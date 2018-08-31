@@ -26,7 +26,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (web uri)
   #:use-module (guix http-client)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix memoization)
   #:use-module (guix store)
   #:use-module (guix base32)

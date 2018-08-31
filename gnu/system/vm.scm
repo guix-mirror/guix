@@ -32,7 +32,7 @@
   #:use-module (guix modules)
   #:use-module (guix scripts pack)
   #:use-module (guix utils)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module ((guix self) #:select (make-config.scm))
 
@@ -43,7 +43,7 @@
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages guile)
-  #:autoload   (gnu packages gnupg) (libgcrypt)
+  #:autoload   (gnu packages gnupg) (guile-gcrypt)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages less)
@@ -124,10 +124,12 @@
     (('gnu rest ...) #t)
     (rest #f)))
 
-(define guile-sqlite3&co
-  ;; Guile-SQLite3 and its propagated inputs.
-  (cons guile-sqlite3
-        (package-transitive-propagated-inputs guile-sqlite3)))
+(define gcrypt-sqlite3&co
+  ;; Guile-Gcrypt, Guile-SQLite3, and their propagated inputs.
+  (append-map (lambda (package)
+                (cons package
+                      (package-transitive-propagated-inputs package)))
+              (list guile-gcrypt guile-sqlite3)))
 
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
@@ -164,10 +166,6 @@ based on the size of the closure of REFERENCES-GRAPHS.
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs, as for `derivation'.  The files containing the reference graphs are
 made available under the /xchg CIFS share."
-  (define config
-    ;; (guix config) module for consumption by (guix gcrypt).
-    (make-config.scm #:libgcrypt libgcrypt))
-
   (define user-builder
     (program-file "builder-in-linux-vm" exp))
 
@@ -195,12 +193,14 @@ made available under the /xchg CIFS share."
 
     (define builder
       ;; Code that launches the VM that evaluates EXP.
-      (with-extensions guile-sqlite3&co
+      (with-extensions gcrypt-sqlite3&co
         (with-imported-modules `(,@(source-module-closure
                                     '((guix build utils)
                                       (gnu build vm))
                                     #:select? not-config?)
-                                 ((guix config) => ,config))
+
+                                 ;; For consumption by (gnu store database).
+                                 ((guix config) => ,(make-config.scm)))
           #~(begin
               (use-modules (guix build utils)
                            (gnu build vm))
@@ -255,9 +255,6 @@ made available under the /xchg CIFS share."
   "Return a bootable, stand-alone iso9660 image.
 
 INPUTS is a list of inputs (as for packages)."
-  (define config
-    (make-config.scm #:libgcrypt libgcrypt))
-
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -265,12 +262,12 @@ INPUTS is a list of inputs (as for packages)."
 
   (expression->derivation-in-linux-vm
    name
-   (with-extensions guile-sqlite3&co
+   (with-extensions gcrypt-sqlite3&co
      (with-imported-modules `(,@(source-module-closure '((gnu build vm)
                                                          (guix store database)
                                                          (guix build utils))
                                                        #:select? not-config?)
-                              ((guix config) => ,config))
+                              ((guix config) => ,(make-config.scm)))
        #~(begin
            (use-modules (gnu build vm)
                         (guix store database)
@@ -347,9 +344,6 @@ INPUTS is a list of inputs (as for packages).  When COPY-INPUTS? is true, copy
 all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
 register INPUTS in the store database of the image so that Guix can be used in
 the image."
-  (define config
-    (make-config.scm #:libgcrypt libgcrypt))
-
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -357,13 +351,13 @@ the image."
 
   (expression->derivation-in-linux-vm
    name
-   (with-extensions guile-sqlite3&co
+   (with-extensions gcrypt-sqlite3&co
      (with-imported-modules `(,@(source-module-closure '((gnu build vm)
                                                          (gnu build bootloader)
                                                          (guix store database)
                                                          (guix build utils))
                                                        #:select? not-config?)
-                              ((guix config) => ,config))
+                              ((guix config) => ,(make-config.scm)))
        #~(begin
            (use-modules (gnu build bootloader)
                         (gnu build vm)
@@ -462,10 +456,6 @@ makes sense when you want to build a GuixSD Docker image that has Guix
 installed inside of it.  If you don't need Guix (e.g., your GuixSD Docker
 image just contains a web server that is started by the Shepherd), then you
 should set REGISTER-CLOSURES? to #f."
-  (define config
-    ;; (guix config) module for consumption by (guix gcrypt).
-    (make-config.scm #:libgcrypt libgcrypt))
-
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -475,8 +465,8 @@ should set REGISTER-CLOSURES? to #f."
                       (name -> (string-append name ".tar.gz"))
                       (graph -> "system-graph"))
     (define build
-      (with-extensions (cons guile-json          ;for (guix docker)
-                             guile-sqlite3&co)   ;for (guix store database)
+      (with-extensions (cons guile-json           ;for (guix docker)
+                             gcrypt-sqlite3&co)   ;for (guix store database)
         (with-imported-modules `(,@(source-module-closure
                                     '((guix docker)
                                       (guix store database)
@@ -484,7 +474,7 @@ should set REGISTER-CLOSURES? to #f."
                                       (guix build store-copy)
                                       (gnu build vm))
                                     #:select? not-config?)
-                                 ((guix config) => ,config))
+                                 ((guix config) => ,(make-config.scm)))
           #~(begin
               (use-modules (guix docker)
                            (guix build utils)

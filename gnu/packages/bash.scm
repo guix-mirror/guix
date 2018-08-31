@@ -36,7 +36,7 @@
   #:use-module (guix store)
   #:use-module (guix build-system gnu)
   #:autoload   (guix gnupg) (gnupg-verify*)
-  #:autoload   (guix hash) (port-sha256)
+  #:autoload   (gcrypt hash) (port-sha256)
   #:autoload   (guix base32) (bytevector->nix-base32-string)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)

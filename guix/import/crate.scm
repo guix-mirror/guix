@@ -20,7 +20,7 @@
   #:use-module (guix base32)
   #:use-module (guix build-system cargo)
   #:use-module ((guix download) #:prefix download:)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix http-client)
   #:use-module (guix import json)
   #:use-module (guix import utils)

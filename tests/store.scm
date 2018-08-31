@@ -21,7 +21,7 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix monads)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module (guix packages)
   #:use-module (guix derivations)

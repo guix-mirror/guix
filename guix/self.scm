@@ -83,8 +83,8 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("guile-ssh"  (ref '(gnu packages ssh)   'guile-ssh))
       ("guile-git"  (ref '(gnu packages guile) 'guile-git))
       ("guile-sqlite3" (ref '(gnu packages guile) 'guile-sqlite3))
+      ("guile-gcrypt"  (ref '(gnu packages gnupg) 'guile-gcrypt))
       ("gnutls"     (ref '(gnu packages tls) 'gnutls))
-      ("libgcrypt"  (ref '(gnu packages gnupg) 'libgcrypt))
       ("zlib"       (ref '(gnu packages compression) 'zlib))
       ("gzip"       (ref '(gnu packages compression) 'gzip))
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
@@ -454,7 +454,6 @@ assumed to be part of MODULES."
                         (name (string-append "guix-" version))
                         (guile-version (effective-version))
                         (guile-for-build (guile-for-build guile-version))
-                        (libgcrypt (specification->package "libgcrypt"))
                         (zlib (specification->package "zlib"))
                         (gzip (specification->package "gzip"))
                         (bzip2 (specification->package "bzip2"))
@@ -481,6 +480,10 @@ assumed to be part of MODULES."
                        "guile-sqlite3"
                        "guile2.0-sqlite3"))
 
+  (define guile-gcrypt
+    (package-for-guile guile-version
+                       "guile-gcrypt"))
+
   (define gnutls
     (package-for-guile guile-version
                        "gnutls" "guile2.0-gnutls"))
@@ -489,7 +492,7 @@ assumed to be part of MODULES."
     (match (append-map (lambda (package)
                          (cons (list "x" package)
                                (package-transitive-propagated-inputs package)))
-                       (list gnutls guile-git guile-json
+                       (list guile-gcrypt gnutls guile-git guile-json
                              guile-ssh guile-sqlite3))
       (((labels packages _ ...) ...)
        packages)))
@@ -513,10 +516,7 @@ assumed to be part of MODULES."
                  ;; rebuilt when the version changes, which in turn means we
                  ;; can have substitutes for it.
                  #:extra-modules
-                 `(((guix config)
-                    => ,(make-config.scm #:libgcrypt
-                                         (specification->package
-                                          "libgcrypt"))))
+                 `(((guix config) => ,(make-config.scm)))
 
                  ;; (guix man-db) is needed at build-time by (guix profiles)
                  ;; but we don't need to compile it; not compiling it allows
@@ -526,6 +526,7 @@ assumed to be part of MODULES."
                    ("guix/store/schema.sql"
                     ,(local-file "../guix/store/schema.sql")))
 
+                 #:extensions (list guile-gcrypt)
                  #:guile-for-build guile-for-build))
 
   (define *extra-modules*
@@ -600,8 +601,7 @@ assumed to be part of MODULES."
                  '()
                  #:extra-modules
                  `(((guix config)
-                    => ,(make-config.scm #:libgcrypt libgcrypt
-                                         #:zlib zlib
+                    => ,(make-config.scm #:zlib zlib
                                          #:gzip gzip
                                          #:bzip2 bzip2
                                          #:xz xz
@@ -684,7 +684,7 @@ assumed to be part of MODULES."
 
 (define %dependency-variables
   ;; (guix config) variables corresponding to dependencies.
-  '(%libgcrypt %libz %xz %gzip %bzip2))
+  '(%libz %xz %gzip %bzip2))
 
 (define %persona-variables
   ;; (guix config) variables that define Guix's persona.
@@ -703,7 +703,7 @@ assumed to be part of MODULES."
                                       (variables rest ...))))))
     (variables %localstatedir %storedir %sysconfdir %system)))
 
-(define* (make-config.scm #:key libgcrypt zlib gzip xz bzip2
+(define* (make-config.scm #:key zlib gzip xz bzip2
                           (package-name "GNU Guix")
                           (package-version "0")
                           (bug-report-address "bug-guix@gnu.org")
@@ -723,7 +723,6 @@ assumed to be part of MODULES."
                                %state-directory
                                %store-database-directory
                                %config-directory
-                               %libgcrypt
                                %libz
                                %gzip
                                %bzip2
@@ -766,9 +765,6 @@ assumed to be part of MODULES."
                    (define %xz
                      #+(and xz (file-append xz "/bin/xz")))
 
-                   (define %libgcrypt
-                     #+(and libgcrypt
-                            (file-append libgcrypt "/lib/libgcrypt")))
                    (define %libz
                      #+(and zlib
                             (file-append zlib "/lib/libz"))))

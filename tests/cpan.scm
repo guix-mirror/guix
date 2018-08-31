@@ -20,7 +20,7 @@
 (define-module (test-cpan)
   #:use-module (guix import cpan)
   #:use-module (guix base32)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix tests)
   #:use-module (guix grafts)
   #:use-module (srfi srfi-64)

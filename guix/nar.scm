@@ -25,9 +25,9 @@
   #:use-module (guix store)
   #:use-module (guix store database)
   #:use-module (guix ui)                          ; for '_'
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix pki)
-  #:use-module (guix pk-crypto)
+  #:use-module (gcrypt pk-crypto)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)

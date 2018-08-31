@@ -620,7 +620,8 @@ GNU Guix depends on the following packages:
 @itemize
 @item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.13 or
 later, including 2.2.x;
-@item @url{http://gnupg.org/, GNU libgcrypt};
+@item @url{https://notabug.org/cwebber/guile-gcrypt, Guile-Gcrypt}, version
+0.1.0 or later;
 @item
 @uref{http://gnutls.org/, GnuTLS}, specifically its Guile bindings
 (@pxref{Guile Preparations, how to install the GnuTLS bindings for
@@ -662,6 +663,7 @@ Unless @code{--disable-daemon} was passed to @command{configure}, the
 following packages are also needed:
 
 @itemize
+@item @url{http://gnupg.org/, GNU libgcrypt};
 @item @url{http://sqlite.org, SQLite 3};
 @item @url{http://gcc.gnu.org, GCC's g++}, with support for the
 C++11 standard.

@@ -19,7 +19,7 @@
 (define-module (test-opam)
   #:use-module (guix import opam)
   #:use-module (guix base32)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix tests)
   #:use-module ((guix build utils) #:select (delete-file-recursively mkdir-p which))
   #:use-module (srfi srfi-64)

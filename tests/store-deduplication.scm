@@ -19,7 +19,7 @@
 (define-module (test-store-deduplication)
   #:use-module (guix tests)
   #:use-module (guix store deduplication)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module ((guix utils) #:select (call-with-temporary-directory))
   #:use-module (guix build utils)
   #:use-module (rnrs bytevectors)

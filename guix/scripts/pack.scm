@@ -41,7 +41,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages base)
   #:autoload   (gnu packages package-management) (guix)
-  #:autoload   (gnu packages gnupg) (libgcrypt)
+  #:autoload   (gnu packages gnupg) (guile-gcrypt)
   #:autoload   (gnu packages guile) (guile2.0-json guile-json)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -95,10 +95,12 @@ found."
     (('gnu _ ...) #t)
     (_ #f)))
 
-(define guile-sqlite3&co
-  ;; Guile-SQLite3 and its propagated inputs.
-  (cons guile-sqlite3
-        (package-transitive-propagated-inputs guile-sqlite3)))
+(define gcrypt-sqlite3&co
+  ;; Guile-Gcrypt, Guile-SQLite3, and their propagated inputs.
+  (append-map (lambda (package)
+                (cons package
+                      (package-transitive-propagated-inputs package)))
+              (list guile-gcrypt guile-sqlite3)))
 
 (define* (self-contained-tarball name profile
                                  #:key target
@@ -124,16 +126,14 @@ added to the pack."
                                   "guix/store/schema.sql"))))
 
   (define build
-    (with-imported-modules `(((guix config)
-                              => ,(make-config.scm
-                                   #:libgcrypt libgcrypt))
+    (with-imported-modules `(((guix config) => ,(make-config.scm))
                              ,@(source-module-closure
                                 `((guix build utils)
                                   (guix build union)
                                   (guix build store-copy)
                                   (gnu build install))
                                 #:select? not-config?))
-      (with-extensions guile-sqlite3&co
+      (with-extensions gcrypt-sqlite3&co
         #~(begin
             (use-modules (guix build utils)
                          ((guix build union) #:select (relative-file-name))
@@ -251,22 +251,14 @@ points for virtual file systems (like procfs), and optional symlinks.
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
-  (define libgcrypt
-    ;; XXX: Not strictly needed, but pulled by (guix store database).
-    (module-ref (resolve-interface '(gnu packages gnupg))
-                'libgcrypt))
-
-
   (define build
-    (with-imported-modules `(((guix config)
-                              => ,(make-config.scm
-                                   #:libgcrypt libgcrypt))
+    (with-imported-modules `(((guix config) => ,(make-config.scm))
                              ,@(source-module-closure
                                 '((guix build utils)
                                   (guix build store-copy)
                                   (gnu build install))
                                 #:select? not-config?))
-      (with-extensions guile-sqlite3&co
+      (with-extensions gcrypt-sqlite3&co
         #~(begin
             (use-modules (guix build utils)
                          (gnu build install)
@@ -349,32 +341,12 @@ must a be a GNU triplet and it is used to derive the architecture metadata in
 the image."
   (define defmod 'define-module)                  ;trick Geiser
 
-  (define config
-    ;; (guix config) module for consumption by (guix gcrypt).
-    (scheme-file "gcrypt-config.scm"
-                 #~(begin
-                     (#$defmod (guix config)
-                       #:export (%libgcrypt))
-
-                     ;; XXX: Work around <http://bugs.gnu.org/15602>.
-                     (eval-when (expand load eval)
-                       (define %libgcrypt
-                         #+(file-append libgcrypt "/lib/libgcrypt"))))))
-
-  (define json
-    ;; Pick the guile-json package that corresponds to the Guile used to build
-    ;; derivations.
-    (if (string-prefix? "2.0" (package-version (default-guile)))
-        guile2.0-json
-        guile-json))
-
   (define build
-    ;; Guile-JSON is required by (guix docker).
-    (with-extensions (list json)
-      (with-imported-modules `(,@(source-module-closure '((guix docker)
-                                                          (guix build store-copy))
-                                                        #:select? not-config?)
-                               ((guix config) => ,config))
+    ;; Guile-JSON and Guile-Gcrypt are required by (guix docker).
+    (with-extensions (list guile-json guile-gcrypt)
+      (with-imported-modules (source-module-closure '((guix docker)
+                                                      (guix build store-copy))
+                                                    #:select? not-config?)
         #~(begin
             (use-modules (guix docker) (srfi srfi-19) (guix build store-copy))
 

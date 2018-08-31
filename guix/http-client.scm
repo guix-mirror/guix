@@ -34,7 +34,7 @@
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix base64)
-  #:autoload   (guix hash) (sha256)
+  #:autoload   (gcrypt hash) (sha256)
   #:use-module ((guix build utils)
                 #:select (mkdir-p dump-port))
   #:use-module ((guix build download)

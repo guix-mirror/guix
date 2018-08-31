@@ -25,7 +25,7 @@
   #:use-module (guix monads)
   #:use-module (guix base16)
   #:use-module (guix base32)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix profiling)
   #:autoload   (guix build syscalls) (terminal-columns)
   #:use-module (rnrs bytevectors)

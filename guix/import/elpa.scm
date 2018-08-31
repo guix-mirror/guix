@@ -32,7 +32,7 @@
   #:use-module (guix http-client)
   #:use-module (guix store)
   #:use-module (guix ui)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module (guix upstream)
   #:use-module (guix packages)

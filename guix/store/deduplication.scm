@@ -21,7 +21,7 @@
 ;;; timestamps, deduplicating, etc.
 
 (define-module (guix store deduplication)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix build utils)
   #:use-module (guix base16)
   #:use-module (srfi srfi-11)
