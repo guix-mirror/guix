@@ -74,7 +74,7 @@ interface\" (ABI) for TYPE is equal to COOKIE."
           ;; recompiled.
           (throw 'record-abi-mismatch-error 'abi-check
                  "~a: record ABI mismatch; recompilation needed"
-                 '(#,type) '())))))
+                 (list #,type) '())))))
 
 (define-syntax make-syntactic-constructor
   (syntax-rules ()
