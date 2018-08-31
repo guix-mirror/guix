@@ -398,6 +398,7 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
               (patches (search-patches "gcc-4.9-libsanitizer-fix.patch"
+                                       "gcc-4.9-libsanitizer-ustat.patch"
                                        "gcc-arm-bug-71399.patch"
                                        "gcc-asan-missing-include.patch"
                                        "gcc-libvtv-runpath.patch"
