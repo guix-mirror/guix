@@ -748,8 +748,8 @@ Create a bundle of PACKAGE.\n"))
                (build-image (match (assq-ref %formats pack-format)
                               ((? procedure? proc) proc)
                               (#f
-                               (leave (G_ "~a: unknown pack format")
-                                      format))))
+                               (leave (G_ "~a: unknown pack format~%")
+                                      pack-format))))
                (localstatedir? (assoc-ref opts 'localstatedir?)))
           (run-with-store store
             (mlet* %store-monad ((profile (profile-derivation
