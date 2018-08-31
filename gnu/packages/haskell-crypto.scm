@@ -210,7 +210,9 @@ that hides the C implementation.")
          "1y8q7s2bn4gdknw1wjikdnar2b5pgz3nv3220lxrlgpsf23x82vi"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:tests? #f)) ; tests require old version of ghc-hunit (0.9)
+     `(#:cabal-revision
+       ("2" "0vyb9cfvpfxpslxvvhd48gw37i9g8ry5x63xwxd9q7xfiqhs7p3a")
+       #:tests? #f)) ; tests require old version of ghc-hunit (0.9)
     (native-inputs `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
                      ("ghc-puremd5" ,ghc-puremd5)
                      ("ghc-tasty" ,ghc-tasty)
