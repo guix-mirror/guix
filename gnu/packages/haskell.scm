@@ -1832,6 +1832,9 @@ installation of Haskell libraries and programs.")
         (base32
          "0bgd4jdmzxq5y465r4sf4jv2ix73yvblnr4c9wyazazafddamjny"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "1bk85avgc93yvcggwbk01fy8nvg6753wgmaanhkry0hz55h7mpld")))
     (home-page "https://github.com/phadej/cabal-doctest")
     (synopsis "Setup.hs helper for running doctests")
     (description
