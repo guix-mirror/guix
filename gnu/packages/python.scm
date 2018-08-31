@@ -3503,7 +3503,8 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
        ;; object. For this reason we need to import both libraries.
        ;; https://pythonhosted.org/cairocffi/cffi_api.html#converting-pycairo
        ("python-pycairo" ,python-pycairo)
-       ("python-pyqt" ,python-pyqt)
+       ;; XXX: qtwebkit cannot be built reliably.
+       ("python-pyqt" ,python-pyqt-without-qtwebkit)
        ("python-cairocffi" ,python-cairocffi)))
     (inputs
      `(("libpng" ,libpng)
