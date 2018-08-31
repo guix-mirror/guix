@@ -9655,6 +9655,9 @@ functions for the ghc-persistent package.")
         (base32
          "1193fplsjm1lcr05xwvkj1rsyzx74i755f6kw3ikmxbsv0bv0l3m"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "16bjwcsaghqqmyi69rq65dn3ydifyfaabq3ns37apdm00mwqbcj2")))
     (home-page
      "https://github.com/fpco/unliftio/tree/master/unliftio-core#readme")
     (synopsis "The MonadUnliftIO typeclass for unlifting monads to IO")
