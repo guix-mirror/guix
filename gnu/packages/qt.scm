@@ -1834,6 +1834,15 @@ framework.  The bindings are implemented as a set of Python modules and
 contain over 620 classes.")
     (license license:gpl3)))
 
+;; XXX: This is useful because qtwebkit does not build reliably at this time.
+;; Ultimately, it would be nicer to have a more modular set of python-pyqt-*
+;; packages that could be used together.
+(define-public python-pyqt-without-qtwebkit
+  (package (inherit python-pyqt)
+    (name "python-pyqt-without-qtwebkit")
+    (inputs
+     (alist-delete "qtwebkit" (package-inputs python-pyqt)))))
+
 (define-public python2-pyqt
   (package (inherit python-pyqt)
     (name "python2-pyqt")
