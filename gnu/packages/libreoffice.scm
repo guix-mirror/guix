@@ -81,7 +81,7 @@
 (define-public ixion
   (package
     (name "ixion")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
@@ -89,7 +89,7 @@
                            version ".tar.xz"))
        (sha256
         (base32
-         "1rf76drzg593jzswwnh8kr2jangp8ylizqjspx57rld25g2n1qss"))))
+         "14gdd6div4l22vnz3jn2qjxgjly98ck6p8c1v7386c41rx7kilba"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
