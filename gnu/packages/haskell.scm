@@ -2985,6 +2985,9 @@ modifying, and extracting files from zip archives in Haskell.")
         (base32
          "0y566r97sfyvhsmd4yxiz4ns2mqgwf5bdbp56wgxl6wlkidq0wwi"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("6" "06bd38rf31yrvvy989r44pm0id3dsxwcp6nxg7wk6ccj3n2b8rzk")))
     (inputs
      `(("ghc-tagged" ,ghc-tagged)
        ("ghc-base-orphans" ,ghc-base-orphans)
@@ -2993,7 +2996,7 @@ modifying, and extracting files from zip archives in Haskell.")
        ("ghc-generic-deriving" ,ghc-generic-deriving)))
     (native-inputs
      `(("cabal-doctest" ,cabal-doctest)
-       ("ghc-doctest" ,ghc-doctest-0.12)
+       ("ghc-doctest" ,ghc-doctest)
        ("ghc-hspec" ,ghc-hspec)
        ("hspec-discover" ,hspec-discover)))
     (home-page "https://github.com/ekmett/distributive/")
