@@ -320,29 +320,22 @@ graphics.")
 (define-public openexr
   (package
     (name "openexr")
-    (version "2.2.1")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/openexr/openexr-"
+              (uri (string-append "https://github.com/openexr/openexr/releases"
+                                  "/download/v" version "/openexr-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1kdf2gqznsdinbd5vcmqnif442nyhdf9l7ckc51410qm2gv5m6lg"))
+                "19jywbs9qjvsbkvlvzayzi81s976k53wg53vw4xj66lcgylb6v7x"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   (substitute* (find-files "." "tmpDir\\.h")
                     (("\"/var/tmp/\"")
                      "\"/tmp/\""))
-
-                  ;; Install 'ImfStdIO.h'.  Reported at
-                  ;; <https://lists.nongnu.org/archive/html/openexr-devel/2016-06/msg00001.html>
-                  ;; and <https://github.com/openexr/openexr/pull/184>.
-                  (substitute* "IlmImf/Makefile.in"
-                    (("ImfIO\\.h")
-                     "ImfIO.h ImfStdIO.h"))
-                  #t))
-              (patches (search-patches "openexr-missing-samples.patch"))))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
