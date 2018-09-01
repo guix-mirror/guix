@@ -9338,6 +9338,29 @@ The package is intended to rapidly evolve with the contribution from
 the community, with the missing features being added with pull-requests.")
     (license license:expat)))
 
+(define-public ghc-rerebase
+  (package
+    (name "ghc-rerebase")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/rerebase/rerebase-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "11v6rmz7ql2rdx6mhb3lsal952lwihclfhh0m7fcnii5br0906ks"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-rebase" ,ghc-rebase)))
+    (home-page "https://github.com/nikita-volkov/rerebase")
+    (synopsis "Reexports from ``base'' with many other standard libraries")
+    (description "A rich drop-in replacement for ``base''.  For details and
+documentation please visit @uref{https://github.com/nikita-volkov/rerebase,
+the project's home page}.")
+    (license license:expat)))
+
 (define-public ghc-vector-builder
   (package
     (name "ghc-vector-builder")
