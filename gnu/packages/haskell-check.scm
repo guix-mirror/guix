@@ -352,7 +352,8 @@ development.")
          "1bh1pzz5fdcqvzdcirqxna6fnjms02min5md716299g5niz46w55"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=base-compat")))
+     `(#:cabal-revision
+       ("1" "1sngfq3v71bvgjsl8cj5kh65m3fziwy8dkvwjzs0kxfrzr87faly")))
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-base-compat" ,ghc-base-compat)
