@@ -6859,6 +6859,20 @@ provided.  Skylighting is intended to be the successor to highlighting-kate.")
         (base32
          "1dqin92w513l7whg5wdgrngnxsj5mb8gppfvn7kjgyv2pdgpy0zy"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "pandoc.cabal"
+               (("tasty >= 0\\.11 && < 1\\.1")
+                "tasty >= 0.11 && < 1.1.1"))))
+         (add-before 'configure 'patch-tests
+           (lambda _
+             ;; These tests fail benignly and have been adjusted upstream:
+             ;; <https://github.com/commercialhaskell/stackage/issues/3719>.
+             (substitute* "test/Tests/Old.hs"
+               (("lhsWriterTests \"html\"") "[]")))))))
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
        ("ghc-aeson-pretty" ,ghc-aeson-pretty)
