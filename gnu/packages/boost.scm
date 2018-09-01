@@ -182,14 +182,14 @@ Boost.Thread.")
 (define-public mdds
   (package
     (name "mdds")
-    (version "1.3.1")
+    (version "1.4.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "http://kohei.us/files/mdds/src/mdds-" version ".tar.bz2"))
              (sha256
               (base32
-               "18g511z1lgfxrga2ld9yr95phmyfbd3ymbv4q5g5lyjn4ljcvf6w"))))
+               "10cw6irdm6d15nxnys2v5akp8yz52qijpcjvw0frwq7nz5d3vki5"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("boost" ,boost))) ; inclusion of header files
