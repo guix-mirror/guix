@@ -411,7 +411,16 @@ CorelDRAW documents of all versions.")
                "0bfq9rwm040xhh7b3v0gsdavwvnrz4hkwnhpggarxk70mr3j7jcx"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-mdds=1.2")))
+     `(#:configure-flags '("--with-mdds=1.4")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'support-mdds-1.4
+                    (lambda _
+                      ;; This package already works fine with mdds 1.4, but the
+                      ;; configure check is too strict.  Taken from upstream.
+                      (substitute* "configure"
+                        (("mdds=1\\.2") "mdds=1.4")
+                        (("mdds=\"1\\.2\"") "mdds=\"1.4\""))
+                      #t)))))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
