@@ -6268,6 +6268,9 @@ described in @url{https://www.lua.org/}.")
         (base32
          "0bcfpb1dhnxp0gr376ai4w7vczr9zrjl1r3r6w7kcxivfkwq9cxf"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "0vajlsd7y6pwa08635q0cx8z5c1c55bk7fvavw7g2vmyvxqjzx6n")))
     (inputs
      `(("ghc-hslua" ,ghc-hslua)
        ("ghc-text" ,ghc-text)))
