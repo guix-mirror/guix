@@ -849,6 +849,29 @@ making this package a full replacement for the original newtype package,
 and an alternative to newtype-th.")
     (license license:bsd-3)))
 
+(define-public ghc-memotrie
+  (package
+    (name "ghc-memotrie")
+    (version "0.6.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/MemoTrie/MemoTrie-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "157p0pi6rrq74a35mq6zkkycv4ah7xhkbrcmnkb9xf7pznw4aq0x"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-newtype-generics" ,ghc-newtype-generics)))
+    (home-page "https://github.com/conal/MemoTrie")
+    (synopsis "Trie-based memo functions")
+    (description "This package provides a functional library for creating
+efficient memo functions using tries.")
+    (license license:bsd-3)))
+
 (define-public ghc-haddock-library
   (package
     (name "ghc-haddock-library")
