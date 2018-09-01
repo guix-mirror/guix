@@ -167,6 +167,110 @@ in turn be used to build the final Rust.")
     (snippet '(begin (delete-file-recursively "src/llvm") #t))
     (patches (map search-patch patches))))
 
+(define* (rust-bootstrapped-package base-rust version checksum
+                                    #:key (patches '()))
+  "Bootstrap rust VERSION with source checksum CHECKSUM patched with PATCHES using BASE-RUST."
+  (package
+    (inherit base-rust)
+    (version version)
+    (source
+     (rust-source version checksum #:patches patches))
+    (native-inputs
+     (alist-replace "cargo-bootstrap" (list base-rust "cargo")
+                    (alist-replace "rustc-bootstrap" (list base-rust)
+                                   (package-native-inputs base-rust))))))
+
+(define-public mrustc
+  (let ((rustc-version "1.19.0"))
+    (package
+      (name "mrustc")
+      (version "0.8.0")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/thepowersgang/mrustc.git")
+                      (commit (string-append "v" version))))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0a7v8ccyzp1sdkwni8h1698hxpfz2sxhcpx42n6l2pbm0rbjp08i"))))
+      (outputs '("out" "cargo"))
+      (build-system gnu-build-system)
+      (inputs
+       `(("llvm" ,llvm-3.9.1)))
+      (native-inputs
+       `(("bison" ,bison)
+         ("flex" ,flex)
+         ;; Required for the libstd sources.
+         ("rustc"
+          ,(rust-source "1.19.0" "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"))))
+      (arguments
+       `(#:tests? #f
+         #:make-flags (list (string-append "LLVM_CONFIG="
+                                           (assoc-ref %build-inputs "llvm")
+                                           "/bin/llvm-config"))
+         #:phases
+         (modify-phases %standard-phases
+          (add-after 'unpack 'patch-date
+            (lambda _
+              (substitute* "Makefile"
+               (("shell date") "shell date -d @1"))
+              #t))
+           (add-after 'patch-date 'unpack-target-compiler
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (substitute* "minicargo.mk"
+                 ;; Don't try to build LLVM.
+                 (("^[$][(]LLVM_CONFIG[)]:") "xxx:")
+                 ;; Build for the correct target architecture.
+                 (("^RUSTC_TARGET := x86_64-unknown-linux-gnu")
+                  (string-append "RUSTC_TARGET := "
+                                 ,(or (%current-target-system)
+                                      (nix-system->gnu-triplet-for-rust)))))
+               (invoke "tar" "xf" (assoc-ref inputs "rustc"))
+               (chdir "rustc-1.19.0-src")
+               (invoke "patch" "-p0" "../rust_src.patch")
+               (chdir "..")
+               #t))
+           (replace 'configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+               #t))
+           (add-after 'build 'build-minicargo
+             (lambda _
+               (for-each (lambda (target)
+                           (invoke "make" "-f" "minicargo.mk" target))
+                         '("output/libstd.hir" "output/libpanic_unwind.hir"
+                           "output/libproc_macro.hir" "output/libtest.hir"))
+               ;; Technically the above already does it - but we want to be clear.
+               (invoke "make" "-C" "tools/minicargo")))
+           (replace 'install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (tools-bin (string-append out "/tools/bin"))
+                      (cargo-out (assoc-ref outputs "cargo"))
+                      (cargo-bin (string-append cargo-out "/bin"))
+                      (lib (string-append out "/lib"))
+                      (lib/rust (string-append lib "/mrust"))
+                      (gcc (assoc-ref inputs "gcc")))
+                 ;; These files are not reproducible.
+                 (for-each delete-file (find-files "output" "\\.txt$"))
+                 (mkdir-p lib)
+                 (copy-recursively "output" lib/rust)
+                 (mkdir-p bin)
+                 (mkdir-p tools-bin)
+                 (install-file "bin/mrustc" bin)
+                 ;; minicargo uses relative paths to resolve mrustc.
+                 (install-file "tools/bin/minicargo" tools-bin)
+                 (install-file "tools/bin/minicargo" cargo-bin)
+                 #t))))))
+      (synopsis "Compiler for the Rust progamming language")
+      (description "Rust is a systems programming language that provides memory
+safety and thread safety guarantees.")
+      (home-page "https://github.com/thepowersgang/mrustc")
+      ;; Dual licensed.
+      (license (list license:asl2.0 license:expat)))))
+
 (define rust-1.19
   (package
     (name "rust")
@@ -393,110 +497,6 @@ safety and thread safety guarantees.")
     (home-page "https://www.rust-lang.org")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
-
-(define* (rust-bootstrapped-package base-rust version checksum
-                                    #:key (patches '()))
-  "Bootstrap rust VERSION with source checksum CHECKSUM patched with PATCHES using BASE-RUST."
-  (package
-    (inherit base-rust)
-    (version version)
-    (source
-     (rust-source version checksum #:patches patches))
-    (native-inputs
-     (alist-replace "cargo-bootstrap" (list base-rust "cargo")
-                    (alist-replace "rustc-bootstrap" (list base-rust)
-                                   (package-native-inputs base-rust))))))
-
-(define-public mrustc
-  (let ((rustc-version "1.19.0"))
-    (package
-      (name "mrustc")
-      (version "0.8.0")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/thepowersgang/mrustc.git")
-                      (commit (string-append "v" version))))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0a7v8ccyzp1sdkwni8h1698hxpfz2sxhcpx42n6l2pbm0rbjp08i"))))
-      (outputs '("out" "cargo"))
-      (build-system gnu-build-system)
-      (inputs
-       `(("llvm" ,llvm-3.9.1)))
-      (native-inputs
-       `(("bison" ,bison)
-         ("flex" ,flex)
-         ;; Required for the libstd sources.
-         ("rustc"
-          ,(rust-source "1.19.0" "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"))))
-      (arguments
-       `(#:tests? #f
-         #:make-flags (list (string-append "LLVM_CONFIG="
-                                           (assoc-ref %build-inputs "llvm")
-                                           "/bin/llvm-config"))
-         #:phases
-         (modify-phases %standard-phases
-          (add-after 'unpack 'patch-date
-            (lambda _
-              (substitute* "Makefile"
-               (("shell date") "shell date -d @1"))
-              #t))
-           (add-after 'patch-date 'unpack-target-compiler
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (substitute* "minicargo.mk"
-                 ;; Don't try to build LLVM.
-                 (("^[$][(]LLVM_CONFIG[)]:") "xxx:")
-                 ;; Build for the correct target architecture.
-                 (("^RUSTC_TARGET := x86_64-unknown-linux-gnu")
-                  (string-append "RUSTC_TARGET := "
-                                 ,(or (%current-target-system)
-                                      (nix-system->gnu-triplet-for-rust)))))
-               (invoke "tar" "xf" (assoc-ref inputs "rustc"))
-               (chdir "rustc-1.19.0-src")
-               (invoke "patch" "-p0" "../rust_src.patch")
-               (chdir "..")
-               #t))
-           (replace 'configure
-             (lambda* (#:key inputs #:allow-other-keys)
-               (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
-               #t))
-           (add-after 'build 'build-minicargo
-             (lambda _
-               (for-each (lambda (target)
-                           (invoke "make" "-f" "minicargo.mk" target))
-                         '("output/libstd.hir" "output/libpanic_unwind.hir"
-                           "output/libproc_macro.hir" "output/libtest.hir"))
-               ;; Technically the above already does it - but we want to be clear.
-               (invoke "make" "-C" "tools/minicargo")))
-           (replace 'install
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append out "/bin"))
-                      (tools-bin (string-append out "/tools/bin"))
-                      (cargo-out (assoc-ref outputs "cargo"))
-                      (cargo-bin (string-append cargo-out "/bin"))
-                      (lib (string-append out "/lib"))
-                      (lib/rust (string-append lib "/mrust"))
-                      (gcc (assoc-ref inputs "gcc")))
-                 ;; These files are not reproducible.
-                 (for-each delete-file (find-files "output" "\\.txt$"))
-                 (mkdir-p lib)
-                 (copy-recursively "output" lib/rust)
-                 (mkdir-p bin)
-                 (mkdir-p tools-bin)
-                 (install-file "bin/mrustc" bin)
-                 ;; minicargo uses relative paths to resolve mrustc.
-                 (install-file "tools/bin/minicargo" tools-bin)
-                 (install-file "tools/bin/minicargo" cargo-bin)
-                 #t))))))
-      (synopsis "Compiler for the Rust progamming language")
-      (description "Rust is a systems programming language that provides memory
-safety and thread safety guarantees.")
-      (home-page "https://github.com/thepowersgang/mrustc")
-      ;; Dual licensed.
-      (license (list license:asl2.0 license:expat)))))
 
 (define-public rust-1.23
   (package
