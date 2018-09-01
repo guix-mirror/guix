@@ -9684,6 +9684,9 @@ connections.")
         (base32
          "12l55b76bhya9q89mfmqmy6sl5v39b6gzrw5rf3f70vkb23nsv5a"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "06f7pgmmc8456p3hc1y23kz1y127gfczy7s00wz1rls9g2sm2vi4")))
     (inputs `(("ghc-attoparsec" ,ghc-attoparsec)
               ("ghc-base-compat" ,ghc-base-compat)
               ("ghc-text" ,ghc-text)))
