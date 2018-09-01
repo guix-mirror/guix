@@ -823,6 +823,32 @@ code pages on Windows.  On all other operating systems, the library does
 nothing.")
   (license license:bsd-3)))
 
+(define-public ghc-newtype-generics
+  (package
+    (name "ghc-newtype-generics")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "newtype-generics/newtype-generics-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0igyisw2djg19v9vkna1rwf47k97mvkvk4bbkmswznvbm00z15gj"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "http://github.com/sjakobi/newtype-generics")
+    (synopsis "Typeclass and set of functions for working with newtypes")
+    (description "The @code{Newtype} typeclass represents the packing and
+unpacking of a newtype, and allows you to operate under that newtype with
+functions such as @code{ala}.  Generics support was added in version 0.4,
+making this package a full replacement for the original newtype package,
+and an alternative to newtype-th.")
+    (license license:bsd-3)))
+
 (define-public ghc-haddock-library
   (package
     (name "ghc-haddock-library")
