@@ -4730,6 +4730,43 @@ Compatibility package for older packages.")
 given term should not exist.")
     (license license:bsd-3)))
 
+(define-public ghc-invariant
+  (package
+    (name "ghc-invariant")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/invariant/invariant-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0aqj7z55632qdg45074kgn9qfdxzb0a2f8lgjzr0l0i4mm2rr37b"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-bifunctors" ,ghc-bifunctors)
+       ("ghc-comonad" ,ghc-comonad)
+       ("ghc-contravariant" ,ghc-contravariant)
+       ("ghc-profunctors" ,ghc-profunctors)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-statevar" ,ghc-statevar)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-th-abstraction" ,ghc-th-abstraction)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/nfrisby/invariant-functors")
+    (synopsis "Haskell98 invariant functors")
+    (description "Haskell98 invariant functors (also known as exponential
+functors).  For more information, see Edward Kmett's article
+@uref{http://comonad.com/reader/2008/rotten-bananas/, Rotten Bananas}.")
+    (license license:bsd-2)))
+
 (define-public ghc-kan-extensions
   (package
     (name "ghc-kan-extensions")
