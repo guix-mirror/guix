@@ -20,13 +20,20 @@
 
 (use-modules (srfi srfi-26))
 
-;; Add ~/.config/guix/latest to the search path.
-(add-to-load-path
- (and=> (or (getenv "XDG_CONFIG_HOME")
-            (and=> (getenv "HOME")
-                   (cut string-append <> "/.config")))
-        (cute string-append <> "/guix/current/share/guile/site/"
-              (effective-version))))
+;; Add ~/.config/guix/current to the search path.
+(eval-when (expand load eval)
+  (and=> (or (getenv "XDG_CONFIG_HOME")
+             (and=> (getenv "HOME")
+                    (cut string-append <> "/.config/guix/current")))
+         (lambda (current)
+           (set! %load-path
+             (cons (string-append current "/share/guile/site/"
+                                  (effective-version))
+                   %load-path))
+           (set! %load-compiled-path
+             (cons (string-append current "/lib/guile/" (effective-version)
+                                  "/site-ccache")
+                   %load-compiled-path)))))
 
 (use-modules (guix) (guix ui)
              (guix git-download)
