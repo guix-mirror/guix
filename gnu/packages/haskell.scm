@@ -872,6 +872,66 @@ and an alternative to newtype-th.")
 efficient memo functions using tries.")
     (license license:bsd-3)))
 
+(define-public ghc-tree-diff
+  (package
+    (name "ghc-tree-diff")
+    (version "0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/tree-diff/tree-diff-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "049v44c520jy3icxlnrvbdblh3mjmvd7m6qmkzxbzkf02x63xqmz"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("4" "1rqxxyj6hqllahs11693g855cxz8mgnb490s7j1ksd300i5xgjsp")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "tree-diff.cabal"
+               (("trifecta             >=1\\.7\\.1\\.1  && <1\\.8")
+                "trifecta             >=1.7.1.1  && <=2")))))))
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-generics-sop" ,ghc-generics-sop)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-memotrie" ,ghc-memotrie)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-parsers" ,ghc-parsers)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-uuid-types" ,ghc-uuid-types)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-trifecta" ,ghc-trifecta)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-golden" ,ghc-tasty-golden)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (home-page "https://github.com/phadej/tree-diff")
+    (synopsis "Compute difference between (expression) trees")
+    (description "This Haskell library provides a function for computing
+the difference bewteen (expression) trees.  It also provides a way to
+compute the difference between arbitrary abstract datatypes (ADTs) using
+@code{Generics}-derivable helpers.")
+    (license license:bsd-3)))
+
 (define-public ghc-haddock-library
   (package
     (name "ghc-haddock-library")
