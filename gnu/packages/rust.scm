@@ -171,10 +171,12 @@ in turn be used to build the final Rust.")
   (package
     (name "rust")
     (version "1.19.0")
-    (source (rust-source version "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"))
+    (source (rust-source version "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"
+            #:patches '("rust-1.19-mrustc.patch")))
     (outputs '("out" "cargo"))
     (arguments
      `(#:imported-modules ,%cargo-build-system-modules ;for `generate-checksums'
+       #:modules ((guix build utils) (ice-9 match) (guix build gnu-build-system))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-env
@@ -186,6 +188,24 @@ in turn be used to build the final Rust.")
              (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
              ;; guix llvm-3.9.1 package installs only shared libraries
              (setenv "LLVM_LINK_SHARED" "1")
+             #t))
+         (add-after 'unpack 'patch-cargo-tomls
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "src/librustc_errors/Cargo.toml"
+               (("[[]dependencies[]]") "
+[dependencies]
+term = \"0.4.4\"
+"))
+             (substitute* "src/librustc/Cargo.toml"
+               (("[[]dependencies[]]") "
+[dependencies]
+getopts = { path = \"../libgetopts\" }
+"))
+             (substitute* "src/librustdoc/Cargo.toml"
+               (("[[]dependencies[]]") "
+[dependencies]
+test = { path = \"../libtest\" }
+"))
              #t))
          (add-after 'unpack 'patch-tests
            (lambda* (#:key inputs #:allow-other-keys)
@@ -243,12 +263,97 @@ in turn be used to build the final Rust.")
                   (generate-checksums dir ,%cargo-reference-project-file)))
               (find-files "src/vendor" ".cargo-checksum.json"))
              #t))
+         ;; This phase is overridden by newer versions.
          (replace 'configure
            (const #t))
+         ;; This phase is overridden by newer versions.
+         (replace 'build
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((rustc-bootstrap (assoc-ref inputs "rustc-bootstrap")))
+               (setenv "CFG_COMPILER_HOST_TRIPLE"
+                ,(nix-system->gnu-triplet (%current-system)))
+               (setenv "CFG_RELEASE" "")
+               (setenv "CFG_RELEASE_CHANNEL" "stable")
+               (setenv "CFG_LIBDIR_RELATIVE" "lib")
+               (setenv "CFG_VERSION" "1.19.0-stable-mrustc")
+               ; bad: (setenv "CFG_PREFIX" "mrustc") ; FIXME output path.
+               (mkdir-p "output")
+               (invoke (string-append rustc-bootstrap "/tools/bin/minicargo")
+                       "src/rustc" "--vendor-dir" "src/vendor"
+                       "--output-dir" "output/rustc-build"
+                       "-L" (string-append rustc-bootstrap "/lib/mrust")
+                       "-j" "1")
+               (install-file "output/rustc-build/rustc" "output") ; FIXME: Remove?
+               (setenv "CFG_COMPILER_HOST_TRIPLE" #f)
+               (setenv "CFG_RELEASE" #f)
+               (setenv "CFG_RELEASE_CHANNEL" #f)
+               (setenv "CFG_VERSION" #f)
+               (setenv "CFG_PREFIX" #f)
+               (setenv "CFG_LIBDIR_RELATIVE" #f)
+               (invoke (string-append rustc-bootstrap "/tools/bin/minicargo")
+                       "src/tools/cargo" "--vendor-dir" "src/vendor"
+                       "--output-dir" "output/cargo-build"
+                       "-L" "output/"
+                       "-L" (string-append rustc-bootstrap "/lib/mrust")
+                       "-j" "1")
+               ;; Now use the newly-built rustc to build the libraries.
+               ;; One day that could be replaced by:
+               ;; (invoke "output/cargo-build/cargo" "build"
+               ;;         "--manifest-path" "src/bootstrap/Cargo.toml"
+               ;;         "--verbose") ; "--locked" "--frozen"
+               ;; but right now, Cargo has problems with libstd's circular
+               ;; dependencies.
+               (mkdir-p "output/target-libs")
+               (for-each ((@ (ice-9 match) match-lambda)
+                          ((name . flags)
+                            (write name)
+                            (newline)
+                            (apply invoke
+                                   "output/rustc-build/rustc"
+                                   "-C" (string-append "linker="
+                                                       (getenv "CC"))
+                                   "-L" "output/target-libs"
+                                   (string-append "src/" name "/lib.rs")
+                                   "-o"
+                                   (string-append "output/target-libs/"
+                                                  (car (string-split name #\/))
+                                                  ".rlib")
+                                   flags)))
+                         '(("libcore")
+                           ("libstd_unicode")
+                           ("liballoc")
+                           ("libcollections")
+                           ("librand")
+                           ("liblibc/src" "--cfg" "stdbuild")
+                           ("libunwind" "-l" "gcc_s")
+                           ("libcompiler_builtins")
+                           ("liballoc_system")
+                           ("libpanic_unwind")
+                           ;; Uses "cc" to link.
+                           ("libstd" "-l" "dl" "-l" "rt" "-l" "pthread")
+                           ("libarena")))
+               #t)))
+         ;; This phase is overridden by newer versions.
          (replace 'check
            (const #t))
+         ;; This phase is overridden by newer versions.
          (replace 'install
-           (const #t)))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (target-system ,(or (%current-target-system)
+                                        (nix-system->gnu-triplet
+                                         (%current-system))))
+                    (out-libs (string-append out "/lib/rustlib/"
+                                             target-system "/lib")))
+                                        ;(setenv "CFG_PREFIX" out)
+               (mkdir-p out-libs)
+               (copy-recursively "output/target-libs" out-libs)
+               (install-file "output/rustc-build/rustc"
+                             (string-append out "/bin"))
+               (install-file "output/cargo-build/cargo"
+                             (string-append (assoc-ref outputs "cargo")
+                                            "/bin")))
+             #t)))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison) ; For the tests
@@ -258,8 +363,8 @@ in turn be used to build the final Rust.")
        ("git" ,git)
        ("procps" ,procps) ; For the tests
        ("python-2" ,python-2)
-       ("rustc-bootstrap" ,rust-bootstrap)
-       ("cargo-bootstrap" ,rust-bootstrap "cargo")
+       ("rustc-bootstrap" ,mrustc)
+       ("cargo-bootstrap" ,mrustc "cargo")
        ("pkg-config" ,pkg-config) ; For "cargo"
        ("which" ,which)))
     (inputs
@@ -400,6 +505,18 @@ safety and thread safety guarantees.")
     (version "1.23.0")
     (source (rust-source version "14fb8vhjzsxlbi6yrn1r6fl5dlbdd1m92dn5zj5gmzfwf4w9ar3l"))
     (outputs '("out" "doc" "cargo"))
+    (native-inputs
+     `(("bison" ,bison) ; For the tests
+       ("cmake" ,cmake)
+       ("flex" ,flex) ; For the tests
+       ("gdb" ,gdb)   ; For the tests
+       ("git" ,git)
+       ("procps" ,procps) ; For the tests
+       ("python-2" ,python-2)
+       ("rustc-bootstrap" ,rust-bootstrap)
+       ("cargo-bootstrap" ,rust-bootstrap "cargo")
+       ("pkg-config" ,pkg-config) ; For "cargo"
+       ("which" ,which)))
     (arguments
      (substitute-keyword-arguments (package-arguments rust-1.19)
        ((#:phases phases)
@@ -410,6 +527,8 @@ safety and thread safety guarantees.")
                (substitute* "src/binaryen/CMakeLists.txt"
                  (("ADD_COMPILE_FLAG\\(\\\"-march=native\\\"\\)") ""))
                #t))
+           ;; TODO: Revisit this and find out whether that's needed after all.
+           (delete 'patch-cargo-tomls)
            (add-after 'patch-tests 'patch-cargo-tests
              (lambda _
                (substitute* "src/tools/cargo/tests/build.rs"
