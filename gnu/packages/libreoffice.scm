@@ -107,7 +107,7 @@ their dependencies automatically upon calculation.")
 (define-public orcus
   (package
     (name "orcus")
-    (version "0.13.4")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
@@ -115,7 +115,7 @@ their dependencies automatically upon calculation.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1r42waglxwmvvwl20fy49vzgfp1sis4j703f81iswzdyzqalq75p"))))
+         "1ays13a1x15j81dsrq0d3697v1bbqd3bfz3ajn6kb9d61y2drlgj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
