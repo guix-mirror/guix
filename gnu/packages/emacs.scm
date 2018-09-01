@@ -646,7 +646,11 @@ only a handful of functions that are not resource-specific.")
                     "https://github.com/haskell/haskell-mode/archive/v"
                     version ".tar.gz"))
               (sha256
-               (base32 "0g6lcjw7lcgavv3yrd8xjcyqgfyjl787y32r1z14amw2f009m78h"))))
+               (base32 "0g6lcjw7lcgavv3yrd8xjcyqgfyjl787y32r1z14amw2f009m78h"))
+              (patches
+               (search-patches ; backport test failure fixes
+                "haskell-mode-unused-variables.patch"
+                "haskell-mode-make-check.patch"))))
     (inputs
      `(("emacs-el-search" ,emacs-el-search) ; for tests
        ("emacs-stream" ,emacs-stream)))     ; for tests
@@ -686,12 +690,11 @@ only a handful of functions that are not resource-specific.")
                               (_ ""))
                             inputs)))
               (substitute* (find-files "." "\\.el") (("/bin/sh") sh))
-              (substitute* "tests/haskell-code-conventions.el"
-                ;; Function name recently changed in "emacs-el-search".
-                (("el-search--search-pattern") "el-search-forward")
-                ;; Don't contact home.
-                (("\\(when \\(>= emacs-major-version 25\\)")
-                 "(require 'el-search) (when nil"))
+              ;; embed filename to fix test failure
+              (let ((file "tests/haskell-cabal-tests.el"))
+                (substitute* file
+                  (("\\(buffer-file-name\\)")
+                   (format #f "(or (buffer-file-name) ~s)" file))))
               #t)))
          (replace
           'install
