@@ -5481,8 +5481,6 @@ and bytestrings.")
                (base32
                 "1q6v2bynij724fv347mhqxdscwifzrx5jb9mq80608qf638fn717"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs
      `(("ghc-syb" ,ghc-syb)
        ("ghc-aeson" ,ghc-aeson)
