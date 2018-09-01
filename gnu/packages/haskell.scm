@@ -4932,7 +4932,7 @@ cross-site scripting (@dfn{XSS}) attacks.")
 (define-public ghc-semigroupoids
   (package
     (name "ghc-semigroupoids")
-    (version "5.1")
+    (version "5.2.2")
     (source
      (origin
        (method url-fetch)
@@ -4942,9 +4942,11 @@ cross-site scripting (@dfn{XSS}) attacks.")
              ".tar.gz"))
        (sha256
         (base32
-         "0dgqc59p4xx5cl8qkpm6sn4wd3n59rq7l6din76hf10bnklqrb0n"))))
+         "17i96y4iqj8clcs090lf6k0ij3j16nj14vsfwz0mm9nd6i4gbpp4"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: doctest packagedb propagation problem.
+    (arguments
+     `(#:cabal-revision
+       ("4" "0pqfrxzypjq6z8lgdkzq4vhcyqkpk5326hny0r6snpc3gm78r4ij")))
     (inputs
      `(("ghc-base-orphans" ,ghc-base-orphans)
        ("ghc-transformers-compat" ,ghc-transformers-compat)
@@ -4952,8 +4954,13 @@ cross-site scripting (@dfn{XSS}) attacks.")
        ("ghc-comonad" ,ghc-comonad)
        ("ghc-contravariant" ,ghc-contravariant)
        ("ghc-distributive" ,ghc-distributive)
+       ("ghc-hashable" ,ghc-hashable)
        ("ghc-semigroups" ,ghc-semigroups)
-       ("ghc-tagged" ,ghc-tagged)))
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (native-inputs
+     `(("cabal-doctest" ,cabal-doctest)
+       ("ghc-doctest" ,ghc-doctest)))
     (home-page "https://github.com/ekmett/semigroupoids")
     (synopsis "Semigroupoids operations for Haskell")
     (description "This library provides a wide array of (semi)groupoids and
@@ -10083,22 +10090,6 @@ system dependencies.")
      "This Haskell package provides a validator that can validate an email
 address string against RFC 5322.")
     (license license:bsd-3)))
-
-(define-public ghc-semigroupoids-5.2.2
-  (package
-    (inherit ghc-semigroupoids)
-    (name "ghc-semigroupoids")
-    (version "5.2.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://hackage.haskell.org/package/"
-                                  "semigroupoids-" version "/semigroupoids-"
-                                   version ".tar.gz"))
-              (sha256
-               (base32
-                "17i96y4iqj8clcs090lf6k0ij3j16nj14vsfwz0mm9nd6i4gbpp4"))))
-    (inputs `(("ghc-unordered-containers" ,ghc-unordered-containers)
-              ,@(package-inputs ghc-semigroupoids)))))
 
 (define-public ghc-bytes
   (package
