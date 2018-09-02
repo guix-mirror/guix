@@ -3602,7 +3602,7 @@ experiments and provide highly stable thresholds based on reproducibility.")
 (define-public jellyfish
   (package
     (name "jellyfish")
-    (version "2.2.7")
+    (version "2.2.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/gmarcais/Jellyfish/"
@@ -3610,7 +3610,7 @@ experiments and provide highly stable thresholds based on reproducibility.")
                                   "/jellyfish-" version ".tar.gz"))
               (sha256
                (base32
-                "1a1iwq9pq54k2m9ypvwl5s0bqfl64gwh9dx5af9i382ajas2016q"))))
+                "1k4pc3fvv6w1km2yph4m5sd78fbxp21d6xyzgmy0gjihzc6mb249"))))
     (build-system gnu-build-system)
     (outputs '("out"      ;for library
                "ruby"     ;for Ruby bindings
@@ -3647,8 +3647,8 @@ DNA sequences.  It outputs its k-mer counts in a binary format, which can be
 translated into a human-readable text format using the @code{jellyfish dump}
 command, or queried for specific k-mers with @code{jellyfish query}.")
     (home-page "http://www.genome.umd.edu/jellyfish.html")
-    ;; From their website: JELLYFISH runs on 64-bit Intel-compatible processors
-    (supported-systems '("x86_64-linux"))
+    ;; JELLYFISH seems to be 64-bit only.
+    (supported-systems '("x86_64-linux" "aarch64-linux" "mips64el-linux"))
     ;; The combined work is published under the GPLv3 or later.  Individual
     ;; files such as lib/jsoncpp.cpp are released under the Expat license.
     (license (list license:gpl3+ license:expat))))
