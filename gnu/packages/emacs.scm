@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -11313,6 +11313,43 @@ e.g. the package dependencies it requires.  See function
 @code{package-lint-buffer}.  Checks will currently be enabled only if a
 \"Package-Requires:\" or \"Package-Version:\" header is present in the
 file.")
+      (license license:gpl3+))))
+
+(define-public emacs-picpocket
+  (let ((version "20180610.1059") ; taken from melpa
+        (commit "ce4b6ed088384f2414af82e8e4eae5b92c2874bf"))
+    (package
+      (name "emacs-picpocket")
+      (version version)
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/johanclaesson/picpocket")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "15vpbcv83mc4j1pvrk7xic0klh2bl9gzg2xxs7c2lmnix52hy8mv"))))
+      (build-system emacs-build-system)
+      (arguments ; needed for running tests
+       `(#:tests? #t
+         #:emacs ,emacs
+         #:test-command '("emacs" "--batch"
+                          "-l" "picpocket-test.el"
+                          "-f" "ert-run-tests-batch-and-exit")))
+      (home-page "https://github.com/johanclaesson/picpocket")
+      (synopsis "Image viewer for Emacs")
+      (description
+       "Picpocket is an image viewer for GNU Emacs.  It has commands for:
+
+@itemize
+@item File operations on the picture files (delete, move, copy, hardlink).
+@item Scale and rotate the picture.
+@item Associate pictures with tags which are saved to disk.
+@item Filter pictures according to tags.
+@item Customizing keystrokes for quick tagging and file operations.
+@item Undo and browse history of undoable commands.
+@end itemize")
       (license license:gpl3+))))
 
 (define-public emacs-wgrep-helm
