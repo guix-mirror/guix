@@ -5736,3 +5736,29 @@ to obtain a practically sound, highly interpretable model.")
 Axon Instruments/Molecular Devices software.  Only files recorded in gap-free
 mode are currently supported.")
     (license license:artistic2.0)))
+
+(define-public r-abhgenotyper
+  (package
+    (name "r-abhgenotyper")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ABHgenotypeR" version))
+       (sha256
+        (base32 "08cpmnaaxsm5c5bjifnfxdlvg5inrf13biqpcl2yq5zpqjmiki0l"))))
+    (properties `((upstream-name . "ABHgenotypeR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "https://github.com/StefanReuscher/ABHgenotypeR/")
+    (synopsis "Visualize and manipulate ABH genotypes")
+    (description
+     "The @code{r-abhgenotyper} package provides simple imputation,
+error-correction and plotting capacities for genotype data.  The package is
+supposed to serve as an intermediate but independent analysis tool between the
+TASSEL GBS pipeline and the @code{r-qtl} package.  It provides functionalities
+not found in either TASSEL or @code{r-qtl} in addition to visualization of
+genotypes as \"graphical genotypes\".")
+    (license license:gpl3)))
