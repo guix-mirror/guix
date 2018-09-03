@@ -470,11 +470,6 @@ computing convex hulls.")
         (base32
          "0f8jx3fifmj9qdp289zr7r651y1q48k1jya859rqxq62mvis7xsh"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autoreconf
-                    (lambda _
-                      (invoke "autoreconf" "-vfi"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
