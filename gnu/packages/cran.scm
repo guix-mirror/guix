@@ -5797,3 +5797,28 @@ sampling and basic manipulation of Brazilian lawsuits identification number.
 It also implements functions for text cleaning, such as accentuation
 removal.")
     (license license:expat)))
+
+(define-public r-abnormality
+  (package
+    (name "r-abnormality")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abnormality" version))
+       (sha256
+        (base32 "1fzfskl9akl06nliy8hkv2a0pznpj8pwcypg3gj5r2nzvr3kan9v"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)))
+    (home-page "https://cran.r-project.org/web/packages/abnormality/")
+    (synopsis "Measure a subject's abnormality with respect to a reference population")
+    (description
+     "This package contains functions to implement the methodology and
+considerations laid out by Marks et al. in the article \"Measuring abnormality
+in high dimensional spaces: applications in biomechanical gait analysis\".
+Using high-dimensional datasets to measure a subject's overall level of
+abnormality as compared to a reference population is often needed in outcomes
+research.")
+    (license license:expat)))
