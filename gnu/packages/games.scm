@@ -2470,7 +2470,7 @@ Transport Tycoon Deluxe.")
 (define openrct2-objects
   (package
    (name "openrct2-objects")
-   (version "1.0.2")
+   (version "1.0.6")
    (source
     (origin
      (method url-fetch)
@@ -2479,7 +2479,7 @@ Transport Tycoon Deluxe.")
      (file-name (string-append name "-" version ".zip"))
      (sha256
       (base32
-       "1z92afhbv13j1ig6fz0x8w9vdmfchssv16vwwhb0vj40pn1g1rwy"))))
+       "00kfy95zx6g4ldr6br5p7bwkwfx6pw9v78fd3rvghjnwyvf5fhki"))))
    (build-system trivial-build-system)
    (native-inputs
     `(("bash" ,bash)
@@ -2511,7 +2511,7 @@ Transport Tycoon Deluxe.")
 (define-public openrct2
   (package
     (name "openrct2")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -2519,7 +2519,7 @@ Transport Tycoon Deluxe.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1yrbjra27n2xxb1x47v962lc3qi8gwm5ws4f97952nvn533zrwxz"))
+         "1fxzk037xphpyk7vv5jfrcz739zrj86p43pnf5gjjv9rjxwv7m8f"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
