@@ -150,14 +150,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.8.4")
+    (version "4.8.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "01jlk8xlawfp3yyhi5migcd1fy7dkavbh56in444m281kqa4s17m"))))
+               "0mailvhjsma19k6b6zjl02z9n2hbbyfybvicjfw2hh9d4sqyd3p5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -341,14 +341,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.3.3")
+    (version "1.3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "14gsrm7dvyjpbpnc60z75j6fz2p187abm2h353lq95kx2bv70c1b"))
+                "16lkz3gyvsm9als1wyimsl573hclr72xy6454mshwjanncs33lji"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -417,7 +417,8 @@ key-value pair databases and a real LDAP database.")
                  (("/usr/include/crypt\\.h")
                   (string-append libc "/include/crypt.h"))
                  (("/usr/include/pcap-bpf.h")
-                  (string-append libpcap "/include/pcap-bpf.h")))))))))
+                  (string-append libpcap "/include/pcap-bpf.h")))
+               #t))))))
     (inputs
      `(("libpcap" ,libpcap)))
     (synopsis "Implementation of the Point-to-Point Protocol")

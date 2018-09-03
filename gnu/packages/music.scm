@@ -3685,7 +3685,7 @@ specification and header.")
 (define-public rosegarden
   (package
     (name "rosegarden")
-    (version "17.04")
+    (version "18.06")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3693,7 +3693,7 @@ specification and header.")
                     version "/rosegarden-" version ".tar.bz2"))
               (sha256
                (base32
-                "1khfcj22asdhjh0jvhkqsz200wgmigkhsrcz09ffia5hqm0n32lq"))))
+                "04qc80sqb2ji42pq3mayhvqqn39hlxzymsywpbpzfpchr19chxx7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DUSE_QT5=1") ; "-DCMAKE_BUILD_TYPE=Release"
@@ -3747,6 +3747,7 @@ specification and header.")
              ;; Tests create files in $HOME/.local/share/rosegarden .
              (mkdir-p "/tmp/foo")
              (setenv "HOME" "/tmp/foo")
+             (setenv "XDG_RUNTIME_DIR" "/tmp/foo")
              #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -3773,7 +3774,7 @@ sequencer")
     (description "Rosegarden is a music composition and editing environment
 based around a MIDI sequencer that features a rich understanding of music
 notation and includes basic support for digital audio.")
-    (home-page "http://www.rosegardenmusic.com/")
+    (home-page "https://www.rosegardenmusic.com/")
     (license license:gpl2)))
 
 (define-public patchmatrix

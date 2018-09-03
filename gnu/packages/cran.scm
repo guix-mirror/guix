@@ -4944,3 +4944,47 @@ developers to generate user interfaces easy to maintain.")
 models.  The methods employed are applicable to virtually any predictive model
 and make comparisons between different methodologies straightforward.")
     (license license:gpl2+)))
+
+(define-public r-infotheo
+  (package
+    (name "r-infotheo")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "infotheo" version))
+       (sha256
+        (base32
+         "18xacczfq3z3xpy434js4nf3l19lczngzd0lq26wh22pvg1yniwv"))))
+    (build-system r-build-system)
+    (home-page "http://homepage.meyerp.com/software")
+    (synopsis "Information-theoretic measures")
+    (description
+     "This package implements various measures of information theory based on
+several entropy estimators.")
+    (license license:gpl3+)))
+
+(define-public r-abcoptim
+  (package
+    (name "r-abcoptim")
+    (version "0.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ABCoptim" version))
+       (sha256
+        (base32 "1ih0xk88qhsmpvnxf56041wx5sk8as2f4f2gdnpnwdym9mbr9n4b"))))
+    (properties `((upstream-name . "ABCoptim")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/gvegayon/ABCoptim/")
+    (synopsis "Optimization of Artificial Bee Colony algorithm")
+    (description
+     "Artificial Bee Colony (ABC) is one of the most recently defined algorithms by Dervis
+Karaboga in 2005, motivated by the intelligent behavior of honey bees.  It is as
+simple as Particle Swarm Optimization (PSO) and Differential Evolution (DE)
+algorithms, and uses only common control parameters such as colony size and
+maximum cycle number.  The @code{r-abcoptim} implements the Artificial bee
+colony optimization algorithm @url{http://mf.erciyes.edu.tr/abc/pub/tr06_2005.pdf}.
+  This version is a work-in-progress and is written in R code.")
+    (license license:expat)))

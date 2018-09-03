@@ -2217,7 +2217,8 @@ making @dfn{screencasts}.")
        ("jack" ,jack-1)
        ("libxi" ,libxi)
        ("pulseaudio" ,pulseaudio)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags

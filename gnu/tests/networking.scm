@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages networking)
   #:use-module (gnu services shepherd)
-  #:export (%test-inetd %test-openvswitch %test-dhcpd))
+  #:export (%test-inetd %test-openvswitch %test-dhcpd %test-tor))
 
 (define %inetd-os
   ;; Operating system with 2 inetd services.
@@ -339,3 +340,97 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
    (name "dhcpd")
    (description "Test a running DHCP daemon configuration.")
    (value (run-dhcpd-test))))
+
+
+;;;
+;;; Services related to Tor
+;;;
+
+(define %tor-os
+  (simple-operating-system
+   (tor-service)))
+
+(define %tor-os/unix-socks-socket
+  (simple-operating-system
+   (service tor-service-type
+            (tor-configuration
+             (socks-socket-type 'unix)))))
+
+(define (run-tor-test)
+  (define os
+    (marionette-operating-system %tor-os
+                                 #:imported-modules '((gnu services herd))
+                                 #:requirements '(tor)))
+
+  (define os/unix-socks-socket
+    (marionette-operating-system %tor-os/unix-socks-socket
+                                 #:imported-modules '((gnu services herd))
+                                 #:requirements '(tor)))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (ice-9 popen)
+                       (ice-9 rdelim)
+                       (srfi srfi-64))
+
+          (define marionette
+            (make-marionette (list #$(virtual-machine os))))
+
+          (define (tor-is-alive? marionette)
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd)
+                             (srfi srfi-1))
+                (live-service-running
+                 (find (lambda (live)
+                         (memq 'tor
+                               (live-service-provision live)))
+                       (current-services))))
+             marionette))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "tor")
+
+          ;; Test the usual Tor service.
+
+          (test-assert "tor is alive"
+            (tor-is-alive? marionette))
+
+          (test-assert "tor is listening"
+            (let ((default-port 9050))
+              (wait-for-tcp-port default-port marionette)))
+
+          ;; Don't run two VMs at once.
+          (marionette-control "quit" marionette)
+
+          ;; Test the Tor service using a SOCKS socket.
+
+          (let* ((socket-directory "/tmp/more-sockets")
+                 (_ (mkdir socket-directory))
+                 (marionette/unix-socks-socket
+                  (make-marionette
+                   (list #$(virtual-machine os/unix-socks-socket))
+                   ;; We can't use the same socket directory as the first
+                   ;; marionette.
+                   #:socket-directory socket-directory)))
+            (test-assert "tor is alive, even when using a SOCKS socket"
+              (tor-is-alive? marionette/unix-socks-socket))
+
+            (test-assert "tor is listening, even when using a SOCKS socket"
+              (wait-for-unix-socket "/var/run/tor/socks-sock"
+                                    marionette/unix-socks-socket)))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "tor-test" test))
+
+(define %test-tor
+  (system-test
+   (name "tor")
+   (description "Test a running Tor daemon configuration.")
+   (value (run-tor-test))))

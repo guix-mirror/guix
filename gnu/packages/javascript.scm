@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
@@ -26,6 +26,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages lisp)
+  #:use-module (gnu packages readline)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -412,7 +413,7 @@ external server.")
 (define-public mujs
   (package
     (name "mujs")
-    (version "1.0.3")
+    (version "1.0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -421,14 +422,16 @@ external server.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "15ml3rzjl44lqdb1yxipdh8bhh0rvk2g6w6sjv667q8xywijwqv8"))))
+                "1ly0yybs66nk63517kg4dmdc7dbikhqqqf2r2kvccgzzvv6k0vs8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (delete 'configure)) ; no configure
+                  (delete 'configure))  ; no configure
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out"))
                           (string-append "CC=gcc"))
-       #:tests? #f)) ; no tests
+       #:tests? #f))                    ; no tests
+    (inputs
+     `(("readline" ,readline)))
     (home-page "https://artifex.com/mujs/")
     (synopsis "JavaScript interpreter written in C")
     (description "MuJS is a lightweight Javascript interpreter designed for

@@ -236,7 +236,7 @@ plugins, as well as code to create plugins, or complete applications.")
 (define-public krita
   (package
     (name "krita")
-    (version "4.0.1")
+    (version "4.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -245,7 +245,7 @@ plugins, as well as code to create plugins, or complete applications.")
                     "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0k55ybvna40dx4fqygnix7bnhjaanak3ckb108hny2k7sspy62pc"))))
+                "1qz9bjvnwa5gc2b0063i2p72jq6y1b6kgqdj39599acp7ws11asw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
@@ -316,7 +316,7 @@ plugins, as well as code to create plugins, or complete applications.")
        ("fftw" ,fftw)
        ("gsl" ,gsl)
        ("poppler-qt5" ,poppler-qt5)
-       ("libraw" ,libraw)
+       ("libraw" ,libraw-0.18)
        ("libtiff" ,libtiff)
        ("perl" ,perl)
        ("ilmbase" ,ilmbase)
@@ -328,23 +328,6 @@ plugins, as well as code to create plugins, or complete applications.")
 illustrators, matte and texture artists, and the VFX industry.  Notable
 features include brush stabilizers, brush engines and wrap-around mode.")
     (license license:gpl2+)))
-
-;; Krita 3 and 4's file formats are incompatible, so we are keeping Krita 3
-;; for now.
-(define-public krita-3
-  (package
-    (inherit krita)
-    (name "krita")
-    (version "3.3.3")
-    (source (origin
-              (inherit (package-source krita))
-              (uri (string-append
-                    "mirror://kde/stable/krita/"
-                    (version-prefix version 3)
-                    "/" name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0pc6hnakkqy81x5b5ncivaps6hqv43i50sjwgi3i3cz9j8rlxh5y"))))))
 
 (define-public kholidays
   (package
@@ -418,7 +401,7 @@ used in KDE development tools Kompare and KDevelop.")
 (define-public libksysguard
   (package
     (name "libksysguard")
-    (version "5.11.5")
+    (version "5.13.4")
     (source
      (origin
        (method url-fetch)
@@ -426,7 +409,7 @@ used in KDE development tools Kompare and KDevelop.")
                            "/libksysguard-" version ".tar.xz"))
        (sha256
         (base32
-         "0f2py4zkqzpxxf3mqaij0q8ka0v3nschj17dv6rbzzmr5mjv825f"))))
+         "0k8q5bxk9zyv7c3nny1c399v8acqs618nw39q20pj2qdijl9ibvh"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
@@ -468,7 +451,7 @@ used in KDE development tools Kompare and KDevelop.")
            (lambda _
              ;; TODO: Fix this failing test-case
              (zero? (system* "ctest" "-E" "processtest")))))))
-    (home-page "https://www.kde.org/info/plasma-5.11.5.php")
+    (home-page "https://www.kde.org/info/plasma-5.13.4.php")
     (synopsis "Network enabled task and system monitoring")
     (description "KSysGuard can obtain information on system load and
 manage running processes.  It obtains this information by interacting

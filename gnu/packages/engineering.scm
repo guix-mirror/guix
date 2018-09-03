@@ -1101,7 +1101,7 @@ language, ADMS transforms Verilog-AMS code into other target languages.")
              (setenv "LDFLAGS"  (string-append "-Wl,-rpath="
                                                (assoc-ref outputs "out") "/lib"))
              #t)))))
-    (home-page "http://www.capstone-engine.org")
+    (home-page "https://www.capstone-engine.org")
     (synopsis "Lightweight multi-platform, multi-architecture disassembly framework")
     (description
      "Capstone is a lightweight multi-platform, multi-architecture disassembly

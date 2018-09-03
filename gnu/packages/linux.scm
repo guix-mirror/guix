@@ -29,6 +29,7 @@
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -445,8 +446,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.152"
-                    "082aajyr363ca95pxlg9iascf5d7k2gbw9ggsbsa1hj6nhspsxw6"
+  (make-linux-libre "4.4.153"
+                    "195vzkkmjiicqfzd38hgf381rlz665rl06abzf8cww0gbnzvrf72"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -3615,10 +3616,52 @@ The following service daemons are also provided:
            license:cc0               ; most files in ccan/
            license:bsd-3))))         ; providers/hfi1verbs are dual GPL2/BSD-3
 
+(define-public perftest
+  (package
+    (name "perftest")
+    (version "4.2-0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/linux-rdma/perftest/releases/download/V"
+                           version "/perftest-" version ".g0e24e67.tar.gz"))
+       (sha256
+        (base32 "1r3pxn7cx3grb8myb4q1b0pk447pc06cifd0v7ym13xw00372dlx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-header-paths
+           (lambda _
+             (substitute* '("src/raw_ethernet_fs_rate.c"
+                            "src/raw_ethernet_resources.c"
+                            "src/raw_ethernet_resources.h"
+                            "src/raw_ethernet_send_burst_lat.c"
+                            "src/raw_ethernet_send_bw.c"
+                            "src/raw_ethernet_send_lat.c")
+               (("/usr/include/netinet/ip.h") "netinet/ip.h"))
+             #t)))))
+    (inputs `(("rdma-core" ,rdma-core)))
+    (home-page "https://github.com/linux-rdma/perftest/")
+    (synopsis "Open Fabrics Enterprise Distribution (OFED) Performance Tests")
+    (description "This is a collection of tests written over uverbs intended for
+use as a performance micro-benchmark. The tests may be used for hardware or
+software tuning as well as for functional testing.
+
+The collection contains a set of bandwidth and latency benchmark such as:
+@enumerate
+@item Send        - @code{ib_send_bw} and @code{ib_send_lat}
+@item RDMA Read   - @code{ib_read_bw} and @code{ib_read_lat}
+@item RDMA Write  - @code{ib_write_bw} and @code{ib_wriet_lat}
+@item RDMA Atomic - @code{ib_atomic_bw} and @code{ib_atomic_lat}
+@item Native Ethernet (when working with MOFED2) - @code{raw_ethernet_bw}, @code{raw_ethernet_lat}
+@end enumerate")
+    (license license:gpl2)))
+
 (define-public rng-tools
   (package
     (name "rng-tools")
-    (version "6.3.1")
+    (version "6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nhorman/rng-tools/"
@@ -3626,7 +3669,7 @@ The following service daemons are also provided:
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04p7wvcm389s21y9mq8ss6z2szxi4nfrfixzwqjkq2qciz705i4s"))))
+                "005krksl8iz37l5p1nx8apl1yg7q78yrsb6inby31d2g5ck8nnwa"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.

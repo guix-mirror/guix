@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -30,6 +30,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages bootstrap)           ;glibc-dynamic-linker
@@ -380,3 +381,53 @@ code analysis tools.")
        (patches (list (search-patch "llvm-for-extempore.patch")))))
     ;; Extempore refuses to build on architectures other than x86_64
     (supported-systems '("x86_64-linux"))))
+
+(define-public python-llvmlite
+  (package
+    (name "python-llvmlite")
+    (version "0.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "llvmlite" version))
+       (sha256
+        (base32
+         "01zwjlc3c5mhrwmv4b73zgbskwqps9ly0nrh54bbj1f1l72f839j"))))
+    (build-system python-build-system)
+    (inputs
+     `(("llvm"
+        ,(package
+           (inherit llvm)
+           (source (origin
+                     (inherit (package-source llvm))
+                     (patches
+                      (list
+                       (origin
+                         (method url-fetch)
+                         (uri (string-append "https://raw.githubusercontent.com/numba/"
+                                             "llvmlite/v" version "/conda-recipes/"
+                                             "D47188-svml.patch"))
+                         (sha256
+                          (base32
+                           "0mrj24jvkv3hjcmyg98zmvmyl1znlh2j63rdr69f6g7s96d2pfv1")))
+                       (origin
+                         (method url-fetch)
+                         (uri (string-append "https://raw.githubusercontent.com/numba/"
+                                             "llvmlite/v" version "/conda-recipes/"
+                                             "twine_cfg_undefined_behavior.patch"))
+                         (sha256
+                          (base32
+                           "07h71n2m1mn9zcfgw04zglffknplb233zqbcd6pckq0wygkrxflp")))
+                       (origin
+                         (method url-fetch)
+                         (uri (string-append "https://raw.githubusercontent.com/numba/"
+                                             "llvmlite/v" version "/conda-recipes/"
+                                             "0001-Transforms-Add-missing-header-for-InstructionCombini.patch"))
+                         (sha256
+                          (base32
+                           "1pp0z9696l6j4dwz7ypjrm4vvkj0d3mlf1g8zmiyk08akw5lz0cb")))))))))))
+    (home-page "http://llvmlite.pydata.org")
+    (synopsis "Wrapper around basic LLVM functionality")
+    (description
+     "This package provides a Python binding to LLVM for use in Numba.")
+    (license license:bsd-3)))

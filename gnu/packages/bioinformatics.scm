@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3601,7 +3602,7 @@ experiments and provide highly stable thresholds based on reproducibility.")
 (define-public jellyfish
   (package
     (name "jellyfish")
-    (version "2.2.7")
+    (version "2.2.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/gmarcais/Jellyfish/"
@@ -3609,7 +3610,7 @@ experiments and provide highly stable thresholds based on reproducibility.")
                                   "/jellyfish-" version ".tar.gz"))
               (sha256
                (base32
-                "1a1iwq9pq54k2m9ypvwl5s0bqfl64gwh9dx5af9i382ajas2016q"))))
+                "1k4pc3fvv6w1km2yph4m5sd78fbxp21d6xyzgmy0gjihzc6mb249"))))
     (build-system gnu-build-system)
     (outputs '("out"      ;for library
                "ruby"     ;for Ruby bindings
@@ -3646,8 +3647,8 @@ DNA sequences.  It outputs its k-mer counts in a binary format, which can be
 translated into a human-readable text format using the @code{jellyfish dump}
 command, or queried for specific k-mers with @code{jellyfish query}.")
     (home-page "http://www.genome.umd.edu/jellyfish.html")
-    ;; From their website: JELLYFISH runs on 64-bit Intel-compatible processors
-    (supported-systems '("x86_64-linux"))
+    ;; JELLYFISH seems to be 64-bit only.
+    (supported-systems '("x86_64-linux" "aarch64-linux" "mips64el-linux"))
     ;; The combined work is published under the GPLv3 or later.  Individual
     ;; files such as lib/jsoncpp.cpp are released under the Expat license.
     (license (list license:gpl3+ license:expat))))
@@ -13458,3 +13459,102 @@ conversions, region filtering, FASTA sequence extraction and more.")
 spliced (back-spliced) sequencing reads, indicative of circular RNA (circRNA)
 in RNA-seq data.")
       (license license:gpl3))))
+
+(define-public python-scanpy
+  (package
+    (name "python-scanpy")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "scanpy" version))
+       (sha256
+        (base32
+         "1ak7bxms5a0yvf65prppq2g38clkv7c7jnjbnfpkh3xxv7q512jz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-anndata" ,python-anndata)
+       ("python-igraph" ,python-igraph)
+       ("python-numba" ,python-numba)
+       ("python-joblib" ,python-joblib)
+       ("python-natsort" ,python-natsort)
+       ("python-networkx" ,python-networkx)
+       ("python-statsmodels" ,python-statsmodels)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-pandas" ,python-pandas)
+       ("python-scipy" ,python-scipy)
+       ("python-seaborn" ,python-seaborn)
+       ("python-h5py" ,python-h5py)
+       ("python-tables" ,python-tables)))
+    (home-page "http://github.com/theislab/scanpy")
+    (synopsis "Single-Cell Analysis in Python.")
+    (description "Scanpy is a scalable toolkit for analyzing single-cell gene
+expression data.  It includes preprocessing, visualization, clustering,
+pseudotime and trajectory inference and differential expression testing.  The
+Python-based implementation efficiently deals with datasets of more than one
+million cells.")
+    (license license:bsd-3)))
+
+(define-public gffcompare
+  (let ((commit "be56ef4349ea3966c12c6397f85e49e047361c41")
+        (revision "1"))
+    (package
+      (name "gffcompare")
+      (version (git-version "0.10.15" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gpertea/gffcompare/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0cp5qpxdhw4mxpya5dld8wi3jk00zyklm6rcri426wydinrnfmkg"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; no check target
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'build 'copy-gclib-source
+             (lambda* (#:key inputs #:allow-other-keys)
+               (mkdir "../gclib")
+               (copy-recursively
+                (assoc-ref inputs "gclib-source") "../gclib")
+               #t))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (install-file "gffcompare" bin)
+                 #t))))))
+      (native-inputs
+       `(("gclib-source" ; see 'README.md' of gffcompare
+          ,(let ((commit "54917d0849c1e83cfb057b5f712e5cb6a35d948f")
+                 (revision "1")
+                 (name "gclib")
+                 (version (git-version "0.10.3" revision commit)))
+             (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/gpertea/gclib/")
+                     (commit commit)))
+               (file-name (git-file-name name version))
+               (sha256
+                (base32 "0b51lc0b8syrv7186fd7n8f15rwnf264qgfmm2palrwks1px24mr")))))))
+      (home-page "https://github.com/gpertea/gffcompare/")
+      (synopsis "Tool for comparing or classifing transcripts of RNA-Seq")
+      (description
+       "@code{gffcompare} is a tool that can:
+@enumerate
+@item compare and evaluate the accuracy of RNA-Seq transcript assemblers
+(Cufflinks, Stringtie);
+@item collapse (merge) duplicate transcripts from multiple GTF/GFF3 files (e.g.
+resulted from assembly of different samples);
+@item classify transcripts from one or multiple GTF/GFF3 files as they relate to
+reference transcripts provided in a annotation file (also in GTF/GFF3 format).
+@end enumerate")
+      (license
+       (list
+        license:expat                   ;license for gffcompare
+        license:artistic2.0)))))        ;license for gclib

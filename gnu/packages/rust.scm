@@ -167,128 +167,6 @@ in turn be used to build the final Rust.")
     (snippet '(begin (delete-file-recursively "src/llvm") #t))
     (patches (map search-patch patches))))
 
-(define rust-1.19
-  (package
-    (name "rust")
-    (version "1.19.0")
-    (source (rust-source version "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"))
-    (outputs '("out" "cargo"))
-    (arguments
-     `(#:imported-modules ,%cargo-build-system-modules ;for `generate-checksums'
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-env
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Disable test for cross compilation support.
-             (setenv "CFG_DISABLE_CROSS_TESTS" "1")
-             (setenv "SHELL" (which "sh"))
-             (setenv "CONFIG_SHELL" (which "sh"))
-             (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
-             ;; guix llvm-3.9.1 package installs only shared libraries
-             (setenv "LLVM_LINK_SHARED" "1")
-             #t))
-         (add-after 'unpack 'patch-tests
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((bash (assoc-ref inputs "bash")))
-               (substitute* "src/libstd/process.rs"
-                 ;; The newline is intentional.
-                 ;; There's a line length "tidy" check in Rust which would
-                 ;; fail otherwise.
-                 (("\"/bin/sh\"") (string-append "\n\"" bash "/bin/sh\"")))
-               (substitute* "src/libstd/net/tcp.rs"
-                 ;; There is no network in build environment
-                 (("fn connect_timeout_unroutable")
-                  "#[ignore]\nfn connect_timeout_unroutable"))
-               ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00222.html>
-               (substitute* "src/libstd/sys/unix/process/process_common.rs"
-                (("fn test_process_mask") "#[allow(unused_attributes)]
-    #[ignore]
-    fn test_process_mask"))
-               #t)))
-         (add-after 'patch-tests 'patch-aarch64-test
-           (lambda* _
-             (substitute* "src/librustc_back/dynamic_lib.rs"
-               ;; This test is known to fail on aarch64 and powerpc64le:
-               ;; https://github.com/rust-lang/rust/issues/45410
-               (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
-             #t))
-         (add-after 'patch-tests 'use-readelf-for-tests
-           (lambda* _
-             ;; nm doesn't recognize the file format because of the
-             ;; nonstandard sections used by the Rust compiler, but readelf
-             ;; ignores them.
-             (substitute* "src/test/run-make/atomic-lock-free/Makefile"
-               (("\tnm ")
-                "\treadelf -c "))
-             #t))
-         (add-after 'patch-tests 'remove-unsupported-tests
-           (lambda* _
-             ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
-             ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>
-             (delete-file-recursively "src/test/run-make/linker-output-non-utf8")
-             #t))
-         (add-after 'patch-source-shebangs 'patch-cargo-checksums
-           (lambda* _
-             (substitute* "src/Cargo.lock"
-               (("(\"checksum .* = )\".*\"" all name)
-                (string-append name "\"" ,%cargo-reference-hash "\"")))
-             (for-each
-              (lambda (filename)
-                (use-modules (guix build cargo-build-system))
-                (delete-file filename)
-                (let* ((dir (dirname filename)))
-                  (display (string-append
-                            "patch-cargo-checksums: generate-checksums for "
-                            dir "\n"))
-                  (generate-checksums dir ,%cargo-reference-project-file)))
-              (find-files "src/vendor" ".cargo-checksum.json"))
-             #t))
-         (replace 'configure
-           (const #t))
-         (replace 'check
-           (const #t))
-         (replace 'install
-           (const #t)))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("bison" ,bison) ; For the tests
-       ("cmake" ,cmake)
-       ("flex" ,flex) ; For the tests
-       ("gdb" ,gdb)   ; For the tests
-       ("git" ,git)
-       ("procps" ,procps) ; For the tests
-       ("python-2" ,python-2)
-       ("rustc-bootstrap" ,rust-bootstrap)
-       ("cargo-bootstrap" ,rust-bootstrap "cargo")
-       ("pkg-config" ,pkg-config) ; For "cargo"
-       ("which" ,which)))
-    (inputs
-     `(("jemalloc" ,jemalloc-4.5.0)
-       ("llvm" ,llvm-3.9.1)
-       ("openssl" ,openssl)
-       ("libcurl" ,curl))) ; For "cargo"
-
-    ;; rustc invokes gcc, so we need to set its search paths accordingly.
-    ;; Note: duplicate its value here to cope with circular dependencies among
-    ;; modules (see <https://bugs.gnu.org/31392>).
-    (native-search-paths
-     (list (search-path-specification
-            (variable "C_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "CPLUS_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "LIBRARY_PATH")
-            (files '("lib" "lib64")))))
-
-    (synopsis "Compiler for the Rust progamming language")
-    (description "Rust is a systems programming language that provides memory
-safety and thread safety guarantees.")
-    (home-page "https://www.rust-lang.org")
-    ;; Dual licensed.
-    (license (list license:asl2.0 license:expat))))
-
 (define* (rust-bootstrapped-package base-rust version checksum
                                     #:key (patches '()))
   "Bootstrap rust VERSION with source checksum CHECKSUM patched with PATCHES using BASE-RUST."
@@ -393,6 +271,233 @@ safety and thread safety guarantees.")
       ;; Dual licensed.
       (license (list license:asl2.0 license:expat)))))
 
+(define rust-1.19
+  (package
+    (name "rust")
+    (version "1.19.0")
+    (source (rust-source version "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"
+            #:patches '("rust-1.19-mrustc.patch")))
+    (outputs '("out" "cargo"))
+    (arguments
+     `(#:imported-modules ,%cargo-build-system-modules ;for `generate-checksums'
+       #:modules ((guix build utils) (ice-9 match) (guix build gnu-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-env
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Disable test for cross compilation support.
+             (setenv "CFG_DISABLE_CROSS_TESTS" "1")
+             (setenv "SHELL" (which "sh"))
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+             ;; guix llvm-3.9.1 package installs only shared libraries
+             (setenv "LLVM_LINK_SHARED" "1")
+             #t))
+         (add-after 'unpack 'patch-cargo-tomls
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "src/librustc_errors/Cargo.toml"
+               (("[[]dependencies[]]") "
+[dependencies]
+term = \"0.4.4\"
+"))
+             (substitute* "src/librustc/Cargo.toml"
+               (("[[]dependencies[]]") "
+[dependencies]
+getopts = { path = \"../libgetopts\" }
+"))
+             (substitute* "src/librustdoc/Cargo.toml"
+               (("[[]dependencies[]]") "
+[dependencies]
+test = { path = \"../libtest\" }
+"))
+             #t))
+         (add-after 'unpack 'patch-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bash (assoc-ref inputs "bash")))
+               (substitute* "src/libstd/process.rs"
+                 ;; The newline is intentional.
+                 ;; There's a line length "tidy" check in Rust which would
+                 ;; fail otherwise.
+                 (("\"/bin/sh\"") (string-append "\n\"" bash "/bin/sh\"")))
+               (substitute* "src/libstd/net/tcp.rs"
+                 ;; There is no network in build environment
+                 (("fn connect_timeout_unroutable")
+                  "#[ignore]\nfn connect_timeout_unroutable"))
+               ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00222.html>
+               (substitute* "src/libstd/sys/unix/process/process_common.rs"
+                (("fn test_process_mask") "#[allow(unused_attributes)]
+    #[ignore]
+    fn test_process_mask"))
+               #t)))
+         (add-after 'patch-tests 'patch-aarch64-test
+           (lambda* _
+             (substitute* "src/librustc_back/dynamic_lib.rs"
+               ;; This test is known to fail on aarch64 and powerpc64le:
+               ;; https://github.com/rust-lang/rust/issues/45410
+               (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
+             #t))
+         (add-after 'patch-tests 'use-readelf-for-tests
+           (lambda* _
+             ;; nm doesn't recognize the file format because of the
+             ;; nonstandard sections used by the Rust compiler, but readelf
+             ;; ignores them.
+             (substitute* "src/test/run-make/atomic-lock-free/Makefile"
+               (("\tnm ")
+                "\treadelf -c "))
+             #t))
+         (add-after 'patch-tests 'remove-unsupported-tests
+           (lambda* _
+             ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
+             ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>
+             (delete-file-recursively "src/test/run-make/linker-output-non-utf8")
+             #t))
+         (add-after 'patch-source-shebangs 'patch-cargo-checksums
+           (lambda* _
+             (substitute* "src/Cargo.lock"
+               (("(\"checksum .* = )\".*\"" all name)
+                (string-append name "\"" ,%cargo-reference-hash "\"")))
+             (for-each
+              (lambda (filename)
+                (use-modules (guix build cargo-build-system))
+                (delete-file filename)
+                (let* ((dir (dirname filename)))
+                  (display (string-append
+                            "patch-cargo-checksums: generate-checksums for "
+                            dir "\n"))
+                  (generate-checksums dir ,%cargo-reference-project-file)))
+              (find-files "src/vendor" ".cargo-checksum.json"))
+             #t))
+         ;; This phase is overridden by newer versions.
+         (replace 'configure
+           (const #t))
+         ;; This phase is overridden by newer versions.
+         (replace 'build
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((rustc-bootstrap (assoc-ref inputs "rustc-bootstrap")))
+               (setenv "CFG_COMPILER_HOST_TRIPLE"
+                ,(nix-system->gnu-triplet (%current-system)))
+               (setenv "CFG_RELEASE" "")
+               (setenv "CFG_RELEASE_CHANNEL" "stable")
+               (setenv "CFG_LIBDIR_RELATIVE" "lib")
+               (setenv "CFG_VERSION" "1.19.0-stable-mrustc")
+               ; bad: (setenv "CFG_PREFIX" "mrustc") ; FIXME output path.
+               (mkdir-p "output")
+               (invoke (string-append rustc-bootstrap "/tools/bin/minicargo")
+                       "src/rustc" "--vendor-dir" "src/vendor"
+                       "--output-dir" "output/rustc-build"
+                       "-L" (string-append rustc-bootstrap "/lib/mrust")
+                       "-j" "1")
+               (install-file "output/rustc-build/rustc" "output") ; FIXME: Remove?
+               (setenv "CFG_COMPILER_HOST_TRIPLE" #f)
+               (setenv "CFG_RELEASE" #f)
+               (setenv "CFG_RELEASE_CHANNEL" #f)
+               (setenv "CFG_VERSION" #f)
+               (setenv "CFG_PREFIX" #f)
+               (setenv "CFG_LIBDIR_RELATIVE" #f)
+               (invoke (string-append rustc-bootstrap "/tools/bin/minicargo")
+                       "src/tools/cargo" "--vendor-dir" "src/vendor"
+                       "--output-dir" "output/cargo-build"
+                       "-L" "output/"
+                       "-L" (string-append rustc-bootstrap "/lib/mrust")
+                       "-j" "1")
+               ;; Now use the newly-built rustc to build the libraries.
+               ;; One day that could be replaced by:
+               ;; (invoke "output/cargo-build/cargo" "build"
+               ;;         "--manifest-path" "src/bootstrap/Cargo.toml"
+               ;;         "--verbose") ; "--locked" "--frozen"
+               ;; but right now, Cargo has problems with libstd's circular
+               ;; dependencies.
+               (mkdir-p "output/target-libs")
+               (for-each ((@ (ice-9 match) match-lambda)
+                          ((name . flags)
+                            (write name)
+                            (newline)
+                            (apply invoke
+                                   "output/rustc-build/rustc"
+                                   "-C" (string-append "linker="
+                                                       (getenv "CC"))
+                                   "-L" "output/target-libs"
+                                   (string-append "src/" name "/lib.rs")
+                                   "-o"
+                                   (string-append "output/target-libs/"
+                                                  (car (string-split name #\/))
+                                                  ".rlib")
+                                   flags)))
+                         '(("libcore")
+                           ("libstd_unicode")
+                           ("liballoc")
+                           ("libcollections")
+                           ("librand")
+                           ("liblibc/src" "--cfg" "stdbuild")
+                           ("libunwind" "-l" "gcc_s")
+                           ("libcompiler_builtins")
+                           ("liballoc_system")
+                           ("libpanic_unwind")
+                           ;; Uses "cc" to link.
+                           ("libstd" "-l" "dl" "-l" "rt" "-l" "pthread")
+                           ("libarena")))
+               #t)))
+         ;; This phase is overridden by newer versions.
+         (replace 'check
+           (const #t))
+         ;; This phase is overridden by newer versions.
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (target-system ,(or (%current-target-system)
+                                        (nix-system->gnu-triplet
+                                         (%current-system))))
+                    (out-libs (string-append out "/lib/rustlib/"
+                                             target-system "/lib")))
+                                        ;(setenv "CFG_PREFIX" out)
+               (mkdir-p out-libs)
+               (copy-recursively "output/target-libs" out-libs)
+               (install-file "output/rustc-build/rustc"
+                             (string-append out "/bin"))
+               (install-file "output/cargo-build/cargo"
+                             (string-append (assoc-ref outputs "cargo")
+                                            "/bin")))
+             #t)))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("bison" ,bison) ; For the tests
+       ("cmake" ,cmake)
+       ("flex" ,flex) ; For the tests
+       ("gdb" ,gdb)   ; For the tests
+       ("git" ,git)
+       ("procps" ,procps) ; For the tests
+       ("python-2" ,python-2)
+       ("rustc-bootstrap" ,mrustc)
+       ("cargo-bootstrap" ,mrustc "cargo")
+       ("pkg-config" ,pkg-config) ; For "cargo"
+       ("which" ,which)))
+    (inputs
+     `(("jemalloc" ,jemalloc-4.5.0)
+       ("llvm" ,llvm-3.9.1)
+       ("openssl" ,openssl)
+       ("libcurl" ,curl))) ; For "cargo"
+
+    ;; rustc invokes gcc, so we need to set its search paths accordingly.
+    ;; Note: duplicate its value here to cope with circular dependencies among
+    ;; modules (see <https://bugs.gnu.org/31392>).
+    (native-search-paths
+     (list (search-path-specification
+            (variable "C_INCLUDE_PATH")
+            (files '("include")))
+           (search-path-specification
+            (variable "CPLUS_INCLUDE_PATH")
+            (files '("include")))
+           (search-path-specification
+            (variable "LIBRARY_PATH")
+            (files '("lib" "lib64")))))
+
+    (synopsis "Compiler for the Rust progamming language")
+    (description "Rust is a systems programming language that provides memory
+safety and thread safety guarantees.")
+    (home-page "https://www.rust-lang.org")
+    ;; Dual licensed.
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-1.23
   (package
     (inherit rust-1.19)
@@ -400,6 +505,18 @@ safety and thread safety guarantees.")
     (version "1.23.0")
     (source (rust-source version "14fb8vhjzsxlbi6yrn1r6fl5dlbdd1m92dn5zj5gmzfwf4w9ar3l"))
     (outputs '("out" "doc" "cargo"))
+    (native-inputs
+     `(("bison" ,bison) ; For the tests
+       ("cmake" ,cmake)
+       ("flex" ,flex) ; For the tests
+       ("gdb" ,gdb)   ; For the tests
+       ("git" ,git)
+       ("procps" ,procps) ; For the tests
+       ("python-2" ,python-2)
+       ("rustc-bootstrap" ,rust-bootstrap)
+       ("cargo-bootstrap" ,rust-bootstrap "cargo")
+       ("pkg-config" ,pkg-config) ; For "cargo"
+       ("which" ,which)))
     (arguments
      (substitute-keyword-arguments (package-arguments rust-1.19)
        ((#:phases phases)
@@ -410,6 +527,8 @@ safety and thread safety guarantees.")
                (substitute* "src/binaryen/CMakeLists.txt"
                  (("ADD_COMPILE_FLAG\\(\\\"-march=native\\\"\\)") ""))
                #t))
+           ;; TODO: Revisit this and find out whether that's needed after all.
+           (delete 'patch-cargo-tomls)
            (add-after 'patch-tests 'patch-cargo-tests
              (lambda _
                (substitute* "src/tools/cargo/tests/build.rs"

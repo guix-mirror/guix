@@ -40,6 +40,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
@@ -277,7 +278,7 @@ the wrong hands.")
 (define-public keyutils
   (package
     (name "keyutils")
-    (version "1.5.10")
+    (version "1.5.11")
     (source
      (origin
        (method url-fetch)
@@ -286,9 +287,9 @@ the wrong hands.")
                        version ".tar.bz2"))
        (sha256
         (base32
-         "1dmgjcf7mnwc6h72xkvpaqpzxw8vmlnsmzz0s27pg0giwzm3sp0i"))
+         "1ddig6j5xjyk6g9l2wlqc7k1cgvryxdqbsv3c9rk1p3f42448n0i"))
        (modules '((guix build utils)))
-       ;; Create relative symbolic links instead of absolute ones to /lib/*
+       ;; Create relative symbolic links instead of absolute ones to /lib/*.
        (snippet '(begin
                    (substitute* "Makefile" (("\\$\\(LNS\\) \\$\\(LIBDIR\\)/")
                                             "$(LNS) "))
@@ -306,6 +307,8 @@ the wrong hands.")
                           "MANDIR=/share/man"
                           "SHAREDIR=/share/keyutils")
        #:test-target "test"))
+    (inputs
+     `(("mit-krb5" ,mit-krb5)))
     (home-page "https://people.redhat.com/dhowells/keyutils/")
     (synopsis "Linux key management utilities")
     (description

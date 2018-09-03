@@ -94,7 +94,7 @@ most common applications of GD involve website development.")
 (define-public perl-gd
   (package
     (name "perl-gd")
-    (version "2.68")
+    (version "2.69")
     (source
      (origin
        (method url-fetch)
@@ -102,7 +102,7 @@ most common applications of GD involve website development.")
                            "GD-" version ".tar.gz"))
        (sha256
         (base32
-         "0p2ya641nl5cvcqgw829xgabh835qijfd6vq2ba12862946xx8va"))))
+         "0palmq7l42fibqxhrabnjm7di4q8kciq9323902d717x3i4jvc6x"))))
     (build-system perl-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)

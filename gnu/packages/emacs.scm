@@ -646,7 +646,11 @@ only a handful of functions that are not resource-specific.")
                     "https://github.com/haskell/haskell-mode/archive/v"
                     version ".tar.gz"))
               (sha256
-               (base32 "0g6lcjw7lcgavv3yrd8xjcyqgfyjl787y32r1z14amw2f009m78h"))))
+               (base32 "0g6lcjw7lcgavv3yrd8xjcyqgfyjl787y32r1z14amw2f009m78h"))
+              (patches
+               (search-patches ; backport test failure fixes
+                "haskell-mode-unused-variables.patch"
+                "haskell-mode-make-check.patch"))))
     (inputs
      `(("emacs-el-search" ,emacs-el-search) ; for tests
        ("emacs-stream" ,emacs-stream)))     ; for tests
@@ -686,12 +690,11 @@ only a handful of functions that are not resource-specific.")
                               (_ ""))
                             inputs)))
               (substitute* (find-files "." "\\.el") (("/bin/sh") sh))
-              (substitute* "tests/haskell-code-conventions.el"
-                ;; Function name recently changed in "emacs-el-search".
-                (("el-search--search-pattern") "el-search-forward")
-                ;; Don't contact home.
-                (("\\(when \\(>= emacs-major-version 25\\)")
-                 "(require 'el-search) (when nil"))
+              ;; embed filename to fix test failure
+              (let ((file "tests/haskell-cabal-tests.el"))
+                (substitute* file
+                  (("\\(buffer-file-name\\)")
+                   (format #f "(or (buffer-file-name) ~s)" file))))
               #t)))
          (replace
           'install
@@ -1720,6 +1723,32 @@ type, for example: packages, buffers, files, etc.")
 Guix package manager.  Particularly, it allows you to do various package
 management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
 @code{M-x guix-help} command.")
+    (license license:gpl3+)))
+
+(define-public emacs-build-farm
+  (package
+    (name "emacs-build-farm")
+    (version "0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/alezost-emacs/build-farm")
+                    (commit "fa7fa54901416fc5c216a5014394cbd73a61efc6")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1zw3pivma6cv9j7k7qm02jd6wnxmsc1v2mjcssd50im99zzrqflh"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("bui" ,emacs-bui)
+       ("magit-popup" ,emacs-magit-popup)))
+    (home-page "https://gitlab.com/alezost-emacs/build-farm")
+    (synopsis "Emacs interface for Hydra and Cuirass build farms")
+    (description
+     "This Emacs package provides an interface for Hydra and
+Cuirass (build farms used by Nix and Guix).  It allows you to look at
+various data related to the build farm projects, jobsets, builds and
+evaluations.  The entry point is @code{M-x build-farm} command.")
     (license license:gpl3+)))
 
 (define-public emacs-d-mode
@@ -8977,7 +9006,7 @@ continue.")
 (define-public emacs-elisp-refs
   (package
     (name "emacs-elisp-refs")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
@@ -8986,14 +9015,15 @@ continue.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0fj6wphwrvbslw46w7wgdk3b4bfr312ygj3lbgr9qw63lpqw26nl"))))
+         "02nzcn3v14n7mp7q32j5r4wdlpsw3zixzh6cf0cdyarfir6dly3p"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-f" ,emacs-f)
        ("emacs-list-utils" ,emacs-list-utils)
        ("emacs-loop" ,emacs-loop)
-       ("emacs-s" ,emacs-s)))
+       ("emacs-s" ,emacs-s)
+       ("emacs-shut-up" ,emacs-shut-up)))
     (home-page "https://github.com/Wilfred/elisp-refs")
     (synopsis "Find callers of elisp functions or macros")
     (description "Find references to functions, macros or variables.  Unlike a
@@ -9537,11 +9567,12 @@ duplicate hook and function names further into a single declarative call.")
          "0rf2rnzg82pdqch041yyx3f9ddixffkk9s2ydzg8hwy66sg3385n"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Malabarba/fancy-narrow/releases")
-    (synopsis "Immitate narrow-to-region with more eye-candy")
-    (description "Unlike narrow-to-region, which completely hides text outside
-the narrowed region, this package simply deemphasizes the text, makes it
-readonly, and makes it unreachable.  This leads to a much more natural
-feeling, where the region stays static (instead of being brutally moved to a
+    (synopsis "Imitate @code{narrow-to-region} with more eye candy")
+    (description
+     "Unlike @code{narrow-to-region}, which completely hides text outside
+the narrowed region, this package simply de-emphasizes the text, makes it
+read-only, and makes it unreachable.  This leads to a much more natural
+feeling where the region stays static (instead of being brutally moved to a
 blank slate) and is clearly highlighted with respect to the rest of the
 buffer.")
     (license license:gpl2+)))
@@ -9633,7 +9664,7 @@ downloading manager for Emacs.")
 (define-public emacs-helpful
   (package
     (name "emacs-helpful")
-    (version "0.1")
+    (version "0.13")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -9642,7 +9673,7 @@ downloading manager for Emacs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "16dx566qzrjj0bf43lnw7h1qlvgs94brqplamw8kppp2ylr72qs9"))))
+                "11kj04y1fa3vnw2991cyqf6adz6bb3hlrdkvypjnmpb0s64q64b6"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-elisp-refs" ,emacs-elisp-refs)))
@@ -10027,7 +10058,7 @@ perform regression test for packages that provide font-lock rules.")
       (license license:gpl3+))))
 
 (define-public emacs-racket-mode
-  (let ((commit "add0190d3c9bdad25fee57f8efd0460c9a45c2ec")
+  (let ((commit "92c33487f6c707880ac3f6169e7ea65ddffd1463")
         (revision "1"))
     (package
       (name "emacs-racket-mode")
@@ -10042,7 +10073,7 @@ perform regression test for packages that provide font-lock rules.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0bf6s4nqjfacij20x9vppdnq8fq1bf53cch6p4g8xqcqri3ms4jw"))))
+           "19q6ym10gj2xdzzcgh3wdbq1xv8cv7nlrhv2b0bjvvdjzhiki472"))))
       (build-system emacs-build-system)
       (arguments
        `(#:include '("\\.el$" "\\.rkt$")))

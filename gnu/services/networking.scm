@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -576,7 +577,9 @@ demand.")))
   (config-file      tor-configuration-config-file
                     (default (plain-file "empty" "")))
   (hidden-services  tor-configuration-hidden-services
-                    (default '())))
+                    (default '()))
+  (socks-socket-type tor-configuration-socks-socket-type ; 'tcp or 'unix
+                     (default 'tcp)))
 
 (define %tor-accounts
   ;; User account and groups for Tor.
@@ -598,7 +601,7 @@ demand.")))
 (define (tor-configuration->torrc config)
   "Return a 'torrc' file for CONFIG."
   (match config
-    (($ <tor-configuration> tor config-file services)
+    (($ <tor-configuration> tor config-file services socks-socket-type)
      (computed-file
       "torrc"
       (with-imported-modules '((guix build utils))
@@ -612,7 +615,12 @@ demand.")))
 ### These lines were generated from your system configuration:
 User tor
 DataDirectory /var/lib/tor
+PidFile /var/run/tor/tor.pid
 Log notice syslog\n" port)
+                (when (eq? 'unix '#$socks-socket-type)
+                  (display "\
+SocksPort unix:/var/run/tor/socks-sock
+UnixSocksGroupWritable 1\n" port))
 
                 (for-each (match-lambda
                             ((service (ports hosts) ...)
@@ -639,7 +647,7 @@ HiddenServicePort ~a ~a~%"
                 #t))))))))
 
 (define (tor-shepherd-service config)
-  "Return a <shepherd-service> running TOR."
+  "Return a <shepherd-service> running Tor."
   (match config
     (($ <tor-configuration> tor)
      (let ((torrc (tor-configuration->torrc config)))
@@ -665,12 +673,17 @@ HiddenServicePort ~a ~a~%"
                                             (writable? #t))
                                            (file-system-mapping
                                             (source "/dev/log") ;for syslog
-                                            (target source)))))
+                                            (target source))
+                                           (file-system-mapping
+                                            (source "/var/run/tor")
+                                            (target source)
+                                            (writable? #t)))
+                          #:pid-file "/var/run/tor/tor.pid"))
                 (stop #~(make-kill-destructor))
                 (documentation "Run the Tor anonymous network overlay."))))))))
 
-(define (tor-hidden-service-activation config)
-  "Return the activation gexp for SERVICES, a list of hidden services."
+(define (tor-activation config)
+  "Set up directories for Tor and its hidden services, if any."
   #~(begin
       (use-modules (guix build utils))
 
@@ -686,6 +699,15 @@ HiddenServicePort ~a ~a~%"
           ;; The daemon bails out if we give wider permissions.
           (chmod directory #o700)))
 
+      ;; Allow Tor to write its PID file.
+      (mkdir-p "/var/run/tor")
+      (chown "/var/run/tor" (passwd:uid %user) (passwd:gid %user))
+      ;; Set the group permissions to rw so that if the system administrator
+      ;; has specified UnixSocksGroupWritable=1 in their torrc file, members
+      ;; of the "tor" group will be able to use the SOCKS socket.
+      (chmod "/var/run/tor" #o750)
+
+      ;; Allow Tor to access the hidden services' directories.
       (mkdir-p "/var/lib/tor")
       (chown "/var/lib/tor" (passwd:uid %user) (passwd:gid %user))
       (chmod "/var/lib/tor" #o700)
@@ -705,7 +727,7 @@ HiddenServicePort ~a ~a~%"
                        (service-extension account-service-type
                                           (const %tor-accounts))
                        (service-extension activation-service-type
-                                          tor-hidden-service-activation)))
+                                          tor-activation)))
 
                 ;; This can be extended with hidden services.
                 (compose concatenate)

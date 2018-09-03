@@ -548,14 +548,14 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "0.6.6")
+    (version "0.6.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbxmpp" version))
        (sha256
         (base32
-         "0bp60syqc3qp2i28phvadxlpwizjbr6bxw4m363p9yn5fl687qnh"))))
+         "0fas4iawjfdmkz8vr042wpq6b2qispi6fy35g4a62jw50jb1saav"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -873,7 +873,7 @@ protocols.")
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.2.6")
+    (version "0.2.7")
     (source
      (origin
        (method url-fetch)
@@ -882,7 +882,7 @@ protocols.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "04b3ifkj64yy06vph0hlq24mw9fh24zmq1qdf40fmj24vvgfmjpl"))))
+         "1lcw979zakyb5kzy8yfk87js3bzfz3k2jxidda6ga6ljdnqdpxmy"))))
     (arguments
      `(#:tests? #f)) ; FIXME: Testsuite seems to stay stuck on test 3. Disable
                      ; for now.
@@ -1565,7 +1565,7 @@ using ncurses and libmesode, inspired by Irssi.")
 (define-public libircclient
   (package
     (name "libircclient")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
@@ -1573,7 +1573,7 @@ using ncurses and libmesode, inspired by Irssi.")
                            version "/libircclient-" version ".tar.gz"))
        (sha256
         (base32
-         "0r60i76jh4drjh2jgp5sx71chagqllmkaq49zv67nrhqwvp9ghw1"))))
+         "0b9wa0h3xc31wpqlvgxgnvqp5wgx3kwsf5s9432m5cj8ycx6zcmv"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -1584,8 +1584,7 @@ using ncurses and libmesode, inspired by Irssi.")
              "--enable-shared"
              "--enable-ipv6"
              "--enable-openssl")
-       ;; no test suite
-       #:tests? #f))
+       #:tests? #f))                    ; no test suite
     (home-page "https://www.ulduzsoft.com/libircclient/")
     (synopsis "Library implementing the client IRC protocol")
     (description "Libircclient is a library which implements the client IRC

@@ -963,7 +963,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.24")
+    (version "1.8.25")
     (source (origin
               (method url-fetch)
               (uri
@@ -973,7 +973,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1s2v49n905wf3phmdnaa6v1dwck2lrcin0flg85z7klf35x5b25l"))
+                "0hfw6pcwjvv1vvnhb4n1p210306jm4npz99p9cfhbd33yrhhzkwx"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2750,3 +2750,81 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
     (description
      "@code{pscircle} visualizes Linux processes in the form of a radial tree.")
     (license license:gpl2+)))
+
+(define-public python-pyudev
+  (package
+    (name "python-pyudev")
+    (version "0.21.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyudev" version))
+        (sha256
+          (base32
+            "0arz0dqp75sszsmgm6vhg92n1lsx91ihddx3m944f4ah0487ljq9"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; Tests require /sys
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-ctypes-udev
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((eudev (assoc-ref inputs "eudev")))
+               (substitute* "src/pyudev/core.py"
+                (("'udev'")
+                 (string-append "'" eudev "/lib/libudev.so'")))
+               (substitute* "src/pyudev/_ctypeslib/utils.py"
+                ;; Use absolute paths instead of keys.
+                (("= find_library") "= "))
+               #t))))))
+    (inputs
+     `(("eudev" ,eudev)))
+    (native-inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "http://pyudev.readthedocs.org/")
+    (synopsis "Python udev binding")
+    (description "This package provides @code{udev} bindings for Python.")
+    (license license:lgpl2.1)))
+
+(define-public solaar
+  (package
+    (name "solaar")
+    (version "0.9.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pwr/Solaar.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "085mfa13dap3wqik1dqlad0d7kff4rv7j4ljh99c7l8nhczkqgwm"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-prefix-detection
+           (lambda _
+             (substitute* "setup.py"
+              (("'--prefix' in sys\\.argv")
+               "len([x.startswith('--prefix=') for x in sys.argv]) > 0"))
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "python" "setup.py" "build")))
+         (add-before 'check 'setenv-PATH
+           (lambda _
+             (setenv "PYTHONPATH" (string-append "lib:" (getenv "PYTHONPATH")))
+             #t)))))
+    (propagated-inputs
+     `(("python-pygobject" ,python-pygobject)
+       ("python-pyudev" ,python-pyudev)))
+    (home-page "https://smxi.org/docs/inxi.htm")
+    (synopsis "Linux devices manager for the Logitech Unifying Receiver")
+    (description "This package provides tools to manage clients of the
+Logitech Unifying Receiver.")
+    (license license:gpl2)))

@@ -17,23 +17,23 @@ Work around upstream's lack of a pkg-config file and update API.
  
  # Optional libraries with pkgconfig
  
---- netsurf-3.6/utils/idna.c
-+++ netsurf-3.6/utils/idna.c
-@@ -26,7 +26,7 @@
- #include <stdint.h>
+--- netsurf-3.8/utils/idna.c
++++ netsurf-3.8/utils/idna.c
+@@ -27,7 +27,7 @@
  #include <stdlib.h>
  #include <string.h>
+ #include <sys/types.h>
 -#include <libutf8proc/utf8proc.h>
 +#include <utf8proc.h>
  
- #include "utils/errors.h"
- #include "utils/idna.h"
---- netsurf-3.7/test/Makefile	2017-10-15 08:39:24.000000000 -0500
-+++ netsurf-3.7/test/Makefile	2017-11-05 11:14:46.219013218 -0600
-@@ -139,14 +139,14 @@
- 	-D_XOPEN_SOURCE=600 \
+ #include "netsurf/inttypes.h"
+ 
+--- netsurf-3.8/test/Makefile
++++ netsurf-3.8/test/Makefile
+@@ -142,14 +142,15 @@
  	-Itest -Iinclude -Icontent/handlers -Ifrontends -I. -I.. \
  	-Dnsgtk \
+ 	$(SAN_FLAGS) \
 -	$(shell pkg-config --cflags libcurl libparserutils libwapcaplet libdom libnsutils libutf8proc) \
 +	$(shell pkg-config --cflags libcurl libparserutils libwapcaplet libdom libnsutils) \
  	$(LIB_CFLAGS)
@@ -43,7 +43,8 @@ Work around upstream's lack of a pkg-config file and update API.
  
  TESTLDFLAGS := -L$(TESTROOT) \
 -	$(shell pkg-config --libs libcurl libparserutils libwapcaplet libdom libnsutils libutf8proc) -lz \
-+	$(shell pkg-config --libs libcurl libparserutils libwapcaplet libdom libnsutils) -lz -lutf8proc \
++	$(shell pkg-config --libs libcurl libparserutils libwapcaplet libdom libnsutils) \
++	$(LDFLAGS) \
+ 	$(SAN_FLAGS) \
  	$(LIB_LDFLAGS)\
  	$(COV_LDFLAGS)
- 

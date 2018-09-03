@@ -323,7 +323,7 @@ in C/C++.")
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.19")
+    (version "4.20")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -331,7 +331,7 @@ in C/C++.")
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "0agpv3f17h8kmzi0ifibaaxc1k3xc0q61wqw3l6r2xr2z8bmkn9f"))))
+               "0vjms4j75zvv5b2siyafg7hh924ysx2cwjad8spzp7x87n8n929c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -359,7 +359,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.38")
+    (version "3.39")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -370,7 +370,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0qigcy3d169cf67jzv3rbai0m6dn34vp8h2z696mz4yn10y3sr1c"))
+                "0jw6qlfl2g47hhx056nvnj6h92bk3sn46hy3ig61a911dzblvrkb"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-increase-test-timeout.patch"))))

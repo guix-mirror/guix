@@ -44,6 +44,7 @@
             %hackage-updater
 
             guix-package->hackage-name
+            hackage-name->package-name
             hackage-fetch
             hackage-source-url
             hackage-cabal-url

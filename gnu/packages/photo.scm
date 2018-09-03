@@ -95,6 +95,18 @@ cameras (CRW/CR2, NEF, RAF, DNG, and others).")
     ;; both two licensing modes for your changes/additions."
     (license (list license:lgpl2.1 license:cddl1.0))))
 
+(define-public libraw-0.18
+  (package (inherit libraw)
+    (name "libraw")
+    (version "0.18.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.libraw.org/data/LibRaw-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1m2khr2cij8z6lawgbmdksjn14fpnjsy8ad4qahnpqapm1slsxap"))))))
+
 (define-public libexif
   (package
     (name "libexif")

@@ -459,7 +459,7 @@ computing convex hulls.")
 (define-public arpack-ng
   (package
     (name "arpack-ng")
-    (version "3.5.0")
+    (version "3.6.2")
     (home-page "https://github.com/opencollab/arpack-ng")
     (source
      (origin
@@ -468,13 +468,8 @@ computing convex hulls.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0f8jx3fifmj9qdp289zr7r651y1q48k1jya859rqxq62mvis7xsh"))))
+         "16jrvdl0gh78rrfnvrcxwys4slwfh6qmwwjhfc9d6vwrvq184g37"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autoreconf
-                    (lambda _
-                      (invoke "autoreconf" "-vfi"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -2049,12 +2044,12 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "2.1.4")
+    (version "2.1.5")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "1ygm81i7mqvh229dp9935djjyb120p3bqvaf4k572sa4q63fzjhc"))))
+        (base32 "18cv7c2gvagbmggfbsy2xk9bpn47izd0qrmqnc3q7afvj6pr6nf9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quadprog" ,r-quadprog)))
@@ -3517,7 +3512,7 @@ set.")
 (define-public hypre
   (package
     (name "hypre")
-    (version "2.11.0")
+    (version "2.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/LLNL/hypre/archive/"
@@ -3525,7 +3520,7 @@ set.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0q69ia0jivzcr8p049dn3mg8yjpn6nwq4sw9iqac8vr63vi54l6m"))
+                "0v515i73bvaz378h5465b1dy9v2gf924zy2q94cpq4qqarawvkqh"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3533,7 +3528,7 @@ set.")
                   ;; substitute the tarball creation time.
                   (substitute* "src/utilities/HYPRE_utilities.h"
                     (("Date Compiled: .*$")
-                     "Date Compiled: Mar 28 2016 20:19:59 +0000\"\n"))
+                     "Date Compiled: Apr 11 2018 16:24:59 +0000\"\n"))
                   #t))))
     (build-system gnu-build-system)
     (outputs '("out"                    ;6.1 MiB of headers and libraries

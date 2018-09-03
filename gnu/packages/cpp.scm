@@ -236,7 +236,7 @@ as ordering relation.")
     (build-system cmake-build-system)
     (synopsis "JSON parser and printer library for C++")
     (description "JSON for Modern C++ is a C++ JSON library that provides
-intutive syntax and trivial integration.")
+intuitive syntax and trivial integration.")
     (license license:expat)))
 
 (define-public xtl
