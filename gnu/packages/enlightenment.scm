@@ -312,35 +312,36 @@ embedded systems.")
 (define-public python-efl
   (package
     (name "python-efl")
-    (version "1.20.0")
+    (version "1.21.0")
     (source
       (origin
         (method url-fetch)
-        (uri (list
-               (pypi-uri "python-efl" version)
-               (string-append "http://download.enlightenment.org/rel/bindings/"
-                              "python/python-efl-" version ".tar.gz")))
+        (uri (string-append "http://download.enlightenment.org/rel/bindings/"
+                            "python/python-efl-" version ".tar.xz"))
         (sha256
          (base32
-          "1680pgpf501nhbc9arm0nfj6rpcw17aryh0pgmmmszxlgpifpdzy"))))
+          "08x2cv8hnf004c3711250wrax21ffj5y8951pvk77h98als4pq47"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-        (replace 'build
-          (lambda _
-            (zero?
-              (system* "env" "ENABLE_CYTHON=1" "python" "setup.py" "build"))))
+         (replace 'build
+           (lambda _
+             (setenv "ENABLE_CYTHON" "1")
+             (invoke "python" "setup.py" "build")))
         (add-before 'build 'set-flags
-         (lambda _
-           (setenv "CFLAGS"
-                   (string-append "-I" (assoc-ref %build-inputs "python-dbus")
-                                  "/include/dbus-1.0"))
-           #t))
+          (lambda _
+            (setenv "CFLAGS"
+                    (string-append "-I" (assoc-ref %build-inputs "python-dbus")
+                                   "/include/dbus-1.0"))
+            #t))
         (add-before 'check 'set-environment
           (lambda _
             ;; Some tests require write access to HOME.
             (setenv "HOME" "/tmp")
+            ;; These tests try to connect to the internet.
+            (delete-file "tests/ecore/test_09_file_download.py")
+            (delete-file "tests/ecore/test_11_con.py")
             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
