@@ -459,7 +459,7 @@ computing convex hulls.")
 (define-public arpack-ng
   (package
     (name "arpack-ng")
-    (version "3.5.0")
+    (version "3.6.2")
     (home-page "https://github.com/opencollab/arpack-ng")
     (source
      (origin
@@ -468,7 +468,7 @@ computing convex hulls.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0f8jx3fifmj9qdp289zr7r651y1q48k1jya859rqxq62mvis7xsh"))))
+         "16jrvdl0gh78rrfnvrcxwys4slwfh6qmwwjhfc9d6vwrvq184g37"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
