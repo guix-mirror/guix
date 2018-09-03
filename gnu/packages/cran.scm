@@ -5695,3 +5695,25 @@ message boxes, input boxes, list, file or directory selection, and others.  In
 case R cannot display GUI dialog boxes, a simpler command line version of these
 interactive elements is also provided as a fallback solution.")
     (license license:gpl2)))
+
+(define-public r-abe
+  (package
+    (name "r-abe")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abe" version))
+       (sha256
+        (base32
+         "1f19h3xzzmjhvwc1rrb8z0rai3ip03y4gdi2gg9bfr5sg2nfklk6"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/abe/")
+    (synopsis "Augmented backward elimination")
+    (description
+     "This package performs augmented backward elimination and checks the
+stability of the obtained model.  Augmented backward elimination combines
+significance or information based criteria with the change in estimate to
+either select the optimal model for prediction purposes or to serve as a tool
+to obtain a practically sound, highly interpretable model.")
+    (license license:gpl2+)))
