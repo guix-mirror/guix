@@ -5717,3 +5717,22 @@ significance or information based criteria with the change in estimate to
 either select the optimal model for prediction purposes or to serve as a tool
 to obtain a practically sound, highly interpretable model.")
     (license license:gpl2+)))
+
+(define-public r-abf2
+  (package
+    (name "r-abf2")
+    (version "0.7-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abf2" version))
+       (sha256
+        (base32 "0d65mc1w4pbiv7xaqzdlw1bfsxf25587rv597hh41vs0j0zlfpxx"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/abf2/")
+    (synopsis "Load gap-free axon @code{r-abf2} files")
+    (description
+     "This package loads electrophysiology data from ABF2 files, as created by
+Axon Instruments/Molecular Devices software.  Only files recorded in gap-free
+mode are currently supported.")
+    (license license:artistic2.0)))
