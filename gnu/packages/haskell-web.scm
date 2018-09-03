@@ -524,6 +524,30 @@ functionality.")
 Haskell's Web Application Interface (WAI).")
     (license license:expat)))
 
+(define-public ghc-bsb-http-chunked
+  (package
+    (name "ghc-bsb-http-chunked")
+    (version "0.0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/"
+             "bsb-http-chunked/bsb-http-chunked-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1x6m6xkrcw6jiaig1bb2wb5pqyw31x8xr9k9pxgq2g3ng44pbjr8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-bytestring-builder" ,ghc-bytestring-builder)))
+    (home-page "http://github.com/sjakobi/bsb-http-chunked")
+    (synopsis "Chunked HTTP transfer encoding for bytestring builders")
+    (description "This Haskell library contains functions for encoding
+bytestring builders for chunked Hypertext Transfer Protocol (HTTP) 1.1
+transfers.")
+    (license license:bsd-3)))
+
 (define-public ghc-warp
   (package
     (name "ghc-warp")
