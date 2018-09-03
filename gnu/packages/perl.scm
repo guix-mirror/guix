@@ -48,7 +48,6 @@
   #:use-module (guix utils) ;substitute-keyword-arguments for perl-5.26.2
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages cross-base)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
@@ -80,7 +79,7 @@
                        "perl-reproducible-build-date.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f
+     '(#:tests? #f
        #:configure-flags
        (let ((out  (assoc-ref %outputs "out"))
              (libc (assoc-ref %build-inputs "libc")))
@@ -129,10 +128,7 @@
          (add-after 'install 'remove-extra-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
-                    (libc (assoc-ref inputs
-                             (if ,(%current-target-system)
-                                  "cross-libc"
-                                  "libc")))
+                    (libc    (assoc-ref inputs "libc"))
                     (config1 (car (find-files (string-append out "/lib/perl5")
                                               "^Config_heavy\\.pl$")))
                     (config2 (find-files (string-append out "/lib/perl5")
