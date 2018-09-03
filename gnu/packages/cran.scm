@@ -5762,3 +5762,38 @@ TASSEL GBS pipeline and the @code{r-qtl} package.  It provides functionalities
 not found in either TASSEL or @code{r-qtl} in addition to visualization of
 genotypes as \"graphical genotypes\".")
     (license license:gpl3)))
+
+(define-public r-abjutils
+  (package
+    (name "r-abjutils")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abjutils" version))
+       (sha256
+        (base32 "0qrsc4if7aif73qp95lw6b5986c2r0jn7m39123zij8k15vc935b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-devtools" ,r-devtools)
+       ("r-dplyr" ,r-dplyr)
+       ("r-glue" ,r-glue)
+       ("r-httr" ,r-httr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plyr" ,r-plyr)
+       ("r-progress" ,r-progress)
+       ("r-purrr" ,r-purrr)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-scales" ,r-scales)
+       ("r-stringi" ,r-stringi)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/abjur/abjutils/")
+    (synopsis "Collection of tools for jurimetrical analysis")
+    (description
+     "This package implements general purpose tools, such as functions for
+sampling and basic manipulation of Brazilian lawsuits identification number.
+It also implements functions for text cleaning, such as accentuation
+removal.")
+    (license license:expat)))
