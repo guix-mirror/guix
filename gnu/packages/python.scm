@@ -3755,6 +3755,18 @@ functions.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-broken-tests
+           (lambda _
+             (substitute* "scipy/sparse/linalg/dsolve/tests/test_linsolve.py"
+               (("^( +)def test_threads_parallel\\(self\\):" m indent)
+                (string-append indent
+                               "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
+                               m)))
+             (substitute* "scipy/sparse/linalg/eigen/arpack/tests/test_arpack.py"
+               (("^def test_parallel_threads\\(\\):" m)
+                (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
+                               m)))
+             #t))
          (add-before 'build 'configure-openblas
            (lambda* (#:key inputs #:allow-other-keys)
              (call-with-output-file "site.cfg"
