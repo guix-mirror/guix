@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017, 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
@@ -1685,6 +1685,7 @@ scientific applications modeled by partial differential equations.")
     (name "petsc-openmpi")
     (inputs
      `(("openmpi" ,openmpi)
+       ("hdf5" ,hdf5-parallel-openmpi)
        ,@(package-inputs petsc)))
     (arguments
      (substitute-keyword-arguments (package-arguments petsc)
@@ -1692,7 +1693,21 @@ scientific applications modeled by partial differential equations.")
         ``("--with-mpiexec=mpirun"
            ,(string-append "--with-mpi-dir="
                            (assoc-ref %build-inputs "openmpi"))
-           ,@(delete "--with-mpi=0" ,cf)))))
+           ,(string-append "--with-hdf5-include="
+                           (assoc-ref %build-inputs "hdf5") "/include")
+           ,(string-append "--with-hdf5-lib="
+                           (assoc-ref %build-inputs "hdf5") "/lib/libhdf5.a")
+           ,@(delete "--with-mpi=0" ,cf)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'check 'set-test-environment
+             (lambda _
+               ;; By default, running the test suite would fail because 'ssh'
+               ;; could not be found in $PATH.  Define this variable to
+               ;; placate Open MPI without adding a dependency on OpenSSH (the
+               ;; agent isn't used anyway.)
+               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+               #t))))))
     (synopsis "Library to solve PDEs (with MPI support)")))
 
 (define-public petsc-complex-openmpi
