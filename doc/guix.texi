@@ -2851,6 +2851,10 @@ is provided, the subset of generations that match @var{pattern}.
 The syntax of @var{pattern} is the same as with @code{guix package
 --list-generations} (@pxref{Invoking guix package}).
 
+@item --profile=@var{profile}
+@itemx -p @var{profile}
+Use @var{profile} instead of @file{~/.config/guix/current}.
+
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
 useful to Guix developers.
