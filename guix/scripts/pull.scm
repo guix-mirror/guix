@@ -48,7 +48,8 @@
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
-  #:export (guix-pull))
+  #:export (display-profile-content
+            guix-pull))
 
 
 ;;;

@@ -147,6 +147,7 @@ Package Management
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 * Channels::                    Customizing the package collection.
+* Invoking guix describe::      Display information about your Guix revision.
 * Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
 
@@ -1698,6 +1699,7 @@ guix package -i emacs-guix
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 * Channels::                    Customizing the package collection.
+* Invoking guix describe::      Display information about your Guix revision.
 * Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
 @end menu
@@ -1751,7 +1753,7 @@ collected.
 
 @cindex reproducibility
 @cindex reproducible builds
-Finally, Guix takes a @dfn{purely functional} approach to package
+Guix takes a @dfn{purely functional} approach to package
 management, as described in the introduction (@pxref{Introduction}).
 Each @file{/gnu/store} package directory name contains a hash of all the
 inputs that were used to build that package---compiler, libraries, build
@@ -1778,6 +1780,15 @@ developers.  The @command{guix environment} command allows developers of
 a package to quickly set up the right development environment for their
 package, without having to manually install the dependencies of the
 package into their profile (@pxref{Invoking guix environment}).
+
+@cindex replication, of software environments
+@cindex provenance tracking, of software artifacts
+All of Guix and its package definitions is version-controlled, and
+@command{guix pull} allows you to ``travel in time'' on the history of Guix
+itself (@pxref{Invoking guix pull}).  This makes it possible to replicate a
+Guix instance on a different machine or at a later point in time, which in
+turn allows you to @emph{replicate complete software environments}, while
+retaining precise @dfn{provenance tracking} of the software.
 
 @node Invoking guix package
 @section Invoking @command{guix package}
@@ -2806,6 +2817,9 @@ Generation 3	Jun 13 2018 23:31:07	(current)
   69 packages upgraded: borg@@1.1.6, cheese@@3.28.0, @dots{}
 @end example
 
+@ref{Invoking guix describe, @command{guix describe}}, for other ways to
+describe the current status of Guix.
+
 This @code{~/.config/guix/current} profile works like any other profile
 created by @command{guix package} (@pxref{Invoking guix package}).  That
 is, you can list generations, roll back to the previous
@@ -2850,6 +2864,9 @@ List all the generations of @file{~/.config/guix/current} or, if @var{pattern}
 is provided, the subset of generations that match @var{pattern}.
 The syntax of @var{pattern} is the same as with @code{guix package
 --list-generations} (@pxref{Invoking guix package}).
+
+@ref{Invoking guix describe}, for a way to display information about the
+current generation only.
 
 @item --profile=@var{profile}
 @itemx -p @var{profile}
@@ -3023,6 +3040,9 @@ say, on another machine, by providing a channel specification in
        (branch "dd3df5e2c8818760a8fc0bd699e55d3b69fef2bb")))
 @end lisp
 
+The @command{guix describe --format=channels} command can even generate this
+list of channels directly (@pxref{Invoking guix describe}).
+
 At this point the two machines run the @emph{exact same Guix}, with access to
 the @emph{exact same packages}.  The output of @command{guix build gimp} on
 one machine will be exactly the same, bit for bit, as the output of the same
@@ -3033,6 +3053,78 @@ package it defines.
 This gives you super powers, allowing you to track the provenance of binary
 artifacts with very fine grain, and to reproduce software environments at
 will---some sort of ``meta reproducibility'' capabilities, if you will.
+
+@node Invoking guix describe
+@section Invoking @command{guix describe}
+
+@cindex reproducibility
+@cindex replicating Guix
+Often you may want to answer questions like: ``Which revision of Guix am I
+using?'' or ``Which channels am I using?''  This is useful information in many
+situations: if you want to @emph{replicate} an environment on a different
+machine or user account, if you want to report a bug or to determine what
+change in the channels you are using caused it, or if you want to record your
+system state for reproducibility purposes.  The @command{guix describe}
+command answers these questions.
+
+When run from a @command{guix pull}ed @command{guix}, @command{guix describe}
+displays the channel(s) that it was built from, including their repository URL
+and commit IDs (@pxref{Channels}):
+
+@example
+$ guix describe
+Generation 10	Sep 03 2018 17:32:44	(current)
+  guix e0fa68c
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: master
+    commit: e0fa68c7718fffd33d81af415279d6ddb518f727
+@end example
+
+If you're familiar with the Git version control system, this is similar in
+spirit to @command{git describe}; the output is also similar to that of
+@command{guix pull --list-generations}, but limited to the current generation
+(@pxref{Invoking guix pull, the @option{--list-generations} option}).  Because
+the Git commit ID shown above unambiguously refers to a snapshot of Guix, this
+information is all it takes to describe the revision of Guix you're using, and
+also to replicate it.
+
+To make it easier to replicate Guix, @command{guix describe} can also be asked
+to return a list of channels instead of the human-readable description above:
+
+@example
+$ guix describe -f channels
+(list (channel
+        (name 'guix)
+        (url "https://git.savannah.gnu.org/git/guix.git")
+        (commit
+          "e0fa68c7718fffd33d81af415279d6ddb518f727")))
+@end example
+
+@noindent
+You can save this to a file and feed it to @command{guix pull -C} on some
+other machine or at a later point in time, which will instantiate @emph{this
+exact Guix revision} (@pxref{Invoking guix pull, the @option{-C} option}).
+From there on, since you're able to deploy the same revision of Guix, you can
+just as well @emph{replicate a complete software environment}.  We humbly
+think that this is @emph{awesome}, and we hope you'll like it too!
+
+The details of the options supported by @command{guix describe} are as
+follows:
+
+@table @code
+@item --format=@var{format}
+@itemx -f @var{format}
+Produce output in the specified @var{format}, one of:
+
+@table @code
+@item human
+produce human-readable output;
+@item channels
+produce a list of channel specifications that can be passed to @command{guix
+pull -C} or installed as @file{~/.config/guix/channels.scm} (@pxref{Invoking
+guix pull}).
+@end table
+@end table
 
 @node Invoking guix pack
 @section Invoking @command{guix pack}

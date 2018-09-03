@@ -204,6 +204,7 @@ MODULES =					\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
   guix/scripts/repl.scm				\
+  guix/scripts/describe.scm			\
   guix/scripts/system.scm			\
   guix/scripts/system/search.scm		\
   guix/scripts/lint.scm				\
@@ -409,6 +410,7 @@ SH_TESTS =					\
   tests/guix-environment.sh			\
   tests/guix-environment-container.sh		\
   tests/guix-graph.sh				\
+  tests/guix-describe.sh			\
   tests/guix-lint.sh
 
 TESTS = $(SCM_TESTS) $(SH_TESTS)

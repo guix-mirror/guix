@@ -21,7 +21,9 @@
   #:use-module (guix profiles)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
-  #:export (package-path-entries))
+  #:export (current-profile
+            current-profile-entries
+            package-path-entries))
 
 ;;; Commentary:
 ;;;
