@@ -600,6 +600,32 @@ transfers.")
 based WAI (Web Application Interface in Haskell).")
     (license license:expat)))
 
+(define-public ghc-tls-session-manager
+  (package
+  (name "ghc-tls-session-manager")
+  (version "0.0.0.2")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+            "https://hackage.haskell.org/package/"
+            "tls-session-manager/tls-session-manager-"
+             version ".tar.gz"))
+      (sha256
+        (base32
+          "0rvmln545vghsx8zhxp44f0f6pzma8cylarmfhhysy55ipywr1n5"))))
+  (build-system haskell-build-system)
+  (inputs
+    `(("ghc-auto-update" ,ghc-auto-update)
+      ("ghc-clock" ,ghc-clock)
+      ("ghc-psqueues" ,ghc-psqueues)
+      ("ghc-tls" ,ghc-tls)))
+  (home-page "http://hackage.haskell.org/package/tls-session-manager")
+  (synopsis "In-memory TLS session manager")
+  (description "This Haskell library provides a TLS session manager with
+limitation, automatic pruning, energy saving and replay resistance.")
+  (license license:bsd-3)))
+
 (define-public ghc-warp-tls
   (package
     (name "ghc-warp-tls")
