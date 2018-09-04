@@ -19,6 +19,7 @@
 (define-module (guix inferior)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
+  #:use-module ((guix utils) #:select (source-properties->location))
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
   #:export (inferior?
@@ -33,7 +34,9 @@
 
             inferior-packages
             inferior-package-synopsis
-            inferior-package-description))
+            inferior-package-description
+            inferior-package-home-page
+            inferior-package-location))
 
 ;;; Commentary:
 ;;;
@@ -198,3 +201,18 @@ TRANSLATE? is true, translate it to the current locale's language."
                           (if translate?
                               '(compose (@ (guix ui) P_) package-description)
                               'package-description)))
+
+(define (inferior-package-home-page package)
+  "Return the home page of PACKAGE."
+  (inferior-package-field package 'package-home-page))
+
+(define (inferior-package-location package)
+  "Return the source code location of PACKAGE, either #f or a <location>
+record."
+  (source-properties->location
+   (inferior-package-field package
+                           '(compose (lambda (loc)
+                                       (and loc
+                                            (location->source-properties
+                                             loc)))
+                                     package-location))))
