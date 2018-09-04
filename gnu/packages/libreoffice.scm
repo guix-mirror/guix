@@ -316,7 +316,16 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
           ;; During configure, the boost headers are found, but linking
           ;; fails without the following flag.
           (string-append "--with-boost="
-                         (assoc-ref %build-inputs "boost")))))
+                         (assoc-ref %build-inputs "boost")))
+        #:phases (modify-phases %standard-phases
+                   (add-before 'build 'fix-boost-include
+                     (lambda _
+                       ;; This library moved in Boost and the compatibility
+                       ;; redirect is no longer available since version 1.68.0.
+                       (substitute* "src/libcmis/xml-utils.cxx"
+                         (("boost/uuid/sha1.hpp")
+                          "boost/uuid/detail/sha1.hpp"))
+                       #t)))))
     (home-page "https://github.com/tdf/libcmis")
     (synopsis "CMIS client library")
     (description "LibCMIS is a C++ client library for the CMIS interface.  It
