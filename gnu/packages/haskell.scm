@@ -5197,6 +5197,8 @@ occurrences of a substring (the first in case of overlaps) with another.")
         (base32
          "1wj8kgjg5bn2yrs4zh9qfjv85cx6w998j9pi39yrbv305944mb9j"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=tasty")))
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-smallcheck" ,ghc-smallcheck)
