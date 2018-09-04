@@ -329,7 +329,8 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
   `((verbosity . 0)
     (graft? . #t)
     (substitutes? . #t)
-    (build-hook? . #t)))
+    (build-hook? . #t)
+    (print-build-trace? . #t)))
 
 (define (show-help)
   (display (G_ "Usage: guix package [OPTION]...
@@ -930,18 +931,24 @@ processed, #f otherwise."
         (arg-handler arg result)
         (leave (G_ "~A: extraneous argument~%") arg)))
 
-  (let ((opts (parse-command-line args %options (list %default-options #f)
-                                  #:argument-handler handle-argument)))
-    (with-error-handling
-      (or (process-query opts)
-          (parameterize ((%store  (open-connection))
-                         (%graft? (assoc-ref opts 'graft?)))
-            (set-build-options-from-command-line (%store) opts)
+  (define opts
+    (parse-command-line args %options (list %default-options #f)
+                        #:argument-handler handle-argument))
+  (define verbose?
+    (assoc-ref opts 'verbose?))
 
-            (parameterize ((%guile-for-build
-                            (package-derivation
-                             (%store)
-                             (if (assoc-ref opts 'bootstrap?)
-                                 %bootstrap-guile
-                                 (canonical-package guile-2.2)))))
-              (process-actions (%store) opts)))))))
+  (with-error-handling
+    (or (process-query opts)
+        (parameterize ((%store  (open-connection))
+                       (%graft? (assoc-ref opts 'graft?)))
+          (set-build-options-from-command-line (%store) opts)
+
+          (parameterize ((%guile-for-build
+                          (package-derivation
+                           (%store)
+                           (if (assoc-ref opts 'bootstrap?)
+                               %bootstrap-guile
+                               (canonical-package guile-2.2))))
+                         (current-build-output-port
+                          (build-output-port #:verbose? verbose?)))
+            (process-actions (%store) opts))))))

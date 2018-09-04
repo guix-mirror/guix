@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2013, 2014 Free Software Foundation, Inc.
 ;;; Copyright © 2018 Sahithi Yarlagadda <sahi@swecha.net>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,7 +119,7 @@
             warning
             info
             guix-main
-            colorize-string))
+            build-output-port))
 
 ;;; Commentary:
 ;;;
@@ -1674,5 +1675,111 @@ be reset such that subsequent output will not have any colors in effect."
    (apply color color-list)
    str
    (color 'RESET)))
+
+(define* (build-output-port #:key
+                            (colorize? #t)
+                            verbose?
+                            (port (current-error-port)))
+  "Return a soft port that processes build output.  By default it colorizes
+phase announcements and replaces any other output with a spinner."
+  (define spun? #f)
+  (define spin!
+    (let ((steps (circular-list "\\" "|" "/" "-")))
+      (lambda ()
+        (match steps
+          ((first . rest)
+           (set! steps rest)
+           (set! spun? #t) ; remember to erase spinner
+           first)))))
+
+  (define use-color?
+    (and colorize?
+         (not (or (getenv "NO_COLOR")
+                  (getenv "INSIDE_EMACS")
+                  (not (isatty? port))))))
+
+  (define handle-string
+    (let* ((proc (if use-color?
+                     colorize-string
+                     (lambda (s . _) s)))
+           (rules `(("^(@ build-started) (.*) (.*)"
+                     #:transform
+                     ,(lambda (m)
+                        (string-append
+                         (proc "Building " 'BLUE 'BOLD)
+                         (match:substring m 2) "\n")))
+                    ("^(@ build-failed) (.*) (.*)"
+                     #:transform
+                     ,(lambda (m)
+                        (string-append
+                         (proc "Build failed: " 'RED 'BOLD)
+                         (match:substring m 2) "\n")))
+                    ("^(@ build-succeeded) (.*) (.*)"
+                     #:transform
+                     ,(lambda (m)
+                        (string-append
+                         (proc "Built " 'GREEN 'BOLD)
+                         (match:substring m 2) "\n")))
+                    ("^(@ substituter-started) (.*) (.*)"
+                     #:transform
+                     ,(lambda (m)
+                        (string-append
+                         (proc "Substituting " 'BLUE 'BOLD)
+                         (match:substring m 2) "\n")))
+                    ("^(@ substituter-failed) (.*) (.*) (.*)"
+                     #:transform
+                     ,(lambda (m)
+                        (string-append
+                         (proc "Substituter failed: " 'RED 'BOLD)
+                         (match:substring m 2) "\n"
+                         (match:substring m 3) ": "
+                         (match:substring m 4) "\n")))
+                    ("^(@ substituter-succeeded) (.*)"
+                     #:transform
+                     ,(lambda (m)
+                        (string-append
+                         (proc "Substituted " 'GREEN 'BOLD)
+                         (match:substring m 2) "\n")))
+                    ("^(starting phase )(.*)"
+                     BLUE GREEN)
+                    ("^(phase)(.*)(succeeded after)(.*)(seconds)(.*)"
+                     GREEN BLUE GREEN BLUE GREEN BLUE)
+                    ("^(phase)(.*)(failed after)(.*)(seconds)(.*)"
+                     RED BLUE RED BLUE RED BLUE))))
+      (lambda (str)
+        (let ((processed
+               (any (match-lambda
+                      ((pattern #:transform transform)
+                       (and=> (string-match pattern str)
+                              transform))
+                      ((pattern . colors)
+                       (and=> (string-match pattern str)
+                              (lambda (m)
+                                (let ((substrings
+                                       (map (cut match:substring m <>)
+                                            (iota (- (match:count m) 1) 1))))
+                                  (string-join (map proc substrings colors) ""))))))
+                    rules)))
+          (when spun?
+            (display (string #\backspace) port))
+          (if processed
+              (begin
+                (display processed port)
+                (set! spun? #f))
+              ;; Print unprocessed line, or replace with spinner
+              (display (if verbose? str (spin!)) port))))))
+  (make-soft-port
+   (vector
+    ;; procedure accepting one character for output
+    (cut write <> port)
+    ;; procedure accepting a string for output
+    handle-string
+    ;; thunk for flushing output
+    (lambda () (force-output port))
+    ;; thunk for getting one character
+    (const #t)
+    ;; thunk for closing port (not by garbage collection)
+    (lambda () (close port)))
+   "w"))
 
 ;;; ui.scm ends here
