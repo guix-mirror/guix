@@ -832,11 +832,15 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
     `(#:test-target "check"
       #:phases
       (modify-phases %standard-phases
-        ;; See https://github.com/ukoethe/vigra/issues/432
-        (add-after 'unpack 'disable-broken-test
+        (add-after 'unpack 'disable-broken-tests
           (lambda _
+            ;; See https://github.com/ukoethe/vigra/issues/432
             (substitute* "test/fourier/CMakeLists.txt"
               (("VIGRA_ADD_TEST.*") ""))
+            ;; This test fails with Numpy 1.15:
+            ;; <https://github.com/ukoethe/vigra/issues/436>.
+            (substitute* "vigranumpy/test/CMakeLists.txt"
+              (("test1\\.py") ""))
             #t)))
       #:configure-flags
         (list "-Wno-dev" ; suppress developer mode with lots of warnings
