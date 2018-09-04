@@ -6208,7 +6208,13 @@ representations of current time.")
         (base32 "0jkca97zyv23yyilp3jydcrzxqhyk27swhzh82llvban5zp8b21y"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck")))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "edit-distance.cabal"
+               (("QuickCheck >= 2\\.4 && <2\\.9")
+                "QuickCheck >= 2.4 && < 2.12")))))))
     (inputs
      `(("ghc-random" ,ghc-random)
        ("ghc-test-framework" ,ghc-test-framework)
