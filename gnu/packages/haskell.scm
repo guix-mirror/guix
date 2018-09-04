@@ -7278,7 +7278,7 @@ instance of @code{MonadBase} or @code{MonadBaseControl}.")
 (define ghc-system-filepath-bootstrap
   (package
     (name "ghc-system-filepath-bootstrap")
-    (version "0.4.13.4")
+    (version "0.4.14")
     (source
      (origin
        (method url-fetch)
@@ -7287,7 +7287,7 @@ instance of @code{MonadBase} or @code{MonadBaseControl}.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1yy5zsmmimhg6iaw9fmpwrxvxrgi5s6bfyqfihdsnx4bjvn7sp9l"))))
+         "14yras4pz2dh55xpwmazcgxijvi8913pjgzb9iw50mjq1lycwmhn"))))
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f))
