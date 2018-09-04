@@ -491,7 +491,7 @@ specifically mp3 files containing ID3 metadata (i.e. song info).  It provides a
 command-line tool (eyeD3) and a Python library (import eyed3) that can be used
 to write your own applications or plugins that are callable from the
 command-line tool.")
-    (home-page "http://eyed3.nicfit.net/")
+    (home-page "https://eyed3.readthedocs.io/en/latest/")
     (license license:gpl2+)))
 
 (define-public chromaprint
