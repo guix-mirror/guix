@@ -3889,6 +3889,9 @@ optimisation framework.")
         (base32
          "1y236jb72iab9ska1mc48z6yb0xgwmj45laaqdyjxksd84z7hbrb"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "196frl4akhfk7xf1nxzn8lmq99dxhzhsimanswn9yy7ym8zhki4i")))
     (inputs
      `(("ghc-vector" ,ghc-vector)))
     (native-inputs
