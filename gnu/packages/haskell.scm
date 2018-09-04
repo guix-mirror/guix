@@ -3525,8 +3525,15 @@ variety of traversals.")
          "1i6cp4b3w7sjk7y1dq3fh6bci2sm5h3lnbbaw9ln19nwncg2wwll"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck"
-                               "--allow-newer=hspec")))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "fgl.cabal"
+               (("QuickCheck >= 2\\.8 && < 2\\.10")
+                "QuickCheck >= 2.8 && < 2.12")
+               (("hspec >= 2\\.1 && < 2\\.5")
+                "hspec >= 2.1 && < 2.6")))))))
     (inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("ghc-quickcheck" ,ghc-quickcheck)))
