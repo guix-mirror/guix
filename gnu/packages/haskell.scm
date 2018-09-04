@@ -7455,7 +7455,14 @@ testing strategies.")
        ("ghc-random" ,ghc-random)
        ("ghc-quickcheck" ,ghc-quickcheck)))
     (arguments
-     `(#:tests? #f))
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "chell-quickcheck.cabal"
+               (("QuickCheck >= 2\\.3 && < 2\\.11")
+                "QuickCheck >= 2.3 && < 2.12")))))))
     (home-page "https://john-millikin.com/software/chell/")
     (synopsis "QuickCheck support for the Chell testing library")
     (description "More complex tests for @code{chell}.")
@@ -7475,6 +7482,14 @@ testing strategies.")
         (base32
          "1iicsys9igx7m7n4l2b8djardmjy2ah5ibzp7kzs758h460fq53a"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "chell-quickcheck.cabal"
+               (("QuickCheck >= 2\\.3 && < 2\\.11")
+                "QuickCheck >= 2.3 && < 2.12")))))))
     (inputs
      `(("ghc-chell" ,ghc-chell)
        ("ghc-chell-quickcheck-bootstrap" ,ghc-chell-quickcheck-bootstrap)
