@@ -355,10 +355,12 @@
        ("objconv"
         ,(origin
            (method url-fetch)
-           (uri "http://www.agner.org/optimize/objconv.zip")
+           ;; No versioned URL, see <https://www.agner.org/optimize/> for updates.
+           (uri "https://www.agner.org/optimize/objconv.zip")
+           (file-name "objconv-2018-08-15.zip")
            (sha256
             (base32
-             "1fi7qa2sd9vb35dvkgripjf0fayzg2qmff215f8agfqfiwd1g8qs"))))
+             "09y4pwxfs6fl47cyingbf95i2rxx74wmycl9fd4ldcgvpx9bzdrx"))))
        ("dsfmt"
         ,(origin
            (method url-fetch)
