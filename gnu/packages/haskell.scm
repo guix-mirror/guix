@@ -2078,9 +2078,13 @@ literals.")
         (base32
          "1vbzf0awb6zb456xf48za1kl22018646cfzq4frvxgb9ay97vk0d"))))
     (build-system haskell-build-system)
-    ;; Tests require older versions of testy.
-    (arguments `(#:tests? #f))
+    (arguments `(#:configure-flags (list "--allow-newer=tasty")))
     (inputs `(("zlib" ,zlib)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
     (home-page "https://hackage.haskell.org/package/zlib")
     (synopsis
      "Compression and decompression in the gzip and zlib formats")
