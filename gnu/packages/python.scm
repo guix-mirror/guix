@@ -3623,14 +3623,14 @@ functions.")
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "1.0.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scipy" version))
        (sha256
         (base32
-         "1fj0r7bg0cfk5clvl57ga06y9bfh05iwlv1dqqs1r6pd89wccfc7"))))
+         "1lfg686w6vv2m2dfs8v9d0bf2i18z7wz5vgzjnkgmpr4hi0550w7"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
