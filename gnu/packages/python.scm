@@ -14221,3 +14221,28 @@ regular-spaced values, etc.
 
 This Python package wraps the Blosc library.")
     (license license:bsd-3)))
+
+(define-public python-partd
+  (package
+    (name "python-partd")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "partd" version))
+       (sha256
+        (base32
+         "03s0i5qfgkx6y24bmfgyd5hnsjznkbbfafwb2khf7k9790f1yab7"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-blosc" ,python-blosc)
+       ("python-locket" ,python-locket)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-toolz" ,python-toolz)))
+    (home-page "https://github.com/dask/partd/")
+    (synopsis "Appendable key-value storage")
+    (description "Partd stores key-value pairs.  Values are raw bytes.  We
+append on old values.  Partd excels at shuffling operations.")
+    (license license:bsd-3)))
