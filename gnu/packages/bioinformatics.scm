@@ -1924,13 +1924,13 @@ files.")
 (define-public python-pybigwig
   (package
     (name "python-pybigwig")
-    (version "0.2.5")
+    (version "0.3.12")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pyBigWig" version))
               (sha256
                (base32
-                "0yrpdxg3y0sny25x4w22lv1k47jzccqjmg7j4bp0hywklvp0hg7d"))
+                "00w4kfnm2c5l7wdwr2nj1z5djv8kzgf7h1zhsgv6njff1rwr26g0"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1946,6 +1946,8 @@ files.")
              (substitute* "setup.py"
                (("libs=\\[") "libs=[\"BigWig\", "))
              #t)))))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
     (inputs
      `(("libbigwig" ,libbigwig)
        ("zlib" ,zlib)
