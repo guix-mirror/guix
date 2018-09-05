@@ -499,6 +499,33 @@ print, summary, plot, update, etc.
 processes.  Most of its code is based on the @code{psutil} Python package.")
     (license license:bsd-3)))
 
+(define-public r-pkgbuild
+  (package
+    (name "r-pkgbuild")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pkgbuild" version))
+       (sha256
+        (base32
+         "10iz8057mixl9j73pq2cbp4ib6dadfsgi3fcsjjm7l3wwb9issd9"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-callr" ,r-callr)
+       ("r-crayon" ,r-crayon)
+       ("r-desc" ,r-desc)
+       ("r-r6" ,r-r6)
+       ("r-rprojroot" ,r-rprojroot)
+       ("r-withr" ,r-withr)))
+    (home-page "https://github.com/r-pkgs/pkgbuild")
+    (synopsis "Find tools needed to build R packages")
+    (description
+     "This package provides functions used to build R packages.  It locates
+compilers needed to build R packages on various platforms and ensures the PATH
+is configured appropriately so R can use them.")
+    (license license:gpl3)))
+
 (define-public r-rcpp
   (package
     (name "r-rcpp")
