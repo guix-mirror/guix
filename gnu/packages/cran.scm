@@ -43,6 +43,25 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
 
+(define-public r-clipr
+  (package
+    (name "r-clipr")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "clipr" version))
+       (sha256
+        (base32
+         "061x84ildc7g1p91yw5iyj8lpqdf4hqv36as85lw8c6qv9ywbsqv"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/mdlincoln/clipr")
+    (synopsis "Read and write from the system clipboard")
+    (description
+     "This package provides simple utility functions to read from and write to
+the system clipboards.")
+    (license license:gpl3)))
+
 (define-public r-tidyverse
   (package
     (name "r-tidyverse")
