@@ -1816,22 +1816,23 @@ created using basic graphics.")
 (define-public r-broom
   (package
     (name "r-broom")
-    (version "0.4.5")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "broom" version))
        (sha256
         (base32
-         "1mrrqqw1bmjf2v88ziqwb5y86g29h0a3rsx2jpw0hrzrzb8i5kcb"))))
+         "1r3831vq0fd5sh5841xr844sghg88z7ws91hg4jgnzbbkxfjp4ag"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-dplyr" ,r-dplyr)
+     `(("r-backports" ,r-backports)
+       ("r-dplyr" ,r-dplyr)
        ("r-nlme" ,r-nlme)
-       ("r-plyr" ,r-plyr)
-       ("r-psych" ,r-psych)
+       ("r-purrr" ,r-purrr)
        ("r-reshape2" ,r-reshape2)
        ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)))
     (home-page "https://github.com/tidyverse/broom")
     (synopsis "Convert statistical analysis objects into tidy data frames")
