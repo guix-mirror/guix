@@ -4770,6 +4770,43 @@ label attributes, to convert labelled vectors into factors or numeric (and
 vice versa), or to deal with multiple declared missing values.")
     (license license:gpl3)))
 
+(define-public r-sjmisc
+  (package
+    (name "r-sjmisc")
+    (version "2.7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sjmisc" version))
+       (sha256
+        (base32
+         "11cy09k1d2y5wwqvafqxr01hzk4x68ji2pqlwj7fnpw27i3ap4q4"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-broom" ,r-broom)
+       ("r-crayon" ,r-crayon)
+       ("r-dplyr" ,r-dplyr)
+       ("r-haven" ,r-haven)
+       ("r-magrittr" ,r-magrittr)
+       ("r-pillar" ,r-pillar)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-sjlabelled" ,r-sjlabelled)
+       ("r-stringdist" ,r-stringdist)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-tidyselect" ,r-tidyselect)))
+    (home-page "https://github.com/strengejacke/sjmisc")
+    (synopsis "Data and variable transformation functions")
+    (description
+     "This package is a collection of miscellaneous utility functions,
+supporting data transformation tasks like recoding, dichotomizing or grouping
+variables, setting and replacing missing values.  The data transformation
+functions also support labelled data, and all integrate seamlessly into a
+tidyverse workflow.")
+    (license license:gpl3)))
+
 (define-public r-writexl
   (package
     (name "r-writexl")
