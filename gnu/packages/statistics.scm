@@ -5011,18 +5011,19 @@ decompositions of such matrices, and solutions of linear systems.")
 (define-public r-modelmetrics
   (package
     (name "r-modelmetrics")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
         (uri (cran-uri "ModelMetrics" version))
         (sha256
          (base32
-          "119xxmzb5biq7k1yxqsf0jmmarmfn6lds9x9hfgv593xlpym6za8"))))
+          "1sgdyrf6fbsn18gk8slir4a1yhv133kfhyg2crfs759nff4aw89h"))))
     (properties `((upstream-name . "ModelMetrics")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)))
+     `(("r-rcpp" ,r-rcpp)
+       ("r-data-table" ,r-data-table)))
     (home-page "https://cran.r-project.org/web/packages/ModelMetrics")
     (synopsis "Rapid calculation of model metrics")
     (description
