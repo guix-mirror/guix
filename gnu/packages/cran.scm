@@ -4691,6 +4691,28 @@ be added or removed.  When working with Word documents, a cursor can be used
 to help insert or delete content at a specific location in the document.")
     (license license:gpl3)))
 
+(define-public r-snakecase
+  (package
+    (name "r-snakecase")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "snakecase" version))
+       (sha256
+        (base32
+         "1g6xai53dl24ws0mwhqrkcv583ziaq505cv3z8v5dhjgy98kilyj"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-stringi" ,r-stringi)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/Tazinho/snakecase")
+    (synopsis "Convert strings into any case")
+    (description
+     "This package provides a consistent, flexible and easy to use tool to
+parse and convert strings into cases like snake or camel among others.")
+    (license license:gpl3)))
+
 (define-public r-writexl
   (package
     (name "r-writexl")
