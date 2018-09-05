@@ -2312,17 +2312,16 @@ training models for classification or ranking.")
 (define-public r-xts
   (package
     (name "r-xts")
-    (version "0.10-2")
+    (version "0.11-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xts" version))
        (sha256
         (base32
-         "1i11fczks4lh8rpi6xbm9bm7f3jpcp6xw03kv178g3n3361qhmc1"))))
+         "1v50yn4bsjzdyk7r90isn6dxmpkapillrhpx3gqsshd180vwzqk9"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-zoo" ,r-zoo)))
-    (native-inputs `(("gfortran" ,gfortran)))
     (home-page "https://github.com/joshuaulrich/xts")
     (synopsis "Extensible time series")
     (description
