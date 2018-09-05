@@ -4656,6 +4656,41 @@ Rd files and roxygen2 comments, as well as many functions for manipulation of
 references and Rd files.")
     (license license:gpl2+)))
 
+(define-public r-officer
+  (package
+    (name "r-officer")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "officer" version))
+       (sha256
+        (base32
+         "14b6ii9h3fi5g8ja929mfhxps9r7x78flqjdy437y9aygkhmiz2i"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-digest" ,r-digest)
+       ("r-htmltools" ,r-htmltools)
+       ("r-magrittr" ,r-magrittr)
+       ("r-r6" ,r-r6)
+       ("r-rcpp" ,r-rcpp)
+       ("r-uuid" ,r-uuid)
+       ("r-xml2" ,r-xml2)
+       ("r-zip" ,r-zip)))
+    (home-page "https://davidgohel.github.io/officer")
+    (synopsis "Manipulation of Word and PowerPoint documents")
+    (description
+     "This package provides tools to access and manipulate Word and PowerPoint
+documents from R.  The package focuses on tabular and graphical reporting from
+R; it also provides two functions that let users get document content into
+data objects.  A set of functions lets add and remove images, tables and
+paragraphs of text in new or existing documents.  When working with PowerPoint
+presentations, slides can be added or removed; shapes inside slides can also
+be added or removed.  When working with Word documents, a cursor can be used
+to help insert or delete content at a specific location in the document.")
+    (license license:gpl3)))
+
 (define-public r-writexl
   (package
     (name "r-writexl")
