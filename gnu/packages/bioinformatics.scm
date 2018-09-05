@@ -10211,14 +10211,14 @@ effort and encourages consistency.")
 (define-public r-ggbio
   (package
     (name "r-ggbio")
-    (version "1.28.0")
+    (version "1.28.5")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ggbio" version))
        (sha256
         (base32
-         "0wszh3w8yia5zw758h837i1q35k99sn444y2hahcxqbdmmlbf7in"))))
+         "19s2v40fycwf44fl3lm791y635xzw67b30sq2g0qq4a6phjik42d"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -10241,6 +10241,7 @@ effort and encourages consistency.")
        ("r-iranges" ,r-iranges)
        ("r-organismdbi" ,r-organismdbi)
        ("r-reshape2" ,r-reshape2)
+       ("r-rlang" ,r-rlang)
        ("r-rsamtools" ,r-rsamtools)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
