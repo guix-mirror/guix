@@ -9619,14 +9619,14 @@ structure (pcaRes) to provide a common interface to the PCA results.")
 (define-public r-msnbase
   (package
     (name "r-msnbase")
-    (version "2.6.1")
+    (version "2.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MSnbase" version))
        (sha256
         (base32
-         "0zrpx9r93q5ca2zdak5rs2m9sjm0wjdra1xfj3d3sx6p5gzfyg6n"))))
+         "15jhqg02ypmznc0wxksw56yij02csy678vqy531fdv86fsmypwa0"))))
     (properties `((upstream-name . "MSnbase")))
     (build-system r-build-system)
     (propagated-inputs
