@@ -13668,3 +13668,34 @@ the visualization of multiple contact matrices along with other types of data
 like genes, compartments, ChIP-seq coverage tracks (and in general any type of
 genomic scores), long range contacts and the visualization of viewpoints.")
     (license license:gpl3)))
+
+(define-public python-pygenometracks
+  (package
+    (name "python-pygenometracks")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyGenomeTracks" version))
+       (sha256
+        (base32
+         "1fws6bqsyy9kj3qiabhkqx4wd4i775gsxnhszqd3zg7w67sc1ic5"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-configparser" ,python-configparser)
+       ("python-future" ,python-future)
+       ("python-hicexplorer" ,python-hicexplorer)
+       ("python-intervaltree" ,python-intervaltree)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-pybigwig" ,python-pybigwig)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://pygenometracks.readthedocs.io")
+    (synopsis "Program and library to plot beautiful genome browser tracks")
+    (description
+     "This package aims to produce high-quality genome browser tracks that
+are highly customizable.  Currently, it is possible to plot: bigwig, bed (many
+options), bedgraph, links (represented as arcs), and Hi-C matrices.
+pyGenomeTracks can make plots with or without Hi-C data.")
+    (license license:gpl3+)))
