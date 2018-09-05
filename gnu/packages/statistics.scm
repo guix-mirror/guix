@@ -3511,13 +3511,13 @@ persistent (on the file system).")
 (define-public r-r-rsp
   (package
     (name "r-r-rsp")
-    (version "0.42.0")
+    (version "0.43.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.rsp" version))
               (sha256
                (base32
-                "1zcq0hzi0j7fvj2rs796a1i120wbr0387vck17rrd644awwbsbm0"))))
+                "0ax6781kfylx0acz0i3sqnpkxmrq73x29wwfic59ng7vj0ws0gyd"))))
     (properties `((upstream-name . "R.rsp")))
     (build-system r-build-system)
     (propagated-inputs
