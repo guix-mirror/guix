@@ -13615,3 +13615,56 @@ fasta subsequences.")
 storage format, called @code{cool}, used to store genomic interaction data,
 such as Hi-C contact matrices.")
     (license license:bsd-3)))
+
+(define-public python-hicexplorer
+  (package
+    (name "python-hicexplorer")
+    (version "2.1.4")
+    (source
+     (origin
+       ;; The latest version is not available on Pypi.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/deeptools/HiCExplorer.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0q5gpbzmrkvygqgw524q36b4nrivcmyi5v194vsx0qw7b3gcmq08"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'loosen-up-requirements
+           (lambda _
+             (substitute* "setup.py"
+               (("==") ">="))
+             #t)))))
+    (propagated-inputs
+     `(("python-biopython" ,python-biopython)
+       ("python-configparser" ,python-configparser)
+       ("python-cooler" ,python-cooler)
+       ("python-future" ,python-future)
+       ("python-intervaltree" ,python-intervaltree)
+       ("python-jinja2" ,python-jinja2)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pybigwig" ,python-pybigwig)
+       ("python-pysam" ,python-pysam)
+       ("python-scipy" ,python-scipy)
+       ("python-six" ,python-six)
+       ("python-tables" ,python-tables)
+       ("python-unidecode" ,python-unidecode)))
+    (home-page "http://hicexplorer.readthedocs.io")
+    (synopsis "Process, analyze and visualize Hi-C data")
+    (description
+     "HiCExplorer is a powerful and easy to use set of tools to process,
+normalize and visualize Hi-C data.  HiCExplorer facilitates the creation of
+contact matrices, correction of contacts, TAD detection, A/B compartments,
+merging, reordering or chromosomes, conversion from different formats
+including cooler and detection of long-range contacts.  Moreover, it allows
+the visualization of multiple contact matrices along with other types of data
+like genes, compartments, ChIP-seq coverage tracks (and in general any type of
+genomic scores), long range contacts and the visualization of viewpoints.")
+    (license license:gpl3)))
