@@ -162,20 +162,23 @@ package is a port of the Python package @code{cssselect}.")
 (define-public r-reprex
   (package
     (name "r-reprex")
-    (version "0.1.2")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reprex" version))
        (sha256
         (base32
-         "105d9vsmqfilgpw8psfb2wyiz1hvcycvh4cqhb3ab37lm3rcavvs"))))
+         "1l44pxjiz3g0jkk3v6rg5jps3llihfiah0qyv40s0bxvxa6gm8v9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
+       ("r-clipr" ,r-clipr)
        ("r-knitr" ,r-knitr)
+       ("r-rlang" ,r-rlang)
        ("r-rmarkdown" ,r-rmarkdown)
-       ("r-whisker" ,r-whisker)))
+       ("r-whisker" ,r-whisker)
+       ("r-withr" ,r-withr)))
     (home-page "https://github.com/tidyverse/reprex")
     (synopsis "Prepare reproducible R code examples for sharing")
     (description
