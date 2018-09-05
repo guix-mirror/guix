@@ -3850,14 +3850,14 @@ character vector.")
 (define-public r-googlesheets
   (package
     (name "r-googlesheets")
-    (version "0.2.2")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "googlesheets" version))
        (sha256
         (base32
-         "18q0xmxn09b52rmky7gr5flp0awndcnsgb7zcvkzvkrkvmwad52b"))))
+         "11q07nxys72wkxx9mawmjyf20gvwvrb7h3gpa73h6lgh2vgrwnv8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cellranger" ,r-cellranger)
@@ -3867,6 +3867,7 @@ character vector.")
        ("r-purrr" ,r-purrr)
        ("r-readr" ,r-readr)
        ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
        ("r-xml2" ,r-xml2)))
     (home-page "https://github.com/jennybc/googlesheets")
