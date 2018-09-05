@@ -5227,7 +5227,13 @@ occurrences of a substring (the first in case of overlaps) with another.")
          "1wj8kgjg5bn2yrs4zh9qfjv85cx6w998j9pi39yrbv305944mb9j"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=tasty")))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "integer-logarithms.cabal"
+               (("tasty >= 0\\.10 && < 1\\.1")
+                "tasty >= 0.10 && < 1.2")))))))
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-smallcheck" ,ghc-smallcheck)
