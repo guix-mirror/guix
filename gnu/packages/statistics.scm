@@ -4361,19 +4361,20 @@ data at that region, and avoids over-plotting.")
 (define-public r-ggthemes
   (package
     (name "r-ggthemes")
-    (version "3.5.0")
+    (version "4.0.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ggthemes" version))
               (sha256
                (base32
-                "0drbzzb4i5jq1579fx1wmgh87ybnswjn7srak2l8g771ip49xwb8"))))
+                "0y6570wv135sf7pv57l7bqilzw47rziaqx4vsk45pf1w4lmj0w8b"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-assertthat" ,r-assertthat)
-       ("r-colorspace" ,r-colorspace)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-scales" ,r-scales)))
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-purrr" ,r-purrr)
+       ("r-scales" ,r-scales)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)))
     (home-page "https://cran.rstudio.com/web/packages/ggthemes")
     (synopsis "Extra themes, scales and geoms for @code{ggplot2}")
     (description "This package provides extra themes and scales for
