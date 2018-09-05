@@ -2867,17 +2867,18 @@ automatically.")
 (define-public r-metap
   (package
     (name "r-metap")
-    (version "0.9")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "metap" version))
        (sha256
         (base32
-         "03vg0mb6q7j2z0pkxykbak0hcp6dcak7zxs1lw9hswz9kqrq5jhz"))))
+         "18rzvqfzyk8fn54gjvy2qd21nk9w69j7ihww477ma3f3ab6i982h"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-lattice" ,r-lattice)))
+     `(("r-lattice" ,r-lattice)
+       ("r-rdpack" ,r-rdpack)))
     (home-page "http://www.dewey.myzen.co.uk/meta/meta.html")
     (synopsis "Meta-analysis of significance values")
     (description
