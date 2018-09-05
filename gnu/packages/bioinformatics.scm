@@ -13504,3 +13504,31 @@ reference transcripts provided in a annotation file (also in GTF/GFF3 format).
        (list
         license:expat                   ;license for gffcompare
         license:artistic2.0)))))        ;license for gclib
+
+(define-public python-intervaltree
+  (package
+    (name "python-intervaltree")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "intervaltree" version))
+       (sha256
+        (base32
+         "02w191m9zxkcjqr1kv2slxvhymwhj3jnsyy3a28b837pi15q19dc"))))
+    (build-system python-build-system)
+    ;; FIXME: error when collecting tests
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-sortedcontainers" ,python-sortedcontainers)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/chaimleib/intervaltree")
+    (synopsis "Editable interval tree data structure")
+    (description
+     "This package provides a mutable, self-balancing interval tree
+implementation for Python.  Queries may be by point, by range overlap, or by
+range envelopment.  This library was designed to allow tagging text and time
+intervals, where the intervals include the lower bound but not the upper
+bound.")
+    (license license:asl2.0)))
