@@ -2912,14 +2912,14 @@ supports arbitrary vertex/edge/graph attributes.")
 (define-public r-statnet-common
   (package
     (name "r-statnet-common")
-    (version "4.1.2")
+    (version "4.1.4")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "statnet.common" version))
         (sha256
           (base32
-            "0h3g687214rlycca0fjrpy1lqbqsrginxqhmhl2mb2jinqqxcfgd"))))
+            "14dydm4c4dzc4v6ldxpn04q551nczzfablwibrd8lzgja8x9ksic"))))
     (properties
       `((upstream-name . "statnet.common")))
     (build-system r-build-system)
