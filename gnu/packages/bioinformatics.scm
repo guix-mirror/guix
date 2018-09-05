@@ -13578,3 +13578,40 @@ bgzipped text file that contains a pair of genomic coordinates per line.")
      "This package provides procedures for efficient pythonic random access to
 fasta subsequences.")
     (license license:bsd-3)))
+
+(define-public python-cooler
+  (package
+    (name "python-cooler")
+    (version "0.7.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cooler" version))
+       (sha256
+        (base32
+         "08k5nxnxa6qsbk15z5z0q01n28042k87wi4905hh95rzqib15mhx"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-biopython" ,python-biopython)
+       ("python-click" ,python-click)
+       ("python-cytoolz" ,python-cytoolz)
+       ("python-dask" ,python-dask)
+       ("python-h5py" ,python-h5py)
+       ("python-multiprocess" ,python-multiprocess)
+       ("python-pandas" ,python-pandas)
+       ("python-pyfaidx" ,python-pyfaidx)
+       ("python-pypairix" ,python-pypairix)
+       ("python-pysam" ,python-pysam)
+       ("python-scipy" ,python-scipy)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/mirnylab/cooler")
+    (synopsis "Sparse binary format for genomic interaction matrices")
+    (description
+     "Cooler is a support library for a sparse, compressed, binary persistent
+storage format, called @code{cool}, used to store genomic interaction data,
+such as Hi-C contact matrices.")
+    (license license:bsd-3)))
