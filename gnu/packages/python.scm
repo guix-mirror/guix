@@ -14018,3 +14018,30 @@ scalable way of keeping track of data together with learned annotations and
 reduces the code overhead typically encountered when using a mostly
 object-oriented library such as @code{scikit-learn}.")
     (license license:bsd-3)))
+
+(define-public python-dill
+  (package
+    (name "python-dill")
+    (version "0.2.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dill" version))
+       (sha256
+        (base32
+         "1cymzn9fxwdy33h21zkk4gqgzvd25110hh3zdqnvnwa3p52c4kb2"))))
+    (build-system python-build-system)
+    ;; FIXME: The check phase fails with "don't know how to make test".
+    (arguments '(#:tests? #f))
+    (home-page "https://pypi.org/project/dill")
+    (synopsis "Serialize all of Python")
+    (description "Dill extends Python's @code{pickle} module for serializing
+and de-serializing Python objects to the majority of the built-in Python
+types.  Dill provides the user the same interface as the @code{pickle} module,
+and also includes some additional features.  In addition to pickling Python
+objects, @code{dill} provides the ability to save the state of an interpreter
+session in a single command.  Hence, it would be feasable to save a
+interpreter session, close the interpreter, ship the pickled file to another
+computer, open a new interpreter, unpickle the session and thus continue from
+the saved state of the original interpreter session.")
+    (license license:bsd-3)))
