@@ -13532,3 +13532,27 @@ range envelopment.  This library was designed to allow tagging text and time
 intervals, where the intervals include the lower bound but not the upper
 bound.")
     (license license:asl2.0)))
+
+(define-public python-pypairix
+  (package
+    (name "python-pypairix")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pypairix" version))
+       (sha256
+        (base32
+         "0zs92b74s5v4xy2h16s15f3z6l4nnbw8x8zyif7xx5xpafjn0xss"))))
+    (build-system python-build-system)
+    ;; FIXME: the tests fail because test.support cannot be loaded:
+    ;; ImportError: cannot import name 'support'
+    (arguments '(#:tests? #f))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/4dn-dcic/pairix")
+    (synopsis "Support for querying pairix-indexed bgzipped text files")
+    (description
+     "Pypairix is a Python module for fast querying on a pairix-indexed
+bgzipped text file that contains a pair of genomic coordinates per line.")
+    (license license:expat)))
