@@ -4713,6 +4713,30 @@ to help insert or delete content at a specific location in the document.")
 parse and convert strings into cases like snake or camel among others.")
     (license license:gpl3)))
 
+(define-public r-prediction
+  (package
+    (name "r-prediction")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "prediction" version))
+       (sha256
+        (base32
+         "19d7312f5lkqfglfvlgssnvyw7gl161s0xradcry44r1i6qp05j1"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)))
+    (home-page "https://github.com/leeper/prediction")
+    (synopsis "Tidy, type-safe prediction methods")
+    (description
+     "This package provides the @code{prediction()} function, a type-safe
+alternative to @code{predict()} that always returns a data frame.  The package
+currently supports common model types (e.g., @code{\"lm\"}, @code{\"glm\"})
+from the @code{stats} package, as well as numerous other model classes from
+other add-on packages.")
+    (license license:expat)))
+
 (define-public r-writexl
   (package
     (name "r-writexl")
