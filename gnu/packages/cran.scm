@@ -526,6 +526,33 @@ compilers needed to build R packages on various platforms and ensures the PATH
 is configured appropriately so R can use them.")
     (license license:gpl3)))
 
+(define-public r-pkgload
+  (package
+    (name "r-pkgload")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pkgload" version))
+       (sha256
+        (base32
+         "1rjj229nq9fsl4ki4m75ybsavjgpqqhsr1zjzapwicsrxv6212px"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-desc" ,r-desc)
+       ("r-pkgbuild" ,r-pkgbuild)
+       ("r-rlang" ,r-rlang)
+       ("r-rprojroot" ,r-rprojroot)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-withr" ,r-withr)))
+    (home-page "https://github.com/r-lib/pkgload")
+    (synopsis "Simulate package installation and attach")
+    (description
+     "This package simulates the process of installing a package and then
+attaching it.  This is a key part of the @code{devtools} package as it allows
+you to rapidly iterate while developing a package.")
+    (license license:gpl3)))
+
 (define-public r-rcpp
   (package
     (name "r-rcpp")
