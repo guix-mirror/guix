@@ -4516,6 +4516,25 @@ patterned after functions in the Python @code{itertools} module, and others
 patterned after functions in the snow package.")
     (license license:gpl2)))
 
+(define-public r-polynom
+  (package
+    (name "r-polynom")
+    (version "1.3-9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "polynom" version))
+       (sha256
+        (base32
+         "1s4xxv5rvpigawknvq27v9vzvs83phfsj5h8mim2lmf5bj950nnk"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/polynom/")
+    (synopsis "Functions for univariate polynomial manipulations")
+    (description
+     "This package provides a collection of functions to implement a class for
+univariate polynomial manipulations.")
+    (license license:gpl2)))
+
 (define-public r-writexl
   (package
     (name "r-writexl")
