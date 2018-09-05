@@ -4180,18 +4180,19 @@ it.")
 (define-public r-codedepends
   (package
     (name "r-codedepends")
-    (version "0.5-3")
+    (version "0.6.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "CodeDepends" version))
        (sha256
         (base32
-         "03p82s0abca2jimzqvxdzykfzca7c7fhm5xsjxybcksr4gggr5sc"))))
+         "0l7kiv3awx50glf5cs841b4zzsff1ml90f0zr868ygvwsr4ps1hq"))))
     (properties `((upstream-name . "CodeDepends")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-codetools" ,r-codetools)
+       ("r-graph" ,r-graph)
        ("r-xml" ,r-xml)))
     (home-page "http://cran.r-project.org/web/packages/CodeDepends")
     (synopsis "Analysis of R code for reproducible research and code comprehension")
