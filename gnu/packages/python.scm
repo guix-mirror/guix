@@ -14067,3 +14067,25 @@ the saved state of the original interpreter session.")
 which supports the spawning of processes using the API of the standard
 library's @code{threading} module.")
     (license license:bsd-3)))
+
+(define-public python-toolz
+  (package
+    (name "python-toolz")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "toolz" version))
+       (sha256
+        (base32
+         "1j9i7fdjnx9dz35fdj5gvgxx6585ja9sxgaiv65if77nlxz0m7wj"))))
+    (build-system python-build-system)
+    ;; FIXME: tests cannot be computed: "Can't perform this operation for
+    ;; unregistered loader type"
+    (arguments '(#:tests? #f))
+    (home-page "https://github.com/pytoolz/toolz/")
+    (synopsis "List processing tools and functional utilities")
+    (description
+     "This package provides a set of utility functions for iterators,
+functions, and dictionaries.")
+    (license license:bsd-3)))
