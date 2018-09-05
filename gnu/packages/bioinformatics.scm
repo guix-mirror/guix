@@ -7256,13 +7256,13 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-edger
   (package
     (name "r-edger")
-    (version "3.22.2")
+    (version "3.22.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "edgeR" version))
               (sha256
                (base32
-                "07py2g6vg9jbflwhc1hnzr2silbinrjwxq3mkq30nzjgf0n0hrf3"))))
+                "0w3jv29n0kkaiig8dbbdqy2dkng8xfaihch82mj9ci5hphrx3nng"))))
     (properties `((upstream-name . "edgeR")))
     (build-system r-build-system)
     (propagated-inputs
