@@ -1817,6 +1817,20 @@ Note that 8sync is only available for Guile 2.2.")
                (base32
                 "0vjkg72ghgdgphzbjz9ig8al8271rq8974viknb2r1rg4lz92ld0"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'mode-guile-objects
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; .go files are installed to "lib/guile/X.Y/cache".
+                      ;; This phase moves them to "…/site-ccache".
+                      (let* ((out (assoc-ref outputs "out"))
+                             (lib (string-append out "/lib/guile"))
+                             (old (car (find-files lib "^ccache$"
+                                                   #:directories? #t)))
+                             (new (string-append (dirname old)
+                                                 "/site-ccache")))
+                        (rename-file old new)
+                        #t))))))
     (native-inputs
      `(("texinfo" ,texinfo)
        ("pkg-config" ,pkg-config)))
