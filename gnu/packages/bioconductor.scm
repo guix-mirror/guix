@@ -363,14 +363,14 @@ expressed genes in DNA microarray experiments.")
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.14.0")
+    (version "3.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "1kcnc3cnmrhdk1x7q3y6zsz09pgd3xn9xy1hfbxz48cajlb18ad0"))))
+         "1cn1hfc3nvsf2n3563lkmvwjxfbiygx7f84zk683p89gy7zi1gyj"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs
