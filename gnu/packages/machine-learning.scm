@@ -560,13 +560,13 @@ I/O.")
 (define-public r-adaptivesparsity
   (package
     (name "r-adaptivesparsity")
-    (version "1.4")
+    (version "1.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "AdaptiveSparsity" version))
               (sha256
                (base32
-                "1az7isvalf3kmdiycrfl6s9k9xqk22k1mc6rh8v0jmcz402qyq8z"))))
+                "0imr5m8mll9j6n4icsv6z9rl5kbnwsp9wvzrg7n90nnmcxq2cz91"))))
     (properties
      `((upstream-name . "AdaptiveSparsity")))
     (build-system r-build-system)
@@ -579,7 +579,9 @@ I/O.")
                (("PKG_LIBS=" prefix)
                 (string-append prefix "-larmadillo"))))))))
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)
+     `(("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
        ("r-rcpparmadillo" ,r-rcpparmadillo)))
     (inputs
      `(("armadillo" ,armadillo)))
