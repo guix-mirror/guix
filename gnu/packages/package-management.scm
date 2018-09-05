@@ -317,6 +317,7 @@ the Nix package manager.")
     (inputs
      `(("gnutls" ,gnutls)
        ("guile-git" ,guile-git)
+       ("guile-gcrypt" ,guile-gcrypt)
        ,@(fold alist-delete (package-inputs guix)
                '("boot-guile" "boot-guile/i686" "util-linux"))))
 
