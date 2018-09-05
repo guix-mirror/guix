@@ -1887,42 +1887,33 @@ other types of unwanted sequence from high-throughput sequencing reads.")
 (define-public libbigwig
   (package
     (name "libbigwig")
-    (version "0.1.4")
+    (version "0.4.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/dpryan79/libBigWig/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dpryan79/libBigWig.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "098rjh35pi4a9q83n8wiwvyzykjqj6l8q189p1xgfw4ghywdlvw1"))))
+                "0h2smg24v5srdcqzrmz2g23cmlp4va465mgx8r2z571sfz8pv454"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:tests? #f ; tests require access to the web
        #:make-flags
        (list "CC=gcc"
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-before 'check 'disable-curl-test
-           (lambda _
-             (substitute* "Makefile"
-               (("./test/testRemote.*") ""))
-             #t))
-         ;; This has been fixed with the upstream commit 4ff6959cd8a0, but
-         ;; there has not yet been a release containing this change.
-         (add-before 'install 'create-target-dirs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (mkdir-p (string-append out "/lib"))
-               (mkdir-p (string-append out "/include"))
-               #t))))))
+         (delete 'configure))))
     (inputs
      `(("zlib" ,zlib)
        ("curl" ,curl)))
     (native-inputs
-     `(("doxygen" ,doxygen)))
+     `(("doxygen" ,doxygen)
+       ;; Need for tests
+       ("python" ,python-2)))
     (home-page "https://github.com/dpryan79/libBigWig")
     (synopsis "C library for handling bigWig files")
     (description
