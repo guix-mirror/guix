@@ -1787,17 +1787,17 @@ and fast file reading.")
 (define-public r-xtable
   (package
     (name "r-xtable")
-    (version "1.8-2")
+    (version "1.8-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xtable" version))
        (sha256
         (base32
-         "0398qkpvlw3dv0myz4mjcyqwpwc2m31l127r8vdzwc71wb6s28qn"))))
+         "09f311gq9g7dzf8jdvcx72j11xb7p00jlg066jjbpa6pz3zv1cjk"))))
     (build-system r-build-system)
     (native-inputs
-     `(("r-knitr" ,r-knitr)))
+     `(("r-knitr" ,r-knitr))) ; for vignettes
     (home-page "http://xtable.r-forge.r-project.org/")
     (synopsis "Export R tables to LaTeX or HTML")
     (description
