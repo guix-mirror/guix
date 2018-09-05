@@ -2798,18 +2798,19 @@ display.")
 (define-public r-pillar
   (package
     (name "r-pillar")
-    (version "1.2.3")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pillar" version))
        (sha256
         (base32
-         "1rzhssprqgam1nq3s0f5rzxhxsq02azcghvxf6k8kmsmddf1n7f8"))))
+         "1q6arybmfqxhp5zqj1fri5pb8v7ywcv7bmgf81rrmgl892p4bn5f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
        ("r-crayon" ,r-crayon)
+       ("r-fansi" ,r-fansi)
        ("r-rlang" ,r-rlang)
        ("r-utf8" ,r-utf8)))
     (home-page "https://github.com/r-lib/pillar")
