@@ -4251,14 +4251,22 @@ series of numeric vectors/matrices and factors.")
 (define-public r-ztable
   (package
     (name "r-ztable")
-    (version "0.1.8")
+    (version "0.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ztable" version))
               (sha256
                (base32
-                "1hk5k9614n52dpfrhdws06w4gvwhnz8q47x4cwxx88qmrzm8z2m3"))))
+                "0g7khk5ifsdh9p31wlwh2l5mn1hzxzpv6qcn1wh34vsfjdmijjwy"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-flextable" ,r-flextable)
+       ("r-magrittr" ,r-magrittr)
+       ("r-moonbook" ,r-moonbook)
+       ("r-officer" ,r-officer)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-scales" ,r-scales)
+       ("r-stringr" ,r-stringr)))
     (home-page "https://cran.r-project.org/web/packages/ztable")
     (synopsis "Zebra-striped tables in LaTeX and HTML formats for R")
     (description
