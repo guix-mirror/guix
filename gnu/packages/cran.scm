@@ -2062,14 +2062,14 @@ impute compatibly with the substantive model.")
 (define-public r-pan
   (package
     (name "r-pan")
-    (version "1.4")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pan" version))
        (sha256
         (base32
-         "1p3nigmhrnlch86g89hn7l0wvkifx3k9n59g0psi95yck43kza76"))))
+         "1dk3jjj826p7xrz10qz04vyc068xnypg7bp0pj4c32z3da0xzh5d"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/web/packages/pan/")
