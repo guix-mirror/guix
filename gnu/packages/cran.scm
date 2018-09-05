@@ -4556,6 +4556,33 @@ Extract argument descriptions and other parts of the help pages of
 functions.")
     (license license:gpl2+)))
 
+(define-public r-rdpack
+  (package
+    (name "r-rdpack")
+    (version "0.9-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rdpack" version))
+       (sha256
+        (base32
+         "067w0w6kza0hkzcnx58danl83yfvl9yjacr47mnid2bg856gdd1b"))))
+    (properties `((upstream-name . "Rdpack")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bibtex" ,r-bibtex)
+       ("r-gbrd" ,r-gbrd)))
+    (home-page "https://github.com/GeoBosh/Rdpack")
+    (synopsis "Update and manipulate Rd documentation objects")
+    (description
+     "This package provides functions for manipulation of R documentation
+objects, including functions @code{reprompt()} and @code{ereprompt()} for
+updating Rd documentation for functions, methods and classes; it also includes
+Rd macros for citations and import of references from bibtex files for use in
+Rd files and roxygen2 comments, as well as many functions for manipulation of
+references and Rd files.")
+    (license license:gpl2+)))
+
 (define-public r-writexl
   (package
     (name "r-writexl")
