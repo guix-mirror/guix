@@ -14116,3 +14116,24 @@ functions, and dictionaries.")
 main differences are that @code{cytoolz} is faster and cytoolz offers a C API
 that is accessible to other projects developed in Cython.")
     (license license:bsd-3)))
+
+(define-public python-sortedcontainers
+  (package
+    (name "python-sortedcontainers")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sortedcontainers" version))
+       (sha256
+        (base32
+         "10hrk2k0hbf9x78vd3f0lj277m1yzfhzzxr0hja718liwb398wk0"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-tox" ,python-tox)))
+    (home-page "http://www.grantjenks.com/docs/sortedcontainers/")
+    (synopsis "Sorted List, Sorted Dict, Sorted Set")
+    (description
+     "This package provides a sorted collections library, written in
+pure-Python.")
+    (license license:asl2.0)))
