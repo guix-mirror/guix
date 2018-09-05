@@ -4826,6 +4826,35 @@ tidyverse workflow.")
 hypothesis of normality.")
     (license license:gpl2+)))
 
+(define-public r-moonbook
+  (package
+    (name "r-moonbook")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "moonBook" version))
+       (sha256
+        (base32
+         "0hys56mwbm776ff7dibi8wzyf69qiais9rs1jazv79lk6h56s9s6"))))
+    (properties `((upstream-name . "moonBook")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-magrittr" ,r-magrittr)
+       ("r-nortest" ,r-nortest)
+       ("r-purrr" ,r-purrr)
+       ("r-sjmisc" ,r-sjmisc)
+       ("r-stringr" ,r-stringr)
+       ("r-survival" ,r-survival)))
+    (home-page "https://github.com/cardiomoon/moonBook")
+    (synopsis "Functions and datasets for the book by Keon-Woong Moon")
+    (description
+     "This package provides several analysis-related functions for the book
+entitled \"R statistics and graph for medical articles\" (written in Korean),
+version 1, by Keon-Woong Moon with Korean demographic data with several plot
+functions.")
+    (license license:gpl2)))
+
 (define-public r-writexl
   (package
     (name "r-writexl")
