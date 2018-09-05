@@ -14171,3 +14171,22 @@ is especially useful for cluster computing where Python expressions are
 shipped over the network to execute on remote hosts, possibly close to the
 data.")
     (license license:bsd-3)))
+
+(define-public python-locket
+  (package
+    (name "python-locket")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "locket" version))
+       (sha256
+        (base32
+         "1d4z2zngrpqkrfhnd4yhysh66kjn4mblys2l06sh5dix2p0n7vhz"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/mwilliamson/locket.py")
+    (synopsis "File-based locks for Python")
+    (description
+     "Locket implements a lock that can be used by multiple processes provided
+they use the same path.")
+    (license license:bsd-2)))
