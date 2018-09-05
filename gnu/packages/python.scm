@@ -14190,3 +14190,34 @@ data.")
      "Locket implements a lock that can be used by multiple processes provided
 they use the same path.")
     (license license:bsd-2)))
+
+(define-public python-blosc
+  (package
+    (name "python-blosc")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "blosc" version))
+       (sha256
+        (base32
+         "1cm91c6r431yla2mbs4895bgiianjf30dfz14vvv99dslygd65jw"))))
+    (build-system python-build-system)
+    ;; FIXME: all tests pass, but then this error is printed:
+    ;; TypeError: calling <function run at 0x7ffff2568d90> returned None, not a test
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/blosc/python-blosc")
+    (synopsis "Python wrapper for the Blosc data compressor library")
+    (description "Blosc is a high performance compressor optimized for binary
+data.  It has been designed to transmit data to the processor cache faster
+than the traditional, non-compressed, direct memory fetch approach via a
+@code{memcpy()} system call.
+
+Blosc works well for compressing numerical arrays that contains data with
+relatively low entropy, like sparse data, time series, grids with
+regular-spaced values, etc.
+
+This Python package wraps the Blosc library.")
+    (license license:bsd-3)))
