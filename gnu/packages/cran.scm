@@ -4855,6 +4855,37 @@ version 1, by Keon-Woong Moon with Korean demographic data with several plot
 functions.")
     (license license:gpl2)))
 
+(define-public r-flextable
+  (package
+    (name "r-flextable")
+    (version "0.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "flextable" version))
+       (sha256
+        (base32
+         "09j2y0z7rkc0w1cl9pp1cpk6fnzzfr6245mxa3ca42z9k2cy2jfl"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gdtools" ,r-gdtools)
+       ("r-htmltools" ,r-htmltools)
+       ("r-knitr" ,r-knitr)
+       ("r-officer" ,r-officer)
+       ("r-r6" ,r-r6)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-stringr" ,r-stringr)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://davidgohel.github.io/flextable")
+    (synopsis "Functions for tabular reporting")
+    (description
+     "This package provides tools to create pretty tables for HTML documents
+and other formats.  Functions are provided to let users create tables, modify
+and format their content.  It extends the @code{officer} package and can be
+used within R markdown documents when rendering to HTML and to Word
+documents.")
+    (license license:gpl3)))
+
 (define-public r-writexl
   (package
     (name "r-writexl")
