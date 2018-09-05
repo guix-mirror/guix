@@ -7787,25 +7787,6 @@ extracting the desired features in a convenient format.")
 information about the latest version of the Gene Ontologies.")
     (license license:artistic2.0)))
 
-(define-public r-graph
-  (package
-    (name "r-graph")
-    (version "1.58.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "graph" version))
-              (sha256
-               (base32
-                "1zx445lk36g1s6i5dbhhf00nzzazyklfjxxjfax6q8hnhvgm9759"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)))
-    (home-page "https://bioconductor.org/packages/graph")
-    (synopsis "Handle graph data structures in R")
-    (description
-     "This package implements some simple graph handling capabilities for R.")
-    (license license:artistic2.0)))
-
 (define-public r-topgo
   (package
     (name "r-topgo")
