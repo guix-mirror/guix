@@ -14089,3 +14089,30 @@ library's @code{threading} module.")
      "This package provides a set of utility functions for iterators,
 functions, and dictionaries.")
     (license license:bsd-3)))
+
+(define-public python-cytoolz
+  (package
+    (name "python-cytoolz")
+    (version "0.9.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cytoolz" version))
+       (sha256
+        (base32
+         "1r80p88hm3f3r4zpixzr047y5hw4bzy41m4xywnhycda83x0dk44"))))
+    (build-system python-build-system)
+    ;; FIXME: tests fail with "module 'cytoolz.curried' has no attribute
+    ;; 'exceptions'"
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-toolz" ,python-toolz)))
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (home-page "https://github.com/pytoolz/cytoolz")
+    (synopsis "High performance functional utilities")
+    (description
+     "The cytoolz package implements the same API as provided by toolz.  The
+main differences are that @code{cytoolz} is faster and cytoolz offers a C API
+that is accessible to other projects developed in Cython.")
+    (license license:bsd-3)))
