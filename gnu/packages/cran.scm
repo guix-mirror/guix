@@ -4737,6 +4737,39 @@ from the @code{stats} package, as well as numerous other model classes from
 other add-on packages.")
     (license license:expat)))
 
+(define-public r-sjlabelled
+  (package
+    (name "r-sjlabelled")
+    (version "1.0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sjlabelled" version))
+       (sha256
+        (base32
+         "0xizj7mrhnbn8kwjgm076si9w68a7lgrx4vj1sbqmv9jx055h8wv"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-broom" ,r-broom)
+       ("r-dplyr" ,r-dplyr)
+       ("r-haven" ,r-haven)
+       ("r-magrittr" ,r-magrittr)
+       ("r-prediction" ,r-prediction)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-snakecase" ,r-snakecase)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyselect" ,r-tidyselect)))
+    (home-page "https://github.com/strengejacke/sjlabelled")
+    (synopsis "Labelled data utility functions")
+    (description
+     "This package provides a collection of functions dealing with labelled
+data, like reading and writing data between R and other statistical software
+packages.  This includes easy ways to get, set or change value and variable
+label attributes, to convert labelled vectors into factors or numeric (and
+vice versa), or to deal with multiple declared missing values.")
+    (license license:gpl3)))
+
 (define-public r-writexl
   (package
     (name "r-writexl")
