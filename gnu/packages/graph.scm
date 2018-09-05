@@ -130,14 +130,14 @@ more.")
 (define-public r-diffusionmap
   (package
     (name "r-diffusionmap")
-    (version "1.1-0")
+    (version "1.1-0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "diffusionMap" version))
        (sha256
         (base32
-         "1l985q2hfc8ss5afajik4p25dx628yikvhdimz5s0pql800q2yv3"))))
+         "11l4kbciawvli5nlsi4qaf8afmgk5xgqiqpdyhvaqri5mx0zhk5j"))))
     (properties `((upstream-name . "diffusionMap")))
     (build-system r-build-system)
     (propagated-inputs
