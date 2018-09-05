@@ -3743,13 +3743,13 @@ features present in other programming languages.")
 (define-public r-plotly
   (package
     (name "r-plotly")
-    (version "4.7.1")
+    (version "4.8.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotly" version))
               (sha256
                (base32
-                "0wj9lw7w28z8w9ip9vadv6sydjhqyg65kfiai9m3bndzz50b1m3w"))))
+                "19p8pa03q9mw5vaan7r56xgd13d90ssiz0flbrkvpfrir2105ybq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
@@ -3765,8 +3765,10 @@ features present in other programming languages.")
        ("r-jsonlite" ,r-jsonlite)
        ("r-lazyeval" ,r-lazyeval)
        ("r-magrittr" ,r-magrittr)
+       ("r-promises" ,r-promises)
        ("r-purrr" ,r-purrr)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
