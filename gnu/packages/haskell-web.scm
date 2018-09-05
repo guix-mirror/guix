@@ -852,18 +852,6 @@ for Haskell, optimized for ease of use and high performance.  (A note on
 naming: in Greek mythology, Aeson was the father of Jason.)")
     (license license:bsd-3)))
 
-(define-public ghc-aeson-for-pandoc-1
-  (package (inherit ghc-aeson)
-    (version "1.1.2.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/aeson/aeson-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1zy5z8pzvh53qkjm0nm3f4rwqfqg3867ck8ncd6mrxpcyvxqqj1p"))))))
-
 (define-public ghc-aeson-pretty
   (package
     (name "ghc-aeson-pretty")
