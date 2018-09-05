@@ -207,13 +207,18 @@ INSTANCES."
             (guix-channel? (channel-instance-channel instance)))
           instances))
 
+  ;; Guile-Gcrypt is a dependency of CORE-INSTANCE.
+  (define guile-gcrypt
+    (module-ref (resolve-interface '(gnu packages gnupg))
+                'guile-gcrypt))
+
   (mlet %store-monad ((core (build-channel-instance core-instance)))
     (mapm %store-monad
           (lambda (instance)
             (if (eq? instance core-instance)
                 (return core)
                 (build-channel-instance instance
-                                        (list core))))
+                                        (list core guile-gcrypt))))
           instances)))
 
 (define (whole-package-for-legacy name modules)
