@@ -2877,6 +2877,17 @@ aimed particularly at dealing efficiently with network protocols and
 complicated text/binary file formats.")
     (license license:bsd-3)))
 
+(define-public ghc-attoparsec-bootstrap
+  (package
+    (inherit ghc-attoparsec)
+    (name "ghc-attoparsec-bootstrap")
+    (arguments `(#:tests? #f))
+    (inputs
+     `(("ghc-scientific" ,ghc-scientific-bootstrap)
+       ("ghc-text" ,ghc-text)))
+    (native-inputs '())
+    (properties '(hidden? #t))))
+
 (define-public ghc-zip-archive
   (package
     (name "ghc-zip-archive")
@@ -5227,6 +5238,14 @@ occurrences of a substring (the first in case of overlaps) with another.")
 in migrated modules.")
     (license license:expat)))
 
+(define-public ghc-integer-logarithms-bootstrap
+  (package
+    (inherit ghc-integer-logarithms)
+    (name "ghc-integer-logarithms-bootstrap")
+    (arguments `(#:tests? #f))
+    (native-inputs '())
+    (properties '(hidden? #t))))
+
 (define-public ghc-scientific
   (package
     (name "ghc-scientific")
@@ -5263,6 +5282,19 @@ and space efficient.  They are represented using
 @uref{https://en.wikipedia.org/wiki/Scientific_notation, scientific
 notation}.")
     (license license:bsd-3)))
+
+(define-public ghc-scientific-bootstrap
+  (package
+    (inherit ghc-scientific)
+    (name "ghc-scientific-bootstrap")
+    (arguments `(#:tests? #f))
+    (inputs
+     `(("ghc-integer-logarithms" ,ghc-integer-logarithms-bootstrap)
+       ("ghc-text" ,ghc-text)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-primitive" ,ghc-primitive)))
+    (native-inputs '())
+    (properties '(hidden? #t))))
 
 (define-public ghc-boxes
   (package
@@ -10198,5 +10230,15 @@ native wcwidth and a command line tool to examine the widths assigned by it.
 The command line tool can compile a width table to Haskell code that assigns
 widths to the Char type.")
     (license license:bsd-3)))
+
+(define-public ghc-wcwidth-bootstrap
+  (package
+    (inherit ghc-wcwidth)
+    (name "ghc-wcwidth-bootstrap")
+    (inputs
+     `(("ghc-setlocale" ,ghc-setlocale)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-attoparsec" ,ghc-attoparsec-bootstrap)))
+    (properties '(hidden? #t))))
 
 ;;; haskell.scm ends here

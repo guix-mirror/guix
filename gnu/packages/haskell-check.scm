@@ -181,7 +181,7 @@ timer functions of different operating systems via a unified API.")
 (define-public ghc-tasty
   (package
     (name "ghc-tasty")
-    (version "0.11.0.4")
+    (version "1.1.0.3")
     (source
      (origin
        (method url-fetch)
@@ -191,18 +191,18 @@ timer functions of different operating systems via a unified API.")
              ".tar.gz"))
        (sha256
         (base32
-         "05pxjzgbgjdn7477xry0ssjrnmnsydqiq6nm6ck8n2da1baliqp0"))))
+         "14riid753hjqr6lca1kgxpnvq0wykf0k3qc5jpag42hh8bszav22"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stm" ,ghc-stm)
        ("ghc-tagged" ,ghc-tagged)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-       ("ghc-regex-tdfa-rc" ,ghc-regex-tdfa-rc)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-unbounded-delays" ,ghc-unbounded-delays)
        ("ghc-async" ,ghc-async)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-clock-bootstrap" ,ghc-clock-bootstrap)))
+       ("ghc-clock-bootstrap" ,ghc-clock-bootstrap)
+       ("ghc-wcwidth" ,ghc-wcwidth-bootstrap)))
     (home-page "http://documentup.com/feuerbach/tasty")
     (synopsis "Modern and extensible testing framework")
     (description "Tasty is a modern testing framework for Haskell.  It lets
