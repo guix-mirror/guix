@@ -2870,7 +2870,7 @@ with slicing and Clang-style colored diagnostics.")
     ;; re-enable them.
     (arguments `(#:tests? #f))
     (inputs
-     `(("ghc-scientific-bootstrap" ,ghc-scientific-bootstrap)
+     `(("ghc-scientific" ,ghc-scientific)
        ("ghc-text" ,ghc-text)))
     (native-inputs
      `(("ghc-tasty" ,ghc-tasty)
@@ -2884,13 +2884,6 @@ with slicing and Clang-style colored diagnostics.")
 aimed particularly at dealing efficiently with network protocols and
 complicated text/binary file formats.")
     (license license:bsd-3)))
-
-(define ghc-attoparsec-bootstrap
-  (package
-    (inherit ghc-attoparsec)
-    (name "ghc-attoparsec-bootstrap")
-    (arguments '(#:tests? #f))
-    (native-inputs '())))
 
 (define-public ghc-zip-archive
   (package
@@ -5221,13 +5214,6 @@ occurrences of a substring (the first in case of overlaps) with another.")
 in migrated modules.")
     (license license:expat)))
 
-(define ghc-integer-logarithms-bootstrap
-  (package
-    (inherit ghc-integer-logarithms)
-    (name "ghc-integer-logarithms-bootstrap")
-    (arguments `(#:tests? #f))
-    (native-inputs '())))
-
 (define-public ghc-scientific
   (package
     (name "ghc-scientific")
@@ -5244,7 +5230,7 @@ in migrated modules.")
          "03ql2f0ac8bsl524idy9xxa3kxisb2sj3avflzw580j5hzy0m397"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-integer-logarithms-bootstrap" ,ghc-integer-logarithms-bootstrap)
+     `(("ghc-integer-logarithms" ,ghc-integer-logarithms)
        ("ghc-text" ,ghc-text)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-primitive" ,ghc-primitive)))
@@ -5264,13 +5250,6 @@ and space efficient.  They are represented using
 @uref{https://en.wikipedia.org/wiki/Scientific_notation, scientific
 notation}.")
     (license license:bsd-3)))
-
-(define ghc-scientific-bootstrap
-  (package
-    (inherit ghc-scientific)
-    (name "ghc-scientific-bootstrap")
-    (arguments `(#:tests? #f))
-    (native-inputs '())))
 
 (define-public ghc-boxes
   (package
@@ -10195,7 +10174,7 @@ backends provided by the @code{Cairo} and @code{Diagrams} libraries.")
     (inputs
      `(("ghc-setlocale" ,ghc-setlocale)
        ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-attoparsec-bootstrap" ,ghc-attoparsec-bootstrap)))
+       ("ghc-attoparsec" ,ghc-attoparsec)))
     (home-page "https://github.com/solidsnack/wcwidth/")
     (synopsis "Haskell bindings to wcwidth")
     (description "This package provides Haskell bindings to your system's
