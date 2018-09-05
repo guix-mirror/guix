@@ -4411,14 +4411,14 @@ and adds the annotation to the plot.")
 (define-public r-ggpubr
   (package
     (name "r-ggpubr")
-    (version "0.1.7")
+    (version "0.1.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggpubr" version))
        (sha256
         (base32
-         "110ny8p41kmbz0a5rl0mv9cqpjkx6yr3ybflp1r0fmcvhwv7cr3i"))))
+         "0psl2zndm4wk6nnj1nv305islpxfvfgd87gjh2ph8yqn4mxpnfi1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cowplot" ,r-cowplot)
@@ -4427,8 +4427,10 @@ and adds the annotation to the plot.")
        ("r-ggrepel" ,r-ggrepel)
        ("r-ggsci" ,r-ggsci)
        ("r-ggsignif" ,r-ggsignif)
+       ("r-glue" ,r-glue)
        ("r-gridextra" ,r-gridextra)
        ("r-magrittr" ,r-magrittr)
+       ("r-polynom" ,r-polynom)
        ("r-purrr" ,r-purrr)
        ("r-scales" ,r-scales)
        ("r-tidyr" ,r-tidyr)))
