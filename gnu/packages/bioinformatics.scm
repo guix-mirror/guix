@@ -10169,14 +10169,14 @@ the fact that each of these packages implements a select methods.")
 (define-public r-biovizbase
   (package
     (name "r-biovizbase")
-    (version "1.28.0")
+    (version "1.28.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "biovizBase" version))
        (sha256
         (base32
-         "0lkiqdr3ics6hgv47lwkykcy761823bbkhffbn4ykyfzyqwl4p67"))))
+         "0wc45j3hfn01i44bkkxjj3n8b8xzbkkcdv35mrkzb1f9yprkf8gq"))))
     (properties `((upstream-name . "biovizBase")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10193,6 +10193,7 @@ the fact that each of these packages implements a select methods.")
        ("r-hmisc" ,r-hmisc)
        ("r-iranges" ,r-iranges)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rlang" ,r-rlang)
        ("r-rsamtools" ,r-rsamtools)
        ("r-s4vectors" ,r-s4vectors)
        ("r-scales" ,r-scales)
