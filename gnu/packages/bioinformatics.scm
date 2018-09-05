@@ -13556,3 +13556,25 @@ bound.")
      "Pypairix is a Python module for fast querying on a pairix-indexed
 bgzipped text file that contains a pair of genomic coordinates per line.")
     (license license:expat)))
+
+(define-public python-pyfaidx
+  (package
+    (name "python-pyfaidx")
+    (version "0.5.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyfaidx" version))
+       (sha256
+        (base32
+         "0y5zyjksj1rdglj601xd2bbni5abhdh622y3ck76chyzxz9z4rx8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (home-page "http://mattshirley.com")
+    (synopsis "Random access to fasta subsequences")
+    (description
+     "This package provides procedures for efficient pythonic random access to
+fasta subsequences.")
+    (license license:bsd-3)))
