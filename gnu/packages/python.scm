@@ -14045,3 +14045,25 @@ interpreter session, close the interpreter, ship the pickled file to another
 computer, open a new interpreter, unpickle the session and thus continue from
 the saved state of the original interpreter session.")
     (license license:bsd-3)))
+
+(define-public python-multiprocess
+  (package
+    (name "python-multiprocess")
+    (version "0.70.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "multiprocess" version))
+       (sha256
+        (base32
+         "1ip5caz67b3q0553mr8gm8xwsb8x500jn8ml0gihgyfy52m2ypcq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dill" ,python-dill)))
+    (home-page "https://pypi.org/project/multiprocess")
+    (synopsis "Multiprocessing and multithreading in Python")
+    (description
+     "This package is a fork of the multiprocessing Python package, a package
+which supports the spawning of processes using the API of the standard
+library's @code{threading} module.")
+    (license license:bsd-3)))
