@@ -4807,6 +4807,25 @@ functions also support labelled data, and all integrate seamlessly into a
 tidyverse workflow.")
     (license license:gpl3)))
 
+(define-public r-nortest
+  (package
+    (name "r-nortest")
+    (version "1.0-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nortest" version))
+       (sha256
+        (base32
+         "17r0wpz72z9312c70nwi1i1kp1v9fm1h6jg7q5cx1mc1h420m1d3"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/nortest/")
+    (synopsis "Tests for normality")
+    (description
+     "This package provides five omnibus tests for testing the composite
+hypothesis of normality.")
+    (license license:gpl2+)))
+
 (define-public r-writexl
   (package
     (name "r-writexl")
