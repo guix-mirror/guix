@@ -1981,6 +1981,30 @@ can be computed between character vectors while taking proper care of encoding
 or between integer vectors representing generic sequences.")
     (license license:gpl3+)))
 
+(define-public r-ucminf
+  (package
+    (name "r-ucminf")
+    (version "1.1-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ucminf" version))
+       (sha256
+        (base32
+         "01vggwg1w71k98qs6fhb0x1843vi322mf4g3hbclks94kcpkisx2"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/ucminf/")
+    (synopsis "General-purpose unconstrained non-linear optimization")
+    (description
+     "This package provides an implementation of an algorithm for
+general-purpose unconstrained non-linear optimization.  The algorithm is of
+quasi-Newton type with BFGS updating of the inverse Hessian and soft line
+search with a trust region type monitoring of the input to the line search
+algorithm.  The interface of @code{ucminf} is designed for easy interchange
+with the package @code{optim}.")
+    (license license:gpl2+)))
+
 (define-public r-jomo
   (package
     (name "r-jomo")
