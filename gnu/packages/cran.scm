@@ -3141,21 +3141,20 @@ University Press, 2000.")
 (define-public r-tsa
   (package
     (name "r-tsa")
-    (version "1.01")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "TSA" version))
        (sha256
         (base32
-         "0cm97hwxm6vfgy9mc3kgwq6dnmn86p8a4avnfjbai048qnwrn6hx"))))
+         "0gjfqibwdznz0nka95k4fjm935svxjpnqfywwz403crn2lh30h6q"))))
     (properties `((upstream-name . "TSA")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-leaps" ,r-leaps)
        ("r-locfit" ,r-locfit)
-       ("r-mgcv" ,r-mgcv)
-       ("r-tseries" ,r-tseries)))
+       ("r-mgcv" ,r-mgcv)))
     (home-page "http://www.stat.uiowa.edu/~kchan/TSA.htm")
     (synopsis "Time series analysis")
     (description
