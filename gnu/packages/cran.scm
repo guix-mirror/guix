@@ -193,17 +193,18 @@ such as copy/paste from an R session.")
 (define-public r-callr
   (package
     (name "r-callr")
-    (version "2.0.4")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "callr" version))
        (sha256
         (base32
-         "1053qqq632z94pqq2v5dynjpgyv1b1c8zvidmcllw7zn8zha8gqf"))))
+         "1rxbxy6kn7dj90z9hpppr9cnpvnxzknba2dwrdp0lrk5dh462qz3"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-r6" ,r-r6)
+     `(("r-base64enc" ,r-base64enc)
+       ("r-r6" ,r-r6)
        ("r-processx" ,r-processx)))
     (home-page "https://github.com/r-lib/callr#readme")
     (synopsis "Call R from R")
