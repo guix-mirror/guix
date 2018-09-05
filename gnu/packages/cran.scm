@@ -4424,6 +4424,27 @@ packages.  It contains also functions for simplifying some clustering analysis
 steps and provides ggplot2-based elegant data visualization.")
     (license license:gpl2)))
 
+(define-public r-fansi
+  (package
+    (name "r-fansi")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fansi" version))
+       (sha256
+        (base32
+         "135qj7bcc3mwn0vg55hiiadf66lx6zaxvkicfmfw9x0zr7ah2r6x"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://github.com/brodieG/fansi")
+    (synopsis "ANSI control sequence aware string functions")
+    (description
+     "This package provides counterparts to R string manipulation functions
+that account for the effects of ANSI text formatting control sequences.")
+    (license license:gpl2+)))
+
 (define-public r-nbclust
   (package
     (name "r-nbclust")
