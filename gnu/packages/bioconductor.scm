@@ -379,6 +379,34 @@ expressed genes in DNA microarray experiments.")
      "This package implements some simple graph handling capabilities for R.")
     (license license:artistic2.0)))
 
+(define-public r-codedepends
+  (package
+    (name "r-codedepends")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "CodeDepends" version))
+       (sha256
+        (base32
+         "0l7kiv3awx50glf5cs841b4zzsff1ml90f0zr868ygvwsr4ps1hq"))))
+    (properties `((upstream-name . "CodeDepends")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-codetools" ,r-codetools)
+       ("r-graph" ,r-graph)
+       ("r-xml" ,r-xml)))
+    (home-page "http://cran.r-project.org/web/packages/CodeDepends")
+    (synopsis "Analysis of R code for reproducible research and code comprehension")
+    (description
+     "This package provides tools for analyzing R expressions or blocks of
+code and determining the dependencies between them.  It focuses on R scripts,
+but can be used on the bodies of functions.  There are many facilities
+including the ability to summarize or get a high-level view of code,
+determining dependencies between variables, code improvement suggestions.")
+    ;; Any version of the GPL
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
