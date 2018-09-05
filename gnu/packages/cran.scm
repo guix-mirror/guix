@@ -2005,6 +2005,33 @@ algorithm.  The interface of @code{ucminf} is designed for easy interchange
 with the package @code{optim}.")
     (license license:gpl2+)))
 
+(define-public r-ordinal
+  (package
+    (name "r-ordinal")
+    (version "2018.8-25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ordinal" version))
+       (sha256
+        (base32
+         "03cv9hcrw8j3lhamzhz8sk2p3ns4cw9z41x49h301k2b3pajv43h"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-numderiv" ,r-numderiv)
+       ("r-ucminf" ,r-ucminf)))
+    (home-page "https://github.com/runehaubo/ordinal")
+    (synopsis "Regression models for ordinal data")
+    (description
+     "This package provides an implementation of cumulative link (mixed)
+models also known as ordered regression models, proportional odds models,
+proportional hazards models for grouped survival times and ordered models.
+Estimation is via maximum likelihood and mixed models are fitted with the
+Laplace approximation and adaptive Gauss-Hermite quadrature.")
+    (license license:gpl2+)))
+
 (define-public r-jomo
   (package
     (name "r-jomo")
