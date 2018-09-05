@@ -4535,6 +4535,27 @@ patterned after functions in the snow package.")
 univariate polynomial manipulations.")
     (license license:gpl2)))
 
+(define-public r-gbrd
+  (package
+    (name "r-gbrd")
+    (version "0.4-11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gbRd" version))
+       (sha256
+        (base32
+         "06x97rw5i6v6cgjxkfhxnw4dn7lghn5q6ra7ri5ag1x9dkfzcl82"))))
+    (properties `((upstream-name . "gbRd")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/gbRd/")
+    (synopsis "Utilities for processing Rd objects and files")
+    (description
+     "This package provides utilities for processing Rd objects and files.
+Extract argument descriptions and other parts of the help pages of
+functions.")
+    (license license:gpl2+)))
+
 (define-public r-writexl
   (package
     (name "r-writexl")
