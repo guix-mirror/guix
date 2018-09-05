@@ -6494,17 +6494,18 @@ needs.  It provides a very simple API to create sockets to a destination with
 the choice of SSL/TLS, and SOCKS.")
     (license license:bsd-3)))
 
-(define-public ghc-skylighting
+(define-public ghc-skylighting-core
   (package
-    (name "ghc-skylighting")
-    (version "0.5.1")
+    (name "ghc-skylighting-core")
+    (version "0.7.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://hackage.haskell.org/package/skylighting-"
-                                  version "/skylighting-" version ".tar.gz"))
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "skylighting-core/skylighting-core-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "0l5lhhqqlfaq1fs7pn3n3b25kmazk8p4ahwvhagbrhcbm5hsigdg"))))
+                "066fwmwsd7xcvwlinfk2izlzq0xp8697i6lnbgsbl71jdybyackq"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
@@ -6514,21 +6515,21 @@ the choice of SSL/TLS, and SOCKS.")
        ("ghc-blaze-html" ,ghc-blaze-html)
        ("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-colour" ,ghc-colour)
-       ("ghc-diff" ,ghc-diff)
        ("ghc-hxt" ,ghc-hxt)
-       ("ghc-pretty-show" ,ghc-pretty-show)
        ("ghc-regex-pcre-builtin" ,ghc-regex-pcre-builtin)
        ("ghc-safe" ,ghc-safe)
        ("ghc-text" ,ghc-text)
        ("ghc-utf8-string" ,ghc-utf8-string)))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)
+     `(("ghc-diff" ,ghc-diff)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-pretty-show" ,ghc-pretty-show)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-golden" ,ghc-tasty-golden)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
-    (home-page "https://hackage.haskell.org/package/skylighting")
+    (home-page "https://github.com/jgm/skylighting")
     (synopsis "Syntax highlighting library")
     (description "Skylighting is a syntax highlighting library with support
 for over one hundred languages.  It derives its tokenizers from XML syntax
@@ -6536,6 +6537,22 @@ definitions used by KDE's @code{KSyntaxHighlighting} framework, so any syntax
 supported by that framework can be added.  An optional command-line program is
 provided.  Skylighting is intended to be the successor to highlighting-kate.")
     (license license:gpl2)))
+
+(define-public ghc-skylighting
+  (package
+    (inherit ghc-skylighting-core)
+    (name "ghc-skylighting")
+    (version "0.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/skylighting-"
+                                  version "/skylighting-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rh3z1a7a4clvksdw1qlpmhxqkfahwypi70k91whgfamzsqpxdch"))))
+    (inputs
+     `(("ghc-skylighting-core" ,ghc-skylighting-core)
+       ,@(package-inputs ghc-skylighting-core)))))
 
 (define-public ghc-skylighting-for-pandoc-1
   (package (inherit ghc-skylighting)
