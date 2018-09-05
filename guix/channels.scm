@@ -78,7 +78,7 @@
   ;; Default list of channels.
   (list (channel
          (name 'guix)
-         (branch "origin/master")
+         (branch "master")
          (url "https://git.savannah.gnu.org/git/guix.git"))))
 
 (define (guix-channel? channel)
