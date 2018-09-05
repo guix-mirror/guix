@@ -9701,58 +9701,31 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "2.3.2")
+    (version "2.3.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "1sjpy5rrpvlpm6hs7qy7qpglgbp7zrgfybcsalpmjb51rhxhgcg1"))
-              ;; Delete pre-built jar.
-              (snippet
-               '(begin (delete-file "inst/java/ModularityOptimizer.jar")
-                       #t))))
+                "0l8bv4i9nzz26mirnva10mq6pimibj24vk7vpvfypgn7xk4942hd"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'build-jar
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((classesdir "tmp-classes"))
-               (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
-               (mkdir classesdir)
-               (with-output-to-file "manifest"
-                 (lambda _
-                   (display "Manifest-Version: 1.0
-Main-Class: ModularityOptimizer\n")))
-               (and (zero? (apply system* `("javac" "-d" ,classesdir
-                                            ,@(find-files "java" "\\.java$"))))
-                    (zero? (system* "jar"
-                                    "-cmf" "manifest"
-                                    "inst/java/ModularityOptimizer.jar"
-                                    "-C" classesdir  ".")))))))))
-    (native-inputs
-     `(("jdk" ,icedtea "jdk")))
     (propagated-inputs
      `(("r-ape" ,r-ape)
-       ("r-caret" ,r-caret)
        ("r-cluster" ,r-cluster)
        ("r-cowplot" ,r-cowplot)
-       ("r-diffusionmap" ,r-diffusionmap)
        ("r-dosnow" ,r-dosnow)
        ("r-dplyr" ,r-dplyr)
        ("r-dtw" ,r-dtw)
        ("r-fitdistrplus" ,r-fitdistrplus)
-       ("r-fnn" ,r-fnn)
        ("r-foreach" ,r-foreach)
        ("r-fpc" ,r-fpc)
-       ("r-gdata" ,r-gdata)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggridges" ,r-ggridges)
        ("r-gplots" ,r-gplots)
        ("r-hdf5r" ,r-hdf5r)
        ("r-hmisc" ,r-hmisc)
+       ("r-httr" ,r-httr)
        ("r-ica" ,r-ica)
        ("r-igraph" ,r-igraph)
        ("r-irlba" ,r-irlba)
@@ -9765,7 +9738,6 @@ Main-Class: ModularityOptimizer\n")))
        ("r-pbapply" ,r-pbapply)
        ("r-plotly" ,r-plotly)
        ("r-png" ,r-png)
-       ("r-ranger" ,r-ranger)
        ("r-rann" ,r-rann)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-rcpp" ,r-rcpp)
@@ -9776,11 +9748,8 @@ Main-Class: ModularityOptimizer\n")))
        ("r-rocr" ,r-rocr)
        ("r-rtsne" ,r-rtsne)
        ("r-sdmtools" ,r-sdmtools)
-       ("r-stringr" ,r-stringr)
-       ("r-tclust" ,r-tclust)
        ("r-tidyr" ,r-tidyr)
-       ("r-tsne" ,r-tsne)
-       ("r-vgam" ,r-vgam)))
+       ("r-tsne" ,r-tsne)))
     (home-page "http://www.satijalab.org/seurat")
     (synopsis "Seurat is an R toolkit for single cell genomics")
     (description
