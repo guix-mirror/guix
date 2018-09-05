@@ -8518,7 +8518,7 @@ paired-end data.")
      `(("r-testthat" ,r-testthat)
        ;; During vignette building knitr checks that "pandoc-citeproc"
        ;; is in the PATH.
-       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc-with-pandoc-1)))
+       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)))
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-biomart" ,r-biomart)
