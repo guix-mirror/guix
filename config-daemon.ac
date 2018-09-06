@@ -48,7 +48,7 @@ if test "x$guix_build_daemon" = "xyes"; then
   esac
 
   case "$LIBGCRYPT_LIBDIR" in
-    no)
+    no | "")
       LIBGCRYPT_LIBS="-lgcrypt"
       ;;
     *)
