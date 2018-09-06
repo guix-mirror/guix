@@ -108,7 +108,7 @@ algebra.")
 library for performing multiple-precision, floating-point computations with
 correct rounding.")
    (license lgpl3+)
-   (home-page "http://www.mpfr.org/")))
+   (home-page "https://www.mpfr.org/")))
 
 (define-public mpc
   (package
