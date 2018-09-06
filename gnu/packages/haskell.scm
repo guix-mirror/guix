@@ -2044,7 +2044,15 @@ literals.")
         (base32
          "1vbzf0awb6zb456xf48za1kl22018646cfzq4frvxgb9ay97vk0d"))))
     (build-system haskell-build-system)
-    (arguments `(#:configure-flags (list "--allow-newer=tasty")))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'strip-test-framework-constraints
+           (lambda _
+             (substitute* "zlib.cabal"
+               (("tasty            >= 0\\.8 && < 0\\.12") "tasty")
+               (("tasty-hunit      >= 0\\.8 && < 0\\.10") "tasty-hunit")
+               (("tasty-quickcheck == 0\\.8\\.\\*") "tasty-quickcheck")))))))
     (inputs `(("zlib" ,zlib)))
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
