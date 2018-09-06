@@ -7804,7 +7804,7 @@ Haskell, using gnuplot for rendering.")
 (define-public ghc-hashtables
   (package
     (name "ghc-hashtables")
-    (version "1.2.1.0")
+    (version "1.2.3.1")
     (source
      (origin
        (method url-fetch)
@@ -7812,10 +7812,8 @@ Haskell, using gnuplot for rendering.")
              "https://hackage.haskell.org/package/hashtables/hashtables-"
              version ".tar.gz"))
        (sha256
-        (base32 "1b6w9xznk42732vpd8ili60k12yq190xnajgga0iwbdpyg424lgg"))))
+        (base32 "1giw9caajr07slf09j7zry9b0kvm4yj9q78zy1mawzi6gk3wglcg"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:configure-flags (list "--allow-newer=vector")))
     (inputs
      `(("ghc-hashable" ,ghc-hashable)
        ("ghc-primitive" ,ghc-primitive)
