@@ -16848,6 +16848,17 @@ A typical hpcguix-web service declaration looks like this:
                 (menu '(("/about" "ABOUT"))))))))
 @end example
 
+@quotation Note
+The hpcguix-web service periodically updates the package list it publishes by
+pulling channels from Git.  To that end, it needs to access X.509 certificates
+so that it can authenticate Git servers when communicating over HTTPS, and it
+assumes that @file{/etc/ssl/certs} contains those certificates.
+
+Thus, make sure to add @code{nss-certs} or another certificate package to the
+@code{packages} field of your configuration.  @ref{X.509 Certificates}, for
+more information on X.509 certificates.
+@end quotation
+
 @node Certificate Services
 @subsubsection Certificate Services
 

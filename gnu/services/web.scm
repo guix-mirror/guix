@@ -967,7 +967,8 @@ a webserver.")
                  #:user "hpcguix-web"
                  #:group "hpcguix-web"
                  #:environment-variables
-                 (list "XDG_CACHE_HOME=/var/cache")))
+                 (list "XDG_CACHE_HOME=/var/cache"
+                       "SSL_CERT_DIR=/etc/ssl/certs")))
        (stop #~(make-kill-destructor))))))
 
 (define hpcguix-web-service-type
