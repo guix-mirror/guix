@@ -5668,3 +5668,30 @@ Interfaces (GUI) in R.  It is independent from any particular GUI widgets.  It
 centralizes info about GUI elements currently used, and it dispatches GUI
 calls to the particular toolkits in use in function of the context.")
     (license license:gpl2)))
+
+(define-public r-svdialogs
+  (package
+    (name "r-svdialogs")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "svDialogs" version))
+       (sha256
+        (base32 "0xqppydfawnwk84kb5qiybwbcmv38vn4imgz01mz2pnq4xb80p97"))))
+    (properties `((upstream-name . "svDialogs")))
+    (build-system r-build-system)
+    (inputs
+     `(("yad" ,yad)
+       ("zenity" ,zenity)))
+    (propagated-inputs
+     `(("r-rstudioapi" ,r-rstudioapi)
+       ("r-svgui" ,r-svgui)))
+    (home-page "https://github.com/SciViews/svDialogs/")
+    (synopsis "Portable dialog boxes")
+    (description
+     "This package helps to construct standard dialog boxes for your GUI, including
+message boxes, input boxes, list, file or directory selection, and others.  In
+case R cannot display GUI dialog boxes, a simpler command line version of these
+interactive elements is also provided as a fallback solution.")
+    (license license:gpl2)))
