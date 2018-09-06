@@ -216,6 +216,16 @@ person's version identifier."
                    "1gir7ifknbmbvjlql5j6wzk7bkb5lnmq80q59ngz43hhpclrk5k3"))
                  (file-name (string-append name "-" version ".tar.gz"))))
        (build-system gnu-build-system)
+       (arguments
+        ;; The 'bootstrap' phase appeared in 'core-updates', which was merged
+        ;; into 'master' ca. June 2018.
+        '(#:phases (modify-phases %standard-phases
+                     (delete 'bootstrap)
+                     (add-before 'configure 'bootstrap
+                       (lambda _
+                         (unless (zero? (system* "autoreconf" "-vfi"))
+                           (error "autoreconf failed"))
+                         #t)))))
        (native-inputs
         `(("pkg-config" ,(specification->package "pkg-config"))
           ("autoconf" ,(specification->package "autoconf"))
