@@ -1093,7 +1093,19 @@ tool lex or flex for C/C++.")
          "1hbpplss1m4rdpm4ibip6fpimlhssqa14fl338kl2jbc463i64cj"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck")))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "cgi.cabal"
+               (("exceptions < 0\\.9")
+                "exceptions < 0.11")
+               (("time >= 1\\.5 && < 1\\.7")
+                "time >= 1.5 && < 1.9")
+               (("doctest >= 0\\.8 && < 0\\.12")
+                "doctest >= 0.8 && < 0.17")
+               (("QuickCheck >= 2\\.8\\.1 && < 2\\.10")
+                "QuickCheck >= 2.8.1 && < 2.12")))))))
     (inputs
      `(("ghc-parsec" ,ghc-parsec)
        ("ghc-exceptions" ,ghc-exceptions)
