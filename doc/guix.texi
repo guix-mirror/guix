@@ -16825,6 +16825,13 @@ Extension package for @code{hpcguix-web}.
 
 @item @code{menu} (default: @code{'()})
 Additional entry in page @code{menu}.
+
+@item @code{channels} (default: @code{%default-channels})
+List of channels from which the package list is built (@pxref{Channels}).
+
+@item @code{package-list-expiration} (default: @code{(* 12 3600)})
+The expiration time, in seconds, after which the package list is rebuilt from
+the latest instances of the given channels.
 @end table
 
 See the hpcguix-web repository for a
