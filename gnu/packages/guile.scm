@@ -1612,8 +1612,10 @@ you send to a FIFO file.")
                     (("ac_subst_vars='")
                      "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
                   (substitute* "Makefile.in"
-                    (("/site/2.0")
-                     "/site/@GUILE_EFFECTIVE_VERSION@"))
+                    (("moddir =.*")
+                     "moddir = $(datadir)/guile/site/@GUILE_EFFECTIVE_VERSION@\n")
+                    (("godir =.*")
+                     "godir = $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
                   #t))))
     (build-system gnu-build-system)
     (inputs
