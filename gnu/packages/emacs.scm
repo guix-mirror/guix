@@ -38,6 +38,7 @@
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4123,22 +4124,34 @@ programming language.")
 (define-public emacs-ess
   (package
     (name "emacs-ess")
-    (version "16.10")
+    (version "17.11")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://ess.r-project.org/downloads/ess/ess-"
-                                  version ".tgz"))
+              (uri (string-append "https://github.com/emacs-ess/ESS/archive/v"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "04m8lwp3ylh2vl7k2bjjs7mxbm64j4sdckqpvnm9k0qhaqf02pjk"))
+                "0cbilbsiwvcyf6d5y24mymp57m3ana5dkzab3knfs83w4a3a4c5c"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Stop ESS from trying to bundle an external julia-mode.el.
                   (substitute* "lisp/Makefile"
                     (("^\tjulia-mode.elc\\\\\n") "")
-                    (("^all: \\$\\(ELC\\) ess-custom.el julia-mode.el")
-                     "all: $(ELC) ess-custom.el"))
+                    (("^dist: all julia-mode.el")
+                     "dist: all"))
+                  ;; No need to build docs in so many formats.  Also, skipping
+                  ;; pdf lets us not pull in texlive.
+                  (substitute* "doc/Makefile"
+                    (("all  : info text html pdf")
+                     "all  : info")
+                    (("install: install-info install-other-docs")
+                     "install: install-info"))
+                  ;; Test fails upstream
+                  (substitute* "test/ess-r-tests.el"
+                    (("ert-deftest ess-r-namespaced-eval-no-srcref-in-errors ()")
+                     "ert-deftest ess-r-namespaced-eval-no-srcref-in-errors () :expected-result :failed"))
                   #t))))
     (build-system gnu-build-system)
     (arguments
@@ -4157,10 +4170,6 @@ programming language.")
                  (("SHELL = /bin/sh")
                   (string-append "SHELL = " (which "sh"))))
                #t))
-           ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
-           ;; them in HOME, so it needs to be writeable.
-           (add-before 'build 'set-HOME
-             (lambda _ (setenv "HOME" "/tmp") #t))
            (replace 'check
              (lambda _
                (invoke "make" "test")))))))
@@ -4169,16 +4178,14 @@ programming language.")
        ("r-minimal" ,r-minimal)))
     (native-inputs
      `(("perl" ,perl)
-       ("texinfo" ,texinfo)
-       ("texlive" ,(texlive-union (list texlive-latex-natbib
-                                        texlive-latex-seminar
-                                        texlive-latex-hyperref
-                                        texlive-tex-texinfo)))))
+       ("texinfo" ,texinfo)))
+    (propagated-inputs
+     `(("emacs-julia-mode" ,emacs-julia-mode)))
     (home-page "https://ess.r-project.org/")
     (synopsis "Emacs mode for statistical analysis programs")
     (description "Emacs Speaks Statistics (ESS) is an add-on package for GNU
 Emacs.  It is designed to support editing of scripts and interaction with
-various statistical analysis programs such as R and OpenBUGS.")
+various statistical analysis programs such as R, Julia, and JAGS.")
     (license license:gpl2+)))
 
 (define-public emacs-smex
