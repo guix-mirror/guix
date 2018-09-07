@@ -3253,7 +3253,7 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.9.0")
+    (version "0.9.9.1")
     (source
      (origin
        (method url-fetch)
@@ -3261,7 +3261,7 @@ Failure to do so will result in a library with poor performance.")
                            version  "/glm-" version ".zip"))
        (sha256
         (base32
-         "0ihjadp2sb8w312a276skfjsljm3y41bjscbxf79wn23gi00giz1"))))
+         "042a23hmxfs429czkmlg5ixf28aikzfbw18780prj2gcd4flgw8h"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
