@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
@@ -27,6 +27,7 @@
 (define-module (gnu services web)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu services admin)
   #:use-module (gnu system pam)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
@@ -974,6 +975,14 @@ a webserver.")
         (chown home-dir (passwd:uid user) (passwd:gid user))
         (chmod home-dir #o755))))
 
+(define %hpcguix-web-log-file
+  "/var/log/hpcguix-web.log")
+
+(define %hpcguix-web-log-rotations
+  (list (log-rotation
+         (files (list %hpcguix-web-log-file))
+         (frequency 'weekly))))
+
 (define (hpcguix-web-shepherd-service config)
   (let ((specs       (hpcguix-web-configuration-specs config))
         (hpcguix-web (hpcguix-web-package config)))
@@ -991,7 +1000,8 @@ a webserver.")
                  #:group "hpcguix-web"
                  #:environment-variables
                  (list "XDG_CACHE_HOME=/var/cache"
-                       "SSL_CERT_DIR=/etc/ssl/certs")))
+                       "SSL_CERT_DIR=/etc/ssl/certs")
+                 #:log-file #$%hpcguix-web-log-file))
        (stop #~(make-kill-destructor))))))
 
 (define hpcguix-web-service-type
@@ -1003,6 +1013,8 @@ a webserver.")
                              (const %hpcguix-web-accounts))
           (service-extension activation-service-type
                              (const %hpcguix-web-activation))
+          (service-extension rottlog-service-type
+                             (const %hpcguix-web-log-rotations))
           (service-extension shepherd-root-service-type
                              (compose list hpcguix-web-shepherd-service))))))
 
