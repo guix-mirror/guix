@@ -342,9 +342,15 @@ data types.")
               (snippet
                '(begin
                   (for-each delete-file
-                            '("Lib/ctypes/test/test_win32.py" ; fails on aarch64
-                              "Lib/test/test_fcntl.py" ; fails on aarch64
-                              "Lib/test/test_posix.py")) ; fails on aarch64
+                            '(;; This test may hang and eventually run out of
+                              ;; memory on some systems:
+                              ;; <https://bugs.python.org/issue34587>
+                              "Lib/test/test_socket.py"
+
+                              ;; These tests fail on AArch64.
+                              "Lib/ctypes/test/test_win32.py"
+                              "Lib/test/test_fcntl.py"
+                              "Lib/test/test_posix.py"))
                   #t))))
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
