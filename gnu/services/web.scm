@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,9 +33,11 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages php)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages logging)
   #:use-module (guix records)
   #:use-module (guix modules)
   #:use-module (guix gexp)
+  #:use-module ((guix store) #:select (text-file))
   #:use-module ((guix utils) #:select (version-major))
   #:use-module ((guix packages) #:select (package-version))
   #:use-module (srfi srfi-1)
@@ -164,7 +167,29 @@
 
             hpcguix-web-configuration
             hpcguix-web-configuration?
-            hpcguix-web-service-type))
+            hpcguix-web-service-type
+
+            <tailon-configuration-file>
+            tailon-configuration-file
+            tailon-configuration-file?
+            tailon-configuration-file-files
+            tailon-configuration-file-bind
+            tailon-configuration-file-relative-root
+            tailon-configuration-file-allow-transfers?
+            tailon-configuration-file-follow-names?
+            tailon-configuration-file-tail-lines
+            tailon-configuration-file-allowed-commands
+            tailon-configuration-file-debug?
+            tailon-configuration-file-http-auth
+            tailon-configuration-file-users
+
+            <tailon-configuration>
+            tailon-configuration
+            tailon-configuration?
+            tailon-configuration-config-file
+            tailon-configuration-package
+
+            tailon-service-type))
 
 ;;; Commentary:
 ;;;
@@ -980,3 +1005,148 @@ a webserver.")
                              (const %hpcguix-web-activation))
           (service-extension shepherd-root-service-type
                              (compose list hpcguix-web-shepherd-service))))))
+
+
+;;;
+;;; Tailon
+;;;
+
+(define-record-type* <tailon-configuration-file>
+  tailon-configuration-file make-tailon-configuration-file
+  tailon-configuration-file?
+  (files                   tailon-configuration-file-files
+                           (default '("/var/log")))
+  (bind                    tailon-configuration-file-bind
+                           (default "localhost:8080"))
+  (relative-root           tailon-configuration-file-relative-root
+                           (default #f))
+  (allow-transfers?        tailon-configuration-file-allow-transfers?
+                           (default #t))
+  (follow-names?           tailon-configuration-file-follow-names?
+                           (default #t))
+  (tail-lines              tailon-configuration-file-tail-lines
+                           (default 200))
+  (allowed-commands        tailon-configuration-file-allowed-commands
+                           (default '("tail" "grep" "awk")))
+  (debug?                  tailon-configuration-file-debug?
+                           (default #f))
+  (wrap-lines              tailon-configuration-file-wrap-lines
+                           (default #t))
+  (http-auth               tailon-configuration-file-http-auth
+                           (default #f))
+  (users                   tailon-configuration-file-users
+                           (default #f)))
+
+(define (tailon-configuration-files-string files)
+  (string-append
+   "\n"
+   (string-join
+    (map
+     (lambda (x)
+       (string-append
+        "  - "
+        (cond
+         ((string? x)
+          (simple-format #f "'~A'" x))
+         ((list? x)
+          (string-join
+           (cons (simple-format #f "'~A':" (car x))
+                 (map
+                  (lambda (x) (simple-format #f "      - '~A'" x))
+                  (cdr x)))
+           "\n"))
+         (else (error x)))))
+     files)
+    "\n")))
+
+(define-gexp-compiler (tailon-configuration-file-compiler
+                       (file <tailon-configuration-file>) system target)
+  (match file
+    (($ <tailon-configuration-file> files bind relative-root
+                                    allow-transfers? follow-names?
+                                    tail-lines allowed-commands debug?
+                                    wrap-lines http-auth users)
+     (text-file
+      "tailon-config.yaml"
+      (string-concatenate
+       (filter-map
+        (match-lambda
+         ((key . #f) #f)
+         ((key . value) (string-append key ": " value "\n")))
+
+        `(("files" . ,(tailon-configuration-files-string files))
+          ("bind" . ,bind)
+          ("relative-root" . ,relative-root)
+          ("allow-transfers" . ,(if allow-transfers? "true" "false"))
+          ("follow-names" . ,(if follow-names? "true" "false"))
+          ("tail-lines" . ,(number->string tail-lines))
+          ("commands" . ,(string-append "["
+                                        (string-join allowed-commands ", ")
+                                        "]"))
+          ("debug" . ,(if debug? "true" #f))
+          ("wrap-lines" . ,(if wrap-lines "true" "false"))
+          ("http-auth" . ,http-auth)
+          ("users" . ,(if users
+                          (string-concatenate
+                           (cons "\n"
+                                 (map (match-lambda
+                                       ((user . pass)
+                                        (string-append
+                                         "  " user ":" pass)))
+                                      users)))
+                          #f)))))))))
+
+(define-record-type* <tailon-configuration>
+  tailon-configuration make-tailon-configuration
+  tailon-configuration?
+  (config-file tailon-configuration-config-file
+               (default (tailon-configuration-file)))
+  (package tailon-configuration-package
+           (default tailon)))
+
+(define tailon-shepherd-service
+  (match-lambda
+    (($ <tailon-configuration> config-file package)
+     (list (shepherd-service
+            (provision '(tailon))
+            (documentation "Run the tailon daemon.")
+            (start #~(make-forkexec-constructor
+                      `(,(string-append #$package "/bin/tailon")
+                        "-c" ,#$config-file)
+                      #:user "tailon"
+                      #:group "tailon"))
+            (stop #~(make-kill-destructor)))))))
+
+(define %tailon-accounts
+  (list (user-group (name "tailon") (system? #t))
+        (user-account
+         (name "tailon")
+         (group "tailon")
+         (system? #t)
+         (comment "tailon")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define tailon-service-type
+  (service-type
+   (name 'tailon)
+   (description
+    "Run Tailon, a Web application for monitoring, viewing, and searching log
+files.")
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             tailon-shepherd-service)
+          (service-extension account-service-type
+                             (const %tailon-accounts))))
+   (compose concatenate)
+   (extend (lambda (parameter files)
+             (tailon-configuration
+              (inherit parameter)
+              (config-file
+               (let ((old-config-file
+                      (tailon-configuration-config-file parameter)))
+                 (tailon-configuration-file
+                  (inherit old-config-file)
+                  (files (append (tailon-configuration-file-files old-config-file)
+                                 files))))))))
+   (default-value (tailon-configuration))))
