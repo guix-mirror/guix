@@ -101,7 +101,7 @@ generate such a compilation database.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.47.1")
+    (version "0.47.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -109,7 +109,7 @@ generate such a compilation database.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19mdap2ncvczajx220bd73xmwhd8x906382y18cn9c5syxwxwwyn"))))
+                "1swmycf6p9p0ag6yiywyyri42ffkxxj38r2ic7in24km47cszn4j"))))
     (build-system python-build-system)
     (arguments
      `(;; FIXME: Tests require many additional inputs, a fix for the RUNPATH
