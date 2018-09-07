@@ -237,14 +237,14 @@ fonts to/from the WOFF2 format.")
 (define-public fontconfig
   (package
    (name "fontconfig")
-   (version "2.13.0")
+   (version "2.13.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
             (sha256 (base32
-                     "1fgf28zgsqh7x6dw30n6zi9z679gx6dyfyahp55z7dsm454yipci"))))
+                     "0hb700a68kk0ip51wdlnjjc682kvlrmb6q920mzajykdk0mdsmgn"))))
    (build-system gnu-build-system)
    ;; In Requires or Requires.private of fontconfig.pc.
    (propagated-inputs `(("expat" ,expat)
