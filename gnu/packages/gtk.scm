@@ -443,7 +443,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.36.12")
+   (version "2.38.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -451,26 +451,35 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0d534ysa6n9prd17wwzisq7mj6qkhwh8wcf8qgin1ar3hbs5ry7z"))))
-   (build-system gnu-build-system)
+              "0ixfmnxjylx06mjaw116apymwi1a8rnkmkbbvqaxxg2pfwy9fl6x"))))
+   (build-system meson-build-system)
    (arguments
-    '(#:configure-flags '("--with-x11")
+    '(#:configure-flags '("-Dinstalled-tests=false")
       #:phases
       (modify-phases %standard-phases
         (add-after
          'unpack 'disable-failing-tests
          (lambda _
-           (substitute* "tests/Makefile.in"
+           (substitute* "tests/meson.build"
              ;; XXX FIXME: This test fails on armhf machines with:
              ;; SKIP Not enough memory to load bitmap image
              ;; ERROR: cve-2015-4491 - too few tests run (expected 4, got 2)
-             (("cve-2015-4491\\$\\(EXEEXT\\) ") "")
+             ((".*'cve-2015-4491'.*") "")
              ;; XXX FIXME: This test fails with:
              ;; ERROR:pixbuf-jpeg.c:74:test_type9_rotation_exif_tag:
              ;; assertion failed (error == NULL): Data differ
              ;; (gdk-pixbuf-error-quark, 0)
-             (("pixbuf-jpeg\\$\\(EXEEXT\\) ") ""))
-           #t)))))
+             ((".*'pixbuf-jpeg'.*") ""))
+           #t))
+        (add-before 'configure 'aid-install-script
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; "build-aux/post-install.sh" invokes `gdk-pixbuf-query-loaders`
+            ;; for updating loader.cache, but it's not on PATH.  Make it use
+            ;; the one we're installing.  XXX: Won't work when cross-compiling.
+            (substitute* "build-aux/post-install.sh"
+              (("gdk-pixbuf-query-loaders" match)
+               (string-append (assoc-ref outputs "out") "/bin/" match)))
+            #t)))))
    (propagated-inputs
     `(;; Required by gdk-pixbuf-2.0.pc
       ("glib" ,glib)
@@ -483,6 +492,7 @@ highlighting and other features typical of a source code editor.")
       ("libx11"  ,libx11)))
    (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME image loading and manipulation library")
@@ -502,7 +512,7 @@ in the GNOME project.")
      `(("librsvg" ,librsvg)
        ,@(package-inputs gdk-pixbuf)))
     (arguments
-     '(#:configure-flags '("--with-x11")
+     '(#:configure-flags '("-Dinstalled-tests=false")
        #:tests? #f ; tested by the gdk-pixbuf package already
        #:phases
        (modify-phases %standard-phases
