@@ -2846,8 +2846,8 @@ parts of it.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/xianyi/OpenBLAS/tarball/v"
-                           version))
+       (uri (string-append "mirror://sourceforge/openblas/v" version "/OpenBLAS%20"
+                           version "%20version.tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
