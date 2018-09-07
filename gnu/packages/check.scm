@@ -1415,13 +1415,13 @@ normally the case.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "3.68.2")
+    (version "3.70.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "15wlbdy148h3z0ckylf7zkszrfnnk254a6ld3qaf37lkf7hyp4r0"))))
+                "1rshs1japfmwgar98yrkq4hg4z2q76hlnq7w2n3lfbjnscn1jd9b"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-flake8" ,python-flake8)
