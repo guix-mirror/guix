@@ -897,7 +897,7 @@ for Guile\".")
 (define-public guile-json
   (package
     (name "guile-json")
-    (version "1.1.1")
+    (version "1.2.0")
     (home-page "https://github.com/aconchillo/guile-json")
     (source (origin
               (method url-fetch)
@@ -906,7 +906,7 @@ for Guile\".")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12jqkn9qgwdlxbasy2n25a2a7apf30dww1nnxqfam5735k3jdngv"))))
+                "02kqv0q98fmchn7i4y7ycmrjlh4b2c93ij0z7k036qwpp204w4gh"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
@@ -924,7 +924,9 @@ specification.  These are the main features:
 @item Unicode support for strings.
 @item Allows JSON pretty printing.
 @end itemize\n")
-    (license license:lgpl3+)))
+
+    ;; Version 1.2.0 switched to GPLv3+ (from LGPLv3+).
+    (license license:gpl3+)))
 
 (define-public guile2.2-json
   (deprecated-package "guile2.2-json" guile-json))
