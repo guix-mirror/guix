@@ -108,8 +108,7 @@ within a Git checkout."
   "Display information about PROFILE, a profile as created by (guix channels),
 in the format specified by FMT."
   (define number
-    (match (profile-generations profile)
-      ((_ ... last) last)))
+    (generation-number profile))
 
   (match fmt
     ('human
