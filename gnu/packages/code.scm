@@ -651,6 +651,19 @@ extensions over the standard utility.")
    (license license:gpl3+)
    (home-page "https://www.gnu.org/software/indent/")))
 
+(define-public indent-2.2.12
+  (package
+    (inherit indent)
+    (version "2.2.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/indent/indent-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "12xvcd16cwilzglv9h7sgh4h1qqjd1h8s48ji2dla58m4706hzg7"))))
+    (native-inputs `(("texinfo" ,texinfo)))))
+
 (define-public amalgamate
   (let* ((commit "c91f07eea1133aa184f652b8f1398eaf03586208")
          (revision "0")
