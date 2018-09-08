@@ -610,14 +610,12 @@ of index files."
                  (match '#$args
                    (("-s" . _) #t)
                    (_
-                    (let loop ((duration 0))
-                      ;; https://bugs.launchpad.net/ubuntu/+source/nginx/+bug/1581864/comments/7
-                      (sleep duration)
-                      (if (file-exists? #$pid-file)
-                          (let ((pid (call-with-input-file #$pid-file read)))
-                            ;; it could be #<eof>
-                            (if (integer? pid) pid (loop 1)))
-                          (loop 1)))))))))
+                    ;; When FILE is true, we cannot be sure that PID-FILE will
+                    ;; be created, so assume it won't show up.  When FILE is
+                    ;; false, read PID-FILE.
+                    #$(if file
+                          #~#t
+                          #~(read-pid-file #$pid-file))))))))
 
      ;; TODO: Add 'reload' action.
      (list (shepherd-service
