@@ -19,6 +19,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -495,6 +496,7 @@ arithmetic ops.")
   (package
     (name "jbig2dec")
     (version "0.14")
+    (replacement jbig2dec-0.15)
     (source
       (origin
         (method url-fetch)
@@ -518,6 +520,21 @@ maintaining parity with available encoders, so it is useful for real
 work.")
     (home-page "https://jbig2dec.com")
     (license license:gpl2+)))
+
+;; This is a bugfix release from an ongoing Ghostscript security audit.
+;; It was released alongside Ghostscript 9.24.
+(define-public jbig2dec-0.15
+  (package
+    (inherit jbig2dec)
+    (version "0.15")
+    (source (origin
+              (inherit (package-source jbig2dec))
+              (uri (string-append "https://github.com/ArtifexSoftware"
+                                  "/ghostpdl-downloads/releases/download/gs924/"
+                                  "jbig2dec-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0m1qwpbjbirgw2fqznbajdhdhh35d6xa2csr64lpjz735pvimykb"))))))
 
 (define-public openjpeg
   (package
