@@ -753,41 +753,51 @@ It contains the following fonts and styles:
 (define-public font-fantasque-sans
   (package
     (name "font-fantasque-sans")
-    (version "1.7.1")
+    (version "1.7.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/belluzj/fantasque-sans/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/belluzj/fantasque-sans.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "07fpy53k2x2nz5q61swkab6cfk9gw2kc4x4brsj6zjgbm16fap85"))))
+         "1gjranq7qf20rfxnpxsckv1hl35nzsal0rjs475nhfbpqy5wmly6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ttfautohint" ,ttfautohint)
        ("woff-tools" ,woff-tools)
        ("fontforge" ,fontforge)
        ("woff2" ,woff2)
-       ("ttf2eot" ,ttf2eot)))
+       ("ttf2eot" ,ttf2eot)
+       ("zip" ,zip)))
     (arguments
      `(#:tests? #f                 ;test target intended for visual inspection
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ;no configuration
+                  (add-before 'build 'xrange->range
+                    ;; Rather than use a python2 fontforge, just replace the
+                    ;; offending function.
+                    (lambda _
+                      (substitute* "Scripts/fontbuilder.py"
+                        (("xrange") "range"))
+                      #t))
                   (replace 'install
                     ;; 'make install' wants to install to ~/.fonts, install to
-                    ;; output instead.
+                    ;; output instead.  Install only the "Normal" variant.
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
                              (font-dir (string-append out "/share/fonts"))
                              (truetype-dir (string-append font-dir "/truetype"))
                              (opentype-dir (string-append font-dir "/opentype"))
                              (webfonts-dir (string-append font-dir "/webfonts")))
-                        (copy-recursively "OTF" opentype-dir)
-                        (for-each (lambda (f) (install-file f truetype-dir))
-                                  (find-files "." "\\.ttf$"))
-                        (copy-recursively "Webfonts" webfonts-dir)
-                        #t))))))
+                        (with-directory-excursion "Variants/Normal"
+                          (copy-recursively "OTF" opentype-dir)
+                          (for-each (lambda (f) (install-file f truetype-dir))
+                                    (find-files "." "\\.ttf$"))
+                          (copy-recursively "Webfonts" webfonts-dir)
+                          #t)))))))
     (synopsis "Font family with a monospaced variant for programmers")
     (description
      "Fantasque Sans Mono is a programming font designed with functionality in
