@@ -42,6 +42,7 @@
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match)
   #:export (run-basic-test
             %test-basic-os
             %test-halt
@@ -67,6 +68,11 @@ initialization step, such as entering a LUKS passphrase."
     (service-value
      (fold-services (operating-system-services os)
                     #:target-type special-files-service-type)))
+
+  (define guix&co
+    (match (package-transitive-propagated-inputs guix)
+      (((labels packages) ...)
+       (cons guix packages))))
 
   (define test
     (with-imported-modules '((gnu build marionette)
@@ -345,8 +351,14 @@ info --version")
             'success!
             (marionette-eval '(begin
                                 ;; Make sure the (guix …) modules are found.
-                                (add-to-load-path
-                                 #+(file-append guix "/share/guile/site/2.2"))
+                                (eval-when (expand load eval)
+                                  (set! %load-path
+                                    (append (map (lambda (package)
+                                                   (string-append package
+                                                                  "/share/guile/site/"
+                                                                  (effective-version)))
+                                                 '#$guix&co)
+                                            %load-path)))
 
                                 (use-modules (srfi srfi-34) (guix store))
 
