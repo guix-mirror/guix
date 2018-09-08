@@ -1093,6 +1093,24 @@
                                (call-with-input-file out get-string-all))
                      (equal? refs (list guile))))))))
 
+(test-assertm "file-union"
+  (mlet* %store-monad ((union -> (file-union "union"
+                                             `(("a" ,(plain-file "a" "1"))
+                                               ("b/c/d" ,(plain-file "d" "2"))
+                                               ("e" ,(plain-file "e" "3")))))
+                       (drv      (lower-object union))
+                       (out ->   (derivation->output-path drv)))
+    (define (contents=? file str)
+      (string=? (call-with-input-file (string-append out "/" file)
+                  get-string-all)
+                str))
+
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (return (and (contents=? "a" "1")
+                   (contents=? "b/c/d" "2")
+                   (contents=? "e" "3"))))))
+
 (test-assert "gexp->derivation vs. %current-target-system"
   (let ((mval (gexp->derivation "foo"
                                 #~(begin
