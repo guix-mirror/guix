@@ -608,7 +608,7 @@ of index files."
                                (default-nginx-config config))
                          #$@args)
                  (match '#$args
-                   (("-s" . _) #t)
+                   (("-s" . _) #f)
                    (_
                     ;; When FILE is true, we cannot be sure that PID-FILE will
                     ;; be created, so assume it won't show up.  When FILE is
