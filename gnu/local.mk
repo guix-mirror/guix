@@ -726,7 +726,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch \
   %D%/packages/patches/ghc-dont-pass-linker-flags-via-response-files.patch	\
-  %D%/packages/patches/ghostscript-CVE-2018-10194.patch		\
+  %D%/packages/patches/ghostscript-CVE-2018-16509.patch		\
+  %D%/packages/patches/ghostscript-bug-699708.patch		\
   %D%/packages/patches/ghostscript-no-header-id.patch		\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
