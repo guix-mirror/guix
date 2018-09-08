@@ -33,6 +33,8 @@
   #:use-module (guix build-system r)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
@@ -5644,4 +5646,25 @@ professional lives, but which are usually taught in isolation, if at all.")
     (description
      "The @code{r-abd} package contains data sets and sample code for the Analysis of
 biological data by Michael Whitlock and Dolph Schluter.")
+    (license license:gpl2)))
+
+(define-public r-svgui
+  (package
+    (name "r-svgui")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "svGUI" version))
+       (sha256
+        (base32 "1r7ab0p4yr8q03gj02hmj7k1ghksgkg4nx750c0ajfs2q9y1dxfc"))))
+    (properties `((upstream-name . "svGUI")))
+    (build-system r-build-system)
+    (home-page "https://github.com/SciViews/svGUI/")
+    (synopsis "Functions for managing GUI clients in R")
+    (description
+     "The SciViews @code{svGUI} package eases the management of Graphical User
+Interfaces (GUI) in R.  It is independent from any particular GUI widgets.  It
+centralizes info about GUI elements currently used, and it dispatches GUI
+calls to the particular toolkits in use in function of the context.")
     (license license:gpl2)))
