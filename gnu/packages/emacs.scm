@@ -1729,21 +1729,21 @@ management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
 (define-public emacs-build-farm
   (package
     (name "emacs-build-farm")
-    (version "0.2")
+    (version "0.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://gitlab.com/alezost-emacs/build-farm")
-                    (commit "fa7fa54901416fc5c216a5014394cbd73a61efc6")))
+                    (url "https://notabug.org/alezost/emacs-build-farm.git")
+                    (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1zw3pivma6cv9j7k7qm02jd6wnxmsc1v2mjcssd50im99zzrqflh"))))
+                "1a4ky0hca26p7f3i2c2s5517ygkyaaz52vs0vxy6f5q95rhlgdhd"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("bui" ,emacs-bui)
        ("magit-popup" ,emacs-magit-popup)))
-    (home-page "https://gitlab.com/alezost-emacs/build-farm")
+    (home-page "https://notabug.org/alezost/emacs-build-farm")
     (synopsis "Emacs interface for Hydra and Cuirass build farms")
     (description
      "This Emacs package provides an interface for Hydra and
