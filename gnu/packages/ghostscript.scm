@@ -135,8 +135,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (replacement ghostscript/fixed)
-    (version "9.23")
+    (version "9.24")
     (source
       (origin
         (method url-fetch)
@@ -146,9 +145,9 @@ printing, and psresize, for adjusting page sizes.")
                             "/ghostscript-" version ".tar.xz"))
         (sha256
          (base32
-          "1ng8d9fm5lza7k1f7ybc791275c07z5hcmpkrl2i226nshkxrkhz"))
-        (patches (search-patches "ghostscript-runpath.patch"
-                                 "ghostscript-CVE-2018-10194.patch"
+          "1mk922rnml93w2g42yxiyn8xqanc50cm65irrgh0b6lp4kgifjfl"))
+        (patches (search-patches "ghostscript-CVE-2018-16509.patch"
+                                 "ghostscript-bug-699708.patch"
                                  "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
                                  "ghostscript-no-header-uuid.patch"))
@@ -167,7 +166,9 @@ printing, and psresize, for adjusting page sizes.")
     (arguments
      `(#:disallowed-references ("doc")
        #:configure-flags
-       (list "--with-system-libtiff"
+       (list (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib")
+             "--with-system-libtiff"
              "LIBS=-lz"
              (string-append "ZLIBDIR="
                             (assoc-ref %build-inputs "zlib") "/include")
@@ -185,6 +186,12 @@ printing, and psresize, for adjusting page sizes.")
                    '()))
        #:phases
        (modify-phases %standard-phases
+        (add-before 'configure 'create-output-directory
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; The configure script refuses to function if the directory
+            ;; specified as -rpath does not already exist.
+            (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))
+            #t))
         (add-after 'configure 'remove-doc-reference
           (lambda _
             ;; Don't retain a reference to the 'doc' output in 'gs'.
@@ -254,44 +261,6 @@ capabilities of the PostScript language.  It supports a wide variety of
 output file formats and printers.")
     (home-page "https://www.ghostscript.com/")
     (license license:agpl3+)))
-
-(define-public ghostscript/fixed
-  (hidden-package
-    (package
-      (inherit ghostscript)
-      (version "9.24")
-      (source
-        (origin
-          (inherit (package-source ghostscript))
-          (uri (string-append "https://github.com/ArtifexSoftware/"
-                              "ghostpdl-downloads/releases/download/gs"
-                              (string-delete #\. version)
-                              "/ghostscript-" version ".tar.xz"))
-          (sha256
-           (base32
-            "1mk922rnml93w2g42yxiyn8xqanc50cm65irrgh0b6lp4kgifjfl"))
-          (patches (search-patches "ghostscript-CVE-2018-16509.patch"
-                                   "ghostscript-bug-699708.patch"
-                                   "ghostscript-no-header-creationdate.patch"
-                                   "ghostscript-no-header-id.patch"
-                                   "ghostscript-no-header-uuid.patch"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments ghostscript)
-         ((#:configure-flags flags)
-          ;; Notice that we removed the 'ghostscript-runpath' patch above.
-          ;; The reason is that it conflicts with an upstream change that
-          ;; takes LDFLAGS into account.
-          `(cons (string-append "LDFLAGS=-Wl,-rpath="
-                                (assoc-ref %outputs "out") "/lib")
-                 ,flags))
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-before 'configure 'create-output-directory
-               (lambda* (#:key outputs #:allow-other-keys)
-                 ;; Unfortunately the configure script refuses to function if
-                 ;; the directory specified as -rpath does not already exist.
-                 (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))
-                 #t)))))))))
 
 (define-public ghostscript/x
   (package/inherit ghostscript
