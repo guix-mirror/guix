@@ -44,10 +44,15 @@
 
             %bootstrap-guile
             %bootstrap-coreutils&co
+            %bootstrap-linux-libre-headers
             %bootstrap-binutils
             %bootstrap-gcc
             %bootstrap-glibc
-            %bootstrap-inputs))
+            %bootstrap-inputs
+            %mescc-tools-seed
+            %mes-seed
+            %srfi-43
+            %tinycc-seed))
 
 ;;; Commentary:
 ;;;
@@ -393,6 +398,23 @@ $out/bin/guile --version~%"
                                (("^exec grep") (string-append (getcwd) "/bin/grep"))))
                            (chmod "bin" #o555))))
 
+(define-public %bootstrap-linux-libre-headers
+  (package-from-tarball
+   "linux-libre-headers-bootstrap"
+   (lambda (system)
+     (origin
+       (method url-fetch)
+       (uri (match system
+              ((or "i686-linux"
+                   "x86_64-linux")
+               "http://lilypond.org/janneke/mes/linux-libre-headers-stripped-4.14.26-i686-linux.tar.xz")
+              (_ (error "linux-libre-headers-bootstrap: system not supported"))))
+       (sha256
+        (base32
+         "0nwspwydn089xbd28nnas762iwl6l9ymbcz170qvfi50ywgim1ma"))))
+   #f                                   ; no program to test
+   "Bootstrap linux-libre-headers"))
+
 (define %bootstrap-binutils
   (package-from-tarball "binutils-bootstrap"
                         (lambda (system)
@@ -587,6 +609,48 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
     (description synopsis)
     (home-page #f)
     (license gpl3+)))
+
+(define %mescc-tools-seed ; todo: add tarballs to alpha.gnu.org/pub/mes/bootstrap/
+  (let ((commit"29aae8c72e195cbb2f965f05a997b984a4f158fb"))
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://gitlab.com/janneke/mescc-tools-seed"
+                          "/-/archive/" commit
+                          "/mescc-tools-seed-" commit ".tar.gz"))
+      (sha256
+       (base32
+        "0rqip3j2qsppvjvmhhmjqdv70n64q6vkg2p6vpx87h1dbggdjk3v")))))
+
+(define %mes-seed
+  (let ((commit "bed429ae315c2c57e9dd428a4dcf3f0d332ef064"))
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://gitlab.com/janneke/mes-seed"
+                          "/-/archive/" commit
+                          "/mes-seed-" commit ".tar.gz"))
+      (sha256
+       (base32
+        "0k7iv9djcky18r8lm0zq96xj5nz8v5kg1clf7a2y8r47n6wzww8s")))))
+
+(define %tinycc-seed
+  (let ((commit "f6e7682891ab72ba66e9f5b9401eaed4e4733cfd"))
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://gitlab.com/janneke/tinycc-seed"
+                          "/-/archive/" commit
+                          "/tinycc-seed-" commit ".tar.gz"))
+      (sha256
+       (base32
+        "0hzjd0iyghj4zphwn3ppyclq7k9qqg3xam9fj9hsrr2m0ibvr387")))))
+
+(define %srfi-43
+  (origin
+    (method url-fetch)
+    (uri "http://git.savannah.gnu.org/cgit/guile.git/plain/module/srfi/srfi-43.scm?h=stable-2.0")
+    (file-name "srfi-43.scm")
+    (sha256
+     (base32
+      "0rnkppwdkxbzkgp9s9ccmby9f7p3ijxjlmvj0pzqxwmrmpy7jwmb"))))
 
 (define (%bootstrap-inputs)
   ;; The initial, pre-built inputs.  From now on, we can start building our
