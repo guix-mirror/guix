@@ -1571,7 +1571,13 @@ exec " gcc "/bin/" program
 (define (%bootstrap-inputs+toolchain)
   ;; The traditional bootstrap-inputs.  For the i686-linux Reduced Binary Seed
   ;; the actual reduced set with bootstrapped toolchain.
-  (%bootstrap-inputs))
+  (append (match (%current-system)
+            ("i686-linux" `(("libc" ,glibc-mesboot)
+                            ("binutils" ,binutils-mesboot)
+                            ("gcc-wrapper" ,gcc-mesboot-wrapper)
+                            ("gcc" ,gcc-mesboot)))
+            (_ '()))
+          (%bootstrap-inputs)))
 
 (define gnu-make-boot0
   (package-with-bootstrap-guile
@@ -1716,7 +1722,23 @@ exec " gcc "/bin/" program
          ;; XXX: libstdc++.so NEEDs ld.so for some reason.
          #:validate-runpath? #f
 
-         ,@(package-arguments lib)))
+         ,@(match (%current-system)
+             ("i686-linux"
+              (substitute-keyword-arguments (package-arguments lib)
+                ((#:phases phases)
+                 `(modify-phases ,phases
+                    ;; FIXME: why doesn't this package build libstdc++.so.6.0.20,
+                    ;; when gcc-mesboot builds it fine?
+                    ;; libtool: install: /gnu/store/7swwdnq02lqk4xkd8740fxdj1h4va38l-bootstrap-binaries-0/bin/install -c .libs/libstdc++.so.6.0.20 /gnu/store/np5pmdlwfin3vmqk88chh0fgs0ncki79-libstdc++-boot0-4.8.5/lib/libstdc++.so.6.0.20
+                    ;; /gnu/store/7swwdnq02lqk4xkd8740fxdj1h4va38l-bootstrap-binaries-0/bin/install: cannot stat '.libs/libstdc++.so.6.0.20': No such file or directory
+                    (add-after 'build 'copy-libstdc++-
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (let ((gcc (assoc-ref %build-inputs "gcc"))
+                              (out (assoc-ref outputs "out")))
+                          (copy-file (string-append gcc "/lib/libstdc++.so.6.0.20")
+                                     (string-append "src/.libs/libstdc++.so.6.0.20"))
+                          #t)))))))
+             (_ (package-arguments lib)))))
       (inputs (%boot0-inputs))
       (native-inputs '()))))
 
@@ -1786,6 +1808,16 @@ exec " gcc "/bin/" program
                                          ,(package-name lib)))
                              (list gmp-6.0 mpfr mpc))
                       #t)))
+                ,(match (%current-system)
+                   ("i686-linux"
+                    '(add-after 'build 'libtool-workaround
+                      (lambda _
+                        ;; libtool: install: /gnu/store/7swwdnq02lqk4xkd8740fxdj1h4va38l-bootstrap-binaries-0/bin/install -c .libs/libcc1.so.0.0.0 /gnu/store/8qf47i99nxz9jvrmq5va0g3q1yvs3x74-gcc-cross-boot0-5.5.0-lib/lib/./libcc1.so.0.0.0
+                        ;; /gnu/store/7swwdnq02lqk4xkd8740fxdj1h4va38l-bootstrap-binaries-0/bin/install: cannot stat '.libs/libcc1.so.0.0.0': No such file or directory
+                        (system* "touch"
+                                 "libcc1/.libs/libcc1.so.0.0.0"
+                                 "libcc1/.libs/libcc1plugin.so.0.0.0"))))
+                   (_ 'identity))
                 (add-after 'install 'symlink-libgcc_eh
                   (lambda* (#:key outputs #:allow-other-keys)
                     (let ((out (assoc-ref outputs "lib")))
