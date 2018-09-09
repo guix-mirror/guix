@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:export (%bootstrap-binaries-tarball
+            %linux-libre-headers-bootstrap-tarball
             %binutils-bootstrap-tarball
             %glibc-bootstrap-tarball
             %gcc-bootstrap-tarball
@@ -299,6 +301,26 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
      "Binaries used to bootstrap the distribution.")
     (license gpl3+)
     (home-page #f)))
+
+(define %linux-libre-headers-stripped
+  ;; The subset of Linux-Libre-Headers that we need.
+  (package (inherit linux-libre-headers)
+    (name (string-append (package-name linux-libre-headers) "-stripped"))
+    (build-system trivial-build-system)
+    (outputs '("out"))
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build make-bootstrap))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (guix build make-bootstrap))
+
+         (let* ((in  (assoc-ref %build-inputs "linux-libre-headers"))
+                (out (assoc-ref %outputs "out")))
+           (copy-linux-headers out in)
+           #t))))
+    (inputs `(("linux-libre-headers" ,linux-libre-headers)))))
 
 (define %binutils-static
   ;; Statically-linked Binutils.
@@ -657,6 +679,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define %bootstrap-binaries-tarball
   ;; A tarball with the statically-linked bootstrap binaries.
   (tarball-package %static-binaries))
+
+(define %linux-libre-headers-bootstrap-tarball
+  ;; A tarball with the statically-linked Linux-Libre-Headers programs.
+  (tarball-package %linux-libre-headers-stripped))
 
 (define %binutils-bootstrap-tarball
   ;; A tarball with the statically-linked Binutils programs.
