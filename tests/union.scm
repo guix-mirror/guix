@@ -94,8 +94,9 @@
                          `(,name ,(package-derivation %store package))))
 
                        ;; Purposefully leave duplicate entries.
-                       (append %bootstrap-inputs
-                               (take %bootstrap-inputs 3))))
+                       (filter (compose package? cadr)
+                               (append (%bootstrap-inputs)
+                                (take (%bootstrap-inputs) 3)))))
          (builder `(begin
                      (use-modules (guix build union))
                      (union-build (assoc-ref %outputs "out")

@@ -153,9 +153,9 @@ edges."
                        (match nodes
                          (((labels names) ...)
                           names))))
-               (match %bootstrap-inputs
+               (match (%bootstrap-inputs)
                  (((labels packages) ...)
-                  (map package-full-name packages))))))))
+                  (map package-full-name (filter package? packages)))))))))
 
 (test-assert "bag DAG, including origins"
   (let-values (((backend nodes+edges) (make-recording-backend)))

@@ -388,9 +388,9 @@ the image."
   "Return the C compiler that uses the bootstrap toolchain.  This is used only
 by '--bootstrap', for testing purposes."
   (define bootstrap-toolchain
-    (list (first (assoc-ref %bootstrap-inputs "gcc"))
-          (first (assoc-ref %bootstrap-inputs "binutils"))
-          (first (assoc-ref %bootstrap-inputs "libc"))))
+    (list (first (assoc-ref (%bootstrap-inputs) "gcc"))
+          (first (assoc-ref (%bootstrap-inputs) "binutils"))
+          (first (assoc-ref (%bootstrap-inputs) "libc"))))
 
   (c-compiler bootstrap-toolchain
               #:guile %bootstrap-guile))

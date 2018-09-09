@@ -28,7 +28,8 @@
   #:use-module (gcrypt hash)
   #:use-module (guix tests)
   #:use-module ((guix packages)
-                #:select (package-derivation package-native-search-paths))
+                #:select (package?
+                          package-derivation package-native-search-paths))
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -39,7 +40,7 @@
 (define %store
   (open-connection-for-tests))
 
-(define %bootstrap-inputs
+(define (%bootstrap-inputs)
   ;; Use the bootstrap inputs so it doesn't take ages to run these tests.
   ;; This still involves building Make, Diffutils, and Findutils.
   ;; XXX: We're relying on the higher-level `package-derivations' here.
@@ -47,14 +48,18 @@
        (map (match-lambda
              ((name package)
               (list name (package-derivation %store package))))
-            (@@ (gnu packages commencement) %boot0-inputs))))
+            (filter
+             (compose package? cadr)
+             ((@@ (gnu packages commencement) %boot0-inputs))))))
 
-(define %bootstrap-search-paths
+(define (%bootstrap-search-paths)
   ;; Search path specifications that go with %BOOTSTRAP-INPUTS.
   (append-map (match-lambda
-               ((name package _ ...)
-                (package-native-search-paths package)))
-              (@@ (gnu packages commencement) %boot0-inputs)))
+                ((name package _ ...)
+                 (package-native-search-paths package)))
+              (filter
+               (compose package? cadr)
+               ((@@ (gnu packages commencement) %boot0-inputs)))))
 
 (define url-fetch*
   (store-lower url-fetch))
@@ -104,9 +109,9 @@
                                #:guile %bootstrap-guile))
          (build    (gnu-build %store "hello-2.8"
                               `(("source" ,tarball)
-                                ,@%bootstrap-inputs)
+                                ,@(%bootstrap-inputs))
                               #:guile %bootstrap-guile
-                              #:search-paths %bootstrap-search-paths))
+                              #:search-paths (%bootstrap-search-paths)))
          (out      (derivation->output-path build)))
     (and (build-derivations %store (list (pk 'hello-drv build)))
          (valid-path? %store out)

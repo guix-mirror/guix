@@ -586,7 +586,7 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
     (home-page #f)
     (license gpl3+)))
 
-(define %bootstrap-inputs
+(define (%bootstrap-inputs)
   ;; The initial, pre-built inputs.  From now on, we can start building our
   ;; own packages.
   `(("libc" ,%bootstrap-glibc)
