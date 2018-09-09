@@ -6937,7 +6937,7 @@ for correctness.")
 (define-public perl-pegex
   (package
    (name "perl-pegex")
-   (version "0.64")
+   (version "0.67")
    (source
     (origin
      (method url-fetch)
@@ -6946,7 +6946,7 @@ for correctness.")
            version ".tar.gz"))
      (sha256
       (base32
-       "1kb7y2cc3nibbn8i8y3vrzz1f9h3892nbf8jj88c5fdgpmj05q17"))))
+       "149015ra2figalxrnj72fz02qc5cm96xg6x8d6kmyanfmrrxzf9w"))))
    (build-system perl-build-system)
    (native-inputs
     `(("perl-file-sharedir-install" ,perl-file-sharedir-install)
