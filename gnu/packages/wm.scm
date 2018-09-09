@@ -848,7 +848,7 @@ Keybinder works with GTK-based applications using the X Window System.")
 (define-public spectrwm
   (package
     (name "spectrwm")
-    (version "3.1.0")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
@@ -859,7 +859,7 @@ Keybinder works with GTK-based applications using the X Window System.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "16lxcharxslf9rc39wxa3mr2nx5d8kzm9ls7p7dal8yrwr7y59dp"))))
+         "0z7gjmp1x6y8q3dnw6swvbv8x2wd4ykzjvi3ibk2sxhgc910907v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (let ((pkg-config (lambda (flag)
@@ -871,7 +871,7 @@ Keybinder works with GTK-based applications using the X Window System.")
                        (string-append "PREFIX=" %output)
                        (string-append "INCS=-I. " (pkg-config "--cflags"))
                        (string-append "LIBS=" (pkg-config "--libs") " -lm")))
-       #:tests? #f ;No test suite
+       #:tests? #f                      ;no test suite
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'change-dir
@@ -881,13 +881,7 @@ Keybinder works with GTK-based applications using the X Window System.")
            (lambda _
              (substitute* "Makefile"
                (("-g") ""))))
-         (add-after 'change-dir 'fix-freetype-include
-           (lambda _
-             (substitute* "Makefile"
-               (("/usr/include/freetype2")
-                (string-append (assoc-ref %build-inputs "freetype")
-                               "/include/freetype2")))))
-         (delete 'configure))))                   ;no 'configure' exists
+         (delete 'configure))))         ;no 'configure' exists
     (inputs
      `(("freetype" ,freetype)
        ("fontconfig" ,fontconfig)
