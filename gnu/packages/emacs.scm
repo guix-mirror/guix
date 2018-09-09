@@ -1635,20 +1635,20 @@ and stored in memory.")
 (define-public emacs-bui
   (package
     (name "emacs-bui")
-    (version "1.1.0")
+    (version "1.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/alezost/bui.el/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://notabug.org/alezost/emacs-bui.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "112k0mq6xpy0r47vk66miw7rxbkv3d06pv3pd0vcmrhcnhnnk486"))))
+                "0ixia5s41f2nbal3wsixacbhbc0mk9yb75ir1amqakip30sq4apv"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("dash" ,emacs-dash)))
-    (home-page "https://github.com/alezost/bui.el")
+    (home-page "https://notabug.org/alezost/emacs-bui")
     (synopsis "Buffer interface library for Emacs")
     (description
      "BUI (Buffer User Interface) is a library for making @code{list} and
