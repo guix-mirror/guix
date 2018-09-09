@@ -645,7 +645,14 @@ providing the system administrator with some help in common tasks.")
                                      (rename-file file
                                                   (string-append static "/"
                                                                  file)))
-                                   (find-files "lib" "\\.a$")))
+                                   (find-files "lib" "\\.a$"))
+
+                         ;; Remove references to the static library from the '.la'
+                         ;; files so that Libtool does the right thing when both
+                         ;; the shared and static library is available.
+                         (substitute* (find-files "lib" "\\.la$")
+                           (("old_library=.*") "old_library=''\n")))
+
                        #t))))))
     (inputs `(("zlib" ,zlib)
               ("ncurses" ,ncurses)
