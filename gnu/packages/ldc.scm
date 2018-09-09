@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2015 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2015, 2018 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Frederick Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -172,9 +172,9 @@ and freshness without requiring additional information from the user.")
               (base32
                "0z6ch930wjkg2vlnqkbliwxxxifad6ydsdpwdxwnajkb2kaxsjx4"))))))
       (home-page "http://wiki.dlang.org/LDC")
-      (synopsis "LLVM compiler for the D programming language")
+      (synopsis "LLVM-based compiler for the D programming language")
       (description
-       "LDC is a compiler for the D programming language.  It is based on
+       "LDC is an LLVM compiler for the D programming language.  It is based on
 the latest DMD compiler that was written in C and is used for
 bootstrapping more recent compilers written in D.")
       ;; Most of the code is released under BSD-3, except for code originally
@@ -188,11 +188,11 @@ bootstrapping more recent compilers written in D.")
   ;; Phobos, druntime and dmd-testsuite library dependencies do
   ;; not always have a newer release than the compiler, hence we
   ;; retain this variable.
-  (let ((older-version "1.7.0"))
+  (let ((older-version "1.10.0")) ;; retain this because sometimes the libs are older
     (package
       (inherit ldc-bootstrap)
       (name "ldc")
-      (version "1.7.0")
+      (version "1.10.0")
       (source (origin
                 (method url-fetch)
                 (uri (string-append
@@ -201,7 +201,7 @@ bootstrapping more recent compilers written in D.")
                 (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "0rqchmlbhz1pd8ksl1vfhfd5s3cp9h9pqi4k4w2np9sq0zr7abwn"))))
+                  "16b1h9kwfggjw6ykc6sfs26ak6vypylsx9wmvp5m6x3cvi6g70yi"))))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
@@ -235,6 +235,8 @@ bootstrapping more recent compilers written in D.")
                (delete-file "tests/compilable/ctfe_math.d")
                (delete-file "tests/debuginfo/nested_gdb.d")
                (delete-file "tests/debuginfo/classtypes_gdb.d")
+               ;; the following tests plugins we don't have.
+               (delete-file "tests/plugins/addFuncEntryCall/testPlugin.d")
                ;; the following tests requires AVX instruction set in the CPU.
                (substitute* "tests/d2/dmd-testsuite/runnable/test_cdvecfill.d"
                 (("^// DISABLED: ") "^// DISABLED: linux64 "))
@@ -246,8 +248,8 @@ bootstrapping more recent compilers written in D.")
                       (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
                       (invoke "make" "test" "-j" (number->string (parallel-job-count))))))))
       (native-inputs
-       `(("llvm" ,llvm-3.8)
-         ("clang" ,clang-3.8)
+       `(("llvm" ,llvm)
+         ("clang" ,clang)
          ("ldc" ,ldc-bootstrap)
          ("python-lit" ,python-lit)
          ("python-wrapper" ,python-wrapper)
@@ -261,7 +263,7 @@ bootstrapping more recent compilers written in D.")
                    older-version ".tar.gz"))
              (sha256
               (base32
-               "042hn3v0zk353r0h6yclq56z86hi437y969bckyb2qsnv00h60hi"))
+               "0cpmrww00xf1qx38bcc22rr05qw41p00p45yb5fbwnfaccfwdn0s"))
              ;; This patch deactivates some tests that depend on network access
              ;; to pass.  It also deactivates some tests that have some reliance
              ;; on timezone.
@@ -271,7 +273,7 @@ bootstrapping more recent compilers written in D.")
              ;; that is being pursued at
              ;; <https://forum.dlang.org/post/zmdbdgnzrxyvtpqafvyg@forum.dlang.org>.
              ;; It also deactivates a test that requires /root
-             (patches (search-patches "ldc-1.7.0-disable-phobos-tests.patch"))))
+             (patches (search-patches "ldc-disable-phobos-tests.patch"))))
          ("druntime-src"
           ,(origin
              (method url-fetch)
@@ -280,7 +282,7 @@ bootstrapping more recent compilers written in D.")
                    older-version ".tar.gz"))
              (sha256
               (base32
-               "0pvabk70zw8c1gbmvy2i486bg22bn0l5nbacjz0qwmhf0w9y9ylh"))))
+               "1akh2vdi98jih8642yjbvv2vavxzrmq24kz8i3kfidg5ndqyv222"))))
          ("dmd-testsuite-src"
           ,(origin
              (method url-fetch)
@@ -289,7 +291,7 @@ bootstrapping more recent compilers written in D.")
                    older-version ".tar.gz"))
              (sha256
               (base32
-               "1i8j1raah7b26bprwkdick443ivdsihgi1l14sn9rh4a95rnrpd9")))))))))
+               "0z5x07qrbkpksshaymp11ir6jlmg9wjicxn6zhp8cya6i1ha9p99")))))))))
 
 (define-public dub
   (package
