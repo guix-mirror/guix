@@ -276,16 +276,15 @@ enough to be used effectively as a scientific calculator.")
 (define-public double-conversion
   (package
     (name "double-conversion")
-    (version "3.0.0")
+    (version "3.1.0")
     (home-page "https://github.com/google/double-conversion")
     (source (origin
               (method git-fetch)
-              (uri (git-reference (url home-page)
-                                  (commit (string-append "v" version))))
+              (uri (git-reference (url home-page) (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05m78wlwrg310mxh1cl3d8d0ishzfvzh84x64xmvng252m0vc8yz"))))
+                "123rb2p4snqagrybw66vnapchqdwn2rfpr1wcq0ya9gwbyl7xccx"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"
