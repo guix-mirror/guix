@@ -636,6 +636,13 @@ Language.")
                '(begin
                   ;; Delete bundled snappy and xz.
                   (delete-file-recursively "storage/tokudb/PerconaFT/third_party")
+                  (substitute* "storage/tokudb/PerconaFT/CMakeLists.txt"
+                    ;; This file checks that the bundled sources are present and
+                    ;; declares build procedures for them.
+                    (("^include\\(TokuThirdParty\\)") ""))
+                  (substitute* "storage/tokudb/PerconaFT/ft/CMakeLists.txt"
+                    ;; Don't attempt to use the procedures we just removed.
+                    ((" build_lzma build_snappy") ""))
 
                   ;; Preserve CMakeLists.txt for these.
                   (for-each (lambda (file)
@@ -679,7 +686,7 @@ Language.")
          "-DINSTALL_SHAREDIR=share")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'unbundle
+         (add-after 'unpack 'fix-pcre-detection
            (lambda _
              ;; The bundled PCRE in MariaDB has a patch that was upstreamed
              ;; in version 8.34.  Unfortunately the upstream patch behaves
@@ -688,16 +695,6 @@ Language.")
              ;; XXX: Consider patching PCRE instead.
              (substitute* "cmake/pcre.cmake"
                ((" OR NOT PCRE_STACK_SIZE_OK") ""))
-
-             (substitute* "storage/tokudb/PerconaFT/ft/CMakeLists.txt"
-               ;; Remove dependency on these CMake targets.
-               ((" build_lzma build_snappy") ""))
-
-             (substitute* "storage/tokudb/PerconaFT/CMakeLists.txt"
-               ;; This file checks that the bundled sources are present and
-               ;; declares build procedures for them.  We don't need that.
-               (("^include\\(TokuThirdParty\\)") ""))
-
              #t))
          (add-after 'unpack 'adjust-tests
            (lambda _
