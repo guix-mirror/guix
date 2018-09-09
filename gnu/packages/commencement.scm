@@ -79,6 +79,9 @@
 ;;;
 ;;; Code:
 
+(define (%bootstrap-inputs+toolchain)
+  (%bootstrap-inputs))
+
 (define gnu-make-boot0
   (package-with-bootstrap-guile
    (package (inherit gnu-make)
@@ -101,13 +104,13 @@
                       (install-file "make" bin)
                       #t))))))))
      (native-inputs '())                          ; no need for 'pkg-config'
-     (inputs (%bootstrap-inputs)))))
+     (inputs (%bootstrap-inputs+toolchain)))))
 
 (define diffutils-boot0
   (package-with-bootstrap-guile
    (let ((p (package-with-explicit-inputs diffutils
                                           `(("make" ,gnu-make-boot0)
-                                            ,@(%bootstrap-inputs))
+                                            ,@(%bootstrap-inputs+toolchain))
                                           #:guile %bootstrap-guile)))
      (package (inherit p)
        (name "diffutils-boot0")
@@ -121,7 +124,7 @@
                                    (name "findutils-boot0"))
                                  `(("make" ,gnu-make-boot0)
                                    ("diffutils" ,diffutils-boot0) ; for tests
-                                   ,@(%bootstrap-inputs))
+                                   ,@(%bootstrap-inputs+toolchain))
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
@@ -131,17 +134,16 @@
                                    (inherit file)
                                    (name "file-boot0"))
                                  `(("make" ,gnu-make-boot0)
-                                   ,@(%bootstrap-inputs))
+                                   ,@(%bootstrap-inputs+toolchain))
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
-
 
 (define (%boot0-inputs)
   `(("make" ,gnu-make-boot0)
     ("diffutils" ,diffutils-boot0)
     ("findutils" ,findutils-boot0)
     ("file" ,file-boot0)
-    ,@(%bootstrap-inputs)))
+    ,@(%bootstrap-inputs+toolchain)))
 
 (define* (boot-triplet #:optional (system (%current-system)))
   ;; Return the triplet used to create the cross toolchain needed in the
@@ -150,8 +152,9 @@
 
 ;; Following Linux From Scratch, build a cross-toolchain in stage 0.  That
 ;; toolchain actually targets the same OS and arch, but it has the advantage
-;; of being independent of the libc and tools in (%BOOTSTRAP-INPUTS), since
-;; GCC-BOOT0 (below) is built without any reference to the target libc.
+;; of being independent of the libc and tools in
+;; (%BOOTSTRAP-INPUTS+TOOLCHAIN), since GCC-BOOT0 (below) is built without any
+;; reference to the target libc.
 
 (define binutils-boot0
   (package-with-bootstrap-guile
