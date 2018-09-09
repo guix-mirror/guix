@@ -109,8 +109,9 @@
 (define diffutils-boot0
   (package-with-bootstrap-guile
    (let ((p (package-with-explicit-inputs diffutils
-                                          `(("make" ,gnu-make-boot0)
-                                            ,@(%bootstrap-inputs+toolchain))
+                                          (lambda _
+                                            `(("make" ,gnu-make-boot0)
+                                              ,@(%bootstrap-inputs+toolchain)))
                                           #:guile %bootstrap-guile)))
      (package (inherit p)
        (name "diffutils-boot0")
@@ -122,9 +123,10 @@
    (package-with-explicit-inputs (package
                                    (inherit findutils)
                                    (name "findutils-boot0"))
-                                 `(("make" ,gnu-make-boot0)
-                                   ("diffutils" ,diffutils-boot0) ; for tests
-                                   ,@(%bootstrap-inputs+toolchain))
+                                 (lambda _
+                                   `(("make" ,gnu-make-boot0)
+                                     ("diffutils" ,diffutils-boot0) ; for tests
+                                     ,@(%bootstrap-inputs+toolchain)))
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
@@ -132,9 +134,13 @@
   (package-with-bootstrap-guile
    (package-with-explicit-inputs (package
                                    (inherit file)
-                                   (name "file-boot0"))
-                                 `(("make" ,gnu-make-boot0)
-                                   ,@(%bootstrap-inputs+toolchain))
+                                   (name "file-boot0")
+                                   (arguments
+                                    '(#:strip-binaries? #f
+                                      #:validate-runpath? #f)))
+                                 (lambda _
+                                   `(("make" ,gnu-make-boot0)
+                                     ,@(%bootstrap-inputs+toolchain)))
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
@@ -342,7 +348,7 @@
                       `(delete "-Dusethreads" ,configure-flags))))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs perl
-                                   (%boot0-inputs)
+                                   %boot0-inputs
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
@@ -361,11 +367,7 @@
   ;; This Bison is needed to build MiG so we need it early in the process.
   ;; It is also needed to rebuild Bash's parser, which is modified by
   ;; its CVE patches.  Remove it when it's no longer needed.
-  (let* ((m4    (package-with-bootstrap-guile
-                 (package-with-explicit-inputs m4 (%boot0-inputs)
-                                               (current-source-location)
-                                               #:guile %bootstrap-guile)))
-         (bison (package (inherit bison)
+  (let* ((bison (package (inherit bison)
                   (propagated-inputs `(("m4" ,m4)))
                   (inputs '())                    ;remove Flex...
                   (arguments
@@ -374,11 +376,12 @@
                      ;; Zero timestamps in liby.a; this must be done
                      ;; explicitly here because the bootstrap Binutils don't
                      ;; do that (default is "cru".)
-                     #:make-flags '("ARFLAGS=crD" "RANLIB=ranlib -D"
+                     #:make-flags '("ARFLAGS=crD"
+                                    "RANLIB=ranlib -D"
                                     "V=1"))))))
     (package
       (inherit (package-with-bootstrap-guile
-                (package-with-explicit-inputs bison (%boot0-inputs)
+                (package-with-explicit-inputs bison %boot0-inputs
                                               (current-source-location)
                                               #:guile %bootstrap-guile)))
       (native-inputs `(("perl" ,perl-boot0))))))
@@ -391,7 +394,7 @@
                  (inputs `(("indent" ,indent)))
                  (arguments '(#:tests? #f)))))
     (package-with-bootstrap-guile
-     (package-with-explicit-inputs flex (%boot0-inputs)
+     (package-with-explicit-inputs flex %boot0-inputs
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
@@ -483,23 +486,24 @@ the bootstrap environment."
                    ;; UTF-8 locale at this stage, so skip them.
                    (arguments '(#:tests? #f)))))
     (package-with-bootstrap-guile
-     (package-with-explicit-inputs texinfo (%boot0-inputs)
+     (package-with-explicit-inputs texinfo %boot0-inputs
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
-(define ld-wrapper-boot0
+(define (ld-wrapper-boot0)
   ;; We need this so binaries on Hurd will have libmachuser and libhurduser
   ;; in their RUNPATH, otherwise validate-runpath will fail.
   (make-ld-wrapper "ld-wrapper-boot0"
                    #:target boot-triplet
                    #:binutils binutils-boot0
                    #:guile %bootstrap-guile
-                   #:bash (car (assoc-ref (%boot0-inputs) "bash"))))
+                   #:bash (car (assoc-ref (%boot0-inputs) "bash"))
+                   #:guile-for-build %bootstrap-guile))
 
 (define (%boot1-inputs)
   ;; 2nd stage inputs.
   `(("gcc" ,gcc-boot0)
-    ("ld-wrapper-cross" ,ld-wrapper-boot0)
+    ("ld-wrapper-cross" ,(ld-wrapper-boot0))
     ("binutils-cross" ,binutils-boot0)
     ,@(alist-delete "binutils" (%boot0-inputs))))
 
@@ -650,7 +654,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                    ,@(fold alist-delete (%boot1-inputs)
                            '("gcc" "libc")))))
     (package-with-bootstrap-guile
-     (package-with-explicit-inputs bash inputs
+     (package-with-explicit-inputs bash (lambda _ inputs)
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
@@ -685,7 +689,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                   (delete 'patch-tests))))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs gettext-minimal
-                                   (%boot1-inputs)
+                                   %boot1-inputs
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
@@ -718,7 +722,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
          ,@(package-arguments glibc-final-with-bootstrap-bash))))))
 
-(define gcc-boot0-wrapped
+(define (gcc-boot0-wrapped)
   ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
   ;; non-cross names.
   (cross-gcc-wrapper gcc-boot0 binutils-boot0 glibc-final
@@ -728,7 +732,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; 3rd stage inputs.
   `(("libc" ,glibc-final)
     ("libc:static" ,glibc-final "static")
-    ("gcc" ,gcc-boot0-wrapped)
+    ("gcc" ,(gcc-boot0-wrapped))
     ,@(fold alist-delete (%boot1-inputs) '("libc" "gcc"))))
 
 (define binutils-final
@@ -780,12 +784,13 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
         ,@(package-arguments zlib)))
      (inputs (%boot2-inputs)))))
 
-(define ld-wrapper-boot3
+(define (ld-wrapper-boot3)
   ;; A linker wrapper that uses the bootstrap Guile.
   (make-ld-wrapper "ld-wrapper-boot3"
                    #:binutils binutils-final
                    #:guile %bootstrap-guile
-                   #:bash (car (assoc-ref (%boot2-inputs) "bash"))))
+                   #:bash (car (assoc-ref (%boot2-inputs) "bash"))
+                   #:guile-for-build %bootstrap-guile))
 
 (define gcc-final
   ;; The final GCC.
@@ -846,7 +851,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (inputs `(("gmp-source" ,(bootstrap-origin (package-source gmp-6.0)))
               ("mpfr-source" ,(package-source mpfr))
               ("mpc-source" ,(package-source mpc))
-              ("ld-wrapper" ,ld-wrapper-boot3)
+              ("ld-wrapper" ,(ld-wrapper-boot3))
               ("binutils" ,binutils-final)
               ("libstdc++" ,libstdc++)
               ("zlib" ,zlib-final)
@@ -855,7 +860,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define (%boot3-inputs)
   ;; 4th stage inputs.
   `(("gcc" ,gcc-final)
-    ("ld-wrapper" ,ld-wrapper-boot3)
+    ("ld-wrapper" ,(ld-wrapper-boot3))
     ,@(alist-delete "gcc" (%boot2-inputs))))
 
 (define bash-final
@@ -870,7 +875,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                    ,@(package-arguments bash-minimal))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs (static-libgcc-package bash)
-                                   (%boot3-inputs)
+                                   %boot3-inputs
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
@@ -884,7 +889,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; mark it as hidden so that 'fold-packages' ignores it.
   (package-with-bootstrap-guile
    (package-with-explicit-inputs (hidden-package guile-2.2/fixed)
-                                 (%boot4-inputs)
+                                 %boot4-inputs
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
@@ -898,7 +903,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (inherit glibc-utf8-locales)
     (inputs `(("glibc" ,glibc-final)
               ("gzip"
-               ,(package-with-explicit-inputs gzip (%boot4-inputs)
+               ,(package-with-explicit-inputs gzip %boot4-inputs
                                               (current-source-location)
                                               #:guile %bootstrap-guile))))))
 
@@ -920,8 +925,9 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; The final GNU Make, which uses the final Guile.
   (package-with-bootstrap-guile
    (package-with-explicit-inputs gnu-make
-                                 `(("guile" ,guile-final)
-                                   ,@(%boot5-inputs))
+                                 (lambda _
+                                   `(("guile" ,guile-final)
+                                     ,@(%boot5-inputs)))
                                  (current-source-location))))
 
 (define coreutils-final
@@ -929,7 +935,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; Findutils, keep a reference to the Coreutils they were built with.
   (package-with-bootstrap-guile
    (package-with-explicit-inputs coreutils
-                                 (%boot5-inputs)
+                                 %boot5-inputs
                                  (current-source-location)
 
                                  ;; Use the final Guile, linked against the
@@ -942,7 +948,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; The final grep.  Gzip holds a reference to it (via zgrep), so it must be
   ;; built before gzip.
   (let ((grep (package-with-bootstrap-guile
-               (package-with-explicit-inputs grep (%boot5-inputs)
+               (package-with-explicit-inputs grep %boot5-inputs
                                              (current-source-location)
                                              #:guile guile-final))))
     (package/inherit grep
@@ -958,7 +964,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define sed-final
   ;; The final sed.
   (let ((sed (package-with-bootstrap-guile
-              (package-with-explicit-inputs sed (%boot6-inputs)
+              (package-with-explicit-inputs sed %boot6-inputs
                                             (current-source-location)
                                             #:guile guile-final))))
     (package/inherit sed (native-inputs `(("perl" ,perl-boot0))))))
@@ -969,7 +975,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; used for origins that have patches, thereby avoiding circular
   ;; dependencies.
   (let ((finalize (compose package-with-bootstrap-guile
-                           (cut package-with-explicit-inputs <> (%boot6-inputs)
+                           (cut package-with-explicit-inputs <> %boot6-inputs
                                 (current-source-location)))))
     `(,@(map (match-lambda
               ((name package)
