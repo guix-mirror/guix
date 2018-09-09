@@ -2180,7 +2180,7 @@ hours, minutes, seconds, and time zones.")
 (define-public perl-datetime
   (package
     (name "perl-datetime")
-    (version "1.49")
+    (version "1.50")
     (source
      (origin
        (method url-fetch)
@@ -2188,7 +2188,7 @@ hours, minutes, seconds, and time zones.")
                            "DateTime-" version ".tar.gz"))
        (sha256
         (base32
-         "0hbw4zq1562slnz7g7hyhfhyq98dzkk3i5g21x3xra5cvfix93kh"))))
+         "165iqk1xvhs5j0kzsipa7aqycx3h37wqsl2r4jl104yqvmqhqszd"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
