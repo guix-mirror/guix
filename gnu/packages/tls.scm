@@ -317,15 +317,7 @@ required structures.")
                      (string-append "--openssldir=" out
                                     "/share/openssl-" ,version)
 
-                     (string-append "--prefix=" out)
-
-                     ;; XXX FIXME: Work around a code generation bug in GCC
-                     ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
-                     ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
-                     ,@(if (and (not (%current-target-system))
-                                (string-prefix? "armhf" (%current-system)))
-                           '("-mfpu=vfpv3")
-                           '())))))
+                     (string-append "--prefix=" out)))))
         (add-after
          'install 'make-libraries-writable
          (lambda* (#:key outputs #:allow-other-keys)
