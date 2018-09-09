@@ -217,6 +217,85 @@ by no means limited to these applications.)  This package provides XML DTDs.")
      "This package provides XSL style sheets for DocBook.")
     (license (x11-style "" "See 'COPYING' file."))))
 
+(define-public docbook-dsssl
+  (package
+    (name "docbook-dsssl")
+    (version "1.79")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/docbook/"
+                                  name "/" version "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1g72y2yyc2k89kzs0lvrb9n7hjayw1hdskfpplpz97pf1c99wcig"))))
+    (build-system trivial-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((source (assoc-ref %build-inputs "source"))
+               (dtd (string-append (assoc-ref %outputs "out")
+                                   "/sgml/dtd/docbook"))
+               (docbook-dsssl-doc (assoc-ref %build-inputs "docbook-dsssl-doc"))
+               (doc (assoc-ref %outputs "doc"))
+               (tar (assoc-ref %build-inputs "tar"))
+               (bzip2 (assoc-ref %build-inputs "bzip2")))
+           (setenv "PATH" (string-append tar "/bin" ":" bzip2 "/bin"))
+           (mkdir-p dtd)
+           (invoke "tar" "-xf" source "-C" dtd)
+           ;; The doc output contains 1.4 MiB of HTML documentation.
+           (symlink docbook-dsssl-doc doc)))))
+    (inputs
+     `(("docbook-dsssl-doc" ,docbook-dsssl-doc)))
+    (native-inputs
+     `(("bzip2", bzip2)
+       ("tar" ,tar)))
+    (home-page "https://docbook.org/")
+    (synopsis "DSSSL style sheets for DocBook")
+    (description "This package provides DSSSL style sheets for DocBook.")
+    (license (non-copyleft "file://README"))))
+
+;;; Private variable, used as the 'doc' output of the docbook-dsssl package.
+(define docbook-dsssl-doc
+  (package
+    (name "docbook-dsssl-doc")
+    (version "1.79")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/docbook/"
+                                  name "/" version "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1plp5ngc96pbna4rwglp9glcadnirbm3hlcjb4gjvq1f8biic9lz"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((source (assoc-ref %build-inputs "source"))
+               (docdir (string-append (assoc-ref %outputs "out")
+                                      "/share/doc/" "docbook-dsssl-" ,version))
+               (tar (assoc-ref %build-inputs "tar"))
+               (bzip2 (assoc-ref %build-inputs "bzip2")))
+           (setenv "PATH" (string-append tar "/bin" ":" bzip2 "/bin"))
+           (mkdir-p docdir)
+           ;; Extract the "doc" subdirectory.
+           (invoke "tar" "-xf" source "--strip-components=2"
+                   "--no-same-owner" "-C" docdir
+                   (string-append "docbook-dsssl-" ,version "/doc"))))))
+    (native-inputs
+     `(("bzip2", bzip2)
+       ("tar" ,tar)))
+    (home-page "https://docbook.org/")
+    (synopsis "DocBook DSSSL style sheets documentation")
+    (description "Documentation for the DocBook DSSSL style sheets.")
+    (license (non-copyleft "file://doc/LEGALNOTICE.htm"))))
+
 (define-public docbook-sgml
   (package
     (name "docbook-sgml")
