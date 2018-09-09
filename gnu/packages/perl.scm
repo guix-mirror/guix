@@ -6364,7 +6364,7 @@ anything that looks like a method.")
 (define-public perl-namespace-clean
   (package
     (name "perl-namespace-clean")
-    (version "0.25")
+    (version "0.27")
     (source
      (origin
        (method url-fetch)
@@ -6372,7 +6372,7 @@ anything that looks like a method.")
                            "namespace-clean-" version ".tar.gz"))
        (sha256
         (base32
-         "016dds70ql1mp18b07chkxiy4drn976ibnbshqc2hmhrh9xjnsll"))))
+         "17dg64pd4bwi2ad3p8ykwys1zha7kg8a8ykvks7wfg8q7qyah44a"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-package-stash" ,perl-package-stash)
