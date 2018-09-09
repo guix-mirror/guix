@@ -3168,7 +3168,7 @@ only about 40% as many lines of code and with zero non-core dependencies.")
 (define-public perl-extutils-installpaths
   (package
     (name "perl-extutils-installpaths")
-    (version "0.011")
+    (version "0.012")
     (source
      (origin
        (method url-fetch)
@@ -3176,7 +3176,7 @@ only about 40% as many lines of code and with zero non-core dependencies.")
                            "ExtUtils-InstallPaths-" version ".tar.gz"))
        (sha256
         (base32
-         "0z06y0fhx9hy9x01abb7s2xdbqrh9x4ps7avmlf4bwfwih2gl2bn"))))
+         "1v9lshfhm9ck4p0v77arj5f7haj1mmkqal62lgzzvcds6wq5www4"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-extutils-config" ,perl-extutils-config)))
