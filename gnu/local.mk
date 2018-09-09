@@ -1010,8 +1010,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/opensmtpd-fix-crash.patch		\
   %D%/packages/patches/openssl-runpath.patch			\
-  %D%/packages/patches/openssl-1.0.2-CVE-2018-0495.patch	\
-  %D%/packages/patches/openssl-1.0.2-CVE-2018-0732.patch	\
   %D%/packages/patches/openssl-1.1.0-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\

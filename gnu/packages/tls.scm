@@ -262,7 +262,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.2o")
+   (version "1.0.2p")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -274,10 +274,8 @@ required structures.")
                                        "/" name "-" version ".tar.gz")))
              (sha256
               (base32
-               "0kcy13l701054nhpbd901mz32v1kn4g311z0nifd83xs2jbmqgzc"))
+               "003xh9f898i56344vpvpxxxzmikivxig4xwlm7vbi7m8n43qxaah"))
              (patches (search-patches "openssl-runpath.patch"
-                                      "openssl-1.0.2-CVE-2018-0495.patch"
-                                      "openssl-1.0.2-CVE-2018-0732.patch"
                                       "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
