@@ -279,12 +279,13 @@ enough to be used effectively as a scientific calculator.")
     (version "3.0.0")
     (home-page "https://github.com/google/double-conversion")
     (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "059r1czs28ljjd388pn6l3njg1ghbf1cv3q9nkxv3dj2a8siabqm"))))
+                "05m78wlwrg310mxh1cl3d8d0ishzfvzh84x64xmvng252m0vc8yz"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"
