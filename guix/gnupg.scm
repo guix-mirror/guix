@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2013, 2014, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -24,9 +24,12 @@
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 i18n)
   #:use-module (srfi srfi-1)
-  #:use-module (guix ui)
+  #:use-module (guix i18n)
+  #:use-module ((guix utils) #:select (config-directory))
+  #:use-module ((guix build utils) #:select (mkdir-p))
   #:export (%gpg-command
             %openpgp-key-server
+            current-keyring
             gnupg-verify
             gnupg-verify*
             gnupg-status-good-signature?
@@ -42,13 +45,25 @@
   ;; The GnuPG 2.x command-line program name.
   (make-parameter (or (getenv "GUIX_GPG_COMMAND") "gpg")))
 
+(define %gpgv-command
+  ;; The 'gpgv' program.
+  (make-parameter (or (getenv "GUIX_GPGV_COMMAND") "gpgv")))
+
+(define current-keyring
+  ;; The default keyring of "trusted keys".
+  (make-parameter (string-append (config-directory #:ensure? #f)
+                                 "/gpg/trustedkeys.kbx")))
+
 (define %openpgp-key-server
   ;; The default key server.  Note that keys.gnupg.net appears to be
   ;; unreliable.
   (make-parameter "pgp.mit.edu"))
 
-(define (gnupg-verify sig file)
-  "Verify signature SIG for FILE.  Return a status s-exp if GnuPG failed."
+(define* (gnupg-verify sig file
+                       #:optional (keyring (current-keyring)))
+  "Verify signature SIG for FILE against the keys in KEYRING.  All the keys in
+KEYRING as assumed to be \"trusted\", whether or not they expired or were
+revoked.  Return a status s-exp if GnuPG failed."
 
   (define (status-line->sexp line)
     ;; See file `doc/DETAILS' in GnuPG.
@@ -117,8 +132,8 @@
           (loop (read-line input)
                 (cons (status-line->sexp line) result)))))
 
-  (let* ((pipe   (open-pipe* OPEN_READ (%gpg-command) "--status-fd=1"
-                             "--verify" sig file))
+  (let* ((pipe   (open-pipe* OPEN_READ (%gpgv-command) "--status-fd=1"
+                             "--keyring" keyring sig file))
          (status (parse-status pipe)))
     ;; Ignore PIPE's exit status since STATUS above should contain all the
     ;; info we need.
@@ -145,12 +160,21 @@ missing key."
            (_ #f)))
        status))
 
-(define (gnupg-receive-keys key-id server)
-  (system* (%gpg-command) "--keyserver" server "--recv-keys" key-id))
+(define* (gnupg-receive-keys key-id server
+                             #:optional (keyring (current-keyring)))
+  (unless (file-exists? keyring)
+    (mkdir-p (dirname keyring))
+    (call-with-output-file keyring (const #t)))   ;create an empty keybox
+
+  (system* (%gpg-command) "--keyserver" server
+           "--no-default-keyring" "--keyring" keyring
+           "--recv-keys" key-id))
 
 (define* (gnupg-verify* sig file
-                        #:key (key-download 'interactive)
-                              (server (%openpgp-key-server)))
+                        #:key
+                        (key-download 'interactive)
+                        (server (%openpgp-key-server))
+                        (keyring (current-keyring)))
   "Like `gnupg-verify', but try downloading the public key if it's missing.
 Return #t if the signature was good, #f otherwise.  KEY-DOWNLOAD specifies a
 download policy for missing OpenPGP keys; allowed values: 'always', 'never',
@@ -161,15 +185,17 @@ and 'interactive' (default)."
           (define (download-and-try-again)
             ;; Download the missing key and try again.
             (begin
-              (gnupg-receive-keys missing server)
-              (gnupg-status-good-signature? (gnupg-verify sig file))))
+              (gnupg-receive-keys missing server keyring)
+              (gnupg-status-good-signature? (gnupg-verify sig file
+                                                          keyring))))
 
           (define (receive?)
             (let ((answer
-                   (begin (format #t (G_ "~a~a~%")
-                                  "Would you like to download this key "
-                                  "and add it to your keyring?")
-                          (read-line))))
+                   (begin
+                     (format #t (G_ "Would you like to add this key \
+to keyring '~a'?~%")
+                             keyring)
+                     (read-line))))
               (string-match (locale-yes-regexp) answer)))
 
           (and missing

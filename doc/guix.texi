@@ -7268,6 +7268,36 @@ The following options can be used to customize GnuPG operation:
 Use @var{command} as the GnuPG 2.x command.  @var{command} is searched
 for in @code{$PATH}.
 
+@item --keyring=@var{file}
+Use @var{file} as the keyring for upstream keys.  @var{file} must be in the
+@dfn{keybox format}.  Keybox files usually have a name ending in @file{.kbx}
+and the GNU@tie{}Privacy Guard (GPG) can manipulate these files
+(@pxref{kbxutil, @command{kbxutil},, gnupg, Using the GNU Privacy Guard}, for
+information on a tool to manipulate keybox files).
+
+When this option is omitted, @command{guix refresh} uses
+@file{~/.config/guix/upstream/trustedkeys.kbx} as the keyring for upstream
+signing keys.  OpenPGP signatures are checked against keys from this keyring;
+missing keys are downloaded to this keyring as well (see
+@option{--key-download} below.)
+
+You can export keys from your default GPG keyring into a keybox file using
+commands like this one:
+
+@example
+gpg --export rms@@gnu.org | kbxutil --import-openpgp >> mykeyring.kbx
+@end example
+
+Likewise, you can fetch keys to a specific keybox file like this:
+
+@example
+gpg --no-default-keyring --keyring mykeyring.kbx \
+  --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
+@end example
+
+@ref{GPG Configuration Options, @option{--keyring},, gnupg, Using the GNU
+Privacy Guard}, for more information on GPG's @option{--keyring} option.
+
 @item --key-download=@var{policy}
 Handle missing OpenPGP keys according to @var{policy}, which may be one
 of:
