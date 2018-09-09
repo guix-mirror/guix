@@ -28,17 +28,17 @@
 (define-public musl
   (package
     (name "musl")
-    (version "1.1.19")
+    (version "1.1.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.musl-libc.org/releases/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1nf1wh44bhm8gdcfr75ayib29b99vpq62zmjymrq7f96h9bshnfv"))))
+                "0q8dsjxl41dccscv9a0r78bs7jap57mn4mni5pwbbip6s1qqggj4"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f  ; Musl has no tests
+     `(#:tests? #f                      ; Musl has no tests
        #:configure-flags
        (list "--disable-gcc-wrapper")))
     (synopsis "Small C standard library")
