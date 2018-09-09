@@ -346,6 +346,17 @@
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
+(define m4-boot0
+  (package-with-bootstrap-guile
+   (package
+     (inherit m4)
+     (name "m4-boot0")
+     (inputs (%boot0-inputs))
+     (arguments
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
+        ,@(package-arguments m4))))))
+
 (define bison-boot0
   ;; This Bison is needed to build MiG so we need it early in the process.
   ;; It is also needed to rebuild Bash's parser, which is modified by
