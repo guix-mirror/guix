@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,10 +98,10 @@
 (define* (package-from-tarball name source program-to-test description
                                #:key snippet)
   "Return a package that correspond to the extraction of SOURCE.
-PROGRAM-TO-TEST is a program to run after extraction of SOURCE, to check
-whether everything is alright.  If SNIPPET is provided, it is evaluated after
-extracting SOURCE.  SNIPPET should raise an exception to signal an error; its
-return value is ignored."
+PROGRAM-TO-TEST is #f or a string: the program to run after extraction of
+SOURCE to check whether everything is alright.  If SNIPPET is provided, it is
+evaluated after extracting SOURCE.  SNIPPET should return true if successful,
+or false to signal an error."
   (package
     (name name)
     (version "0")
@@ -123,8 +124,9 @@ return value is ignored."
              (invoke tar "xvf"
                      (string-append builddir "/binaries.tar"))
              ,@(if snippet (list snippet) '())
-             (invoke (string-append "bin/" ,program-to-test)
-                     "--version"))))))
+             (or (not ,program-to-test)
+                 (invoke (string-append "bin/" ,program-to-test)
+                         "--version")))))))
     (inputs
      `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
        ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
