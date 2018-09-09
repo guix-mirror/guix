@@ -497,6 +497,7 @@ arithmetic ops.")
           (base32 "0k01hp0q4275fj4rbr1gy64svfraw5w7wvwl08yjhvsnpb1rid11"))
         (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
     (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--disable-static")))
     (synopsis "Decoder of the JBIG2 image compression format")
     (description
       "JBIG2 is designed for lossy or lossless encoding of 'bilevel' (1-bit
