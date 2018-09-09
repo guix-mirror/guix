@@ -156,8 +156,10 @@
                                 (files '("lib/perl5/site_perl")))))
     (synopsis "Implementation of the Perl programming language")
     (description
-     "Perl 5 is a highly capable, feature-rich programming language with over
-24 years of development.")
+     "Perl is a general-purpose programming language originally developed for
+text manipulation and now used for a wide range of tasks including system
+administration, web development, network programming, GUI development, and
+more.")
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
 
