@@ -57,7 +57,8 @@
              (inherit (package-source gd))
              (patches (search-patches "gd-fix-tests-on-i686.patch"
                                       "gd-freetype-test-failure.patch"
-                                      "gd-CVE-2018-5711.patch"))))))
+                                      "gd-CVE-2018-5711.patch"
+                                      "gd-CVE-2018-1000222.patch"))))))
 
 (define-public php
   (package

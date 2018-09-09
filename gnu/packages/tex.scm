@@ -4250,14 +4250,14 @@ PDF documents.")
 (define-public texmaker
   (package
     (name "texmaker")
-    (version "4.5")
+    (version "5.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.xm1math.net/texmaker/texmaker-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "056njk6j8wma23mlp7xa3rgfaxx0q8ynwx8wkmj7iy0b85p9ds9c"))))
+                "0y81mjm89b99pr9svcwpaf4iz2q9pc9hjas5kiwd1pbgl5vqskm9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -4268,9 +4268,9 @@ PDF documents.")
              (let ((out (assoc-ref outputs "out")))
                (invoke "qmake"
                        (string-append "PREFIX=" out)
-                       (string-append "DESKTOPDIR=" out
-                                      "/share/applications")
+                       (string-append "DESKTOPDIR=" out "/share/applications")
                        (string-append "ICONDIR=" out "/share/pixmaps")
+                       (string-append "METAINFODIR=" out "/share/metainfo")
                        "texmaker.pro")))))))
     (inputs
      `(("poppler-qt5" ,poppler-qt5)

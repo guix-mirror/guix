@@ -735,7 +735,7 @@ needed."
 
         (parameterize ((current-build-output-port (if quiet?
                                                       (%make-void-port "w")
-                                                      (current-error-port))))
+                                                      (build-output-port #:verbose? #t))))
           (let* ((mode  (assoc-ref opts 'build-mode))
                  (drv   (options->derivations store opts))
                  (urls  (map (cut string-append <> "/log")
