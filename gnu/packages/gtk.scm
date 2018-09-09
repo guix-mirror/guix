@@ -890,14 +890,7 @@ images onto Cairo surfaces.")
               (sha256
                (base32
                 "1qam447m05sxxv6x8dlzg7qnyfc4dh8apjw1idpfhpns671gfr6m"))
-              (patches (search-patches "guile-present-coding.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "Makefile.in"
-                    (("godir = .*$")
-                     "godir = $(moddir)\n"))
-                  #t))))
+              (patches (search-patches "guile-present-coding.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

@@ -138,6 +138,31 @@
          (equal? (list s1 s2)
                  (instantiate-missing-services (list s1 s2))))))
 
+(test-assert "instantiate-missing-services, indirect"
+  (let* ((t1 (service-type (name 't1) (extensions '())
+                           (default-value 'dflt)
+                           (compose concatenate)
+                           (extend cons)))
+         (t2 (service-type (name 't2) (extensions '())
+                           (default-value 'dflt2)
+                           (compose concatenate)
+                           (extend cons)
+                           (extensions
+                            (list (service-extension t1 list)))))
+         (t3 (service-type (name 't3)
+                           (extensions
+                            (list (service-extension t2 list)))))
+         (s1 (service t1))
+         (s2 (service t2))
+         (s3 (service t3 42))
+         (== (cut lset= equal? <...>)))
+    (and (== (list s1 s2 s3)
+             (instantiate-missing-services (list s3)))
+         (== (list s1 s2 s3)
+             (instantiate-missing-services (list s1 s3)))
+         (== (list s1 s2 s3)
+             (instantiate-missing-services (list s2 s3))))))
+
 (test-assert "instantiate-missing-services, no default value"
   (let* ((t1 (service-type (name 't1) (extensions '())))
          (t2 (service-type (name 't2)

@@ -732,13 +732,23 @@ instantiated; other missing services lead to a
            instances
            (service-type-extensions (service-kind svc))))
 
-  (let ((instances (fold (lambda (service result)
-                           (vhash-consq (service-kind service) service
-                                        result))
-                         vlist-null services)))
-    (fold2 adjust-service-list
-           services instances
-           services)))
+  (let loop ((services services))
+    (define instances
+      (fold (lambda (service result)
+              (vhash-consq (service-kind service) service
+                           result))
+            vlist-null services))
+
+    (define adjusted
+      (fold2 adjust-service-list
+             services instances
+             services))
+
+    ;; If we instantiated services, they might in turn depend on missing
+    ;; services.  Loop until we've reached fixed point.
+    (if (= (length adjusted) (vlist-length instances))
+        adjusted
+        (loop adjusted))))
 
 (define* (fold-services services
                         #:key (target-type system-service-type))

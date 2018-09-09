@@ -1908,7 +1908,7 @@ lv2-c++-tools.")
 (define-public openal
   (package
     (name "openal")
-    (version "1.18.2")
+    (version "1.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1916,7 +1916,7 @@ lv2-c++-tools.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "10kydm8701a2kppiss9sdidn1820cmzhqgx1b2bsa5dsgzic32lz"))))
+                "1mhf5bsb58s1xk6hvxl7ly7rd4rpl9z8h07xl1q94brywykg7bgi"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f  ; no check target

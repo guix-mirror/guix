@@ -20,7 +20,7 @@
 
 (define-module (guix scripts hash)
   #:use-module (guix base32)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix serialization)
   #:use-module (guix ui)
   #:use-module (guix scripts)
@@ -44,7 +44,7 @@
   `((format . ,bytevector->nix-base32-string)))
 
 (define (show-help)
-  (display (G_ "Usage: guix hash [OPTION] FILE
+  (display (G_ "Usage: gcrypt hash [OPTION] FILE
 Return the cryptographic hash of FILE.
 
 Supported formats: 'nix-base32' (default), 'base32', and 'base16' ('hex'
@@ -93,7 +93,7 @@ and 'hexadecimal' can be used as well).\n"))
                   (exit 0)))
         (option '(#\V "version") #f #f
                 (lambda args
-                  (show-version-and-exit "guix hash")))))
+                  (show-version-and-exit "gcrypt hash")))))
 
 
 

@@ -22,6 +22,7 @@
   #:use-module (guix ui)
   #:use-module (guix config)
   #:use-module (guix modules)
+  #:use-module (guix build-system gnu)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (rnrs io ports)
@@ -72,7 +73,7 @@
                                       (variables rest ...))))))
     (variables %localstatedir %storedir %sysconfdir %system)))
 
-(define* (make-config.scm #:key libgcrypt zlib gzip xz bzip2
+(define* (make-config.scm #:key zlib gzip xz bzip2
                           (package-name "GNU Guix")
                           (package-version "0")
                           (bug-report-address "bug-guix@gnu.org")
@@ -92,7 +93,6 @@
                                %state-directory
                                %store-database-directory
                                %config-directory
-                               %libgcrypt
                                %libz
                                %gzip
                                %bzip2
@@ -137,9 +137,6 @@
                      (define %xz
                        #+(and xz (file-append xz "/bin/xz")))
 
-                     (define %libgcrypt
-                       #+(and libgcrypt
-                              (file-append libgcrypt "/lib/libgcrypt")))
                      (define %libz
                        #+(and zlib
                               (file-append zlib "/lib/libz")))))))
@@ -200,6 +197,54 @@ person's version identifier."
   ;; XXX: Replace with a Git commit id.
   (date->string (current-date 0) "~Y~m~d.~H"))
 
+(define guile-gcrypt
+  ;; The host Guix may or may not have 'guile-gcrypt', which was introduced in
+  ;; August 2018.  If it has it, it's at least version 0.1.0, which is good
+  ;; enough.  If it doesn't, specify our own package because the target Guix
+  ;; requires it.
+  (match (find-best-packages-by-name "guile-gcrypt" #f)
+    (()
+     (package
+       (name "guile-gcrypt")
+       (version "0.1.0")
+       (home-page "https://notabug.org/cwebber/guile-gcrypt")
+       (source (origin
+                 (method url-fetch)
+                 (uri (string-append home-page "/archive/v" version ".tar.gz"))
+                 (sha256
+                  (base32
+                   "1gir7ifknbmbvjlql5j6wzk7bkb5lnmq80q59ngz43hhpclrk5k3"))
+                 (file-name (string-append name "-" version ".tar.gz"))))
+       (build-system gnu-build-system)
+       (arguments
+        ;; The 'bootstrap' phase appeared in 'core-updates', which was merged
+        ;; into 'master' ca. June 2018.
+        '(#:phases (modify-phases %standard-phases
+                     (delete 'bootstrap)
+                     (add-before 'configure 'bootstrap
+                       (lambda _
+                         (unless (zero? (system* "autoreconf" "-vfi"))
+                           (error "autoreconf failed"))
+                         #t)))))
+       (native-inputs
+        `(("pkg-config" ,(specification->package "pkg-config"))
+          ("autoconf" ,(specification->package "autoconf"))
+          ("automake" ,(specification->package "automake"))
+          ("texinfo" ,(specification->package "texinfo"))))
+       (inputs
+        `(("guile" ,(specification->package "guile"))
+          ("libgcrypt" ,(specification->package "libgcrypt"))))
+       (synopsis "Cryptography library for Guile using Libgcrypt")
+       (description
+        "Guile-Gcrypt provides a Guile 2.x interface to a subset of the
+GNU Libgcrypt crytographic library.  It provides modules for cryptographic
+hash functions, message authentication codes (MAC), public-key cryptography,
+strong randomness, and more.  It is implemented using the foreign function
+interface (FFI) of Guile.")
+       (license #f)))                             ;license:gpl3+
+    ((package . _)
+     package)))
+
 (define* (build-program source version
                         #:optional (guile-version (effective-version))
                         #:key (pull-version 0))
@@ -212,10 +257,21 @@ person's version identifier."
       (('gnu _ ...)    #t)
       (_               #f)))
 
+  (define fake-gcrypt-hash
+    ;; Fake (gcrypt hash) module; see below.
+    (scheme-file "hash.scm"
+                 #~(define-module (gcrypt hash)
+                     #:export (sha1 sha256))))
+
   (with-imported-modules `(((guix config)
-                            => ,(make-config.scm
-                                 #:libgcrypt
-                                 (specification->package "libgcrypt")))
+                            => ,(make-config.scm))
+
+                           ;; To avoid relying on 'with-extensions', which was
+                           ;; introduced in 0.15.0, provide a fake (gcrypt
+                           ;; hash) just so that we can build modules, and
+                           ;; adjust %LOAD-PATH later on.
+                           ((gcrypt hash) => ,fake-gcrypt-hash)
+
                            ,@(source-module-closure `((guix store)
                                                       (guix self)
                                                       (guix derivations)
@@ -237,13 +293,24 @@ person's version identifier."
                            (match %load-path
                              ((front _ ...)
                               (unless (string=? front source) ;already done?
-                                (set! %load-path (list source front)))))))
+                                (set! %load-path
+                                  (list source
+                                        (string-append #$guile-gcrypt
+                                                       "/share/guile/site/"
+                                                       (effective-version))
+                                        front)))))))
 
-                        ;; Only load our own modules or those of Guile.
+                        ;; Only load Guile-Gcrypt, our own modules, or those
+                        ;; of Guile.
                         (match %load-compiled-path
                           ((front _ ... sys1 sys2)
-                           (set! %load-compiled-path
-                             (list front sys1 sys2)))))
+                           (unless (string-prefix? #$guile-gcrypt front)
+                             (set! %load-compiled-path
+                               (list (string-append #$guile-gcrypt
+                                                    "/lib/guile/"
+                                                    (effective-version)
+                                                    "/site-ccache")
+                                     front sys1 sys2))))))
 
                       (use-modules (guix store)
                                    (guix self)

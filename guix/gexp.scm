@@ -1417,26 +1417,31 @@ denoting the target file.  Here's an example:
               `((\"hosts\" ,(plain-file \"hosts\"
                                         \"127.0.0.1 localhost\"))
                 (\"bashrc\" ,(plain-file \"bashrc\"
-                                         \"alias ls='ls --color'\"))))
+                                         \"alias ls='ls --color'\"))
+                (\"libvirt/qemu.conf\" ,(plain-file \"qemu.conf\" \"\"))))
 
 This yields an 'etc' directory containing these two files."
   (computed-file name
-                 (gexp
-                  (begin
-                    (mkdir (ungexp output))
-                    (chdir (ungexp output))
-                    (ungexp-splicing
-                     (map (match-lambda
-                            ((target source)
-                             (gexp
-                              (begin
-                                ;; Stat the source to abort early if it does
-                                ;; not exist.
-                                (stat (ungexp source))
+                 (with-imported-modules '((guix build utils))
+                   (gexp
+                    (begin
+                      (use-modules (guix build utils))
 
-                                (symlink (ungexp source)
-                                         (ungexp target))))))
-                          files))))))
+                      (mkdir (ungexp output))
+                      (chdir (ungexp output))
+                      (ungexp-splicing
+                       (map (match-lambda
+                              ((target source)
+                               (gexp
+                                (begin
+                                  ;; Stat the source to abort early if it does
+                                  ;; not exist.
+                                  (stat (ungexp source))
+
+                                  (mkdir-p (dirname (ungexp target)))
+                                  (symlink (ungexp source)
+                                           (ungexp target))))))
+                            files)))))))
 
 (define* (directory-union name things
                           #:key (copy? #f) (quiet? #f)

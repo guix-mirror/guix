@@ -286,7 +286,8 @@ file name."
            (manifest-transitive-entries manifest))))
 
 (define* (package->manifest-entry package #:optional (output "out")
-                                  #:key (parent (delay #f)))
+                                  #:key (parent (delay #f))
+                                  (properties '()))
   "Return a manifest entry for the OUTPUT of package PACKAGE."
   ;; For each dependency, keep a promise pointing to its "parent" entry.
   (letrec* ((deps  (map (match-lambda
@@ -305,7 +306,8 @@ file name."
                      (dependencies (delete-duplicates deps))
                      (search-paths
                       (package-transitive-native-search-paths package))
-                     (parent parent))))
+                     (parent parent)
+                     (properties properties))))
     entry))
 
 (define (packages->manifest packages)

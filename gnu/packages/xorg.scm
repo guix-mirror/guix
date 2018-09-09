@@ -17,6 +17,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6170,3 +6171,44 @@ and embedded platforms.")
 cursor to any point on the screen with a few key strokes.  It also simulates
 mouse click.  You can do everything mouse can do with a keyboard.")
     (license license:bsd-3)))
+
+(define-public transset-df
+  (package
+    (name "transset-df")
+    (version "6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://forchheimer.se/" name "/" name "-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "1vnykwwrv75miigbhmcwxniw8xnhsdyzhqydip2m9crxi2lwhqs5"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'setenv
+           (lambda _
+             (setenv "CC" (which "gcc"))
+             #t))
+         (delete 'configure)
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "transset-df" bin)
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs `(("libxcomposite" ,libxcomposite)
+              ("libxdamager" ,libxdamage)
+              ("libxrender" ,libxrender)))
+    (synopsis "Set the transparency of X11 windows")
+    (description "The @command{transset-df} command allows you to set the
+opacity of X11 windows.  This patched version of X.Org's @command{transset}
+adds functionality, including: selecting window by clicking (as transset),
+selecting windows by pointing select actual focused X11 window, selecting by
+window name or id, forcing toggle, increase or decrease opacity.")
+    (home-page "http://forchheimer.se/transset-df/")
+    (license license:x11)))

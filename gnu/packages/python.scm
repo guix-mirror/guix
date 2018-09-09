@@ -6186,14 +6186,14 @@ printing of sub-tables by specifying a row range.")
 (define-public python-tables
   (package
     (name "python-tables")
-    (version "3.2.2")
+    (version "3.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tables" version))
        (sha256
         (base32
-         "117s6w7s3yxafpmf3zz3svana7xfrsviw01va1xp7h8ylx8v6r1m"))
+         "0affz7k8babh8wdmsgrz5jxrd569by2w8ffimcxs9wiaf5rw1idx"))
        (modules '((guix build utils)))
        (snippet
         '(begin

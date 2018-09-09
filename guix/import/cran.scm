@@ -29,7 +29,7 @@
   #:use-module (web uri)
   #:use-module (guix memoization)
   #:use-module (guix http-client)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix store)
   #:use-module (guix base32)
   #:use-module ((guix download) #:select (download-to-store))

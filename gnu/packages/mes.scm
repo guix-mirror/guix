@@ -39,15 +39,15 @@
 (define-public nyacc
   (package
     (name "nyacc")
-    (version "0.83.3")
+    (version "0.86.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/nyacc/"
                                   name "-" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (patches (search-patches "nyacc-binary-literals.patch"))
               (sha256
                (base32
-                "0120n0mdb6r58c4jc024dhwqy5s8a20waknijfhqjc59a884lrd6"))))
+                "0lkd9lyspvhxlfs0496gsllwinh62jk9wij6gpadvx9gwz6yavd9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("guile" ,guile-2.2)))
@@ -59,36 +59,24 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (home-page "https://savannah.nongnu.org/projects/nyacc")
     (license (list gpl3+ lgpl3+))))
 
-(define-public nyacc-for-mes
-  (package
-    (inherit nyacc)
-    (version "0.80.42")
-      (source (origin
-                (method url-fetch)
-                (uri (string-append "https://gitlab.com/janneke/nyacc"
-                                    "/-/archive/v" version
-                                    "/nyacc-" version ".tar.gz"))
-                (sha256
-                 (base32
-                  "0c8c8kxir0h2d4nxr131xbkfs7c80haipmkp2g6677sh14wn0b3y"))))))
-
 (define-public mes
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version "0.17")
+      (version "0.17.1")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "http://alpha.gnu.org/gnu/mes/"
                                     "mes-" version ".tar.gz"))
+                (patches (search-patches "mes-nyacc-0.86.0.patch"))
                 (sha256
                  (base32
-                  "1j32x4zqy2cqjlg9m35f2411mwac2b0p5ch4hm99gddmfbxzgyhg"))))
+                  "02g8zig53ffd0ai8kqhv2zj7bj2366a8hr6ydkwakmi2d1amyrna"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
        `(("mescc-tools" ,mescc-tools)
-         ("nyacc" ,nyacc-for-mes)))
+         ("nyacc" ,nyacc)))
       (native-inputs
        `(("guile" ,guile-2.2)
          ,@(if (not (string-prefix? "i686-linux" (or (%current-target-system)

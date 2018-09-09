@@ -786,18 +786,23 @@ interface.  It is implemented as a frontend to @code{klick}.")
 (define-public libgme
   (package
     (name "libgme")
-    (version "0.6.1")
+    (version "0.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/mpyne/game-music-emu/"
                                   "downloads/game-music-emu-" version
-                                  ".tar.bz2"))
+                                  ".tar.xz"))
               (sha256
                (base32
-                "08fk7zddpn7v93d0fa7fcypx7hvgwx9b5psj9l6m8b87k2hbw4fw"))))
+                "0hkkmxbaas2sirlb5i4r10mgbbiaapjx8pazifabwba23m3wnijh"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no check target
+    (native-inputs
+     `(;; Use gcc-4.9 to work around an internal compiler error that happens
+       ;; when using gcc-5.5.0.  FIXME: Try removing this when the default
+       ;; compiler is no longer gcc-5.5.0.
+       ("gcc" ,gcc-4.9)))
     (home-page "https://bitbucket.org/mpyne/game-music-emu")
     (synopsis "Video game music file playback library")
     (description

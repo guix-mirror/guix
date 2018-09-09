@@ -28,7 +28,7 @@
                 #:renamer (lambda (name)
                             (cond ((eq? name 'location) 'make-location)
                                   (else name))))
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix grafts)

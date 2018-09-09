@@ -130,6 +130,11 @@ if test "x$guix_cv_have_recent_guile_sqlite3" != "xyes"; then
   AC_MSG_ERROR([A recent Guile-SQLite3 could not be found; please install it.])
 fi
 
+GUILE_MODULE_AVAILABLE([have_guile_gcrypt], [(gcrypt hash)])
+if test "x$have_guile_gcrypt" != "xyes"; then
+  AC_MSG_ERROR([Guile-Gcrypt could not be found; please install it.])
+fi
+
 dnl Make sure we have a full-fledged Guile.
 GUIX_ASSERT_GUILE_FEATURES([regex posix socket net-db threads])
 
@@ -213,16 +218,10 @@ AC_ARG_WITH([libgcrypt-libdir],
    esac])
 
 dnl If none of the --with-libgcrypt-* options was used, try to determine the
-dnl absolute file name of libgcrypt.so.
+dnl the library directory.
 case "x$LIBGCRYPT_PREFIX$LIBGCRYPT_LIBDIR" in
   xnono)
     GUIX_LIBGCRYPT_LIBDIR([LIBGCRYPT_LIBDIR])
-    if test "x$LIBGCRYPT_LIBDIR" != x; then
-      LIBGCRYPT="$LIBGCRYPT_LIBDIR/libgcrypt"
-    else
-      dnl 'config-daemon.ac' expects "no" in this case.
-      LIBGCRYPT_LIBDIR="no"
-    fi
     ;;
 esac
 

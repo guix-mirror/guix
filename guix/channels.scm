@@ -48,7 +48,7 @@
 
             latest-channel-instances
             channel-instance-derivations
-            latest-channel-derivations
+            latest-channel-derivation
             channel-instances->manifest))
 
 ;;; Commentary:
@@ -78,7 +78,7 @@
   ;; Default list of channels.
   (list (channel
          (name 'guix)
-         (branch "origin/master")
+         (branch "master")
          (url "https://git.savannah.gnu.org/git/guix.git"))))
 
 (define (guix-channel? channel)
@@ -207,22 +207,19 @@ INSTANCES."
             (guix-channel? (channel-instance-channel instance)))
           instances))
 
+  ;; Guile-Gcrypt is a dependency of CORE-INSTANCE.
+  (define guile-gcrypt
+    (module-ref (resolve-interface '(gnu packages gnupg))
+                'guile-gcrypt))
+
   (mlet %store-monad ((core (build-channel-instance core-instance)))
     (mapm %store-monad
           (lambda (instance)
             (if (eq? instance core-instance)
                 (return core)
                 (build-channel-instance instance
-                                        (list core))))
+                                        (list core guile-gcrypt))))
           instances)))
-
-(define latest-channel-derivations
-  (let ((latest-channel-instances (store-lift latest-channel-instances)))
-    (lambda (channels)
-      "Return, as a monadic value, the list of derivations for the latest
-instances of CHANNELS."
-      (mlet %store-monad ((instances (latest-channel-instances channels)))
-        (channel-instance-derivations instances)))))
 
 (define (whole-package-for-legacy name modules)
   "Return a full-blown Guix package for MODULES, a derivation that builds Guix
@@ -290,3 +287,14 @@ channel instances."
                        (entries     (mapm %store-monad instance->entry
                                           (zip instances derivations))))
     (return (manifest entries))))
+
+(define latest-channel-instances*
+  (store-lift latest-channel-instances))
+
+(define* (latest-channel-derivation #:optional (channels %default-channels))
+  "Return as a monadic value the derivation that builds the profile for the
+latest instances of CHANNELS."
+  (mlet* %store-monad ((instances ((store-lift latest-channel-instances)
+                                   channels))
+                       (manifest  (channel-instances->manifest instances)))
+    (profile-derivation manifest)))

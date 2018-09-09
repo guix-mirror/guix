@@ -887,7 +887,7 @@ designed to work well in user interface environments.")
 (define-public font-fira-code
   (package
     (name "font-fira-code")
-    (version "1.204")
+    (version "1.205")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://github.com/tonsky/FiraCode/releases/"
@@ -895,7 +895,7 @@ designed to work well in user interface environments.")
                                   "/FiraCode_" version ".zip"))
               (sha256
                (base32
-                "17wky221b3igrqhmxgmqiyv1xdfn0nw471vzhpkrvv1w2w1w1k18"))))
+                "13bxgf59g6fw5191xclcjzn22hj8jk9k5jjwf7vz07mpjbgadcl5"))))
     (build-system font-build-system)
     (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Monospaced font with programming ligatures")

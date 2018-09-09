@@ -153,8 +153,10 @@
                                 (files '("lib/perl5/site_perl")))))
     (synopsis "Implementation of the Perl programming language")
     (description
-     "Perl 5 is a highly capable, feature-rich programming language with over
-24 years of development.")
+     "Perl is a general-purpose programming language originally developed for
+text manipulation and now used for a wide range of tasks including system
+administration, web development, network programming, GUI development, and
+more.")
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
 
@@ -1369,7 +1371,7 @@ supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
 (define-public perl-config-autoconf
   (package
     (name "perl-config-autoconf")
-    (version "0.315")
+    (version "0.317")
     (source
      (origin
        (method url-fetch)
@@ -1377,7 +1379,7 @@ supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
                            "Config-AutoConf-" version ".tar.gz"))
        (sha256
         (base32
-         "0h39x9rzrhhilpg8yxlzpka269qrzsjg0iy0c1b9xflqlvhx2g2b"))))
+         "1qcwib4yaml5z2283qy5khjcydyibklsnk8zrk9wzdzc5wnv5r01"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
@@ -2140,7 +2142,7 @@ hours, minutes, seconds, and time zones.")
 (define-public perl-datetime
   (package
     (name "perl-datetime")
-    (version "1.49")
+    (version "1.50")
     (source
      (origin
        (method url-fetch)
@@ -2148,7 +2150,7 @@ hours, minutes, seconds, and time zones.")
                            "DateTime-" version ".tar.gz"))
        (sha256
         (base32
-         "0hbw4zq1562slnz7g7hyhfhyq98dzkk3i5g21x3xra5cvfix93kh"))))
+         "165iqk1xvhs5j0kzsipa7aqycx3h37wqsl2r4jl104yqvmqhqszd"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
@@ -3128,7 +3130,7 @@ only about 40% as many lines of code and with zero non-core dependencies.")
 (define-public perl-extutils-installpaths
   (package
     (name "perl-extutils-installpaths")
-    (version "0.011")
+    (version "0.012")
     (source
      (origin
        (method url-fetch)
@@ -3136,7 +3138,7 @@ only about 40% as many lines of code and with zero non-core dependencies.")
                            "ExtUtils-InstallPaths-" version ".tar.gz"))
        (sha256
         (base32
-         "0z06y0fhx9hy9x01abb7s2xdbqrh9x4ps7avmlf4bwfwih2gl2bn"))))
+         "1v9lshfhm9ck4p0v77arj5f7haj1mmkqal62lgzzvcds6wq5www4"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-extutils-config" ,perl-extutils-config)))
@@ -3192,7 +3194,7 @@ XS interface besides the perl one.")
 (define-public perl-extutils-helpers
   (package
     (name "perl-extutils-helpers")
-    (version "0.022")
+    (version "0.026")
     (source
      (origin
        (method url-fetch)
@@ -3200,7 +3202,7 @@ XS interface besides the perl one.")
                            "ExtUtils-Helpers-" version ".tar.gz"))
        (sha256
         (base32
-         "15dalfwmpfmifw312i5pwiai8134pxf7b2804shlqhdk1xqczy6k"))))
+         "05ilqcj1rg5izr09dsqmy5di4fvq6ph4k0chxks7qmd4j1kip46y"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/ExtUtils-Helpers")
     (synopsis "Various portability utilities for module builders")
@@ -3772,7 +3774,7 @@ single-letter approach, is provided but not enabled by default.")
 (define-public perl-getopt-long-descriptive
   (package
     (name "perl-getopt-long-descriptive")
-    (version "0.102")
+    (version "0.103")
     (source
      (origin
        (method url-fetch)
@@ -3780,7 +3782,7 @@ single-letter approach, is provided but not enabled by default.")
                            "Getopt-Long-Descriptive-" version ".tar.gz"))
        (sha256
         (base32
-         "0ii8xafvlph5vzcqp3dpc83lg7nkg3l1l2hmqdf5382a567vkm4s"))))
+         "1cpl240qxmh7jf85ai9sfkp3nzm99syya4jxidizp7aa83kvmqbh"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
@@ -6324,7 +6326,7 @@ anything that looks like a method.")
 (define-public perl-namespace-clean
   (package
     (name "perl-namespace-clean")
-    (version "0.25")
+    (version "0.27")
     (source
      (origin
        (method url-fetch)
@@ -6332,7 +6334,7 @@ anything that looks like a method.")
                            "namespace-clean-" version ".tar.gz"))
        (sha256
         (base32
-         "016dds70ql1mp18b07chkxiy4drn976ibnbshqc2hmhrh9xjnsll"))))
+         "17dg64pd4bwi2ad3p8ykwys1zha7kg8a8ykvks7wfg8q7qyah44a"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-package-stash" ,perl-package-stash)
@@ -6704,7 +6706,7 @@ checking parameters easier.")
 (define-public perl-params-validate
   (package
     (name "perl-params-validate")
-    (version "1.26")
+    (version "1.29")
     (source
      (origin
        (method url-fetch)
@@ -6712,7 +6714,7 @@ checking parameters easier.")
                            "Params-Validate-" version ".tar.gz"))
        (sha256
         (base32
-         "1vbj78qd46ip09i06dsbb62jfwpzp4bg7yi617v98nvim77w66l2"))))
+         "0cwpf8yxwyxbnwhf6rx4wnaq1q38j38i34a78a005shb8gxqv9j9"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -6897,7 +6899,7 @@ for correctness.")
 (define-public perl-pegex
   (package
    (name "perl-pegex")
-   (version "0.64")
+   (version "0.67")
    (source
     (origin
      (method url-fetch)
@@ -6906,7 +6908,7 @@ for correctness.")
            version ".tar.gz"))
      (sha256
       (base32
-       "1kb7y2cc3nibbn8i8y3vrzz1f9h3892nbf8jj88c5fdgpmj05q17"))))
+       "149015ra2figalxrnj72fz02qc5cm96xg6x8d6kmyanfmrrxzf9w"))))
    (build-system perl-build-system)
    (native-inputs
     `(("perl-file-sharedir-install" ,perl-file-sharedir-install)

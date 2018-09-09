@@ -2078,9 +2078,13 @@ literals.")
         (base32
          "1vbzf0awb6zb456xf48za1kl22018646cfzq4frvxgb9ay97vk0d"))))
     (build-system haskell-build-system)
-    ;; Tests require older versions of testy.
-    (arguments `(#:tests? #f))
+    (arguments `(#:configure-flags (list "--allow-newer=tasty")))
     (inputs `(("zlib" ,zlib)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
     (home-page "https://hackage.haskell.org/package/zlib")
     (synopsis
      "Compression and decompression in the gzip and zlib formats")
@@ -4220,7 +4224,7 @@ system.")
 (define-public ghc-base-compat
   (package
     (name "ghc-base-compat")
-    (version "0.10.4")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
@@ -4230,7 +4234,7 @@ system.")
              ".tar.gz"))
        (sha256
         (base32
-         "0ksp990gxs731mq19rzbxrbs43nazfljjc8krlx5bjqblw3kfs8d"))))
+         "0452l6zf6fjhy4kxqwv6i6hhg6yfx4wcg450k3axpyj30l7jnq3x"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
@@ -5190,6 +5194,8 @@ occurrences of a substring (the first in case of overlaps) with another.")
         (base32
          "1wj8kgjg5bn2yrs4zh9qfjv85cx6w998j9pi39yrbv305944mb9j"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=tasty")))
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-smallcheck" ,ghc-smallcheck)
@@ -10150,6 +10156,31 @@ tools are not needed to actually run Gtk2Hs programs.")
     (description
      "This package provides a library for generating 2D charts and plots, with
 backends provided by the @code{Cairo} and @code{Diagrams} libraries.")
+    (license license:bsd-3)))
+
+(define-public ghc-wcwidth
+  (package
+    (name "ghc-wcwidth")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/wcwidth/wcwidth-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1n1fq7v64b59ajf5g50iqj9sa34wm7s2j3viay0kxpmvlcv8gipz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-setlocale" ,ghc-setlocale)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-attoparsec" ,ghc-attoparsec)))
+    (home-page "https://github.com/solidsnack/wcwidth/")
+    (synopsis "Haskell bindings to wcwidth")
+    (description "This package provides Haskell bindings to your system's
+native wcwidth and a command line tool to examine the widths assigned by it.
+The command line tool can compile a width table to Haskell code that assigns
+widths to the Char type.")
     (license license:bsd-3)))
 
 ;;; haskell.scm ends here

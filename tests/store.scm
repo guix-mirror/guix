@@ -21,7 +21,7 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix monads)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module (guix packages)
   #:use-module (guix derivations)
@@ -44,6 +44,9 @@
 
 (define %store
   (open-connection-for-tests))
+
+(define %shell
+  (or (getenv "SHELL") (getenv "CONFIG_SHELL")))
 
 
 (test-begin "store")
@@ -220,7 +223,8 @@
     ("./foo/c" directory #t)
     ("./foo/c/p" regular "file p")
     ("./foo/c/q" directory #t)
-    ("./foo/c/q/x" regular "#!/bin/sh\nexit 42")
+    ("./foo/c/q/x" regular
+     ,(string-append "#!" %shell "\nexit 42"))
     ("./foo/c/q/y" symlink "..")
     ("./foo/c/q/z" directory #t))
   (let* ((tree  `("file-tree" directory
@@ -231,7 +235,7 @@
                     ("p" regular (data ,(string->utf8 "file p")))
                     ("q" directory
                      ("x" executable
-                      (data "#!/bin/sh\nexit 42"))
+                      (data ,(string-append "#!" %shell "\nexit 42")))
                      ("y" symlink "..")
                      ("z" directory))))
                   ("bar" directory)))

@@ -31,6 +31,7 @@ guix/scripts/challenge.scm
 guix/scripts/copy.scm
 guix/scripts/pack.scm
 guix/scripts/weather.scm
+guix/scripts/describe.scm
 guix/gnu-maintenance.scm
 guix/scripts/container.scm
 guix/scripts/container/exec.scm

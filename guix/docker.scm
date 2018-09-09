@@ -19,7 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix docker)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base16)
   #:use-module ((guix build utils)
                 #:select (mkdir-p

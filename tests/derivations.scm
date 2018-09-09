@@ -23,7 +23,7 @@
   #:use-module (guix grafts)
   #:use-module (guix store)
   #:use-module (guix utils)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module (guix tests)
   #:use-module (guix tests http)

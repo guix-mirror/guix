@@ -18,8 +18,8 @@
 
 (define-module (test-pki)
   #:use-module (guix pki)
-  #:use-module (guix pk-crypto)
-  #:use-module (guix hash)
+  #:use-module (gcrypt pk-crypto)
+  #:use-module (gcrypt hash)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-64))
 

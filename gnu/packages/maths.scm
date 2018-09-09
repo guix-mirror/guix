@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017, 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
@@ -1580,7 +1580,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.8.0")
+    (version "3.9.3")
     (source
      (origin
       (method url-fetch)
@@ -1588,7 +1588,9 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "1lajbk3c29hnh83v6cbmm3a8wv6bdykh0p70kwrr4vrnizalk88s"))))
+       (base32 "1fwkbwv4g7zf2lc8fw865xd0bl9anb6jaczfis5dff7h449gwa48"))))
+    (outputs '("out"                    ;libraries and headers
+               "examples"))             ;~30MiB of examples
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -1605,11 +1607,7 @@ September 2004}")
        #:configure-flags
        `("--with-mpi=0"
          "--with-openmp=1"
-         "--with-superlu=1"
-         ,(string-append "--with-superlu-include="
-                         (assoc-ref %build-inputs "superlu") "/include")
-         ,(string-append "--with-superlu-lib="
-                         (assoc-ref %build-inputs "superlu") "/lib/libsuperlu.a"))
+         "--with-superlu=1")
        #:make-flags
        ;; Honor (parallel-job-count) for build.  Do not use --with-make-np,
        ;; whose value is dumped to $out/lib/petsc/conf/petscvariables.
@@ -1662,6 +1660,15 @@ September 2004}")
                           "PETScBuildInternal.cmake"
                           ;; Once installed, should uninstall with Guix
                           "uninstall.py"))
+              #t)))
+        (add-after 'install 'move-examples
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (examples (assoc-ref outputs "examples"))
+                   (exdir (string-append out "/share/petsc/examples"))
+                   (exdir' (string-append examples "/share/petsc/examples")))
+              (copy-recursively exdir exdir')
+              (delete-file-recursively exdir)
               #t))))))
     (home-page "http://www.mcs.anl.gov/petsc")
     (synopsis "Library to solve PDEs")
@@ -1685,6 +1692,7 @@ scientific applications modeled by partial differential equations.")
     (name "petsc-openmpi")
     (inputs
      `(("openmpi" ,openmpi)
+       ("hdf5" ,hdf5-parallel-openmpi)
        ,@(package-inputs petsc)))
     (arguments
      (substitute-keyword-arguments (package-arguments petsc)
@@ -1692,7 +1700,21 @@ scientific applications modeled by partial differential equations.")
         ``("--with-mpiexec=mpirun"
            ,(string-append "--with-mpi-dir="
                            (assoc-ref %build-inputs "openmpi"))
-           ,@(delete "--with-mpi=0" ,cf)))))
+           ,(string-append "--with-hdf5-include="
+                           (assoc-ref %build-inputs "hdf5") "/include")
+           ,(string-append "--with-hdf5-lib="
+                           (assoc-ref %build-inputs "hdf5") "/lib/libhdf5.a")
+           ,@(delete "--with-mpi=0" ,cf)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'check 'set-test-environment
+             (lambda _
+               ;; By default, running the test suite would fail because 'ssh'
+               ;; could not be found in $PATH.  Define this variable to
+               ;; placate Open MPI without adding a dependency on OpenSSH (the
+               ;; agent isn't used anyway.)
+               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+               #t))))))
     (synopsis "Library to solve PDEs (with MPI support)")))
 
 (define-public petsc-complex-openmpi
@@ -1738,7 +1760,7 @@ savings are consistently > 5x.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.8.2")
+    (version "3.9.2")
     (source
      (origin
        (method url-fetch)
@@ -1746,7 +1768,7 @@ savings are consistently > 5x.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "04zd48p43rnvg68p6cp28zll0px5whglc5v0sc3s6vdj1v920z8y"))))
+         "0gmhdqac8zm3jx43h935z7bflazjnpvqxjv4jh5za2y1z2rqax94"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -2824,8 +2846,8 @@ parts of it.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/xianyi/OpenBLAS/tarball/v"
-                           version))
+       (uri (string-append "mirror://sourceforge/openblas/v" version "/OpenBLAS%20"
+                           version "%20version.tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
@@ -3231,7 +3253,7 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.9.0")
+    (version "0.9.9.1")
     (source
      (origin
        (method url-fetch)
@@ -3239,7 +3261,7 @@ Failure to do so will result in a library with poor performance.")
                            version  "/glm-" version ".zip"))
        (sha256
         (base32
-         "0ihjadp2sb8w312a276skfjsljm3y41bjscbxf79wn23gi00giz1"))))
+         "042a23hmxfs429czkmlg5ixf28aikzfbw18780prj2gcd4flgw8h"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -4027,3 +4049,80 @@ terminal do calculations simply and quickly.  The formula to be calculated can
 be fed to @command{tcalc} through the command line.")
   (home-page "https://sites.google.com/site/mohammedisam2000/tcalc")
   (license license:gpl3+)))
+
+(define-public sundials
+  (package
+    (name "sundials")
+    (version "3.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://computation.llnl.gov/projects/sundials/download/"
+                           "sundials-" version ".tar.gz"))
+       (sha256
+        (base32
+         "090s8ymhd0g1s1d44fa73r5yi32hb4biwahhbfi327zd64yn8kd2"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("python" ,python-2)))    ;for tests; syntax incompatible with python 3
+    (inputs
+     `(("fortran" ,gfortran)            ;for fcmix
+       ("blas" ,openblas)
+       ("suitesparse" ,suitesparse)))   ;TODO: Add hypre
+    (arguments
+     `(#:configure-flags `("-DEXAMPLES_ENABLE_C:BOOL=ON"
+                           "-DEXAMPLES_ENABLE_CXX:BOOL=ON"
+                           "-DEXAMPLES_ENABLE_F77:BOOL=ON"
+                           "-DEXAMPLES_ENABLE_F90:BOOL=ON"
+                           "-DEXAMPLES_INSTALL:BOOL=OFF"
+
+                           "-DFCMIX_ENABLE:BOOL=ON"
+
+                           "-DKLU_ENABLE:BOOL=ON"
+                           ,(string-append "-DKLU_INCLUDE_DIR="
+                                           (assoc-ref %build-inputs "suitesparse")
+                                           "/include")
+                           ,(string-append "-DKLU_LIBRARY_DIR="
+                                           (assoc-ref %build-inputs "suitesparse")
+                                           "/lib"))))
+    (home-page "https://computation.llnl.gov/projects/sundials")
+    (synopsis "Suite of nonlinear and differential/algebraic equation solvers")
+    (description "SUNDIALS is a family of software packages implemented with
+the goal of providing robust time integrators and nonlinear solvers that can
+easily be incorporated into existing simulation codes.")
+    (license license:bsd-3)))
+
+(define-public sundials-openmpi
+  (package (inherit sundials)
+    (name "sundials-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ("petsc" ,petsc-openmpi)         ;support in SUNDIALS requires MPI
+       ,@(package-inputs sundials)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sundials)
+       ((#:configure-flags flags '())
+        `(cons* "-DMPI_ENABLE:BOOL=ON"
+                "-DPETSC_ENABLE:BOOL=ON"
+                (string-append "-DPETSC_INCLUDE_DIR="
+                               (assoc-ref %build-inputs "petsc")
+                               "/include")
+                (string-append "-DPETSC_LIBRARY_DIR="
+                               (assoc-ref %build-inputs "petsc")
+                               "/lib")
+                ,flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'set-test-environment
+             (lambda _
+               ;; By default, running the test suite would fail because 'ssh'
+               ;; could not be found in $PATH.  Define this variable to
+               ;; placate Open MPI without adding a dependency on OpenSSH (the
+               ;; agent isn't used anyway.)
+               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+               ;; Allow oversubscription in case there are less
+               ;; physical cores available in the build environment
+               ;; than SUNDIALS wants while testing.
+               (setenv "OMPI_MCA_rmaps_base_oversubscribe" "yes")
+               #t))))))
+    (synopsis "SUNDIALS with OpenMPI support")))

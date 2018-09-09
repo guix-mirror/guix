@@ -21,7 +21,7 @@
   #:use-module (git)
   #:use-module (git object)
   #:use-module (guix base32)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (guix store)
   #:use-module (guix utils)
@@ -112,7 +112,7 @@ OID (roughly the commit hash) corresponding to REF."
 
 (define* (update-cached-checkout url
                                  #:key
-                                 (ref '(branch . "origin/master"))
+                                 (ref '(branch . "master"))
                                  (cache-directory
                                   (url-cache-directory
                                    url (%repository-cache-directory))))
@@ -122,6 +122,17 @@ to REF.
 
 REF is pair whose key is [branch | commit | tag] and value the associated
 data, respectively [<branch name> | <sha1> | <tag name>]."
+  (define canonical-ref
+    ;; We used to require callers to specify "origin/" for each branch, which
+    ;; made little sense since the cache should be transparent to them.  So
+    ;; here we append "origin/" if it's missing and otherwise keep it.
+    (match ref
+      (('branch . branch)
+       `(branch . ,(if (string-prefix? "origin/" branch)
+                       branch
+                       (string-append "origin/" branch))))
+      (_ ref)))
+
   (with-libgit2
    (let* ((cache-exists? (openable-repository? cache-directory))
           (repository    (if cache-exists?
@@ -130,7 +141,7 @@ data, respectively [<branch name> | <sha1> | <tag name>]."
      ;; Only fetch remote if it has not been cloned just before.
      (when cache-exists?
        (remote-fetch (remote-lookup repository "origin")))
-     (let ((oid (switch-to-ref repository ref)))
+     (let ((oid (switch-to-ref repository canonical-ref)))
 
        ;; Reclaim file descriptors and memory mappings associated with
        ;; REPOSITORY as soon as possible.
@@ -144,7 +155,7 @@ data, respectively [<branch name> | <sha1> | <tag name>]."
                                    #:key
                                    (cache-directory
                                     (%repository-cache-directory))
-                                   (ref '(branch . "origin/master")))
+                                   (ref '(branch . "master")))
   "Return two values: the content of the git repository at URL copied into a
 store directory and the sha1 of the top level commit in this directory.  The
 reference to be checkout, once the repository is fetched, is specified by REF.

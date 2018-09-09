@@ -3823,15 +3823,17 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.4.4.1")
+    (version "1.4.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "12kwq10xa8glrip7rai9xb4hnpysng00g2l0rw7swfzq5lk4z966"))))
+                "1ddpcarzf694h0gy5pdz7l5glqfv4hr9dmxb4vw7yqd0bga174gi"))))
     (build-system r-build-system)
-    (native-inputs `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("r-bh" ,r-bh)
        ("r-later" ,r-later)
@@ -6706,10 +6708,11 @@ compressed JSON header blocks.
     (license l:expat)))
 
 (define-public hpcguix-web
-  (let ((commit "87cb51611c0f1fd3863b830614ab1364599cf1ca"))
+  (let ((commit "9ff40fcc77f248901d861756dbbddc80270c380c")
+        (revision "2"))
     (package
       (name "hpcguix-web")
-      (version (git-version "0.0.1" "1" commit))
+      (version (git-version "0.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -6718,7 +6721,7 @@ compressed JSON header blocks.
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0p66fl8r3v73v13fqg9rbqbzbdzvyznchxbq2s1jwq6qfsn2w3gr"))))
+                  "0lxcj9s3wxrv1l7lrxxx374jwzx7h60gxwkbgr46lzcbgvb3k26s"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -6739,10 +6742,13 @@ compressed JSON header blocks.
                (let* ((out      (assoc-ref outputs "out"))
                       (guix     (assoc-ref inputs "guix"))
                       (guile    (assoc-ref inputs "guile"))
+                      (gcrypt   (assoc-ref inputs "guile-gcrypt"))
+                      (git      (assoc-ref inputs "guile-git"))
+                      (bs       (assoc-ref inputs "guile-bytestructures"))
                       (json     (assoc-ref inputs "guile-json"))
                       (guile-cm (assoc-ref inputs
                                            "guile-commonmark"))
-                      (deps (list guile guile-cm guix json))
+                      (deps (list guile gcrypt git bs guile-cm guix json))
                       (effective
                        (read-line
                         (open-pipe* OPEN_READ

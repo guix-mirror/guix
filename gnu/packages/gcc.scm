@@ -668,6 +668,10 @@ as the 'native-search-paths' field."
   (custom-gcc gcc-7 "gfortran" '("fortran")
               %generic-search-paths))
 
+(define-public gfortran-8
+  (custom-gcc gcc-8 "gfortran" '("fortran")
+              %generic-search-paths))
+
 (define-public gfortran
   ;; Note: Update this when GCC changes!  We cannot use
   ;; (custom-gcc gcc "fortran" …) because that would lead to a package object
@@ -728,6 +732,15 @@ as the 'native-search-paths' field."
                      (variable "LIBRARY_PATH")
                      (files '("lib" "lib64"))))))
 
+(define-public gcc-objc-8
+  (custom-gcc gcc-8 "gcc-objc" '("objc")
+              (list (search-path-specification
+                     (variable "OBJC_INCLUDE_PATH")
+                     (files '("include")))
+                    (search-path-specification
+                     (variable "LIBRARY_PATH")
+                     (files '("lib" "lib64"))))))
+
 (define-public gcc-objc gcc-objc-5)
 
 (define-public gcc-objc++-4.8
@@ -768,6 +781,15 @@ as the 'native-search-paths' field."
 
 (define-public gcc-objc++-7
   (custom-gcc gcc-7 "gcc-objc++" '("obj-c++")
+              (list (search-path-specification
+                     (variable "OBJCPLUS_INCLUDE_PATH")
+                     (files '("include")))
+                    (search-path-specification
+                     (variable "LIBRARY_PATH")
+                     (files '("lib" "lib64"))))))
+
+(define-public gcc-objc++-8
+  (custom-gcc gcc-8 "gcc-objc++" '("obj-c++")
               (list (search-path-specification
                      (variable "OBJCPLUS_INCLUDE_PATH")
                      (files '("include")))

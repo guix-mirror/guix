@@ -28,6 +28,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages bioconductor)
   #:use-module (gnu packages bioinformatics)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
@@ -98,14 +99,14 @@ more.")
 (define-public r-igraph
   (package
     (name "r-igraph")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "igraph" version))
        (sha256
         (base32
-         "1hcr6b1lz030lgay1bz8y8sxaf2j93ds8n8gsqr6qhssz141hd2m"))))
+         "1bggm7b8v3bh7q2589w26qvd7sgs69m4qiij7d0rbm0ykkgxm8lx"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -130,14 +131,14 @@ more.")
 (define-public r-diffusionmap
   (package
     (name "r-diffusionmap")
-    (version "1.1-0")
+    (version "1.1-0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "diffusionMap" version))
        (sha256
         (base32
-         "1l985q2hfc8ss5afajik4p25dx628yikvhdimz5s0pql800q2yv3"))))
+         "11l4kbciawvli5nlsi4qaf8afmgk5xgqiqpdyhvaqri5mx0zhk5j"))))
     (properties `((upstream-name . "diffusionMap")))
     (build-system r-build-system)
     (propagated-inputs

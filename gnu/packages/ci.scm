@@ -32,6 +32,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
@@ -223,39 +224,42 @@ their dependencies.")
              (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Wrap the 'cuirass' command to refer to the right modules.
                (let* ((out    (assoc-ref outputs "out"))
+                      (gcrypt (assoc-ref inputs "guile-gcrypt"))
                       (json   (assoc-ref inputs "guile-json"))
                       (sqlite (assoc-ref inputs "guile-sqlite3"))
                       (git    (assoc-ref inputs "guile-git"))
                       (bytes  (assoc-ref inputs "guile-bytestructures"))
                       (fibers (assoc-ref inputs "guile-fibers"))
                       (guix   (assoc-ref inputs "guix"))
+                      (deps   (list gcrypt json sqlite git bytes fibers guix))
                       (guile  (assoc-ref %build-inputs "guile"))
                       (effective (read-line
                                   (open-pipe* OPEN_READ
                                               (string-append guile "/bin/guile")
                                               "-c" "(display (effective-version))")))
-                      (mods   (string-append json "/share/guile/site/"
-                                             effective ":"
-                                             git "/share/guile/site/"
-                                             effective ":"
-                                             bytes "/share/guile/site/"
-                                             effective ":"
-                                             sqlite "/share/guile/site/"
-                                             effective ":"
-                                             fibers "/share/guile/site/"
-                                             effective ":"
-                                             guix "/share/guile/site/"
-                                             effective)))
+                      (mods   (string-drop-right  ;drop trailing colon
+                               (string-join deps
+                                            (string-append "/share/guile/site/"
+                                                           effective ":")
+                                            'suffix)
+                               1))
+                      (objs   (string-drop-right
+                               (string-join deps
+                                            (string-append "/lib/guile/" effective
+                                                           "/site-ccache:")
+                                            'suffix)
+                               1)))
                  ;; Make sure 'cuirass' can find the 'evaluate' command, as
                  ;; well as the relevant Guile modules.
                  (wrap-program (string-append out "/bin/cuirass")
                    `("PATH" ":" prefix (,(string-append out "/bin")))
                    `("GUILE_LOAD_PATH" ":" prefix (,mods))
-                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,mods)))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs)))
                  #t))))))
       (inputs
        `(("guile" ,guile-2.2)
          ("guile-fibers" ,guile-fibers)
+         ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-git" ,guile-git)

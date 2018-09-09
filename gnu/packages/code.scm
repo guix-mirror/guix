@@ -211,16 +211,16 @@ COCOMO model or user-provided parameters.")
 (define-public cloc
   (package
     (name "cloc")
-    (version "1.76")
+    (version "1.78")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/AlDanial/cloc/releases/download/v" version
+             "https://github.com/AlDanial/cloc/releases/download/" version
              "/cloc-" version ".tar.gz"))
        (sha256
         (base32
-         "05srlvzwisr7y7ymvzb5yfdsrspja27ysqdmkwhiiivy84mq2gnl"))))
+         "176xklr2qsgxh9zdb565gib6pp4gsm585rz5fvyphgjy4i679wkv"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)
@@ -650,6 +650,19 @@ deal with incomplete or malformed syntax.  GNU indent offers several
 extensions over the standard utility.")
    (license license:gpl3+)
    (home-page "https://www.gnu.org/software/indent/")))
+
+(define-public indent-2.2.12
+  (package
+    (inherit indent)
+    (version "2.2.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/indent/indent-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "12xvcd16cwilzglv9h7sgh4h1qqjd1h8s48ji2dla58m4706hzg7"))))
+    (native-inputs `(("texinfo" ,texinfo)))))
 
 (define-public amalgamate
   (let* ((commit "c91f07eea1133aa184f652b8f1398eaf03586208")

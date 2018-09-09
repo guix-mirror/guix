@@ -34,6 +34,7 @@
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5553,3 +5554,159 @@ open-source FPS of its kind.")
     (license (list license:gpl2+
                    license:bsd-3 ; /source/d0_blind_id folder and others
                    (license:x11-style "" "See file rcon.pl.")))))
+
+(define-public frotz
+  (package
+    (name "frotz")
+    (version "2.44")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append
+                          "http://www.ifarchive.org/if-archive/infocom/interpreters/"
+                          name "/" name "-" version ".tar.gz")
+                         (string-append
+                          "ftp://ftp.ifarchive.org/if-archive/infocom/interpreters/"
+                          name "/" name "-" version ".tar.gz")))
+              (sha256
+               (base32
+                "1v735xr3blznac8fnwa27s1vhllx4jpz7kw7qdw1bsfj6kq21v3k"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'curses
+           (lambda _
+             (substitute* "Makefile"
+               (("lcurses") "lncurses"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man6")))
+               (install-file "frotz" bin)
+               (mkdir-p man)
+               (install-file "doc/frotz.6" man)
+               #t))))))
+    (inputs `(("libmodplug" ,libmodplug)
+              ("libsamplerate" ,libsamplerate)
+              ("libsndfile" ,libsndfile)
+              ("libvorbis" ,libvorbis)
+              ("ncurses" ,ncurses)))
+    (synopsis "Portable Z-machine interpreter (ncurses version) for text adventure games")
+    (description "Frotz is an interpreter for Infocom games and other Z-machine
+games in the text adventure/interactive fiction genre.  This version of Frotz
+complies with standard 1.0 of Graham Nelson's specification.  It plays all
+Z-code games V1-V8, including V6, with sound support through libao, and uses
+ncurses for text display.")
+    (home-page "http://frotz.sourceforge.net")
+    (license license:gpl2+)))
+
+(define-public frotz-dumb-terminal
+  (package
+    (name "frotz-dumb-terminal")
+    (version "2.44")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append
+                          "http://www.ifarchive.org/if-archive/infocom/interpreters/"
+                          "frotz" "/" "frotz" "-" version ".tar.gz")
+                         (string-append
+                          "ftp://ftp.ifarchive.org/if-archive/infocom/interpreters/"
+                          "frotz" "/" "frotz" "-" version ".tar.gz")))
+              (sha256
+               (base32
+                "1v735xr3blznac8fnwa27s1vhllx4jpz7kw7qdw1bsfj6kq21v3k"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "make" "dumb")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man6")))
+               (install-file "dfrotz" bin)
+               (mkdir-p man)
+               (install-file "doc/dfrotz.6" man)
+               #t))))))
+    (synopsis "Portable Z-machine dumb interpreter for text adventure games")
+    (description "Frotz is an interpreter for Infocom games and
+other Z-machine games in the text adventure/interactive fiction genre.
+dfrotz is the dumb interface version.  You get no screen control; everything
+is just printed to the terminal line by line.  The terminal handles all the
+scrolling.  Maybe you'd like to experience what it's like to play Adventure on
+a teletype.  A much cooler use for compiling Frotz with the dumb interface is
+that it can be wrapped in CGI scripting, PHP, and the like to allow people
+to play games on webpages.  It can also be made into a chat bot.")
+    (home-page "http://frotz.sourceforge.net")
+    (license license:gpl2+)))
+
+(define-public frotz-sdl
+  (let* ((commit "4de8c34f2116fff554af6216c30ec9d41bf50b24"))
+    (package
+      (name "frotz-sdl")
+      (version "2.45pre")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/DavidGriffith/frotz")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "18ms21pcrl7ipcnyqnf8janamkryzx78frsgd9kfk67jvbj0z2k8"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; there are no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'build 'patch-makefile
+             (lambda _
+               (substitute* "Makefile"
+                 (("lcurses") "lncurses")
+                 (("^BUILD_DATE_TIME =.*$")
+                  "BUILD_DATE_TIME = \"2.45pre-20180907.00000\"\n"))
+               #t))
+           (replace 'build
+             (lambda _
+               (invoke "make" "sdl")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (man (string-append out "/share/man/man6")))
+                 (install-file "sfrotz" bin)
+                 (mkdir-p man)
+                 (install-file "doc/sfrotz.6" man)
+                 #t))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("which" ,which)
+         ("perl" ,perl)))
+      (inputs `(("sdl2" ,sdl2)
+                ("sdl2-mixer" ,sdl2-mixer)
+                ("libmodplug" ,libmodplug)
+                ("libsamplerate" ,libsamplerate)
+                ("libsndfile" ,libsndfile)
+                ("libvorbis" ,libvorbis)
+                ("ncurses" ,ncurses)
+                ("freetype" ,freetype)
+                ("libjpeg-turbo" ,libjpeg-turbo)))
+      (synopsis "Portable Z-machine interpreter (SDL port) for text adventure games")
+      (description "Frotz is an interpreter for Infocom games and other Z-machine
+games in the text adventure/interactive fiction genre.  This version of Frotz
+using SDL fully supports all these versions of the Z-Machine including the
+graphical version 6.  Graphics and sound are created through the use of the SDL
+libraries.  AIFF sound effects and music in MOD and OGG formats are supported
+when packaged in Blorb container files or optionally from individual files.")
+      (home-page "http://frotz.sourceforge.net")
+      (license license:gpl2+))))

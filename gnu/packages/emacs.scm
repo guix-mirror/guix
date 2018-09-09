@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -38,6 +38,7 @@
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4123,22 +4124,34 @@ programming language.")
 (define-public emacs-ess
   (package
     (name "emacs-ess")
-    (version "16.10")
+    (version "17.11")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://ess.r-project.org/downloads/ess/ess-"
-                                  version ".tgz"))
+              (uri (string-append "https://github.com/emacs-ess/ESS/archive/v"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "04m8lwp3ylh2vl7k2bjjs7mxbm64j4sdckqpvnm9k0qhaqf02pjk"))
+                "0cbilbsiwvcyf6d5y24mymp57m3ana5dkzab3knfs83w4a3a4c5c"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Stop ESS from trying to bundle an external julia-mode.el.
                   (substitute* "lisp/Makefile"
                     (("^\tjulia-mode.elc\\\\\n") "")
-                    (("^all: \\$\\(ELC\\) ess-custom.el julia-mode.el")
-                     "all: $(ELC) ess-custom.el"))
+                    (("^dist: all julia-mode.el")
+                     "dist: all"))
+                  ;; No need to build docs in so many formats.  Also, skipping
+                  ;; pdf lets us not pull in texlive.
+                  (substitute* "doc/Makefile"
+                    (("all  : info text html pdf")
+                     "all  : info")
+                    (("install: install-info install-other-docs")
+                     "install: install-info"))
+                  ;; Test fails upstream
+                  (substitute* "test/ess-r-tests.el"
+                    (("ert-deftest ess-r-namespaced-eval-no-srcref-in-errors ()")
+                     "ert-deftest ess-r-namespaced-eval-no-srcref-in-errors () :expected-result :failed"))
                   #t))))
     (build-system gnu-build-system)
     (arguments
@@ -4157,10 +4170,6 @@ programming language.")
                  (("SHELL = /bin/sh")
                   (string-append "SHELL = " (which "sh"))))
                #t))
-           ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
-           ;; them in HOME, so it needs to be writeable.
-           (add-before 'build 'set-HOME
-             (lambda _ (setenv "HOME" "/tmp") #t))
            (replace 'check
              (lambda _
                (invoke "make" "test")))))))
@@ -4169,16 +4178,14 @@ programming language.")
        ("r-minimal" ,r-minimal)))
     (native-inputs
      `(("perl" ,perl)
-       ("texinfo" ,texinfo)
-       ("texlive" ,(texlive-union (list texlive-latex-natbib
-                                        texlive-latex-seminar
-                                        texlive-latex-hyperref
-                                        texlive-tex-texinfo)))))
+       ("texinfo" ,texinfo)))
+    (propagated-inputs
+     `(("emacs-julia-mode" ,emacs-julia-mode)))
     (home-page "https://ess.r-project.org/")
     (synopsis "Emacs mode for statistical analysis programs")
     (description "Emacs Speaks Statistics (ESS) is an add-on package for GNU
 Emacs.  It is designed to support editing of scripts and interaction with
-various statistical analysis programs such as R and OpenBUGS.")
+various statistical analysis programs such as R, Julia, and JAGS.")
     (license license:gpl2+)))
 
 (define-public emacs-smex
@@ -11313,6 +11320,43 @@ e.g. the package dependencies it requires.  See function
 @code{package-lint-buffer}.  Checks will currently be enabled only if a
 \"Package-Requires:\" or \"Package-Version:\" header is present in the
 file.")
+      (license license:gpl3+))))
+
+(define-public emacs-picpocket
+  (let ((version "20180610.1059") ; taken from melpa
+        (commit "ce4b6ed088384f2414af82e8e4eae5b92c2874bf"))
+    (package
+      (name "emacs-picpocket")
+      (version version)
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/johanclaesson/picpocket")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "15vpbcv83mc4j1pvrk7xic0klh2bl9gzg2xxs7c2lmnix52hy8mv"))))
+      (build-system emacs-build-system)
+      (arguments ; needed for running tests
+       `(#:tests? #t
+         #:emacs ,emacs
+         #:test-command '("emacs" "--batch"
+                          "-l" "picpocket-test.el"
+                          "-f" "ert-run-tests-batch-and-exit")))
+      (home-page "https://github.com/johanclaesson/picpocket")
+      (synopsis "Image viewer for Emacs")
+      (description
+       "Picpocket is an image viewer for GNU Emacs.  It has commands for:
+
+@itemize
+@item File operations on the picture files (delete, move, copy, hardlink).
+@item Scale and rotate the picture.
+@item Associate pictures with tags which are saved to disk.
+@item Filter pictures according to tags.
+@item Customizing keystrokes for quick tagging and file operations.
+@item Undo and browse history of undoable commands.
+@end itemize")
       (license license:gpl3+))))
 
 (define-public emacs-wgrep-helm

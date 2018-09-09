@@ -399,8 +399,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.18.5")
-(define %linux-libre-hash "1y52ns34vh9p4pfj08xsycv8p0xywm6dbpdi0wwpkll1xgpqikvf")
+(define %linux-libre-version "4.18.6")
+(define %linux-libre-hash "1l5caid77vbfb54zrfxkk7qj7lrf9ck9kpn96kr45spkwl51wm8m")
 
 (define %linux-libre-4.18-patches
   (list %boot-logo-patch
@@ -430,8 +430,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.18-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.67")
-(define %linux-libre-4.14-hash "050zvdxjy6sc64q75pr1gxsmh49chwav2pwxz8xlif39bvahnrpg")
+(define %linux-libre-4.14-version "4.14.68")
+(define %linux-libre-4.14-hash "05l5y0vbbl60jxdbqglqr9c99a8g8lfsp4mcqfpcx1pkh5br7i3l")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -440,14 +440,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.124"
-                    "0p78gx5jiqvaf2cadf5jp40lzgarrg0m0ybf9w2499v28vjsp30q"
+  (make-linux-libre "4.9.125"
+                    "1saihk61l1kk42jf8yfsfkm77zalq31f0bdlam3c1g7yw702wj9g"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.153"
-                    "195vzkkmjiicqfzd38hgf381rlz665rl06abzf8cww0gbnzvrf72"
+  (make-linux-libre "4.4.154"
+                    "08i9fvrmswkydj538wg6c7ggxmhll0ff0bjkw8rnyslqwilfwr1i"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 

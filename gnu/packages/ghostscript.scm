@@ -7,6 +7,7 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,8 +39,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module (srfi srfi-1))
 
 (define-public lcms
   (package
@@ -132,6 +135,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
+    (replacement ghostscript/fixed)
     (version "9.23")
     (source
       (origin
@@ -250,6 +254,44 @@ capabilities of the PostScript language.  It supports a wide variety of
 output file formats and printers.")
     (home-page "https://www.ghostscript.com/")
     (license license:agpl3+)))
+
+(define-public ghostscript/fixed
+  (hidden-package
+    (package
+      (inherit ghostscript)
+      (version "9.24")
+      (source
+        (origin
+          (inherit (package-source ghostscript))
+          (uri (string-append "https://github.com/ArtifexSoftware/"
+                              "ghostpdl-downloads/releases/download/gs"
+                              (string-delete #\. version)
+                              "/ghostscript-" version ".tar.xz"))
+          (sha256
+           (base32
+            "1mk922rnml93w2g42yxiyn8xqanc50cm65irrgh0b6lp4kgifjfl"))
+          (patches (search-patches "ghostscript-CVE-2018-16509.patch"
+                                   "ghostscript-bug-699708.patch"
+                                   "ghostscript-no-header-creationdate.patch"
+                                   "ghostscript-no-header-id.patch"
+                                   "ghostscript-no-header-uuid.patch"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments ghostscript)
+         ((#:configure-flags flags)
+          ;; Notice that we removed the 'ghostscript-runpath' patch above.
+          ;; The reason is that it conflicts with an upstream change that
+          ;; takes LDFLAGS into account.
+          `(cons (string-append "LDFLAGS=-Wl,-rpath="
+                                (assoc-ref %outputs "out") "/lib")
+                 ,flags))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'configure 'create-output-directory
+               (lambda* (#:key outputs #:allow-other-keys)
+                 ;; Unfortunately the configure script refuses to function if
+                 ;; the directory specified as -rpath does not already exist.
+                 (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))
+                 #t)))))))))
 
 (define-public ghostscript/x
   (package/inherit ghostscript

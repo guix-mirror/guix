@@ -18,7 +18,7 @@
 
 (define-module (test-challenge)
   #:use-module (guix tests)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix derivations)

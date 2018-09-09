@@ -360,17 +360,64 @@ cutoffs.  The procedures are directly applicable to identifying differentially
 expressed genes in DNA microarray experiments.")
     (license license:lgpl3)))
 
+(define-public r-graph
+  (package
+    (name "r-graph")
+    (version "1.58.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "graph" version))
+              (sha256
+               (base32
+                "1zx445lk36g1s6i5dbhhf00nzzazyklfjxxjfax6q8hnhvgm9759"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)))
+    (home-page "https://bioconductor.org/packages/graph")
+    (synopsis "Handle graph data structures in R")
+    (description
+     "This package implements some simple graph handling capabilities for R.")
+    (license license:artistic2.0)))
+
+(define-public r-codedepends
+  (package
+    (name "r-codedepends")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "CodeDepends" version))
+       (sha256
+        (base32
+         "0l7kiv3awx50glf5cs841b4zzsff1ml90f0zr868ygvwsr4ps1hq"))))
+    (properties `((upstream-name . "CodeDepends")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-codetools" ,r-codetools)
+       ("r-graph" ,r-graph)
+       ("r-xml" ,r-xml)))
+    (home-page "http://cran.r-project.org/web/packages/CodeDepends")
+    (synopsis "Analysis of R code for reproducible research and code comprehension")
+    (description
+     "This package provides tools for analyzing R expressions or blocks of
+code and determining the dependencies between them.  It focuses on R scripts,
+but can be used on the bodies of functions.  There are many facilities
+including the ability to summarize or get a high-level view of code,
+determining dependencies between variables, code improvement suggestions.")
+    ;; Any version of the GPL
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.14.0")
+    (version "3.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "1kcnc3cnmrhdk1x7q3y6zsz09pgd3xn9xy1hfbxz48cajlb18ad0"))))
+         "1cn1hfc3nvsf2n3563lkmvwjxfbiygx7f84zk683p89gy7zi1gyj"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs

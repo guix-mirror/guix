@@ -117,8 +117,8 @@
 
 ;; Building from recent Git because the official 5.0 release no longer builds.
 (define-public dolphin-emu
-  (let ((commit "806c1ee8f0ed824008185212bfab2658d400b576")
-        (revision "2"))
+  (let ((commit "5f0d825f40b8aabe13eaef32d44ab667ff8e8c28")
+        (revision "3"))
     (package
       (name "dolphin-emu")
       (version (git-version "5.0" revision commit))
@@ -144,7 +144,7 @@
              #t))
          (sha256
           (base32
-           "1sdc7rh6z7gjx4kxg18jrv7srfpx1vgf936zg5y43radnlscrh1j"))))
+           "0dh7mih16aif9ynbgcsn7n10f89g8d232i86xqfp2rijsdggcmzl"))))
       (build-system cmake-build-system)
       (arguments
        '(#:tests? #f

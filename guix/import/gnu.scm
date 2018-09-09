@@ -21,7 +21,7 @@
   #:use-module (guix import utils)
   #:use-module (guix utils)
   #:use-module (guix store)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module (guix upstream)
   #:use-module (srfi srfi-1)

@@ -1,0 +1,29 @@
+From 6a08014b77bf435f025ecdac08396580b85f159a Mon Sep 17 00:00:00 2001
+From: Jan Nieuwenhuizen <janneke@gnu.org>
+Date: Sat, 8 Sep 2018 20:22:45 +0200
+Subject: [PATCH] fix binary literals.
+
+---
+ module/nyacc/lex.scm | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/module/nyacc/lex.scm b/module/nyacc/lex.scm
+index 2ec9895..b205212 100644
+--- a/module/nyacc/lex.scm
++++ b/module/nyacc/lex.scm
+@@ -345,10 +345,11 @@
+ 	  ((char-numeric? ch) (iter chl '$fixed ba 1 ch))
+ 	  ((char=? #\. ch) (iter (cons ch chl) #f ba 15 (read-char))) 
+ 	  (else #f)))
+-	((10) ;; allow x after 0
++	((10) ;; allow x, b after 0
+ 	 (cond
+ 	  ((eof-object? ch) (iter chl ty ba 5 ch))
+ 	  ((char=? #\x ch) (iter (cons ch chl) ty 16 1 (read-char)))
++          ((char=? #\b ch) (iter (cons ch chl) ty 2 1 (read-char)))
+ 	  (else (iter chl ty ba 1 ch))))
+ 	((15) ;; got `.' only
+ 	 (cond
+-- 
+2.18.0
+

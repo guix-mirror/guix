@@ -292,7 +292,7 @@ history mechanism, job control and a C-like syntax.")
 (define-public zsh
   (package
     (name "zsh")
-    (version "5.5.1")
+    (version "5.6")
     (source (origin
               (method url-fetch)
               (uri (list (string-append
@@ -303,7 +303,7 @@ history mechanism, job control and a C-like syntax.")
                            ".tar.xz")))
               (sha256
                (base32
-                "105aqkdfsdxc4531anrj2zis2ywz6icagjam9lsc235yzh48ihz1"))))
+                "1mp6h2452z2029n12mxipjv4b0cc8i8sb72g8p8jklg8275iysvl"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
                  #:phases
@@ -336,6 +336,19 @@ history mechanism, job control and a C-like syntax.")
                          (("command -pv") "command -v")
                          (("command -p") "command ")
                          (("'command' -p") "'command' "))
+                       ;; This file is ISO-8859-1 encoded.
+                       (with-fluids ((%default-port-encoding #f))
+                         (substitute* "Test/A05execution.ztst"
+                           ;; Help it find `sh`
+                           (("PATH=/bin:\\$\\{ZTST_testdir\\}/command.tmp/ tstcmd-slashless")
+                            (string-append "PATH=/bin:"
+                                           (assoc-ref %build-inputs "bash") "/bin:"
+                                           "${ZTST_testdir}/command.tmp/ tstcmd-slashless"))
+                           ;; Help it find `echo`
+                           (("PATH=/bin:\\$\\{ZTST_testdir\\}/command.tmp tstcmd-arg")
+                            (string-append "PATH=/bin:"
+                                           (assoc-ref %build-inputs "coreutils") "/bin:"
+                                           "PATH=/bin:${ZTST_testdir}/command.tmp tstcmd-arg"))))
                        #t)))))
     (native-inputs `(("autoconf" ,autoconf)))
     (inputs `(("ncurses" ,ncurses)

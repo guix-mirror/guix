@@ -20,7 +20,7 @@
 (define-module (test-pypi)
   #:use-module (guix import pypi)
   #:use-module (guix base32)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix tests)
   #:use-module (guix build-system python)
   #:use-module ((guix build utils) #:select (delete-file-recursively which))

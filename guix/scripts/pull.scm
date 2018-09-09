@@ -48,7 +48,8 @@
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
-  #:export (guix-pull))
+  #:export (display-profile-content
+            guix-pull))
 
 
 ;;;
@@ -79,6 +80,8 @@ Download and deploy the latest version of Guix.\n"))
   (display (G_ "
   -l, --list-generations[=PATTERN]
                          list generations matching PATTERN"))
+  (display (G_ "
+  -p, --profile=PROFILE  use PROFILE instead of ~/.config/guix/current"))
   (display (G_ "
       --bootstrap        use the bootstrap Guile to build the new Guix"))
   (newline)
@@ -112,6 +115,10 @@ Download and deploy the latest version of Guix.\n"))
          (option '("branch") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'ref `(branch . ,(string-append "origin/" arg))
+                               result)))
+         (option '(#\p "profile") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'profile (canonicalize-profile arg)
                                result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
@@ -152,14 +159,11 @@ Download and deploy the latest version of Guix.\n"))
                                       #:heading (G_ "New in this revision:\n"))))
     (_ #t)))
 
-(define* (build-and-install instances config-dir
+(define* (build-and-install instances profile
                             #:key verbose?)
-  "Build the tool from SOURCE, and install it in CONFIG-DIR."
+  "Build the tool from SOURCE, and install it in PROFILE."
   (define update-profile
     (store-lift build-and-use-profile))
-
-  (define profile
-    (string-append config-dir "/current"))
 
   (mlet %store-monad ((manifest (channel-instances->manifest instances)))
     (mbegin %store-monad
@@ -414,7 +418,9 @@ Use '~/.config/guix/channels.scm' instead."))
      (let* ((opts     (parse-command-line args %options
                                           (list %default-options)))
             (cache    (string-append (cache-directory) "/pull"))
-            (channels (channel-list opts)))
+            (channels (channel-list opts))
+            (profile  (or (assoc-ref opts 'profile)
+                          (string-append (config-directory) "/current"))))
 
        (cond ((assoc-ref opts 'query)
               (process-query opts))
@@ -456,7 +462,7 @@ Use '~/.config/guix/channels.scm' instead."))
                                          %bootstrap-guile
                                          (canonical-package guile-2.2)))))
                       (run-with-store store
-                        (build-and-install instances (config-directory)
+                        (build-and-install instances profile
                                            #:verbose?
                                            (assoc-ref opts 'verbose?)))))))))))))
 

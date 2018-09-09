@@ -106,14 +106,14 @@
 (define-public nss-pam-ldapd
   (package
     (name "nss-pam-ldapd")
-    (version "0.9.9")
+    (version "0.9.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://arthurdejong.org/nss-pam-ldapd/"
                                   "nss-pam-ldapd-" version ".tar.gz"))
               (sha256
                (base32
-                "1lj7qkjlg3bshwdc5x5r1ny37rly4wgm1c8b6w6b5f4wa11nmji0"))))
+                "1cqamcr6qpgwxijlr6kg7jspjamjra8w0haan0qssn0yxn95d7c0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

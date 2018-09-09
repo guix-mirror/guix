@@ -84,7 +84,7 @@ fully implemented.
 
 This package contains the library.")
    (license license:gpl2+)
-   (home-page "http://www.underbit.com/products/mad/")))
+   (home-page "https://www.underbit.com/products/mad/")))
 
 (define-public libid3tag
   (package
@@ -105,7 +105,7 @@ This package contains the library.")
     "Libid3tag is a library for reading ID3 tags, both ID3v1 and the various
 versions of ID3v2.")
    (license license:gpl2+)
-   (home-page "http://www.underbit.com/products/mad/")))
+   (home-page "https://www.underbit.com/products/mad/")))
 
 (define-public id3lib
   (package
@@ -184,7 +184,7 @@ Speex, WavPack TrueAudio, WAV, AIFF, MP4 and ASF files.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://ibiblio.org"
+                    "https://ibiblio.org"
                     "/pub/linux/apps/sound/mp3-utils/mp3info/mp3info-"
                     version ".tgz"))
               (sha256
@@ -231,7 +231,7 @@ Speex, WavPack TrueAudio, WAV, AIFF, MP4 and ASF files.")
     (inputs
      `(("gtk+" ,gtk+-2)
        ("ncurses" ,ncurses)))
-    (home-page "http://www.ibiblio.org/mp3info/")
+    (home-page "https://www.ibiblio.org/mp3info/")
     (synopsis "MP3 technical info viewer and ID3 1.x tag editor")
     (description
      "MP3Info is a little utility used to read and modify the ID3 tags of MP3
@@ -309,7 +309,7 @@ This package contains the binary.")
               (uri (list (string-append "mirror://sourceforge/mpg123/mpg123/"
                                         version "/mpg123-" version ".tar.bz2")
                          (string-append
-                          "http://www.mpg123.org/download/mpg123-"
+                          "https://www.mpg123.org/download/mpg123-"
                           version ".tar.bz2")))
               (sha256
                (base32
@@ -413,7 +413,7 @@ for album and track information.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://files.musepack.net/source/libmpcdec-"
+                    "https://files.musepack.net/source/libmpcdec-"
                     version ".tar.bz2"))
               (sha256
                (base32
@@ -424,7 +424,7 @@ for album and track information.")
      "This library supports decoding of the Musepack (MPC) audio compression
 format.")
     (license license:bsd-3)
-    (home-page "http://musepack.net")))
+    (home-page "https://musepack.net")))
 
 (define-public mpc123
   (package
@@ -491,7 +491,7 @@ specifically mp3 files containing ID3 metadata (i.e. song info).  It provides a
 command-line tool (eyeD3) and a Python library (import eyed3) that can be used
 to write your own applications or plugins that are callable from the
 command-line tool.")
-    (home-page "http://eyed3.nicfit.net/")
+    (home-page "https://eyed3.readthedocs.io/en/latest/")
     (license license:gpl2+)))
 
 (define-public chromaprint

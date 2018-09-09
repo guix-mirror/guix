@@ -35,6 +35,7 @@
   #:use-module (guix config)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
+  #:autoload   (guix describe) (current-profile-entries)
   #:use-module ((guix build utils)
                 #:select (directory-exists? mkdir-p))
   #:use-module (ice-9 format)
@@ -238,7 +239,7 @@ of relevance scores."
     (info (G_ "package '~a' has been superseded by '~a'~%")
           (manifest-entry-name old) (package-name new))
     (manifest-transaction-install-entry
-     (package->manifest-entry new (manifest-entry-output old))
+     (package->manifest-entry* new (manifest-entry-output old))
      (manifest-transaction-remove-pattern
       (manifest-pattern
         (name (manifest-entry-name old))
@@ -261,7 +262,7 @@ of relevance scores."
            (case (version-compare candidate-version version)
              ((>)
               (manifest-transaction-install-entry
-               (package->manifest-entry pkg output)
+               (package->manifest-entry* pkg output)
                transaction))
              ((<)
               transaction)
@@ -274,7 +275,7 @@ of relevance scores."
                          (null? (package-propagated-inputs pkg)))
                     transaction
                     (manifest-transaction-install-entry
-                     (package->manifest-entry pkg output)
+                     (package->manifest-entry* pkg output)
                      transaction))))))))
        (#f
         (warning (G_ "package '~a' no longer exists~%") name)
@@ -570,6 +571,52 @@ upgrading, #f otherwise."
       (output "out")                              ;XXX: wild guess
       (item item))))
 
+(define (package-provenance package)
+  "Return the provenance of PACKAGE as an sexp for use as the 'provenance'
+property of manifest entries, or #f if it could not be determined."
+  (define (entry-source entry)
+    (match (assq 'source
+                 (manifest-entry-properties entry))
+      (('source value) value)
+      (_ #f)))
+
+  (match (and=> (package-location package) location-file)
+    (#f #f)
+    (file
+     (let ((file (if (string-prefix? "/" file)
+                     file
+                     (search-path %load-path file))))
+       (and file
+            (string-prefix? (%store-prefix) file)
+
+            ;; Always store information about the 'guix' channel and
+            ;; optionally about the specific channel FILE comes from.
+            (or (let ((main  (and=> (find (lambda (entry)
+                                            (string=? "guix"
+                                                      (manifest-entry-name entry)))
+                                          (current-profile-entries))
+                                    entry-source))
+                      (extra (any (lambda (entry)
+                                    (let ((item (manifest-entry-item entry)))
+                                      (and (string-prefix? item file)
+                                           (entry-source entry))))
+                                  (current-profile-entries))))
+                  (and main
+                       `(,main
+                         ,@(if extra (list extra) '()))))))))))
+
+(define (package->manifest-entry* package output)
+  "Like 'package->manifest-entry', but attach PACKAGE provenance meta-data to
+the resulting manifest entry."
+  (define (provenance-properties package)
+    (match (package-provenance package)
+      (#f   '())
+      (sexp `((provenance ,@sexp)))))
+
+  (package->manifest-entry package output
+                           #:properties (provenance-properties package)))
+
+
 (define (options->installable opts manifest transaction)
   "Given MANIFEST, the current manifest, and OPTS, the result of 'args-fold',
 return an variant of TRANSACTION that accounts for the specified installations
@@ -590,13 +637,13 @@ and upgrades."
                   (('install . (? package? p))
                    ;; When given a package via `-e', install the first of its
                    ;; outputs (XXX).
-                   (package->manifest-entry p "out"))
+                   (package->manifest-entry* p "out"))
                   (('install . (? string? spec))
                    (if (store-path? spec)
                        (store-item->manifest-entry spec)
                        (let-values (((package output)
                                      (specification->package+output spec)))
-                         (package->manifest-entry package output))))
+                         (package->manifest-entry* package output))))
                   (_ #f))
                 opts))
 

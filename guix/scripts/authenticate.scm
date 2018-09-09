@@ -19,7 +19,7 @@
 (define-module (guix scripts authenticate)
   #:use-module (guix config)
   #:use-module (guix base16)
-  #:use-module (guix pk-crypto)
+  #:use-module (gcrypt pk-crypto)
   #:use-module (guix pki)
   #:use-module (guix ui)
   #:use-module (ice-9 binary-ports)

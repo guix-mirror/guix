@@ -2461,7 +2461,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.62.3")
+    (version "2.64.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2469,7 +2469,7 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0whi8p03kpbp68kg6fg3vb7rhykjp7wn3nlbzy9j0p298zjss4nk"))))
+                "09z7g3spww3f84y8jmicdd6lqp360mbggpg5h1fq1v4p5ihcjnyr"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -2573,6 +2573,7 @@ libxml to ease remote use of the RESTful API.")
        ("libxml2" ,libxml2)))
     (inputs
      `(("glib-networking" ,glib-networking)
+       ("libpsl" ,libpsl)
        ("sqlite" ,sqlite)))
     (home-page "https://live.gnome.org/LibSoup/")
     (synopsis "GLib-based HTTP Library")
