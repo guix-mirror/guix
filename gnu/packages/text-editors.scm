@@ -147,7 +147,7 @@ commands are similar to Vi's ones, and it shares Vi's \"keystrokes as a text
 editing language\" model.  Kakoune has a strong focus on interactivity, most
 commands provide immediate and incremental results, while still being
 competitive (as in keystroke count) with Vim.")
-    (home-page "http://kakoune.org/")
+    (home-page "https://kakoune.org/")
     (license license:unlicense)))
 
 (define-public joe
