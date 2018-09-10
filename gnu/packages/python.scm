@@ -7162,14 +7162,14 @@ be set via config files and/or environment variables.")
 (define-public python2-contextlib2
   (package
     (name "python2-contextlib2")
-    (version "0.4.0")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "contextlib2" version))
        (sha256
         (base32
-         "0cmp131dlh0d0zvw0aza1zd13glvngzk8lb4avks0hm7yxwdr9am"))))
+         "0j6ad6lwwyc9kv71skj098v5l7x5biyj2hs4lc5x1kcixqcr97sh"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -7179,6 +7179,8 @@ be set via config files and/or environment variables.")
            (lambda _ (zero?
                       (system*
                        "python" "test_contextlib2.py" "-v")))))))
+    (native-inputs
+     `(("python2-unittest2" ,python2-unittest2)))
     (home-page "http://contextlib2.readthedocs.org/")
     (synopsis "Tools for decorators and context managers")
     (description "This module is primarily a backport of the Python
