@@ -1583,7 +1583,7 @@ backported for previous versions of Python from 2.4 to 3.3.")
     (home-page "https://github.com/r1chardj0n3s/parse")
     (synopsis "Parse strings")
     (description
-     "Parse strings using a specification based on the Python format()
+     "Parse strings using a specification based on the Python @code{format()}
 syntax.")
     (license license:x11)))
 
