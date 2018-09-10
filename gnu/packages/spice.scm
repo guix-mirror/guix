@@ -177,15 +177,15 @@ which allows users to view a desktop computing environment.")
 (define-public spice
   (package
     (name "spice")
-    (version "0.14.0")
+    (version "0.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                 "https://www.spice-space.org/download/releases/"
-                "spice-" version ".tar.bz2"))
+                "spice-server/spice-" version ".tar.bz2"))
               (sha256
                (base32
-                "0j5q7cp5p95jk8fp48gz76rz96lifimdsx1wnpmfal0nnnar9nrs"))))
+                "068mb9l7wzk4k4c65bzvpw5fyyzh81rb6z81skgdxvh67pk5vb8y"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("openssl" ,openssl)
@@ -202,12 +202,18 @@ which allows users to view a desktop computing environment.")
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("python" ,python)
-        ("spice-gtk" ,spice-gtk)))
+        ("spice-gtk" ,spice-gtk)
+
+        ;; These are needed for the server listen tests.
+        ("glib-networking" ,glib-networking)
+        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (arguments
       `(#:configure-flags
-        '("--disable-celt051" ; Disable support for unpackaged audio codec
-          "--enable-lz4"
-          "--enable-automated-tests")))
+        '("--enable-lz4"
+          "--enable-automated-tests")
+        #:phases (modify-phases %standard-phases
+                   (add-before 'check 'use-empty-ssl-cert-file
+                     (lambda _ (setenv "SSL_CERT_FILE" "/dev/null") #t)))))
     (synopsis "Server implementation of the SPICE protocol")
     (description "SPICE is a remote display system built for virtual
 environments which allows you to view a computing 'desktop' environment
