@@ -220,7 +220,7 @@ COCOMO model or user-provided parameters.")
              "/cloc-" version ".tar.gz"))
        (sha256
         (base32
-         "176xklr2qsgxh9zdb565gib6pp4gsm585rz5fvyphgjy4i679wkv"))))
+         "1j9lwy9xf43kpv1csqdxzch6y1hnsv881ddqd357f8v58dhr4s68"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)
