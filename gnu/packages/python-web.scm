@@ -177,14 +177,14 @@ other HTTP libraries.")
 (define-public python-sockjs-tornado
   (package
     (name "python-sockjs-tornado")
-    (version "1.0.3")
+    (version "1.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sockjs-tornado" version))
        (sha256
         (base32
-         "16cff40nniqsyvda1pb2j3b4zwmrw7y2g1vqq78lp20xpmhnwwkd"))))
+         "0zhq8wnnhkfbvdnsggqrc3pp97pqpilsf7fh6ymvnf52r0rwyjsc"))))
     (build-system python-build-system)
     (arguments
      `(;; There are no tests, and running the test phase requires missing
