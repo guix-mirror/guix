@@ -5224,7 +5224,7 @@ examine the contents, and perform some simple tasks.  It can also load the
 (define-public perl-module-runtime
   (package
     (name "perl-module-runtime")
-    (version "0.014")
+    (version "0.016")
     (source
      (origin
        (method url-fetch)
@@ -5232,7 +5232,7 @@ examine the contents, and perform some simple tasks.  It can also load the
                            "Module-Runtime-" version ".tar.gz"))
        (sha256
         (base32
-         "19326f094jmjs6mgpwkyisid54k67w34br8yfh0gvaaml87gwi2c"))))
+         "097hy2czwkxlppri32m599ph0xfvfsbf0a5y23a4fdc38v32wc38"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "https://metacpan.org/release/Module-Runtime")
