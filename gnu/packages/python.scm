@@ -4340,13 +4340,13 @@ displayed.")
 (define-public python-pexpect
   (package
     (name "python-pexpect")
-    (version "4.2.1")
+    (version "4.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pexpect" version))
        (sha256
-        (base32 "14ls7k99pwvl21zqv65kzrhccv50j89m5ij1hf0slmsvlxjj84rx"))))
+        (base32 "1fla85g47iaxxpjhp9vkxdnv4pgc7rplfy6ja491smrrk0jqi3ia"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
