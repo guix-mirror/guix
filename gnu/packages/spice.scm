@@ -19,7 +19,6 @@
 
 (define-module (gnu packages spice)
   #:use-module (gnu packages)
-  #:use-module (gnu packages autotools) ; remove after updating usbredir to 0.7.1+
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages gl)
@@ -40,64 +39,33 @@
   #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
-  #:use-module (guix git-download) ; remove after updating usbredir to 0.7.1+
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils))
 
 (define-public usbredir
-  (let ((commit "ac80a5971c6318d73d5fba4b5f13d3a9389558c9")
-        (revision "1"))          ;Guix package revision
-    (package
-      (name "usbredir")
-      (version (string-append "0.7.1-" revision "."
-                              (string-take commit 7)))
-      ;(version "0.7.1")
-      ;(source (origin
-      ;          (method url-fetch)
-      ;          (uri (string-append
-      ;            "http://spice-space.org/download/usbredir/"
-      ;            "usbredir-" version ".tar.bz2"))
-      ;          (sha256
-      ;           (base32
-      ;            "1wsnmk4wjpdhbn1zaxg6bmyxspcki2zgy0am9lk037rnl4krwzj0"))))
-      ; FIXME: usbredir 0.7.1 release doesn't build on 32 bit systems.
-      ;        issue is fixed in HEAD
-      ;        remove 'autogen phase and autoconf, automake, libtool inputs
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                        (url "https://anongit.freedesktop.org/git/spice/usbredir.git")
-                        (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "052fywgi72j68dr5ybldncg4vk8iqfrh58la7iazyxxpph9aag1g"))))
-      (build-system gnu-build-system)
-      (propagated-inputs
-        `(("libusb" ,libusb)))
-      (native-inputs
-        `(("pkg-config" ,pkg-config)
-          ("autoconf" ,autoconf)
-          ("automake" ,automake)
-          ("libtool" ,libtool)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'autogen
-             (lambda _
-               ;; Build without '-Werror', in particular to avoid errors due
-               ;; to the use of the deprecated 'libusb_set_debug' function.
-               (substitute* "configure.ac"
-                 (("-Werror") ""))
-               (zero? (system* "autoreconf" "-vfi")))))))
-      (synopsis "Tools for sending USB device traffic over a network")
-      (description "Usbredir is a network protocol for sending USB device traffic
-  over a network connection.  It can be used to redirect traffic from a USB device
-  to a different (virtual) machine than the one to which the USB device is
-  attached.")
-      (home-page "https://www.spice-space.org")
-      (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+)))))
+  (package
+    (name "usbredir")
+    (home-page "https://spice-space.org")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/download/" name "/" name "-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "002yik1x7kn0427xahvnhjby2np14a6xqw7c3dx530n9h5d9rg47"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("libusb" ,libusb)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Tools for sending USB device traffic over a network")
+    (description
+     "Usbredir is a network protocol for sending USB device traffic over a
+network connection.  It can be used to redirect traffic from a USB device to a
+different (virtual) machine than the one to which the USB device is attached.")
+    (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+))))
 
 (define-public virglrenderer
   (package
