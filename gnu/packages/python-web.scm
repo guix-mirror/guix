@@ -194,12 +194,12 @@ other HTTP libraries.")
      `(("python-tornado" ,python-tornado)))
     (home-page "https://github.com/mrjoes/sockjs-tornado/")
     (synopsis
-     "SockJS python server implementation on top of Tornado framework")
+     "SockJS Python server implementation on top of the Tornado framework")
     (description
-     "SockJS-tornado provides the server side counterpart to a SockJS client
+     "SockJS-tornado provides the server-side counterpart to a SockJS client
 library, through the Tornado framework.
 
-SockJS provides a low latency, full duplex, cross-domain communication channel
+SockJS provides a low-latency, full-duplex, cross-domain communication channel
 between a web browser and web server.")
     (license license:expat)))
 
