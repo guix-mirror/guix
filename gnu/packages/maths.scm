@@ -3975,7 +3975,7 @@ toolset supports analysis and automatic verification, linearisation, simulation,
 state-space exploration and generation, and tools to optimise and analyse
 specifications.  Also, state spaces can be manipulated, visualised and
 analysed.")
-    (home-page "http://mcrl2.org")
+    (home-page "https://mcrl2.org")
     (license license:boost1.0)))
 
 (define-public r-subplex
