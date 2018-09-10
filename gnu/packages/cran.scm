@@ -5851,3 +5851,27 @@ frame.  It offers three methods to process data:
 These algorithms are well suited for high dimensional data outlier
 detection.")
     (license license:expat)))
+
+(define-public r-abps
+  (package
+    (name "r-abps")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ABPS" version))
+       (sha256
+        (base32 "1k3f5i34f4w2khkszb4qhwwcpiy7gsfh82vjr6rypwg6rx5rjclq"))))
+    (properties `((upstream-name . "ABPS")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-kernlab" ,r-kernlab)))
+    (home-page "https://cran.r-project.org/web/packages/ABPS/")
+    (synopsis "Abnormal blood profile score to detect blood doping")
+    (description
+     "This package offers an implementation of the @dfn{Abnormal blood profile score} (ABPS).
+The ABPS is a part of the Athlete biological passport program of the World
+anti-doping agency, which combines several blood parameters into a single
+score in order to detect blood doping.  The package also contains functions to
+calculate other scores used in anti-doping programs, such as the ratio of
+hemoglobin to reticulocytes (OFF-score), as well as example data.")
+    (license license:gpl2+)))
