@@ -5822,3 +5822,32 @@ Using high-dimensional datasets to measure a subject's overall level of
 abnormality as compared to a reference population is often needed in outcomes
 research.")
     (license license:expat)))
+
+(define-public r-abodoutlier
+  (package
+    (name "r-abodoutlier")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abodOutlier" version))
+       (sha256
+        (base32 "1pvhgxmh23br84r0fbmv7g53z2427birdja96a67vqgz18r3fdvj"))))
+    (properties `((upstream-name . "abodOutlier")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)))
+    (home-page "https://cran.r-project.org/web/packages/abodOutlier/")
+    (synopsis "Angle-based outlier detection")
+    (description
+     "This package performs angle-based outlier detection on a given data
+frame.  It offers three methods to process data:
+@enumerate
+@item full but slow implementation using all the data that has cubic
+  complexity;
+@item a fully randomized method;
+@item a method using k-nearest neighbours.
+@end enumerate
+These algorithms are well suited for high dimensional data outlier
+detection.")
+    (license license:expat)))
