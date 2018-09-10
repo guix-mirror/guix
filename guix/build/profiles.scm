@@ -94,12 +94,20 @@ definitions for all the SEARCH-PATHS."
         (for-each (write-environment-variable-definition port)
                   (map (abstract-profile output) variables))))))
 
-(define (ensure-writable-directory directory)
+(define* (ensure-writable-directory directory
+                                    #:key (symlink symlink))
   "Ensure DIRECTORY exists and is writable.  If DIRECTORY is currently a
 symlink (to a read-only directory in the store), then delete the symlink and
 instead make DIRECTORY a \"real\" directory containing symlinks."
+  (define (absolute? file)
+    (string-prefix? "/" file))
+
   (define (unsymlink link)
-    (let* ((target (readlink link))
+    (let* ((target (match (readlink link)
+                     ((? absolute? target)
+                      target)
+                     ((? string? relative)
+                      (string-append (dirname link) "/" relative))))
            ;; TARGET might itself be a symlink, so append "/" to make sure
            ;; 'scandir' enters it.
            (files  (scandir (string-append target "/")
@@ -149,7 +157,8 @@ SEARCH-PATHS."
   ;; Make sure we can write to 'OUTPUT/etc'.  'union-build' above could have
   ;; made 'etc' a symlink to a read-only sub-directory in the store so we need
   ;; to work around that.
-  (ensure-writable-directory (string-append output "/etc"))
+  (ensure-writable-directory (string-append output "/etc")
+                             #:symlink symlink)
 
   ;; Write 'OUTPUT/etc/profile'.
   (build-etc/profile output search-paths))
