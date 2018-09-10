@@ -1291,7 +1291,7 @@ auto-wah.")
     (arguments
      (substitute-keyword-arguments (package-arguments guitarix)
        ((#:configure-flags flags)
-        `(cons "--lv2-only" ,flags))))))
+        `(cons "--no-standalone" ,flags))))))
 
 (define-public rakarrack
   (package
