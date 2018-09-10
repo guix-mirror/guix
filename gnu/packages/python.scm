@@ -1566,14 +1566,14 @@ backported for previous versions of Python from 2.4 to 3.3.")
 (define-public python-parse
   (package
     (name "python-parse")
-    (version "1.8.2")
+    (version "1.8.4")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "parse" version))
       (sha256
        (base32
-        "1lj9v1q4imszyhvipb6drsm3xdl35nan011mqxxas1yaypixsj40"))))
+        "0f8997xr8nq2nq35iiviq8ningd1zvy59fg503xfpbi2dwhgdkf3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
