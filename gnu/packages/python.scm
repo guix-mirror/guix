@@ -7176,9 +7176,7 @@ be set via config files and/or environment variables.")
        #:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (zero?
-                      (system*
-                       "python" "test_contextlib2.py" "-v")))))))
+           (lambda _ (invoke "python" "test_contextlib2.py" "-v"))))))
     (native-inputs
      `(("python2-unittest2" ,python2-unittest2)))
     (home-page "http://contextlib2.readthedocs.org/")
