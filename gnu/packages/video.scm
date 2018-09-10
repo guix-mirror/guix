@@ -864,7 +864,7 @@ videoformats depend on the configuration flags of ffmpeg.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.3-1")
+    (version "3.0.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -874,7 +874,7 @@ videoformats depend on the configuration flags of ffmpeg.")
              (patches (list %vlc-libx264-compat.patch))
              (sha256
               (base32
-               "1p7qvdvg9w4lz8vckzhn6bswfkq3qw7fqkgvwjcskdgc266xx7dw"))))
+               "17jsq0zqpqyxw4ckvjba0hf6zk8ywc4wf8sy3z03hh3ij0vxpwq1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
