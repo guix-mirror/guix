@@ -4518,25 +4518,25 @@ away.")
 (define-public python-traitlets
   (package
     (name "python-traitlets")
-    (version "4.2.0")
+    (version "4.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "traitlets" version))
        (sha256
         (base32
-         "1afy08sa5n9gnkvh3da49c16zkyv598vchv0p1hp7zzjy8895hz4"))))
+         "0dbq7sx26xqz5ixs711k5nc88p8a0nqyz6162pwks5dpcz9d4jww"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _ (zero? (system* "nosetests")))))))
+         (replace 'check (lambda _ (invoke "pytest" "-vv" "traitlets"))))))
     (propagated-inputs
      `(("python-ipython-genutils" ,python-ipython-genutils)
-       ("python-decorator" ,python-decorator)))
+       ("python-decorator" ,python-decorator)))    ;not needed for >4.3.2
     (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)))
+    (properties `((python2-variant . ,(delay python2-traitlets))))
     (home-page "https://ipython.org")
     (synopsis "Configuration system for Python applications")
     (description
@@ -4549,7 +4549,12 @@ without using the configuration machinery.")
     (license license:bsd-3)))
 
 (define-public python2-traitlets
-  (package-with-python2 python-traitlets))
+  (let ((traitlets (package-with-python2 (strip-python2-variant python-traitlets))))
+    (package
+      (inherit traitlets)
+      (propagated-inputs
+       `(("python2-enum34" ,python2-enum34)
+         ,@(package-propagated-inputs traitlets))))))
 
 (define-public python-jupyter-core
   (package
