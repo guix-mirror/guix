@@ -6708,8 +6708,8 @@ compressed JSON header blocks.
     (license l:expat)))
 
 (define-public hpcguix-web
-  (let ((commit "9ff40fcc77f248901d861756dbbddc80270c380c")
-        (revision "2"))
+  (let ((commit "53e09ea59ec0380b41a4cbda32df8bdb9a10004d")
+        (revision "3"))
     (package
       (name "hpcguix-web")
       (version (git-version "0.0.1" revision commit))
@@ -6721,7 +6721,7 @@ compressed JSON header blocks.
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0lxcj9s3wxrv1l7lrxxx374jwzx7h60gxwkbgr46lzcbgvb3k26s"))))
+                  "1ah4pn9697vazhbvd45n4b1rrkx2nbhnw384cr0b941q3sz1dfyc"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
