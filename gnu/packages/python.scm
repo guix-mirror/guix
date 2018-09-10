@@ -9844,13 +9844,13 @@ hardware-accelerated multitouch applications.")
 (define-public python-binaryornot
   (package
     (name "python-binaryornot")
-    (version "0.4.0")
+    (version "0.4.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "binaryornot" version))
               (sha256
                (base32
-                "1j4f51dxic39mdwf6alj7gd769wy6mhk916v031wjali51xkh3xb"))))
+                "0qc006986rb6bcbmiymwgcl1mns2jphr1j7sr7nk41nlr7gh359m"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-chardet" ,python-chardet)
