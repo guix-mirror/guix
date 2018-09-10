@@ -6694,6 +6694,7 @@ serve the same purpose: provide Python bindings for libmagic.")))
 (define-public python-debian
   (package
     (name "python-debian")
+    (home-page "https://salsa.debian.org/python-debian-team/python-debian")
     (version "0.1.28")
     (source
      (origin
@@ -6705,7 +6706,6 @@ serve the same purpose: provide Python bindings for libmagic.")))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
-    (home-page "http://packages.debian.org/sid/python-debian")
     (synopsis "Debian package related modules")
     (description
      ;; XXX: Use @enumerate instead of @itemize to work around
