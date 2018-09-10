@@ -47,21 +47,21 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.3.3.9")
+    (version "0.3.4.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0vyf5z0dn5jghp2qjp076aq62lsz9g32qv9jiqf08skf096nnd45"))))
+               "08qhzcmzxp5xr2l5721vagksqnnbrzzzy5hmz5y9r8lrq2r4qsl2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-gcc-hardening"
                                "--enable-linker-hardening")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python" ,python-2)))  ; for tests
+       ("python" ,python-2)))           ; for tests
     (inputs
      `(("zlib" ,zlib)
        ("openssl" ,openssl)
