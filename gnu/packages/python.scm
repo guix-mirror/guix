@@ -5160,13 +5160,13 @@ Python.")
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "5.2.0")
+    (version "5.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "0a1i5v5qxbmmpznp7my9nva8y7pxp8pjrwk2gxgisdskg35sq8s1"))))
+        (base32 "18x36n78ph5v1fxk54gvdbc3d8nfncha78phifg3lqaa9gifgzxd"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
