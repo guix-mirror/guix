@@ -7159,9 +7159,9 @@ be set via config files and/or environment variables.")
 @code{ArgumentParser} object.")
     (license license:asl2.0)))
 
-(define-public python-contextlib2
+(define-public python2-contextlib2
   (package
-    (name "python-contextlib2")
+    (name "python2-contextlib2")
     (version "0.4.0")
     (source
      (origin
@@ -7172,7 +7172,8 @@ be set via config files and/or environment variables.")
          "0cmp131dlh0d0zvw0aza1zd13glvngzk8lb4avks0hm7yxwdr9am"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:python ,python-2
+       #:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _ (zero?
@@ -7186,9 +7187,6 @@ provides utilities for common tasks involving decorators and context
 managers.  It also contains additional features that are not part of
 the standard library.")
     (license license:psfl)))
-
-(define-public python2-contextlib2
-  (package-with-python2 python-contextlib2))
 
 (define-public python-texttable
   (package
