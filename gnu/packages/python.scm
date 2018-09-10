@@ -13234,14 +13234,14 @@ source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
 (define-public python-typing
   (package
     (name "python-typing")
-    (version "3.6.4")
+    (version "3.6.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "typing" version))
        (sha256
         (base32
-         "1wmk9nkh30n37cbrqwkbggmj2390lhrlagjkd0ikm02l88saj06l"))))
+         "0ba9acs4awx15bf9v3nrs781msbd2nx826906nj6fqks2bvca9s0"))))
     (build-system python-build-system)
     (home-page "https://docs.python.org/3/library/typing.html")
     (synopsis "Type hints for Python")
