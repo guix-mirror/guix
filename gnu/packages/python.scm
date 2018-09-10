@@ -6555,7 +6555,7 @@ Python Package Index (PyPI).")
 (define-public python-tlsh
   (package
     (name "python-tlsh")
-    (version "3.4.4")
+    (version "3.4.5")
     (home-page "https://github.com/trendmicro/tlsh")
     (source (origin
               (method url-fetch)
@@ -6563,7 +6563,7 @@ Python Package Index (PyPI).")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "00bhzjqrlh7v538kbkbn8lgx976j1138al3sdhklaizqjvpwyk4r"))
+                "1x1vahd4zg5kpyr9h9hs3fvh460p25rjy4cclwdnbbw8x3vc30q3"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
