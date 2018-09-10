@@ -6624,13 +6624,13 @@ a hash value.")
 (define-public python-libarchive-c
   (package
     (name "python-libarchive-c")
-    (version "2.2")
+    (version "2.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "libarchive-c" version))
               (sha256
                (base32
-                "0z4r7v3dhd6b3120mav05ff08srih176r2rg5k8kn7mjd9pslm2x"))))
+                "0qg0v1s9c1xdk9philhnv8k6c6nicvnvfwlc0j9srg90jmdlvm06"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -6642,7 +6642,12 @@ a hash value.")
                        (substitute* "libarchive/ffi.py"
                          (("find_library\\('archive'\\)")
                           (string-append "'" libarchive
-                                         "/lib/libarchive.so'")))))))))
+                                         "/lib/libarchive.so'"))))))
+                  (replace 'check
+                    (lambda _ (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
     (inputs
      `(("libarchive" ,libarchive)))
     (home-page "https://github.com/Changaco/python-libarchive-c")
