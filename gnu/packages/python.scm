@@ -9639,14 +9639,14 @@ characters, mouse support, and auto suggestions.")
 (define-public python-jedi
   (package
     (name "python-jedi")
-    (version "0.12.0")
+    (version "0.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jedi" version))
        (sha256
         (base32
-         "1bcr7csx4xil1iwmk03d79jis0bkmgi9k0kir3xa4rmwqsagcwhr"))))
+         "1h8ypnjisn57kiv1zqrkj1im6sbfnhxllqaa8znh39qkd47ys2dl"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -9658,11 +9658,14 @@ characters, mouse support, and auto suggestions.")
        ("python-parso" ,python-parso)
        ("python-docopt" ,python-docopt)))
     (home-page "https://github.com/davidhalter/jedi")
-    (synopsis
-     "Autocompletion for Python that can be used for text editors")
+    (synopsis "Autocompletion and static analysis library for Python")
     (description
-     "Jedi is an autocompletion tool for Python that can be used for text
- editors.")
+     "Jedi is a static analysis tool for Python that can be used in Integrated
+Development Environments (@dfn{IDE}s) and text editors.  It understands Python
+on a deeper level than many other static analysis frameworks for Python.
+
+Jedi understands docstrings and you can use Jedi autocompletion in your REPL as
+well.")
     (license license:expat)))
 
 (define-public python2-jedi
