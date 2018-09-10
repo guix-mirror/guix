@@ -135,6 +135,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/display-managers.scm		\
   %D%/packages/django.scm			\
   %D%/packages/djvu.scm				\
+  %D%/packages/dlang.scm			\
   %D%/packages/dns.scm				\
   %D%/packages/docbook.scm			\
   %D%/packages/docker.scm			\
@@ -245,7 +246,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/key-mon.scm			\
   %D%/packages/kodi.scm				\
   %D%/packages/language.scm			\
-  %D%/packages/ldc.scm				\
   %D%/packages/lego.scm				\
   %D%/packages/less.scm				\
   %D%/packages/lesstif.scm			\
