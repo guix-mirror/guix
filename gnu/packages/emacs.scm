@@ -1659,38 +1659,42 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.4.1.1")
+    (version "0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://emacs-guix.gitlab.io/website/"
                                   "releases/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "0jbnrcazbks7h50rngpw5l40a6vn2794kb53cpva3yzdjmrc1955"))))
+                "09zxd8x674vrpigmcx8l00ifhaxh35xwkwjb8dw9kydnhv9hyyi1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (let ((guix        (assoc-ref %build-inputs "guix"))
+             (gcrypt      (assoc-ref %build-inputs "guile-gcrypt"))
              (geiser      (assoc-ref %build-inputs "geiser"))
              (dash        (assoc-ref %build-inputs "dash"))
              (bui         (assoc-ref %build-inputs "bui"))
              (magit-popup (assoc-ref %build-inputs "magit-popup"))
              (edit-indirect (assoc-ref %build-inputs "edit-indirect"))
-             (site-lisp   "/share/emacs/site-lisp"))
+             (site-lisp   "/share/emacs/site-lisp")
+             (site-scm    "/share/guile/site")
+             (site-go     "/lib/guile")
+             (guile-dir (lambda (dir)
+                          (car (find-files dir
+                                           (lambda (file stat)
+                                             (string-prefix?
+                                              "2." (basename file)))
+                                           #:directories? #t)))))
          (list (string-append "--with-guix-site-dir="
-                              (car (find-files (string-append guix
-                                                           "/share/guile/site")
-                                               (lambda (file stat)
-                                                 (string-prefix?
-                                                  "2."
-                                                  (basename file)))
-                                               #:directories? #t)))
+                              (guile-dir (string-append guix site-scm)))
                (string-append "--with-guix-site-ccache-dir="
-                              (car (find-files (string-append guix "/lib/guile")
-                                               (lambda (file stat)
-                                                 (string-prefix?
-                                                  "2." (basename file)))
-                                               #:directories? #t))
+                              (guile-dir (string-append guix site-go))
+                              "/site-ccache")
+               (string-append "--with-guile-gcrypt-site-dir="
+                              (guile-dir (string-append gcrypt site-scm)))
+               (string-append "--with-guile-gcrypt-site-ccache-dir="
+                              (guile-dir (string-append gcrypt site-go))
                               "/site-ccache")
                (string-append "--with-geiser-lispdir=" geiser site-lisp)
                (string-append "--with-dash-lispdir="
@@ -1713,6 +1717,7 @@ type, for example: packages, buffers, files, etc.")
        ("guix" ,guix)))
     (propagated-inputs
      `(("geiser" ,geiser)
+       ("guile-gcrypt" ,guile-gcrypt)
        ("dash" ,emacs-dash)
        ("bui" ,emacs-bui)
        ("edit-indirect" ,emacs-edit-indirect)
