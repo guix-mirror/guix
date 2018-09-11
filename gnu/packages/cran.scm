@@ -6057,3 +6057,28 @@ on user-defined cut-points of accelerometer counts.
 and generates data summaries.  Also, includes functions to plot, analyze, and
 simulate accelerometer data.")
     (license license:gpl2+)))
+
+(define-public r-rbenchmark
+  (package
+    (name "r-rbenchmark")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rbenchmark" version))
+       (sha256
+        (base32 "010fn3qwnk2k411cbqyvra1d12c3bhhl3spzm8kxffmirj4p2al9"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/rbenchmark/")
+    (synopsis "Benchmarking routine for R")
+    (description
+     "This @code{r-rbenchmark} package is inspired by the Perl module Benchmark,
+and is intended to facilitate benchmarking of arbitrary R code.  The library
+consists of just one function, benchmark, which is a simple wrapper around
+system.time.  Given a specification of the benchmarking process (counts of
+replications, evaluation environment) and an arbitrary number of expressions,
+benchmark evaluates each of the expressions in the specified environment,
+replicating the evaluation as many times as specified, and returning the results
+conveniently wrapped into a data frame.")
+    (license license:gpl2+)))
+
