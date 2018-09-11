@@ -2056,8 +2056,8 @@ convenient nested tree operations.")
     (license license:gpl3+)))
 
 (define-public guile-simple-zmq
-  (let ((commit "1f3b7c0b9b249c6fde8e8a632b252d8a1b794424")
-        (revision "1"))
+  (let ((commit "5bb66a0499f94006cfd18b58e80ad6623f911c31")
+        (revision "2"))
     (package
       (name "guile-simple-zmq")
       (version (git-version "0.0.0" revision commit))
@@ -2069,7 +2069,7 @@ convenient nested tree operations.")
                (commit commit)))
          (sha256
           (base32
-           "0nj2pd5bsmmgd3c54wh4sixfhmsv1arsq7yam2d7487h3n9q57r7"))
+           "0dj1brjqa7m4k71sf94aq26ca0la3nr894kfmjnqkpawqfp4dyaz"))
          (file-name (git-file-name name version))))
       (build-system guile-build-system)
       (arguments
@@ -2094,8 +2094,8 @@ messaging library.")
       (license license:gpl3+))))
 
 (define-public jupyter-guile-kernel
-  (let ((commit "a5c5f3ea3215b65e770bcb62f71117b0ec4575ed")
-        (revision "0"))
+  (let ((commit "a7db9245a886e104138474df46c3e88b95cff629")
+        (revision "1"))
     (package
       (name "jupyter-guile-kernel")
       (version (git-version "0.0.0" revision commit))
@@ -2107,7 +2107,7 @@ messaging library.")
                (commit commit)))
          (sha256
           (base32
-           "0y5jr0f0dyskvsawqbf6n0bpg8jirw4mhqbarf2a6p9lxhqha9s9"))))
+           "0aj04853bqm47ivfcmrgpb7w3wkis847kc7qrwsa5zcn9h38qh2f"))))
       (build-system guile-build-system)
       (arguments
        '(#:phases (modify-phases %standard-phases
