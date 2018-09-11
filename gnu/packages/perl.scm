@@ -2626,6 +2626,30 @@ the appropriate objects.")
 particular command is available.")
     (license (package-license perl))))
 
+(define-public perl-devel-checklib
+  (package
+    (name "perl-devel-checklib")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MATTN/Devel-CheckLib-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1a19qkwxwz3wqb16cdabymfbf9kiydiifw90nd5srpq5hy8gvb94"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-io-captureoutput" ,perl-io-captureoutput)
+       ("perl-mock-config" ,perl-mock-config)))
+    (home-page "https://metacpan.org/release/Devel-CheckLib")
+    (synopsis "Check that a library is available")
+    (description
+     "@code{Devel::CheckLib} is a Perl module that checks whether a particular
+C library and its headers are available.  You can also check for the presence of
+particular functions in a library, or even that those functions return
+particular results.")
+    (license perl-license)))
+
 (define-public perl-devel-checkcompiler
   (package
   (name "perl-devel-checkcompiler")
