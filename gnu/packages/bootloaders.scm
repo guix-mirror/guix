@@ -312,7 +312,7 @@ menu to select one of the installed operating systems.")
                  ;; Don't look up headers under /usr.
                  (("/usr/include/") ""))
                (invoke "make" "unittest"))))))
-      (home-page "http://www.syslinux.org")
+      (home-page "https://www.syslinux.org")
       (synopsis "Lightweight Linux bootloader")
       (description "Syslinux is a lightweight Linux bootloader.")
       (license (list license:gpl2+
