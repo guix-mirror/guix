@@ -44,6 +44,27 @@
 ;;;
 
 
+(define-public perl-mock-config
+  (package
+    (name "perl-mock-config")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/Mock-Config-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "06q0xkg5cwdwafzmb9rkaa305ddv7vli9gpm6n9jnkyaaxbk9f55"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Mock-Config")
+    (synopsis "Temporarily set Config or XSConfig values")
+    (description
+     "The @code{Mock::Config} Perl module allows temporarily setting and
+overriding @code{Config} values, even for the readonly @code{XSConfig}
+implementation as used in cperl.  It does not store the mocked overrides
+lexically, just dynamically.")
+    (license artistic2.0)))
+
 (define-public perl-test2-bundle-extended
   (package
     (name "perl-test2-bundle-extended")
