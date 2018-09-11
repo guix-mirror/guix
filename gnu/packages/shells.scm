@@ -296,10 +296,10 @@ history mechanism, job control and a C-like syntax.")
     (source (origin
               (method url-fetch)
               (uri (list (string-append
-                           "http://www.zsh.org/pub/zsh-" version
+                           "https://www.zsh.org/pub/zsh-" version
                            ".tar.xz")
                          (string-append
-                           "http://www.zsh.org/pub/old/zsh-" version
+                           "https://www.zsh.org/pub/old/zsh-" version
                            ".tar.xz")))
               (sha256
                (base32
@@ -360,7 +360,7 @@ as an interactive login shell and as a powerful command interpreter
 for shell scripting.  Zsh can be thought of as an extended Bourne shell
 with a large number of improvements, including some features of bash,
 ksh, and tcsh.")
-    (home-page "http://www.zsh.org/")
+    (home-page "https://www.zsh.org/")
 
     ;; The whole thing is under an MIT/X11-style license, but there's one
     ;; command, 'Completion/Unix/Command/_darcs', which is under GPLv2+.
