@@ -11797,3 +11797,27 @@ hiding the symbolic links and fontified based on whether content is present.
 Commands for performing some common operations (e.g., unlocking and adding
 files) are provided.")
       (license license:gpl2+))))
+
+(define-public emacs-hackernews
+  (let ((commit "d8c450bbc76d6bb65ec5cdb6c3b888a23f3769e9"))
+    (package
+      (name "emacs-hackernews")
+      (version (git-version "0.4.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/clarete/hackernews.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "06mp4n6c300jv5lhwf50ircfjckzr2p1zd38s4mqnxxjlf1maim7"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/clarete/hackernews.el")
+      (synopsis "Hacker News client for Emacs")
+      (description "The @command{hackernews} package is able to fetch stories
+from six different Hacker News feeds, namely top, new, best, ask, show and job
+stories.  The default feed is top stories, which corresponds to the Hacker
+News homepage.")
+      (license license:gpl3))))
