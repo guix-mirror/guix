@@ -410,7 +410,7 @@ required structures.")
   (package
     (inherit openssl)
     (name "openssl")
-    (version "1.1.0i")
+    (version "1.1.1")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -420,13 +420,13 @@ required structures.")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
                                        "/" name "-" version ".tar.gz")))
-              (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
+              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
               (sha256
                (base32
-                "16fgaf113p6s5ixw227sycvihh3zx6f6rf0hvjjhxk68m12cigzb"))))
+                "0gbab2fjgms1kx5xjvqx8bxhr98k4r8l2fa8vw7kvh491xd8fdi8"))))
     (outputs '("out"
-               "doc"        ; 1.3MiB of man3 pages
-               "static"))   ; 5.5MiB of .a files
+               "doc"        ; 6.7 MiB of man3 pages and full HTML documentation
+               "static"))   ; 6.4 MiB of .a files
     (arguments
      (substitute-keyword-arguments (package-arguments openssl)
        ((#:phases phases)
@@ -439,6 +439,11 @@ required structures.")
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (lib (string-append out "/lib")))
+                 ;; It's not a shebang so patch-source-shebangs misses it.
+                 (substitute* "config"
+                   (("/usr/bin/env")
+                    (string-append (assoc-ref %build-inputs "coreutils")
+                                   "/bin/env")))
                  (invoke "./config"
                          "shared"       ;build shared libraries
                          "--libdir=lib"
@@ -460,6 +465,21 @@ required structures.")
                                '("-mfpu=vfpv3")
                                '())))))
 
+           (delete 'move-man3-pages)
+           (add-after 'install 'move-extra-documentation
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Move man3 pages and full HTML documentation to "doc".
+               (let* ((out    (assoc-ref outputs "out"))
+                      (man3   (string-append out "/share/man/man3"))
+                      (html (string-append out "/share/doc/openssl"))
+                      (doc    (assoc-ref outputs "doc"))
+                      (man-target (string-append doc "/share/man/man3"))
+                      (html-target (string-append doc "/share/doc/openssl")))
+                 (copy-recursively man3 man-target)
+                 (delete-file-recursively man3)
+                 (copy-recursively html html-target)
+                 (delete-file-recursively html)
+                 #t)))
            ;; XXX: Duplicate this phase to make sure 'version' evaluates
            ;; in the current scope and not the inherited one.
            (replace 'remove-miscellany
