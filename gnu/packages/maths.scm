@@ -508,7 +508,17 @@ large scale eigenvalue problems.")
     (arguments
      (substitute-keyword-arguments (package-arguments arpack-ng)
        ((#:configure-flags _ '())
-        ''("--enable-mpi"))))
+        ''("--enable-mpi"))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'set-test-environment
+             (lambda _
+               ;; By default, running the test suite would fail because 'ssh'
+               ;; could not be found in $PATH.  Define this variable to
+               ;; placate Open MPI without adding a dependency on OpenSSH (the
+               ;; agent isn't used anyway.)
+               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+               #t))))))
     (synopsis "Fortran subroutines for solving eigenvalue problems with MPI")))
 
 (define-public lapack
