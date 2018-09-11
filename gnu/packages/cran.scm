@@ -6107,3 +6107,27 @@ fitted probability density function or probability mass function curve, create
 the body mass index groups, assess the linearity assumption in logistic
 regression).")
     (license license:gpl2)))
+
+(define-public r-accelerometry
+  (package
+    (name "r-accelerometry")
+    (version "3.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "accelerometry" version))
+       (sha256
+        (base32 "13xzrwhr4i1nj9c8vrmfdg2rmrc8n446iihcyxmy99sm99hpzyip"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dvmisc" ,r-dvmisc)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/accelerometry/")
+    (synopsis "Functions for processing accelerometer data")
+    (description
+     "This package provides a collection of functions that perform operations on
+time-series accelerometer data, such as identify the non-wear time, flag minutes
+that are part of an activity bout, and find the maximum 10-minute average count
+value.  The functions are generally very flexible, allowing for a variety of
+algorithms to be implemented.")
+    (license license:gpl3)))
