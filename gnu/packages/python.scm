@@ -5217,13 +5217,13 @@ Python.")
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "5.2.2")
+    (version "5.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "18x36n78ph5v1fxk54gvdbc3d8nfncha78phifg3lqaa9gifgzxd"))))
+        (base32 "0gj0xxgiq3mp9qyyrbfzldiaq1giliqw0in64nqiz7vx49myqj7z"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
@@ -5241,7 +5241,8 @@ Python.")
                                "/bin/snakemake")))
              #t)))))
     (propagated-inputs
-     `(("python-wrapt" ,python-wrapt)
+     `(("python-gitpython" ,python-gitpython)
+       ("python-wrapt" ,python-wrapt)
        ("python-requests" ,python-requests)
        ("python-appdirs" ,python-appdirs)
        ("python-configargparse" ,python-configargparse)
