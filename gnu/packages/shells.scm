@@ -292,7 +292,7 @@ history mechanism, job control and a C-like syntax.")
 (define-public zsh
   (package
     (name "zsh")
-    (version "5.6")
+    (version "5.6.1")
     (source (origin
               (method url-fetch)
               (uri (list (string-append
@@ -303,7 +303,7 @@ history mechanism, job control and a C-like syntax.")
                            ".tar.xz")))
               (sha256
                (base32
-                "1mp6h2452z2029n12mxipjv4b0cc8i8sb72g8p8jklg8275iysvl"))))
+                "1s5kzfbfvixibb1sbzmmlrrx898zqwi5cfmnnq4bhcbx64zparlm"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
                  #:phases
