@@ -6082,3 +6082,28 @@ replicating the evaluation as many times as specified, and returning the results
 conveniently wrapped into a data frame.")
     (license license:gpl2+)))
 
+(define-public r-dvmisc
+  (package
+    (name "r-dvmisc")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dvmisc" version))
+       (sha256
+        (base32 "1dy0yykskwhkql19bhzmbwsgv028afc8jh9yqwbczj6f3vpv31zh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-rbenchmark" ,r-rbenchmark)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/dvmisc/")
+    (synopsis "Faster computation of common statistics and miscellaneous functions")
+    (description
+     "This package implements faster versions of base R functions (e.g. mean, standard
+deviation, covariance, weighted mean), mostly written in C++, along with
+miscellaneous functions for various purposes (e.g. create the histogram with
+fitted probability density function or probability mass function curve, create
+the body mass index groups, assess the linearity assumption in logistic
+regression).")
+    (license license:gpl2)))
