@@ -2210,6 +2210,50 @@ writing code that contains string literals that contain code themselves.")
 (define-public ecl-pythonic-string-reader
   (sbcl-package->ecl-package sbcl-pythonic-string-reader))
 
+(define-public sbcl-slime-swank
+  (package
+    (name "sbcl-slime-swank")
+    (version "2.22")
+    (source
+     (origin
+       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             ;; (url "https://github.com/slime/slime/")
+             ;; (commit "841f61467c03dea9f38ff9d5af0e21a8aa29e8f7")
+             ;; REVIEW: Do we need sionescu's patch to package SWANK?
+             (url "https://github.com/sionescu/slime/")
+             ;; (commit "swank-asdf")
+             (commit "2f7c3fcb3ac7d50d844d5c6ca0e89b52a45e1d3a")))
+       (sha256
+        (base32
+         ;; "065bc4y6iskazdfwlhgcjlzg9bi2hyjbhmyjw3461506pgkj08vi"
+         "0pkmg94wn4ii1zhlrncn44mdc5i6c5v0i9gbldx4dwl2yy7ibz5c"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "contrib/swank-listener-hooks.lisp"
+             ((":compile-toplevel :load-toplevel ") ""))
+           (substitute* "contrib/swank-presentations.lisp"
+             ((":compile-toplevel :load-toplevel ") ""))
+           (substitute* "swank.asd"
+             ((":file \"packages\".*" all)
+              (string-append all "(:file \"swank-loader-asdf\")\n")))
+           (substitute* "swank-loader-asdf.lisp"
+             ((":common-lisp" all) (string-append all " #:asdf")))
+           #t))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:asd-file "swank.asd"
+       #:asd-system-name "swank"))
+    (home-page "https://github.com/slime/slime")
+    (synopsis "Common Lisp Swank server")
+    (description
+     "This is only useful if you want to start a Swank server in a Lisp
+processes that doesn't run under Emacs.  Lisp processes created by
+@command{M-x slime} automatically start the server.")
+    (license (license (list license:gpl2+ license:public-domain)))))
+
 (define-public sbcl-mgl-pax
   (let ((commit "818448418d6b9de74620f606f5b23033c6082769"))
     (package
