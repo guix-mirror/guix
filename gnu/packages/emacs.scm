@@ -5673,7 +5673,7 @@ Yasnippet.")
 (define-public emacs-helm-system-packages
   (package
     (name "emacs-helm-system-packages")
-    (version "1.10.0")
+    (version "1.10.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5682,7 +5682,7 @@ Yasnippet.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0y5wzvfycb1bvgdk782xyl744fih43vz14wmq6gcqjarw6xfniz5"))))
+                "01by0c4lqi2cw8xmbxkjw7m9x78zssm31sx4hdpw5j35s2951j0f"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
