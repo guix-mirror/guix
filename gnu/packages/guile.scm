@@ -2130,9 +2130,13 @@ messaging library.")
 
                     (add-after 'install 'install-kernel
                       (lambda* (#:key inputs outputs #:allow-other-keys)
-                        (let* ((out (assoc-ref outputs "out"))
-                               (dir (string-append
-                                     out "/share/jupyter/kernels/guile")))
+                        (let* ((out   (assoc-ref outputs "out"))
+                               (json  (assoc-ref inputs "guile-json"))
+                               (zmq   (assoc-ref inputs "guile-simple-zmq"))
+                               (deps  (list json zmq))
+                               (dir   (string-append
+                                       out "/share/jupyter/kernels/guile"))
+                               (effective (target-guile-effective-version)))
                           ;; Install kernel.
                           (install-file "src/kernel.json" dir)
 
@@ -2146,13 +2150,30 @@ messaging library.")
                              (string-append "\"" (assoc-ref inputs "guile")
                                             "/bin/guile\""))
                             (("-s")
-                             (string-append "--no-auto-compile\", \"-s")))
+                             ;; Add '-L' and '-C' flags so that the kernel
+                             ;; finds its dependencies.
+                             (let ((-L (map (lambda (item)
+                                              (string-append "\"" item
+                                                             "/share/guile/site/"
+                                                             effective "\""))
+                                            deps))
+                                   (-C (map (lambda (item)
+                                              (string-append "\"" item
+                                                             "/lib/guile/"
+                                                             effective
+                                                             "/site-ccache\""))
+                                            deps)))
+                              (string-append "--no-auto-compile\""
+                                             (string-join -L ", \"-L\", "
+                                                          'prefix)
+                                             (string-join -C ", \"-C\", "
+                                                          'prefix)
+                                             ", \"-s"))))
                           #t))))))
       (inputs
        `(("openssl" ,openssl)
-         ("guile" ,guile-2.2)))
-      (propagated-inputs
-       `(("guile-json" ,guile-json)
+         ("guile" ,guile-2.2)
+         ("guile-json" ,guile-json)
          ("guile-simple-zmq" ,guile-simple-zmq)))
       (synopsis "Guile kernel for the Jupyter Notebook")
       (description
