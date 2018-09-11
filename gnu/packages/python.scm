@@ -5431,14 +5431,14 @@ so it might be a tiny bit slower.")
 (define-public python-waf
   (package
     (name "python-waf")
-    (version "2.0.10")
+    (version "2.0.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://waf.io/"
                                   "waf-" version ".tar.bz2"))
               (sha256
                (base32
-                "1v832jljl5wwqyimz40zgksf5ws1w3d2niz3qxamyp5dnyvzjl35"))))
+                "13zrniwkmfqgsgzi9v5m1367fppp9yzrz6z2ny6hy8dmpb8mj4z4"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
