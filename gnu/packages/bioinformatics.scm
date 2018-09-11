@@ -13736,3 +13736,32 @@ juicer) and single-resolution or multi-resolution @code{.cool} files (for
 cooler).  Both @code{hic} and @code{cool} files describe Hi-C contact
 matrices.")
     (license license:expat)))
+
+(define-public r-pore
+  (package
+    (name "r-pore")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/rpore/" version
+                       "/poRe_" version ".tar.gz"))
+       (sha256
+        (base32 "0pih9nljbv8g4x8rkk29i7aqq681b782r5s5ynp4nw9yzqnmmksv"))))
+    (properties `((upstream-name . "poRe")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bit64" ,r-bit64)
+       ("r-data-table" ,r-data-table)
+       ("r-rhdf5" ,r-rhdf5)
+       ("r-shiny" ,r-shiny)
+       ("r-svdialogs" ,r-svdialogs)))
+    (home-page "https://sourceforge.net/projects/rpore/")
+    (synopsis "Visualize Nanopore sequencing data")
+    (description
+     "This package provides graphical user interfaces to organize and visualize Nanopore
+sequencing data.")
+    ;; This is free software but the license variant is unclear:
+    ;; <https://github.com/mw55309/poRe_docs/issues/10>.
+    (license license:bsd-3)))
