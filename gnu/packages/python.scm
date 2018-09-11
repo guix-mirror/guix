@@ -5195,7 +5195,7 @@ Python.")
        ("python-networkx" ,python-networkx)
        ("python-pyyaml" ,python-pyyaml)
        ("python-ratelimiter" ,python-ratelimiter)))
-    (home-page "https://bitbucket.org/snakemake/snakemake/wiki/Home")
+    (home-page "https://snakemake.readthedocs.io")
     (synopsis "Python-based execution environment for make-like workflows")
     (description
       "Snakemake aims to reduce the complexity of creating workflows by
