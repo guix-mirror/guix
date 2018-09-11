@@ -66,7 +66,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
       (version "0.17.1")
       (source (origin
                 (method url-fetch)
-                (uri (string-append "http://alpha.gnu.org/gnu/mes/"
+                (uri (string-append "mirror://gnu/mes/"
                                     "mes-" version ".tar.gz"))
                 (patches (search-patches "mes-nyacc-0.86.0.patch"))
                 (sha256
