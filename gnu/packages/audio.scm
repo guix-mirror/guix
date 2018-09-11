@@ -1777,6 +1777,8 @@ significantly faster and have minimal dependencies.")
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f  ; no check target
+       ;; XXX: The bundled waf does not work with Python 3.7.
+       #:python ,python-2
        #:configure-flags '("--no-plugins")))
     (inputs
      ;; Leaving off cairo and gtk+-2.0 which are needed for example plugins
