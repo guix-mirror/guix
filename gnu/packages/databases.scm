@@ -1458,7 +1458,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-mysql
   (package
     (name "perl-dbd-mysql")
-    (version "4.046")
+    (version "4.047")
     (source
      (origin
        (method url-fetch)
@@ -1466,10 +1466,24 @@ columns, primary keys, unique constraints and relationships.")
                            "DBD-mysql-" version ".tar.gz"))
        (sha256
         (base32
-         "1xziv9w87cl3fbl1mqkdrx28mdqly3gs6gs1ynbmpl2rr4p6arb1"))))
+         "0idizgr0hr7sj92fbdlb3gv6cva15jkpaq28wrdw4j4p7awx2mls"))))
     (build-system perl-build-system)
-    ;; Tests require running MySQL server
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'skip-library-detection
+           ;; Avoid depencies on perl-devel-checklib, openssl, and zlib.  They
+           ;; are really only needed for the test suite; their absence does not
+           ;; affect the build or the end result.
+           (lambda _
+             (substitute* "Makefile.PL"
+               (("use Devel::CheckLib;" match)
+                (string-append "# " match))
+               (("assert_lib")
+                "print"))
+             #t)))
+       ;; Tests require running MySQL server.
+       #:tests? #f))
     (propagated-inputs
      `(("perl-dbi" ,perl-dbi)
        ("mysql" ,mysql)))
