@@ -926,19 +926,19 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "6.0.6.2")
+    (version "6.1.0.3")
     (source
      (origin
-      (method url-fetch)
-      (uri
+       (method url-fetch)
+       (uri
         (string-append
-          "https://download.documentfoundation.org/libreoffice/src/"
-          (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
-      (sha256
-       (base32
-        "13kaikaz65xw9a3hxbh245cnydjpy58np22c7s0s65pnmcq68rpi"))
-      (patches (search-patches "libreoffice-icu.patch"
-                               "libreoffice-glm.patch"))))
+         "https://download.documentfoundation.org/libreoffice/src/"
+         (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1n7b6abc0bp9x8lddx60w5br444wf62mdlkqmfk2zmkmiwkcvv2l"))
+       (patches (search-patches "libreoffice-icu.patch"
+                                "libreoffice-glm.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -979,6 +979,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("libltdl" ,libltdl)
        ("libmspub" ,libmspub)
        ("libmwaw" ,libmwaw)
+       ("libnumbertext" ,libnumbertext)
        ("libodfgen" ,libodfgen)
        ("libpagemaker" ,libpagemaker)
        ("libqxp" ,libqxp)
@@ -1005,6 +1006,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("poppler" ,poppler)
        ("postgresql" ,postgresql)
        ("python" ,python)
+       ("python-lxml" ,python-lxml)
        ("redland" ,redland)
        ("sane-backends" ,sane-backends)
        ("unixodbc" ,unixodbc)
