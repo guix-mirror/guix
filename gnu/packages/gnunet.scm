@@ -186,13 +186,13 @@ authentication and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.61.0")
+   (version "7.61.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gnunet/" name "-" version ".tar.Z"))
             (sha256
              (base32
-              "1h03zkd9mp4xb5icirl3bfd64r5x8j9ka1hw9qd0n1ql1w0ilz23"))))
+              "0amnhhmlxaliz2rzp3zf1x6ixjqvgmiq7in0q14gd21rjlk9kvir"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ; 1.5 MiB of man3 pages
