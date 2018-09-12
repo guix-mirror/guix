@@ -336,19 +336,6 @@ history mechanism, job control and a C-like syntax.")
                          (("command -pv") "command -v")
                          (("command -p") "command ")
                          (("'command' -p") "'command' "))
-                       ;; This file is ISO-8859-1 encoded.
-                       (with-fluids ((%default-port-encoding #f))
-                         (substitute* "Test/A05execution.ztst"
-                           ;; Help it find `sh`
-                           (("PATH=/bin:\\$\\{ZTST_testdir\\}/command.tmp/ tstcmd-slashless")
-                            (string-append "PATH=/bin:"
-                                           (assoc-ref %build-inputs "bash") "/bin:"
-                                           "${ZTST_testdir}/command.tmp/ tstcmd-slashless"))
-                           ;; Help it find `echo`
-                           (("PATH=/bin:\\$\\{ZTST_testdir\\}/command.tmp tstcmd-arg")
-                            (string-append "PATH=/bin:"
-                                           (assoc-ref %build-inputs "coreutils") "/bin:"
-                                           "PATH=/bin:${ZTST_testdir}/command.tmp tstcmd-arg"))))
                        #t)))))
     (native-inputs `(("autoconf" ,autoconf)))
     (inputs `(("ncurses" ,ncurses)
