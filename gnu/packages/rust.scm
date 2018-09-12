@@ -608,6 +608,10 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                      `("LIBRARY_PATH" ":" suffix (,(string-append libc "/lib"))))
                    #t))))))))))
 
+(define-public rust-1.21
+  (rust-bootstrapped-package rust-1.20 "1.21.0"
+                             "1yj8lnxybjrybp00fqhxw8fpr641dh8wcn9mk44xjnsb4i1c21qp"))
+
 (define-public rust-1.23
   (package
     (inherit rust-1.20)
