@@ -499,6 +499,120 @@ safety and thread safety guarantees.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-1.20
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.19 "1.20.0"
+          "0542y4rnzlsrricai130mqyxl8r6rd991frb4qsnwb27yigqg91a")))
+    (package
+      (inherit base-rust)
+      (outputs '("out" "doc" "cargo"))
+      (arguments
+       (substitute-keyword-arguments (package-arguments rust-1.19)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'configure
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (doc (assoc-ref outputs "doc"))
+                        (gcc (assoc-ref inputs "gcc"))
+                        (gdb (assoc-ref inputs "gdb"))
+                        (binutils (assoc-ref inputs "binutils"))
+                        (python (assoc-ref inputs "python-2"))
+                        (rustc (assoc-ref inputs "rustc-bootstrap"))
+                        (cargo (assoc-ref inputs "cargo-bootstrap"))
+                        (llvm (assoc-ref inputs "llvm"))
+                        (jemalloc (assoc-ref inputs "jemalloc")))
+                   (call-with-output-file "config.toml"
+                     (lambda (port)
+                       (display (string-append "
+[llvm]
+[build]
+cargo = \"" cargo "/bin/cargo" "\"
+rustc = \"" rustc "/bin/rustc" "\"
+docs = true
+python = \"" python "/bin/python2" "\"
+gdb = \"" gdb "/bin/gdb" "\"
+vendor = true
+submodules = false
+[install]
+prefix = \"" out "\"
+docdir = \"" doc "/share/doc/rust" "\"
+sysconfdir = \"etc\"
+localstatedir = \"var/lib\"
+[rust]
+default-linker = \"" gcc "/bin/gcc" "\"
+
+# The archiver that the finished compiler uses
+default-ar = \"" binutils "/bin/ar" "\"
+channel = \"stable\"
+rpath = true
+" ;; There are 2 failed codegen tests:
+;; codegen/mainsubprogram.rs and codegen/mainsubprogramstart.rs
+;; These tests require a patched LLVM
+"codegen-tests = false
+[target." ,(nix-system->gnu-triplet-for-rust) "]
+llvm-config = \"" llvm "/bin/llvm-config" "\"
+cc = \"" gcc "/bin/gcc" "\"
+cxx = \"" gcc "/bin/g++" "\"
+jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
+[dist]
+") port)))
+                   #t)))
+             (add-after 'configure 'provide-cc
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (symlink (string-append (assoc-ref inputs "gcc") "/bin/gcc")
+                          "/tmp/cc")
+                 (setenv "PATH" (string-append "/tmp:" (getenv "PATH")))
+                 #t))
+             (add-after 'provide-cc 'configure-archiver
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (substitute* "src/build_helper/lib.rs"
+                  ;; Make sure "ar" is always used as the archiver.
+                  (("\"musl\"") "\"\"")
+                  ;; Then substitute "ar" by our name.
+                  (("\"ar\"") (string-append "\""
+                               (assoc-ref inputs "binutils")
+                               "/bin/ar\"")))
+                 #t))
+             (delete 'patch-cargo-tomls)
+             (add-before 'build 'reset-timestamps-after-changes
+               (lambda* _
+                 (define ref (stat "README.md"))
+                 (for-each
+                  (lambda (filename)
+                    (set-file-time filename ref))
+                  (find-files "." #:directories? #t))
+                 #t))
+             (replace 'build
+               (lambda* _
+                 (invoke "./x.py" "build")
+                 (invoke "./x.py" "build" "src/tools/cargo")))
+             (replace 'check
+               (lambda* _
+                 ;; Disable parallel execution to prevent EAGAIN errors when
+                 ;; running tests.
+                 (invoke "./x.py" "-j1" "test" "-vv")
+                 (invoke "./x.py" "-j1" "test" "src/tools/cargo")
+                 #t))
+             (replace 'install
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (invoke "./x.py" "install")
+                 (substitute* "config.toml"
+                   ;; replace prefix to specific output
+                   (("prefix = \"[^\"]*\"")
+                    (string-append "prefix = \"" (assoc-ref outputs "cargo") "\"")))
+                 (invoke "./x.py" "install" "cargo")))
+             (add-after 'install 'wrap-rustc
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let ((out (assoc-ref outputs "out"))
+                       (libc (assoc-ref inputs "libc"))
+                       (ld-wrapper (assoc-ref inputs "ld-wrapper")))
+                   ;; Let gcc find ld and libc startup files.
+                   (wrap-program (string-append out "/bin/rustc")
+                     `("PATH" ":" prefix (,(string-append ld-wrapper "/bin")))
+                     `("LIBRARY_PATH" ":" suffix (,(string-append libc "/lib"))))
+                   #t))))))))))
+
 (define-public rust-1.23
   (package
     (inherit rust-1.19)
