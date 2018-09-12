@@ -454,6 +454,8 @@ test = { path = \"../libtest\" }
                (copy-recursively "output/target-libs" out-libs)
                (install-file "output/rustc-build/rustc"
                              (string-append out "/bin"))
+               (install-file "output/rustc-build/rustdoc"
+                             (string-append out "/bin"))
                (install-file "output/cargo-build/cargo"
                              (string-append (assoc-ref outputs "cargo")
                                             "/bin")))
