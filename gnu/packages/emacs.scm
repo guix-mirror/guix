@@ -117,6 +117,7 @@
   #:use-module (gnu packages shells)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages haskell)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -11862,3 +11863,45 @@ News homepage.")
 @command{youtube-dl} subprocess, downloading one video at a time.  New videos
 can be queued at any time.")
       (license license:unlicense))))
+
+(define-public emacs-org-web-tools
+  (package
+    (name "emacs-org-web-tools")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alphapapa/org-web-tools")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0kak9h5ny00d39gnwspv53nadnag01brw2fq9zk5wpfc91h9bjng"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-esxml" ,emacs-esxml)
+       ("emacs-s" ,emacs-s)))
+    (inputs
+     `(("pandoc" ,ghc-pandoc)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-exec-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((pandoc (assoc-ref inputs "pandoc")))
+               (substitute* "org-web-tools.el"
+                 (("\"pandoc\"") (string-append "\"" pandoc "/bin/pandoc\"")))
+               #t))))))
+    (home-page "https://github.com/alphapapa/org-web-tools")
+    (synopsis "Display/Process web page as Org-mode content")
+    (description "This package contains library functions and commands useful
+for retrieving web page content and processing it into Org-mode content.
+
+For example, you can copy a URL to the clipboard or kill-ring, then run a
+command that downloads the page, isolates the “readable” content with
+@command{eww-readable}, converts it to Org-mode content with Pandoc, and
+displays it in an Org-mode buffer.  Another command does all of that but
+inserts it as an Org entry instead of displaying it in a new buffer.")
+    (license license:gpl3+)))
