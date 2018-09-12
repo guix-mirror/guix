@@ -387,7 +387,6 @@ test = { path = \"../libtest\" }
                        "--output-dir" "output/rustc-build"
                        "-L" (string-append rustc-bootstrap "/lib/mrust")
                        "-j" "1")
-               (install-file "output/rustc-build/rustc" "output") ; FIXME: Remove?
                (setenv "CFG_COMPILER_HOST_TRIPLE" #f)
                (setenv "CFG_RELEASE" #f)
                (setenv "CFG_RELEASE_CHANNEL" #f)
