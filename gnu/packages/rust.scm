@@ -143,11 +143,6 @@
                (for-each (lambda (file)
                            (invoke "patchelf" "--set-interpreter" ld-so file))
                          (list rustc rustdoc cargo))
-               ;; Rust requires a C toolchain for linking. The prebuilt
-               ;; binaries expect a compiler called cc. Thus symlink gcc
-               ;; to cc.
-               (symlink (string-append gcc "/bin/gcc")
-                        (string-append out "/bin/cc"))
                #t))))))
     (home-page "https://www.rust-lang.org")
     (synopsis "Prebuilt rust compiler and cargo package manager")
@@ -636,7 +631,6 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
      (substitute-keyword-arguments (package-arguments rust-1.20)
        ((#:phases phases)
         `(modify-phases ,phases
-           (delete 'provide-cc)
            (delete 'configure-archiver)
            (add-after 'unpack 'dont-build-native
              (lambda _
