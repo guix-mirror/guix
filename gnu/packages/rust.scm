@@ -126,13 +126,13 @@
                     (rustdoc (string-append out "/bin/rustdoc"))
                     (cargo (string-append cargo-out "/bin/cargo"))
                     (gcc (assoc-ref inputs "gcc")))
-               ;; Install rustc/rustdoc
+               ;; Install rustc/rustdoc.
                (invoke "bash" "install.sh"
                         (string-append "--prefix=" out)
                         (string-append "--components=rustc,"
                                        "rust-std-"
                                        ,(nix-system->gnu-triplet-for-rust)))
-               ;; Instal cargo
+               ;; Install cargo.
                (invoke "bash" "install.sh"
                         (string-append "--prefix=" cargo-out)
                         (string-append "--components=cargo"))
