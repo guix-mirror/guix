@@ -116,6 +116,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages video)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -11821,3 +11822,43 @@ from six different Hacker News feeds, namely top, new, best, ask, show and job
 stories.  The default feed is top stories, which corresponds to the Hacker
 News homepage.")
       (license license:gpl3))))
+
+(define-public emacs-youtube-dl
+  (let ((commit "7c9d7a7d05b72a7d1b1257a36c5e2b2567b185dd"))
+    (package
+      (name "emacs-youtube-dl")
+      (version (git-version "1.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/skeeto/youtube-dl-emacs/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0mh4s089a4x8s380agzb2306kdp1hl204px1n5rrrrdcls7imnh6"))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("youtube-dl" ,youtube-dl)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((youtube-dl (assoc-ref inputs "youtube-dl")))
+                 ;; .el is read-only in git.
+                 (chmod "youtube-dl.el" #o644)
+                 ;; Specify the absolute file names of the various
+                 ;; programs so that everything works out-of-the-box.
+                 (emacs-substitute-variables
+                     "youtube-dl.el"
+                   ("youtube-dl-program"
+                    (string-append youtube-dl "/bin/youtube-dl")))))))))
+      (home-page "https://github.com/skeeto/youtube-dl-emacs/")
+      (synopsis "Emacs youtube-dl download manager")
+      (description "This package manages a video download queue for
+@command{youtube-dl}, which serves as the back end.  It manages a single
+@command{youtube-dl} subprocess, downloading one video at a time.  New videos
+can be queued at any time.")
+      (license license:unlicense))))
