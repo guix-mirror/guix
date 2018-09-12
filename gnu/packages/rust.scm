@@ -536,9 +536,6 @@ sysconfdir = \"etc\"
 localstatedir = \"var/lib\"
 [rust]
 default-linker = \"" gcc "/bin/gcc" "\"
-
-# The archiver that the finished compiler uses
-default-ar = \"" binutils "/bin/ar" "\"
 channel = \"stable\"
 rpath = true
 " ;; There are 2 failed codegen tests:
@@ -549,6 +546,7 @@ rpath = true
 llvm-config = \"" llvm "/bin/llvm-config" "\"
 cc = \"" gcc "/bin/gcc" "\"
 cxx = \"" gcc "/bin/g++" "\"
+ar = \"" binutils "/bin/ar" "\"
 jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 [dist]
 ") port)))
