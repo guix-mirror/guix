@@ -615,7 +615,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 
 (define-public rust-1.23
   (package
-    (inherit rust-1.19)
+    (inherit rust-1.20)
     (name "rust")
     (version "1.23.0")
     (source (rust-source version "14fb8vhjzsxlbi6yrn1r6fl5dlbdd1m92dn5zj5gmzfwf4w9ar3l"))
@@ -633,17 +633,17 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
        ("pkg-config" ,pkg-config) ; For "cargo"
        ("which" ,which)))
     (arguments
-     (substitute-keyword-arguments (package-arguments rust-1.19)
+     (substitute-keyword-arguments (package-arguments rust-1.20)
        ((#:phases phases)
         `(modify-phases ,phases
+           (delete 'provide-cc)
+           (delete 'configure-archiver)
            (add-after 'unpack 'dont-build-native
              (lambda _
                ;; XXX: Revisit this when we use gcc 6.
                (substitute* "src/binaryen/CMakeLists.txt"
                  (("ADD_COMPILE_FLAG\\(\\\"-march=native\\\"\\)") ""))
                #t))
-           ;; TODO: Revisit this and find out whether that's needed after all.
-           (delete 'patch-cargo-tomls)
            (add-after 'patch-tests 'patch-cargo-tests
              (lambda _
                (substitute* "src/tools/cargo/tests/build.rs"
@@ -671,90 +671,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  ;; is 0, but in same time "src" have 0 mtime in guix build!
                  (("let threshold = mtime\\(dst\\);")
                   "if !dst.exists() {\nreturn false\n}\n let threshold = mtime(dst);"))
-               #t))
-           (replace 'configure
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (doc (assoc-ref outputs "doc"))
-                      (gcc (assoc-ref inputs "gcc"))
-                      (gdb (assoc-ref inputs "gdb"))
-                      (binutils (assoc-ref inputs "binutils"))
-                      (python (assoc-ref inputs "python-2"))
-                      (rustc (assoc-ref inputs "rustc-bootstrap"))
-                      (cargo (assoc-ref inputs "cargo-bootstrap"))
-                      (llvm (assoc-ref inputs "llvm"))
-                      (jemalloc (assoc-ref inputs "jemalloc")))
-                 (call-with-output-file "config.toml"
-                   (lambda (port)
-                     (display (string-append "
-[llvm]
-[build]
-cargo = \"" cargo "/bin/cargo" "\"
-rustc = \"" rustc "/bin/rustc" "\"
-docs = true
-python = \"" python "/bin/python2" "\"
-gdb = \"" gdb "/bin/gdb" "\"
-vendor = true
-submodules = false
-[install]
-prefix = \"" out "\"
-docdir = \"" doc "/share/doc/rust" "\"
-sysconfdir = \"etc\"
-localstatedir = \"var/lib\"
-[rust]
-default-linker = \"" gcc "/bin/gcc" "\"
-channel = \"stable\"
-rpath = true
-" ;; There are 2 failed codegen tests:
-  ;; codegen/mainsubprogram.rs and codegen/mainsubprogramstart.rs
-  ;; These tests require a patched LLVM
-"codegen-tests = false
-[target." ,(nix-system->gnu-triplet-for-rust) "]
-llvm-config = \"" llvm "/bin/llvm-config" "\"
-cc = \"" gcc "/bin/gcc" "\"
-cxx = \"" gcc "/bin/g++" "\"
-ar = \"" binutils "/bin/ar" "\"
-jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
-[dist]
-") port)))
-               #t)))
-         (add-before 'build 'reset-timestamps-after-changes
-           (lambda* _
-             (define ref (stat "README.md"))
-             (for-each
-              (lambda (filename)
-                (set-file-time filename ref))
-              (find-files "." #:directories? #t))
-             #t))
-         (replace 'build
-           (lambda* _
-             (invoke "./x.py" "build")
-             (invoke "./x.py" "build" "src/tools/cargo")))
-         (replace 'check
-           (lambda* _
-             ;; Disable parallel execution to prevent EAGAIN errors when
-             ;; running tests.
-             (invoke "./x.py" "-j1" "test")
-             (invoke "./x.py" "-j1" "test" "src/tools/cargo")))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "./x.py" "install")
-             (substitute* "config.toml"
-               ;; replace prefix to specific output
-               (("prefix = \"[^\"]*\"")
-                (string-append "prefix = \"" (assoc-ref outputs "cargo") "\"")))
-             (invoke "./x.py" "install" "cargo")
-             #t))
-         (add-after 'install 'wrap-rustc
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (libc (assoc-ref inputs "libc"))
-                   (ld-wrapper (assoc-ref inputs "ld-wrapper")))
-               ;; Let gcc find ld and libc startup files.
-               (wrap-program (string-append out "/bin/rustc")
-                 `("PATH" ":" prefix (,(string-append ld-wrapper "/bin")))
-                 `("LIBRARY_PATH" ":" suffix (,(string-append libc "/lib"))))
-               #t)))))))))
+               #t))))))))
 
 (define-public rust-1.24
   (let ((base-rust
