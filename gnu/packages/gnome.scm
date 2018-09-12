@@ -4150,7 +4150,7 @@ work and the interface is well tested.")
        ("gtkspell3" ,gtkspell3)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("webkitgtk" ,webkitgtk)))
-    (home-page "https://github.com/gnumdk/eolie/")
+    (home-page "https://wiki.gnome.org/Apps/Eolie")
     (synopsis "Web browser for GNOME")
     (description
      "Eolie is a new web browser for GNOME.  It features Firefox sync support,
