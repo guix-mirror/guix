@@ -11905,3 +11905,29 @@ command that downloads the page, isolates the “readable” content with
 displays it in an Org-mode buffer.  Another command does all of that but
 inserts it as an Org entry instead of displaying it in a new buffer.")
     (license license:gpl3+)))
+
+(define-public emacs-blimp
+  (let ((commit "e420763d6d18b5d1be552cdbc47f91418343db03"))
+    (package
+      (name "emacs-blimp")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/walseb/blimp")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "09wmhpym516b81dfq8smdmysh1fn610dzlyvyl2rkx8600f0fizd"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-eimp" ,emacs-eimp)))
+      (home-page "https://github.com/walseb/blimp")
+      (synopsis "Emacs wrapper around all Imagemagick commands")
+      (description "Blimp (Bustling Image Manipulation Package) is a complete
+wrapper around all Imagemagick commands with descriptions, autocompletion (for
+some commands) and hints displayed in prompt using @command{eimp.el} to
+execute its commands and resize images.")
+      (license license:gpl3+))))
