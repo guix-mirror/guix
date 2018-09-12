@@ -40,15 +40,24 @@
     (synopsis "SCSI device utilities")
     (description
      "sg3-utils is a collection of utilities for devices that use the Small
-Computer System Interface (SCSI) command set.  It includes utilities to read
-data from, write data to, control, modify, and query the state of SCSI
-devices.  For example, this package provides command-line tools to copy data
-based on @code{dd} syntax and semantics (called @code{sg_dd}, @code{sgp_dd}
-and @code{sgm_dd}), check INQUIRY data and VPD pages (@code{sg_inq}), check
-mode and log pages (@code{sginfo}, @code{sg_modes} and @code{sg_logs}), spin
-up and down disks (@code{sg_start}), do self tests (@code{sg_senddiag}), parse
-sense data (@code{sg_decode_sense}), and perform various other functions.  In
-addition, this package includes a library, called libsgutils, which can be
+Computer System Interface (@dfn{SCSI}) command set.  It includes utilities to
+read data from, write data to, control, modify, and query the state of SCSI
+devices.
+
+For example, this package provides command-line tools to:
+@itemize
+@item copy data based on @code{dd} syntax and semantics (called @command{sg_dd},
+@command{sgp_dd}, and @command{sgm_dd})
+@item check @code{INQUIRY} data and @code{VPD pages} (@command{sg_inq})
+@item check mode and log pages (@command{sginfo}, @command{sg_modes}, and
+@command{sg_logs})
+@item spin up and down disks (@command{sg_start})
+@item do self-tests (@code{sg_senddiag})
+@item parse sense data (@code{sg_decode_sense})
+@item and perform various other functions.
+@end itemize
+
+In addition, this package includes a library, called libsgutils, which can be
 used in C and C++ programs to interact with SCSI devices.")
     ;; See README: "All utilities and libraries have either a "2 clause" BSD
     ;;   license or are "GPL-2ed". [...] That BSD license was updated from the
