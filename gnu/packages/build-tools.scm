@@ -4,6 +4,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,6 +98,63 @@ provide information on how a given compilation unit is processed.  With this,
 it is easy to re-run the compilation with alternate programs.  Bear is used to
 generate such a compilation database.")
     (license license:gpl3+)))
+
+(define-public gn
+  (let ((commit "f73698ebb33e26a0bf120e2b55d12528fd1dbe7d")
+        (revision "1481"))          ;as returned by `git describe`, used below
+    (package
+      (name "gn")
+      (version (git-version "0.0" revision commit))
+      (home-page "https://gn.googlesource.com/gn")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "078ydwak4424bkqh3hd7q955zxp2c3qlw44lsb29i8jqap140f9d"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ;FIXME: How to run?
+         #:phases (modify-phases %standard-phases
+                    (add-before 'configure 'set-build-environment
+                      (lambda _
+                        (setenv "CC" "gcc") (setenv "CXX" "g++")
+                        (setenv "AR" "ar")
+                        #t))
+                    (replace 'configure
+                      (lambda _
+                        (invoke "python" "build/gen.py" "--no-sysroot"
+                                "--no-last-commit-position")))
+                    (add-after 'configure 'create-last-commit-position
+                      (lambda _
+                        ;; Create "last_commit_position.h" to avoid a dependency
+                        ;; on 'git' (and the checkout..).
+                        (call-with-output-file "out/last_commit_position.h"
+                          (lambda (port)
+                            (format port
+                                    "#define LAST_COMMIT_POSITION \"~a (~a)\"\n"
+                                    ,revision ,(string-take commit 8))
+                            #t))))
+                    (replace 'build
+                      (lambda _
+                        (invoke "ninja" "-C" "out" "gn"
+                                "-j" (number->string (parallel-job-count)))))
+                    (replace 'install
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (let ((out (assoc-ref outputs "out")))
+                          (install-file "out/gn" (string-append out "/bin"))
+                          #t))))))
+      (native-inputs
+       `(("ninja" ,ninja)
+         ("python" ,python-2)))
+      (synopsis "Generate Ninja build files")
+      (description
+       "GN is a tool that collects information about a project from @file{.gn}
+files and generates build instructions for the Ninja build system.")
+      ;; GN is distributed as BSD-3, but bundles some files from ICU using the
+      ;; X11 license.
+      (license (list license:bsd-3 license:x11)))))
 
 (define-public meson
   (package
