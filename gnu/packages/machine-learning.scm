@@ -703,40 +703,41 @@ computing environments.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.19.1")
+    (version "0.19.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/scikit-learn/scikit-learn/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/scikit-learn/scikit-learn.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "18n8775kyfwbvcjjjzda9c5sqy4737c0hrmj6qj1ps2jmlqzair9"))
+         "1dk9hdj01c0bny4ps78b7869fjw9gr6qklxf6wyql8h6nh4k19xm"))
        (patches (search-patches
-                "python-scikit-learn-fix-test-non-determinism.patch"))))
+                 "python-scikit-learn-fix-test-non-determinism.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'check)
-         (add-after 'install 'check
-           ;; Running tests from the source directory requires
-           ;; an "inplace" build with paths relative to CWD.
-           ;; http://scikit-learn.org/stable/developers/advanced_installation.html#testing
-           ;; Use the installed version instead.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             ;; some tests require access to "$HOME"
-             (setenv "HOME" "/tmp")
-             ;; Step out of the source directory just to be sure.
-             (chdir "..")
-             (invoke "nosetests" "-v" "sklearn"))))))
+         (add-after 'build 'build-ext
+           (lambda _ (invoke "python" "setup.py" "build_ext" "--inplace") #t))
+         (replace 'check
+           (lambda _
+             ;; Restrict OpenBLAS threads to prevent segfaults while testing!
+             (setenv "OPENBLAS_NUM_THREADS" "1")
+             ;; Disable tests that require network access
+             (delete-file "sklearn/datasets/tests/test_mldata.py")
+             (delete-file "sklearn/datasets/tests/test_rcv1.py")
+             (invoke "pytest" "sklearn")
+             #t))
+         ;; FIXME: This fails with permission denied
+         (delete 'reset-gzip-timestamps))))
     (inputs
      `(("openblas" ,openblas)))
     (native-inputs
-     `(("python-nose" ,python-nose)
+     `(("python-pytest" ,python-pytest)
+       ("python-pandas" ,python-pandas) ;for tests
        ("python-cython" ,python-cython)))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
@@ -744,8 +745,8 @@ computing environments.")
     (home-page "http://scikit-learn.org/")
     (synopsis "Machine Learning in Python")
     (description
-     "Scikit-learn provides simple and efficient tools for data
-mining and data analysis.")
+     "Scikit-learn provides simple and efficient tools for data mining and
+data analysis.")
     (license license:bsd-3)))
 
 (define-public python2-scikit-learn
