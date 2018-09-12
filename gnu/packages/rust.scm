@@ -408,7 +408,7 @@ test = { path = \"../libtest\" }
                ;; but right now, Cargo has problems with libstd's circular
                ;; dependencies.
                (mkdir-p "output/target-libs")
-               (for-each ((@ (ice-9 match) match-lambda)
+               (for-each (match-lambda
                           ((name . flags)
                             (write name)
                             (newline)
