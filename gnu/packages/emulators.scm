@@ -1066,7 +1066,7 @@ emulation community.  It provides highly accurate emulation.")
         (base32 "0h6y2hpjg4b470jvn9ghwp0k3a527sbb6xhia17frlm9w9v5028w"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -1086,10 +1086,14 @@ emulation community.  It provides highly accurate emulation.")
                  (("<compat/zlib.h>") "<zlib.h>"))
                ;; The configure script does not yet accept the extra arguments
                ;; (like ‘CONFIG_SHELL=’) passed by the default configure phase.
-               (zero? (system*
-                       "./configure"
-                       (string-append "--prefix=" out)
-                       (string-append "--global-config-dir=" etc)))))))))
+               (invoke
+                 "./configure"
+                 ,@(if (string-prefix? "armhf" (or (%current-target-system)
+                                                  (%current-system)))
+                       '("--enable-neon" "--enable-floathard")
+                       '())
+                 (string-append "--prefix=" out)
+                 (string-append "--global-config-dir=" etc))))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("ffmpeg" ,ffmpeg)
