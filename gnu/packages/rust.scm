@@ -696,7 +696,8 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 (define-public rust-1.25
   (let ((base-rust
          (rust-bootstrapped-package rust-1.24 "1.25.0"
-                                    "0baxjr99311lvwdq0s38bipbnj72pn6fgbk6lcq7j555xq53mxpf")))
+          "0baxjr99311lvwdq0s38bipbnj72pn6fgbk6lcq7j555xq53mxpf"
+          #:patches '("rust-1.25-accept-more-detailed-gdb-lines.patch"))))
     (package
       (inherit base-rust)
       (inputs
@@ -735,8 +736,9 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 (define-public rust-1.26
   (let ((base-rust
          (rust-bootstrapped-package rust-1.25 "1.26.2"
-                                    "0047ais0fvmqvngqkdsxgrzhb0kljg8wy85b01kbbjc88hqcz7pv"
-                                    #:patches '("rust-coresimd-doctest.patch"))))
+          "0047ais0fvmqvngqkdsxgrzhb0kljg8wy85b01kbbjc88hqcz7pv"
+          #:patches '("rust-coresimd-doctest.patch"
+                      "rust-1.25-accept-more-detailed-gdb-lines.patch"))))
     (package
       (inherit base-rust)
       (arguments
@@ -786,7 +788,8 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                                     "089d7rhw55zpvnw71dj8vil6qrylvl4xjr4m8bywjj83d4zq1f9c"
                                     #:patches
                                     '("rust-coresimd-doctest.patch"
-                                      "rust-bootstrap-stage0-test.patch"))))
+                                      "rust-bootstrap-stage0-test.patch"
+                                      "rust-1.25-accept-more-detailed-gdb-lines.patch"))))
     (package
       (inherit base-rust)
       (arguments
