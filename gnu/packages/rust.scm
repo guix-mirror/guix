@@ -620,7 +620,6 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
     (name "rust")
     (version "1.23.0")
     (source (rust-source version "14fb8vhjzsxlbi6yrn1r6fl5dlbdd1m92dn5zj5gmzfwf4w9ar3l"))
-    (outputs '("out" "doc" "cargo"))
     (native-inputs
      `(("bison" ,bison) ; For the tests
        ("cmake" ,cmake)
