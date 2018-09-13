@@ -733,9 +733,11 @@ needed."
         ;; Set the build options before we do anything else.
         (set-build-options-from-command-line store opts)
 
-        (parameterize ((current-build-output-port (if quiet?
-                                                      (%make-void-port "w")
-                                                      (build-output-port #:verbose? #t))))
+        (parameterize ((current-build-output-port
+                        (if quiet?
+                            (%make-void-port "w")
+                            (build-output-port #:verbose? #t
+                                               #:port (duplicate-port (current-error-port) "w")))))
           (let* ((mode  (assoc-ref opts 'build-mode))
                  (drv   (options->derivations store opts))
                  (urls  (map (cut string-append <> "/log")

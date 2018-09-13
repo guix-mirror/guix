@@ -305,15 +305,15 @@ menu to select one of the installed operating systems.")
            (delete 'configure)
            (add-before 'build 'set-permissions
              (lambda _
-               (zero? (system* "chmod" "a+w" "utils/isohybrid.in"))))
+               (invoke "chmod" "a+w" "utils/isohybrid.in")))
            (replace 'check
              (lambda _
                (setenv "CC" "gcc")
                (substitute* "tests/unittest/include/unittest/unittest.h"
                  ;; Don't look up headers under /usr.
                  (("/usr/include/") ""))
-               (zero? (system* "make" "unittest")))))))
-      (home-page "http://www.syslinux.org")
+               (invoke "make" "unittest"))))))
+      (home-page "https://www.syslinux.org")
       (synopsis "Lightweight Linux bootloader")
       (description "Syslinux is a lightweight Linux bootloader.")
       (license (list license:gpl2+

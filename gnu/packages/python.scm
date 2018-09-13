@@ -54,6 +54,7 @@
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1519,14 +1520,14 @@ backported for previous versions of Python from 2.4 to 3.3.")
 (define-public python-parse
   (package
     (name "python-parse")
-    (version "1.8.2")
+    (version "1.8.4")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "parse" version))
       (sha256
        (base32
-        "1lj9v1q4imszyhvipb6drsm3xdl35nan011mqxxas1yaypixsj40"))))
+        "0f8997xr8nq2nq35iiviq8ningd1zvy59fg503xfpbi2dwhgdkf3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1536,7 +1537,7 @@ backported for previous versions of Python from 2.4 to 3.3.")
     (home-page "https://github.com/r1chardj0n3s/parse")
     (synopsis "Parse strings")
     (description
-     "Parse strings using a specification based on the Python format()
+     "Parse strings using a specification based on the Python @code{format()}
 syntax.")
     (license license:x11)))
 
@@ -2626,6 +2627,62 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 
 (define-public python2-feedgenerator
   (package-with-python2 python-feedgenerator))
+
+(define-public python-toml
+  (package
+    (name "python-toml")
+    (version "0.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "toml" version))
+       (sha256
+        (base32
+         "0bdbpbip67wdm6c7xwc6mmbmskyradj4cdxn1iibj4fcx1nbv1lf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                     ;no tests suite in release
+    (home-page "https://github.com/uiri/toml")
+    (synopsis "Library for TOML")
+    (description
+     "@code{toml} is a library for parsing and creating Tom's Obvious, Minimal
+Language (TOML) configuration files.")
+    (license license:expat)))
+
+(define-public python-black
+  (package
+    (name "python-black")
+    (version "18.6b4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "black" version))
+       (sha256
+        (base32
+         "0i4sfqgz6w15vd50kbhi7g7rifgqlf8yfr8y78rypd56q64qn592"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-extra-shebangs
+           (lambda _
+             (let ((python3 (which "python3")))
+               (substitute* '("tests/data/fmtonoff.py"
+                              "tests/data/string_prefixes.py"
+                              "tests/data/function.py")
+                 (("#!/usr/bin/env python3(\\.[0-9]+)?" _ minor-version)
+                  (string-append "#!" python3 (if (string? minor-version)
+                                                  minor-version
+                                                  ""))))))))))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-attrs" ,python-attrs)
+       ("python-appdirs" ,python-appdirs)
+       ("python-toml" ,python-toml)))
+    (home-page "https://github.com/ambv/black")
+    (synopsis "The uncompromising code formatter")
+    (description "Black is the uncompromising Python code formatter.")
+    (license license:expat)))
 
 (define-public python-blinker
   (package
@@ -5061,13 +5118,13 @@ Python.")
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "5.2.0")
+    (version "5.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "0a1i5v5qxbmmpznp7my9nva8y7pxp8pjrwk2gxgisdskg35sq8s1"))))
+        (base32 "18x36n78ph5v1fxk54gvdbc3d8nfncha78phifg3lqaa9gifgzxd"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
@@ -5096,7 +5153,7 @@ Python.")
        ("python-networkx" ,python-networkx)
        ("python-pyyaml" ,python-pyyaml)
        ("python-ratelimiter" ,python-ratelimiter)))
-    (home-page "https://bitbucket.org/snakemake/snakemake/wiki/Home")
+    (home-page "https://snakemake.readthedocs.io")
     (synopsis "Python-based execution environment for make-like workflows")
     (description
       "Snakemake aims to reduce the complexity of creating workflows by
@@ -6455,7 +6512,7 @@ Python Package Index (PyPI).")
 (define-public python-tlsh
   (package
     (name "python-tlsh")
-    (version "3.4.4")
+    (version "3.4.5")
     (home-page "https://github.com/trendmicro/tlsh")
     (source (origin
               (method url-fetch)
@@ -6463,7 +6520,7 @@ Python Package Index (PyPI).")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "00bhzjqrlh7v538kbkbn8lgx976j1138al3sdhklaizqjvpwyk4r"))
+                "1x1vahd4zg5kpyr9h9hs3fvh460p25rjy4cclwdnbbw8x3vc30q3"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
@@ -6524,13 +6581,13 @@ a hash value.")
 (define-public python-libarchive-c
   (package
     (name "python-libarchive-c")
-    (version "2.2")
+    (version "2.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "libarchive-c" version))
               (sha256
                (base32
-                "0z4r7v3dhd6b3120mav05ff08srih176r2rg5k8kn7mjd9pslm2x"))))
+                "0qg0v1s9c1xdk9philhnv8k6c6nicvnvfwlc0j9srg90jmdlvm06"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -6542,7 +6599,12 @@ a hash value.")
                        (substitute* "libarchive/ffi.py"
                          (("find_library\\('archive'\\)")
                           (string-append "'" libarchive
-                                         "/lib/libarchive.so'")))))))))
+                                         "/lib/libarchive.so'"))))))
+                  (replace 'check
+                    (lambda _ (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
     (inputs
      `(("libarchive" ,libarchive)))
     (home-page "https://github.com/Changaco/python-libarchive-c")
@@ -6589,6 +6651,7 @@ serve the same purpose: provide Python bindings for libmagic.")))
 (define-public python-debian
   (package
     (name "python-debian")
+    (home-page "https://salsa.debian.org/python-debian-team/python-debian")
     (version "0.1.28")
     (source
      (origin
@@ -6600,7 +6663,6 @@ serve the same purpose: provide Python bindings for libmagic.")))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
-    (home-page "http://packages.debian.org/sid/python-debian")
     (synopsis "Debian package related modules")
     (description
      ;; XXX: Use @enumerate instead of @itemize to work around
@@ -9543,14 +9605,14 @@ characters, mouse support, and auto suggestions.")
 (define-public python-jedi
   (package
     (name "python-jedi")
-    (version "0.12.0")
+    (version "0.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jedi" version))
        (sha256
         (base32
-         "1bcr7csx4xil1iwmk03d79jis0bkmgi9k0kir3xa4rmwqsagcwhr"))))
+         "1h8ypnjisn57kiv1zqrkj1im6sbfnhxllqaa8znh39qkd47ys2dl"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -9559,14 +9621,18 @@ characters, mouse support, and auto suggestions.")
                            (invoke "py.test" "-vv"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-parso" ,python-parso)
        ("python-docopt" ,python-docopt)))
+    (propagated-inputs
+     `(("python-parso" ,python-parso)))
     (home-page "https://github.com/davidhalter/jedi")
-    (synopsis
-     "Autocompletion for Python that can be used for text editors")
+    (synopsis "Autocompletion and static analysis library for Python")
     (description
-     "Jedi is an autocompletion tool for Python that can be used for text
- editors.")
+     "Jedi is a static analysis tool for Python that can be used in Integrated
+Development Environments (@dfn{IDE}s) and text editors.  It understands Python
+on a deeper level than many other static analysis frameworks for Python.
+
+Jedi understands docstrings and you can use Jedi autocompletion in your REPL as
+well.")
     (license license:expat)))
 
 (define-public python2-jedi
@@ -9745,13 +9811,13 @@ hardware-accelerated multitouch applications.")
 (define-public python-binaryornot
   (package
     (name "python-binaryornot")
-    (version "0.4.0")
+    (version "0.4.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "binaryornot" version))
               (sha256
                (base32
-                "1j4f51dxic39mdwf6alj7gd769wy6mhk916v031wjali51xkh3xb"))))
+                "0qc006986rb6bcbmiymwgcl1mns2jphr1j7sr7nk41nlr7gh359m"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-chardet" ,python-chardet)
@@ -13169,14 +13235,14 @@ source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
 (define-public python-typing
   (package
     (name "python-typing")
-    (version "3.6.4")
+    (version "3.6.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "typing" version))
        (sha256
         (base32
-         "1wmk9nkh30n37cbrqwkbggmj2390lhrlagjkd0ikm02l88saj06l"))))
+         "0ba9acs4awx15bf9v3nrs781msbd2nx826906nj6fqks2bvca9s0"))))
     (build-system python-build-system)
     (home-page "https://docs.python.org/3/library/typing.html")
     (synopsis "Type hints for Python")
@@ -13449,14 +13515,14 @@ time-based (TOTP) passwords.")
 (define-public python-parso
   (package
     (name "python-parso")
-    (version "0.2.1")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parso" version))
        (sha256
         (base32
-         "0zvh4rdhv2wkglkgh0h9kn9ndpsw5p639wcwv47jn1kfp504lq7h"))))
+         "18p89iwcm8mnf380f92g9w0bhx5km8wxp392vvjcq4y1ld1llw1m"))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (build-system python-build-system)
@@ -13952,4 +14018,277 @@ for data analysis pipelines.  In this context, it provides an efficient,
 scalable way of keeping track of data together with learned annotations and
 reduces the code overhead typically encountered when using a mostly
 object-oriented library such as @code{scikit-learn}.")
+    (license license:bsd-3)))
+
+(define-public python-dill
+  (package
+    (name "python-dill")
+    (version "0.2.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dill" version))
+       (sha256
+        (base32
+         "1cymzn9fxwdy33h21zkk4gqgzvd25110hh3zdqnvnwa3p52c4kb2"))))
+    (build-system python-build-system)
+    ;; FIXME: The check phase fails with "don't know how to make test".
+    (arguments '(#:tests? #f))
+    (home-page "https://pypi.org/project/dill")
+    (synopsis "Serialize all of Python")
+    (description "Dill extends Python's @code{pickle} module for serializing
+and de-serializing Python objects to the majority of the built-in Python
+types.  Dill provides the user the same interface as the @code{pickle} module,
+and also includes some additional features.  In addition to pickling Python
+objects, @code{dill} provides the ability to save the state of an interpreter
+session in a single command.  Hence, it would be feasable to save a
+interpreter session, close the interpreter, ship the pickled file to another
+computer, open a new interpreter, unpickle the session and thus continue from
+the saved state of the original interpreter session.")
+    (license license:bsd-3)))
+
+(define-public python-multiprocess
+  (package
+    (name "python-multiprocess")
+    (version "0.70.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "multiprocess" version))
+       (sha256
+        (base32
+         "1ip5caz67b3q0553mr8gm8xwsb8x500jn8ml0gihgyfy52m2ypcq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dill" ,python-dill)))
+    (home-page "https://pypi.org/project/multiprocess")
+    (synopsis "Multiprocessing and multithreading in Python")
+    (description
+     "This package is a fork of the multiprocessing Python package, a package
+which supports the spawning of processes using the API of the standard
+library's @code{threading} module.")
+    (license license:bsd-3)))
+
+(define-public python-toolz
+  (package
+    (name "python-toolz")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "toolz" version))
+       (sha256
+        (base32
+         "1j9i7fdjnx9dz35fdj5gvgxx6585ja9sxgaiv65if77nlxz0m7wj"))))
+    (build-system python-build-system)
+    ;; FIXME: tests cannot be computed: "Can't perform this operation for
+    ;; unregistered loader type"
+    (arguments '(#:tests? #f))
+    (home-page "https://github.com/pytoolz/toolz/")
+    (synopsis "List processing tools and functional utilities")
+    (description
+     "This package provides a set of utility functions for iterators,
+functions, and dictionaries.")
+    (license license:bsd-3)))
+
+(define-public python-cytoolz
+  (package
+    (name "python-cytoolz")
+    (version "0.9.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cytoolz" version))
+       (sha256
+        (base32
+         "1r80p88hm3f3r4zpixzr047y5hw4bzy41m4xywnhycda83x0dk44"))))
+    (build-system python-build-system)
+    ;; FIXME: tests fail with "module 'cytoolz.curried' has no attribute
+    ;; 'exceptions'"
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-toolz" ,python-toolz)))
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (home-page "https://github.com/pytoolz/cytoolz")
+    (synopsis "High performance functional utilities")
+    (description
+     "The cytoolz package implements the same API as provided by toolz.  The
+main differences are that @code{cytoolz} is faster and cytoolz offers a C API
+that is accessible to other projects developed in Cython.")
+    (license license:bsd-3)))
+
+(define-public python-sortedcontainers
+  (package
+    (name "python-sortedcontainers")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sortedcontainers" version))
+       (sha256
+        (base32
+         "10hrk2k0hbf9x78vd3f0lj277m1yzfhzzxr0hja718liwb398wk0"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-tox" ,python-tox)))
+    (home-page "http://www.grantjenks.com/docs/sortedcontainers/")
+    (synopsis "Sorted List, Sorted Dict, Sorted Set")
+    (description
+     "This package provides a sorted collections library, written in
+pure-Python.")
+    (license license:asl2.0)))
+
+(define-public python-cloudpickle
+  (package
+    (name "python-cloudpickle")
+    (version "0.5.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cloudpickle" version))
+       (sha256
+        (base32
+         "0gdg5n025v4wqmdg65rm0n6fvp6731ip30ji0rmn2kqsyr4bb93f"))))
+    (build-system python-build-system)
+    ;; FIXME: there are 5 errors in 122 tests:
+    ;; ERROR: test_function_pickle_compat_0_4_0 (tests.cloudpickle_test.CloudPickleTest)
+    ;; ERROR: test_function_pickle_compat_0_4_1 (tests.cloudpickle_test.CloudPickleTest)
+    ;; ERROR: test_function_pickle_compat_0_4_0 (tests.cloudpickle_test.Protocol2CloudPickleTest)
+    ;; ERROR: test_function_pickle_compat_0_4_1 (tests.cloudpickle_test.Protocol2CloudPickleTest)
+    ;; ERROR: test_temp_file (tests.cloudpickle_file_test.CloudPickleFileTests)
+    ;; TypeError: cannot serialize '_io.BufferedRandom' object
+    (arguments '(#:tests? #f))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-mock" ,python-mock)
+       ("python-tornado" ,python-tornado)))
+    (home-page "https://github.com/cloudpipe/cloudpickle")
+    (synopsis "Extended pickling support for Python objects")
+    (description
+     "Cloudpickle makes it possible to serialize Python constructs not
+supported by the default pickle module from the Python standard library.  It
+is especially useful for cluster computing where Python expressions are
+shipped over the network to execute on remote hosts, possibly close to the
+data.")
+    (license license:bsd-3)))
+
+(define-public python-locket
+  (package
+    (name "python-locket")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "locket" version))
+       (sha256
+        (base32
+         "1d4z2zngrpqkrfhnd4yhysh66kjn4mblys2l06sh5dix2p0n7vhz"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/mwilliamson/locket.py")
+    (synopsis "File-based locks for Python")
+    (description
+     "Locket implements a lock that can be used by multiple processes provided
+they use the same path.")
+    (license license:bsd-2)))
+
+(define-public python-blosc
+  (package
+    (name "python-blosc")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "blosc" version))
+       (sha256
+        (base32
+         "1cm91c6r431yla2mbs4895bgiianjf30dfz14vvv99dslygd65jw"))))
+    (build-system python-build-system)
+    ;; FIXME: all tests pass, but then this error is printed:
+    ;; TypeError: calling <function run at 0x7ffff2568d90> returned None, not a test
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/blosc/python-blosc")
+    (synopsis "Python wrapper for the Blosc data compressor library")
+    (description "Blosc is a high performance compressor optimized for binary
+data.  It has been designed to transmit data to the processor cache faster
+than the traditional, non-compressed, direct memory fetch approach via a
+@code{memcpy()} system call.
+
+Blosc works well for compressing numerical arrays that contains data with
+relatively low entropy, like sparse data, time series, grids with
+regular-spaced values, etc.
+
+This Python package wraps the Blosc library.")
+    (license license:bsd-3)))
+
+(define-public python-partd
+  (package
+    (name "python-partd")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "partd" version))
+       (sha256
+        (base32
+         "03s0i5qfgkx6y24bmfgyd5hnsjznkbbfafwb2khf7k9790f1yab7"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-blosc" ,python-blosc)
+       ("python-locket" ,python-locket)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-toolz" ,python-toolz)))
+    (home-page "https://github.com/dask/partd/")
+    (synopsis "Appendable key-value storage")
+    (description "Partd stores key-value pairs.  Values are raw bytes.  We
+append on old values.  Partd excels at shuffling operations.")
+    (license license:bsd-3)))
+
+(define-public python-dask
+  (package
+    (name "python-dask")
+    (version "0.19.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dask" version))
+       (sha256
+        (base32
+         "1pm1163qb6s22p8fnvj0zlfazihvs7hxjn8l2n52bzs7shw6kdz3"))))
+    (build-system python-build-system)
+    ;; A single test out of 5000+ fails.  This test is marked as xfail when
+    ;; pytest-xdist is used.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-broken-test
+           (lambda _
+             (substitute* "dask/tests/test_threaded.py"
+               (("def test_interrupt\\(\\)" m)
+                (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
+                               m)))
+             #t)))))
+    (propagated-inputs
+     `(("python-cloudpickle" ,python-cloudpickle)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-partd" ,python-partd)
+       ("python-toolz" ,python-toolz)
+       ("python-pyyaml" ,python-pyyaml)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/dask/dask/")
+    (synopsis "Parallel computing with task scheduling")
+    (description
+     "Dask is a flexible parallel computing library for analytics.  It
+consists of two components: dynamic task scheduling optimized for computation,
+and large data collections like parallel arrays, dataframes, and lists that
+extend common interfaces like NumPy, Pandas, or Python iterators to
+larger-than-memory or distributed environments.  These parallel collections
+run on top of the dynamic task schedulers. ")
     (license license:bsd-3)))

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,6 +57,7 @@
              (guix packages)
              (guix derivations)
              (guix monads)
+             (guix ui)
              ((guix licenses) #:select (gpl3+))
              ((guix utils) #:select (%current-system))
              ((guix scripts system) #:select (read-operating-system))
@@ -311,6 +313,30 @@ valid."
                           packages)))
                  #:select? (const #t)))           ;include hidden packages
 
+(define (arguments->manifests arguments)
+  "Return the list of manifests extracted from ARGUMENTS."
+  (map (match-lambda
+         ((input-name . relative-path)
+          (let* ((checkout (assq-ref arguments (string->symbol input-name)))
+                 (base (assq-ref checkout 'file-name)))
+            (in-vicinity base relative-path))))
+       (assq-ref arguments 'manifests)))
+
+(define (manifests->packages store manifests)
+  "Return the list of packages found in MANIFESTS."
+  (define (load-manifest manifest)
+    (save-module-excursion
+     (lambda ()
+       (set-current-module (make-user-module '((guix profiles) (gnu))))
+       (primitive-load manifest))))
+
+  (parameterize ((%graft? #f))
+    (delete-duplicates!
+     (map manifest-entry-item
+          (append-map (compose manifest-entries
+                               load-manifest)
+                      manifests)))))
+
 
 ;;;
 ;;; Hydra entry point.
@@ -323,6 +349,7 @@ valid."
       ("core" 'core)                              ; only build core packages
       ("hello" 'hello)                            ; only build hello
       (((? string?) (? string?) ...) 'list)       ; only build selected list of packages
+      ("manifests" 'manifests)                    ; only build packages in the list of manifests
       (_ 'all)))                                  ; build everything
 
   (define systems
@@ -419,6 +446,14 @@ valid."
                                                  package system))
                                   packages))
                          '()))
+                    ((manifests)
+                     ;; Build packages in the list of manifests.
+                     (let* ((manifests (arguments->manifests arguments))
+                            (packages (manifests->packages store manifests)))
+                       (map (lambda (package)
+                              (package-job store (job-name package)
+                                           package system))
+                            packages)))
                     (else
                      (error "unknown subset" subset))))
                 systems)))

@@ -170,7 +170,7 @@ as required.")
 (define-public libfilezilla
   (package
     (name "libfilezilla")
-    (version "0.12.3")
+    (version "0.13.1")
     (source
      (origin
        (method url-fetch)
@@ -178,7 +178,7 @@ as required.")
                            name "/" name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "1v606kcz2rdmmlwxrv3xvwh7ia1nh6jfc9bhjw2r4ai3rm16gch5"))))
+         "0347zkapp0wrhfm1yzw7wa1v3lww65ch176scifxn8f9068f1ixb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)

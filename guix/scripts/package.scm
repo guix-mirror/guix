@@ -950,5 +950,6 @@ processed, #f otherwise."
                                %bootstrap-guile
                                (canonical-package guile-2.2))))
                          (current-build-output-port
-                          (build-output-port #:verbose? verbose?)))
+                          (build-output-port #:verbose? verbose?
+                                             #:port (duplicate-port (current-error-port) "w"))))
             (process-actions (%store) opts))))))

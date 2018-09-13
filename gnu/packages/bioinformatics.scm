@@ -76,7 +76,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
   #:use-module (gnu packages jemalloc)
-  #:use-module (gnu packages ldc)
+  #:use-module (gnu packages dlang)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages machine-learning)
@@ -13504,3 +13504,198 @@ reference transcripts provided in a annotation file (also in GTF/GFF3 format).
        (list
         license:expat                   ;license for gffcompare
         license:artistic2.0)))))        ;license for gclib
+
+(define-public python-intervaltree
+  (package
+    (name "python-intervaltree")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "intervaltree" version))
+       (sha256
+        (base32
+         "02w191m9zxkcjqr1kv2slxvhymwhj3jnsyy3a28b837pi15q19dc"))))
+    (build-system python-build-system)
+    ;; FIXME: error when collecting tests
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-sortedcontainers" ,python-sortedcontainers)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/chaimleib/intervaltree")
+    (synopsis "Editable interval tree data structure")
+    (description
+     "This package provides a mutable, self-balancing interval tree
+implementation for Python.  Queries may be by point, by range overlap, or by
+range envelopment.  This library was designed to allow tagging text and time
+intervals, where the intervals include the lower bound but not the upper
+bound.")
+    (license license:asl2.0)))
+
+(define-public python-pypairix
+  (package
+    (name "python-pypairix")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pypairix" version))
+       (sha256
+        (base32
+         "0zs92b74s5v4xy2h16s15f3z6l4nnbw8x8zyif7xx5xpafjn0xss"))))
+    (build-system python-build-system)
+    ;; FIXME: the tests fail because test.support cannot be loaded:
+    ;; ImportError: cannot import name 'support'
+    (arguments '(#:tests? #f))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/4dn-dcic/pairix")
+    (synopsis "Support for querying pairix-indexed bgzipped text files")
+    (description
+     "Pypairix is a Python module for fast querying on a pairix-indexed
+bgzipped text file that contains a pair of genomic coordinates per line.")
+    (license license:expat)))
+
+(define-public python-pyfaidx
+  (package
+    (name "python-pyfaidx")
+    (version "0.5.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyfaidx" version))
+       (sha256
+        (base32
+         "0y5zyjksj1rdglj601xd2bbni5abhdh622y3ck76chyzxz9z4rx8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (home-page "http://mattshirley.com")
+    (synopsis "Random access to fasta subsequences")
+    (description
+     "This package provides procedures for efficient pythonic random access to
+fasta subsequences.")
+    (license license:bsd-3)))
+
+(define-public python-cooler
+  (package
+    (name "python-cooler")
+    (version "0.7.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cooler" version))
+       (sha256
+        (base32
+         "08k5nxnxa6qsbk15z5z0q01n28042k87wi4905hh95rzqib15mhx"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-biopython" ,python-biopython)
+       ("python-click" ,python-click)
+       ("python-cytoolz" ,python-cytoolz)
+       ("python-dask" ,python-dask)
+       ("python-h5py" ,python-h5py)
+       ("python-multiprocess" ,python-multiprocess)
+       ("python-pandas" ,python-pandas)
+       ("python-pyfaidx" ,python-pyfaidx)
+       ("python-pypairix" ,python-pypairix)
+       ("python-pysam" ,python-pysam)
+       ("python-scipy" ,python-scipy)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/mirnylab/cooler")
+    (synopsis "Sparse binary format for genomic interaction matrices")
+    (description
+     "Cooler is a support library for a sparse, compressed, binary persistent
+storage format, called @code{cool}, used to store genomic interaction data,
+such as Hi-C contact matrices.")
+    (license license:bsd-3)))
+
+(define-public python-hicexplorer
+  (package
+    (name "python-hicexplorer")
+    (version "2.1.4")
+    (source
+     (origin
+       ;; The latest version is not available on Pypi.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/deeptools/HiCExplorer.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0q5gpbzmrkvygqgw524q36b4nrivcmyi5v194vsx0qw7b3gcmq08"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'loosen-up-requirements
+           (lambda _
+             (substitute* "setup.py"
+               (("==") ">="))
+             #t)))))
+    (propagated-inputs
+     `(("python-biopython" ,python-biopython)
+       ("python-configparser" ,python-configparser)
+       ("python-cooler" ,python-cooler)
+       ("python-future" ,python-future)
+       ("python-intervaltree" ,python-intervaltree)
+       ("python-jinja2" ,python-jinja2)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pybigwig" ,python-pybigwig)
+       ("python-pysam" ,python-pysam)
+       ("python-scipy" ,python-scipy)
+       ("python-six" ,python-six)
+       ("python-tables" ,python-tables)
+       ("python-unidecode" ,python-unidecode)))
+    (home-page "http://hicexplorer.readthedocs.io")
+    (synopsis "Process, analyze and visualize Hi-C data")
+    (description
+     "HiCExplorer is a powerful and easy to use set of tools to process,
+normalize and visualize Hi-C data.  HiCExplorer facilitates the creation of
+contact matrices, correction of contacts, TAD detection, A/B compartments,
+merging, reordering or chromosomes, conversion from different formats
+including cooler and detection of long-range contacts.  Moreover, it allows
+the visualization of multiple contact matrices along with other types of data
+like genes, compartments, ChIP-seq coverage tracks (and in general any type of
+genomic scores), long range contacts and the visualization of viewpoints.")
+    (license license:gpl3)))
+
+(define-public python-pygenometracks
+  (package
+    (name "python-pygenometracks")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyGenomeTracks" version))
+       (sha256
+        (base32
+         "1fws6bqsyy9kj3qiabhkqx4wd4i775gsxnhszqd3zg7w67sc1ic5"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-configparser" ,python-configparser)
+       ("python-future" ,python-future)
+       ("python-hicexplorer" ,python-hicexplorer)
+       ("python-intervaltree" ,python-intervaltree)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-pybigwig" ,python-pybigwig)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://pygenometracks.readthedocs.io")
+    (synopsis "Program and library to plot beautiful genome browser tracks")
+    (description
+     "This package aims to produce high-quality genome browser tracks that
+are highly customizable.  Currently, it is possible to plot: bigwig, bed (many
+options), bedgraph, links (represented as arcs), and Hi-C matrices.
+pyGenomeTracks can make plots with or without Hi-C data.")
+    (license license:gpl3+)))

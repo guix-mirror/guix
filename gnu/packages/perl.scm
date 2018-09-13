@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2018 Roel Janssen <roel@gnu.org>
@@ -5483,7 +5483,7 @@ private methods are not.")
 (define-public perl-moosex-getopt
   (package
     (name "perl-moosex-getopt")
-    (version "0.71")
+    (version "0.73")
     (source
      (origin
        (method url-fetch)
@@ -5491,12 +5491,15 @@ private methods are not.")
                            "MooseX-Getopt-" version ".tar.gz"))
        (sha256
         (base32
-         "0nf2094qgir0irxjycwqavy53ygm530g9f7cxfywnl2n1bmgh66y"))))
+         "19zm8brf930p0ymqn3w1y0ix29kb74m8nvhrhjvrg8cgz6vc5fyz"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
+       ("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-path-tiny" ,perl-path-tiny)
        ("perl-test-deep" ,perl-test-deep)
        ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-needs" ,perl-test-needs)
        ("perl-test-requires" ,perl-test-requires)
        ("perl-test-trap" ,perl-test-trap)
        ("perl-test-warnings" ,perl-test-warnings)))

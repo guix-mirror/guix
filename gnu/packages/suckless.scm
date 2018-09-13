@@ -561,7 +561,7 @@ environment variable.")
 (define-public fortify-headers
   (package
     (name "fortify-headers")
-    (version "0.9")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
@@ -569,15 +569,15 @@ environment variable.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1z517ajy34l2k5lz2gvhbmia9xjgagffi4s22azqxnlmgb1g2xfg"))))
+         "0nvplfg4y4a10x2j12qwmxzlk2q4j6287j0v5f9bfsdayb04qvh2"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://git.2f30.org/fortify-headers/")
     (synopsis "Standalone fortify-source implementation")
     (description

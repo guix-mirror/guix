@@ -25,6 +25,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
@@ -263,6 +265,9 @@ interface (FFI) of Guile.")
                  #~(define-module (gcrypt hash)
                      #:export (sha1 sha256))))
 
+  (define fake-git
+    (scheme-file "git.scm" #~(define-module (git))))
+
   (with-imported-modules `(((guix config)
                             => ,(make-config.scm))
 
@@ -271,6 +276,11 @@ interface (FFI) of Guile.")
                            ;; hash) just so that we can build modules, and
                            ;; adjust %LOAD-PATH later on.
                            ((gcrypt hash) => ,fake-gcrypt-hash)
+
+                           ;; (guix git-download) depends on (git) but only
+                           ;; for peripheral functionality.  Provide a dummy
+                           ;; (git) to placate it.
+                           ((git) => ,fake-git)
 
                            ,@(source-module-closure `((guix store)
                                                       (guix self)
@@ -417,7 +427,15 @@ files."
            ;; Unsupported PULL-VERSION.
            (return #f))
           ((? string? str)
-           (error "invalid build result" (list build str))))))))
+           (raise (condition
+                   (&message
+                    (message (format #f "You found a bug: the program '~a'
+failed to compute the derivation for Guix (version: ~s; system: ~s;
+host version: ~s; pull-version: ~s).
+Please report it by email to <~a>.~%"
+                                     (derivation->output-path build)
+                                     version system %guix-version pull-version
+                                     %guix-bug-report-address)))))))))))
 
 ;; This file is loaded by 'guix pull'; return it the build procedure.
 build

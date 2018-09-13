@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
@@ -250,3 +250,15 @@ software vendors, application developers and computer science researchers.")
 work correctly with all transports (such as @code{openib}), and the
 performance is generally worse than the vanilla @code{openmpi} package, which
 only provides @code{MPI_THREAD_FUNNELED}.")))
+
+;;; Build phase to be used for packages that execute MPI code.
+(define-public %openmpi-setup
+  '(lambda _
+     ;; By default, running the test suite would fail because 'ssh' could not
+     ;; be found in $PATH.  Define this variable to placate Open MPI without
+     ;; adding a dependency on OpenSSH (the agent isn't used anyway.)
+     (setenv "OMPI_MCA_plm_rsh_agent" (which "false"))
+     ;; Allow oversubscription in case there are less physical cores available
+     ;; in the build environment than the package wants while testing.
+     (setenv "OMPI_MCA_rmaps_base_oversubscribe" "yes")
+     #t))

@@ -1087,7 +1087,10 @@ default value."
     (#f     #f)
     (locale (false-if-exception (setlocale LC_ALL locale))))
 
-  (set-thread-name "guix substitute")
+  (catch 'system-error
+    (lambda ()
+      (set-thread-name "guix substitute"))
+    (const #t))                                   ;GNU/Hurd lacks 'prctl'
 
   (with-networking
    (with-error-handling                           ; for signature errors

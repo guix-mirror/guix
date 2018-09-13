@@ -146,14 +146,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.18.0")
+   (version "2.19.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "14hfwfkrci829a9316hnvkglnqqw1p03cw9k56p4fcb078wbwh4b"))))
+              "1x1y5z3awabmfg7hk6zb331jxngad4nal4507v96bnf0izsyy3qq"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -166,7 +166,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "15k04s9pcc5wkmlfa8x99nbgczjbx0c91767ciqmjy9kwsavxqws"))))))
+            "1jvxiqvp9q4is3np063ny7rnmk5hm36d34bhi3cgv89njqdh8laf"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -642,7 +642,14 @@ collaboration using typical untrusted file hosts or services.")
        ("xz" ,xz)))
     (inputs
      `(;; Building cgit requires a Git source tree.
-       ("git-source" ,(package-source git))
+       ("git-source"
+        ,(origin
+           (method url-fetch)
+           ;; XXX CGit is currently incompatible with Git > 2.18.
+           (uri "mirror://kernel.org/software/scm/git/git-2.18.0.tar.xz")
+           (sha256
+            (base32
+             "14hfwfkrci829a9316hnvkglnqqw1p03cw9k56p4fcb078wbwh4b"))))
        ("openssl" ,openssl)
        ("groff" ,groff)
        ("python" ,python)

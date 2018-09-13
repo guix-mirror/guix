@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,12 +50,14 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:autoload   (gnu packages protobuf) (protobuf)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -682,3 +685,41 @@ which executes commands on multiple remote hosts in parallel.  Pdsh implements
 dynamically loadable modules for extended functionality such as new remote
 shell services and remote host selection.")
     (license license:gpl2+)))
+
+(define-public clustershell
+  (package
+    (name "clustershell")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cea-hpc/clustershell/archive/v"
+                           version
+                           ".tar.gz"))
+       (sha256
+        (base32 "1qyf6zp5ikk8rk7zvx5ssbgr9si2bqv3a3415590kd07s7i16nmd"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (inputs `(("openssh" ,openssh)))
+    (propagated-inputs `(("python-pyyaml" ,python-pyyaml)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'record-openssh-file-name
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((ssh (assoc-ref inputs "openssh")))
+                        (substitute* "lib/ClusterShell/Worker/Ssh.py"
+                          (("info\\(\"ssh_path\"\\) or \"ssh\"")
+                           (string-append "info(\"ssh_path\") or \""
+                                          ssh "/bin/ssh\"")))
+                        #t))))))
+    (home-page "https://cea-hpc.github.io/clustershell/")
+    (synopsis "Scalable event-driven Python framework for cluster administration")
+    (description
+     "ClusterShell is an event-driven Python framework, designed to run local
+or distant commands in parallel on server farms or on large GNU/Linux
+clusters.  It will take care of common issues encountered on HPC clusters,
+such as operating on groups of nodes, running distributed commands using
+optimized execution algorithms, as well as gathering results and merging
+identical outputs, or retrieving return codes.  ClusterShell takes advantage
+of existing remote shell facilities such as SSH.")
+    (license license:lgpl2.1+)))

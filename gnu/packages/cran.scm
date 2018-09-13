@@ -33,6 +33,8 @@
   #:use-module (guix build-system r)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
@@ -5563,4 +5565,235 @@ and coverage methods to tune the choice of threshold.")
 gf_density(), and so on, bring the formula interface to ggplot().  This captures
 and extends the excellent simplicity of the lattice-graphics formula interface,
 while providing the intuitive capabilities of @code{r-ggplot2}.")
+    (license license:expat)))
+
+(define-public r-mosaicdata
+  (package
+    (name "r-mosaicdata")
+    (version "0.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mosaicData" version))
+       (sha256
+        (base32 "04z0mdm52mykqsxsinhmsihn181zf6cw321gayk2rjp7lj7mwdq9"))))
+    (properties `((upstream-name . "mosaicData")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/mosaicData/")
+    (synopsis "Data sets for project Mosaic")
+    (description
+     "This package provides data sets from project Mosaic @url{http://mosaic-web.org}
+used to teach mathematics, statistics, computation and modeling.")
+    (license license:gpl2+)))
+
+(define-public r-mosaic
+  (package
+   (name "r-mosaic")
+   (version "1.4.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (cran-uri "mosaic" version))
+     (sha256
+      (base32 "10jbrg8kli00kfgbh2f67bymm5cnlancc9dplb1j7fl552yjddn2"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-broom" ,r-broom)
+      ("r-dplyr" ,r-dplyr)
+      ("r-ggdendro" ,r-ggdendro)
+      ("r-ggformula" ,r-ggformula)
+      ("r-ggplot2" ,r-ggplot2)
+      ("r-ggrepel" ,r-ggrepel)
+      ("r-glue" ,r-glue)
+      ("r-gridextra" ,r-gridextra)
+      ("r-lattice" ,r-lattice)
+      ("r-latticeextra" ,r-latticeextra)
+      ("r-lazyeval" ,r-lazyeval)
+      ("r-mass" ,r-mass)
+      ("r-matrix" ,r-matrix)
+      ("r-mosaiccore" ,r-mosaiccore)
+      ("r-mosaicdata" ,r-mosaicdata)
+      ("r-readr" ,r-readr)
+      ("r-tidyr" ,r-tidyr)))
+   (home-page "https://github.com/ProjectMOSAIC/mosaic/")
+   (synopsis "Mathematics, statistics, and computation teaching utilities")
+   (description
+    "This package contain data sets and utilities from
+@url{http://mosaic-web.org, Project MOSAIC} used to teach mathematics,
+statistics, computation and modeling.  Project MOSAIC is a community of
+educators working to tie together aspects of quantitative work that students
+in science, technology, engineering and mathematics will need in their
+professional lives, but which are usually taught in isolation, if at all.")
+   (license license:gpl2+)))
+
+(define-public r-abd
+  (package
+    (name "r-abd")
+    (version "0.2-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abd" version))
+       (sha256
+        (base32 "191gspqzdv573vaw624ri0f5cm6v4j524bjs74d4a1hn3kn6r9b7"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-mosaic" ,r-mosaic)
+       ("r-nlme" ,r-nlme)))
+    (home-page "https://cran.r-project.org/web/packages/abd/")
+    (synopsis "Analysis of biological data")
+    (description
+     "The @code{r-abd} package contains data sets and sample code for the Analysis of
+biological data by Michael Whitlock and Dolph Schluter.")
+    (license license:gpl2)))
+
+(define-public r-svgui
+  (package
+    (name "r-svgui")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "svGUI" version))
+       (sha256
+        (base32 "1r7ab0p4yr8q03gj02hmj7k1ghksgkg4nx750c0ajfs2q9y1dxfc"))))
+    (properties `((upstream-name . "svGUI")))
+    (build-system r-build-system)
+    (home-page "https://github.com/SciViews/svGUI/")
+    (synopsis "Functions for managing GUI clients in R")
+    (description
+     "The SciViews @code{svGUI} package eases the management of Graphical User
+Interfaces (GUI) in R.  It is independent from any particular GUI widgets.  It
+centralizes info about GUI elements currently used, and it dispatches GUI
+calls to the particular toolkits in use in function of the context.")
+    (license license:gpl2)))
+
+(define-public r-svdialogs
+  (package
+    (name "r-svdialogs")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "svDialogs" version))
+       (sha256
+        (base32 "0xqppydfawnwk84kb5qiybwbcmv38vn4imgz01mz2pnq4xb80p97"))))
+    (properties `((upstream-name . "svDialogs")))
+    (build-system r-build-system)
+    (inputs
+     `(("yad" ,yad)
+       ("zenity" ,zenity)))
+    (propagated-inputs
+     `(("r-rstudioapi" ,r-rstudioapi)
+       ("r-svgui" ,r-svgui)))
+    (home-page "https://github.com/SciViews/svDialogs/")
+    (synopsis "Portable dialog boxes")
+    (description
+     "This package helps to construct standard dialog boxes for your GUI, including
+message boxes, input boxes, list, file or directory selection, and others.  In
+case R cannot display GUI dialog boxes, a simpler command line version of these
+interactive elements is also provided as a fallback solution.")
+    (license license:gpl2)))
+
+(define-public r-abe
+  (package
+    (name "r-abe")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abe" version))
+       (sha256
+        (base32
+         "1f19h3xzzmjhvwc1rrb8z0rai3ip03y4gdi2gg9bfr5sg2nfklk6"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/abe/")
+    (synopsis "Augmented backward elimination")
+    (description
+     "This package performs augmented backward elimination and checks the
+stability of the obtained model.  Augmented backward elimination combines
+significance or information based criteria with the change in estimate to
+either select the optimal model for prediction purposes or to serve as a tool
+to obtain a practically sound, highly interpretable model.")
+    (license license:gpl2+)))
+
+(define-public r-abf2
+  (package
+    (name "r-abf2")
+    (version "0.7-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abf2" version))
+       (sha256
+        (base32 "0d65mc1w4pbiv7xaqzdlw1bfsxf25587rv597hh41vs0j0zlfpxx"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/abf2/")
+    (synopsis "Load gap-free axon @code{r-abf2} files")
+    (description
+     "This package loads electrophysiology data from ABF2 files, as created by
+Axon Instruments/Molecular Devices software.  Only files recorded in gap-free
+mode are currently supported.")
+    (license license:artistic2.0)))
+
+(define-public r-abhgenotyper
+  (package
+    (name "r-abhgenotyper")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ABHgenotypeR" version))
+       (sha256
+        (base32 "08cpmnaaxsm5c5bjifnfxdlvg5inrf13biqpcl2yq5zpqjmiki0l"))))
+    (properties `((upstream-name . "ABHgenotypeR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "https://github.com/StefanReuscher/ABHgenotypeR/")
+    (synopsis "Visualize and manipulate ABH genotypes")
+    (description
+     "The @code{r-abhgenotyper} package provides simple imputation,
+error-correction and plotting capacities for genotype data.  The package is
+supposed to serve as an intermediate but independent analysis tool between the
+TASSEL GBS pipeline and the @code{r-qtl} package.  It provides functionalities
+not found in either TASSEL or @code{r-qtl} in addition to visualization of
+genotypes as \"graphical genotypes\".")
+    (license license:gpl3)))
+
+(define-public r-abjutils
+  (package
+    (name "r-abjutils")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abjutils" version))
+       (sha256
+        (base32 "0qrsc4if7aif73qp95lw6b5986c2r0jn7m39123zij8k15vc935b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-devtools" ,r-devtools)
+       ("r-dplyr" ,r-dplyr)
+       ("r-glue" ,r-glue)
+       ("r-httr" ,r-httr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plyr" ,r-plyr)
+       ("r-progress" ,r-progress)
+       ("r-purrr" ,r-purrr)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-scales" ,r-scales)
+       ("r-stringi" ,r-stringi)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/abjur/abjutils/")
+    (synopsis "Collection of tools for jurimetrical analysis")
+    (description
+     "This package implements general purpose tools, such as functions for
+sampling and basic manipulation of Brazilian lawsuits identification number.
+It also implements functions for text cleaning, such as accentuation
+removal.")
     (license license:expat)))

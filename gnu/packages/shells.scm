@@ -292,18 +292,18 @@ history mechanism, job control and a C-like syntax.")
 (define-public zsh
   (package
     (name "zsh")
-    (version "5.6")
+    (version "5.6.1")
     (source (origin
               (method url-fetch)
               (uri (list (string-append
-                           "http://www.zsh.org/pub/zsh-" version
+                           "https://www.zsh.org/pub/zsh-" version
                            ".tar.xz")
                          (string-append
-                           "http://www.zsh.org/pub/old/zsh-" version
+                           "https://www.zsh.org/pub/old/zsh-" version
                            ".tar.xz")))
               (sha256
                (base32
-                "1mp6h2452z2029n12mxipjv4b0cc8i8sb72g8p8jklg8275iysvl"))))
+                "1s5kzfbfvixibb1sbzmmlrrx898zqwi5cfmnnq4bhcbx64zparlm"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
                  #:phases
@@ -336,19 +336,6 @@ history mechanism, job control and a C-like syntax.")
                          (("command -pv") "command -v")
                          (("command -p") "command ")
                          (("'command' -p") "'command' "))
-                       ;; This file is ISO-8859-1 encoded.
-                       (with-fluids ((%default-port-encoding #f))
-                         (substitute* "Test/A05execution.ztst"
-                           ;; Help it find `sh`
-                           (("PATH=/bin:\\$\\{ZTST_testdir\\}/command.tmp/ tstcmd-slashless")
-                            (string-append "PATH=/bin:"
-                                           (assoc-ref %build-inputs "bash") "/bin:"
-                                           "${ZTST_testdir}/command.tmp/ tstcmd-slashless"))
-                           ;; Help it find `echo`
-                           (("PATH=/bin:\\$\\{ZTST_testdir\\}/command.tmp tstcmd-arg")
-                            (string-append "PATH=/bin:"
-                                           (assoc-ref %build-inputs "coreutils") "/bin:"
-                                           "PATH=/bin:${ZTST_testdir}/command.tmp tstcmd-arg"))))
                        #t)))))
     (native-inputs `(("autoconf" ,autoconf)))
     (inputs `(("ncurses" ,ncurses)
@@ -360,7 +347,7 @@ as an interactive login shell and as a powerful command interpreter
 for shell scripting.  Zsh can be thought of as an extended Bourne shell
 with a large number of improvements, including some features of bash,
 ksh, and tcsh.")
-    (home-page "http://www.zsh.org/")
+    (home-page "https://www.zsh.org/")
 
     ;; The whole thing is under an MIT/X11-style license, but there's one
     ;; command, 'Completion/Unix/Command/_darcs', which is under GPLv2+.

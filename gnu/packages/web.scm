@@ -889,7 +889,7 @@ used to validate and fix HTML data.")
 (define-public tinyproxy
   (package
     (name "tinyproxy")
-    (version "1.8.4")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tinyproxy/tinyproxy/"
@@ -897,7 +897,7 @@ used to validate and fix HTML data.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "002hi97687czhfkwsjkr174yvlp10224qi6gd5s53z230bgls7x4"))))
+                "10jnk6y2swld25mm47mjc0nkffyzsfysnsxwr7cs0ns1kil8ggjr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -912,9 +912,6 @@ used to validate and fix HTML data.")
              ;; (substitute* "docs/man5/Makefile" (("a2x") "a2x -v"))
              ;; (setenv "XML_DEBUG_CATALOG" "1")
              #t)))))
-    ;; All of the below are used to generate the documentation
-    ;; (Should they be propagated inputs of asciidoc ??)
-    (native-inputs `(("asciidoc" ,asciidoc)))
     (home-page "https://tinyproxy.github.io/")
     (synopsis "Light-weight HTTP/HTTPS proxy daemon")
     (description "Tinyproxy is a light-weight HTTP/HTTPS proxy
@@ -6708,8 +6705,8 @@ compressed JSON header blocks.
     (license l:expat)))
 
 (define-public hpcguix-web
-  (let ((commit "9ff40fcc77f248901d861756dbbddc80270c380c")
-        (revision "2"))
+  (let ((commit "53e09ea59ec0380b41a4cbda32df8bdb9a10004d")
+        (revision "3"))
     (package
       (name "hpcguix-web")
       (version (git-version "0.0.1" revision commit))
@@ -6721,7 +6718,7 @@ compressed JSON header blocks.
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0lxcj9s3wxrv1l7lrxxx374jwzx7h60gxwkbgr46lzcbgvb3k26s"))))
+                  "1ah4pn9697vazhbvd45n4b1rrkx2nbhnw384cr0b941q3sz1dfyc"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)

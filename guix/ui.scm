@@ -1708,12 +1708,26 @@ phase announcements and replaces any other output with a spinner."
                         (string-append
                          (proc "Building " 'BLUE 'BOLD)
                          (match:substring m 2) "\n")))
-                    ("^(@ build-failed) (.*) (.*)"
-                     #:transform
-                     ,(lambda (m)
-                        (string-append
-                         (proc "Build failed: " 'RED 'BOLD)
-                         (match:substring m 2) "\n")))
+                    ,(if verbose?
+                         ;; Err on the side of caution: show everything, even
+                         ;; if it might be redundant.
+                         `("^(@ build-failed)(.+)"
+                           #:transform
+                           ,(lambda (m)
+                              (string-append
+                               (proc "Build failed: " 'RED 'BOLD)
+                               (match:substring m 2))))
+                         ;; Show only that the build failed.
+                         `("^(@ build-failed)(.+) -.*"
+                           #:transform
+                           ,(lambda (m)
+                              (string-append
+                               (proc "Build failed: " 'RED 'BOLD)
+                               (match:substring m 2)
+                               "\n"))))
+                    ;; NOTE: this line contains "\n" characters.
+                    ("^(sha256 hash mismatch for output path)(.*)"
+                     RED BLACK)
                     ("^(@ build-succeeded) (.*) (.*)"
                      #:transform
                      ,(lambda (m)

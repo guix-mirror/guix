@@ -102,7 +102,7 @@ based command language.")
 (define-public kakoune
   (package
     (name "kakoune")
-    (version "2018.04.13")
+    (version "2018.09.04")
     (source
      (origin
        (method url-fetch)
@@ -111,7 +111,7 @@ based command language.")
                            name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "1kkzs5nrjxzd1jq7a4k7qfb5kg05871z0r3d9c0yhz9shf6wz36d"))))
+         "1qbj2hmcfs6pr5lc78z9ni5zxdyp3mr64dvms4l52716ikqcjcbs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -147,7 +147,7 @@ commands are similar to Vi's ones, and it shares Vi's \"keystrokes as a text
 editing language\" model.  Kakoune has a strong focus on interactivity, most
 commands provide immediate and incremental results, while still being
 competitive (as in keystroke count) with Vim.")
-    (home-page "http://kakoune.org/")
+    (home-page "https://kakoune.org/")
     (license license:unlicense)))
 
 (define-public joe

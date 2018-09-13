@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,7 @@
   #:use-module (guix download)
   #:use-module ((guix licenses)
                 #:select (gpl2+ lgpl2.1+ lgpl3+ mpl1.1 mpl2.0
-                          non-copyleft x11-style))
+                          non-copyleft x11-style bsd-3))
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
@@ -533,6 +534,35 @@ Aldus/Macromedia/Adobe FreeHand documents.")
 Microsoft Publisher documents of all versions.")
     (license mpl2.0)))
 
+(define-public libnumbertext
+  (package
+    (name "libnumbertext")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/numbertext/" name
+                           "/archive/" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wnsn4911fdd2na8jxkcvmk04a6xw6qlviic9w4qwg9fcym6866v"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/Numbertext/libnumbertext")
+    (synopsis "Language-neutral @code{NUMBERTEXT} and @code{MONEYTEXT} functions")
+    (description
+     "The libnumbertext library provides language-neutral @code{NUMBERTEXT}
+and @code{MONEYTEXT} functions for LibreOffice Calc, available for C++ and
+Java.")
+    (license (list lgpl3+ bsd-3))))
+
 (define-public libpagemaker
   (package
     (name "libpagemaker")
@@ -905,19 +935,19 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "6.0.6.2")
+    (version "6.1.0.3")
     (source
      (origin
-      (method url-fetch)
-      (uri
+       (method url-fetch)
+       (uri
         (string-append
-          "https://download.documentfoundation.org/libreoffice/src/"
-          (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
-      (sha256
-       (base32
-        "13kaikaz65xw9a3hxbh245cnydjpy58np22c7s0s65pnmcq68rpi"))
-      (patches (search-patches "libreoffice-icu.patch"
-                               "libreoffice-glm.patch"))))
+         "https://download.documentfoundation.org/libreoffice/src/"
+         (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1n7b6abc0bp9x8lddx60w5br444wf62mdlkqmfk2zmkmiwkcvv2l"))
+       (patches (search-patches "libreoffice-icu.patch"
+                                "libreoffice-glm.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -958,6 +988,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("libltdl" ,libltdl)
        ("libmspub" ,libmspub)
        ("libmwaw" ,libmwaw)
+       ("libnumbertext" ,libnumbertext)
        ("libodfgen" ,libodfgen)
        ("libpagemaker" ,libpagemaker)
        ("libqxp" ,libqxp)
@@ -984,6 +1015,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("poppler" ,poppler)
        ("postgresql" ,postgresql)
        ("python" ,python)
+       ("python-lxml" ,python-lxml)
        ("redland" ,redland)
        ("sane-backends" ,sane-backends)
        ("unixodbc" ,unixodbc)

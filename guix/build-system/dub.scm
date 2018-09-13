@@ -35,13 +35,13 @@
 (define (default-ldc)
   "Return the default ldc package."
   ;; Lazily resolve the binding to avoid a circular dependency.
-  (let ((ldc (resolve-interface '(gnu packages ldc))))
+  (let ((ldc (resolve-interface '(gnu packages dlang))))
     (module-ref ldc 'ldc)))
 
 (define (default-dub)
   "Return the default dub package."
   ;; Lazily resolve the binding to avoid a circular dependency.
-  (let ((ldc (resolve-interface '(gnu packages ldc))))
+  (let ((ldc (resolve-interface '(gnu packages dlang))))
     (module-ref ldc 'dub)))
 
 (define (default-pkg-config)

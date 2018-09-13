@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,10 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages pkg-config)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
@@ -158,3 +163,45 @@ fzy is designed to be used both as an editor plugin and on the command
 line.  Rather than clearing the screen, fzy displays its interface directly
 below the current cursor position, scrolling the screen if necessary.")
     (license expat)))
+
+(define-public hstr
+  (package
+    (name "hstr")
+    (version "2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dvorka/" name "/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0yk2008bl48hv0v3c90ngq4y45h3nxif2ik6s3l7kag1zs5yv4wd"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'adjust-ncurses-includes
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "src/include/hstr_curses.h"
+                 (("ncursesw\\/curses.h") "ncurses.h"))
+               (substitute* "src/include/hstr.h"
+                 (("ncursesw\\/curses.h") "ncurses.h")))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("readline" ,readline)))
+    (synopsis "Navigate and search command history with shell history suggest box")
+    (description "HSTR (HiSToRy) is a command-line utility that brings
+improved Bash and Zsh command completion from the history.  It aims to make
+completion easier and more efficient than with @kbd{Ctrl-R}.  It allows you to
+easily view, navigate, and search your command history with suggestion boxes.
+HSTR can also manage your command history (for instance you can remove
+commands that are obsolete or contain a piece of sensitive information) or
+bookmark your favourite commands.")
+    (home-page "http://me.mindforger.com/projects/hh.html")
+    (license asl2.0)))

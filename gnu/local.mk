@@ -135,6 +135,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/display-managers.scm		\
   %D%/packages/django.scm			\
   %D%/packages/djvu.scm				\
+  %D%/packages/dlang.scm			\
   %D%/packages/dns.scm				\
   %D%/packages/docbook.scm			\
   %D%/packages/docker.scm			\
@@ -245,7 +246,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/key-mon.scm			\
   %D%/packages/kodi.scm				\
   %D%/packages/language.scm			\
-  %D%/packages/ldc.scm				\
   %D%/packages/lego.scm				\
   %D%/packages/less.scm				\
   %D%/packages/lesstif.scm			\
@@ -529,7 +529,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/vm.scm				\
 						\
   %D%/tests.scm					\
-  %D%/tests/admin.scm				\
   %D%/tests/audio.scm				\
   %D%/tests/base.scm				\
   %D%/tests/databases.scm			\
@@ -855,7 +854,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
   %D%/packages/patches/laby-make-install.patch			\
   %D%/packages/patches/ldc-bootstrap-disable-tests.patch	\
-  %D%/packages/patches/ldc-1.7.0-disable-phobos-tests.patch	\
+  %D%/packages/patches/ldc-disable-phobos-tests.patch		\
   %D%/packages/patches/ledger-fix-uninitialized.patch		\
   %D%/packages/patches/ledger-revert-boost-python-fix.patch	\
   %D%/packages/patches/liba52-enable-pic.patch			\
@@ -983,6 +982,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-date-time.patch			\
   %D%/packages/patches/netcdf-tst_h_par.patch			\
+  %D%/packages/patches/netsurf-message-timestamp.patch		\
   %D%/packages/patches/netsurf-system-utf8proc.patch		\
   %D%/packages/patches/netsurf-y2038-tests.patch		\
   %D%/packages/patches/netsurf-longer-test-timeout.patch	\
@@ -1078,12 +1078,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
   %D%/packages/patches/python-cairocffi-dlopen-path.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
-  %D%/packages/patches/python-genshi-add-support-for-python-3.4-AST.patch	\
-  %D%/packages/patches/python-genshi-buildable-on-python-2.7.patch	\
-  %D%/packages/patches/python-genshi-disable-speedups-on-python-3.3.patch	\
-  %D%/packages/patches/python-genshi-fix-tests-on-python-3.5.patch	\
-  %D%/packages/patches/python-genshi-isstring-helper.patch	\
-  %D%/packages/patches/python-genshi-stripping-of-unsafe-script-tags.patch	\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
   %D%/packages/patches/python-networkx2-reproducible-build.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
@@ -1129,6 +1123,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/rust-1.19-mrustc.patch			\
+  %D%/packages/patches/rust-1.25-accept-more-detailed-gdb-lines.patch \
   %D%/packages/patches/rust-bootstrap-stage0-test.patch		\
   %D%/packages/patches/rust-coresimd-doctest.patch		\
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\

@@ -1655,3 +1655,46 @@ Parcellite and adds bugfixes and features.")
 it does not deal with windowing system surfaces, drawing, scene graphs, or
 input.")
     (license license:expat)))
+
+(define-public yad
+  (package
+    (name "yad")
+    (version "0.40.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/v1cont/yad.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vpgbjbkkbk5plicyklzpf65j1vlig4n4bi3qpvrz5bb09ic5alw"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       '("--with-gtk=gtk3"
+         "--enable-html"
+         "--enable-gio"
+         "--enable-spell"
+         "--enable-icon-browser")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _
+             (invoke "autoreconf" "-vif")
+             (invoke "intltoolize" "--force" "--automake")
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://sourceforge.net/projects/yad-dialog/")
+    (synopsis "GTK+ dialog boxes for shell scripts")
+    (description
+     "This program allows you to display GTK+ dialog boxes from command line or
+shell scripts.  Example of how to use @code{yad} can be consulted at
+@url{https://sourceforge.net/p/yad-dialog/wiki/browse_pages/}.")
+    (license license:gpl3+)))

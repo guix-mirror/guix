@@ -864,7 +864,7 @@ videoformats depend on the configuration flags of ffmpeg.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.3-1")
+    (version "3.0.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -874,7 +874,7 @@ videoformats depend on the configuration flags of ffmpeg.")
              (patches (list %vlc-libx264-compat.patch))
              (sha256
               (base32
-               "1p7qvdvg9w4lz8vckzhn6bswfkq3qw7fqkgvwjcskdgc266xx7dw"))))
+               "17jsq0zqpqyxw4ckvjba0hf6zk8ywc4wf8sy3z03hh3ij0vxpwq1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -1203,7 +1203,7 @@ projects while introducing many more.")
 (define-public gnome-mpv
   (package
     (name "gnome-mpv")
-    (version "0.14")
+    (version "0.15")
     (source
      (origin
        (method url-fetch)
@@ -1212,7 +1212,7 @@ projects while introducing many more.")
                            ".tar.xz"))
        (sha256
         (base32
-         "03kjwd5jq0i5ajnvhjwf5019bjjaa16xkdrhdkiz1k58ipjvvj93"))))
+         "1y47abkidxh1il0bvq8r3dglwn3ggsy41x2n7ic3x23wvvcqmq74"))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -1270,7 +1270,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.08.04")
+    (version "2018.09.08")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1278,7 +1278,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1hcx99qbbyigc8k98c8bcc6a2wnhq6493fmrkl7rysc8krlxr0pm"))))
+                "0vwc4faqdddrb3nm4fzmkr60n5rc2zwyy8jwrrjad60kcp8isf05"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion

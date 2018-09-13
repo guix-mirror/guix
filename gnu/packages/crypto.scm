@@ -816,3 +816,41 @@ which is also used in the Advanced Encryption Standard (AES, see
 @url{http://www.nist.gov/aes}).  This cipher is believed to provide very strong
 security.")
     (license license:gpl2)))
+
+(define-public asignify
+  (let ((commit "f58e7977a599f040797975d649ed318e25cbd2d5")
+        (revision "0"))
+    (package
+      (name "asignify")
+      (version (git-version "1.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/vstakhov/asignify.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1zl68qq6js6fdahxzyhvhrpyrwlv8c2zhdplycnfxyr1ckkhq8dw"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags
+         (list "--enable-openssl"
+               (string-append "--with-openssl="
+                              (assoc-ref %build-inputs "openssl")))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      (inputs
+       `(("openssl" ,openssl-next)))
+      (home-page "https://github.com/vstakhov/asignify")
+      (synopsis "Cryptographic authentication and encryption tool and library")
+      (description "Asignify offers public cryptographic signatures and
+encryption with a library or a command-line tool.  The tool is heavily inspired
+by signify as used in OpenBSD.  The main goal of this project is to define a
+high level API for signing files, validating signatures and encrypting using
+public-key cryptography.  Asignify is designed to be portable and self-contained
+with zero external dependencies.  Asignify can verify OpenBSD signatures, but it
+cannot sign messages in OpenBSD format yet.")
+      (license license:bsd-2))))

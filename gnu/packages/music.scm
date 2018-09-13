@@ -2198,28 +2198,17 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.1")
+    (version "0.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "07csbqr7q4m1j0pqg89kn7jdw0snd5lwna5rha0986s4plq4z1qb"))))
+                "1j3rpvdkw9rw48j4zyfn6rprp01csy4rl6zckcjyx0vh7vaycchr"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f  ; no "check" target
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build-with-qt-5.11
-           (lambda _
-             (substitute* "src/qtractorMeter.h"
-               (("#include <QFrame>" m)
-                (string-append "#include <QAction>\n" m)))
-             (substitute* "src/qtractorTrackButton.h"
-               (("#include <QPushButton>" m)
-                (string-append "#include <QAction>\n" m)))
-             #t)))))
+     `(#:tests? #f))                    ; no "check" target
     (inputs
      `(("qt" ,qtbase)
        ("qtx11extras" ,qtx11extras)

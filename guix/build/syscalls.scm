@@ -385,8 +385,8 @@ the returned procedure is called."
                             #:return-errno? #t)))
     (lambda args
       (lambda _
-        (error (format #f "~a: syscall->procedure failed: ~s"
-                       name args))))))
+        (throw 'system-error name  "~A" (list (strerror ENOSYS))
+               (list ENOSYS))))))
 
 (define-syntax define-as-needed
   (syntax-rules ()

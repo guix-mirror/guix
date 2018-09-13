@@ -460,6 +460,9 @@ implementation techniques and as an expository tool.")
                (substitute* "share/pkgs/math-lib/math/private/bigfloat/mpfr.rkt"
                  (("ffi-lib libmpfr-so")
                   (format #f "ffi-lib \"~a\"" (find-so "libmpfr"))))
+               (substitute* "share/pkgs/readline-lib/readline/rktrl.rkt"
+                 (("\\(getenv \"PLT_READLINE_LIB\"\\)")
+                  (format #f "\"~a\"" (find-so "libedit"))))
                (for-each
                 (lambda (x) (apply patch-ffi-libs x))
                 '(("share/pkgs/draw-lib/racket/draw/unsafe/cairo-lib.rkt"
@@ -487,9 +490,7 @@ implementation techniques and as an expository tool.")
                   ("share/pkgs/gui-lib/mred/private/wx/gtk/gl-context.rkt"
                    ("libGL"))
                   ("share/pkgs/sgl/gl.rkt"
-                   ("libGL" "libGLU"))
-                  ("share/pkgs/readline-lib/readline/rktrl.rkt"
-                   ("libedit")))))
+                   ("libGL" "libGLU")))))
              (chdir "src")
              #t))
          (add-after 'unpack 'patch-/bin/sh
