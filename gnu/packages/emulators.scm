@@ -1079,6 +1079,11 @@ emulation community.  It provides highly accurate emulation.")
                  (("libvulkan.so") (string-append vulkan "/lib/libvulkan.so")))
                (substitute* "qb/qb.libs.sh"
                  (("/bin/true") (which "true")))
+               ;; Use shared zlib.
+               (substitute* '("libretro-common/file/archive_file_zlib.c"
+                              "libretro-common/streams/trans_stream_zlib.c"
+                              "network/httpserver/httpserver.c")
+                 (("<compat/zlib.h>") "<zlib.h>"))
                ;; The configure script does not yet accept the extra arguments
                ;; (like ‘CONFIG_SHELL=’) passed by the default configure phase.
                (zero? (system*
