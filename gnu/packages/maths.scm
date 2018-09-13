@@ -27,6 +27,7 @@
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2871,6 +2872,18 @@ parts of it.")
     (synopsis "Optimized BLAS library based on GotoBLAS")
     (description
      "OpenBLAS is a BLAS library forked from the GotoBLAS2-1.13 BSD version.")
+    (license license:bsd-3)))
+
+(define-public openblas-ilp64
+  (package (inherit openblas)
+    (name "openblas-ilp64")
+    (supported-systems '("x86_64-linux" "aarch64-linux" "mips64el-linux"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openblas)
+       ((#:make-flags flags '())
+        `(append (list "INTERFACE64=1" "LIBNAMESUFFIX=ilp64")
+                 ,flags))))
+    (synopsis "Optimized BLAS library based on GotoBLAS (ILP64 version)")
     (license license:bsd-3)))
 
 (define* (make-blis implementation #:optional substitutable?)
