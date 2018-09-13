@@ -790,8 +790,8 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 
 (define-public rust
   (let ((base-rust
-         (rust-bootstrapped-package rust-1.26 "1.27.0"
-                                    "089d7rhw55zpvnw71dj8vil6qrylvl4xjr4m8bywjj83d4zq1f9c"
+         (rust-bootstrapped-package rust-1.26 "1.27.2"
+                                    "0pg1s37bhx9zqbynxyydq5j6q7kij9vxkcv8maz0m25prm88r0cs"
                                     #:patches
                                     '("rust-coresimd-doctest.patch"
                                       "rust-bootstrap-stage0-test.patch"
