@@ -263,6 +263,9 @@ interface (FFI) of Guile.")
                  #~(define-module (gcrypt hash)
                      #:export (sha1 sha256))))
 
+  (define fake-git
+    (scheme-file "git.scm" #~(define-module (git))))
+
   (with-imported-modules `(((guix config)
                             => ,(make-config.scm))
 
@@ -271,6 +274,11 @@ interface (FFI) of Guile.")
                            ;; hash) just so that we can build modules, and
                            ;; adjust %LOAD-PATH later on.
                            ((gcrypt hash) => ,fake-gcrypt-hash)
+
+                           ;; (guix git-download) depends on (git) but only
+                           ;; for peripheral functionality.  Provide a dummy
+                           ;; (git) to placate it.
+                           ((git) => ,fake-git)
 
                            ,@(source-module-closure `((guix store)
                                                       (guix self)
