@@ -1429,14 +1429,14 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
     (name "youtube-viewer")
     (version "3.3.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/trizen/youtube-viewer/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/trizen/youtube-viewer.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1dqaxkz5svv0lmxds6lppcpzhkq6gar2raw9gx6imrd7yz02fpgn"))))
+                "1kpq3mk81hpjp5q4mi907ds0dbif40a4dzmv2h2lq5pcp757sw6i"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
