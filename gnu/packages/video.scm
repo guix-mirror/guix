@@ -29,6 +29,8 @@
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
+;;; Copyright © 2018 Gábor Boskovit <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1942,7 +1944,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "6.4.1")
+    (version "6.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mltframework/mlt/"
@@ -1950,7 +1952,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "10m3ry0b2pvqx3bk34qh5dq337nn8pkc2gzfyhsj4nv9abskln47"))
+                "1zzdj1g3g24q6v8hd0v34lv0pkh37a13fhjpl44h1ffi00mz3577"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; As of glibc 2.26, <xlocale.h> no longer is.
@@ -1960,7 +1962,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
-       #:make-flags '("CC=gcc")
+       #:make-flags '("CC=gcc" "CXX=g++ -std=gnu++11")
        #:configure-flags
        (list "--enable-gpl3"
              "--enable-gpl")
@@ -1979,11 +1981,16 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
      `(("alsa-lib" ,alsa-lib)
        ("ffmpeg" ,ffmpeg-3.4)
        ("fftw" ,fftw)
+       ("frei0r-plugins" ,frei0r-plugins)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gtk+" ,gtk+-2)
        ("libxml2" ,libxml2)
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("libsamplerate" ,libsamplerate)
        ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
        ("sdl" ,sdl)
        ("sox" ,sox)))
     (native-inputs
