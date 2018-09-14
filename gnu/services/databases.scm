@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,10 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages databases)
+  #:use-module (guix build-system trivial)
+  #:use-module (guix build union)
   #:use-module (guix modules)
+  #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
@@ -141,16 +145,18 @@ host	all	all	::1/128 	trust"))
 (define-record-type* <postgresql-configuration>
   postgresql-configuration make-postgresql-configuration
   postgresql-configuration?
-  (postgresql     postgresql-configuration-postgresql ;<package>
-                  (default postgresql))
-  (port           postgresql-configuration-port
-                  (default 5432))
-  (locale         postgresql-configuration-locale
-                  (default "en_US.utf8"))
-  (config-file    postgresql-configuration-file
-                  (default (postgresql-config-file)))
-  (data-directory postgresql-configuration-data-directory
-                  (default "/var/lib/postgresql/data")))
+  (postgresql         postgresql-configuration-postgresql ;<package>
+                      (default postgresql))
+  (port               postgresql-configuration-port
+                      (default 5432))
+  (locale             postgresql-configuration-locale
+                      (default "en_US.utf8"))
+  (config-file        postgresql-configuration-file
+                      (default (postgresql-config-file)))
+  (data-directory     postgresql-configuration-data-directory
+                      (default "/var/lib/postgresql/data"))
+  (extension-packages postgresql-configuration-extension-packages
+                      (default '())))
 
 (define %postgresql-accounts
   (list (user-group (name "postgres") (system? #t))
@@ -162,15 +168,36 @@ host	all	all	::1/128 	trust"))
          (home-directory "/var/empty")
          (shell (file-append shadow "/sbin/nologin")))))
 
+(define (final-postgresql postgresql extension-packages)
+  (if (null? extension-packages)
+    postgresql
+    (package
+      (inherit postgresql)
+      (source #f)
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils) (guix build union))
+         #:builder
+         (begin
+           (use-modules (guix build utils) (guix build union) (srfi srfi-26))
+           (union-build (assoc-ref %outputs "out") (map (lambda (input) (cdr input)) %build-inputs))
+           #t)))
+      (inputs
+       `(("postgresql" ,postgresql)
+         ,@(map (lambda (extension) (list "extension" extension))
+                extension-packages))))))
+
 (define postgresql-activation
   (match-lambda
-    (($ <postgresql-configuration> postgresql port locale config-file data-directory)
+    (($ <postgresql-configuration> postgresql port locale config-file data-directory
+        extension-packages)
      #~(begin
          (use-modules (guix build utils)
                       (ice-9 match))
 
          (let ((user (getpwnam "postgres"))
-               (initdb (string-append #$postgresql "/bin/initdb"))
+               (initdb (string-append #$(final-postgresql postgresql extension-packages)
+                                      "/bin/initdb"))
                (initdb-args
                 (append
                  (if #$locale
@@ -202,7 +229,8 @@ host	all	all	::1/128 	trust"))
 
 (define postgresql-shepherd-service
   (match-lambda
-    (($ <postgresql-configuration> postgresql port locale config-file data-directory)
+    (($ <postgresql-configuration> postgresql port locale config-file data-directory
+        extension-packages)
      (let* ((pg_ctl-wrapper
              ;; Wrapper script that switches to the 'postgres' user before
              ;; launching daemon.
@@ -214,7 +242,8 @@ host	all	all	::1/128 	trust"))
                   (match (command-line)
                     ((_ mode)
                      (let ((user (getpwnam "postgres"))
-                           (pg_ctl #$(file-append postgresql "/bin/pg_ctl"))
+                           (pg_ctl #$(file-append (final-postgresql postgresql extension-packages)
+                                                  "/bin/pg_ctl"))
                            (options (format #f "--config-file=~a -p ~d"
                                             #$config-file #$port)))
                        (setgid (passwd:gid user))
@@ -253,7 +282,8 @@ host	all	all	::1/128 	trust"))
                              (port 5432)
                              (locale "en_US.utf8")
                              (config-file (postgresql-config-file))
-                             (data-directory "/var/lib/postgresql/data"))
+                             (data-directory "/var/lib/postgresql/data")
+                             (extension-packages '()))
   "Return a service that runs @var{postgresql}, the PostgreSQL database server.
 
 The PostgreSQL daemon loads its runtime configuration from @var{config-file}
@@ -264,7 +294,8 @@ and stores the database cluster in @var{data-directory}."
             (port port)
             (locale locale)
             (config-file config-file)
-            (data-directory data-directory))))
+            (data-directory data-directory)
+            (extension-packages extension-packages))))
 
 
 ;;;

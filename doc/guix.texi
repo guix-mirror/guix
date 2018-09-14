@@ -13383,13 +13383,49 @@ The @code{(gnu services databases)} module provides the following services.
 
 @deffn {Scheme Procedure} postgresql-service [#:postgresql postgresql] @
        [#:config-file] [#:data-directory ``/var/lib/postgresql/data''] @
-       [#:port 5432] [#:locale ``en_US.utf8'']
+       [#:port 5432] [#:locale ``en_US.utf8''] [#:extension-packages '()]
 Return a service that runs @var{postgresql}, the PostgreSQL database
 server.
 
 The PostgreSQL daemon loads its runtime configuration from @var{config-file},
 creates a database cluster with @var{locale} as the default
 locale, stored in @var{data-directory}.  It then listens on @var{port}.
+
+@cindex postgresql extension-packages
+Additional extensions are loaded from packages listed in
+@var{extension-packages}.  Extensions are available at runtime.  For instance,
+to create a geographic database using the @code{postgis} extension, a user can
+configure the postgresql-service as in this example:
+
+@cindex postgis
+@example
+(use-package-modules databases geo)
+
+(operating-system
+  ...
+  ;; postgresql is required to run `psql' but postgis is not required for
+  ;; proper operation.
+  (packages (cons* postgresql %base-packages))
+  (services
+    (cons*
+      (postgresql-service #:extension-packages (list postgis))
+      %base-services)))
+@end example
+
+Then the extension becomes visible and you can initialise an empty geographic
+database in this way:
+
+@example
+psql -U postgres
+> create database postgistest;
+> \connect postgistest;
+> create extension postgis;
+> create extension postgis_topology;
+@end example
+
+There is no need to add this field for contrib extensions such as hstore or
+dblink as they are already loadable by postgresql.  This field is only
+required to add extensions provided by other packages.
 @end deffn
 
 @deffn {Scheme Procedure} mysql-service [#:config (mysql-configuration)]
