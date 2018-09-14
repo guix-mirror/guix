@@ -486,16 +486,16 @@ written in Objective Caml.")
              (let* ((out (assoc-ref outputs "out"))
                     (mandir (string-append out "/share/man"))
                     (browser "icecat -remote \"OpenURL(%s,new-tab)\""))
-               (zero? (system* "./configure"
-                               "-prefix" out
-                               "-mandir" mandir
-                               "-browser" browser
-                               "-coqide" "opt")))))
+               (invoke "./configure"
+                       "-prefix" out
+                       "-mandir" mandir
+                       "-browser" browser
+                       "-coqide" "opt"))))
          (replace 'build
            (lambda _
-             (zero? (system* "make" "-j" (number->string
-                                          (parallel-job-count))
-                             "world"))))
+             (invoke "make"
+                     "-j" (number->string (parallel-job-count))
+                     "world")))
          (delete 'check)
          (add-after 'install 'check
            (lambda _
@@ -505,7 +505,7 @@ written in Objective Caml.")
                (delete-file-recursively "coq-makefile/timing")
                ;; This one fails because we didn't build coqtop.byte.
                (delete-file-recursively "coq-makefile/findlib-package")
-               (zero? (system* "make"))))))))
+               (invoke "make")))))))
     (home-page "https://coq.inria.fr")
     (synopsis "Proof assistant for higher-order logic")
     (description
