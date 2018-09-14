@@ -457,7 +457,7 @@ written in Objective Caml.")
 (define-public coq
   (package
     (name "coq")
-    (version "8.8.0")
+    (version "8.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/coq/coq/archive/V"
@@ -465,7 +465,7 @@ written in Objective Caml.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0g96k2x6lbddlmkmdaczvcpb2gwqi1ydbq9bv4gf9q38kv9w3xya"))))
+                "13cyvbg8cgqkg9wz0ax7jq03srj9k0lyvny97fcka4ai1zrzwln8"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")
