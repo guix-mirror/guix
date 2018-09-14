@@ -179,24 +179,28 @@ are relative to DIRECTORY, which is not necessarily the root of the checkout."
 
 (define (git-predicate directory)
   "Return a predicate that returns true if a file is part of the Git checkout
-living at DIRECTORY.  Upon Git failure, return #f instead of a predicate.
+living at DIRECTORY.  If DIRECTORY does not lie within a Git checkout, and
+upon Git errors, return #f instead of a predicate.
 
 The returned predicate takes two arguments FILE and STAT where FILE is an
 absolute file name and STAT is the result of 'lstat'."
-  (let* ((files  (git-file-list directory))
-         (inodes (fold (lambda (file result)
-                         (let ((stat
-                                (lstat (string-append directory "/"
-                                                      file))))
-                           (vhash-consv (stat:ino stat) (stat:dev stat)
-                                        result)))
-                       vlist-null
-                       files)))
-    (lambda (file stat)
-      ;; Comparing file names is always tricky business so we rely on inode
-      ;; numbers instead.
-      (match (vhash-assv (stat:ino stat) inodes)
-        ((_ . dev) (= dev (stat:dev stat)))
-        (#f        #f)))))
+  (catch 'git-error
+    (lambda ()
+      (let* ((files  (git-file-list directory))
+             (inodes (fold (lambda (file result)
+                             (let ((stat
+                                    (lstat (string-append directory "/"
+                                                          file))))
+                               (vhash-consv (stat:ino stat) (stat:dev stat)
+                                            result)))
+                           vlist-null
+                           files)))
+        (lambda (file stat)
+          ;; Comparing file names is always tricky business so we rely on inode
+          ;; numbers instead.
+          (match (vhash-assv (stat:ino stat) inodes)
+            ((_ . dev) (= dev (stat:dev stat)))
+            (#f        #f)))))
+    (const #f)))
 
 ;;; git-download.scm ends here
