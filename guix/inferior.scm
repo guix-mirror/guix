@@ -19,9 +19,21 @@
 (define-module (guix inferior)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
-  #:use-module ((guix utils) #:select (source-properties->location))
+  #:use-module ((guix utils)
+                #:select (%current-system
+                          source-properties->location
+                          call-with-temporary-directory))
+  #:use-module ((guix store)
+                #:select (nix-server-socket
+                          nix-server-major-version
+                          nix-server-minor-version
+                          store-lift))
+  #:use-module ((guix derivations)
+                #:select (read-derivation-from-file))
+  #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
+  #:use-module (ice-9 binary-ports)
   #:export (inferior?
             open-inferior
             close-inferior
@@ -36,7 +48,8 @@
             inferior-package-synopsis
             inferior-package-description
             inferior-package-home-page
-            inferior-package-location))
+            inferior-package-location
+            inferior-package-derivation))
 
 ;;; Commentary:
 ;;;
@@ -123,8 +136,7 @@ equivalent.  Return #f if the inferior could not be launched."
 
 (set-record-type-printer! <inferior-object> write-inferior-object)
 
-(define (inferior-eval exp inferior)
-  "Evaluate EXP in INFERIOR."
+(define (read-inferior-response inferior)
   (define sexp->object
     (match-lambda
       (('value value)
@@ -132,13 +144,20 @@ equivalent.  Return #f if the inferior could not be launched."
       (('non-self-quoting address string)
        (inferior-object address string))))
 
-  (write exp (inferior-socket inferior))
-  (newline (inferior-socket inferior))
   (match (read (inferior-socket inferior))
     (('values objects ...)
      (apply values (map sexp->object objects)))
     (('exception key objects ...)
      (apply throw key (map sexp->object objects)))))
+
+(define (send-inferior-request exp inferior)
+  (write exp (inferior-socket inferior))
+  (newline (inferior-socket inferior)))
+
+(define (inferior-eval exp inferior)
+  "Evaluate EXP in INFERIOR."
+  (send-inferior-request exp inferior)
+  (read-inferior-response inferior))
 
 
 ;;;
@@ -216,3 +235,97 @@ record."
                                             (location->source-properties
                                              loc)))
                                      package-location))))
+
+(define (proxy client backend)                    ;adapted from (guix ssh)
+  "Proxy communication between CLIENT and BACKEND until CLIENT closes the
+connection, at which point CLIENT is closed (both CLIENT and BACKEND must be
+input/output ports.)"
+  (define (select* read write except)
+    ;; This is a workaround for <https://bugs.gnu.org/30365> in Guile < 2.2.4:
+    ;; since 'select' sometimes returns non-empty sets for no good reason,
+    ;; call 'select' a second time with a zero timeout to filter out incorrect
+    ;; replies.
+    (match (select read write except)
+      ((read write except)
+       (select read write except 0))))
+
+  ;; Use buffered ports so that 'get-bytevector-some' returns up to the
+  ;; whole buffer like read(2) would--see <https://bugs.gnu.org/30066>.
+  (setvbuf client _IOFBF 65536)
+  (setvbuf backend _IOFBF 65536)
+
+  (let loop ()
+    (match (select* (list client backend) '() '())
+      ((reads () ())
+       (when (memq client reads)
+         (match (get-bytevector-some client)
+           ((? eof-object?)
+            (close-port client))
+           (bv
+            (put-bytevector backend bv)
+            (force-output backend))))
+       (when (memq backend reads)
+         (match (get-bytevector-some backend)
+           (bv
+            (put-bytevector client bv)
+            (force-output client))))
+       (unless (port-closed? client)
+         (loop))))))
+
+(define* (inferior-package-derivation store package
+                                      #:optional
+                                      (system (%current-system))
+                                      #:key target)
+  "Return the derivation for PACKAGE, an inferior package, built for SYSTEM
+and cross-built for TARGET if TARGET is true.  The inferior corresponding to
+PACKAGE must be live."
+  ;; Create a named socket in /tmp and let the inferior of PACKAGE connect to
+  ;; it and use it as its store.  This ensures the inferior uses the same
+  ;; store, with the same options, the same per-session GC roots, etc.
+  (call-with-temporary-directory
+   (lambda (directory)
+     (chmod directory #o700)
+     (let* ((name     (string-append directory "/inferior"))
+            (socket   (socket AF_UNIX SOCK_STREAM 0))
+            (inferior (inferior-package-inferior package))
+            (major    (nix-server-major-version store))
+            (minor    (nix-server-minor-version store))
+            (proto    (logior major minor)))
+       (bind socket AF_UNIX name)
+       (listen socket 1024)
+       (send-inferior-request
+        `(let ((socket (socket AF_UNIX SOCK_STREAM 0)))
+           (connect socket AF_UNIX ,name)
+
+           ;; 'port->connection' appeared in June 2018 and we can hardly
+           ;; emulate it on older versions.  Thus fall back to
+           ;; 'open-connection', at the risk of talking to the wrong daemon or
+           ;; having our build result reclaimed (XXX).
+           (let* ((store   (if (defined? 'port->connection)
+                               (port->connection socket #:version ,proto)
+                               (open-connection)))
+                  (package (hashv-ref %package-table
+                                      ,(inferior-package-id package)))
+                  (drv     ,(if target
+                                `(package-cross-derivation store package
+                                                           ,target
+                                                           ,system)
+                                `(package-derivation store package
+                                                     ,system))))
+             (close-connection store)
+             (close-port socket)
+             (derivation-file-name drv)))
+        inferior)
+       (match (accept socket)
+         ((client . address)
+          (proxy client (nix-server-socket store))))
+       (close-port socket)
+       (read-derivation-from-file (read-inferior-response inferior))))))
+
+(define inferior-package->derivation
+  (store-lift inferior-package-derivation))
+
+(define-gexp-compiler (package-compiler (package <inferior-package>) system
+                                        target)
+  ;; Compile PACKAGE for SYSTEM, optionally cross-building for TARGET.
+  (inferior-package->derivation package system #:target target))

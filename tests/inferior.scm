@@ -17,9 +17,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test-inferior)
+  #:use-module (guix tests)
   #:use-module (guix inferior)
   #:use-module (guix packages)
+  #:use-module (guix store)
+  #:use-module (guix derivations)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64))
 
@@ -28,6 +32,9 @@
 
 (define %top-builddir
   (dirname (search-path %load-compiled-path "guix.go")))
+
+(define %store
+  (open-connection-for-tests))
 
 
 (test-begin "inferior")
@@ -71,5 +78,20 @@
                    10))
            (close-inferior inferior)
            result))))
+
+(test-equal "inferior-package-derivation"
+  (map derivation-file-name
+       (list (package-derivation %store %bootstrap-guile "x86_64-linux")
+             (package-derivation %store %bootstrap-guile "armhf-linux")))
+  (let* ((inferior (open-inferior %top-builddir
+                                  #:command "scripts/guix"))
+         (packages (inferior-packages inferior))
+         (guile    (find (lambda (package)
+                           (string=? (package-name %bootstrap-guile)
+                                     (inferior-package-name package)))
+                         packages)))
+    (map derivation-file-name
+         (list (inferior-package-derivation %store guile "x86_64-linux")
+               (inferior-package-derivation %store guile "armhf-linux")))))
 
 (test-end "inferior")
