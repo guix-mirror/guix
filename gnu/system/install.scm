@@ -47,7 +47,7 @@
             a20-olinuxino-lime-installation-os
             a20-olinuxino-lime2-emmc-installation-os
             a20-olinuxino-micro-installation-os
-            banana-pi-m2-ultra-installation-os
+            bananapi-m2-ultra-installation-os
             beaglebone-black-installation-os
             mx6cuboxi-installation-os
             nintendo-nes-classic-edition-installation-os
@@ -448,8 +448,8 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
                             "/dev/mmcblk0" ; SD card storage
                             "ttyS0"))
 
-(define banana-pi-m2-ultra-installation-os
-  (embedded-installation-os u-boot-banana-pi-m2-ultra-bootloader
+(define bananapi-m2-ultra-installation-os
+  (embedded-installation-os u-boot-bananapi-m2-ultra-bootloader
                             "/dev/mmcblk1" ; eMMC storage
                             "ttyS0"))
 

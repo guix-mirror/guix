@@ -570,7 +570,7 @@ board-independent tools.")))
        `(("firmware" ,arm-trusted-firmware-pine64-plus)
          ,@(package-native-inputs base))))))
 
-(define-public u-boot-banana-pi-m2-ultra
+(define-public u-boot-bananapi-m2-ultra
   (make-u-boot-package "Bananapi_M2_Ultra" "arm-linux-gnueabihf"))
 
 (define-public u-boot-a20-olinuxino-lime
