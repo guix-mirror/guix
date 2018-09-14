@@ -581,14 +581,14 @@ support for Git-SVN.")
     (name "emacs-magit-popup")
     (version "2.12.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/magit/magit-popup/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/magit/magit-popup.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pkg95ssdp4biznmgc2bvf74y4ihws8902zz5437zsfhb8p6f3kb"))))
+                "08952nzn0cb6gxscqyiljk4fq2zxjvr3ism0lvgw0gs9hl5phiwx"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
