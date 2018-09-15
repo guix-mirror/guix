@@ -645,19 +645,19 @@ text documents, vector drawings, presentations and spreadsheets.")
 (define-public libmwaw
   (package
     (name "libmwaw")
-    (version "0.3.12")
+    (version "0.3.14")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/" name "-"
                           version "/" name "-" version ".tar.xz"))
       (sha256 (base32
-               "1ryi1v38lgy5kv84fzjqkawidrg30y4hlqrz1v262792wzkad4bn"))))
+               "1s9wyf8pyh3fbazq2d2b6fgi7s7bid60viw2xbdkmn2ywlfbza5c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
-    (propagated-inputs ; in Requires field of .pkg
+    (propagated-inputs                  ; in Requires field of .pkg
      `(("librevenge" ,librevenge)))
     (inputs
      `(("boost" ,boost)
@@ -667,7 +667,7 @@ text documents, vector drawings, presentations and spreadsheets.")
     (description "Libmwaw contains some import filters for old Macintosh
 text documents (MacWrite, ClarisWorks, ... ) and for some graphics and
 spreadsheet documents.")
-    (license (list mpl2.0 lgpl2.1+)))) ; dual license
+    (license (list mpl2.0 lgpl2.1+))))  ; dual license
 
 (define-public libstaroffice
   (package
