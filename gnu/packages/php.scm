@@ -63,7 +63,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.2.8")
+    (version "7.2.10")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -71,7 +71,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "03zv1y8ygzsir60617hinpji3f4irk79zbp3ar1b8zcapq40gfjk"))
+                "1w0432i5wjga9z8x3rhc72h2ij1jd2aimg5xmhc0hg4f7951bhh1"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -237,6 +237,7 @@
                          ;; but with different error messages.
                          ;; Expects "illegal character", instead gets "unknown error (84)".
                          "ext/iconv/tests/bug52211.phpt"
+                         "ext/iconv/tests/bug60494.phpt"
                          ;; Expects "wrong charset", gets unknown error (22).
                          "ext/iconv/tests/iconv_mime_decode_variation3.phpt"
                          "ext/iconv/tests/iconv_strlen_error2.phpt"
