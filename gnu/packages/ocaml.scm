@@ -924,21 +924,20 @@ compilers that can directly deal with packages.")
 (define-public ocaml-ounit
   (package
     (name "ocaml-ounit")
-    (version "2.0.0")
+    (version "2.0.8")
     (source (origin
               (method url-fetch)
-              (uri (ocaml-forge-uri "ounit" version 1258))
+              (uri (ocaml-forge-uri "ounit" version 1749))
               (sha256
                (base32
-                "118xsadrx84pif9vaq13hv4yh22w9kmr0ypvhrs0viir1jr0ajjd"))))
+                "03ifp9hjcxg4m5j190iy373jcn4039d3vy10kmd8p4lfciwzwc1f"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("libxml2" ,libxml2))) ; for xmllint
+     `(("libxml2" ,libxml2)))           ; for xmllint
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Tests are done during build.
-         (delete 'check))))
+         (delete 'check))))             ; tests are run during build
     (home-page "http://ounit.forge.ocamlcore.org")
     (synopsis "Unit testing framework for OCaml")
     (description "Unit testing framework for OCaml.  It is similar to JUnit and
