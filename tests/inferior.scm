@@ -79,6 +79,35 @@
            (close-inferior inferior)
            result))))
 
+(test-equal "lookup-inferior-packages"
+  (let ((->list (lambda (package)
+                  (list (package-name package)
+                        (package-version package)
+                        (package-location package)))))
+    (list (map ->list (find-packages-by-name "guile" #f))
+          (map ->list (find-packages-by-name "guile" "2.2"))))
+  (let* ((inferior (open-inferior %top-builddir
+                                  #:command "scripts/guix"))
+         (->list   (lambda (package)
+                     (list (inferior-package-name package)
+                           (inferior-package-version package)
+                           (inferior-package-location package))))
+         (lst1     (map ->list
+                        (lookup-inferior-packages inferior "guile")))
+         (lst2     (map ->list
+                        (lookup-inferior-packages inferior
+                                                  "guile" "2.2"))))
+    (close-inferior inferior)
+    (list lst1 lst2)))
+
+(test-assert "lookup-inferior-packages and eq?-ness"
+  (let* ((inferior (open-inferior %top-builddir
+                                  #:command "scripts/guix"))
+         (lst1     (lookup-inferior-packages inferior "guile"))
+         (lst2     (lookup-inferior-packages inferior "guile")))
+    (close-inferior inferior)
+    (every eq? lst1 lst2)))
+
 (test-equal "inferior-package-derivation"
   (map derivation-file-name
        (list (package-derivation %store %bootstrap-guile "x86_64-linux")

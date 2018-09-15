@@ -22,7 +22,8 @@
   #:use-module ((guix utils)
                 #:select (%current-system
                           source-properties->location
-                          call-with-temporary-directory))
+                          call-with-temporary-directory
+                          version>? version-prefix?))
   #:use-module ((guix store)
                 #:select (nix-server-socket
                           nix-server-major-version
@@ -31,8 +32,10 @@
   #:use-module ((guix derivations)
                 #:select (read-derivation-from-file))
   #:use-module (guix gexp)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
+  #:use-module (ice-9 vlist)
   #:use-module (ice-9 binary-ports)
   #:export (inferior?
             open-inferior
@@ -45,6 +48,7 @@
             inferior-package-version
 
             inferior-packages
+            lookup-inferior-packages
             inferior-package-synopsis
             inferior-package-description
             inferior-package-home-page
@@ -61,11 +65,13 @@
 
 ;; Inferior Guix process.
 (define-record-type <inferior>
-  (inferior pid socket version)
+  (inferior pid socket version packages table)
   inferior?
   (pid      inferior-pid)
   (socket   inferior-socket)
-  (version  inferior-version))                    ;REPL protocol version
+  (version  inferior-version)                    ;REPL protocol version
+  (packages inferior-package-promise)            ;promise of inferior packages
+  (table    inferior-package-table))             ;promise of vhash
 
 (define (inferior-pipe directory command)
   "Return an input/output pipe on the Guix instance in DIRECTORY.  This runs
@@ -109,7 +115,9 @@ equivalent.  Return #f if the inferior could not be launched."
 
   (match (read pipe)
     (('repl-version 0 rest ...)
-     (let ((result (inferior 'pipe pipe (cons 0 rest))))
+     (letrec ((result (inferior 'pipe pipe (cons 0 rest)
+                                (delay (%inferior-packages result))
+                                (delay (%inferior-package-table result)))))
        (inferior-eval '(use-modules (guix)) result)
        (inferior-eval '(use-modules (gnu)) result)
        (inferior-eval '(define %package-table (make-hash-table))
@@ -181,8 +189,8 @@ equivalent.  Return #f if the inferior could not be launched."
 
 (set-record-type-printer! <inferior-package> write-inferior-package)
 
-(define (inferior-packages inferior)
-  "Return the list of packages known to INFERIOR."
+(define (%inferior-packages inferior)
+  "Compute the list of inferior packages from INFERIOR."
   (let ((result (inferior-eval
                  '(fold-packages (lambda (package result)
                                    (let ((id (object-address package)))
@@ -197,6 +205,33 @@ equivalent.  Return #f if the inferior could not be launched."
            ((name version id)
             (inferior-package inferior name version id)))
          result)))
+
+(define (inferior-packages inferior)
+  "Return the list of packages known to INFERIOR."
+  (force (inferior-package-promise inferior)))
+
+(define (%inferior-package-table inferior)
+  "Compute a package lookup table for INFERIOR."
+  (fold (lambda (package table)
+          (vhash-cons (inferior-package-name package) package
+                      table))
+        vlist-null
+        (inferior-packages inferior)))
+
+(define* (lookup-inferior-packages inferior name #:optional version)
+  "Return the sorted list of inferior packages matching NAME in INFERIOR, with
+highest version numbers first.  If VERSION is true, return only packages with
+a version number prefixed by VERSION."
+  ;; This is the counterpart of 'find-packages-by-name'.
+  (sort (filter (lambda (package)
+                  (or (not version)
+                      (version-prefix? version
+                                       (inferior-package-version package))))
+                (vhash-fold* cons '() name
+                             (force (inferior-package-table inferior))))
+        (lambda (p1 p2)
+          (version>? (inferior-package-version p1)
+                     (inferior-package-version p2)))))
 
 (define (inferior-package-field package getter)
   "Return the field of PACKAGE, an inferior package, accessed with GETTER."
