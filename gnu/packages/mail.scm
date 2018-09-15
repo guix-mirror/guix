@@ -949,12 +949,13 @@ useful features.")
     (name "libetpan")
     (version "1.8")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/dinhviethoa/" name
-                   "/archive/" version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url  "https://github.com/dinhviethoa/libetpan.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
              (sha256
-               (base32 "1sxnaglp5hb0z78sgnfzva4x8m4flqhicvm1dz0krkxdmfsafrsf"))))
+               (base32 "09xqy1n18qn63x7idfrpwm59lfkvb1p5vxkyksywvy4f6mn4pyxk"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
