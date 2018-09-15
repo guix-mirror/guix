@@ -13784,14 +13784,14 @@ under Python 2.7.")
     (name "pybind11")
     (version "2.2.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/pybind/pybind11/archive/v"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pybind/pybind11.git")
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "1sj0x4fwsbnwdai5sxpw1l1vh8m5hpbkfk3zanxcbcgs39jpnfrs"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "111aagiy7lwf3gzf2hzg7sbgs2lxgj473bf75bqqfmhcbvf71vsq"))
+              (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python)
