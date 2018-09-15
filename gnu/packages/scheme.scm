@@ -560,7 +560,7 @@ of libraries.")
                ;; interaction channel to stdin/stdout.
                (("gsi -:tl") "gsi -:d-,tl"))
              #t)))))
-    (home-page "http://www.iro.umontreal.ca/~gambit/")
+    (home-page "http://gambitscheme.org")
     (synopsis "Efficient Scheme interpreter and compiler")
     (description
      "Gambit consists of two main programs: gsi, the Gambit Scheme
