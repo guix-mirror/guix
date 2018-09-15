@@ -2779,6 +2779,8 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
                #t))))))
     (inputs
      `(("eudev" ,eudev)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
     (native-inputs
      `(("python-docutils" ,python-docutils)
        ("python-hypothesis" ,python-hypothesis)
