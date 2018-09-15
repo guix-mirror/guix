@@ -979,7 +979,7 @@ useful features.")
               (invoke "sh" "autogen.sh"))))
         #:configure-flags
         '("--disable-static" "--disable-db")))
-    (home-page "http://www.etpan.org/libetpan.html")
+    (home-page "https://www.etpan.org/libetpan.html")
     (synopsis "Portable middleware for email access")
     (description
      "The purpose of this mail library is to provide a portable, efficient
