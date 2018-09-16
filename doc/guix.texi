@@ -7711,6 +7711,13 @@ This is useful to precisely refer to a package, as in this example:
 @example
 guix graph -e '(@@@@ (gnu packages commencement) gnu-make-final)'
 @end example
+
+@item --system=@var{system}
+@itemx -s @var{system}
+Display the graph for @var{system}---e.g., @code{i686-linux}.
+
+The package dependency graph is largely architecture-independent, but there
+are some architecture-dependent bits that this option allows you to visualize.
 @end table
 
 
