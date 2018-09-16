@@ -1236,7 +1236,7 @@ network, which causes enabled computers to power on.")
 (define-public dmidecode
   (package
     (name "dmidecode")
-    (version "3.1")
+    (version "3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1244,7 +1244,7 @@ network, which causes enabled computers to power on.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1h0sg0lxa15nzf8s7884p6q7p6md9idm0c79wyqmk32l4ndwwrnp"))))
+                "1pcfhcgs2ifdjwp7amnsr3lq95pgxpr150bjhdinvl505px0cw07"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
