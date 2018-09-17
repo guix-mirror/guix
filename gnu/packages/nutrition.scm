@@ -65,7 +65,7 @@
            (lambda* (#:key make-flags #:allow-other-keys)
              (invoke "python" "setup.py" "install" "--prefix"
                      (assoc-ref %outputs "out")))))))
-    (home-page "http://thinkle.github.io/gourmet/")
+    (home-page "https://thinkle.github.io/gourmet/")
     (synopsis "Recipe organizer")
     (description
      "Gourmet Recipe Manager is a recipe organizer that allows you to collect,
