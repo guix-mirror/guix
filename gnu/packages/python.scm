@@ -11607,17 +11607,15 @@ perform the operations required for synchronizing plain text.")
 (define-public python-dirsync
   (package
     (name "python-dirsync")
-    (version "2.2.2")
+    (version "2.2.3")
     (source
       (origin
         (method url-fetch)
-        (uri (pypi-uri "dirsync" version ".zip"))
+        (uri (pypi-uri "dirsync" version))
         (sha256
          (base32
-          "1hcdvmkwd5512zbxpin0k7bx5bkgzy3swjx7d0kj1y45af6r75v2"))))
+          "1r40fkanksagcszf1ag85mdr8w7rgc7196n6s1qlsk2abw6i7v0z"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("unzip" ,unzip)))
     (propagated-inputs
      `(("six" ,python-six)))
     (home-page "https://bitbucket.org/tkhyn/dirsync")
