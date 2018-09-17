@@ -2707,7 +2707,7 @@ is attributed to Albert Einstein.")
     (inputs
      `(("ncurses" ,ncurses)))
     (build-system gnu-build-system)
-    (home-page "http://www.hoopajoo.net/projects/powwow.html")
+    (home-page "https://www.hoopajoo.net/projects/powwow.html")
     (synopsis "MUD and telnet client")
     (description
      "POWWOW is a client software which can be used for telnet as well as for
