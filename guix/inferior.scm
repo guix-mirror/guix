@@ -32,6 +32,7 @@
   #:use-module ((guix derivations)
                 #:select (read-derivation-from-file))
   #:use-module (guix gexp)
+  #:use-module (guix search-paths)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -58,6 +59,9 @@
             inferior-package-native-inputs
             inferior-package-propagated-inputs
             inferior-package-transitive-propagated-inputs
+            inferior-package-native-search-paths
+            inferior-package-transitive-native-search-paths
+            inferior-package-search-paths
             inferior-package-derivation))
 
 ;;; Commentary:
@@ -321,6 +325,28 @@ inferior package."
 
 (define inferior-package-transitive-propagated-inputs
   (cut inferior-package-input-field <> 'package-transitive-propagated-inputs))
+
+(define (%inferior-package-search-paths package field)
+  "Return the list of search path specificiations of PACKAGE, an inferior
+package."
+  (define paths
+    (inferior-package-field package
+                            `(compose (lambda (paths)
+                                        (map (@ (guix search-paths)
+                                                search-path-specification->sexp)
+                                             paths))
+                                      ,field)))
+
+  (map sexp->search-path-specification paths))
+
+(define inferior-package-native-search-paths
+  (cut %inferior-package-search-paths <> 'package-native-search-paths))
+
+(define inferior-package-search-paths
+  (cut %inferior-package-search-paths <> 'package-search-paths))
+
+(define inferior-package-transitive-native-search-paths
+  (cut %inferior-package-search-paths <> 'package-transitive-native-search-paths))
 
 (define (proxy client backend)                    ;adapted from (guix ssh)
   "Proxy communication between CLIENT and BACKEND until CLIENT closes the
