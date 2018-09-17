@@ -335,9 +335,9 @@ editor (without an X toolkit)" )
 ;;; Emacs hacking.
 ;;;
 
-(define-public geiser
+(define-public emacs-geiser
   (package
-    (name "geiser")
+    (name "emacs-geiser")
     (version "0.10")
     (source (origin
              (method url-fetch)
@@ -370,7 +370,10 @@ implementation, Emacs and, ultimately, the schemer, giving them access to live
 metadata.")
     (license license:bsd-3)))
 
-(define-public paredit
+(define-public geiser
+  (deprecated-package "geiser" emacs-geiser))
+
+(define-public emacs-paredit
   (package
     (name "emacs-paredit")
     (version "24")
@@ -394,6 +397,9 @@ S-expressions and moving around in S-expressions.  Its behavior can be jarring
 for those who may want transient periods of unbalanced parentheses, such as
 when typing parentheses directly or commenting out code line by line.")
     (license license:gpl3+)))
+
+(define-public paredit
+  (deprecated-package "paredit" emacs-paredit))
 
 (define-public git-modes
   (package
@@ -444,9 +450,9 @@ For remote processes a substitute is provided, which communicates with Emacs
 on stdout instead of using a socket as the Emacsclient does.")
     (license license:gpl3+)))
 
-(define-public magit
+(define-public emacs-magit
   (package
-    (name "magit")
+    (name "emacs-magit")
     (version "2.13.0")
     (source (origin
              (method url-fetch)
@@ -512,9 +518,12 @@ cherry picking, reverting, merging, rebasing, and other common Git
 operations.")
     (license license:gpl3+)))
 
-(define-public magit-svn
+(define-public magit
+  (deprecated-package "magit" emacs-magit))
+
+(define-public emacs-magit-svn
   (package
-    (name "magit-svn")
+    (name "emacs-magit-svn")
     (version "2.2.0")
     (source (origin
               (method url-fetch)
@@ -531,7 +540,7 @@ operations.")
                      ("gzip" ,gzip)))
     (propagated-inputs `(("dash" ,emacs-dash)
                          ("with-editor" ,emacs-with-editor)
-                         ("magit" ,magit)))
+                         ("magit" ,emacs-magit)))
     (arguments
      `(#:modules ((guix build utils)
                   (guix build emacs-utils))
@@ -576,6 +585,9 @@ operations.")
      "This package is an extension to Magit, the Git Emacs mode, providing
 support for Git-SVN.")
     (license license:gpl3+)))
+
+(define-public magit-svn
+  (deprecated-package "magit-svn" emacs-magit-svn))
 
 (define-public emacs-magit-popup
   (package
@@ -641,9 +653,9 @@ Gitlab APIs from Emacs packages.  It abstracts access to API resources using
 only a handful of functions that are not resource-specific.")
     (license license:gpl3+)))
 
-(define-public haskell-mode
+(define-public emacs-haskell-mode
   (package
-    (name "haskell-mode")
+    (name "emacs-haskell-mode")
     (version "16.1")
     (source (origin
               (method url-fetch)
@@ -731,7 +743,10 @@ only a handful of functions that are not resource-specific.")
 programs.")
     (license license:gpl3+)))
 
-(define-public flycheck
+(define-public haskell-mode
+  (deprecated-package "haskell-mode" emacs-haskell-mode))
+
+(define-public emacs-flycheck
   (package
     (name "emacs-flycheck")
     (version "31")
@@ -766,6 +781,9 @@ checking for over 30 programming and markup languages with more than 70
 different tools.  It highlights errors and warnings inline in the buffer, and
 provides an optional IDE-like error list.")
     (license license:gpl3+)))                     ;+GFDLv1.3+ for the manual
+
+(define-public flycheck
+  (deprecated-package "flycheck" emacs-flycheck))
 
 
 ;;;
@@ -910,7 +928,7 @@ provides an optional IDE-like error list.")
 ;;; Multimedia.
 ;;;
 
-(define-public emms
+(define-public emacs-emms
   (package
     (name "emacs-emms")
     (version "5.0")
@@ -1048,9 +1066,12 @@ light user interface.")
     (home-page "https://www.gnu.org/software/emms/")
     (license license:gpl3+)))
 
+(define-public emms
+  (deprecated-package "emacs-emms" emacs-emms))
+
 (define-public emacs-emms-player-mpv
   ;; A new mpv backend is included in Emms from 5.0.
-  (deprecated-package "emacs-emms-player-mpv" emms))
+  (deprecated-package "emacs-emms-player-mpv" emacs-emms))
 
 (define-public emacs-emms-mode-line-cycle
   (package
@@ -1080,9 +1101,9 @@ within a specified width.  It is useful for displaying long track titles.")
 ;;; Miscellaneous.
 ;;;
 
-(define-public bbdb
+(define-public emacs-bbdb
   (package
-    (name "bbdb")
+    (name "emacs-bbdb")
     (version "3.1.2")
     (source (origin
               (method url-fetch)
@@ -1120,6 +1141,9 @@ an address book for email and snail mail addresses, phone numbers and the
 like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
     (license license:gpl3+)))
+
+(define-public bbdb
+  (deprecated-package "bbdb" emacs-bbdb))
 
 (define-public emacs-aggressive-indent
   (package
@@ -1721,7 +1745,7 @@ type, for example: packages, buffers, files, etc.")
      `(("guile" ,guile-2.2)
        ("guix" ,guix)))
     (propagated-inputs
-     `(("geiser" ,geiser)
+     `(("geiser" ,emacs-geiser)
        ("guile-gcrypt" ,guile-gcrypt)
        ("dash" ,emacs-dash)
        ("bui" ,emacs-bui)
@@ -2377,7 +2401,7 @@ in Lisp modes.")
                 "1k0sm552iawi49v4zis6dbb81d1rzgky9v0dpv7nj31gnb7bmy7k"))))
     (build-system emacs-build-system)
     (native-inputs
-     `(("ert-runner" ,ert-runner)))
+     `(("ert-runner" ,emacs-ert-runner)))
     (arguments
      `(#:tests? #t
        #:test-command '("ert-runner")))
@@ -2663,7 +2687,7 @@ framework for Emacs Lisp to be used with @code{ert}.")
     (native-inputs
      `(("emacs-ert-expectations" ,emacs-ert-expectations)
        ("emacs-undercover" ,emacs-undercover)
-       ("ert-runner" ,ert-runner)))
+       ("ert-runner" ,emacs-ert-runner)))
     (synopsis "Simple asynchronous functions for Emacs Lisp")
     (description
      "The @code{deferred.el} library provides support for asynchronous tasks.
@@ -2672,7 +2696,7 @@ The API is almost the same as that of
 for asynchronous tasks.")
     (license license:gpl3+)))
 
-(define-public butler
+(define-public emacs-butler
   (package
     (name "emacs-butler")
     (version "0.2.4")
@@ -2697,6 +2721,9 @@ integration servers.  Users can specify a list of server in the
 view the build status of those servers' build jobs, and possibly to trigger
 build jobs.")
     (license license:gpl3+)))
+
+(define-public butler
+  (deprecated-package "emacs-butler" emacs-butler))
 
 (define-public emacs-company
   (package
@@ -2823,7 +2850,7 @@ completion candidate when using the Company text completion framework.")
 simultaneous cursors.")
     (license license:gpl3+)))
 
-(define-public typo
+(define-public emacs-typo
   (package
     (name "emacs-typo")
     (version "1.1")
@@ -2846,6 +2873,9 @@ for quotation marks, dashes, and ellipses.  For example, typing @kbd{\"}
 automatically inserts a Unicode opening or closing quotation mark, depending
 on context.")
     (license license:gpl3+)))
+
+(define-public typo
+  (deprecated-package "emacs-typo" emacs-typo))
 
 (define-public emacs-scheme-complete
   (let ((commit "9b5cf224bf2a5994bc6d5b152ff487517f1a9bb5"))
@@ -3982,7 +4012,7 @@ state and will work even without lispy being enabled.")
     (native-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-s" ,emacs-s)
-       ("ert-runner" ,ert-runner)))
+       ("ert-runner" ,emacs-ert-runner)))
     (arguments
      `(#:tests? #t
        #:test-command '("ert-runner")))
@@ -4354,7 +4384,7 @@ indentation and filling of comments and C preprocessor fontification.")
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-s" ,emacs-s)
-       ("emacs-flycheck" ,flycheck)
+       ("emacs-flycheck" ,emacs-flycheck)
        ("emacs-typescript-mode" ,emacs-typescript-mode)))
     (home-page "https://github.com/ananthakumaran/tide")
     (synopsis "Typescript IDE for Emacs")
@@ -4519,7 +4549,7 @@ provide the historic behavior of @code{flet}, as well as
      `(#:tests? #t
        #:test-command '("ert-runner")))
     (native-inputs
-     `(("ert-runner" ,ert-runner)))
+     `(("ert-runner" ,emacs-ert-runner)))
     (propagated-inputs
      `(("emacs-el-x" ,emacs-el-x)))
     (home-page "https://github.com/sigma/mocker.el")
@@ -4585,7 +4615,7 @@ functions to assist in reviewing changes on files.")
        #:tests? #t
        #:test-command '("ert-runner")))
     (native-inputs
-     `(("ert-runner" ,ert-runner)
+     `(("ert-runner" ,emacs-ert-runner)
        ("emacs-mocker" ,emacs-mocker)))
     (home-page "https://github.com/jorgenschaefer/pyvenv")
     (synopsis "Virtualenv minor mode for Emacs")
@@ -4670,7 +4700,7 @@ indentation (space indentation only).
        ("pyvenv" ,emacs-pyvenv)
        ("s" ,emacs-s)))
     (native-inputs
-     `(("ert-runner" ,ert-runner)
+     `(("ert-runner" ,emacs-ert-runner)
        ("emacs-f" ,emacs-f)
        ("python" ,python-wrapper)
        ("python-autopep8" ,python-autopep8)
@@ -6932,9 +6962,9 @@ Emacs.")
 
 ;; Tests for ert-runner have a circular dependency with ecukes, and therefore
 ;; cannot be run
-(define-public ert-runner
+(define-public emacs-ert-runner
   (package
-    (name "ert-runner")
+    (name "emacs-ert-runner")
     (version "0.7.0")
     (source
      (origin
@@ -6976,6 +7006,9 @@ Emacs.")
 using ERT.  It assumes a certain test structure setup and can therefore make
 running tests easier.")
     (license license:gpl3+)))
+
+(define-public ert-runner
+  (deprecated-package "ert-runner" emacs-ert-runner))
 
 (define-public emacs-disable-mouse
   (package
@@ -7020,7 +7053,7 @@ running a customisable handler command (@code{ignore} by default). ")
     (native-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-shut-up" ,emacs-shut-up)
-       ("ert-runner" ,ert-runner)))
+       ("ert-runner" ,emacs-ert-runner)))
     (arguments
      `(#:tests? #t
        #:test-command '("ert-runner")))
@@ -7251,7 +7284,7 @@ settings).")
                 "1a4b0lsmwq84qfx51c5xy4fryhb1ysld4fhgw2vr37izf53379sb"))))
     (build-system emacs-build-system)
     (native-inputs
-     `(("ert-runner" ,ert-runner)))
+     `(("ert-runner" ,emacs-ert-runner)))
     (arguments
      `(#:tests? #t
        #:test-command '("ert-runner" "tests")))
@@ -7507,7 +7540,7 @@ Idris.")
      `(("emacs-f" ,emacs-f)
        ("emacs-s" ,emacs-s)))
     (native-inputs
-     `(("ert-runner" ,ert-runner)))
+     `(("ert-runner" ,emacs-ert-runner)))
     (arguments
      `(#:tests? #t
        #:test-command '("ert-runner")))
@@ -7977,9 +8010,9 @@ supports multiple backends such as @code{vlc}, @code{mpg123},
 @code{afplay}.")
     (license license:gpl2+)))
 
-(define-public groovy-emacs-modes
+(define-public emacs-groovy-modes
   (package
-    (name "groovy-emacs-modes")
+    (name "emacs-groovy-modes")
     (version "2.0")
     (source (origin
               (method url-fetch)
@@ -8001,7 +8034,10 @@ Groovy source files, REPL integration with run-groovy and Grails project
 navigation with the grails mode.")
     (license license:gpl3+)))
 
-(define-public org-tree-slide
+(define-public groovy-emacs-modes
+  (deprecated-package "groovy-emacs-modes" emacs-groovy-modes))
+
+(define-public emacs-org-tree-slide
   (let ((commit "dff8f1a4a64c8dd0a1fde0b0131e2fe186747134")
         (revision "0"))
     (package
@@ -8022,6 +8058,9 @@ navigation with the grails mode.")
 @code{org-tree-slide-mode} to enter the slideshow mode, and then @kbd{C->} and
 @kbd{C-<} to jump to the next and previous slide.")
       (license license:gpl3+))))
+
+(define-public org-tree-slide
+  (deprecated-package "emacs-org-tree-slide" emacs-org-tree-slide))
 
 (define-public emacs-scratch-el
   (let ((commit "2cdf2b841ce7a0987093f65b0cc431947549f897")
@@ -10095,7 +10134,7 @@ time is being spent during Emacs startup in order to optimize startup time.")
 
 (define-public emacs-emms-player-simple-mpv
   ;; A new mpv backend is included in Emms from 5.0.
-  (deprecated-package "emacs-emms-player-simple-mpv" emms))
+  (deprecated-package "emacs-emms-player-simple-mpv" emacs-emms))
 
 (define-public emacs-magit-org-todos-el
   (let ((commit "df206287737b9671f2e36ae7b1474ebbe9940d2a"))
@@ -10113,7 +10152,7 @@ time is being spent during Emacs startup in order to optimize startup time.")
           (base32
            "0kdp7k7jnnrkhsg0xh1c3h7iz0vgi120gf5xwl1hxy61avivnxrn"))))
       (propagated-inputs
-       `(("magit" ,magit)))
+       `(("magit" ,emacs-magit)))
       (build-system emacs-build-system)
       (home-page "https://github.com/danielma/magit-org-todos.el")
       (synopsis "Get todo.org into Emacs Magit status")
@@ -10952,7 +10991,7 @@ through the symbol: @command{this-fn}.")
      `(("emacs-el-mock" ,emacs-el-mock)
        ("emacs-noflet" ,emacs-noflet)
        ("emacs-undercover" ,emacs-undercover)
-       ("ert-runner" ,ert-runner)))
+       ("ert-runner" ,emacs-ert-runner)))
     (propagated-inputs
      `(("emacs-f" ,emacs-f)
        ("emacs-popup" ,emacs-popup)))
@@ -11139,7 +11178,7 @@ Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
-         ("magit" ,magit)))
+         ("magit" ,emacs-magit)))
       (home-page
        "https://github.com/emacs-evil/evil-magit")
       (synopsis "Evil-based key bindings for Magit")
@@ -11412,7 +11451,7 @@ you searched for and execute it, or view its documentation.")
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
-         ("emacs-emms" ,emms)))
+         ("emacs-emms" ,emacs-emms)))
       (home-page
        "https://github.com/emacs-helm/helm-emms")
       (synopsis "Emms for Helm")
@@ -11467,7 +11506,7 @@ See @code{helm-exwm-switch-browser} for an example.")
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
-         ("emacs-flycheck" ,flycheck)
+         ("emacs-flycheck" ,emacs-flycheck)
          ("emacs-helm" ,emacs-helm)))
       (home-page "https://github.com/yasuyk/helm-flycheck")
       (synopsis "Show Flycheck errors with Helm")
@@ -12029,7 +12068,7 @@ buffers – other modes on the TODO list).
        ("emacs-dash" ,emacs-dash)
        ("emacs-f" ,emacs-f)
        ("emacs-hl-todo" ,emacs-hl-todo)
-       ("magit" ,magit)
+       ("magit" ,emacs-magit)
        ("emacs-pcre2el" ,emacs-pcre2el)
        ("emacs-s" ,emacs-s)))
     (home-page "https://github.com/alphapapa/magit-todos")
