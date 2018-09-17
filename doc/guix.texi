@@ -210,6 +210,7 @@ GNU Distribution
 * Package Modules::             Packages from the programmer's viewpoint.
 * Packaging Guidelines::        Growing the distribution.
 * Bootstrapping::               GNU/Linux built from scratch.
+* Reduced Binary Seed Bootstrap::  A Bootstrap worthy of GNU.
 * Porting::                     Targeting another platform or kernel.
 
 System Installation
@@ -8694,6 +8695,7 @@ For information on porting to other architectures or kernels,
 * Package Modules::             Packages from the programmer's viewpoint.
 * Packaging Guidelines::        Growing the distribution.
 * Bootstrapping::               GNU/Linux built from scratch.
+* Reduced Binary Seed Bootstrap::  A Bootstrap worthy of GNU.
 * Porting::                     Targeting another platform or kernel.
 @end menu
 
@@ -23552,6 +23554,9 @@ Binutils, libc, and the other packages mentioned above---the
 These bootstrap binaries are ``taken for granted'', though we can also
 re-create them if needed (more on that later).
 
+For @code{i686-linux} the Guix bootstrap process is more elaborate,
+@pxref{Reduced Binary Seed Bootstrap}.
+
 @unnumberedsubsec Preparing to Use the Bootstrap Binaries
 
 @c As of Emacs 24.3, Info-mode displays the image, but since it's a
@@ -23704,6 +23709,71 @@ on-going projects to do that.  One of these is about replacing the
 bootstrap GCC with a sequence of assemblers, interpreters, and compilers
 of increasing complexity, which could be built from source starting from
 a simple and auditable assembler.  Your help is welcome!
+
+@node Reduced Binary Seed Bootstrap
+@section The Reduced Binary Seed Bootstrap
+
+Guix---like other GNU/Linux distributions---is traditionally bootstrapped from
+a set of bootstrap binaries: Bourne shell, command-line tools provided by GNU
+Coreutils, Awk, Findutils, `sed', and `grep' and Guile, GCC, Binutils, and the
+GNU C Library (@pxref{Bootstrapping}).  Usually, these bootstrap binaries are
+``taken for granted.''
+
+Taking these binaries for granted means that we consider them to be a correct
+and trustworthy `seed' for building the complete system.  Therein lies a
+problem: the current combined size of these bootstrap binaries is about 250MB
+(@pxref{Bootstrappable Builds,,, mes, Mes Reference Manual}).  Auditing or
+even inspecting these is next to impossible.
+
+For @code{i686-linux}, Guix now features a ``Reduced Binary Seed'' bootstrap
+@footnote{We would like to say: ``Full Source Bootstrap'' and while we are
+working towards that goal it would be hyperbole to use that term for what we
+do now.}.
+
+The Reduced Binary Seed bootstrap removes the most critical tools---from a
+trust perspective---from the bootstrap binaries: GCC, Binutils and the GNU C
+Library are replaced by: @code{mescc-tools-seed} (a tiny assembler and linker)
+@code{mes-seed} (a small Scheme Interpreter and a C compiler writen in Scheme)
+and @code{tinycc-seed} (the Mes C Library, built for TinyCC).  Using these new
+binary seeds and a new set of
+@c
+packages@footnote{@c
+mescc-tools-boot,
+nyacc-boot,
+mes-boot,
+tcc-boot0,
+tcc-boot,
+make-mesboot0,
+diffutils-mesboot,
+binutils-mesboot0,
+gcc-core-mesboot,
+mesboot-headers,
+glibc-mesboot0,
+gcc-mesboot0,
+binutils-mesboot,
+make-mesboot,
+gcc-mesboot1,
+gcc-mesboot1-wrapper,
+glibc-headers-mesboot,
+glibc-mesboot,
+gcc-mesboot,
+and
+gcc-mesboot-wrapper.
+}
+@c
+the ``missing'' Binutils, GCC, and the GNU C Library are built from source.
+From here on the more traditional bootstrap process resumes.  This approach
+has reduced the bootstrap binaries in size to about 130MB.  Work is ongoing to
+reduce this further.  If you are interested, join us on @code{#bootstrappable}
+on the Freenode IRC network.
+
+@c ./pre-inst-env guix graph --type=bag -e '(begin (use-modules (guix packages)) (%current-system "i686-linux") (@@ (gnu packages commencement) gcc-mesboot))' > doc/images/gcc-mesboot-bag-graph.dot
+@c dot -T png doc/images/gcc-mesboot-bag-graph.dot > doc/images/gcc-mesboot-bag-graph.png
+
+Below is the generated dependency graph for @code{gcc-mesboot}, the bootstrap
+compiler used to build the rest of GuixSD.
+
+@image{images/gcc-mesboot-bag-graph,6in,,Dependency graph of the gcc-mesboot}
 
 
 @node Porting
