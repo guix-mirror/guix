@@ -28,6 +28,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
@@ -50,7 +51,7 @@
 (define-public gnucash
   (package
     (name "gnucash")
-    (version "3.0")
+    (version "3.3")
     (source
      (origin
       (method url-fetch)
@@ -58,11 +59,9 @@
                           version "/gnucash-" version ".tar.bz2"))
       (sha256
        (base32
-        "1ffvf1rryg5yin86fnf1zvy6hnpwzrjarbdfmjmrf2mqlmv48xac"))
-
-      ;; TODO: rebase this patch
-;      (patches (search-patches "gnucash-price-quotes-perl.patch"))
-      ))
+        "0grr5qi5rn1xvr7qx5d7mcxa2mcgycy2b325ry73bb485a6yv5l3"))
+      (patches (search-patches "gnucash-price-quotes-perl.patch"
+                               "gnucash-disable-failing-tests.patch"))))
     (build-system cmake-build-system)
     (inputs
      `(("guile" ,guile-2.2)
@@ -76,7 +75,8 @@
        ("webkitgtk" ,webkitgtk)
        ("aqbanking" ,aqbanking)
        ("perl-date-manip" ,perl-date-manip)
-       ("perl-finance-quote" ,perl-finance-quote)))
+       ("perl-finance-quote" ,perl-finance-quote)
+       ("tzdata" ,tzdata-for-tests)))
     (native-inputs
      `(("glib" ,glib "bin") ; glib-compile-schemas, etc.
        ("intltool" ,intltool)
@@ -90,6 +90,13 @@
        #:configure-flags
        (list "-DWITH_OFX=OFF"  ; libofx is not available yet
              "-DWITH_SQL=OFF") ; without dbi.h
+       #:make-flags '("GUILE_AUTO_COMPILE=0")
+       #:modules ((guix build cmake-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build cmake-build-system)
+                           (guix build glib-or-gtk-build-system))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'unpack-gmock
@@ -99,14 +106,28 @@
                      "-C" "gmock" "--strip-components=1")
              (setenv "GMOCK_ROOT" (string-append (getcwd) "/gmock/googlemock"))
              #t))
+         (add-after 'unpack 'set-env-vars
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((tzdata (assoc-ref inputs "tzdata")))
+               ;; At least one test is time-related and requires this
+               ;; environment variable.
+               (setenv "TZDIR"
+                       (string-append tzdata
+                                      "/share/zoneinfo"))
+               (substitute* "CMakeLists.txt"
+                 (("set\\(SHELL /bin/bash\\)")
+                  (string-append "set(SHELL " (which "bash") ")")))
+               #t)))
          ;; There are about 100 megabytes of documentation.
          (add-after
           'install 'install-docs
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((docs (assoc-ref inputs "gnucash-docs"))
                   (doc-output (assoc-ref outputs "doc")))
+              (mkdir-p (string-append doc-output "/share"))
               (symlink (string-append docs "/share/gnome")
-                       (string-append doc-output "/share/gnome")))))
+                       (string-append doc-output "/share/gnome"))
+              #t)))
          (add-after
           'install-docs 'wrap-programs
           (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -134,7 +155,11 @@
                       '("gnucash"
                         "gnc-fq-check"
                         "gnc-fq-helper"
-                        "gnc-fq-dump")))))))
+                        "gnc-fq-dump"))))
+         (add-after 'install 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (home-page "https://www.gnucash.org/")
     (synopsis "Personal and small business financial accounting software")
     (description
@@ -150,7 +175,9 @@ financial calculations or scheduled transactions.")
 (define gnucash-docs
   (package
     (name "gnucash-docs")
-    (version (package-version gnucash))
+    ;;(version (package-version gnucash))
+    ;; The current version of gnucash-docs is not available at the moment.
+    (version "3.2")
     (source
      (origin
        (method url-fetch)
@@ -158,7 +185,7 @@ financial calculations or scheduled transactions.")
                            version "/gnucash-docs-" version ".tar.gz"))
        (sha256
         (base32
-         "0yq65s3z3dwdwdf2nq1d1w9ckdjdyjwkfpmvhzyib54b66q65xh5"))))
+         "1763m6d8gkhllwb9rnr9ifch39brmh7kr2m6icqfbc53a91m56j6"))))
     (build-system gnu-build-system)
     ;; These are native-inputs because they are only required for building the
     ;; documentation.

@@ -1,8 +1,9 @@
 After wrapping gnc-fq-check and gnc-fq-helper we can no longer execute them
 with perl, so execute them directly instead.
 
---- gnucash-2.6.6/src/scm/price-quotes.scm.orig	2014-04-27 17:42:28.000000000 -0500
-+++ gnucash-2.6.6/src/scm/price-quotes.scm	2015-07-09 16:12:11.196218472 -0500
+diff -ur gnucash-3.2.old/libgnucash/scm/price-quotes.scm gnucash-3.2/libgnucash/scm/price-quotes.scm
+--- gnucash-3.2.old/libgnucash/scm/price-quotes.scm	2018-09-15 00:48:33.718389646 -0400
++++ gnucash-3.2/libgnucash/scm/price-quotes.scm	2018-09-15 13:51:49.249862724 -0400
 @@ -74,7 +74,7 @@
      (define (start-program)
        (if (not (string-null? gnc:*finance-quote-check*))
