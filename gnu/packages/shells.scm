@@ -155,23 +155,18 @@ and syntax highlighting.")
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/rakitzis/rc.git")
-                    ;; commit name 'release: rc-1.7.4'
-                    (commit "c884da53a7c885d46ace2b92de78946855b18e92")))
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "00mgzvrrh9w96xa85g4gjbsvq02f08k4jwjcdnxq7kyh5xgiw95l"))
-              (file-name (string-append name "-" version "-checkout"))))
+                "0vj1h4pcg13vxsiydmmk87dr2sra9h4gwx0c4q6fjsiw4in78rrd"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        '("--with-edit=gnu")
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'autoreconf
-          (lambda _ (zero? (system* "autoreconf" "-vfi"))))
-         (add-before
-          'autoreconf 'patch-trip.rc
+         (add-before 'bootstrap 'patch-trip.rc
           (lambda _
             (substitute* "trip.rc"
               (("/bin/pwd") (which "pwd"))
