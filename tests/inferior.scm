@@ -24,8 +24,10 @@
   #:use-module (guix derivations)
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
+  #:use-module (gnu packages guile)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-64))
+  #:use-module (srfi srfi-64)
+  #:use-module (ice-9 match))
 
 (define %top-srcdir
   (dirname (search-path %load-path "guix.scm")))
@@ -107,6 +109,36 @@
          (lst2     (lookup-inferior-packages inferior "guile")))
     (close-inferior inferior)
     (every eq? lst1 lst2)))
+
+(test-equal "inferior-package-inputs"
+  (let ((->list (match-lambda
+                  ((label (? package? package) . rest)
+                   `(,label
+                     (package ,(package-name package)
+                              ,(package-version package)
+                              ,(package-location package))
+                     ,@rest)))))
+    (list (map ->list (package-inputs guile-2.2))
+          (map ->list (package-native-inputs guile-2.2))
+          (map ->list (package-propagated-inputs guile-2.2))))
+  (let* ((inferior (open-inferior %top-builddir
+                                  #:command "scripts/guix"))
+         (guile    (first (lookup-inferior-packages inferior "guile")))
+         (->list   (match-lambda
+                     ((label (? inferior-package? package) . rest)
+                      `(,label
+                        (package ,(inferior-package-name package)
+                                 ,(inferior-package-version package)
+                                 ,(inferior-package-location package))
+                        ,@rest))))
+         (result   (list (map ->list (inferior-package-inputs guile))
+                         (map ->list
+                              (inferior-package-native-inputs guile))
+                         (map ->list
+                              (inferior-package-propagated-inputs
+                               guile)))))
+    (close-inferior inferior)
+    result))
 
 (test-equal "inferior-package-derivation"
   (map derivation-file-name

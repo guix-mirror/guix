@@ -33,6 +33,7 @@
                 #:select (read-derivation-from-file))
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 vlist)
@@ -53,6 +54,10 @@
             inferior-package-description
             inferior-package-home-page
             inferior-package-location
+            inferior-package-inputs
+            inferior-package-native-inputs
+            inferior-package-propagated-inputs
+            inferior-package-transitive-propagated-inputs
             inferior-package-derivation))
 
 ;;; Commentary:
@@ -120,6 +125,7 @@ equivalent.  Return #f if the inferior could not be launched."
                                 (delay (%inferior-package-table result)))))
        (inferior-eval '(use-modules (guix)) result)
        (inferior-eval '(use-modules (gnu)) result)
+       (inferior-eval '(use-modules (ice-9 match)) result)
        (inferior-eval '(define %package-table (make-hash-table))
                       result)
        result))
@@ -270,6 +276,51 @@ record."
                                             (location->source-properties
                                              loc)))
                                      package-location))))
+
+(define (inferior-package-input-field package field)
+  "Return the input field FIELD (e.g., 'native-inputs') of PACKAGE, an
+inferior package."
+  (define field*
+    `(compose (lambda (inputs)
+                (map (match-lambda
+                       ;; XXX: Origins are not handled.
+                       ((label (? package? package) rest ...)
+                        (let ((id (object-address package)))
+                          (hashv-set! %package-table id package)
+                          `(,label (package ,id
+                                            ,(package-name package)
+                                            ,(package-version package))
+                                   ,@rest)))
+                       (x
+                        x))
+                     inputs))
+              ,field))
+
+  (define inputs
+    (inferior-package-field package field*))
+
+  (define inferior
+    (inferior-package-inferior package))
+
+  (map (match-lambda
+         ((label ('package id name version) . rest)
+          ;; XXX: eq?-ness of inferior packages is not preserved here.
+          `(,label ,(inferior-package inferior name version id)
+                   ,@rest))
+         (x x))
+       inputs))
+
+(define inferior-package-inputs
+  (cut inferior-package-input-field <> 'package-inputs))
+
+(define inferior-package-native-inputs
+  (cut inferior-package-input-field <> 'package-native-inputs))
+
+(define inferior-package-propagated-inputs
+  (cut inferior-package-input-field <> 'package-propagated-inputs))
+
+(define inferior-package-transitive-propagated-inputs
+  (cut inferior-package-input-field <> 'package-transitive-propagated-inputs))
 
 (define (proxy client backend)                    ;adapted from (guix ssh)
   "Proxy communication between CLIENT and BACKEND until CLIENT closes the
