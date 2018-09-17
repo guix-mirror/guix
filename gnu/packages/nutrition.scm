@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,8 +63,8 @@
        (modify-phases %standard-phases
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (system* "python" "setup.py" "install" "--prefix"
-                             (assoc-ref %outputs "out"))))))))
+             (invoke "python" "setup.py" "install" "--prefix"
+                     (assoc-ref %outputs "out")))))))
     (home-page "http://thinkle.github.io/gourmet/")
     (synopsis "Recipe organizer")
     (description
