@@ -1402,6 +1402,13 @@ can solve two kinds of problems:
        ("less" ,less)
        ("ghostscript" ,ghostscript)
        ("gnuplot" ,gnuplot)))
+    ;; Octave code uses this variable to detect directories holding multiple CA
+    ;; certificates to verify peers with.  This is required for the networking
+    ;; functions that require encryption to work properly.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CURLOPT_CAPATH")
+            (files '("etc/ssl/certs")))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-shell="
