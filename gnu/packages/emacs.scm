@@ -7182,6 +7182,28 @@ the actual transformations.")
 @end itemize\n")
       (license license:gpl3+))))
 
+(define-public emacs-dired-sidebar
+  (let ((commit "06bd0d40bab812c61a668129daf29ba359424454")
+        (revision "0"))
+    (package
+      (name "emacs-dired-sidebar")
+      (home-page "https://github.com/jojojames/dired-sidebar")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "0lvwvq6sl80sha9fq5m4568sg534dhmifyjqw75bqddcbf3by84x"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dired-subtree" ,emacs-dired-hacks)))
+      (synopsis "Sidebar for Emacs using Dired")
+      (description
+       "This package provides a sidebar for Emacs similar to @code{NeoTree}
+or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
+      (license license:gpl3+))))
+
 (define-public emacs-which-key
   (package
     (name "emacs-which-key")
