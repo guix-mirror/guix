@@ -1820,23 +1820,25 @@ exec " gcc "/bin/" program
                 (name "perl-boot0")
                 (arguments
                  ;; At the very least, this must not depend on GCC & co.
-                 (let ((args `(#:disallowed-references
+                 (let ((args `(#:validate-runpath? #f
+                               #:disallowed-references
                                ,(list %bootstrap-binutils))))
-                   (substitute-keyword-arguments (package-arguments perl)
-                     ((#:phases phases)
-                      `(modify-phases ,phases
-                         ;; Pthread support is missing in the bootstrap compiler
-                         ;; (broken spec file), so disable it.
-                         (add-before 'configure 'disable-pthreads
-                           (lambda _
-                             (substitute* "Configure"
-                               (("^libswanted=(.*)pthread" _ before)
-                                (string-append "libswanted=" before)))
-                             #t))))
-                     ;; Do not configure with '-Dusethreads' since pthread
-                     ;; support is missing.
-                     ((#:configure-flags configure-flags)
-                      `(delete "-Dusethreads" ,configure-flags))))))))
+                   `(,@args
+                     ,@(substitute-keyword-arguments (package-arguments perl)
+                         ((#:phases phases)
+                          `(modify-phases ,phases
+                             ;; Pthread support is missing in the bootstrap compiler
+                             ;; (broken spec file), so disable it.
+                             (add-before 'configure 'disable-pthreads
+                               (lambda _
+                                 (substitute* "Configure"
+                                   (("^libswanted=(.*)pthread" _ before)
+                                    (string-append "libswanted=" before)))
+                                 #t))))
+                         ;; Do not configure with '-Dusethreads' since pthread
+                         ;; support is missing.
+                         ((#:configure-flags configure-flags)
+                          `(delete "-Dusethreads" ,configure-flags)))))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs perl
                                    %boot0-inputs
