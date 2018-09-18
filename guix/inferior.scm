@@ -23,7 +23,8 @@
                 #:select (%current-system
                           source-properties->location
                           call-with-temporary-directory
-                          version>? version-prefix?))
+                          version>? version-prefix?
+                          cache-directory))
   #:use-module ((guix store)
                 #:select (nix-server-socket
                           nix-server-major-version
@@ -34,12 +35,23 @@
   #:use-module (guix gexp)
   #:use-module (guix search-paths)
   #:use-module (guix profiles)
+  #:use-module (guix channels)
+  #:use-module (guix monads)
+  #:use-module (guix store)
+  #:use-module (guix derivations)
+  #:use-module (guix base32)
+  #:use-module (gcrypt hash)
+  #:autoload   (guix cache) (maybe-remove-expired-cache-entries)
+  #:autoload   (guix ui) (show-what-to-build*)
+  #:autoload   (guix build utils) (mkdir-p)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:autoload   (ice-9 ftw) (scandir)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 binary-ports)
+  #:use-module ((rnrs bytevectors) #:select (string->utf8))
   #:export (inferior?
             open-inferior
             close-inferior
@@ -65,7 +77,10 @@
             inferior-package-search-paths
             inferior-package-derivation
 
-            inferior-package->manifest-entry))
+            inferior-package->manifest-entry
+
+            %inferior-cache-directory
+            inferior-for-channels))
 
 ;;; Commentary:
 ;;;
@@ -475,3 +490,69 @@ PACKAGE must be live."
                      (parent parent)
                      (properties properties))))
     entry))
+
+
+;;;
+;;; Cached inferiors.
+;;;
+
+(define %inferior-cache-directory
+  ;; Directory for cached inferiors (GC roots).
+  (make-parameter (string-append (cache-directory #:ensure? #f)
+                                 "/inferiors")))
+
+(define* (inferior-for-channels channels
+                                #:key
+                                (cache-directory (%inferior-cache-directory))
+                                (ttl (* 3600 24 30)))
+  "Return an inferior for CHANNELS, a list of channels.  Use the cache at
+CACHE-DIRECTORY, where entries can be reclaimed after TTL seconds.  This
+procedure opens a new connection to the build daemon.
+
+This is a convenience procedure that people may use in manifests passed to
+'guix package -m', for instance."
+  (with-store store
+    (let ()
+      (define instances
+        (latest-channel-instances store channels))
+
+      (define key
+        (bytevector->base32-string
+         (sha256
+          (string->utf8
+           (string-concatenate (map channel-instance-commit instances))))))
+
+      (define cached
+        (string-append cache-directory "/" key))
+
+      (define (base32-encoded-sha256? str)
+        (= (string-length str) 52))
+
+      (define (cache-entries directory)
+        (map (lambda (file)
+               (string-append directory "/" file))
+             (scandir directory base32-encoded-sha256?)))
+
+      (define symlink*
+        (lift2 symlink %store-monad))
+
+      (define add-indirect-root*
+        (store-lift add-indirect-root))
+
+      (mkdir-p cache-directory)
+      (maybe-remove-expired-cache-entries cache-directory
+                                          cache-entries
+                                          #:entry-expiration
+                                          (file-expiration-time ttl))
+
+      (if (file-exists? cached)
+          (open-inferior cached)
+          (run-with-store store
+            (mlet %store-monad ((profile
+                                 (channel-instances->derivation instances)))
+              (mbegin %store-monad
+                (show-what-to-build* (list profile))
+                (built-derivations (list profile))
+                (symlink* (derivation->output-path profile) cached)
+                (add-indirect-root* cached)
+                (return (open-inferior cached)))))))))
