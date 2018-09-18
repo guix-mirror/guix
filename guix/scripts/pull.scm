@@ -176,17 +176,7 @@ Download and deploy the latest version of Guix.\n"))
          (certs (string-append (derivation->output-path drv)
                                "/etc/ssl/certs")))
     (build-derivations store (list drv))
-
-    ;; In the past Guile-Git would not provide this procedure.
-    (if (module-defined? (resolve-interface '(git))
-                         'set-tls-certificate-locations!)
-        (set-tls-certificate-locations! certs)
-        (begin
-          ;; In this case we end up using whichever certificates OpenSSL
-          ;; chooses to use: $SSL_CERT_FILE, $SSL_CERT_DIR, or /etc/ssl/certs.
-          (warning (G_ "cannot enforce use of the Let's Encrypt \
-certificates~%"))
-          (warning (G_ "please upgrade Guile-Git~%"))))))
+    (set-tls-certificate-locations! certs)))
 
 (define (report-git-error error)
   "Report the given Guile-Git error."
