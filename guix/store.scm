@@ -1044,6 +1044,7 @@ an arbitrary directory layout in the store without creating a derivation."
                            #:file-port file-port
                            #:symlink-target symlink-target
                            #:directory-entries directory-entries)
+          (write-buffered-output server)
           (let loop ((done? (process-stderr server)))
             (or done? (loop (process-stderr server))))
           (let ((result (read-store-path port)))
