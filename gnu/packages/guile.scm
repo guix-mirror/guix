@@ -2206,4 +2206,31 @@ endpoint.  Additionally, it provides an interface to write SPARQL queries
 using S-expressions.")
    (license license:gpl3+)))
 
+(define-public guile-debbugs
+  (package
+    (name "guile-debbugs")
+    (version "0.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/guile-debbugs/guile-debbugs-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "16l8910p57im6s3j93xhdaqvgfy6ms5n97177mrch3y961z5hy0i"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile.in"
+                  (("^godir = (.*)/ccache" _ prefix)
+                   (string-append "godir = " prefix "/site-ccache"))))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("guile" ,guile-2.2)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://savannah.gnu.org/projects/guile-debbugs/")
+    (synopsis "Guile interface to the Debbugs bug tracking service")
+    (description
+     "This package provides a Guile library to communicate with a Debbugs bug
+tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
+    (license license:gpl3+)))
+
 ;;; guile.scm ends here
