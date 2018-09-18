@@ -182,4 +182,15 @@
     (close-inferior inferior)
     (manifest-entry->list entry)))
 
+(test-equal "packages->manifest"
+  (map manifest-entry->list
+       (manifest-entries (packages->manifest
+                          (find-best-packages-by-name "guile" #f))))
+  (let* ((inferior (open-inferior %top-builddir
+                                  #:command "scripts/guix"))
+         (guile    (first (lookup-inferior-packages inferior "guile")))
+         (manifest (packages->manifest (list guile))))
+    (close-inferior inferior)
+    (map manifest-entry->list (manifest-entries manifest))))
+
 (test-end "inferior")
