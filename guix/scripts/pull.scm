@@ -233,7 +233,9 @@ way and displaying details about the channel's source code."
             ;; Show most recently installed packages last.
             (reverse
              (manifest-entries
-              (profile-manifest (generation-file-name profile number))))))
+              (profile-manifest (if (zero? number)
+                                    profile
+                                    (generation-file-name profile number)))))))
 
 (define (indented-string str indent)
   "Return STR with each newline preceded by IDENT spaces."
