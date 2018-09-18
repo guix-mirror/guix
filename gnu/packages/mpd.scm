@@ -33,6 +33,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -185,7 +186,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.29")
+    (version "0.30")
     (source (origin
               (method url-fetch)
               (uri
@@ -194,12 +195,23 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "04jzv1hfdvgbn391523jb2h3yhq9a40pjrg41sl3wf3jf6vajs7g"))))
+                "18qj3cgqczgfk334x0ywxwa1ckrk9fbjyp34n4zzcxwaifshrzp3"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list "-Dcurses=ncurses")))
-    (inputs `(("glib" ,glib)
+       (list "-Dcurses=ncurses")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'expand-C++-include-path
+           ;; Make <gcc>/include/c++/ext/string_conversions.h find <stdlib.h>.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((path "CPLUS_INCLUDE_PATH")
+                    (gcc  (assoc-ref inputs "gcc"))
+                    (c++  (string-append gcc "/include/c++")))
+               (setenv path (string-append c++ ":" (getenv path)))
+               #t))))))
+    (inputs `(("gcc", gcc-8)            ; for its C++14 support
+              ("glib" ,glib)
               ("libmpdclient" ,libmpdclient)
               ("ncurses" ,ncurses)))
     (native-inputs `(("gettext" ,gettext-minimal) ; for xgettext
