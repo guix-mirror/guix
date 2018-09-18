@@ -630,33 +630,35 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define static-bash-for-glibc
   ;; A statically-linked Bash to be used by GLIBC-FINAL in system(3) & co.
-  (let* ((gcc  (cross-gcc-wrapper gcc-boot0 binutils-boot0
-                                  glibc-final-with-bootstrap-bash
-                                  (car (assoc-ref (%boot1-inputs) "bash"))))
-         (bash (package
-                 (inherit static-bash)
-                 (arguments
-                  (substitute-keyword-arguments
-                      (package-arguments static-bash)
-                    ((#:guile _ #f)
-                     '%bootstrap-guile)
-                    ((#:configure-flags flags '())
-                     ;; Add a '-L' flag so that the pseudo-cross-ld of
-                     ;; BINUTILS-BOOT0 can find libc.a.
-                     `(append ,flags
-                              (list (string-append "LDFLAGS=-static -L"
-                                                   (assoc-ref %build-inputs
-                                                              "libc:static")
-                                                   "/lib"))))))))
-         (inputs `(("gcc" ,gcc)
-                   ("libc" ,glibc-final-with-bootstrap-bash)
-                   ("libc:static" ,glibc-final-with-bootstrap-bash "static")
-                   ,@(fold alist-delete (%boot1-inputs)
-                           '("gcc" "libc")))))
+  (let ((bash (package
+                (inherit static-bash)
+                (arguments
+                 (substitute-keyword-arguments
+                     (package-arguments static-bash)
+                   ((#:guile _ #f)
+                    '%bootstrap-guile)
+                   ((#:configure-flags flags '())
+                    ;; Add a '-L' flag so that the pseudo-cross-ld of
+                    ;; BINUTILS-BOOT0 can find libc.a.
+                    `(append ,flags
+                             (list (string-append "LDFLAGS=-static -L"
+                                                  (assoc-ref %build-inputs
+                                                             "libc:static")
+                                                  "/lib")))))))))
     (package-with-bootstrap-guile
-     (package-with-explicit-inputs bash (lambda _ inputs)
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+     (package-with-explicit-inputs
+      bash
+      (lambda _
+        (let ((gcc  (cross-gcc-wrapper gcc-boot0 binutils-boot0
+                                       glibc-final-with-bootstrap-bash
+                                       (car (assoc-ref (%boot1-inputs) "bash")))))
+          `(("gcc" ,gcc)
+            ("libc" ,glibc-final-with-bootstrap-bash)
+            ("libc:static" ,glibc-final-with-bootstrap-bash "static")
+            ,@(fold alist-delete (%boot1-inputs)
+                    '("gcc" "libc")))))
+      (current-source-location)
+      #:guile %bootstrap-guile))))
 
 (define gettext-boot0
   ;; A minimal gettext used during bootstrap.
