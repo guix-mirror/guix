@@ -21,6 +21,7 @@
   #:use-module (guix inferior)
   #:use-module (guix packages)
   #:use-module (guix store)
+  #:use-module (guix profiles)
   #:use-module (guix derivations)
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
@@ -37,6 +38,13 @@
 
 (define %store
   (open-connection-for-tests))
+
+(define (manifest-entry->list entry)
+  (list (manifest-entry-name entry)
+        (manifest-entry-version entry)
+        (manifest-entry-output entry)
+        (manifest-entry-search-paths entry)
+        (map manifest-entry->list (manifest-entry-dependencies entry))))
 
 
 (test-begin "inferior")
@@ -163,5 +171,15 @@
     (map derivation-file-name
          (list (inferior-package-derivation %store guile "x86_64-linux")
                (inferior-package-derivation %store guile "armhf-linux")))))
+
+(test-equal "inferior-package->manifest-entry"
+  (manifest-entry->list (package->manifest-entry
+                         (first (find-best-packages-by-name "guile" #f))))
+  (let* ((inferior (open-inferior %top-builddir
+                                  #:command "scripts/guix"))
+         (guile    (first (lookup-inferior-packages inferior "guile")))
+         (entry    (inferior-package->manifest-entry guile)))
+    (close-inferior inferior)
+    (manifest-entry->list entry)))
 
 (test-end "inferior")

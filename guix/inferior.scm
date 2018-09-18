@@ -33,6 +33,7 @@
                 #:select (read-derivation-from-file))
   #:use-module (guix gexp)
   #:use-module (guix search-paths)
+  #:use-module (guix profiles)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -45,12 +46,12 @@
             inferior-eval
             inferior-object?
 
+            inferior-packages
+            lookup-inferior-packages
+
             inferior-package?
             inferior-package-name
             inferior-package-version
-
-            inferior-packages
-            lookup-inferior-packages
             inferior-package-synopsis
             inferior-package-description
             inferior-package-home-page
@@ -62,7 +63,9 @@
             inferior-package-native-search-paths
             inferior-package-transitive-native-search-paths
             inferior-package-search-paths
-            inferior-package-derivation))
+            inferior-package-derivation
+
+            inferior-package->manifest-entry))
 
 ;;; Commentary:
 ;;;
@@ -441,3 +444,34 @@ PACKAGE must be live."
                                         target)
   ;; Compile PACKAGE for SYSTEM, optionally cross-building for TARGET.
   (inferior-package->derivation package system #:target target))
+
+
+;;;
+;;; Manifest entries.
+;;;
+
+(define* (inferior-package->manifest-entry package
+                                           #:optional (output "out")
+                                           #:key (parent (delay #f))
+                                           (properties '()))
+  "Return a manifest entry for the OUTPUT of package PACKAGE."
+  ;; For each dependency, keep a promise pointing to its "parent" entry.
+  (letrec* ((deps  (map (match-lambda
+                          ((label package)
+                           (inferior-package->manifest-entry package
+                                                             #:parent (delay entry)))
+                          ((label package output)
+                           (inferior-package->manifest-entry package output
+                                                             #:parent (delay entry))))
+                        (inferior-package-propagated-inputs package)))
+            (entry (manifest-entry
+                     (name (inferior-package-name package))
+                     (version (inferior-package-version package))
+                     (output output)
+                     (item package)
+                     (dependencies (delete-duplicates deps))
+                     (search-paths
+                      (inferior-package-transitive-native-search-paths package))
+                     (parent parent)
+                     (properties properties))))
+    entry))
