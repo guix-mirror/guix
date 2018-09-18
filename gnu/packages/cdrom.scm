@@ -727,14 +727,14 @@ laid out on the image.")
 (define-public libburn
   (package
     (name "libburn")
-    (version "1.4.8")
+    (version "1.5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://files.libburnia-project.org/releases/"
                                  "libburn-" version ".tar.gz"))
              (sha256
               (base32
-               "19lxnzn8bz70glrrrn2hs43gf5g7gfbcka9rcbckhv1pb7is509y"))))
+               "1gg2kgnqvaa2fwghai62prxz6slpak1f6bvgjh8m4dn16v114asq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
