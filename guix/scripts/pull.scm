@@ -178,6 +178,17 @@ Download and deploy the latest version of Guix.\n"))
     (build-derivations store (list drv))
     (set-tls-certificate-locations! certs)))
 
+(define (honor-x509-certificates store)
+  "Use the right X.509 certificates for Git checkouts over HTTPS."
+  (let ((file      (getenv "SSL_CERT_FILE"))
+        (directory (or (getenv "SSL_CERT_DIR") "/etc/ssl/certs")))
+    (if (or (and file (file-exists? file))
+            (and=> (stat directory #f)
+                   (lambda (st)
+                     (> (stat:nlink st) 2))))
+        (set-tls-certificate-locations! directory file)
+        (honor-lets-encrypt-certificates! store))))
+
 (define (report-git-error error)
   "Report the given Guile-Git error."
   ;; Prior to Guile-Git commit b6b2760c2fd6dfaa5c0fedb43eeaff06166b3134,
@@ -423,13 +434,7 @@ Use '~/.config/guix/channels.scm' instead."))
                 (parameterize ((%graft? (assoc-ref opts 'graft?))
                                (%repository-cache-directory cache))
                   (set-build-options-from-command-line store opts)
-
-                  ;; When certificates are already installed, use them.
-                  ;; Otherwise, use the Let's Encrypt certificates, which we
-                  ;; know Savannah uses.
-                  (let ((certs (or (getenv "SSL_CERT_DIR") "/etc/ssl/certs")))
-                    (unless (file-exists? certs)
-                      (honor-lets-encrypt-certificates! store)))
+                  (honor-x509-certificates store)
 
                   (let ((instances (latest-channel-instances store channels)))
                     (format (current-error-port)
