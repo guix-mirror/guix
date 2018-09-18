@@ -1862,13 +1862,16 @@ exec " gcc "/bin/" program
                   (propagated-inputs `(("m4" ,m4)))
                   (inputs '())                    ;remove Flex...
                   (arguments
-                   '(#:tests? #f                  ;... and thus disable tests
+                   `(#:tests? #f                  ;... and thus disable tests
 
                      ;; Zero timestamps in liby.a; this must be done
                      ;; explicitly here because the bootstrap Binutils don't
                      ;; do that (default is "cru".)
-                     #:make-flags '("ARFLAGS=crD"
-                                    "RANLIB=ranlib -D"
+                     #:make-flags `("ARFLAGS=crD"
+                                    ,,(match (%current-system)
+                                      ;; ranlib: '-D': No such file
+                                      ("i686-linux" "RANLIB=ranlib")
+                                      (_ "RANLIB=ranlib -D"))
                                     "V=1"))))))
     (package
       (inherit (package-with-bootstrap-guile
