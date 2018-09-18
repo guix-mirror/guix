@@ -309,6 +309,13 @@ as well as the classic centralized workflow.")
             (let* ((netrc (assoc-ref outputs "credential-netrc")))
               (install-file "contrib/credential/netrc/git-credential-netrc"
                             (string-append netrc "/bin"))
+              ;; Previously, Git.pm was automatically found by netrc.
+              ;; Perl 5.26 changed how it locates modules so that @INC no
+              ;; longer includes the current working directory (the Perl
+              ;; community calls this "dotless @INC").
+              (wrap-program (string-append netrc "/bin/git-credential-netrc")
+                `("PERL5LIB" ":" prefix
+                  (,(string-append (assoc-ref outputs "out") "/share/perl5"))))
               #t)))
         (add-after 'install 'split
           (lambda* (#:key inputs outputs #:allow-other-keys)
