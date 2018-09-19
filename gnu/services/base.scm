@@ -2122,7 +2122,7 @@ This service is not part of @var{%base-services}."
                                              AF_INET INADDR_ANY 0)))
                     (set-network-interface-flags sock #$interface 0)
                     (close-port sock)
-:                    #f)))
+                    #f)))
         (respawn? #f))))))
 
 (define (static-networking-etc-files interfaces)
