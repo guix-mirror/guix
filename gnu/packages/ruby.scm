@@ -5873,7 +5873,7 @@ hashes more powerful.")
     (synopsis "Heredoc indentation cleaner")
     (description "This gem removes common margin from indented strings, such
 as the ones produced by indented heredocs.  In other words, it strips out
-leading whitespace chars at the beggining of each line, but only as much as
+leading whitespace chars at the beginning of each line, but only as much as
 the line with the smallest margin.
 
 It is acknowledged that many strings defined by heredocs are just code and
