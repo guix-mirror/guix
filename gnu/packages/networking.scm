@@ -87,6 +87,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ssh)
@@ -672,6 +673,55 @@ Instead of sending to one target until it times out or replies, fping will
 send out a ping packet and move on to the next target in a round-robin
 fashion.")
     (license license:expat)))
+
+(define-public gandi.cli
+  (package
+    (name "gandi.cli")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (sha256
+        (base32 "0vfzkw1avybjkf6fwqpf5m4kjz4c0qkkmj62f3jd0zx00vh5ly1d"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'embed-store-file-names
+           (lambda _
+             (substitute* (list "gandi/cli/modules/cert.py"
+                                "gandi/cli/tests/commands/test_certificate.py")
+               (("openssl") (which "openssl")))
+             #t))
+         (add-after 'install 'install-documentation
+           ;; The included man page may be outdated but we install it anyway,
+           ;; since it's mentioned in 'gandi --help' and better than nothing.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (man1 (string-append out "/share/man/man1")))
+               (mkdir-p man1)
+               (with-output-to-file (string-append man1 "/gandi.1")
+                 (lambda _
+                   (invoke "rst2man.py" "gandicli.man.rst")))
+               #t))))))
+    (native-inputs
+     `(("python-docutils" ,python-docutils)   ; for rst2man.py
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-tox" ,python-tox)))
+    (inputs
+     `(("openssl" ,openssl)
+       ("python-click" ,python-click)
+       ("python-ipy" ,python-ipy)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)))
+    (home-page "https://cli.gandi.net")
+    (synopsis "Command-line interface to the Gandi.net Web API")
+    (description
+     "This package provides a command-line client (@command{gandi}) to buy,
+manage, and delete Internet resources from Gandi.net such as domain names,
+virtual machines, and certificates.")
+    (license license:gpl3+)))
 
 (define-public httping
   (package
