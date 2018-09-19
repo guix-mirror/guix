@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright @ 2018 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -497,6 +498,124 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  (setenv "GOGC" "400")
                  ;; Go 1.10 tries to write to $HOME in a test
                  (setenv "HOME" "/tmp")
+                 #t)))))))))
+
+(define-public go-1.11
+  (package
+    (inherit go-1.10)
+    (name "go")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://storage.googleapis.com/golang/"
+                           name version ".src.tar.gz"))
+       (sha256
+        (base32
+         "1ysj04jzds6xa8kdflkdsgyv3mg9fdn90zdf78g4g6p4bwpy3hdg"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments go-1.10)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'prebuild
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
+                      (ld (string-append (assoc-ref inputs "libc") "/lib"))
+                      (loader (car (find-files ld "^ld-linux.+")))
+                      (net-base (assoc-ref inputs "net-base"))
+                      (tzdata-path
+                       (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
+                      (output (assoc-ref outputs "out")))
+
+                 (for-each delete-file
+                           ;; Removing net/ tests, which fail when attempting to access
+                           ;; network resources not present in the build container.
+                           '("net/listen_test.go"
+                             "net/parse_test.go"
+                             "net/cgo_unix_test.go"
+                             ;; A side affect of these test scripts is testing
+                             ;; cgo. Attempts at using cgo flags and
+                             ;; directives with these scripts as specified
+                             ;; here (https://golang.org/cmd/cgo/) have not
+                             ;; worked. The tests continue to state that they
+                             ;; can not find crt1.o despite being present.
+                             "cmd/go/testdata/script/list_compiled_imports.txt"
+                             "cmd/go/testdata/script/mod_case_cgo.txt"
+                             ;; https://github.com/golang/go/issues/24884
+                             "os/user/user_test.go"))
+
+                 (substitute* "os/os_test.go"
+                   (("/usr/bin") (getcwd))
+                   (("/bin/pwd") (which "pwd"))
+                   (("/bin/sh") (which "sh")))
+
+                 (substitute* "cmd/vendor/golang.org/x/sys/unix/syscall_unix_test.go"
+                   (("/usr/bin") "/tmp"))
+
+                 ;; Add libgcc to runpath
+                 (substitute* "cmd/link/internal/ld/lib.go"
+                   (("!rpath.set") "true"))
+                 (substitute* "cmd/go/internal/work/gccgo.go"
+                   (("cgoldflags := \\[\\]string\\{\\}")
+                    (string-append "cgoldflags := []string{"
+                                   "\"-rpath=" gcclib "\""
+                                   "}"))
+                   (("\"-lgcc_s\", ")
+                    (string-append
+                     "\"-Wl,-rpath=" gcclib "\", \"-lgcc_s\", ")))
+                 (substitute* "cmd/go/internal/work/gc.go"
+                   (("ldflags = setextld\\(ldflags, compiler\\)")
+                    (string-append
+                     "ldflags = setextld(ldflags, compiler)\n"
+                     "ldflags = append(ldflags, \"-r\")\n"
+                     "ldflags = append(ldflags, \"" gcclib "\")\n")))
+
+                 ;; Disable failing tests: these tests attempt to access
+                 ;; commands or network resources which are neither available
+                 ;; nor necessary for the build to succeed.
+                 (for-each
+                  (match-lambda
+                    ((file regex)
+                     (substitute* file
+                       ((regex all before test_name)
+                        (string-append before "Disabled" test_name)))))
+                  '(("net/net_test.go" "(.+)(TestShutdownUnix.+)")
+                    ("net/dial_test.go" "(.+)(TestDialTimeout.+)")
+                    ("os/os_test.go" "(.+)(TestHostname.+)")
+                    ("time/format_test.go" "(.+)(TestParseInSydney.+)")
+                    ("time/format_test.go" "(.+)(TestParseInLocation.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestCatStdin.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestCatGoodAndBadFile.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExitStatus.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestPipes.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestStdinClose.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestIgnorePipeErrorOnSuccess.+)")
+                    ("syscall/syscall_unix_test.go" "(.+)(TestPassFD\\(.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles/areturn.+)")
+                    ("cmd/go/go_test.go" "(.+)(TestCoverageWithCgo.+)")
+                    ("cmd/go/go_test.go" "(.+)(TestTwoPkgConfigs.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestOutputStderrCapture.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExtraFilesRace.+)")
+                    ("net/lookup_test.go" "(.+)(TestLookupPort.+)")
+                    ("syscall/exec_linux_test.go"
+                     "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")))
+
+                 ;; fix shebang for testar script
+                 ;; note the target script is generated at build time.
+                 (substitute* "../misc/cgo/testcarchive/carchive_test.go"
+                   (("#!/usr/bin/env") (string-append "#!" (which "env"))))
+
+                 (substitute* "net/lookup_unix.go"
+                   (("/etc/protocols") (string-append net-base "/etc/protocols")))
+                 (substitute* "net/port_unix.go"
+                   (("/etc/services") (string-append net-base "/etc/services")))
+                 (substitute* "time/zoneinfo_unix.go"
+                   (("/usr/share/zoneinfo/") tzdata-path))
+                 (substitute* (find-files "cmd" "\\.go")
+                   (("/lib(64)?/ld-linux.*\\.so\\.[0-9]") loader))
                  #t)))))))))
 
 (define-public go go-1.9)
