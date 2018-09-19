@@ -656,15 +656,16 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
   ;; The initial, pre-built inputs.  From now on, we can start building our
   ;; own packages.
   `(,@(match (%current-system)
-        ("i686-linux" `(("linux-libre-headers" ,%bootstrap-linux-libre-headers)
-                        ("mescc-tools-seed" ,%mescc-tools-seed)
-                        ("mes-seed" ,%mes-seed)
-                        ("srfi-43" ,%srfi-43 )
-                        ("tinycc-seed" ,%tinycc-seed)))
-
-        (_  `(("libc" ,%bootstrap-glibc)
-              ("gcc" ,%bootstrap-gcc)
-              ("binutils" ,%bootstrap-binutils))))
+        ((or "i686-linux" "x86_64-linux")
+         `(("linux-libre-headers" ,%bootstrap-linux-libre-headers)
+           ("mescc-tools-seed" ,%mescc-tools-seed)
+           ("mes-seed" ,%mes-seed)
+           ("srfi-43" ,%srfi-43 )
+           ("tinycc-seed" ,%tinycc-seed)))
+        (_
+         `(("libc" ,%bootstrap-glibc)
+           ("gcc" ,%bootstrap-gcc)
+           ("binutils" ,%bootstrap-binutils))))
     ("coreutils&co" ,%bootstrap-coreutils&co)
 
     ;; In gnu-build-system.scm, we rely on the availability of Bash.

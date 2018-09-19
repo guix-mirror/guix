@@ -383,7 +383,8 @@
                        (mescc-tools (assoc-ref %build-inputs "mescc-tools"))
                        (libc (assoc-ref %build-inputs "libc"))
                        (interpreter (if libc
-                                        (string-append libc ,(glibc-dynamic-linker))
+                                        ;; also for x86_64-linux, we are still on i686-linux
+                                        (string-append libc ,(glibc-dynamic-linker "i686-linux"))
                                         (string-append mes "/lib/mes-loader"))))
                   (setenv "PATH" (string-append
                                   coreutils "/bin"
@@ -488,7 +489,8 @@
                      (tcc (assoc-ref %build-inputs "tcc"))
                      (libc (assoc-ref %build-inputs "libc"))
                      (interpreter (if libc
-                                      (string-append libc ,(glibc-dynamic-linker))
+                                      ;; also for x86_64-linux, we are still on i686-linux
+                                      (string-append libc ,(glibc-dynamic-linker "i686-linux"))
                                       (string-append mes "/lib/mes-loader"))))
                 ;; unpack
                 (setenv "PATH" (string-append
@@ -510,7 +512,8 @@
                      (tcc (assoc-ref %build-inputs "tcc"))
                      (libc (assoc-ref %build-inputs "libc"))
                      (interpreter (if libc
-                                      (string-append libc ,(glibc-dynamic-linker))
+                                      ;; also for x86_64-linux, we are still on i686-linux
+                                      (string-append libc ,(glibc-dynamic-linker "i686-linux"))
                                       (string-append mes "/lib/mes-loader"))))
                 (invoke "tcc"
                         "-vvv"
@@ -1140,7 +1143,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                            "-B" libc "/lib "
                            "-Wl,-dynamic-linker "
                            "-Wl," libc
-                           ,(glibc-dynamic-linker))))
+                           ,(glibc-dynamic-linker "i686-linux"))))
             (list (string-append "LDFLAGS=" ldflags)
                   (string-append "LDFLAGS_FOR_TARGET=" ldflags))))
         ((#:phases phases)
@@ -1267,7 +1270,8 @@ ac_cv_c_float_format='IEEE (little-endian)'
                          (display (string-append "#! " bash "/bin/bash
 exec " gcc "/bin/" program
 " -Wl,--dynamic-linker"
-" -Wl," libc ,(glibc-dynamic-linker)
+;; also for x86_64-linux, we are still on i686-linux
+" -Wl," libc ,(glibc-dynamic-linker "i686-linux")
 " -Wl,--rpath"
 " -Wl," libc "/lib"
 " \"$@\"
@@ -1552,7 +1556,7 @@ exec " gcc "/bin/" program
                (sha256
                 (base32
                  "1f9bxj176kf3pvs350w2dfs8jgwhminywri5pyn01b11yc4yhsjw"))))
-     (supported-systems '("i686-linux"))
+     (supported-systems '("i686-linux" "x86_64-linux"))
      (native-inputs `(("mes" ,mes-boot)
                       ("tcc" ,tcc-boot)))
      (arguments
@@ -1572,11 +1576,13 @@ exec " gcc "/bin/" program
   ;; The traditional bootstrap-inputs.  For the i686-linux Reduced Binary Seed
   ;; the actual reduced set with bootstrapped toolchain.
   (append (match (%current-system)
-            ("i686-linux" `(("libc" ,glibc-mesboot)
-                            ("binutils" ,binutils-mesboot)
-                            ("gcc-wrapper" ,gcc-mesboot-wrapper)
-                            ("gcc" ,gcc-mesboot)))
-            (_ '()))
+            ((or "i686-linux" "x86_64-linux")
+             `(("libc" ,glibc-mesboot)
+               ("binutils" ,binutils-mesboot)
+               ("gcc-wrapper" ,gcc-mesboot-wrapper)
+               ("gcc" ,gcc-mesboot)))
+            (_
+             '()))
           (%bootstrap-inputs)))
 
 (define gnu-make-boot0
@@ -1723,7 +1729,7 @@ exec " gcc "/bin/" program
          #:validate-runpath? #f
 
          ,@(match (%current-system)
-             ("i686-linux"
+             ((or "i686-linux" "x86_64-linux")
               (substitute-keyword-arguments (package-arguments lib)
                 ((#:phases phases)
                  `(modify-phases ,phases
@@ -1784,6 +1790,17 @@ exec " gcc "/bin/" program
                       (remove (cut string-match
                                 "--(with-system-zlib|enable-languages.*)" <>)
                               ,flags)))
+            ((#:make-flags flags)
+             `(let* ((libc        (assoc-ref %build-inputs "libc"))
+                     (libc-native (or (assoc-ref %build-inputs "libc-native")
+                                      libc)))
+                `(,(string-append "LDFLAGS="
+                                  "-Wl,-rpath=" libc-native "/lib "
+                                  "-Wl,-dynamic-linker "
+                                  "-Wl," libc-native ,(glibc-dynamic-linker
+                                                       (match (%current-system)
+                                                         ("x86_64-linux" "i686-linux")
+                                                         (_ (%current-system))))))))
             ((#:phases phases)
              `(modify-phases ,phases
                 (add-after 'unpack 'unpack-gmp&co
@@ -1809,7 +1826,7 @@ exec " gcc "/bin/" program
                              (list gmp-6.0 mpfr mpc))
                       #t)))
                 ,(match (%current-system)
-                   ("i686-linux"
+                   ((or "i686-linux" "x86_64-linux")
                     '(add-after 'build 'libtool-workaround
                       (lambda _
                         ;; libtool: install: /gnu/store/7swwdnq02lqk4xkd8740fxdj1h4va38l-bootstrap-binaries-0/bin/install -c .libs/libcc1.so.0.0.0 /gnu/store/8qf47i99nxz9jvrmq5va0g3q1yvs3x74-gcc-cross-boot0-5.5.0-lib/lib/./libcc1.so.0.0.0
@@ -1817,7 +1834,7 @@ exec " gcc "/bin/" program
                         (system* "touch"
                                  "libcc1/.libs/libcc1.so.0.0.0"
                                  "libcc1/.libs/libcc1plugin.so.0.0.0"))))
-                   (_ 'identity))
+                   (_ identity))
                 (add-after 'install 'symlink-libgcc_eh
                   (lambda* (#:key outputs #:allow-other-keys)
                     (let ((out (assoc-ref outputs "lib")))
@@ -1903,9 +1920,11 @@ exec " gcc "/bin/" program
                      ;; do that (default is "cru".)
                      #:make-flags `("ARFLAGS=crD"
                                     ,,(match (%current-system)
-                                      ;; ranlib: '-D': No such file
-                                      ("i686-linux" "RANLIB=ranlib")
-                                      (_ "RANLIB=ranlib -D"))
+                                        ;; ranlib: '-D': No such file
+                                        ((or "i686-linux" "x86_64-linux")
+                                         "RANLIB=ranlib")
+                                        (_
+                                         "RANLIB=ranlib -D"))
                                     "V=1"))))))
     (package
       (inherit (package-with-bootstrap-guile
@@ -2156,6 +2175,13 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        ("bash" ,bash)))
     (inputs '())))
 
+(define (gcc-boot0-intermediate-wrapped)
+  ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
+  ;; non-cross names.
+  (cross-gcc-wrapper gcc-boot0 binutils-boot0
+                     glibc-final-with-bootstrap-bash
+                     (car (assoc-ref (%boot1-inputs) "bash"))))
+
 (define static-bash-for-glibc
   ;; A statically-linked Bash to be used by GLIBC-FINAL in system(3) & co.
   (let ((bash (package
@@ -2177,14 +2203,11 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      (package-with-explicit-inputs
       bash
       (lambda _
-        (let ((gcc  (cross-gcc-wrapper gcc-boot0 binutils-boot0
-                                       glibc-final-with-bootstrap-bash
-                                       (car (assoc-ref (%boot1-inputs) "bash")))))
-          `(("gcc" ,gcc)
-            ("libc" ,glibc-final-with-bootstrap-bash)
-            ("libc:static" ,glibc-final-with-bootstrap-bash "static")
-            ,@(fold alist-delete (%boot1-inputs)
-                    '("gcc" "libc")))))
+        `(("gcc" ,(gcc-boot0-intermediate-wrapped))
+          ("libc" ,glibc-final-with-bootstrap-bash)
+          ("libc:static" ,glibc-final-with-bootstrap-bash "static")
+          ,@(fold alist-delete (%boot1-inputs)
+                  '("gcc" "libc"))))
       (current-source-location)
       #:guile %bootstrap-guile))))
 
@@ -2344,17 +2367,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        ;; positive, so turn it off.
        #:validate-runpath? #f
 
-       ;; Build again GMP & co. within GCC's build process, because it's hard
-       ;; to do outside (because GCC-BOOT0 is a cross-compiler, and thus
-       ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
-       ,@(substitute-keyword-arguments (package-arguments gcc-boot0)
-           ((#:configure-flags boot-flags)
-            (let loop ((args (package-arguments gcc)))
-              (match args
-                ((#:configure-flags normal-flags _ ...)
-                 normal-flags)
-                ((_ rest ...)
-                 (loop rest)))))
+       ,@(substitute-keyword-arguments (package-arguments gcc)
            ((#:make-flags flags)
             ;; Since $LIBRARY_PATH is not honored, add the relevant flags.
             `(let ((zlib (assoc-ref %build-inputs "zlib")))
@@ -2366,8 +2379,33 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                          zlib "/lib")
                           flag))
                     ,flags)))
+           ;; Build again GMP & co. within GCC's build process, because it's hard
+           ;; to do outside (because GCC-BOOT0 is a cross-compiler, and thus
+           ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
            ((#:phases phases)
-            `(alist-delete 'symlink-libgcc_eh ,phases)))))
+            `(modify-phases ,phases
+                (add-after 'unpack 'unpack-gmp&co
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
+                          (mpfr (assoc-ref %build-inputs "mpfr-source"))
+                          (mpc  (assoc-ref %build-inputs "mpc-source")))
+
+                      ;; To reduce the set of pre-built bootstrap inputs, build
+                      ;; GMP & co. from GCC.
+                      (for-each (lambda (source)
+                                  (invoke "tar" "xvf" source))
+                                (list gmp mpfr mpc))
+
+                      ;; Create symlinks like `gmp' -> `gmp-x.y.z'.
+                      ,@(map (lambda (lib)
+                               ;; Drop trailing letters, as gmp-6.0.0a unpacks
+                               ;; into gmp-6.0.0.
+                               `(symlink ,(string-trim-right
+                                           (package-full-name lib "-")
+                                           char-set:letter)
+                                         ,(package-name lib)))
+                             (list gmp-6.0 mpfr mpc))
+                      #t))))))))
 
     ;; This time we want Texinfo, so we get the manual.  Add
     ;; STATIC-BASH-FOR-GLIBC so that it's used in the final shebangs of
