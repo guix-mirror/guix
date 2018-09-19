@@ -1229,7 +1229,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xapian-revert-5489fb2f8.patch		\
   %D%/packages/patches/xboing-CVE-2004-0149.patch		\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
-  %D%/packages/patches/xf86-video-ast-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-i128-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-mach64-glibc-2.20.patch	\
