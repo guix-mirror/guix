@@ -462,14 +462,13 @@ computing convex hulls.")
     (name "arpack-ng")
     (version "3.6.2")
     (home-page "https://github.com/opencollab/arpack-ng")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "16jrvdl0gh78rrfnvrcxwys4slwfh6qmwwjhfc9d6vwrvq184g37"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08yg5rbsnrni9v04x5a8frav6yp7x6lwvai5j93a37b1p59jsgsl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
