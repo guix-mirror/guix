@@ -200,7 +200,7 @@ in turn be used to build the final Rust.")
          ("rustc"
           ,(rust-source "1.19.0" "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"))))
       (arguments
-       `(#:tests? #f
+       `(#:test-target "local_tests"
          #:make-flags (list (string-append "LLVM_CONFIG="
                                            (assoc-ref %build-inputs "llvm")
                                            "/bin/llvm-config"))
@@ -250,6 +250,7 @@ in turn be used to build the final Rust.")
                       (gcc (assoc-ref inputs "gcc")))
                  ;; These files are not reproducible.
                  (for-each delete-file (find-files "output" "\\.txt$"))
+                 (delete-file-recursively "output/local_tests")
                  (mkdir-p lib)
                  (copy-recursively "output" lib/rust)
                  (mkdir-p bin)
