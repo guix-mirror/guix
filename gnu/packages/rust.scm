@@ -411,6 +411,8 @@ test = { path = \"../libtest\" }
                                    "output/rustc-build/rustc"
                                    "-C" (string-append "linker="
                                                        (getenv "CC"))
+                                   ;; Required for libterm.
+                                   "-Z" "force-unstable-if-unmarked"
                                    "-L" "output/target-libs"
                                    (string-append "src/" name "/lib.rs")
                                    "-o"
@@ -430,7 +432,13 @@ test = { path = \"../libtest\" }
                            ("libpanic_unwind")
                            ;; Uses "cc" to link.
                            ("libstd" "-l" "dl" "-l" "rt" "-l" "pthread")
-                           ("libarena")))
+                           ("libarena")
+
+                           ;; Test dependencies:
+
+                           ("libgetopts")
+                           ("libterm")
+                           ("libtest")))
                #t)))
          ;; This phase is overridden by newer versions.
          (replace 'check
