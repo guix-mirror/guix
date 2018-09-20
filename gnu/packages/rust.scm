@@ -534,15 +534,6 @@ safety and thread safety guarantees.")
                  (substitute* "src/test/run-pass/out-of-stack.rs"
                    (("// ignore-android") "// ignore-test\n// ignore-android"))
                  #t))
-             (add-after 'ignore-glibc-2.27-incompatible-test 'fix-mtime-bug
-               (lambda* _
-                 (substitute* "src/build_helper/lib.rs"
-                   ;; Bug in Rust code.
-                   ;; Current implementation assume that if dst not exist then it's mtime
-                   ;; is 0, but in same time "src" have 0 mtime in guix build!
-                   (("let threshold = mtime\\(dst\\);")
-                    "if !dst.exists() {\nreturn false\n}\n let threshold = mtime(dst);"))
-                 #t))
              (replace 'configure
                (lambda* (#:key inputs outputs #:allow-other-keys)
                  (let* ((out (assoc-ref outputs "out"))
@@ -608,10 +599,11 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
              (delete 'patch-cargo-tomls)
              (add-before 'build 'reset-timestamps-after-changes
                (lambda* _
-                 (define ref (stat "README.md"))
                  (for-each
                   (lambda (filename)
-                    (set-file-time filename ref))
+                    ;; Rust 1.20.0 treats timestamp 0 as "file doesn't exist".
+                    ;; Therefore, use timestamp 1.
+                    (utime filename 1 1 1 1))
                   (find-files "." #:directories? #t))
                  #t))
              (replace 'build
@@ -699,8 +691,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    ;; This test is known to fail on aarch64 and powerpc64le:
                    ;; https://github.com/rust-lang/rust/issues/45410
                    (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
-                 #t))
-             (delete 'fix-mtime-bug))))))))
+                 #t)))))))))
 
 (define-public rust-1.25
   (let ((base-rust
