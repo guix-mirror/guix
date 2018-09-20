@@ -6763,7 +6763,7 @@ the @code{conduit} package.")
 (define-public ghc-pandoc-citeproc
   (package
     (name "ghc-pandoc-citeproc")
-    (version "0.12.2.5")
+    (version "0.14.3.1")
     (source
      (origin
        (method url-fetch)
@@ -6772,7 +6772,7 @@ the @code{conduit} package.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1l58nbflcnlznc93qimkk7ghk2gv8kipf45zf88piqa2zys41yyx"))))
+         "0yj6rckwsc9vig40cm15ry0j3d01xpk04qma9n4byhal6v4b5h22"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
