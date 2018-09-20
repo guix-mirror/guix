@@ -87,23 +87,7 @@
                           ;; XXX Disable WOFF2 ‘web fonts’.  These were never
                           ;; supported in our previous builds.  Enabling them
                           ;; requires building libwoff2 and possibly woff2dec.
-                          "-DUSE_WOFF2=OFF")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after
-          'set-paths 'add-gst-plugins-base-include-path
-          (lambda* (#:key inputs #:allow-other-keys)
-            ;; XXX Work around a problem in the build system, which neglects
-            ;; to add -I for gst-plugins-base when compiling
-            ;; Source/WebKit2/UIProcess/WebPageProxy.cpp, apparently assuming
-            ;; that it will be in the same directory as gstreamer's header
-            ;; files.
-            (setenv "CPATH"
-                    (string-append (getenv "C_INCLUDE_PATH")
-                                   ":"
-                                   (assoc-ref inputs "gst-plugins-base")
-                                   "/include/gstreamer-1.0"))
-            #t)))))
+                          "-DUSE_WOFF2=OFF")))
     (native-inputs
      `(("bison" ,bison)
        ("gettext" ,gettext-minimal)
@@ -171,14 +155,12 @@ HTML/CSS applications to full-fledged web browsers.")
      `(("gcc" ,gcc-7)  ; webkitgtk-2.22 requires gcc-6 or newer
        ,@(package-native-inputs webkitgtk)))
     (arguments
-     (substitute-keyword-arguments (package-arguments webkitgtk)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'add-gst-plugins-base-include-path
-               'work-around-gcc-7-include-path-issue
-             ;; FIXME: Work around a problem with gcc-7 includes (see
-             ;; <https://bugs.gnu.org/30756>).
-             (lambda _
-               (unsetenv "C_INCLUDE_PATH")
-               (unsetenv "CPLUS_INCLUDE_PATH")
-               #t))))))))
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'work-around-gcc-7-include-path-issue
+                    ;; FIXME: Work around a problem with gcc-7 includes (see
+                    ;; <https://bugs.gnu.org/30756>).
+                    (lambda _
+                      (unsetenv "C_INCLUDE_PATH")
+                      (unsetenv "CPLUS_INCLUDE_PATH")
+                      #t)))
+       ,@(package-arguments webkitgtk)))))
