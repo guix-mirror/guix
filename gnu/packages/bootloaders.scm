@@ -381,7 +381,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
        ("sdl" ,sdl)
        ("swig" ,swig)))
     (build-system  gnu-build-system)
-    (home-page "http://www.denx.de/wiki/U-Boot/")
+    (home-page "https://www.denx.de/wiki/U-Boot/")
     (synopsis "ARM bootloader")
     (description "U-Boot is a bootloader used mostly for ARM boards. It
 also initializes the boards (RAM etc).")
