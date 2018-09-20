@@ -417,7 +417,7 @@ use of experts and novices alike.")
                #t))
            (add-after 'unpack 'autoreconf
              (lambda _
-               (zero? (system* "autoreconf")))))))
+               (invoke "autoreconf"))))))
       (inputs
        `(("scheme48" ,scheme48)
          ("scheme48-rx" ,scheme48-rx)))
@@ -623,7 +623,7 @@ interactive POSIX shell targeted at resource-constrained systems.")
          (replace 'build
            (lambda _
              (setenv "CC" "gcc")
-             (zero? (system* (which "sh") "Build.sh"))))
+             (invoke (which "sh") "Build.sh")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -632,7 +632,8 @@ interactive POSIX shell targeted at resource-constrained systems.")
                (install-file "mksh" bin)
                (with-directory-excursion bin
                  (symlink "mksh" "ksh"))
-               (install-file "mksh.1" man)))))))
+               (install-file "mksh.1" man)
+               #t))))))
     (home-page "https://www.mirbsd.org/mksh.htm")
     (synopsis "Korn Shell from MirBSD")
     (description "mksh is an actively developed free implementation of the
