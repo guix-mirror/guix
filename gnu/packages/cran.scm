@@ -5875,3 +5875,23 @@ score in order to detect blood doping.  The package also contains functions to
 calculate other scores used in anti-doping programs, such as the ratio of
 hemoglobin to reticulocytes (OFF-score), as well as example data.")
     (license license:gpl2+)))
+
+(define-public r-parmigene
+  (package
+    (name "r-parmigene")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "parmigene" version))
+       (sha256
+        (base32
+         "1fsm6pkr17jcbzkj1hbn91jf890fviqk1lq6ls8pihsdgah1zb4d"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/parmigene/")
+    (synopsis "Mutual information estimation for gene network reconstruction")
+    (description
+     "This package provides a parallel estimation of the mutual information
+based on entropy estimates from k-nearest neighbors distances and algorithms
+for the reconstruction of gene regulatory networks.")
+    (license license:agpl3+)))
