@@ -1115,7 +1115,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/reptyr-fix-gcc-7.patch			\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpcbind-CVE-2017-8779.patch		\
-  %D%/packages/patches/rsem-makefile.patch			\
   %D%/packages/patches/rtags-separate-rct.patch			\
   %D%/packages/patches/racket-store-checksum-override.patch	\
   %D%/packages/patches/ruby-rubygems-276-for-ruby24.patch	\

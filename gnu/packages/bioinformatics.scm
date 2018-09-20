@@ -4800,66 +4800,79 @@ phylogenies.")
 (define-public rsem
   (package
     (name "rsem")
-    (version "1.2.20")
+    (version "1.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "http://deweylab.biostat.wisc.edu/rsem/src/rsem-"
-                       version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/deweylab/RSEM.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "0nzdc0j0hjllhsd5f2xli95dafm3nawskigs140xzvjk67xh0r9q"))
-       (patches (search-patches "rsem-makefile.patch"))
+        (base32 "1jlq11d1p8qp64w75yj8cnbbd1a93viq10pzsbwal7vdn8fg13j1"))
+       (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
         '(begin
-           ;; remove bundled copy of boost
+           ;; remove bundled copy of boost and samtools
            (delete-file-recursively "boost")
+           (delete-file-recursively "samtools-1.3")
            #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
+       #:make-flags
+       (list (string-append "BOOST="
+                            (assoc-ref %build-inputs "boost")
+                            "/include/")
+             (string-append "SAMHEADERS="
+                            (assoc-ref %build-inputs "htslib")
+                            "/include/htslib/sam.h")
+             (string-append "SAMLIBS="
+                            (assoc-ref %build-inputs "htslib")
+                            "/lib/libhts.a"))
        #:phases
        (modify-phases %standard-phases
          ;; No "configure" script.
          ;; Do not build bundled samtools library.
          (replace 'configure
-                  (lambda _
-                    (substitute* "Makefile"
-                      (("^all : sam/libbam.a") "all : "))
-                    #t))
+           (lambda _
+             (substitute* "Makefile"
+               (("^all : \\$\\(PROGRAMS\\).*") "all: $(PROGRAMS)\n")
+               (("^\\$\\(SAMLIBS\\).*") ""))
+             #t))
          (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (string-append (assoc-ref outputs "out")))
-                           (bin (string-append out "/bin/"))
-                           (perl (string-append out "/lib/perl5/site_perl")))
-                      (mkdir-p bin)
-                      (mkdir-p perl)
-                      (for-each (lambda (file)
-                                  (install-file file bin))
-                                (find-files "." "rsem-.*"))
-                      (install-file "rsem_perl_utils.pm" perl))
-                    #t))
-         (add-after
-          'install 'wrap-program
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (for-each (lambda (prog)
-                          (wrap-program (string-append out "/bin/" prog)
-                            `("PERL5LIB" ":" prefix
-                              (,(string-append out "/lib/perl5/site_perl")))))
-                        '("rsem-plot-transcript-wiggles"
-                          "rsem-calculate-expression"
-                          "rsem-generate-ngvector"
-                          "rsem-run-ebseq"
-                          "rsem-prepare-reference")))
-            #t)))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (string-append (assoc-ref outputs "out")))
+                    (bin (string-append out "/bin/"))
+                    (perl (string-append out "/lib/perl5/site_perl")))
+               (mkdir-p bin)
+               (mkdir-p perl)
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         (find-files "." "rsem-.*"))
+               (install-file "rsem_perl_utils.pm" perl))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (prog)
+                           (wrap-program (string-append out "/bin/" prog)
+                             `("PERL5LIB" ":" prefix
+                               (,(string-append out "/lib/perl5/site_perl")))))
+                         '("rsem-calculate-expression"
+                           "rsem-control-fdr"
+                           "rsem-generate-data-matrix"
+                           "rsem-generate-ngvector"
+                           "rsem-plot-transcript-wiggles"
+                           "rsem-prepare-reference"
+                           "rsem-run-ebseq"
+                           "rsem-run-prsem-testing-procedure")))
+             #t)))))
     (inputs
      `(("boost" ,boost)
-       ("ncurses" ,ncurses)
        ("r-minimal" ,r-minimal)
        ("perl" ,perl)
-       ("samtools" ,samtools-0.1)
+       ("htslib" ,htslib-1.3)
        ("zlib" ,zlib)))
     (home-page "http://deweylab.biostat.wisc.edu/rsem/")
     (synopsis "Estimate gene expression levels from RNA-Seq data")
