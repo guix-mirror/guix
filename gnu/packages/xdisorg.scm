@@ -476,9 +476,8 @@ move windows, switch between desktops, etc.).")
              (let* ((out (assoc-ref outputs "out"))
                     (doc (string-append out "/share/doc/scrot")))
                (mkdir-p doc)
-               (zero?
-                (system* "make" "install"
-                         (string-append "docsdir=" doc)))))))))
+               (invoke "make" "install"
+                        (string-append "docsdir=" doc))))))))
     (inputs
      `(("libx11" ,libx11)
        ("giblib" ,giblib)))
@@ -585,10 +584,9 @@ include cursor in the resulting image.")
                     (man1 (string-append out "/share/man/man1")))
                (mkdir-p bin)
                (mkdir-p man1)
-               (zero?
-                 (system* "make" "install" "install.man"
-                          (string-append "BINDIR=" bin)
-                          (string-append "MANDIR=" man1)))))))))
+               (invoke "make" "install" "install.man"
+                       (string-append "BINDIR=" bin)
+                       (string-append "MANDIR=" man1))))))))
     (inputs `(("libx11" ,libx11)))
     (home-page "http://ftp.x.org/contrib/utilities/")
     (synopsis "Hide idle mouse cursor")
@@ -1344,7 +1342,7 @@ invert colors on a specific display/screen.")
                  #:phases (modify-phases %standard-phases
                            (add-before 'configure 'autoreconf
                              (lambda _
-                               (zero? (system* "autoreconf" "-vfi")))))))
+                               (invoke "autoreconf" "-vfi"))))))
    (native-inputs `(("autoconf" ,autoconf)
                     ("automake" ,automake)
                     ("pkg-config" ,pkg-config)
@@ -1403,7 +1401,7 @@ or playing a PCM encoded WAVE file.")
                #t)))
          (add-after 'install 'install/man
            (lambda _
-             (zero? (system* "make" "install.man")))))))
+             (invoke "make" "install.man"))))))
     (home-page "http://ibiblio.org/pub/Linux/X11/screensavers/")
     (synopsis "Program launcher for idle X sessions")
     (description "Xautolock monitors input devices under the X Window
