@@ -514,6 +514,35 @@ safety and thread safety guarantees.")
        (substitute-keyword-arguments (package-arguments rust-1.19)
          ((#:phases phases)
           `(modify-phases ,phases
+             (add-after 'patch-tests 'patch-cargo-tests
+               (lambda _
+                 (substitute* "src/tools/cargo/tests/build.rs"
+                  (("/usr/bin/env") (which "env"))
+                  ;; Guix llvm is compiled without asmjs-unknown-emscripten.
+                  (("fn wasm32_final_outputs") "#[ignore]\nfn wasm32_final_outputs"))
+                 (substitute* "src/tools/cargo/tests/death.rs"
+                  ;; This is stuck when built in container.
+                  (("fn ctrl_c_kills_everyone") "#[ignore]\nfn ctrl_c_kills_everyone"))
+                 ;; Prints test output in the wrong order when built on
+                 ;; i686-linux.
+                 (substitute* "src/tools/cargo/tests/test.rs"
+                   (("fn cargo_test_env") "#[ignore]\nfn cargo_test_env"))
+                 #t))
+             (add-after 'patch-cargo-tests 'ignore-glibc-2.27-incompatible-test
+               ;; https://github.com/rust-lang/rust/issues/47863
+               (lambda _
+                 (substitute* "src/test/run-pass/out-of-stack.rs"
+                   (("// ignore-android") "// ignore-test\n// ignore-android"))
+                 #t))
+             (add-after 'ignore-glibc-2.27-incompatible-test 'fix-mtime-bug
+               (lambda* _
+                 (substitute* "src/build_helper/lib.rs"
+                   ;; Bug in Rust code.
+                   ;; Current implementation assume that if dst not exist then it's mtime
+                   ;; is 0, but in same time "src" have 0 mtime in guix build!
+                   (("let threshold = mtime\\(dst\\);")
+                    "if !dst.exists() {\nreturn false\n}\n let threshold = mtime(dst);"))
+                 #t))
              (replace 'configure
                (lambda* (#:key inputs outputs #:allow-other-keys)
                  (let* ((out (assoc-ref outputs "out"))
@@ -651,34 +680,6 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                ;; XXX: Revisit this when we use gcc 6.
                (substitute* "src/binaryen/CMakeLists.txt"
                  (("ADD_COMPILE_FLAG\\(\\\"-march=native\\\"\\)") ""))
-               #t))
-           (add-after 'patch-tests 'patch-cargo-tests
-             (lambda _
-               (substitute* "src/tools/cargo/tests/build.rs"
-                (("/usr/bin/env") (which "env"))
-                ;; Guix llvm is compiled without asmjs-unknown-emscripten.
-                (("fn wasm32_final_outputs") "#[ignore]\nfn wasm32_final_outputs"))
-               (substitute* "src/tools/cargo/tests/death.rs"
-                ;; This is stuck when built in container.
-                (("fn ctrl_c_kills_everyone") "#[ignore]\nfn ctrl_c_kills_everyone"))
-               ;; Prints test output in the wrong order when built on
-               ;; i686-linux.
-               (substitute* "src/tools/cargo/tests/test.rs"
-                 (("fn cargo_test_env") "#[ignore]\nfn cargo_test_env"))
-               #t))
-           (add-after 'patch-cargo-tests 'ignore-glibc-2.27-incompatible-test
-             ;; https://github.com/rust-lang/rust/issues/47863
-             (lambda _
-               (substitute* "src/test/run-pass/out-of-stack.rs"
-                 (("// ignore-android") "// ignore-test\n// ignore-android"))))
-           (add-after 'ignore-glibc-2.27-incompatible-test 'fix-mtime-bug
-             (lambda* _
-               (substitute* "src/build_helper/lib.rs"
-                 ;; Bug in Rust code.
-                 ;; Current implementation assume that if dst not exist then it's mtime
-                 ;; is 0, but in same time "src" have 0 mtime in guix build!
-                 (("let threshold = mtime\\(dst\\);")
-                  "if !dst.exists() {\nreturn false\n}\n let threshold = mtime(dst);"))
                #t))))))))
 
 (define-public rust-1.24
