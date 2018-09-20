@@ -814,8 +814,11 @@ incompatible with HDF5.")
                 (mkdir-p flib)
                 (mkdir-p finc)
                 (mkdir-p fex)
-                (rename-file (string-append bin "/h5fc")
-                             (string-append fbin "/h5fc"))
+                ;; Note: When built with --enable-parallel, the 'h5fc' file
+                ;; doesn't exist, hence this condition.
+                (when (file-exists? (string-append bin "/h5fc"))
+                  (rename-file (string-append bin "/h5fc")
+                               (string-append fbin "/h5fc")))
                 (for-each (lambda (file)
                             (rename-file file
                                          (string-append flib "/" (basename file))))
