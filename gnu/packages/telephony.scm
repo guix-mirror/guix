@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Francesco Frassinelli <fraph24@gmail.com>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -314,7 +314,7 @@ protocol (RFC 3550).")
        `(#:phases (modify-phases %standard-phases
                     (add-after 'unpack 'autoconf
                       (lambda _
-                        (zero? (system* "autoreconf" "-vfi")))))))
+                        (invoke "autoreconf" "-vfi"))))))
       (home-page "https://gitlab.savoirfairelinux.com/sflphone/libiax2")
       (synopsis "Inter-Asterisk-Protocol library")
       (description "LibIAX2 implements the Inter-Asterisk-Protocol for relaying
@@ -393,27 +393,27 @@ address of one of the participants.")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "qmake" "main.pro" "-recursive"
-                             (string-append "CONFIG+="
-                                            (string-join
-                                             (list "no-update"
-                                                   "no-ice"
-                                                   "no-embed-qt-translations"
-                                                   "no-bundled-speex"
-                                                   "pch"
-                                                   "no-bundled-opus"
-                                                   "no-celt"
-                                                   "no-alsa"
-                                                   "no-oss"
-                                                   "no-portaudio"
-                                                   "speechd"
-                                                   "no-g15"
-                                                   "no-bonjour"
-                                                   "release")))
-                             (string-append "DEFINES+="
-                                            "PLUGIN_PATH="
-                                            (assoc-ref outputs "out")
-                                            "/lib/mumble")))))
+             (invoke "qmake" "main.pro" "-recursive"
+                     (string-append "CONFIG+="
+                                    (string-join
+                                     (list "no-update"
+                                           "no-ice"
+                                           "no-embed-qt-translations"
+                                           "no-bundled-speex"
+                                           "pch"
+                                           "no-bundled-opus"
+                                           "no-celt"
+                                           "no-alsa"
+                                           "no-oss"
+                                           "no-portaudio"
+                                           "speechd"
+                                           "no-g15"
+                                           "no-bonjour"
+                                           "release")))
+                     (string-append "DEFINES+="
+                                    "PLUGIN_PATH="
+                                    (assoc-ref outputs "out")
+                                    "/lib/mumble"))))
          (add-before 'configure 'fix-libspeechd-include
            (lambda _
              (substitute* "src/mumble/TextToSpeech_unix.cpp"
