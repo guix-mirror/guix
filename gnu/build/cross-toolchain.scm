@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,11 +37,8 @@
 
 (define %gcc-include-paths
   ;; Environment variables for header search paths.
-  ;; Note: See <http://bugs.gnu.org/22186> for why not 'CPATH'.
-  '("C_INCLUDE_PATH"
-    "CPLUS_INCLUDE_PATH"
-    "OBJC_INCLUDE_PATH"
-    "OBJCPLUS_INCLUDE_PATH"))
+  ;; Note: See <http://bugs.gnu.org/30756> for why not 'C_INCLUDE_PATH' & co.
+  '("CPATH"))
 
 (define %gcc-cross-include-paths
   ;; Search path for target headers when cross-compiling.
@@ -171,6 +169,16 @@ a target triplet."
       (if (string-contains target "mingw")
           set-cross-path/mingw
           set-cross-path))
+    (add-before 'configure 'treat-glibc-as-system-header
+      (lambda* (#:key inputs #:allow-other-keys)
+        (let ((libc (assoc-ref inputs "libc")))
+          (when libc
+            ;; For GCC6 and later, make sure Glibc is treated as a "system
+            ;; header" such that #include_next does the right thing.
+            (for-each (lambda (var)
+                        (setenv var (string-append libc "/include")))
+                      '("CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH")))
+          #t)))
     (add-after 'install 'make-cross-binutils-visible
       (cut make-cross-binutils-visible #:target target <...>))
     (replace 'install install-strip)))

@@ -522,7 +522,7 @@ It also includes runtime support libraries for these languages.")))
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions and the gfortran definition
 ;;       accordingly.
-(define-public gcc gcc-5)
+(define-public gcc gcc-7)
 
 (define-public (make-libstdc++ gcc)
   "Return a libstdc++ package based on GCC.  The primary use case is when
@@ -660,7 +660,7 @@ as the 'native-search-paths' field."
   ;; (custom-gcc gcc "fortran" …) because that would lead to a package object
   ;; that is not 'eq?' with GFORTRAN-5, and thus 'fold-packages' would
   ;; report two gfortran@5 that are in fact identical.
-  gfortran-5)
+  gfortran-7)
 
 (define-public gccgo-4.9
   (custom-gcc gcc-4.9 "gccgo" '("go")
@@ -724,7 +724,7 @@ as the 'native-search-paths' field."
                      (variable "LIBRARY_PATH")
                      (files '("lib" "lib64"))))))
 
-(define-public gcc-objc gcc-objc-5)
+(define-public gcc-objc gcc-objc-7)
 
 (define-public gcc-objc++-4.8
   (custom-gcc gcc-4.8 "gcc-objc++" '("obj-c++")
@@ -780,7 +780,7 @@ as the 'native-search-paths' field."
                      (variable "LIBRARY_PATH")
                      (files '("lib" "lib64"))))))
 
-(define-public gcc-objc++ gcc-objc++-5)
+(define-public gcc-objc++ gcc-objc++-7)
 
 (define (make-libstdc++-doc gcc)
   "Return a package with the libstdc++ documentation for GCC."

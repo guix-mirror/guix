@@ -6,6 +6,7 @@
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1578,6 +1579,7 @@ exec " gcc "/bin/" program
                             "--disable-libsanitizer"
                             "--disable-libitm"
                             "--disable-libgomp"
+                            "--disable-libmpx"
                             "--disable-libcilkrts"
                             "--disable-libvtv"
                             "--disable-libssp"
@@ -2118,6 +2120,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
          ;; except for the configure-flags.
          ,@(package-arguments lib)
          #:configure-flags `("--disable-shared"
+                             "--disable-libstdcxx-dual-abi"
                              "--disable-libstdcxx-threads"
                              "--disable-libstdcxx-pch"
                              ,(string-append "--with-gxx-include-dir="
@@ -2207,6 +2210,15 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                            char-set:letter)
                                          ,(package-name lib)))
                              (list gmp-6.0 mpfr mpc))
+                      #t)))
+                (add-before 'configure 'treat-glibc-as-system-header
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    (let ((libc (assoc-ref inputs "libc")))
+                      ;; Make sure Glibc is treated as a "system header" so
+                      ;; #include_next does the right thing.
+                      (for-each (lambda (var)
+                                  (setenv var (string-append libc "/include")))
+                                '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
                       #t))))))))
 
     ;; This time we want Texinfo, so we get the manual.  Add
@@ -2455,23 +2467,23 @@ and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
               ("libc-debug" ,glibc-final "debug")
               ("libc-static" ,glibc-final "static")))))
 
+(define-public gcc-toolchain
+  (make-gcc-toolchain gcc-final))
+
 (define-public gcc-toolchain-4.8
   (make-gcc-toolchain gcc-4.8))
 
 (define-public gcc-toolchain-4.9
   (make-gcc-toolchain gcc-4.9))
 
-(define-public gcc-toolchain
-  (make-gcc-toolchain gcc-final))
-
 (define-public gcc-toolchain-5
-  gcc-toolchain)
+  (make-gcc-toolchain gcc-5))
 
 (define-public gcc-toolchain-6
   (make-gcc-toolchain gcc-6))
 
 (define-public gcc-toolchain-7
-  (make-gcc-toolchain gcc-7))
+  gcc-toolchain)
 
 (define-public gcc-toolchain-8
   (make-gcc-toolchain gcc-8))
