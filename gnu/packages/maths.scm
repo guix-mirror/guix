@@ -2084,7 +2084,8 @@ porting.")
            (lambda _
              (substitute* "spec/parser_spec.rb"
                (("\\\\\"")
-                "\"")))))))
+                "\""))
+             #t)))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-rspec" ,ruby-rspec)))
