@@ -27,6 +27,7 @@
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -459,16 +460,15 @@ computing convex hulls.")
 (define-public arpack-ng
   (package
     (name "arpack-ng")
-    (version "3.6.2")
+    (version "3.6.3")
     (home-page "https://github.com/opencollab/arpack-ng")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "16jrvdl0gh78rrfnvrcxwys4slwfh6qmwwjhfc9d6vwrvq184g37"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wljl96yqxc9v8r49c37lscwkdp58kaacfb9p6s6nvpm31haax4y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -2084,7 +2084,8 @@ porting.")
            (lambda _
              (substitute* "spec/parser_spec.rb"
                (("\\\\\"")
-                "\"")))))))
+                "\""))
+             #t)))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-rspec" ,ruby-rspec)))
@@ -2873,6 +2874,18 @@ parts of it.")
      "OpenBLAS is a BLAS library forked from the GotoBLAS2-1.13 BSD version.")
     (license license:bsd-3)))
 
+(define-public openblas-ilp64
+  (package (inherit openblas)
+    (name "openblas-ilp64")
+    (supported-systems '("x86_64-linux" "aarch64-linux" "mips64el-linux"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openblas)
+       ((#:make-flags flags '())
+        `(append (list "INTERFACE64=1" "LIBNAMESUFFIX=ilp64")
+                 ,flags))))
+    (synopsis "Optimized BLAS library based on GotoBLAS (ILP64 version)")
+    (license license:bsd-3)))
+
 (define* (make-blis implementation #:optional substitutable?)
   "Return a BLIS package with the given IMPLEMENTATION (see config/ in the
 source tree for a list of implementations.)
@@ -3217,7 +3230,7 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.9.1")
+    (version "0.9.9.2")
     (source
      (origin
        (method url-fetch)
@@ -3225,7 +3238,7 @@ Failure to do so will result in a library with poor performance.")
                            version  "/glm-" version ".zip"))
        (sha256
         (base32
-         "042a23hmxfs429czkmlg5ixf28aikzfbw18780prj2gcd4flgw8h"))))
+         "1m2gws1d7l6h4mdn0ap74pfnm3vva3kk8rybdqd5x4lksd1mk6r0"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))

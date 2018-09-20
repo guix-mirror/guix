@@ -60,7 +60,7 @@ to take care of the OS-specific details when writing software that uses serial p
 (define-public libsigrokdecode
   (package
     (name "libsigrokdecode")
-    (version "0.5.1")
+    (version "0.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -68,7 +68,7 @@ to take care of the OS-specific details when writing software that uses serial p
                     version ".tar.gz"))
               (sha256
                (base32
-                "07mmb6s62ncqqgsc6szilj2yxixf6gg99ggbzsjlbhp4b9aqnga9"))))
+                "1w434nl1syjkvwl08lji3r9sr60lbxp1nqys8hqwzv2lgiwrx3g0"))))
     (outputs '("out" "doc"))
     (arguments
      `(#:phases

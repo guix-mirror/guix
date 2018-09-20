@@ -4907,6 +4907,57 @@ toolkit.  Use it to build trees of widgets.")
 (define-public python2-urwidtrees
   (package-with-python2 python-urwidtrees))
 
+(define-public python-ua-parser
+  (package
+    (name "python-ua-parser")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ua-parser" version))
+       (sha256
+        (base32
+         "1jwdf58rhchjzzrad405pviv0iq24xa2xmmmdgcm2c8s6b4wzfwp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no test suite in release
+    (native-inputs
+     `(("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://github.com/ua-parser/uap-python")
+    (synopsis "User agent parser")
+    (description
+     "@code{ua-parser} is a Python port of Browserscope's user agent parser.")
+    (license license:asl2.0)))
+
+(define-public python2-ua-parser
+  (package-with-python2 python-ua-parser))
+
+(define-public python-user-agents
+  (package
+    (name "python-user-agents")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "user-agents" version))
+       (sha256
+        (base32
+         "0fc00cd3j8dahq1zzn8pkgfgd7lq37bp2scmdma2n1c049vicgb4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                  ;missing devices.json test file in release
+    (propagated-inputs
+     `(("python-ua-parser" ,python-ua-parser)))
+    (home-page "https://github.com/selwin/python-user-agents")
+    (synopsis "User Agent strings parsing library")
+  (description
+   "A library to identify devices (phones, tablets) and their capabilities by
+parsing (browser/HTTP) user agent strings.")
+  (license license:expat)))
+
+(define-public python2-user-agents
+  (package-with-python2 python-user-agents))
+
 (define-public python-dbus
   (package
     (name "python-dbus")
@@ -5118,13 +5169,13 @@ Python.")
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "5.2.2")
+    (version "5.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "18x36n78ph5v1fxk54gvdbc3d8nfncha78phifg3lqaa9gifgzxd"))))
+        (base32 "0gj0xxgiq3mp9qyyrbfzldiaq1giliqw0in64nqiz7vx49myqj7z"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
@@ -5142,7 +5193,8 @@ Python.")
                                "/bin/snakemake")))
              #t)))))
     (propagated-inputs
-     `(("python-wrapt" ,python-wrapt)
+     `(("python-gitpython" ,python-gitpython)
+       ("python-wrapt" ,python-wrapt)
        ("python-requests" ,python-requests)
        ("python-appdirs" ,python-appdirs)
        ("python-configargparse" ,python-configargparse)
@@ -10762,6 +10814,37 @@ cases.")
 (define-public python2-ddt
   (package-with-python2 python-ddt))
 
+(define-public python-pycountry
+  (package
+    (name "python-pycountry")
+    (version "18.5.26")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pycountry" version))
+       (sha256
+        (base32
+         "15q9j047s3yc9cfcxq1ch8b71f81na44cr6dydd5gxk0ki9a4akz"))))
+    (build-system python-build-system)
+    (home-page "https://bitbucket.org/flyingcircus/pycountry")
+    (synopsis "ISO databases for languages, countries, currencies, etc.")
+    (description
+     "@code{pycountry} provides the ISO databases for the standards:
+@enumerate
+@item 639-3 (Languages)
+@item 3166 (Countries)
+@item 3166-3 (Deleted Countries)
+@item 3166-2 (Subdivisions of countries)
+@item 4217 (Currencies)
+@item 15924 (Scripts)
+@end enumerate
+It includes a copy from Debian’s pkg-isocodes and makes the data accessible
+through a Python API.")
+    (license license:lgpl2.1+)))
+
+(define-public python2-pycountry
+  (package-with-python2 python-pycountry))
+
 (define-public python-pycosat
   (package
     (name "python-pycosat")
@@ -11455,17 +11538,15 @@ perform the operations required for synchronizing plain text.")
 (define-public python-dirsync
   (package
     (name "python-dirsync")
-    (version "2.2.2")
+    (version "2.2.3")
     (source
       (origin
         (method url-fetch)
-        (uri (pypi-uri "dirsync" version ".zip"))
+        (uri (pypi-uri "dirsync" version))
         (sha256
          (base32
-          "1hcdvmkwd5512zbxpin0k7bx5bkgzy3swjx7d0kj1y45af6r75v2"))))
+          "1r40fkanksagcszf1ag85mdr8w7rgc7196n6s1qlsk2abw6i7v0z"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("unzip" ,unzip)))
     (propagated-inputs
      `(("six" ,python-six)))
     (home-page "https://bitbucket.org/tkhyn/dirsync")
@@ -13716,16 +13797,16 @@ under Python 2.7.")
 (define-public pybind11
   (package
     (name "pybind11")
-    (version "2.2.3")
+    (version "2.2.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/pybind/pybind11/archive/v"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pybind/pybind11.git")
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "1sj0x4fwsbnwdai5sxpw1l1vh8m5hpbkfk3zanxcbcgs39jpnfrs"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0pa79ymcasv8br5ifbx7878id5py2jpjac3i20cqxr6gs9l6ivlv"))
+              (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python)

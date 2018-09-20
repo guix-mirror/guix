@@ -36,7 +36,8 @@
             latest-repository-commit))
 
 (define %repository-cache-directory
-  (make-parameter "/var/cache/guix/checkouts"))
+  (make-parameter (string-append (cache-directory #:ensure? #f)
+                                 "/checkouts")))
 
 (define-syntax-rule (with-libgit2 thunk ...)
   (begin

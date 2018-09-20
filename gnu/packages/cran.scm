@@ -5797,3 +5797,81 @@ sampling and basic manipulation of Brazilian lawsuits identification number.
 It also implements functions for text cleaning, such as accentuation
 removal.")
     (license license:expat)))
+
+(define-public r-abnormality
+  (package
+    (name "r-abnormality")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abnormality" version))
+       (sha256
+        (base32 "1fzfskl9akl06nliy8hkv2a0pznpj8pwcypg3gj5r2nzvr3kan9v"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)))
+    (home-page "https://cran.r-project.org/web/packages/abnormality/")
+    (synopsis "Measure a subject's abnormality with respect to a reference population")
+    (description
+     "This package contains functions to implement the methodology and
+considerations laid out by Marks et al. in the article \"Measuring abnormality
+in high dimensional spaces: applications in biomechanical gait analysis\".
+Using high-dimensional datasets to measure a subject's overall level of
+abnormality as compared to a reference population is often needed in outcomes
+research.")
+    (license license:expat)))
+
+(define-public r-abodoutlier
+  (package
+    (name "r-abodoutlier")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abodOutlier" version))
+       (sha256
+        (base32 "1pvhgxmh23br84r0fbmv7g53z2427birdja96a67vqgz18r3fdvj"))))
+    (properties `((upstream-name . "abodOutlier")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)))
+    (home-page "https://cran.r-project.org/web/packages/abodOutlier/")
+    (synopsis "Angle-based outlier detection")
+    (description
+     "This package performs angle-based outlier detection on a given data
+frame.  It offers three methods to process data:
+@enumerate
+@item full but slow implementation using all the data that has cubic
+  complexity;
+@item a fully randomized method;
+@item a method using k-nearest neighbours.
+@end enumerate
+These algorithms are well suited for high dimensional data outlier
+detection.")
+    (license license:expat)))
+
+(define-public r-abps
+  (package
+    (name "r-abps")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ABPS" version))
+       (sha256
+        (base32 "1k3f5i34f4w2khkszb4qhwwcpiy7gsfh82vjr6rypwg6rx5rjclq"))))
+    (properties `((upstream-name . "ABPS")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-kernlab" ,r-kernlab)))
+    (home-page "https://cran.r-project.org/web/packages/ABPS/")
+    (synopsis "Abnormal blood profile score to detect blood doping")
+    (description
+     "This package offers an implementation of the @dfn{Abnormal blood profile score} (ABPS).
+The ABPS is a part of the Athlete biological passport program of the World
+anti-doping agency, which combines several blood parameters into a single
+score in order to detect blood doping.  The package also contains functions to
+calculate other scores used in anti-doping programs, such as the ratio of
+hemoglobin to reticulocytes (OFF-score), as well as example data.")
+    (license license:gpl2+)))

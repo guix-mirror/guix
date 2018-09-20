@@ -4156,7 +4156,7 @@ work and the interface is well tested.")
        ("gtkspell3" ,gtkspell3)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("webkitgtk" ,webkitgtk)))
-    (home-page "https://github.com/gnumdk/eolie/")
+    (home-page "https://wiki.gnome.org/Apps/Eolie")
     (synopsis "Web browser for GNOME")
     (description
      "Eolie is a new web browser for GNOME.  It features Firefox sync support,
@@ -4438,7 +4438,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.28.0")
+    (version "0.28.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4446,7 +4446,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1d797nmlz9gs6ri0h65b76s40ss6ma6h6405xqx03lhg5xni3kmg"))))
+                "03k7n2kmzqn11kf3733w7m6xjh2b5q9xr84za2hli11fjymzaxm9"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs
      `(("dconf" ,dconf)))

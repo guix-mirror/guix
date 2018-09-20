@@ -770,6 +770,7 @@ bytevector) as its internal buffer, and a thunk to flush this output port."
 
   (define (flush)
     (put-bytevector port buffer 0 total)
+    (force-output port)
     (set! total 0))
 
   (define (write bv offset count)
@@ -927,6 +928,7 @@ path."
              (write-int (if recursive? 1 0) port)
              (write-string hash-algo port)
              (write-file file-name port #:select? select?)
+             (write-buffered-output server)
              (let loop ((done? (process-stderr server)))
                (or done? (loop (process-stderr server))))
              (read-store-path port)))))
@@ -1042,6 +1044,7 @@ an arbitrary directory layout in the store without creating a derivation."
                            #:file-port file-port
                            #:symlink-target symlink-target
                            #:directory-entries directory-entries)
+          (write-buffered-output server)
           (let loop ((done? (process-stderr server)))
             (or done? (loop (process-stderr server))))
           (let ((result (read-store-path port)))

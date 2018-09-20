@@ -13699,3 +13699,27 @@ are highly customizable.  Currently, it is possible to plot: bigwig, bed (many
 options), bedgraph, links (represented as arcs), and Hi-C matrices.
 pyGenomeTracks can make plots with or without Hi-C data.")
     (license license:gpl3+)))
+
+(define-public python-hic2cool
+  (package
+    (name "python-hic2cool")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hic2cool" version))
+       (sha256
+        (base32
+         "0xy6mhfns2lzib1kcr6419jjp6pmh0qx8z8na55lmiwn0ds8q9cl"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; no tests included
+    (propagated-inputs
+     `(("python-cooler" ,python-cooler)))
+    (home-page "https://github.com/4dn-dcic/hic2cool")
+    (synopsis "Converter for .hic and .cool files")
+    (description
+     "This package provides a converter between @code{.hic} files (from
+juicer) and single-resolution or multi-resolution @code{.cool} files (for
+cooler).  Both @code{hic} and @code{cool} files describe Hi-C contact
+matrices.")
+    (license license:expat)))

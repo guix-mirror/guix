@@ -382,7 +382,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
        ("sdl" ,sdl)
        ("swig" ,swig)))
     (build-system  gnu-build-system)
-    (home-page "http://www.denx.de/wiki/U-Boot/")
+    (home-page "https://www.denx.de/wiki/U-Boot/")
     (synopsis "ARM bootloader")
     (description "U-Boot is a bootloader used mostly for ARM boards. It
 also initializes the boards (RAM etc).")
@@ -571,7 +571,7 @@ board-independent tools.")))
        `(("firmware" ,arm-trusted-firmware-pine64-plus)
          ,@(package-native-inputs base))))))
 
-(define-public u-boot-banana-pi-m2-ultra
+(define-public u-boot-bananapi-m2-ultra
   (make-u-boot-package "Bananapi_M2_Ultra" "arm-linux-gnueabihf"))
 
 (define-public u-boot-a20-olinuxino-lime

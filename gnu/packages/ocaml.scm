@@ -457,7 +457,7 @@ written in Objective Caml.")
 (define-public coq
   (package
     (name "coq")
-    (version "8.8.0")
+    (version "8.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/coq/coq/archive/V"
@@ -465,7 +465,7 @@ written in Objective Caml.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0g96k2x6lbddlmkmdaczvcpb2gwqi1ydbq9bv4gf9q38kv9w3xya"))))
+                "13cyvbg8cgqkg9wz0ax7jq03srj9k0lyvny97fcka4ai1zrzwln8"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")
@@ -486,16 +486,16 @@ written in Objective Caml.")
              (let* ((out (assoc-ref outputs "out"))
                     (mandir (string-append out "/share/man"))
                     (browser "icecat -remote \"OpenURL(%s,new-tab)\""))
-               (zero? (system* "./configure"
-                               "-prefix" out
-                               "-mandir" mandir
-                               "-browser" browser
-                               "-coqide" "opt")))))
+               (invoke "./configure"
+                       "-prefix" out
+                       "-mandir" mandir
+                       "-browser" browser
+                       "-coqide" "opt"))))
          (replace 'build
            (lambda _
-             (zero? (system* "make" "-j" (number->string
-                                          (parallel-job-count))
-                             "world"))))
+             (invoke "make"
+                     "-j" (number->string (parallel-job-count))
+                     "world")))
          (delete 'check)
          (add-after 'install 'check
            (lambda _
@@ -505,7 +505,7 @@ written in Objective Caml.")
                (delete-file-recursively "coq-makefile/timing")
                ;; This one fails because we didn't build coqtop.byte.
                (delete-file-recursively "coq-makefile/findlib-package")
-               (zero? (system* "make"))))))))
+               (invoke "make")))))))
     (home-page "https://coq.inria.fr")
     (synopsis "Proof assistant for higher-order logic")
     (description
@@ -924,21 +924,20 @@ compilers that can directly deal with packages.")
 (define-public ocaml-ounit
   (package
     (name "ocaml-ounit")
-    (version "2.0.0")
+    (version "2.0.8")
     (source (origin
               (method url-fetch)
-              (uri (ocaml-forge-uri "ounit" version 1258))
+              (uri (ocaml-forge-uri "ounit" version 1749))
               (sha256
                (base32
-                "118xsadrx84pif9vaq13hv4yh22w9kmr0ypvhrs0viir1jr0ajjd"))))
+                "03ifp9hjcxg4m5j190iy373jcn4039d3vy10kmd8p4lfciwzwc1f"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("libxml2" ,libxml2))) ; for xmllint
+     `(("libxml2" ,libxml2)))           ; for xmllint
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Tests are done during build.
-         (delete 'check))))
+         (delete 'check))))             ; tests are run during build
     (home-page "http://ounit.forge.ocamlcore.org")
     (synopsis "Unit testing framework for OCaml")
     (description "Unit testing framework for OCaml.  It is similar to JUnit and

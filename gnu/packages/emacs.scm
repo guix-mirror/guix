@@ -579,16 +579,16 @@ support for Git-SVN.")
 (define-public emacs-magit-popup
   (package
     (name "emacs-magit-popup")
-    (version "2.12.3")
+    (version "2.12.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/magit/magit-popup/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/magit/magit-popup.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kz6vj67awkwf9y2wj6m3l2him3znm08z6bkdvnmfr6rwd96dr39"))))
+                "08952nzn0cb6gxscqyiljk4fq2zxjvr3ism0lvgw0gs9hl5phiwx"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -7180,6 +7180,28 @@ the actual transformations.")
 @item dired-subtree
 @item dired-tagsistant
 @end itemize\n")
+      (license license:gpl3+))))
+
+(define-public emacs-dired-sidebar
+  (let ((commit "06bd0d40bab812c61a668129daf29ba359424454")
+        (revision "0"))
+    (package
+      (name "emacs-dired-sidebar")
+      (home-page "https://github.com/jojojames/dired-sidebar")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "0lvwvq6sl80sha9fq5m4568sg534dhmifyjqw75bqddcbf3by84x"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dired-subtree" ,emacs-dired-hacks)))
+      (synopsis "Sidebar for Emacs using Dired")
+      (description
+       "This package provides a sidebar for Emacs similar to @code{NeoTree}
+or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
       (license license:gpl3+))))
 
 (define-public emacs-which-key

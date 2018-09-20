@@ -155,23 +155,18 @@ and syntax highlighting.")
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/rakitzis/rc.git")
-                    ;; commit name 'release: rc-1.7.4'
-                    (commit "c884da53a7c885d46ace2b92de78946855b18e92")))
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "00mgzvrrh9w96xa85g4gjbsvq02f08k4jwjcdnxq7kyh5xgiw95l"))
-              (file-name (string-append name "-" version "-checkout"))))
+                "0vj1h4pcg13vxsiydmmk87dr2sra9h4gwx0c4q6fjsiw4in78rrd"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        '("--with-edit=gnu")
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'autoreconf
-          (lambda _ (zero? (system* "autoreconf" "-vfi"))))
-         (add-before
-          'autoreconf 'patch-trip.rc
+         (add-before 'bootstrap 'patch-trip.rc
           (lambda _
             (substitute* "trip.rc"
               (("/bin/pwd") (which "pwd"))
@@ -292,7 +287,7 @@ history mechanism, job control and a C-like syntax.")
 (define-public zsh
   (package
     (name "zsh")
-    (version "5.6.1")
+    (version "5.6.2")
     (source (origin
               (method url-fetch)
               (uri (list (string-append
@@ -303,7 +298,7 @@ history mechanism, job control and a C-like syntax.")
                            ".tar.xz")))
               (sha256
                (base32
-                "1s5kzfbfvixibb1sbzmmlrrx898zqwi5cfmnnq4bhcbx64zparlm"))))
+                "17iffliqcj4hv91g0bd2sxsyfcz51mfyh97sp2iyrs2p0mndc2x5"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
                  #:phases
@@ -422,7 +417,7 @@ use of experts and novices alike.")
                #t))
            (add-after 'unpack 'autoreconf
              (lambda _
-               (zero? (system* "autoreconf")))))))
+               (invoke "autoreconf"))))))
       (inputs
        `(("scheme48" ,scheme48)
          ("scheme48-rx" ,scheme48-rx)))
@@ -628,7 +623,7 @@ interactive POSIX shell targeted at resource-constrained systems.")
          (replace 'build
            (lambda _
              (setenv "CC" "gcc")
-             (zero? (system* (which "sh") "Build.sh"))))
+             (invoke (which "sh") "Build.sh")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -637,7 +632,8 @@ interactive POSIX shell targeted at resource-constrained systems.")
                (install-file "mksh" bin)
                (with-directory-excursion bin
                  (symlink "mksh" "ksh"))
-               (install-file "mksh.1" man)))))))
+               (install-file "mksh.1" man)
+               #t))))))
     (home-page "https://www.mirbsd.org/mksh.htm")
     (synopsis "Korn Shell from MirBSD")
     (description "mksh is an actively developed free implementation of the

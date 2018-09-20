@@ -2645,33 +2645,27 @@ as USB mice.")
      "xf86-video-ark is an Ark Logic video driver for the Xorg X server.")
     (license license:x11)))
 
-;; This driver depends on XAA which has been removed from xorg-server.
-;;
-;; (define-public xf86-video-ast
-;;   (package
-;;     (name "xf86-video-ast")
-;;     (version "0.93.10")
-;;     (source
-;;       (origin
-;;         (method url-fetch)
-;;         (uri (string-append
-;;                "mirror://xorg/individual/driver/xf86-video-ast-"
-;;                version
-;;                ".tar.bz2"))
-;;         (sha256
-;;           (base32
-;;            "1q64z8qqa0ix3cymqiwk1s3sphd1fvvz30lvyxhgkgciygz6dm69"))
-;;         (patches (search-patches "xf86-video-ast-remove-mibstore.patch"))))
-;;     (build-system gnu-build-system)
-;;     (inputs `(("xorg-server" ,xorg-server)))
-;;     (native-inputs `(("pkg-config" ,pkg-config)))
-;;     (home-page "https://www.x.org/wiki/")
-;;     (synopsis "ASpeed Technologies video driver for X server")
-;;     (description
-;;      "xf86-video-ast is an ASpeed Technologies video driver for the Xorg
-;; X server.")
-;;     (license license:x11)))
-
+(define-public xf86-video-ast
+  (package
+    (name "xf86-video-ast")
+    (version "1.1.5")
+    (home-page "https://cgit.freedesktop.org/xorg/driver/xf86-video-ast/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://xorg/individual/driver/xf86-video-ast-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1pm2cy81ma7ldsw0yfk28b33h9z2hcj5rccrxhfxfgvxsiavrnqy"))))
+    (build-system gnu-build-system)
+    (inputs `(("xorg-server" ,xorg-server)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "ASpeed Technologies video driver for X server")
+    (description
+     "xf86-video-ast is an ASpeed Technologies video driver for the Xorg
+X server.")
+    (license license:x11)))
 
 (define-public xf86-video-ati
   (package

@@ -330,12 +330,11 @@ valid."
        (set-current-module (make-user-module '((guix profiles) (gnu))))
        (primitive-load manifest))))
 
-  (parameterize ((%graft? #f))
-    (delete-duplicates!
-     (map manifest-entry-item
-          (append-map (compose manifest-entries
-                               load-manifest)
-                      manifests)))))
+  (delete-duplicates!
+   (map manifest-entry-item
+        (append-map (compose manifest-entries
+                             load-manifest)
+                    manifests))))
 
 
 ;;;

@@ -134,8 +134,10 @@ in the format specified by FMT."
                     ;; Show most recently installed packages last.
                     (reverse
                      (manifest-entries
-                      (profile-manifest (generation-file-name profile
-                                                              number)))))))))
+                      (profile-manifest
+                       (if (zero? number)
+                           profile
+                           (generation-file-name profile number))))))))))
   (display-package-search-path fmt))
 
 

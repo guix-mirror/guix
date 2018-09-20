@@ -62,7 +62,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.21.0")
+    (version "1.21.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -70,7 +70,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "0jxfrcz2aq1synxzd6sh9nhxz7fg9qgz0idr8zj6gaiplmwbwrby"))))
+                "0a5907h896pvpix7a6idc2fspzy6d78xrzf84k8y9fyvnd14nxs4"))))
     (outputs '("out"       ; 49 MB
                "include")) ; 17 MB
     (build-system gnu-build-system)
@@ -251,7 +251,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.22.3")
+    (version "0.22.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -259,7 +259,7 @@ Libraries with some extra bells and whistles.")
                               name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "16zydv7z94aw3rywmb9gr8ya85k7b75h22wng95lfx1x0y1yb0ad"))
+                "0ygy891rrw5c7lhk539nhif77j88phvz2h0fhx172iaridy9kx2r"))
               (patches (search-patches "enlightenment-fix-setuid-path.patch"))))
     (build-system gnu-build-system)
     (arguments

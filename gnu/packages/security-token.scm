@@ -56,7 +56,7 @@
 (define-public ccid
   (package
     (name "ccid")
-    (version "1.4.29")
+    (version "1.4.30")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -64,7 +64,7 @@
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0kdqmbma6sclsrbxy9w85h7cs0v11if4nc2r9v09613k8pl2lhx5"))))
+                "0z7zafdg75fr1adlv2x0zz34s07gljcjg2lsz76s1048w1xhh5xc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--enable-usbdropdir=" %output
@@ -77,7 +77,7 @@
                (("/bin/echo") (which "echo")))
              #t)))))
     (native-inputs
-     `(("pcsc-lite" ,pcsc-lite) ; only required for headers
+     `(("pcsc-lite" ,pcsc-lite)         ; only required for headers
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (inputs
@@ -220,7 +220,7 @@ website for more information about Yubico and the YubiKey.")
 (define-public opensc
   (package
     (name "opensc")
-    (version "0.18.0")
+    (version "0.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -228,7 +228,7 @@ website for more information about Yubico and the YubiKey.")
                     version "/opensc-" version ".tar.gz"))
               (sha256
                (base32
-                "0mrpik6ifzh27ws7h0viv8nwgcdj3fp5whaldmj0zhfi1l1zzh4v"))))
+                "09jqzl18z5qfrf4vf2nvbpdm3mphpgfkl3ww1clkaxh2z56hwnic"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

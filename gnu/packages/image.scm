@@ -267,8 +267,16 @@ files.  It can compress them as much as 40% losslessly.")
     "Libjpeg implements JPEG image encoding, decoding, and transcoding.
 JPEG is a standardized compression method for full-color and gray-scale
 images.
-The included programs provide conversion between the JPEG format and
-image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
+It also includes programs that provide conversion between the JPEG format and
+image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats, as well as
+lossless JPEG manipulations such as rotation, scaling or cropping:
+@enumerate
+@item cjpeg
+@item djpeg
+@item jpegtran
+@item rdjpgcom
+@item wrjpgcom
+@end enumerate")
    (license license:ijg)
    (home-page "http://www.ijg.org/")))
 
@@ -1350,8 +1358,9 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
     (build-system gnu-build-system)
     (home-page "http://libiptcdata.sourceforge.net/")
     (synopsis "IPTC metadata manipulation library")
-    (description "Libiptcdata is a C library for manipulating the International
-Press Telecommunications Council (IPTC) metadata stored within multimedia files
+    (description
+     "Libiptcdata is a C library for manipulating the International Press
+Telecommunications Council (@dfn{IPTC}) metadata stored within multimedia files
 such as images.  This metadata can include captions and keywords, often used by
 popular photo management applications.  The library provides routines for
 parsing, viewing, modifying, and saving this metadata.")

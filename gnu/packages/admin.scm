@@ -963,7 +963,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.25")
+    (version "1.8.25p1")
     (source (origin
               (method url-fetch)
               (uri
@@ -973,7 +973,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0hfw6pcwjvv1vvnhb4n1p210306jm4npz99p9cfhbd33yrhhzkwx"))
+                "0nqri46d4dpycj96zin2f2wszmhm7q9mr68hhj9sp81pgmx9rjcx"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1236,7 +1236,7 @@ network, which causes enabled computers to power on.")
 (define-public dmidecode
   (package
     (name "dmidecode")
-    (version "3.1")
+    (version "3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1244,7 +1244,7 @@ network, which causes enabled computers to power on.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1h0sg0lxa15nzf8s7884p6q7p6md9idm0c79wyqmk32l4ndwwrnp"))))
+                "1pcfhcgs2ifdjwp7amnsr3lq95pgxpr150bjhdinvl505px0cw07"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -2779,6 +2779,8 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
                #t))))))
     (inputs
      `(("eudev" ,eudev)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
     (native-inputs
      `(("python-docutils" ,python-docutils)
        ("python-hypothesis" ,python-hypothesis)

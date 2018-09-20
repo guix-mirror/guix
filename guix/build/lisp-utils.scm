@@ -81,6 +81,20 @@
   "Replace invalid characters in STR with a hyphen."
   (string-join (string-tokenize str valid-char-set) "-"))
 
+(define (normalize-dependency dependency)
+  "Normalize the name of DEPENDENCY.  Handles dependency definitions of the
+dependency-def form described by
+<https://common-lisp.net/project/asdf/asdf.html#The-defsystem-grammar>."
+  (match dependency
+    ((':version name rest ...)
+     `(:version ,(normalize-string name) ,@rest))
+    ((':feature feature-specification dependency-specification)
+     `(:feature
+       ,feature-specification
+       ,(normalize-dependency dependency-specification)))
+    ((? string? name) (normalize-string name))
+    (require-specification require-specification)))
+
 (define (inputs->asd-file-map inputs)
   "Produce a hash table of the form (system . asd-file), where system is the
 name of an ASD system, and asd-file is the full path to its definition."
@@ -105,9 +119,9 @@ name of an ASD system, and asd-file is the full path to its definition."
 
 (define (lisp-eval-program program)
   "Evaluate PROGRAM with a given LISP implementation."
-  (unless (zero? (apply system*
-                        (lisp-invocation program)))
-    (error "lisp-eval-program failed!" (%lisp) program)))
+  (define invocation (lisp-invocation program))
+  (format #t "Invoking ~a: ~{~s ~}~%" (%lisp-type) invocation)
+  (apply invoke invocation))
 
 (define (spread-statements program argument-name)
   "Return a list with the statements from PROGRAM spread between
@@ -138,8 +152,7 @@ with PROGRAM."
 first."
   (lisp-eval-program
    `((require :asdf)
-     (let ((*package* (find-package :asdf)))
-       (load ,asd-file))
+     (asdf:load-asd (truename ,asd-file) :name ,(normalize-string system))
      (asdf:operate 'asdf:compile-bundle-op ,system))))
 
 (define (system-dependencies system asd-file)
@@ -148,8 +161,7 @@ asdf:system-depends-on.  First load the system's ASD-FILE."
   (define deps-file ".deps.sexp")
   (define program
     `((require :asdf)
-      (let ((*package* (find-package :asdf)))
-        (load ,asd-file))
+      (asdf:load-asd (truename ,asd-file) :name ,(normalize-string system))
       (with-open-file
        (stream ,deps-file :direction :output)
        (format stream
@@ -189,19 +201,18 @@ asdf:system-depends-on.  First load the system's ASD-FILE."
 Also load TEST-ASD-FILE if necessary."
   (lisp-eval-program
    `((require :asdf)
-     (let ((*package* (find-package :asdf)))
-       (load ,asd-file)
-       ,@(if test-asd-file
-             `((load ,test-asd-file))
-             ;; Try some likely files.
-             (map (lambda (file)
-                    `(when (uiop:file-exists-p ,file)
-                       (load ,file)))
-                  (list
-                   (string-append system "-tests.asd")
-                   (string-append system "-test.asd")
-                   "tests.asd"
-                   "test.asd"))))
+     (asdf:load-asd (truename ,asd-file) :name ,(normalize-string system))
+     ,@(if test-asd-file
+           `((asdf:load-asd (truename ,test-asd-file)))
+           ;; Try some likely files.
+           (map (lambda (file)
+                  `(when (uiop:file-exists-p ,file)
+                     (asdf:load-asd (truename ,file))))
+                (list
+                 (string-append system "-tests.asd")
+                 (string-append system "-test.asd")
+                 "tests.asd"
+                 "test.asd")))
      (asdf:test-system ,system))))
 
 (define (string->lisp-keyword . strings)
@@ -273,16 +284,24 @@ system to find its dependencies, as described by GENERATE-DEPENDENCY-LINKS."
            (system-dependencies system system-asd-file)))
       (if (eq? 'NIL deps)
           '()
-          (map normalize-string deps))))
+          (map normalize-dependency deps))))
 
   (define lisp-input-map
     (inputs->asd-file-map inputs))
+
+  (define dependency-name
+    (match-lambda
+      ((':version name _ ...) name)
+      ((':feature _ dependency-specification)
+       (dependency-name dependency-specification))
+      ((? string? name) name)
+      (_ #f)))
 
   (define registry
     (filter-map hash-get-handle
                 (make-list (length dependencies)
                            lisp-input-map)
-                dependencies))
+                (map dependency-name dependencies)))
 
   (call-with-output-file asd-file
     (lambda (port)

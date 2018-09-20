@@ -200,7 +200,7 @@ in turn be used to build the final Rust.")
          ("rustc"
           ,(rust-source "1.19.0" "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"))))
       (arguments
-       `(#:tests? #f
+       `(#:test-target "local_tests"
          #:make-flags (list (string-append "LLVM_CONFIG="
                                            (assoc-ref %build-inputs "llvm")
                                            "/bin/llvm-config"))
@@ -250,6 +250,7 @@ in turn be used to build the final Rust.")
                       (gcc (assoc-ref inputs "gcc")))
                  ;; These files are not reproducible.
                  (for-each delete-file (find-files "output" "\\.txt$"))
+                 (delete-file-recursively "output/local_tests")
                  (mkdir-p lib)
                  (copy-recursively "output" lib/rust)
                  (mkdir-p bin)
@@ -410,6 +411,8 @@ test = { path = \"../libtest\" }
                                    "output/rustc-build/rustc"
                                    "-C" (string-append "linker="
                                                        (getenv "CC"))
+                                   ;; Required for libterm.
+                                   "-Z" "force-unstable-if-unmarked"
                                    "-L" "output/target-libs"
                                    (string-append "src/" name "/lib.rs")
                                    "-o"
@@ -429,7 +432,13 @@ test = { path = \"../libtest\" }
                            ("libpanic_unwind")
                            ;; Uses "cc" to link.
                            ("libstd" "-l" "dl" "-l" "rt" "-l" "pthread")
-                           ("libarena")))
+                           ("libarena")
+
+                           ;; Test dependencies:
+
+                           ("libgetopts")
+                           ("libterm")
+                           ("libtest")))
                #t)))
          ;; This phase is overridden by newer versions.
          (replace 'check
@@ -790,8 +799,8 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 
 (define-public rust
   (let ((base-rust
-         (rust-bootstrapped-package rust-1.26 "1.27.0"
-                                    "089d7rhw55zpvnw71dj8vil6qrylvl4xjr4m8bywjj83d4zq1f9c"
+         (rust-bootstrapped-package rust-1.26 "1.27.2"
+                                    "0pg1s37bhx9zqbynxyydq5j6q7kij9vxkcv8maz0m25prm88r0cs"
                                     #:patches
                                     '("rust-coresimd-doctest.patch"
                                       "rust-bootstrap-stage0-test.patch"

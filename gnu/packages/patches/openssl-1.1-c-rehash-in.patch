@@ -6,14 +6,14 @@ to create symbolic links to certificates, for instance in the 'nss-certs'
 package.
 
 diff --git a/tools/c_rehash.in b/tools/c_rehash.in
-index 2fef627..9d40eae 100644
+index 421fd89208..93aca4e168 100644
 --- a/tools/c_rehash.in
 +++ b/tools/c_rehash.in
 @@ -1,4 +1,6 @@
--#!{- $config{hashbangperl} -}
+-#!{- $config{HASHBANGPERL} -}
 +eval '(exit $?0)' && eval 'exec perl -wS "$0" ${1+"$@"}'
 +  & eval 'exec perl -wS "$0" $argv:q'
 +    if 0;
  
  # {- join("\n# ", @autowarntext) -}
- # Copyright 1999-2016 The OpenSSL Project Authors. All Rights Reserved.
+ # Copyright 1999-2018 The OpenSSL Project Authors. All Rights Reserved.

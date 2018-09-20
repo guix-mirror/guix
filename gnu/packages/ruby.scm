@@ -1114,7 +1114,7 @@ and inspect the environment.")
             #t))
          (replace 'check
           (lambda _
-            (zero? (system* "ruby" "-Ilib" "test/test.rb")))))))
+            (invoke "ruby" "-Ilib" "test/test.rb"))))))
     (synopsis "Library to perform operations with sequence permutations")
     (description "This package provides a Ruby library to perform different
 operations with permutations of sequences, such as strings and arrays.")
@@ -1618,7 +1618,7 @@ objects.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-          (lambda _ (zero? (system* "rspec" "spec/")))))))
+          (lambda _ (invoke "rspec" "spec/"))))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-rspec" ,ruby-rspec)))
@@ -2028,7 +2028,7 @@ is to be run.")
          (modify-phases %standard-phases
            (replace 'check
              (lambda _
-               (zero? (system* "script/test")))))))
+               (invoke "script/test"))))))
       (native-inputs
        `(("bundler" ,bundler)
          ("ruby-turn" ,ruby-turn)))
@@ -2289,23 +2289,66 @@ net/http library.")
 (define-public ruby-multi-json
   (package
     (name "ruby-multi-json")
-    (version "1.12.2")
+    (version "1.13.1")
     (source
      (origin
        (method url-fetch)
-       (uri (rubygems-uri "multi_json" version))
+       ;; Tests are not distributed at rubygems.org so download from GitHub
+       ;; instead.
+       (uri (string-append "https://github.com/intridea/multi_json/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1raim9ddjh672m32psaa9niw67ywzjbxbdb8iijx3wv9k5b0pk2x"))))
+         "1s64xqvrnrxmb59v6b2kchnisawg5ai9ky1w60dy6z6ws9la1xv4"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f)) ;; No testsuite included in the gem.
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-signing-key-reference
+           (lambda _
+             (substitute* "multi_json.gemspec"
+               ((".*spec.signing_key.*") ""))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-json-pure" ,ruby-json-pure)
+       ("ruby-oj" ,ruby-oj)
+       ("ruby-yajl-ruby" ,ruby-yajl-ruby)))
     (synopsis "Common interface to multiple JSON libraries for Ruby")
     (description
      "This package provides a common interface to multiple JSON libraries,
 including Oj, Yajl, the JSON gem (with C-extensions), the pure-Ruby JSON gem,
 NSJSONSerialization, gson.rb, JrJackson, and OkJson.")
-    (home-page "http://github.com/intridea/multi_json")
+    (home-page "https://github.com/intridea/multi_json")
+    (license license:expat)))
+
+(define-public ruby-multi-test
+  (package
+    (name "ruby-multi-test")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "multi_test" version))
+       (sha256
+        (base32
+         "1sx356q81plr67hg16jfwz9hcqvnk03bd9n75pmdw8pfxjfy1yxd"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; Tests require different sets of specific gem versions to be available,
+       ;; and there is no gemfile that specifies the newest versions of
+       ;; dependencies to be tested.
+       #:tests? #f))
+    (synopsis
+     "Interface to testing libraries loaded into a running Ruby process")
+    (description
+     "@code{multi_test} provides a uniform interface onto whatever testing
+libraries that have been loaded into a running Ruby process to help control
+rogue test/unit/autorun requires.")
+    (home-page "https://github.com/cucumber/multi_test")
     (license license:expat)))
 
 (define-public ruby-arel
@@ -2560,7 +2603,7 @@ invocation, and source and documentation browsing.")
             #t))
          (replace 'build
           (lambda _
-            (zero? (system* "gem" "build" "guard.gemspec")))))))
+            (invoke "gem" "build" "guard.gemspec"))))))
     (propagated-inputs
      `(("ruby-formatador" ,ruby-formatador)
        ("ruby-listen" ,ruby-listen)
@@ -2675,7 +2718,7 @@ IANA Time Zone database packaged as Ruby modules for use with @code{TZInfo}.")
          ;; list of files.
          (replace 'build
           (lambda _
-            (zero? (system* "gem" "build" "rb-inotify.gemspec")))))))
+            (invoke "gem" "build" "rb-inotify.gemspec"))))))
     (propagated-inputs
      `(("ruby-ffi" ,ruby-ffi)))
     (native-inputs
@@ -2768,7 +2811,7 @@ documentation for Ruby code.")
             ;; causes an error.
             (substitute* "tins.gemspec"
               (("\"lib/spruz\", ") ""))
-            (zero? (system* "gem" "build" "tins.gemspec")))))))
+            (invoke "gem" "build" "tins.gemspec"))))))
     (synopsis "Assorted tools for Ruby")
     (description "Tins is a Ruby library providing assorted tools.")
     (home-page "https://github.com/flori/tins")
@@ -2793,7 +2836,7 @@ documentation for Ruby code.")
        (modify-phases %standard-phases
          (replace 'build
           (lambda _
-            (zero? (system* "gem" "build" "gem_hadar.gemspec")))))))
+            (invoke "gem" "build" "gem_hadar.gemspec"))))))
     (propagated-inputs
      `(("git" ,git)
        ("ruby-tins" ,ruby-tins)
@@ -2870,7 +2913,7 @@ Ruby's large and slower test/unit.")
        (modify-phases %standard-phases
          (replace 'build
           (lambda _
-            (zero? (system* "gem" "build" "term-ansicolor.gemspec")))))))
+            (invoke "gem" "build" "term-ansicolor.gemspec"))))))
     (propagated-inputs
      `(("ruby-tins" ,ruby-tins)))
     (native-inputs
@@ -2978,7 +3021,7 @@ a native C extension.")
            (lambda _
              ;; Regenerate gemspec so loosened dependency constraints are
              ;; propagated.
-             (zero? (system* "rake" "gemspec")))))))
+             (invoke "rake" "gemspec"))))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ragel" ,ragel)
@@ -3062,8 +3105,8 @@ you about the changes.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             ;; There is no tests, instead attempt to load the library.
-             (zero? (system* "ruby" "-Ilib" "-r" "active_support")))))))
+             ;; There are no tests, instead attempt to load the library.
+             (invoke "ruby" "-Ilib" "-r" "active_support"))))))
     (propagated-inputs
      `(("ruby-concurrent" ,ruby-concurrent)
        ("ruby-i18n" ,ruby-i18n)
@@ -3193,6 +3236,43 @@ unacceptable HTML and/or CSS from a string.")
     (home-page "https://github.com/rgrove/sanitize/")
     (license license:expat)))
 
+(define-public ruby-oj
+  (package
+    (name "ruby-oj")
+    (version "3.6.7")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Version on rubygems.org does not contain Rakefile, so download from
+       ;; GitHub instead.
+       (uri (string-append "https://github.com/ohler55/oj/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x28ga72jxlnmsd8g8c0fw81vlh54r0qgagw2lxsd3x3la091g2h"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "test_all"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-bundler
+           (lambda _
+             (substitute* "Rakefile"
+               (("Bundler\\.with_clean_env") "1.times")
+               (("bundle exec ") "")))))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "JSON parser for Ruby optimized for speed")
+    (description
+     "Oj is a JSON parser and generator for Ruby, where the encoding and
+decoding of JSON is implemented as a C extension to Ruby.")
+    (home-page "http://www.ohler.com/oj")
+    (license (list license:expat     ; Ruby code
+                   license:bsd-3)))) ; extension code
+
 (define-public ruby-ox
   (package
     (name "ruby-ox")
@@ -3236,7 +3316,7 @@ alternative to Marshal for Object serialization. ")
          ;; existing gemspec.
          (replace 'build
           (lambda _
-            (zero? (system* "gem" "build" "redcloth.gemspec")))))))
+            (invoke "gem" "build" "redcloth.gemspec"))))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-diff-lcs" ,ruby-diff-lcs)
@@ -3314,9 +3394,9 @@ other things and it comes with a command line interface.")
            ;; There is no Rakefile and minitest can only run one file at once,
            ;; so we have to iterate over all test files.
            (lambda _
-             (and (map (lambda (file)
-                         (zero? (system* "ruby" "-Itest" file)))
-                       (find-files "./test" "test_.*\\.rb"))))))))
+             (map (lambda (file)
+                    (invoke "ruby" "-Itest" file))
+                  (find-files "./test" "test_.*\\.rb")))))))
     (native-inputs
      `(("ruby-minitest" ,ruby-minitest)))
     (synopsis "Library to read and update netrc files")
@@ -3341,7 +3421,7 @@ including comments and whitespace.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-ext
-           (lambda _ (zero? (system* "rake" "compile:unf_ext")))))))
+           (lambda _ (invoke "rake" "compile:unf_ext"))))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-rake-compiler" ,ruby-rake-compiler)
@@ -3658,6 +3738,42 @@ features such as filtering and fine grained logging.")
     (home-page "https://github.com/pjotrp/bioruby-logger-plugin")
     (license license:expat)))
 
+(define-public ruby-yajl-ruby
+  (package
+    (name "ruby-yajl-ruby")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "yajl-ruby" version))
+       (sha256
+        (base32
+         "16v0w5749qjp13xhjgr2gcsvjv6mf35br7iqwycix1n2h7kfcckf"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-test-to-update-load-path
+           (lambda _
+             (substitute* "spec/parsing/large_number_spec.rb"
+               (("require \"yajl\"")
+                "$LOAD_PATH << 'lib'; require 'yajl'"))
+             #t)))))
+     (native-inputs
+      `(("ruby-rake-compiler" ,ruby-rake-compiler)
+        ("ruby-rspec" ,ruby-rspec)))
+     (synopsis "Streaming JSON parsing and encoding library for Ruby")
+     (description
+      "Ruby C bindings to the Yajl JSON stream-based parser library.  The API
+is compatible with the JSON gem, so yajl-ruby can act as a drop in
+replacement.
+
+A modified copy of yajl is used, and included in the package.")
+     (home-page "https://github.com/brianmario/yajl-ruby")
+     (license (list license:expat     ; Ruby code, yajl_ext.c and yajl_ext.h
+                    license:bsd-3)))) ; Included, modified copy of yajl
+
 (define-public ruby-yard
   (package
     (name "ruby-yard")
@@ -3681,7 +3797,7 @@ features such as filtering and fine grained logging.")
              ;; $HOME needs to be set to somewhere writeable for tests to run
              (setenv "HOME" "/tmp")
              ;; Run tests without using 'rake' to avoid dependencies.
-             (zero? (system* "rspec")))))))
+             (invoke "rspec"))))))
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
        ("ruby-rack" ,ruby-rack)))
@@ -3868,7 +3984,7 @@ name and provides query methods such as @{RubyEngine.mri?}.")
          ;; without issue.
          (replace 'check
            (lambda _
-             (zero? (system* "ruby" "-Ilib" "bin/turn" "-h")))))))
+             (invoke "ruby" "-Ilib" "bin/turn" "-h"))))))
     (propagated-inputs
      `(("ruby-ansi" ,ruby-ansi)
        ("ruby-minitest" ,ruby-minitest-4)))
@@ -4008,7 +4124,7 @@ neither too verbose nor too minimal.")
              #t))
          (add-before 'check 'add-gemtest-file
            ;; This file exists in the repository but is not distributed.
-           (lambda _ (zero? (system* "touch" ".gemtest")))))))
+           (lambda _ (invoke "touch" ".gemtest"))))))
     (inputs
      `(("sqlite" ,sqlite)))
     (native-inputs
@@ -4042,7 +4158,7 @@ engine.")
            (lambda _
              ;; Do not run tests to avoid circular dependence with rails.
              ;; Instead just import the library to test.
-             (zero? (system* "ruby" "-Ilib" "-r" "shoulda-context")))))))
+             (invoke "ruby" "-Ilib" "-r" "shoulda-context"))))))
     (synopsis "Test::Unit context framework extracted from Shoulda")
     (description
      "@code{shoulda-context} is the context framework extracted from Shoulda.
@@ -4071,7 +4187,7 @@ names.")
            (lambda _
              ;; Do not run tests to avoid circular dependence with rails.  Instead
              ;; just import the library to test.
-             (zero? (system* "ruby" "-Ilib" "-r" "shoulda-matchers")))))))
+             (invoke "ruby" "-Ilib" "-r" "shoulda-matchers"))))))
     (propagated-inputs
      `(("ruby-activesupport" ,ruby-activesupport)))
     (synopsis "Collection of testing matchers extracted from Shoulda")
@@ -4111,7 +4227,7 @@ more complex, and error-prone.")
          (replace 'check
            ;; Don't run tests to avoid circular dependence with rails.  Instead
            ;; just import the library to test.
-           (lambda _ (zero? (system* "ruby" "-Ilib" "-r" "shoulda")))))))
+           (lambda _ (invoke "ruby" "-Ilib" "-r" "shoulda"))))))
     (propagated-inputs
      `(("ruby-shoulda-context" ,ruby-shoulda-context)
        ("ruby-shoulda-matchers" ,ruby-shoulda-matchers-2)))
@@ -4264,10 +4380,9 @@ It has built-in support for the legacy @code{cookies.txt} and
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (if tests?
-                 (zero?
-                  (system* "ruby"
-                           "-Ilib"
-                           "test/runner.rb"))
+                 (invoke "ruby"
+                         "-Ilib"
+                         "test/runner.rb")
                  #t))))))
     (native-inputs
      `(("ruby-rack" ,ruby-rack)))
@@ -4306,7 +4421,7 @@ requests either using arguments or with an interactive prompt.")
          ;; be require'd.
          (replace 'check
            (lambda _
-             (zero? (system* "ruby" "-Ilib" "-r" "ansi"))))
+             (invoke "ruby" "-Ilib" "-r" "ansi")))
          (add-before 'validate-runpath 'replace-broken-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -4377,7 +4492,7 @@ subprocess.")
            ;; Run test without calling 'rake' so that jeweler is
            ;; not required as an input.
            (lambda _
-             (zero? (system* "rspec" "spec/bio-commandeer_spec.rb")))))))
+             (invoke "rspec" "spec/bio-commandeer_spec.rb"))))))
     (propagated-inputs
      `(("ruby-bio-logger" ,ruby-bio-logger)
        ("ruby-systemu" ,ruby-systemu)))
@@ -4414,7 +4529,7 @@ detail to ease debugging.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "ruby" "-Ilib" "-r" "rubytest")))))))
+             (invoke "ruby" "-Ilib" "-r" "rubytest"))))))
     (propagated-inputs
      `(("ruby-ansi" ,ruby-ansi)))
     (synopsis "Universal test harness for Ruby")
@@ -4444,7 +4559,7 @@ single pass.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "ruby" "-Ilib" "-r" "brass")))))))
+             (invoke "ruby" "-Ilib" "-r" "brass"))))))
     (synopsis "Basic foundational assertions framework")
     (description
      "BRASS (Bare-Metal Ruby Assertion System Standard) is a basic
@@ -4472,7 +4587,7 @@ make use of.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "ruby" "-Ilib" "bin/qed" "--copyright")))))))
+             (invoke "ruby" "-Ilib" "bin/qed" "--copyright"))))))
     (propagated-inputs
      `(("ruby-ansi" ,ruby-ansi)
        ("ruby-brass" ,ruby-brass)))
@@ -4506,7 +4621,7 @@ requirement specifications systems like Cucumber.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (zero? (system* "qed"))))
+           (lambda _ (invoke "qed")))
          (add-before 'validate-runpath 'replace-broken-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -4544,7 +4659,7 @@ for reuse by other test frameworks.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _ (zero? (system* "qed")))))))
+         (replace 'check (lambda _ (invoke "qed"))))))
     (propagated-inputs
      `(("ruby-ae" ,ruby-ae)
        ("ruby-ansi" ,ruby-ansi)
@@ -4600,8 +4715,8 @@ Rubytest-based test frameworks.  It provides the @code{rubytest} executable.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (and (zero? (system* "qed"))
-                  (zero? (system* "rubytest" "-Ilib" "-Itest" "test/"))))))))
+             (invoke "qed")
+             (invoke "rubytest" "-Ilib" "-Itest" "test/"))))))
     (native-inputs
      `(("ruby-rubytest-cli" ,ruby-rubytest-cli)
        ("ruby-qed" ,ruby-qed)
@@ -4635,7 +4750,7 @@ specific use case.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "rspec" "spec/rc4_spec.rb")))))))
+             (invoke "rspec" "spec/rc4_spec.rb"))))))
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec-2)))
     (synopsis "Implementation of the RC4 algorithm")
@@ -4889,7 +5004,7 @@ call.")
          (add-before 'check 'rake-compile
            ;; Fix the test error described at
            ;; https://github.com/ruby-concurrency/concurrent-ruby/pull/408
-           (lambda _ (zero? (system* "rake" "compile"))))
+           (lambda _ (invoke "rake" "compile")))
          (add-before 'check 'remove-timecop-dependency
            ;; Remove timecop-dependent tests as having timecop as a depedency
            ;; causes circular depedencies.
@@ -5757,7 +5872,7 @@ hashes more powerful.")
     (synopsis "Heredoc indentation cleaner")
     (description "This gem removes common margin from indented strings, such
 as the ones produced by indented heredocs.  In other words, it strips out
-leading whitespace chars at the beggining of each line, but only as much as
+leading whitespace chars at the beginning of each line, but only as much as
 the line with the smallest margin.
 
 It is acknowledged that many strings defined by heredocs are just code and

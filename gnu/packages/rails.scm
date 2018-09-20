@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,14 +81,11 @@ migration.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (and
-              (zero? (system* "rake" "compile"))
-              (zero?
-               (system*
-                "ruby" "-Ilib" "-e"
-                (string-append
-                 "require 'debug_inspector'; RubyVM::DebugInspector."
-                 "open{|dc| p dc.backtrace_locations}")))))))))
+             (invoke "rake" "compile")
+             (invoke "ruby" "-Ilib" "-e"
+                     (string-append
+                      "require 'debug_inspector'; RubyVM::DebugInspector."
+                      "open{|dc| p dc.backtrace_locations}")))))))
     (synopsis "Ruby wrapper for the MRI 2.0 debug_inspector API")
     (description
      "This package provides a Ruby wrapper for the MRI 2.0 debug_inspector

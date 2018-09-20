@@ -31,7 +31,7 @@
             u-boot-a20-olinuxino-lime-bootloader
             u-boot-a20-olinuxino-lime2-bootloader
             u-boot-a20-olinuxino-micro-bootloader
-            u-boot-banana-pi-m2-ultra-bootloader
+            u-boot-bananapi-m2-ultra-bootloader
             u-boot-beaglebone-black-bootloader
             u-boot-mx6cuboxi-bootloader
             u-boot-nintendo-nes-classic-edition-bootloader
@@ -148,10 +148,10 @@
    (inherit u-boot-allwinner-bootloader)
    (package u-boot-a20-olinuxino-micro)))
 
-(define u-boot-banana-pi-m2-ultra-bootloader
+(define u-boot-bananapi-m2-ultra-bootloader
   (bootloader
    (inherit u-boot-allwinner-bootloader)
-   (package u-boot-banana-pi-m2-ultra)))
+   (package u-boot-bananapi-m2-ultra)))
 
 (define u-boot-mx6cuboxi-bootloader
   (bootloader

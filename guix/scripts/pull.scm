@@ -176,17 +176,18 @@ Download and deploy the latest version of Guix.\n"))
          (certs (string-append (derivation->output-path drv)
                                "/etc/ssl/certs")))
     (build-derivations store (list drv))
+    (set-tls-certificate-locations! certs)))
 
-    ;; In the past Guile-Git would not provide this procedure.
-    (if (module-defined? (resolve-interface '(git))
-                         'set-tls-certificate-locations!)
-        (set-tls-certificate-locations! certs)
-        (begin
-          ;; In this case we end up using whichever certificates OpenSSL
-          ;; chooses to use: $SSL_CERT_FILE, $SSL_CERT_DIR, or /etc/ssl/certs.
-          (warning (G_ "cannot enforce use of the Let's Encrypt \
-certificates~%"))
-          (warning (G_ "please upgrade Guile-Git~%"))))))
+(define (honor-x509-certificates store)
+  "Use the right X.509 certificates for Git checkouts over HTTPS."
+  (let ((file      (getenv "SSL_CERT_FILE"))
+        (directory (or (getenv "SSL_CERT_DIR") "/etc/ssl/certs")))
+    (if (or (and file (file-exists? file))
+            (and=> (stat directory #f)
+                   (lambda (st)
+                     (> (stat:nlink st) 2))))
+        (set-tls-certificate-locations! directory file)
+        (honor-lets-encrypt-certificates! store))))
 
 (define (report-git-error error)
   "Report the given Guile-Git error."
@@ -233,7 +234,9 @@ way and displaying details about the channel's source code."
             ;; Show most recently installed packages last.
             (reverse
              (manifest-entries
-              (profile-manifest (generation-file-name profile number))))))
+              (profile-manifest (if (zero? number)
+                                    profile
+                                    (generation-file-name profile number)))))))
 
 (define (indented-string str indent)
   "Return STR with each newline preceded by IDENT spaces."
@@ -431,13 +434,7 @@ Use '~/.config/guix/channels.scm' instead."))
                 (parameterize ((%graft? (assoc-ref opts 'graft?))
                                (%repository-cache-directory cache))
                   (set-build-options-from-command-line store opts)
-
-                  ;; When certificates are already installed, use them.
-                  ;; Otherwise, use the Let's Encrypt certificates, which we
-                  ;; know Savannah uses.
-                  (let ((certs (or (getenv "SSL_CERT_DIR") "/etc/ssl/certs")))
-                    (unless (file-exists? certs)
-                      (honor-lets-encrypt-certificates! store)))
+                  (honor-x509-certificates store)
 
                   (let ((instances (latest-channel-instances store channels)))
                     (format (current-error-port)

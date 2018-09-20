@@ -7268,6 +7268,36 @@ The following options can be used to customize GnuPG operation:
 Use @var{command} as the GnuPG 2.x command.  @var{command} is searched
 for in @code{$PATH}.
 
+@item --keyring=@var{file}
+Use @var{file} as the keyring for upstream keys.  @var{file} must be in the
+@dfn{keybox format}.  Keybox files usually have a name ending in @file{.kbx}
+and the GNU@tie{}Privacy Guard (GPG) can manipulate these files
+(@pxref{kbxutil, @command{kbxutil},, gnupg, Using the GNU Privacy Guard}, for
+information on a tool to manipulate keybox files).
+
+When this option is omitted, @command{guix refresh} uses
+@file{~/.config/guix/upstream/trustedkeys.kbx} as the keyring for upstream
+signing keys.  OpenPGP signatures are checked against keys from this keyring;
+missing keys are downloaded to this keyring as well (see
+@option{--key-download} below.)
+
+You can export keys from your default GPG keyring into a keybox file using
+commands like this one:
+
+@example
+gpg --export rms@@gnu.org | kbxutil --import-openpgp >> mykeyring.kbx
+@end example
+
+Likewise, you can fetch keys to a specific keybox file like this:
+
+@example
+gpg --no-default-keyring --keyring mykeyring.kbx \
+  --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
+@end example
+
+@ref{GPG Configuration Options, @option{--keyring},, gnupg, Using the GNU
+Privacy Guard}, for more information on GPG's @option{--keyring} option.
+
 @item --key-download=@var{policy}
 Handle missing OpenPGP keys according to @var{policy}, which may be one
 of:
@@ -7711,6 +7741,13 @@ This is useful to precisely refer to a package, as in this example:
 @example
 guix graph -e '(@@@@ (gnu packages commencement) gnu-make-final)'
 @end example
+
+@item --system=@var{system}
+@itemx -s @var{system}
+Display the graph for @var{system}---e.g., @code{i686-linux}.
+
+The package dependency graph is largely architecture-independent, but there
+are some architecture-dependent bits that this option allows you to visualize.
 @end table
 
 
@@ -11574,6 +11611,54 @@ Thus, it can be instantiated like this:
 (service wpa-supplicant-service-type)
 @end lisp
 @end defvr
+
+@cindex iptables
+@defvr {Scheme Variable} iptables-service-type
+This is the service type to set up an iptables configuration. iptables is a
+packet filtering framework supported by the Linux kernel.  This service
+supports configuring iptables for both IPv4 and IPv6.  A simple example
+configuration rejecting all incoming connections except those to the ssh port
+22 is shown below.
+
+@lisp
+(service iptables-service-type
+         (iptables-configuration
+          (ipv4-rules (plain-file "iptables.rules" "*filter
+:INPUT ACCEPT
+:FORWARD ACCEPT
+:OUTPUT ACCEPT
+-A INPUT -p tcp --dport 22 -j ACCEPT
+-A INPUT -j REJECT --reject-with icmp-port-unreachable
+COMMIT
+"))
+          (ipv6-rules (plain-file "ip6tables.rules" "*filter
+:INPUT ACCEPT
+:FORWARD ACCEPT
+:OUTPUT ACCEPT
+-A INPUT -p tcp --dport 22 -j ACCEPT
+-A INPUT -j REJECT --reject-with icmp6-port-unreachable
+COMMIT
+"))))
+@end lisp
+@end defvr
+
+@deftp {Data Type} iptables-configuration
+The data type representing the configuration of iptables.
+
+@table @asis
+@item @code{iptables} (default: @code{iptables})
+The iptables package that provides @code{iptables-restore} and
+@code{ip6tables-restore}.
+@item @code{ipv4-rules} (default: @code{%iptables-accept-all-rules})
+The iptables rules to use.  It will be passed to @code{iptables-restore}.
+This may be any ``file-like'' object (@pxref{G-Expressions, file-like
+objects}).
+@item @code{ipv6-rules} (default: @code{%iptables-accept-all-rules})
+The ip6tables rules to use.  It will be passed to @code{ip6tables-restore}.
+This may be any ``file-like'' object (@pxref{G-Expressions, file-like
+objects}).
+@end table
+@end deftp
 
 @cindex NTP
 @cindex real time clock

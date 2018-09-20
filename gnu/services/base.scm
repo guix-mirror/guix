@@ -1846,16 +1846,9 @@ item of @var{packages}."
 
          (documentation "Populate the /dev directory, dynamically.")
          (start #~(lambda ()
-                    (define find
-                      (@ (srfi srfi-1) find))
-
                     (define udevd
-                      ;; Choose the right 'udevd'.
-                      (find file-exists?
-                            (map (lambda (suffix)
-                                   (string-append #$udev suffix))
-                                 '("/libexec/udev/udevd" ;udev
-                                   "/sbin/udevd"))))     ;eudev
+                      ;; 'udevd' from eudev.
+                      #$(file-append udev "/sbin/udevd"))
 
                     (define (wait-for-udevd)
                       ;; Wait until someone's listening on udevd's control
@@ -1891,24 +1884,20 @@ item of @var{packages}."
                       (make-static-device-nodes directory)
                       (umask old-umask))
 
-                    (let ((pid (primitive-fork)))
-                      (case pid
-                        ((0)
-                         (exec-command (list udevd)))
-                        (else
-                         ;; Wait until udevd is up and running.  This
-                         ;; appears to be needed so that the events
-                         ;; triggered below are actually handled.
-                         (wait-for-udevd)
+                    (let ((pid (fork+exec-command (list udevd))))
+                      ;; Wait until udevd is up and running.  This appears to
+                      ;; be needed so that the events triggered below are
+                      ;; actually handled.
+                      (wait-for-udevd)
 
-                         ;; Trigger device node creation.
-                         (system* #$(file-append udev "/bin/udevadm")
-                                  "trigger" "--action=add")
+                      ;; Trigger device node creation.
+                      (system* #$(file-append udev "/bin/udevadm")
+                               "trigger" "--action=add")
 
-                         ;; Wait for things to settle down.
-                         (system* #$(file-append udev "/bin/udevadm")
-                                  "settle")
-                         pid)))))
+                      ;; Wait for things to settle down.
+                      (system* #$(file-append udev "/bin/udevadm")
+                               "settle")
+                      pid)))
          (stop #~(make-kill-destructor))
 
          ;; When halting the system, 'udev' is actually killed by
@@ -2133,7 +2122,7 @@ This service is not part of @var{%base-services}."
                                              AF_INET INADDR_ANY 0)))
                     (set-network-interface-flags sock #$interface 0)
                     (close-port sock)
-:                    #f)))
+                    #f)))
         (respawn? #f))))))
 
 (define (static-networking-etc-files interfaces)

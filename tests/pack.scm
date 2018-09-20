@@ -51,7 +51,12 @@
 
 (test-begin "pack")
 
-(unless (network-reachable?) (test-skip 1))
+;; FIXME: The following test would rebuild the world (and likely fail) as a
+;; consequence of commit c45477d2a1a651485feede20fe0f3d15aec48b39 (and related
+;; changes) that made guile-sqlite3 a dependency of the derivation.
+;; See <https://bugs.gnu.org/32184>.
+(test-skip 1)
+
 (test-assertm "self-contained-tarball"
   (mlet* %store-monad
       ((profile (profile-derivation (packages->manifest

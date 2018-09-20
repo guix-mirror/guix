@@ -243,14 +243,14 @@ ISO 8601 dates, time and duration.")
 (define-public python-iso8601
   (package
     (name "python-iso8601")
-    (version "0.1.11")
+    (version "0.1.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "iso8601" version))
        (sha256
         (base32
-         "0c7gh3lsdjds262h0v1sqc66l7hqgfwbakn96qrhdbl0i3vm5yz8"))))
+         "10nyvvnrhw2w3p09v1ica4lgj6f4g9j3kkfx17qmraiq3w7b5i29"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))

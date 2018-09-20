@@ -417,15 +417,7 @@ code analysis tools.")
                                              "twine_cfg_undefined_behavior.patch"))
                          (sha256
                           (base32
-                           "07h71n2m1mn9zcfgw04zglffknplb233zqbcd6pckq0wygkrxflp")))
-                       (origin
-                         (method url-fetch)
-                         (uri (string-append "https://raw.githubusercontent.com/numba/"
-                                             "llvmlite/v" version "/conda-recipes/"
-                                             "0001-Transforms-Add-missing-header-for-InstructionCombini.patch"))
-                         (sha256
-                          (base32
-                           "1pp0z9696l6j4dwz7ypjrm4vvkj0d3mlf1g8zmiyk08akw5lz0cb")))))))))))
+                           "07h71n2m1mn9zcfgw04zglffknplb233zqbcd6pckq0wygkrxflp")))))))))))
     (home-page "http://llvmlite.pydata.org")
     (synopsis "Wrapper around basic LLVM functionality")
     (description
