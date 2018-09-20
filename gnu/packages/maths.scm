@@ -1037,10 +1037,13 @@ Swath).")
      `(("mpi" ,openmpi)
        ,@(package-inputs hdf5)))
     (arguments
-     (substitute-keyword-arguments `(#:configure-flags '("--enable-parallel")
-                                     ,@(package-arguments hdf5))
+     (substitute-keyword-arguments (package-arguments hdf5)
+       ((#:configure-flags flags)
+        ``("--enable-parallel" ,@(delete "--enable-cxx" ,flags)))
        ((#:phases phases)
         `(modify-phases ,phases
+           (add-after 'build 'mpi-setup
+             ,%openmpi-setup)
            (add-before 'check 'patch-tests
              (lambda _
                ;; OpenMPI's mpirun will exit with non-zero status if it
