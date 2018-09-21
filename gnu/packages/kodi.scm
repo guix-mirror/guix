@@ -295,7 +295,7 @@ generator library for C++.")
                            "lib/cpluff")))
                (every (lambda (third-party)
                         (with-directory-excursion third-party
-                          (zero? (system* "autoreconf" "-vif"))))
+                          (invoke "autoreconf" "-vif")))
                       dirs))))
          (add-after 'bootstrap-bundled-software 'patch-stuff
            (lambda* (#:key inputs #:allow-other-keys)
@@ -336,7 +336,7 @@ generator library for C++.")
              #t))
          (add-before 'check 'build-kodi-test
            (lambda _
-             (zero? (system* "make" "kodi-test")))))))
+             (invoke "make" "kodi-test"))))))
     ;; TODO: Add dependencies for:
     ;; - nfs
     ;; - cec
