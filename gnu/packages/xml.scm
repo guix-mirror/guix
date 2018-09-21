@@ -665,20 +665,23 @@ This module provide functions which simplify writing tests for
 (define-public perl-xml-compile
   (package
     (name "perl-xml-compile")
-    (version "1.54")
+    (version "1.60")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-" version ".tar.gz"))
               (sha256
                (base32
-                "1hp41960bpqxvv1samv9hc0ghhmvs3i16r4rfl9yp54lp6jhsr2c"))))
+                "04vv7wy5v1l38xsfdbacvyd90qircvnrs2f3ysljm1nhq8mycmwm"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-log-report" ,perl-log-report)
+     `(("perl-carp" ,perl-carp)
+       ("perl-log-report" ,perl-log-report)
        ("perl-xml-compile-tester" ,perl-xml-compile-tester)
        ("perl-xml-libxml" ,perl-xml-libxml)
-       ("perl-test-deep" ,perl-test-deep)))
+       ("perl-scalar-list-utils" ,perl-scalar-list-utils)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-types-serialiser" ,perl-types-serialiser)))
     (home-page "https://metacpan.org/release/XML-Compile")
     (synopsis "Compilation-based XML processing")
     (description
