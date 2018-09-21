@@ -7244,13 +7244,6 @@ mp3, Ogg Vorbis and FLAC")
                  (base32
                   "150qca8c552fakjlzkgarsxgp87l1xcwn19svqsa9d0cygqxjgia"))))
       (build-system glib-or-gtk-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'autogen
-             (lambda _
-               (invoke "sh" "autogen.sh")
-               #t)))))
       (propagated-inputs `(("glib" ,glib)
                            ("gtk+" ,gtk+)
                            ("gdk-pixbuf" ,gdk-pixbuf)
