@@ -3350,16 +3350,13 @@ library, libgit2 implements Git plumbing.")
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
-    (version "2.2.0")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/pyparsing/pyparsing"
-                           "/pyparsing-" version
-                           "/pyparsing-" version ".tar.gz"))
+       (uri (pypi-uri "pyparsing" version))
        (sha256
-        (base32
-         "016b9gh606aa44sq92jslm89bg874ia0yyiyb643fa6dgbsbqch8"))))
+        (base32 "06dgd0iilvf8m0ssmfpcbh8l6jf0zkp8adbb84llksg17crfx4zl"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (arguments
