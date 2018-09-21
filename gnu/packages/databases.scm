@@ -1458,15 +1458,15 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-mysql
   (package
     (name "perl-dbd-mysql")
-    (version "4.047")
+    (version "4.048")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/C/CA/CAPTTOFU/"
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MICHIELB/"
                            "DBD-mysql-" version ".tar.gz"))
        (sha256
         (base32
-         "0idizgr0hr7sj92fbdlb3gv6cva15jkpaq28wrdw4j4p7awx2mls"))))
+         "1zqmch6c9gq06z90mkmk1skajk2kaggriw19ym5w04l7wv5gydqp"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
