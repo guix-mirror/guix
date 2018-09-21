@@ -2936,18 +2936,15 @@ indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
 (define-public hmmer
   (package
     (name "hmmer")
-    (version "3.1b2")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://eddylab.org/software/hmmer"
-             (version-major version) "/"
-             version "/hmmer-" version ".tar.gz"))
+             "http://eddylab.org/software/hmmer/hmmer-" version ".tar.gz"))
        (sha256
         (base32
-         "0djmgc0pfli0jilfx8hql1axhwhqxqb8rxg2r5rg07aw73sfs5nx"))
-       (patches (search-patches "hmmer-remove-cpu-specificity.patch"))))
+         "171bivy6xhgjsz5nv53n81pc3frnwz29ylblawk2bv46szwjjqd5"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (home-page "http://hmmer.org/")
@@ -2957,12 +2954,10 @@ indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
 sequences, and for making protein sequence alignments.  It implements methods
 using probabilistic models called profile hidden Markov models (profile
 HMMs).")
-    (license (list license:gpl3+
-                   ;; The bundled library 'easel' is distributed
-                   ;; under The Janelia Farm Software License.
-                   (license:non-copyleft
-                    "file://easel/LICENSE"
-                    "See easel/LICENSE in the distribution.")))))
+    ;; hmmer uses non-portable SSE intrinsics so building fails on other
+    ;; platforms.
+    (supported-systems '("x86_64-linux" "i686-linux"))
+    (license license:bsd-3)))
 
 (define-public htseq
   (package
