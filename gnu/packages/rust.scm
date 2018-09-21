@@ -562,7 +562,6 @@ submodules = false
 prefix = \"" out "\"
 docdir = \"" doc "/share/doc/rust" "\"
 sysconfdir = \"etc\"
-localstatedir = \"var/lib\"
 [rust]
 default-linker = \"" gcc "/bin/gcc" "\"
 channel = \"stable\"
