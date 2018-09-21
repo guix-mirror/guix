@@ -147,6 +147,7 @@ Package Management
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 * Channels::                    Customizing the package collection.
+* Inferiors::                   Interacting with another revision of Guix.
 * Invoking guix describe::      Display information about your Guix revision.
 * Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
@@ -1699,6 +1700,7 @@ guix package -i emacs-guix
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 * Channels::                    Customizing the package collection.
+* Inferiors::                   Interacting with another revision of Guix.
 * Invoking guix describe::      Display information about your Guix revision.
 * Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
@@ -3053,6 +3055,135 @@ package it defines.
 This gives you super powers, allowing you to track the provenance of binary
 artifacts with very fine grain, and to reproduce software environments at
 will---some sort of ``meta reproducibility'' capabilities, if you will.
+@xref{Inferiors}, for another way to take advantage of these super powers.
+
+@node Inferiors
+@section Inferiors
+
+@c TODO: Remove this once we're more confident about API stability.
+@quotation Note
+The functionality described here is a ``technology preview'' as of version
+@value{VERSION}.  As such, the interface is subject to change.
+@end quotation
+
+@cindex inferiors
+@cindex composition of Guix revisions
+Sometimes you might need to mix packages from the revision of Guix you're
+currently running with packages available in a different revision of Guix.
+Guix @dfn{inferiors} allow you to achieve that by composing different Guix
+revisions in arbitrary ways.
+
+@cindex inferior packages
+Technically, an ``inferior'' is essentially a separate Guix process connected
+to your main Guix process through a REPL (@pxref{Invoking guix repl}).  The
+@code{(guix inferior)} module allows you to create inferiors and to
+communicate with them.  It also provides a high-level interface to browse and
+manipulate the packages that an inferior provides---@dfn{inferior packages}.
+
+When combined with channels (@pxref{Channels}), inferiors provide a simple way
+to interact with a separate revision of Guix.  For example, let's assume you
+want to install in your profile the current @code{guile} package, along with
+the @code{guile-json} as it existed in an older revision of Guix---perhaps
+because the newer @code{guile-json} has an incompatible API and you want to
+run your code against the old API@.  To do that, you could write a manifest for
+use by @code{guix package --manifest} (@pxref{Invoking guix package}); in that
+manifest, you would create an inferior for that old Guix revision you care
+about, and you would look up the @code{guile-json} package in the inferior:
+
+@lisp
+(use-modules (guix inferior) (guix channels)
+             (srfi srfi-1))   ;for 'first'
+
+(define channels
+  ;; This is the old revision from which we want to
+  ;; extract guile-json.
+  (list (channel
+         (name 'guix)
+         (url "https://git.savannah.gnu.org/git/guix.git")
+         (commit
+          "65956ad3526ba09e1f7a40722c96c6ef7c0936fe"))))
+
+(define inferior
+  ;; An inferior representing the above revision.
+  (inferior-for-channels channels))
+
+;; Now create a manifest with the current "guile" package
+;; and the old "guile-json" package.
+(packages->manifest
+ (list (first (lookup-inferior-packages inferior "guile-json"))
+       (specification->package "guile")))
+@end lisp
+
+On its first run, @command{guix package --manifest} might have to build the
+channel you specified before it can create the inferior; subsequent runs will
+be much faster because the Guix revision will be cached.
+
+The @code{(guix inferior)} module provides the following procedures to open an
+inferior:
+
+@deffn {Scheme Procedure} inferior-for-channels @var{channels} @
+   [#:cache-directory] [#:ttl]
+Return an inferior for @var{channels}, a list of channels.  Use the cache at
+@var{cache-directory}, where entries can be reclaimed after @var{ttl} seconds.
+This procedure opens a new connection to the build daemon.
+
+As a side effect, this procedure may build or substitute binaries for
+@var{channels}, which can take time.
+@end deffn
+
+@deffn {Scheme Procedure} open-inferior @var{directory} @
+  [#:command "bin/guix"]
+Open the inferior Guix in @var{directory}, running
+@code{@var{directory}/@var{command} repl} or equivalent.  Return @code{#f} if
+the inferior could not be launched.
+@end deffn
+
+@cindex inferior packages
+The procedures listed below allow you to obtain and manipulate inferior
+packages.
+
+@deffn {Scheme Procedure} inferior-packages @var{inferior}
+Return the list of packages known to @var{inferior}.
+@end deffn
+
+@deffn {Scheme Procedure} lookup-inferior-packages @var{inferior} @var{name} @
+   [@var{version}]
+Return the sorted list of inferior packages matching @var{name} in
+@var{inferior}, with highest version numbers first.  If @var{version} is true,
+return only packages with a version number prefixed by @var{version}.
+@end deffn
+
+@deffn {Scheme Procedure} inferior-package? @var{obj}
+Return true if @var{obj} is an inferior package.
+@end deffn
+
+@deffn {Scheme Procedure} inferior-package-name @var{package}
+@deffnx {Scheme Procedure} inferior-package-version @var{package}
+@deffnx {Scheme Procedure} inferior-package-synopsis @var{package}
+@deffnx {Scheme Procedure} inferior-package-description @var{package}
+@deffnx {Scheme Procedure} inferior-package-home-page @var{package}
+@deffnx {Scheme Procedure} inferior-package-location @var{package}
+@deffnx {Scheme Procedure} inferior-package-inputs @var{package}
+@deffnx {Scheme Procedure} inferior-package-native-inputs @var{package}
+@deffnx {Scheme Procedure} inferior-package-propagated-inputs @var{package}
+@deffnx {Scheme Procedure} inferior-package-transitive-propagated-inputs @var{package}
+@deffnx {Scheme Procedure} inferior-package-native-search-paths @var{package}
+@deffnx {Scheme Procedure} inferior-package-transitive-native-search-paths @var{package}
+@deffnx {Scheme Procedure} inferior-package-search-paths @var{package}
+These procedures are the counterpart of package record accessors
+(@pxref{package Reference}).  Most of them work by querying the inferior
+@var{package} comes from, so the inferior must still be live when you call
+these procedures.
+@end deffn
+
+Inferior packages can be used transparently like any other package or
+file-like object in G-expressions (@pxref{G-Expressions}).  They are also
+transparently handled by the @code{packages->manifest} procedure, which is
+commonly use in manifests (@pxref{Invoking guix package, the
+@option{--manifest} option of @command{guix package}}).  Thus you can insert
+an inferior package pretty much anywhere you would insert a regular package:
+in manifests, in the @code{packages} field of your @code{operating-system}
+declaration, and so on.
 
 @node Invoking guix describe
 @section Invoking @command{guix describe}
