@@ -11705,8 +11705,8 @@ file.")
       (synopsis
        "Show a complete thread in a single buffer")
       (description
-       "This package offers an alternate view to mu4e e-mail display.  It
-shows all e-mails of a thread in a single view, where each correspondant has
+       "This package offers an alternate view to mu4e's e-mail display.  It
+shows all e-mails of a thread in a single view, where each correspondent has
 their own face.  Threads can be displayed linearly (in which case e-mails are
 displayed in chronological order) or as an Org document where the node tree
 maps the thread tree.")
