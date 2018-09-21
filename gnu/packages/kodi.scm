@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,22 +93,22 @@
       (arguments
        '(#:phases
          (modify-phases %standard-phases
-           (delete 'configure) ; no configure script
+           (delete 'configure)          ; no configure script
            ;; There's no build system here, so we have to do it ourselves.
            (replace 'build
              (lambda _
-               (and (zero? (system* "g++" "-c" "guid.cpp" "-o" "guid.o"
-                                    "-std=c++11" "-DGUID_LIBUUID"))
-                    (zero? (system* "ar" "rvs" "libcrossguid.a" "guid.o")))))
+               (invoke "g++" "-c" "guid.cpp" "-o" "guid.o"
+                       "-std=c++11" "-DGUID_LIBUUID")
+               (invoke "ar" "rvs" "libcrossguid.a" "guid.o")))
            (replace 'check
              (lambda _
-               (and (zero? (system* "g++" "-c" "test.cpp" "-o" "test.o"
-                                    "-std=c++11"))
-                    (zero? (system* "g++" "-c" "testmain.cpp" "-o" "testmain.o"
-                                    "-std=c++11"))
-                    (zero? (system* "g++" "test.o" "guid.o" "testmain.o"
-                                    "-o" "test" "-luuid"))
-                    (zero? (system* (string-append (getcwd) "/test"))))))
+               (invoke "g++" "-c" "test.cpp" "-o" "test.o"
+                       "-std=c++11")
+               (invoke "g++" "-c" "testmain.cpp" "-o" "testmain.o"
+                       "-std=c++11")
+               (invoke "g++" "test.o" "guid.o" "testmain.o"
+                       "-o" "test" "-luuid")
+               (invoke (string-append (getcwd) "/test"))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
