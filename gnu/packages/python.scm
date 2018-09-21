@@ -767,8 +767,8 @@ and verifies that it matches the intended target hostname.")
             (setenv "PYTHONPATH"
                     (string-append (getcwd) ":"
                                    (getenv "PYTHONPATH")))
-            (and (zero? (system* "./runexamples.sh"))
-                 (zero? (system* "nosetests" "-v"))))))))
+            (invoke "./runexamples.sh")
+            (invoke "nosetests" "-v"))))))
    (home-page "https://github.com/fhs/python-hdf4")
    (synopsis "Python interface to the NCSA HDF4 library")
    (description
