@@ -3382,7 +3382,7 @@ library, libgit2 implements Git plumbing.")
                 (list "docs" "htmldoc" "examples")
                 (list doc html-doc examples))
                #t))))))
-    (home-page "http://pyparsing.wikispaces.com")
+    (home-page "https://github.com/pyparsing/pyparsing")
     (synopsis "Python parsing class library")
     (description
      "The pyparsing module is an alternative approach to creating and
