@@ -220,7 +220,7 @@ This package provides a Python interface for BLAKE2.")
        ("python-pyasn1" ,python-pyasn1)
        ("python-pynacl" ,python-pynacl)
        ("python-cryptography" ,python-cryptography)))
-    (home-page "http://www.paramiko.org/")
+    (home-page "https://www.paramiko.org/")
     (synopsis "SSHv2 protocol library")
     (description "Paramiko is a python implementation of the SSHv2 protocol,
 providing both client and server functionality.  While it leverages a Python C
