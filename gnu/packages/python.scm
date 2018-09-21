@@ -12456,15 +12456,24 @@ library.")
 (define-public python-rencode
   (package
    (name "python-rencode")
-   (version "1.0.3")
+   (version "1.0.5")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "rencode" version))
      (sha256
       (base32
-       "08if5yax1xn5yfp8p3765ccjmfcv9di7i4m5jckgnwvdsgznwkbj"))))
+       "0mzwdq1is7kyyr32i5k4iz6g5xxdvmiyc132jnc60p9m6lnwjrpv"))))
    (build-system python-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-before 'check 'delete-bogus-test
+          ;; This test requires /home/aresch/Downloads, which is not provided by
+          ;; the build environment.
+          (lambda _
+            (delete-file "rencode/t.py")
+            #t)))))
    (native-inputs `(("pkg-config" ,pkg-config)
                     ("python-cython" ,python-cython)))
    (home-page "https://github.com/aresch/rencode")
