@@ -811,8 +811,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
-  %D%/packages/patches/icecat-bug-1413868-pt1.patch		\
-  %D%/packages/patches/icecat-CVE-2018-5157-and-CVE-2018-5158.patch	\
   %D%/packages/patches/icecat-use-system-graphite2.patch	\
   %D%/packages/patches/icecat-use-system-harfbuzz.patch		\
   %D%/packages/patches/icedtea-6-hotspot-gcc-segfault-workaround.patch  \
