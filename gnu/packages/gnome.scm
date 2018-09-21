@@ -7224,7 +7224,7 @@ mp3, Ogg Vorbis and FLAC")
     (license license:gpl2+)))
 
 (define-public workrave
-  (let ((commit "v1_10_20"))
+  (let ((commit "v1_10_21"))
     (package
       (name "workrave")
       (version (string-map (match-lambda
@@ -7236,10 +7236,10 @@ mp3, Ogg Vorbis and FLAC")
                 (uri (git-reference
                       (url "https://github.com/rcaelers/workrave.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "099a87zkrkmsgfz9isrfm89dh545x52891jh6qxmn19h6wwsi941"))))
+                  "150qca8c552fakjlzkgarsxgp87l1xcwn19svqsa9d0cygqxjgia"))))
       (build-system glib-or-gtk-build-system)
       (arguments
        `(#:phases
