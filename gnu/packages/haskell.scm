@@ -1878,6 +1878,52 @@ This library provides an alternative interface which works with both
 MinTTY and other consoles.")
     (license license:bsd-3)))
 
+(define-public ghc-hackage-security
+  (package
+    (name "ghc-hackage-security")
+    (version "0.5.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hackage-security/hackage-security-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "08bwawc7ramgdh54vcly2m9pvfchp0ahhs8117jajni6x4bnx66v"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests fail because of framework updates.
+    (inputs
+     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-cryptohash-sha256" ,ghc-cryptohash-sha256)
+       ("ghc-ed25519" ,ghc-ed25519)
+       ("ghc-network" ,ghc-network)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-tar" ,ghc-tar)
+       ("ghc-zlib" ,ghc-zlib)))
+    (native-inputs
+     `(("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tar" ,ghc-tar)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-zlib" ,ghc-zlib)))
+    (home-page "https://github.com/haskell/hackage-security")
+    (synopsis "Hackage security library")
+    (description "This Hackage security library provides both server and
+client utilities for securing @uref{http://hackage.haskell.org/, the
+Hackage package server}.  It is based on
+@uref{http://theupdateframework.com/, The Update Framework}, a set of
+recommendations developed by security researchers at various universities
+in the US as well as developers on the @uref{https://www.torproject.org/,
+Tor project}.")
+    (license license:bsd-3)))
+
 (define-public cabal-install
  (package
   (name "cabal-install")
