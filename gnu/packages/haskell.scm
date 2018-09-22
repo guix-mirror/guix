@@ -1852,6 +1852,32 @@ Writer monad), where list append quickly becomes too expensive.")
 versions of GHC (i.e., < 6.10).")
     (license license:bsd-3)))
 
+(define-public ghc-echo
+  (package
+    (name "ghc-echo")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/echo/echo-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1vw5ykpwhr39wc0hhcgq3r8dh59zq6ib4zxbz1qd2wl21wqhfkvh"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "0br8wfiybcw5hand4imiw0i5hacdmrax1dv8g95f35gazffbx42l")))
+    (home-page "https://github.com/RyanGlScott/echo")
+    (synopsis "Echo terminal input portably")
+    (description "The @code{base} library exposes the @code{hGetEcho} and
+@code{hSetEcho} functions for querying and setting echo status, but
+unfortunately, neither function works with MinTTY consoles on Windows.
+This library provides an alternative interface which works with both
+MinTTY and other consoles.")
+    (license license:bsd-3)))
+
 (define-public cabal-install
  (package
   (name "cabal-install")
