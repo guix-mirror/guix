@@ -4104,19 +4104,20 @@ work and the interface is well tested.")
          (delete 'configure)
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "meson" "build"
-                             "--prefix" (assoc-ref outputs "out")))))
+             (invoke "meson" "build"
+                      "--prefix" (assoc-ref outputs "out"))))
          (replace 'check
-           (lambda _ (zero? (system* "ninja" "-C" "build" "test"))))
+           (lambda _ (invoke "ninja" "-C" "build" "test")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "ninja" "-C" "build" "install"))))
+             (invoke "ninja" "-C" "build" "install")))
          (add-after 'wrap 'wrap-more
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
                     ;; These libraries must be on LD_LIBRARY_PATH.
                     (libs '("gtkspell3" "webkitgtk" "libsoup" "libsecret"
                             "atk" "gtk+" "gsettings-desktop-schemas"
+                            "gcc:lib" ; needed b/c webkitgtk is built with gcc-7
                             "gobject-introspection"))
                     (path (string-join
                            (map (lambda (lib)
@@ -4129,7 +4130,8 @@ work and the interface is well tested.")
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))
              #t)))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gcc:lib" ,gcc-7 "lib") ; needed because webkitgtk is built with gcc-7
+       ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
        ("meson" ,meson-for-build)
@@ -4149,7 +4151,7 @@ work and the interface is well tested.")
        ("libsecret" ,libsecret)
        ("gtkspell3" ,gtkspell3)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-2.22)))
     (home-page "https://wiki.gnome.org/Apps/Eolie")
     (synopsis "Web browser for GNOME")
     (description
