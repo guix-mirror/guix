@@ -701,3 +701,33 @@ percent.
 @item Monte Carlo value for Pi is 3.132465868 (error 0.29 percent).
 @end itemize")
     (license license:bsd-3)))
+
+(define-public ghc-ed25519
+  (package
+    (name "ghc-ed25519")
+    (version "0.0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/ed25519/ed25519-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0v8msqvgzimhs7p5ri25hrb1ni2wvisl5rmdxy89fc59py79b9fq"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("2" "1cq6h3jqkb1kvd9fjfhsllg5gq78sdiyf2gy9862xhlbv6wil19f")
+       ;; We omit these test suites because they require old versions of
+       ;; packages and packages we do not have.
+       #:configure-flags
+       '("--flags=-test-hlint -test-doctests -test-properties")))
+    (home-page "http://thoughtpolice.github.com/hs-ed25519")
+    (synopsis "Ed25519 cryptographic signatures")
+    (description "This package provides a simple, fast, self-contained
+copy of the Ed25519 public-key signature system with a clean interface.
+It also includes support for detached signatures, and thorough
+documentation on the design and implementation, including usage
+guidelines.")
+    (license license:expat)))
