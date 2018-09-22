@@ -10556,4 +10556,56 @@ widths to the Char type.")
        ("ghc-attoparsec" ,ghc-attoparsec-bootstrap)))
     (properties '(hidden? #t))))
 
+(define-public ghc-rio
+  (package
+    (name "ghc-rio")
+    (version "0.1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/rio/rio-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "064h8a4hp53a479d3ak0vmqbx8hi0cpg7zn4wp23rjy26dka8p7g"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-setup-script
+           (lambda _
+             ;; The usual "Setup.hs" script is missing from the source.
+             (with-output-to-file "Setup.hs"
+               (lambda ()
+                 (format #t "import Distribution.Simple~%")
+                 (format #t "main = defaultMain~%"))))))))
+    (inputs
+     `(("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-microlens" ,ghc-microlens)
+       ("ghc-primitive" ,ghc-primitive)
+       ("ghc-text" ,ghc-text)
+       ("ghc-typed-process" ,ghc-typed-process)
+       ("ghc-unliftio" ,ghc-unliftio)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/commercialhaskell/rio#readme")
+    (synopsis "A standard library for Haskell")
+    (description "This package works as a prelude replacement for Haskell,
+providing more functionality and types out of the box than the standard
+prelude (such as common data types like @code{ByteString} and
+@code{Text}), as well as removing common ``gotchas'', like partial
+functions and lazy I/O.  The guiding principle here is:
+@itemize
+@item If something is safe to use in general and has no expected naming
+conflicts, expose it.
+@item If something should not always be used, or has naming conflicts,
+expose it from another module in the hierarchy.
+@end itemize")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
