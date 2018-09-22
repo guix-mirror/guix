@@ -637,8 +637,20 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    #t))))))))))
 
 (define-public rust-1.21
-  (rust-bootstrapped-package rust-1.20 "1.21.0"
-                             "1yj8lnxybjrybp00fqhxw8fpr641dh8wcn9mk44xjnsb4i1c21qp"))
+  (let ((base-rust (rust-bootstrapped-package rust-1.20 "1.21.0"
+                    "1yj8lnxybjrybp00fqhxw8fpr641dh8wcn9mk44xjnsb4i1c21qp")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'configure 'remove-ar
+               (lambda* (#:key inputs #:allow-other-keys)
+                 ;; Remove because toml complains about "unknown field".
+                 (substitute* "config.toml"
+                  (("^ar =.*") "\n"))
+                 #t)))))))))
 
 (define-public rust-1.22
   (rust-bootstrapped-package rust-1.21 "1.22.1"
