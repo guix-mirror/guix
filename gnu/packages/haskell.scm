@@ -1924,6 +1924,35 @@ in the US as well as developers on the @uref{https://www.torproject.org/,
 Tor project}.")
     (license license:bsd-3)))
 
+(define-public ghc-resolv
+  (package
+    (name "ghc-resolv")
+    (version "0.1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/resolv/resolv-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0wh7wj56l3f2bylz563g5g04a4nydj8acv60hpwa7k3mn792xca9"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "15ay4n3x8c09cb3h4z1nan84yd3n9zpgvi6h114hk98bq10k8mma")
+       #:tests? #f)) ; The required test frameworks are too old.
+    (inputs
+     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)))
+    (home-page "https://github.com/haskell/hackage-security")
+    (synopsis "Domain Name Service (DNS) lookup via @code{libresolv}")
+    (description "This package implements an API for accessing the
+@uref{https://tools.ietf.org/html/rfc1035, Domain Name Service (DNS)}
+resolver service via the standard @code{libresolv} system library (whose
+API is often available directly via the standard @code{libc} C library) on
+Unix systems.")
+    (license license:gpl3)))
+
 (define-public cabal-install
  (package
   (name "cabal-install")
