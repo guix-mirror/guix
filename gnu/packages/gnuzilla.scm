@@ -469,10 +469,10 @@ security standards.")
     (license license:mpl2.0)))
 
 (define (mozilla-patch file-name changeset hash)
-  "Return an origin for CHANGESET from the mozilla-esr52 repository."
+  "Return an origin for CHANGESET from the mozilla-esr60 repository."
   (origin
     (method url-fetch)
-    (uri (string-append "https://hg.mozilla.org/releases/mozilla-esr52/raw-rev/"
+    (uri (string-append "https://hg.mozilla.org/releases/mozilla-esr60/raw-rev/"
                         changeset))
     (sha256 (base32 hash))
     (file-name file-name)))
@@ -498,7 +498,9 @@ security standards.")
         (search-patch "icecat-avoid-bundled-libraries.patch")
         ;; FIXME (search-patch "icecat-use-system-harfbuzz.patch")
         ;; FIXME (search-patch "icecat-use-system-graphite2.patch")
-        ))
+        (mozilla-patch "icecat-CVE-2018-12385.patch"      "80a4a7ef2813" "1vgcbimpnfjqj934v0cryq1g13xac3wfmd4jyhcb5s60x8xyssf5")
+        (search-patch  "icecat-CVE-2018-12383.patch")
+        (mozilla-patch "icecat-bug-1489744.patch"         "6546ee839d30" "11mhvj77r789b428bfxqq5wdx8yr7lbrdjzr8qjj6fw197pldn51")))
       (modules '((guix build utils)))
       (snippet
        '(begin

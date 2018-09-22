@@ -1,8 +1,8 @@
 Fixes needed when avoiding bundled libraries.
 
---- icecat-52.0.2/xpcom/build/moz.build.orig
-+++ icecat-52.0.2/xpcom/build/moz.build
-@@ -93,10 +93,5 @@
+--- icecat-60.2.0/xpcom/build/moz.build.orig	2018-09-13 17:46:49.000000000 -0400
++++ icecat-60.2.0/xpcom/build/moz.build	2018-09-22 04:26:50.659564554 -0400
+@@ -99,10 +99,5 @@
      '/docshell/base',
  ]
  
@@ -13,9 +13,9 @@ Fixes needed when avoiding bundled libraries.
 -
  if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
      CXXFLAGS += CONFIG['TK_CFLAGS']
---- icecat-52.0.2/storage/moz.build.orig
-+++ icecat-52.0.2/storage/moz.build
-@@ -114,7 +114,6 @@
+--- icecat-60.2.0/storage/moz.build.orig	2018-09-13 17:51:11.000000000 -0400
++++ icecat-60.2.0/storage/moz.build	2018-09-22 04:26:50.659564554 -0400
+@@ -117,7 +117,6 @@
      DEFINES['MOZ_MEMORY_TEMP_STORE_PRAGMA'] = True
  
  LOCAL_INCLUDES += [
@@ -23,13 +23,13 @@ Fixes needed when avoiding bundled libraries.
      '/dom/base',
  ]
  
---- icecat-52.0.2/dom/indexedDB/moz.build.orig
-+++ icecat-52.0.2/dom/indexedDB/moz.build
-@@ -101,7 +101,6 @@
+--- icecat-60.2.0/dom/indexedDB/moz.build.orig	2018-09-13 17:49:42.000000000 -0400
++++ icecat-60.2.0/dom/indexedDB/moz.build	2018-09-22 04:26:50.663564574 -0400
+@@ -102,7 +102,6 @@
      CXXFLAGS += ['-Wno-error=shadow']
  
  LOCAL_INCLUDES += [
 -    '/db/sqlite3/src',
      '/dom/base',
      '/dom/storage',
-     '/dom/workers',
+     '/ipc/glue',
