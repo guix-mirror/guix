@@ -257,6 +257,42 @@ The implementation is made in C with a haskell FFI wrapper that hides
 the C implementation.")
     (license license:bsd-3)))
 
+(define-public ghc-cryptohash-sha256
+  (package
+    (name "ghc-cryptohash-sha256")
+    (version "0.11.101.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "cryptohash-sha256-" version "/"
+                           "cryptohash-sha256-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p85vajcgw9hmq8zsz9krzx0vxh7aggwbg5w9ws8w97avcsn8xaj"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "19birnmwga1yh82l4jqc3fygqkqcf5y8dlldnxfswngkzc3rvwp3")
+       #:tests? #f)) ; tests require old version of ghc-hunit (0.9)
+    (inputs
+     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)))
+    (native-inputs
+     `(("ghc-sha" ,ghc-sha)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/hvr/cryptohash-sha1")
+    (synopsis "SHA-256 implementation for Haskell")
+    (description "This Haskell package provides an incremental and
+one-pass, pure API to the @uref{https://en.wikipedia.org/wiki/SHA-2,
+SHA-256 cryptographic hash algorithm}, with performance close to the
+fastest implementations available in other languages.
+
+The implementation is made in C with a haskell FFI wrapper that hides
+the C implementation.")
+    (license license:bsd-3)))
+
 (define-public ghc-cryptonite
   (package
     (name "ghc-cryptonite")
