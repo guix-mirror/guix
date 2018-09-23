@@ -26,6 +26,7 @@
 (define-module (gnu packages geo)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system r)
@@ -760,3 +761,48 @@ location queries to be run in SQL.")
                license:bsd-3 ; files only say "BSD"
                ;; doc
                license:cc-by-sa3.0))))
+
+(define-public tegola
+  (package
+    (name "tegola")
+    (version "0.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                     "https://github.com/go-spatial/tegola/archive/v"
+                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "09vnzxfn0r70kmd776kcdfqxhzdj11syxa0b27z4ci1k367v7viw"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/go-spatial/tegola/cmd/tegola"
+       #:unpack-path "github.com/go-spatial"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-version
+           (lambda _
+             (with-directory-excursion
+               (string-append "src/github.com/go-spatial/tegola-" ,version)
+               (substitute* '("cmd/tegola/cmd/root.go"
+                              "cmd/tegola_lambda/main.go")
+                 (("version not set") ,version)))
+             #t))
+         (add-before 'build 'rename-import
+           (lambda _
+             (rename-file (string-append "src/github.com/go-spatial/tegola-" ,version)
+                          "src/github.com/go-spatial/tegola")
+             #t)))))
+    (home-page "http://tegola.io")
+    (synopsis "Vector tile server for maps")
+    (description "Tegola is a free vector tile server written in Go.  Tegola
+takes geospatial data and slices it into vector tiles that can be efficiently
+delivered to any client.")
+    (license (list
+               license:expat
+               ;; Some packages in vendor have other licenses
+               license:asl2.0
+               license:bsd-2
+               license:bsd-3
+               license:wtfpl2))))
