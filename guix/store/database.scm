@@ -290,18 +290,22 @@ Write a progress report to LOG-PORT."
     (define real-file-name
       (string-append store-dir "/" (basename (store-info-item item))))
 
-    (let-values (((hash nar-size) (nar-sha256 real-file-name)))
+    ;; When TO-REGISTER is already registered, skip it.  This makes a
+    ;; significant differences when 'register-closures' is called
+    ;; consecutively for overlapping closures such as 'system' and 'bootcfg'.
+    (unless (path-id db to-register)
       (when reset-timestamps?
         (reset-timestamps real-file-name))
-      (sqlite-register db #:path to-register
-                       #:references (store-info-references item)
-                       #:deriver (store-info-deriver item)
-                       #:hash (string-append "sha256:"
-                                             (bytevector->base16-string hash))
-                       #:nar-size nar-size
-                       #:time registration-time)
-      (when deduplicate?
-        (deduplicate real-file-name hash #:store store-dir))))
+      (let-values (((hash nar-size) (nar-sha256 real-file-name)))
+        (sqlite-register db #:path to-register
+                         #:references (store-info-references item)
+                         #:deriver (store-info-deriver item)
+                         #:hash (string-append "sha256:"
+                                               (bytevector->base16-string hash))
+                         #:nar-size nar-size
+                         #:time registration-time)
+        (when deduplicate?
+          (deduplicate real-file-name hash #:store store-dir)))))
 
   (mkdir-p db-dir)
   (parameterize ((sql-schema schema))
