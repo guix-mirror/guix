@@ -811,8 +811,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icecat-CVE-2018-12383.patch		\
-  %D%/packages/patches/icecat-use-system-graphite2.patch	\
-  %D%/packages/patches/icecat-use-system-harfbuzz.patch		\
+  %D%/packages/patches/icecat-use-system-graphite2+harfbuzz.patch	\
   %D%/packages/patches/icedtea-6-hotspot-gcc-segfault-workaround.patch  \
   %D%/packages/patches/icedtea-7-hotspot-gcc-segfault-workaround.patch  \
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\

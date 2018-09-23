@@ -495,9 +495,8 @@ security standards.")
         "0lqx7g79x15941rhjr3qsfwsny6vzc7d7abdmvjy6jjbqkqlc1zl"))
       (patches
        (list
-        (search-patch "icecat-avoid-bundled-libraries.patch")
-        ;; FIXME (search-patch "icecat-use-system-harfbuzz.patch")
-        ;; FIXME (search-patch "icecat-use-system-graphite2.patch")
+        (search-patch  "icecat-avoid-bundled-libraries.patch")
+        (search-patch  "icecat-use-system-graphite2+harfbuzz.patch")
         (mozilla-patch "icecat-CVE-2018-12385.patch"      "80a4a7ef2813" "1vgcbimpnfjqj934v0cryq1g13xac3wfmd4jyhcb5s60x8xyssf5")
         (search-patch  "icecat-CVE-2018-12383.patch")
         (mozilla-patch "icecat-bug-1489744.patch"         "6546ee839d30" "11mhvj77r789b428bfxqq5wdx8yr7lbrdjzr8qjj6fw197pldn51")))
@@ -535,8 +534,8 @@ security standards.")
                       "media/libvpx"
                       "security/nss"
                       ;; UNBUNDLE-ME "gfx/cairo"
-                      ;; UNBUNDLE-ME "gfx/harfbuzz"
-                      ;; UNBUNDLE-ME "gfx/graphite2"
+                      "gfx/harfbuzz"
+                      "gfx/graphite2"
                       "js/src/ctypes/libffi"
                       "db/sqlite3"))
           ;; Delete .pyc files, typically present in icecat source tarballs
@@ -557,10 +556,10 @@ security standards.")
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("gtk+-2" ,gtk+-2)
-       ;; UNBUNDLE-ME ("graphite2" ,graphite2)
+       ("graphite2" ,graphite2)
        ("pango" ,pango)
        ("freetype" ,freetype)
-       ;; UNBUNDLE-ME ("harfbuzz" ,harfbuzz)
+       ("harfbuzz" ,harfbuzz)
        ("hunspell" ,hunspell)
        ("libcanberra" ,libcanberra)
        ("libgnome" ,libgnome)
@@ -643,8 +642,8 @@ security standards.")
                            "--with-system-icu"
                            "--with-system-nspr"
                            "--with-system-nss"
-                           ;; UNBUNDLE-ME "--with-system-harfbuzz"
-                           ;; UNBUNDLE-ME "--with-system-graphite2"
+                           "--with-system-harfbuzz"
+                           "--with-system-graphite2"
                            "--enable-system-pixman"
                            ;; UNBUNDLE-ME "--enable-system-cairo"
                            "--enable-system-ffi"
@@ -697,7 +696,7 @@ security standards.")
                               all)))
             #t))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
-           (lambda* _
+           (lambda _
              (use-modules (guix build cargo-build-system))
              (let ((null-file "/dev/null")
                    (null-hash "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"))
