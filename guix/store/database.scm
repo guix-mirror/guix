@@ -23,6 +23,7 @@
   #:use-module (guix serialization)
   #:use-module (guix store deduplication)
   #:use-module (guix base16)
+  #:use-module (guix progress)
   #:use-module (guix build syscalls)
   #:use-module ((guix build utils)
                 #:select (mkdir-p executable-file?))
@@ -234,7 +235,8 @@ be used internally by the daemon's build hook."
                   #:prefix prefix #:state-directory state-directory
                   #:deduplicate? deduplicate?
                   #:reset-timestamps? reset-timestamps?
-                  #:schema schema))
+                  #:schema schema
+                  #:log-port (%make-void-port "w")))
 
 (define %epoch
   ;; When it all began.
@@ -245,12 +247,14 @@ be used internally by the daemon's build hook."
                          (deduplicate? #t)
                          (reset-timestamps? #t)
                          registration-time
-                         (schema (sql-schema)))
+                         (schema (sql-schema))
+                         (log-port (current-error-port)))
   "Register all of ITEMS, a list of <store-info> records as returned by
 'read-reference-graph', in the database under PREFIX/STATE-DIRECTORY.  ITEMS
 must be in topological order (with leaves first.)  If the database is
 initially empty, apply SCHEMA to initialize it.  REGISTRATION-TIME must be the
-registration time to be recorded in the database; #f means \"now\"."
+registration time to be recorded in the database; #f means \"now\".
+Write a progress report to LOG-PORT."
 
   ;; Priority for options: first what is given, then environment variables,
   ;; then defaults. %state-directory, %store-directory, and
@@ -302,4 +306,12 @@ registration time to be recorded in the database; #f means \"now\"."
   (mkdir-p db-dir)
   (parameterize ((sql-schema schema))
     (with-database (string-append db-dir "/db.sqlite") db
-      (for-each (cut register db <>) items))))
+      (let* ((prefix   (format #f "registering ~a items" (length items)))
+             (progress (progress-reporter/bar (length items)
+                                              prefix log-port)))
+        (call-with-progress-reporter progress
+          (lambda (report)
+            (for-each (lambda (item)
+                        (register db item)
+                        (report))
+                      items)))))))
