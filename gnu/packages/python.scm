@@ -5208,7 +5208,7 @@ interfaces in an easy and portable manner.")
     (native-inputs
      `(("python-nose" ,python-nose)
        ("unzip" ,unzip)))
-    (home-page "http://networkx.github.io/")
+    (home-page "https://networkx.github.io/")
     (synopsis "Python module for creating and manipulating graphs and networks")
     (description
       "NetworkX is a Python package for the creation, manipulation, and study
