@@ -164,7 +164,7 @@ toolkit.  It allows users to monitor and control of running processes.")
 (define-public lxterminal
   (package
     (name "lxterminal")
-    (version "0.3.1")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lxde/LXTerminal"
@@ -172,7 +172,7 @@ toolkit.  It allows users to monitor and control of running processes.")
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0jrc3m0hbxcmcgahwjlm46s2350gh80ggb6a90xy0h6xqa3z73fd"))))
+                "1124pghrhnx6q4391ri8nvi6bsmvbj1dx81an08mird8jf2b2rii"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)
               ("vte"  ,vte/gtk+-2)))
