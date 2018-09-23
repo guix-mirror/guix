@@ -1474,13 +1474,14 @@ is also scriptable and extensible via Guile.")
     (name "libmesode")
     (version "0.9.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/boothj5/libmesode/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/boothj5/libmesode.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0iaj56fkd5bjvqpvq3324ni895rmbj1akbfqipjydnghfwaym4z6"))))
+                "1zb1x422zkpnxrz9d2b7pmi8ms60lbw49yh78mydqfypsmj2iyfh"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
