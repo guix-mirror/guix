@@ -806,3 +806,47 @@ delivered to any client.")
                license:bsd-2
                license:bsd-3
                license:wtfpl2))))
+
+(define-public imposm3
+  (package
+    (name "imposm3")
+    (version "0.6.0-alpha.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/omniscale/imposm3/archive/v"
+                            version ".tar.gz"))
+    (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "06f0kwmv52yd5m9jlckqxqmkf0cnqy3hamakrvg9lspplyqrds80"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/omniscale/imposm3/cmd/imposm"
+       #:unpack-path "github.com/omniscale"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'rename-import
+           (lambda _
+             (rename-file (string-append "src/github.com/omniscale/imposm3-" ,version)
+                          "src/github.com/omniscale/imposm3")
+             #t))
+         (add-before 'build 'set-version
+           (lambda _
+             (substitute* "src/github.com/omniscale/imposm3/version.go"
+               (("0.0.0-dev") ,version))
+             #t)))))
+    (inputs
+     `(("geos" ,geos)
+       ("leveldb" ,leveldb)))
+    (home-page "https://imposm.org/")
+    (synopsis "OpenStreetMap importer for PostGIS")
+    (description "Imposm is an importer for OpenStreetMap data.  It reads PBF
+files and imports the data into PostgreSQL/PostGIS databases.  It is designed
+to create databases that are optimized for rendering/tile/map-services.")
+    (license (list
+               license:asl2.0
+               ;; Some dependencies in vendor have different licenses
+               license:expat
+               license:bsd-2
+               license:bsd-3))))
