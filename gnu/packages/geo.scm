@@ -48,6 +48,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -907,3 +908,50 @@ encoder in C++.  The developer using protozero has to manually translate the
     (description "Libosmium is a fast and flexible C++ library for working with
 OpenStreetMap data.")
     (license license:boost1.0)))
+
+(define-public osm2pgsql
+  (package
+    (name "osm2pgsql")
+    (version "0.96.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/openstreetmap/osm2pgsql/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08y7776r4l9v9177a4q6cfdri0lpirky96m6g699hwl7v1vhw0mn"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "contrib/protozero")
+                  (delete-file-recursively "contrib/libosmium")
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f; tests fail because we need to setup a database
+       #:configure-flags
+       (list (string-append "-DOSMIUM_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "libosmium")
+                            "/include")
+             (string-append "-DPROTOZERO_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "protozero")
+                            "/include"))))
+    (inputs
+     `(("boost" ,boost)
+       ("expat" ,expat)
+       ("libosmium" ,libosmium)
+       ("lua" ,lua)
+       ("postgresql" ,postgresql)
+       ("proj.4" ,proj.4)
+       ("protozero" ,protozero)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("python-2" ,python-2)
+       ("python2-psycopg2" ,python2-psycopg2)))
+    (home-page "https://github.com/openstreetmap/osm2pgsql")
+    (synopsis "OSM data importer to postgresql")
+    (description "Osm2pgsql is a tool for loading OpenStreetMap data into a
+PostgreSQL / PostGIS database suitable for applications like rendering into a
+map, geocoding with Nominatim, or general analysis.")
+    (license license:gpl2+)))
