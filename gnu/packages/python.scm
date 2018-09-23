@@ -5194,15 +5194,15 @@ interfaces in an easy and portable manner.")
 (define-public python-networkx
   (package
     (name "python-networkx")
-    (version "2.1")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "networkx" version ".zip"))
        (sha256
-        (base32 "1ccb8mfz4m821k9y0cigkbq42q2sbb4dj5fbjshp0awp32j2q9v4"))))
+        (base32 "12swxb15299v9vqjsq4z8rgh5sdhvpx497xwnhpnb0gynrx6zra5"))))
     (build-system python-build-system)
-    ;; python-decorator is needed at runtime
+    ;; python-decorator is needed at runtime.
     (propagated-inputs
      `(("python-decorator" ,python-decorator)))
     (native-inputs
