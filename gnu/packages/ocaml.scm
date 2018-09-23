@@ -65,6 +65,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix svn-download)
@@ -1650,12 +1651,13 @@ lets the client choose the concrete timeline.")
     (version "0.5.5")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/savonet/ocaml-ssl/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/savonet/ocaml-ssl.git")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256 (base32
-                  "15p7652cvzdrlqxc1af11mg07wasxr1fsaj44gcmmh6bmav7wfzq"))))
+                  "0fviq8xhp3qk7pmkl7knchywsipxgb7p0z489hj8qnf2sx8xzdmy"))))
     (build-system ocaml-build-system)
     (arguments `(#:tests? #f
                  #:make-flags (list "OCAMLFIND_LDCONF=ignore")
