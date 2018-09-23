@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
+  #:use-module (guix memoization)
   #:use-module (guix profiles)
   #:use-module (guix scripts package)
   #:use-module (gnu packages)
@@ -314,10 +316,25 @@
   ;; Here GNU-BUILD-SYSTEM adds implicit inputs that build only on
   ;; %SUPPORTED-SYSTEMS.  Thus the others must be ignored.
   (let ((p (dummy-package "foo"
+               (build-system gnu-build-system)
+               (supported-systems
+                `("does-not-exist" "foobar" ,@%supported-systems)))))
+    (invalidate-memoization! package-transitive-supported-systems)
+    (parameterize ((%current-system "armhf-linux")) ; a traditionally-bootstrapped architecture
+      (package-transitive-supported-systems p))))
+
+(test-equal "package-transitive-supported-systems: reduced binary seed, implicit inputs"
+  '("x86_64-linux" "i686-linux")
+
+  ;; Here GNU-BUILD-SYSTEM adds implicit inputs that build only on
+  ;; %SUPPORTED-SYSTEMS.  Thus the others must be ignored.
+  (let ((p (dummy-package "foo"
              (build-system gnu-build-system)
              (supported-systems
               `("does-not-exist" "foobar" ,@%supported-systems)))))
-    (package-transitive-supported-systems p)))
+    (invalidate-memoization! package-transitive-supported-systems)
+    (parameterize ((%current-system "x86_64-linux"))
+      (package-transitive-supported-systems p))))
 
 (test-assert "supported-package?"
   (let ((p (dummy-package "foo"
