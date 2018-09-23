@@ -390,7 +390,12 @@ the image."
                                  #:closures graphs
                                  #:copy-closures? #$copy-inputs?
                                  #:register-closures? #$register-closures?
-                                 #:system-directory #$os-drv))
+                                 #:system-directory #$os-drv
+
+                                 ;; Disable deduplication to speed things up,
+                                 ;; and because it doesn't help much for a
+                                 ;; single system generation.
+                                 #:deduplicate? #f))
                     (root-size  #$(if (eq? 'guess disk-image-size)
                                       #~(max
                                          ;; Minimum 20 MiB root size
