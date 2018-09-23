@@ -4827,7 +4827,7 @@ interface to this kernel feature.")
 (define-public mbpfan
   (package
     (name "mbpfan")
-    (version "2.0.2")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
@@ -4836,10 +4836,10 @@ interface to this kernel feature.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0wifsws9icki95hhfh4zw1hmk07ddmkcz9mg5a9jr7q2kkrk01cx"))))
+         "1j44bpwv2zszih3cia9h7i7gb2gbfhzqh0s4kscbl7nplvyk3rlp"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; tests ask to be run as root
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
                             "CC=gcc"))
@@ -4850,7 +4850,7 @@ interface to this kernel feature.")
              (substitute* "Makefile"
                (("/usr") ""))
              #t))
-         (delete 'configure)))) ; There's no configure phase.
+         (delete 'configure))))         ; there's no configure phase
     (home-page "https://github.com/dgraziotin/mbpfan")
     (synopsis "Control fan speed on Macbooks")
     (description
