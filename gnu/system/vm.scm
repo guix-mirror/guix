@@ -99,21 +99,28 @@
           (device "store")
           (type "9p")
           (needed-for-boot? #t)
-          (options "trans=virtio")
+          (flags '(read-only))
+          (options "trans=virtio,cache=loose")
           (check? #f))
+
+        ;; The 9p documentation says that cache=loose is "intended for
+        ;; exclusive, read-only mounts", without additional details.  In
+        ;; practice it seems to work well for these, and it's much faster than
+        ;; the default cache=none, especially when copying and registering
+        ;; store items.
         (file-system
           (mount-point "/xchg")
           (device "xchg")
           (type "9p")
           (needed-for-boot? #t)
-          (options "trans=virtio")
+          (options "trans=virtio,cache=loose")
           (check? #f))
         (file-system
           (mount-point "/tmp")
           (device "tmp")
           (type "9p")
           (needed-for-boot? #t)
-          (options "trans=virtio")
+          (options "trans=virtio,cache=loose")
           (check? #f))))
 
 (define not-config?
