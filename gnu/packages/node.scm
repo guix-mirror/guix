@@ -184,7 +184,7 @@
      `(("c-ares" ,c-ares)
        ("http-parser" ,http-parser)
        ("icu4c" ,icu4c)
-       ("libuv" ,libuv)
+       ("libuv" ,libuv-1.19)
        ("nghttp2" ,nghttp2 "lib")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
