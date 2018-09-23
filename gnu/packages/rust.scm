@@ -657,28 +657,22 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                              "1lrzzp0nh7s61wgfs2h6ilaqi6iq89f1pd1yaf65l87bssyl4ylb"))
 
 (define-public rust-1.23
-  (package
-    (inherit rust-1.22)
-    (name "rust")
-    (version "1.23.0")
-    (source (rust-source version "14fb8vhjzsxlbi6yrn1r6fl5dlbdd1m92dn5zj5gmzfwf4w9ar3l"))
-    ;; Use rust-bootstrap@1.22 package to build rust 1.23
-    (native-inputs
-     (alist-replace "cargo-bootstrap" (list rust-bootstrap "cargo")
-                    (alist-replace "rustc-bootstrap" (list rust-bootstrap)
-                                   (package-native-inputs rust-1.22))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments rust-1.22)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (delete 'configure-archiver)
-           (delete 'remove-ar)
-           (add-after 'unpack 'dont-build-native
-             (lambda _
-               ;; XXX: Revisit this when we use gcc 6.
-               (substitute* "src/binaryen/CMakeLists.txt"
-                 (("ADD_COMPILE_FLAG\\(\\\"-march=native\\\"\\)") ""))
-               #t))))))))
+  (let ((base-rust (rust-bootstrapped-package rust-1.22 "1.23.0"
+                    "14fb8vhjzsxlbi6yrn1r6fl5dlbdd1m92dn5zj5gmzfwf4w9ar3l")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'configure-archiver)
+             (delete 'remove-ar)
+             (add-after 'unpack 'dont-build-native
+               (lambda _
+                 ;; XXX: Revisit this when we use gcc 6.
+                 (substitute* "src/binaryen/CMakeLists.txt"
+                  (("ADD_COMPILE_FLAG\\(\\\"-march=native\\\"\\)") ""))
+                 #t)))))))))
 
 (define-public rust-1.24
   (let ((base-rust
