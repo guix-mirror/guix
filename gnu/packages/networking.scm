@@ -651,7 +651,7 @@ network frames.")
 (define-public fping
   (package
     (name "fping")
-    (version "4.0")
+    (version "4.1")
     (source
      (origin
        (method url-fetch)
@@ -659,7 +659,7 @@ network frames.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1kp81wchi79l8z8rrj602fpjrd8bi84y3i7fsaclzlwap5943sv7"))))
+         "0wxbvm480vij8dy4v1pi8f0c7010rx6bidg3qhsvkdf2ijhy4cr7"))))
     (build-system gnu-build-system)
     (home-page "http://fping.org/")
     (synopsis "Send ICMP ECHO_REQUEST packets to network hosts")
