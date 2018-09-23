@@ -661,7 +661,7 @@ network frames.")
         (base32
          "0wxbvm480vij8dy4v1pi8f0c7010rx6bidg3qhsvkdf2ijhy4cr7"))))
     (build-system gnu-build-system)
-    (home-page "http://fping.org/")
+    (home-page "https://fping.org/")
     (synopsis "Send ICMP ECHO_REQUEST packets to network hosts")
     (description
      "fping is a ping like program which uses the Internet Control Message
