@@ -301,8 +301,7 @@ result of 'lstat'; exclude entries for which SELECT? does not return true."
                      (filter-map (lambda (base)
                                    (let ((file (string-append directory
                                                               "/" base)))
-                                     (and (not (member base '("." "..")))
-                                          (select? file (lstat file))
+                                     (and (select? file (lstat file))
                                           base)))
                                  basenames))
 
