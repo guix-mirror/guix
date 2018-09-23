@@ -4830,13 +4830,14 @@ interface to this kernel feature.")
     (version "2.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dgraziotin/mbpfan/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dgraziotin/mbpfan.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1j44bpwv2zszih3cia9h7i7gb2gbfhzqh0s4kscbl7nplvyk3rlp"))))
+         "1gysq778rkl6dvvj9a1swxcl15wvz0bng5bn4nwq118cl8p8pask"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; tests ask to be run as root
