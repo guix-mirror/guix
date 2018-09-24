@@ -13824,3 +13824,48 @@ cell-specific differential expression from measured cell proportions using
 SAM.")
       ;; Any version
       (license license:lgpl2.1+))))
+
+(define-public r-bseqsc
+  (let ((revision "1")
+        (commit "fef3f3e38dcf3df37103348b5780937982b43b98"))
+    (package
+      (name "r-bseqsc")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/shenorrLab/bseqsc.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1prw13wa20f7wlc3gkkls66n1kxz8d28qrb8icfqdwdnnv8w5qg8"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-abind" ,r-abind)
+         ("r-annotationdbi" ,r-annotationdbi)
+         ("r-biobase" ,r-biobase)
+         ("r-cssam" ,r-cssam)
+         ("r-dplyr" ,r-dplyr)
+         ("r-e1071" ,r-e1071)
+         ("r-edger" ,r-edger)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-nmf" ,r-nmf)
+         ("r-openxlsx" ,r-openxlsx)
+         ("r-pkgmaker" ,r-pkgmaker)
+         ("r-plyr" ,r-plyr)
+         ("r-preprocesscore" ,r-preprocesscore)
+         ("r-rngtools" ,r-rngtools)
+         ("r-scales" ,r-scales)
+         ("r-stringr" ,r-stringr)
+         ("r-xbioc" ,r-xbioc)))
+      (home-page "https://github.com/shenorrLab/bseqsc")
+      (synopsis "Deconvolution of bulk sequencing experiments using single cell data")
+      (description "BSeq-sc is a bioinformatics analysis pipeline that
+leverages single-cell sequencing data to estimate cell type proportion and
+cell type-specific gene expression differences from RNA-seq data from bulk
+tissue samples.  This is a companion package to the publication \"A
+single-cell transcriptomic map of the human and mouse pancreas reveals inter-
+and intra-cell population structure.\" Baron et al. Cell Systems (2016)
+@url{https://www.ncbi.nlm.nih.gov/pubmed/27667365}.")
+      (license license:gpl2+))))
