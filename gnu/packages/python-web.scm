@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
@@ -1591,6 +1591,29 @@ library.")
 
 (define-public python2-responses
   (package-with-python2 python-responses))
+
+(define-public python-grequests
+  (package
+    (name "python-grequests")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "grequests" version))
+       (sha256
+        (base32
+         "1j9icncllbkv7x5719b20mx670c6q1jrdx1sakskkarvx3pc8h8g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-gevent" ,python-gevent)
+       ("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/kennethreitz/grequests")
+    (synopsis "Python library for asynchronous HTTP requests")
+    (description "GRequests is a Python library that allows you to use
+@code{Requests} with @code{Gevent} to make asynchronous HTTP Requests easily")
+    (license license:bsd-2)))
 
 (define-public python-geventhttpclient
   (package
