@@ -5573,14 +5573,15 @@ This package contains the library database.")
 (define-public m17n-lib
   (package
     (name "m17n-lib")
-    (version "1.7.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/m17n/m17n-lib-"
                            version ".tar.gz"))
        (sha256
-        (base32 "10yv730i25g1rpzv6q49m6xn4p8fjm7jdwvik2h70sn8w3hm7f4f"))))
+        (base32
+         "0jp61y09xqj10mclpip48qlfhniw8gwy8b28cbzxy8hq8pkwmfkq"))))
     (build-system gnu-build-system)
     (inputs
      `(("fribidi" ,fribidi)
