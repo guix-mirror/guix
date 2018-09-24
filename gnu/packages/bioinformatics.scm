@@ -13793,3 +13793,34 @@ sequencing data.")
 common tasks in the analysis of omics data, leveraging and enhancing features
 provided by Bioconductor packages.")
       (license license:gpl3+))))
+
+(define-public r-cssam
+  (let ((revision "1")
+        (commit "9ec58c982fa551af0d80b1a266890d92954833f2"))
+    (package
+      (name "r-cssam")
+      (version (git-version "1.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/shenorrLab/csSAM.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "128syf9v39gk0z3ip000qpsjbg6l1siyq6c8b0hz41dzg5achyb3"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-formula" ,r-formula)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-pkgmaker" ,r-pkgmaker)
+         ("r-plyr" ,r-plyr)
+         ("r-rngtools" ,r-rngtools)
+         ("r-scales" ,r-scales)))
+      (home-page "https://github.com/shenorrLab/csSAM/")
+      (synopsis "Cell type-specific statistical analysis of microarray")
+      (description "This package implements the method csSAM that computes
+cell-specific differential expression from measured cell proportions using
+SAM.")
+      ;; Any version
+      (license license:lgpl2.1+))))
