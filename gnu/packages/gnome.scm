@@ -115,6 +115,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages selinux)
@@ -4088,29 +4090,20 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.15")
+    (version "0.9.37")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/gnumdk/eolie/"
-                                  "releases/download/" version
-                                  "/eolie-" version ".tar.xz"))
+              (uri (string-append "https://gitlab.gnome.org/World/eolie/"
+                                  "uploads/4341cb428b7a45670308ee3fb3fa07dd/"
+                                  "eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "0glydxp1xh85gfidk1l9miqn6qxdbvvk5s3iy0pjlv8nrs3263jd"))))
-    (build-system glib-or-gtk-build-system)
+                "126m0nwwy3lqv7z8aj9hiwangih03b1nlkg3xja9p7wbf7zcvp2n"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:phases
+     `(#:glib-or-gtk? #t
+       #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "meson" "build"
-                      "--prefix" (assoc-ref outputs "out"))))
-         (replace 'check
-           (lambda _ (invoke "ninja" "-C" "build" "test")))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "ninja" "-C" "build" "install")))
          (add-after 'wrap 'wrap-more
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -4134,9 +4127,8 @@ work and the interface is well tested.")
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
-       ("meson" ,meson-for-build)
-       ("ninja" ,ninja)
        ("python" ,python)
+       ("glib:bin" ,glib "bin")
        ("gtk+" ,gtk+ "bin")))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -4146,8 +4138,10 @@ work and the interface is well tested.")
        ("atk" ,atk)    ; propagated by gtk+, but we need it in LD_LIBRARY_PATH
        ("python" ,python-wrapper)
        ("python-dateutil" ,python-dateutil)
+       ("python-pyfxa" ,python-pyfxa)
        ("python-pygobject" ,python-pygobject)
        ("python-pycairo" ,python-pycairo)
+       ("python-pycrypto" ,python-pycrypto)
        ("libsecret" ,libsecret)
        ("gtkspell3" ,gtkspell3)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
