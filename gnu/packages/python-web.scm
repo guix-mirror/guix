@@ -2694,3 +2694,34 @@ a simple HTTP request-signing scheme.")
      "This is a Python client library for the BrowserID protocol that
 underlies Mozilla Persona.")
     (license license:mpl2.0)))
+
+(define-public python-pyfxa
+  (package
+    (name "python-pyfxa")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyFxA" version))
+       (sha256
+        (base32
+         "0axl16fyrz2r88gnw4b12mk7dpkqscv8c4wsc1y5hicl7bsbc4fm"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; 17 tests require network access
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-hawkauthlib" ,python-hawkauthlib)
+       ("python-pybrowserid" ,python-pybrowserid)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-grequests" ,python-grequests)
+       ("python-mock" ,python-mock)
+       ("python-responses" ,python-responses)
+       ("python-unittest2" ,python-unittest2)))
+    (home-page "https://github.com/mozilla/PyFxA")
+    (synopsis "Firefox Accounts client library for Python")
+    (description
+     "This is a Python library for interacting with the Firefox Accounts
+ecosystem.")
+    (license license:mpl2.0)))
