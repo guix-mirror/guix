@@ -317,7 +317,45 @@ without requiring the source code to be rewritten.")
                 "07p3g0v2ba2vlfbfidqzlgbhnzdx46wh2rgc5gszq1mjyx5bks6r"))))))
 
 (define-public guile-next
-  (deprecated-package "guile-next" guile-2.2))
+  ;; This is the upcoming Guile 3.0, with JIT support.
+  (let ((commit "a74b4a45fab1a78e34954bce5f031e8a9765f827")
+        (revision "0"))
+    (package
+      (inherit guile-2.2)
+      (name "guile-next")
+      (version (git-version "2.99" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/guile.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0kq6mabv7j4gdlwmpz3iaddv98sc7awkl2358sg8j50sg10yw8nx"))
+                (file-name (git-file-name name version))))
+      (native-inputs
+       `(("autoconf", autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("gettext" ,gnu-gettext)
+         ("texinfo" ,texinfo)
+         ("flex" ,flex)
+         ,@(package-native-inputs guile-2.2)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments guile-2.2)
+         ((#:phases phases '%standard-phases)
+          ;; XXX: The default 'bootstrap' phase tries to execute the
+          ;; ./bootstrap directory.
+          `(modify-phases ,phases
+             (replace 'bootstrap
+               (lambda _
+                 (patch-shebang "build-aux/git-version-gen")
+                 (invoke "autoreconf" "-vfi")))
+             (add-before 'check 'skip-version-test
+               (lambda _
+                 ;; Remove this test that's bound to fail.
+                 (delete-file "test-suite/tests/version.test")
+                 #t)))))))))
 
 (define (make-guile-readline guile)
   (package
