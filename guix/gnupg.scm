@@ -57,7 +57,7 @@
 (define %openpgp-key-server
   ;; The default key server.  Note that keys.gnupg.net appears to be
   ;; unreliable.
-  (make-parameter "pgp.mit.edu"))
+  (make-parameter "pool.sks-keyservers.net"))
 
 (define* (gnupg-verify sig file
                        #:optional (keyring (current-keyring)))
