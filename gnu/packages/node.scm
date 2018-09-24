@@ -125,6 +125,14 @@
                          "test/sequential/test-child-process-emfile.js"
                          "test/sequential/test-benchmark-child-process.js"
                          "test/sequential/test-http-regr-gh-2928.js"))
+
+             ;; These tests have an expiry date: they depend on the validity of
+             ;; TLS certificates that are bundled with the source.  We want this
+             ;; package to be reproducible forever, so remove those.
+             ;; TODO: Regenerate certs instead.
+             (for-each delete-file
+                       '("test/parallel/test-tls-passphrase.js"
+                         "test/parallel/test-tls-server-verify.js"))
              #t))
          (replace 'configure
            ;; Node's configure script is actually a python script, so we can't
