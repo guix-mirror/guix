@@ -5538,14 +5538,15 @@ extensibility.")
 (define-public m17n-db
   (package
     (name "m17n-db")
-    (version "1.7.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/m17n/m17n-db-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1w08hnsbknrcjlzp42c99bgwc9hzsnf5m4apdv0dacql2s09zfm2"))))
+        (base32
+         "0vfw7z9i2s9np6nmx1d4dlsywm044rkaqarn7akffmb6bf1j6zv5"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gettext-minimal)))
