@@ -869,7 +869,7 @@ over ssh connections.")
 (define-public rename
   (package
     (name "rename")
-    (version "0.35")
+    (version "1.00")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -877,8 +877,24 @@ over ssh connections.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "052iqmn7ya3w1nadpiyavmr3rx566r0lbflx94y8b5wx9q5c16rq"))))
+                "03yhf8nmqsb0zyliv501fdvwlp589jqfn44yqkrflmpzrbik3zxl"))))
     (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'find-itself
+           ;; Fix run-time 'Can't locate File/Rename.pm in @INC' failure.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (with-directory-excursion bin
+                 (for-each
+                  (lambda (program)
+                    (wrap-program program
+                      `("PERL5LIB" ":" prefix
+                        (,(string-append out "/lib/perl5/site_perl")))))
+                  (find-files "." ".*")))
+               #t))))))
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-pod" ,perl-test-pod)
