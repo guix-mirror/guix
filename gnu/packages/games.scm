@@ -364,6 +364,59 @@ played.  Freedoom complements the Doom engine with free levels, artwork, sound
 effects and music to make a completely free game.")
    (license license:bsd-3)))
 
+(define-public freedroidrpg
+  (package
+    (name "freedroidrpg")
+    (version "0.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://ftp.osuosl.org/pub/freedroid/"
+                           "freedroidRPG-" (version-major+minor version) "/"
+                           "freedroidRPG-" version ".tar.gz"))
+       (sha256
+        (base32 "0n4kn38ncmcy3lrxmq8fjry6c1z50z4q1zcqfig0j4jb0dsz2va2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "CFLAGS="
+                       "-I" (assoc-ref %build-inputs "sdl-gfx") "/include/SDL "
+                       "-I" (assoc-ref %build-inputs "sdl-image") "/include/SDL "
+                       "-I" (assoc-ref %build-inputs "sdl-mixer") "/include/SDL")
+        "--enable-opengl")
+       ;; FIXME: the test suite fails with the following error output:
+       ;;   4586 Segmentation fault      env SDL_VIDEODRIVER=dummy \
+       ;;   SDL_AUDIODRIVER=dummy ./src/freedroidRPG -nb text
+       #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glu" ,glu)
+       ("libjpeg" ,libjpeg)
+       ("libogg" ,libogg)
+       ("libpng" ,libpng)
+       ("libvorbis" ,libvorbis)
+       ("mesa" ,mesa)
+       ("python" ,python-wrapper)
+       ("sdl" ,sdl)
+       ("sdl-gfx" ,sdl-gfx)
+       ("sdl-image" ,sdl-image)
+       ("sdl-mixer" ,sdl-mixer)
+       ("zlib" ,zlib)))
+    (home-page "http://www.freedroid.org/")
+    (synopsis "Isometric role-playing game against killer robots")
+    (description
+     "Freedroid RPG is an @dfn{RPG} (Role-Playing Game) with isometric graphics.
+The game tells the story of a world destroyed by a conflict between robots and
+their human masters.  To restore peace to humankind, the player must complete
+numerous quests while fighting off rebelling robots---either by taking control
+of them, or by simply blasting them to pieces with melee and ranged weapons in
+real-time combat.")
+    (license (list license:expat        ; lua/
+                   license:gpl3         ; src/gen_savestruct.py
+                   license:gpl2+))))    ; the rest
+
 (define-public golly
   (package
     (name "golly")
