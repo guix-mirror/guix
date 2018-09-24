@@ -2649,3 +2649,25 @@ for URL parsing and changing.")
 
 (define-public python2-google-api-client
   (package-with-python2 python-google-api-client))
+
+(define-public python-hawkauthlib
+  (package
+    (name "python-hawkauthlib")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hawkauthlib" version))
+       (sha256
+        (base32
+         "03ai47s4h8nfnrf25shbfvkm1b9n1ccd4nmmj280sg1fayi69zgg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-webob" ,python-webob)))
+    (home-page "https://github.com/mozilla-services/hawkauthlib")
+    (synopsis "Hawk Access Authentication protocol")
+    (description
+     "This is a low-level Python library for implementing Hawk Access Authentication,
+a simple HTTP request-signing scheme.")
+    (license license:mpl2.0)))
