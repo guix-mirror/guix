@@ -36,6 +36,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cargo)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
@@ -62,6 +63,7 @@
   #:use-module (gnu packages rust)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages readline))
 
@@ -497,6 +499,7 @@ security standards.")
        (list
         (search-patch  "icecat-avoid-bundled-libraries.patch")
         (search-patch  "icecat-use-system-graphite2+harfbuzz.patch")
+        (search-patch  "icecat-use-system-media-libs.patch")
         (mozilla-patch "icecat-CVE-2018-12385.patch"      "80a4a7ef2813" "1vgcbimpnfjqj934v0cryq1g13xac3wfmd4jyhcb5s60x8xyssf5")
         (search-patch  "icecat-CVE-2018-12383.patch")
         (mozilla-patch "icecat-bug-1489744.patch"         "6546ee839d30" "11mhvj77r789b428bfxqq5wdx8yr7lbrdjzr8qjj6fw197pldn51")))
@@ -516,24 +519,29 @@ security standards.")
                       ;; FIXME: A script from the bundled nspr is used.
                       ;;"nsprpub"
                       ;;
-                      ;; TODO: Use system media libraries.  Waiting for:
+                      ;; TODO: Use more system media libraries.  See:
                       ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=517422>
-                      ;;   * libogg
-                      ;;   * libtheora
-                      ;;   * libvorbis
-                      ;;   * libtremor (not yet in guix)
+                      ;;   * libtheora: esr60 wants v1.2, not yet released.
+                      ;;   * soundtouch: avoiding the bundled library would
+                      ;;     result in some loss of functionality.  There's
+                      ;;     also an issue with exception handling
+                      ;;     configuration.  It seems that this is needed in
+                      ;;     some moz.build:
+                      ;;       DEFINES['ST_NO_EXCEPTION_HANDLING'] = 1
                       ;;   * libopus
                       ;;   * speex
-                      ;;   * soundtouch (not yet in guix)
                       ;;
                       "modules/freetype2"
                       "modules/zlib"
                       "modules/libbz2"
-                      ;; UNBUNDLE-ME "ipc/chromium/src/third_party/libevent"
+                      "ipc/chromium/src/third_party/libevent"
                       "media/libjpeg"
                       "media/libvpx"
+                      "media/libogg"
+                      "media/libvorbis"
+                      ;; "media/libtheora" ; wants theora-1.2, not yet released
+                      "media/libtremor"
                       "security/nss"
-                      ;; UNBUNDLE-ME "gfx/cairo"
                       "gfx/harfbuzz"
                       "gfx/graphite2"
                       "js/src/ctypes/libffi"
@@ -549,7 +557,6 @@ security standards.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("bzip2" ,bzip2)
-       ;; UNBUNDLE-ME ("cairo" ,cairo)
        ("cups" ,cups)
        ("dbus-glib" ,dbus-glib)
        ("gdk-pixbuf" ,gdk-pixbuf)
@@ -564,8 +571,11 @@ security standards.")
        ("libcanberra" ,libcanberra)
        ("libgnome" ,libgnome)
        ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libogg" ,libogg)
+       ;; ("libtheora" ,libtheora) ; wants theora-1.2, not yet released
+       ("libvorbis" ,libvorbis)
        ("libxft" ,libxft)
-       ;; UNBUNDLE-ME ("libevent" ,libevent-2.0)
+       ("libevent" ,libevent)
        ("libxinerama" ,libxinerama)
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxcomposite" ,libxcomposite)
@@ -637,7 +647,10 @@ security standards.")
                            "--with-system-zlib"
                            "--with-system-bz2"
                            "--with-system-jpeg"        ; must be libjpeg-turbo
-                           ;; UNBUNDLE-ME "--with-system-libevent"
+                           "--with-system-libevent"
+                           "--with-system-ogg"
+                           "--with-system-vorbis"
+                           ;; "--with-system-theora" ; wants theora-1.2, not yet released
                            "--with-system-libvpx"
                            "--with-system-icu"
                            "--with-system-nspr"
@@ -645,7 +658,6 @@ security standards.")
                            "--with-system-harfbuzz"
                            "--with-system-graphite2"
                            "--enable-system-pixman"
-                           ;; UNBUNDLE-ME "--enable-system-cairo"
                            "--enable-system-ffi"
                            "--enable-system-hunspell"
                            "--enable-system-sqlite"
@@ -695,6 +707,9 @@ security standards.")
     'avcodec', 'avutil', 'pulse' ]\n\n"
                               all)))
             #t))
+         (replace 'bootstrap
+           (lambda _
+             (invoke "sh" "-c" "autoconf old-configure.in > old-configure")))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
            (lambda _
              (use-modules (guix build cargo-build-system))
