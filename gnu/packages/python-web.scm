@@ -2671,3 +2671,26 @@ for URL parsing and changing.")
      "This is a low-level Python library for implementing Hawk Access Authentication,
 a simple HTTP request-signing scheme.")
     (license license:mpl2.0)))
+
+(define-public python-pybrowserid
+  (package
+    (name "python-pybrowserid")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyBrowserID" version))
+       (sha256
+        (base32
+         "1qvi79kfb8x9kxkm5lw2mp42hm82cpps1xknmsb5ghkwx1lpc8kc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
+    (home-page "https://github.com/mozilla/PyBrowserID")
+    (synopsis "Python library for the BrowserID protocol")
+    (description
+     "This is a Python client library for the BrowserID protocol that
+underlies Mozilla Persona.")
+    (license license:mpl2.0)))
