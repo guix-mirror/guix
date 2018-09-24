@@ -13760,3 +13760,36 @@ sequencing data.")
     ;; This is free software but the license variant is unclear:
     ;; <https://github.com/mw55309/poRe_docs/issues/10>.
     (license license:bsd-3)))
+
+(define-public r-xbioc
+  (let ((revision "1")
+        (commit "f798c187e376fd1ba27abd559f47bbae7e3e466b"))
+    (package
+      (name "r-xbioc")
+      (version (git-version "0.1.15" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/renozao/xbioc.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "03hffh2f6z71y6l6dqpa5cql3hdaw7zigdi8sm2dzgx379k9rgrr"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-annotationdbi" ,r-annotationdbi)
+         ("r-assertthat" ,r-assertthat)
+         ("r-biobase" ,r-biobase)
+         ("r-biocinstaller" ,r-biocinstaller)
+         ("r-digest" ,r-digest)
+         ("r-pkgmaker" ,r-pkgmaker)
+         ("r-plyr" ,r-plyr)
+         ("r-reshape2" ,r-reshape2)
+         ("r-stringr" ,r-stringr)))
+      (home-page "https://github.com/renozao/xbioc/")
+      (synopsis "Extra base functions for Bioconductor")
+      (description "This package provides extra utility functions to perform
+common tasks in the analysis of omics data, leveraging and enhancing features
+provided by Bioconductor packages.")
+      (license license:gpl3+))))
