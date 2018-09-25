@@ -1351,14 +1351,14 @@ Amazon Web Services (AWS) API.")
 (define-public python-wsgiproxy2
   (package
     (name "python-wsgiproxy2")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WSGIProxy2" version ".tar.gz"))
        (sha256
         (base32
-         "16532rjc94h3w74x52jfckf3yzsp8h6z34522jk4xgjy82hpnd7r"))))
+         "19d9dva282vfjs784i0zkxp078lxfz4h3f621z30ij9wbf5rba6a"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-webtest" ,python-webtest)))
