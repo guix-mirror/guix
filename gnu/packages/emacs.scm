@@ -458,7 +458,7 @@ on stdout instead of using a socket as the Emacsclient does.")
              (method url-fetch)
              (uri (string-append
                    "https://github.com/magit/magit/releases/download/"
-                   version "/" name "-" version ".tar.gz"))
+                   version "/magit-" version ".tar.gz"))
              (sha256
               (base32
                "1ygaah3dd3nxpyd17297xgvdcgr7pgzzwlmpnmchki0kiwgg3sbc"))))
@@ -8019,7 +8019,7 @@ supports multiple backends such as @code{vlc}, @code{mpg123},
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/Groovy-Emacs-Modes/" name
+                    "https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes"
                     "/archive/" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
