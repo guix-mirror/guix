@@ -2053,7 +2053,7 @@ It comes with safe defaults and easily configurable options.")
 (define-public python-flask-login
   (package
     (name "python-flask-login")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
        (method git-fetch)
@@ -2062,12 +2062,27 @@ It comes with safe defaults and easily configurable options.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0sjbmk8m4mmd9g99n6c6lx9nv2jwwqp6qsqhl945w2m0f1sknwdh"))))
+        (base32 "1rj0qwyxapxnp84fi4lhmvh3d91fdiwz7hibw77x3d5i72knqaa9"))))
     (arguments
-     ;; Tests fail PEP8 compliance. See:
-     ;; https://github.com/maxcountryman/flask-login/issues/340
-     `(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'avoid-yanc
+           ;; Work around '.nosetests-real: error: no such option: --with-yanc'.
+           (lambda _
+             (setenv "NOCOLOR" "set")
+             #t)))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)))
+    (native-inputs
+     ;; For tests.
+     `(("python-blinker" ,python-blinker)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-pep8" ,python-pep8)
+       ("python-pyflakes" ,python-pyflakes)
+       ("python-semantic-version" ,python-semantic-version)
+       ("python-werkzeug" ,python-werkzeug)))
     (home-page "https://github.com/maxcountryman/flask-login")
     (synopsis "User session management for Flask")
     (description
