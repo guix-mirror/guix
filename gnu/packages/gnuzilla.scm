@@ -519,6 +519,13 @@ security standards.")
                       ;; FIXME: A script from the bundled nspr is used.
                       ;;"nsprpub"
                       ;;
+                      ;; FIXME: With the update to IceCat 60, using system NSS
+                      ;;        broke certificate validation.  See
+                      ;;        <https://bugs.gnu.org/32833>.  For now, we use
+                      ;;        the bundled NSPR and NSS.  TODO: Investigate,
+                      ;;        and try to unbundle these libraries again.
+                      ;; UNBUNDLE-ME! "security/nss"
+                      ;;
                       ;; TODO: Use more system media libraries.  See:
                       ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=517422>
                       ;;   * libtheora: esr60 wants v1.2, not yet released.
@@ -541,7 +548,6 @@ security standards.")
                       "media/libvorbis"
                       ;; "media/libtheora" ; wants theora-1.2, not yet released
                       "media/libtremor"
-                      "security/nss"
                       "gfx/harfbuzz"
                       "gfx/graphite2"
                       "js/src/ctypes/libffi"
@@ -588,8 +594,10 @@ security standards.")
        ("pulseaudio" ,pulseaudio)
        ("mesa" ,mesa)
        ("mit-krb5" ,mit-krb5)
-       ("nspr" ,nspr)
-       ("nss" ,nss)
+       ;; See <https://bugs.gnu.org/32833>
+       ;;   and related comments in the 'snippet' above.
+       ;; UNBUNDLE-ME! ("nspr" ,nspr)
+       ;; UNBUNDLE-ME! ("nss" ,nss)
        ("sqlite" ,sqlite)
        ("startup-notification" ,startup-notification)
        ("unzip" ,unzip)
@@ -653,8 +661,12 @@ security standards.")
                            ;; "--with-system-theora" ; wants theora-1.2, not yet released
                            "--with-system-libvpx"
                            "--with-system-icu"
-                           "--with-system-nspr"
-                           "--with-system-nss"
+                           
+                           ;; See <https://bugs.gnu.org/32833>
+                           ;;   and related comments in the 'snippet' above.
+                           ;; UNBUNDLE-ME! "--with-system-nspr"
+                           ;; UNBUNDLE-ME! "--with-system-nss"
+                           
                            "--with-system-harfbuzz"
                            "--with-system-graphite2"
                            "--enable-system-pixman"
