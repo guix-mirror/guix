@@ -10482,7 +10482,7 @@ theme for the Sphinx documentation system.  It's the default theme of Sphinx.")
              (setenv "CC" "gcc")
              ;; No need to extend PYTHONPATH to find the built package, since
              ;; the Makefile will build anyway
-             (zero? (system* "make" "check")))))))
+             (invoke "make" "check"))))))
   (native-inputs
    `(("procps" ,procps))) ; required for tests
   (home-page
