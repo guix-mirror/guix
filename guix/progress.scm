@@ -39,6 +39,7 @@
             progress-reporter/file
             progress-reporter/bar
 
+            display-download-progress
             byte-count->string
             current-terminal-columns
 
@@ -183,6 +184,42 @@ width of the bar is BAR-WIDTH."
 move the cursor to the beginning of the line."
   (display "\r\x1b[K" port))
 
+(define* (display-download-progress file size
+                                    #:key
+                                    start-time (transferred 0)
+                                    (log-port (current-error-port)))
+  "Write the progress report to LOG-PORT.  Use START-TIME (a SRFI-19 time
+object) and TRANSFERRED (a total number of bytes) to determine the
+throughput."
+  (define elapsed
+    (duration->seconds
+     (time-difference (current-time time-monotonic) start-time)))
+  (if (number? size)
+      (let* ((%  (* 100.0 (/ transferred size)))
+             (throughput (/ transferred elapsed))
+             (left       (format #f " ~a  ~a" file
+                                 (byte-count->string size)))
+             (right      (format #f "~a/s ~a ~a~6,1f%"
+                                 (byte-count->string throughput)
+                                 (seconds->string elapsed)
+                                 (progress-bar %) %)))
+        (erase-current-line log-port)
+        (display (string-pad-middle left right
+                                    (current-terminal-columns))
+                 log-port)
+        (force-output log-port))
+      (let* ((throughput (/ transferred elapsed))
+             (left       (format #f " ~a" file))
+             (right      (format #f "~a/s ~a | ~a transferred"
+                                 (byte-count->string throughput)
+                                 (seconds->string elapsed)
+                                 (byte-count->string transferred))))
+        (erase-current-line log-port)
+        (display (string-pad-middle left right
+                                    (current-terminal-columns))
+                 log-port)
+        (force-output log-port))))
+
 (define* (progress-reporter/file file size
                                  #:optional (log-port (current-output-port))
                                  #:key (abbreviation basename))
@@ -192,37 +229,10 @@ ABBREVIATION used to shorten FILE for display."
   (let ((start-time (current-time time-monotonic))
         (transferred 0))
     (define (render)
-      "Write the progress report to LOG-PORT."
-      (define elapsed
-        (duration->seconds
-         (time-difference (current-time time-monotonic) start-time)))
-      (if (number? size)
-          (let* ((%  (* 100.0 (/ transferred size)))
-                 (throughput (/ transferred elapsed))
-                 (left       (format #f " ~a  ~a"
-                                     (abbreviation file)
-                                     (byte-count->string size)))
-                 (right      (format #f "~a/s ~a ~a~6,1f%"
-                                     (byte-count->string throughput)
-                                     (seconds->string elapsed)
-                                     (progress-bar %) %)))
-            (erase-current-line log-port)
-            (display (string-pad-middle left right
-                                        (current-terminal-columns))
-                     log-port)
-            (force-output log-port))
-          (let* ((throughput (/ transferred elapsed))
-                 (left       (format #f " ~a"
-                                     (abbreviation file)))
-                 (right      (format #f "~a/s ~a | ~a transferred"
-                                     (byte-count->string throughput)
-                                     (seconds->string elapsed)
-                                     (byte-count->string transferred))))
-            (erase-current-line log-port)
-            (display (string-pad-middle left right
-                                        (current-terminal-columns))
-                     log-port)
-            (force-output log-port))))
+      (display-download-progress (abbreviation file) size
+                                 #:start-time start-time
+                                 #:transferred transferred
+                                 #:log-port log-port))
 
     (progress-reporter
      (start render)
