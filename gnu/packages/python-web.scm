@@ -2056,13 +2056,13 @@ It comes with safe defaults and easily configurable options.")
     (version "0.4.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/maxcountryman/flask-login/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/maxcountryman/flask-login.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1pdqp7a2gyb7k06xda004x0fi2w66s6kn2i0ndkqndmg12d83f9w"))))
+        (base32 "0sjbmk8m4mmd9g99n6c6lx9nv2jwwqp6qsqhl945w2m0f1sknwdh"))))
     (arguments
      ;; Tests fail PEP8 compliance. See:
      ;; https://github.com/maxcountryman/flask-login/issues/340
