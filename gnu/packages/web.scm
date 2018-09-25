@@ -1862,15 +1862,15 @@ MIME type directly to the browser, without being processed through Catalyst.")
 (define-public perl-catalyst-runtime
   (package
     (name "perl-catalyst-runtime")
-    (version "5.90118")
+    (version "5.90119")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Catalyst-Runtime-" version ".tar.gz"))
        (sha256
         (base32
-         "0cws3szx3vvh0372qdx8fypgv6qphcc3v81rbq30sl1ghby7ksd3"))))
+         "1iw7x9rqk3sz2hm1bw01blz5vwm7zlljdf4xj3r8vz54f1yggzqr"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)))
