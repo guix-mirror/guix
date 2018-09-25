@@ -180,9 +180,25 @@ Download and deploy the latest version of Guix.\n"))
 
 (define (honor-x509-certificates store)
   "Use the right X.509 certificates for Git checkouts over HTTPS."
-  (let ((file      (getenv "SSL_CERT_FILE"))
+  ;; On distros such as CentOS 7, /etc/ssl/certs contains only a couple of
+  ;; files (instead of all the certificates) among which "ca-bundle.crt".  On
+  ;; other distros /etc/ssl/certs usually contains the whole set of
+  ;; certificates along with "ca-certificates.crt".  Try to choose the right
+  ;; one.
+  (let ((file      (letrec-syntax ((choose
+                                    (syntax-rules ()
+                                      ((_ file rest ...)
+                                       (let ((f file))
+                                         (if (and f (file-exists? f))
+                                             f
+                                             (choose rest ...))))
+                                      ((_)
+                                       #f))))
+                     (choose (getenv "SSL_CERT_FILE")
+                             "/etc/ssl/certs/ca-certificates.crt"
+                             "/etc/ssl/certs/ca-bundle.crt")))
         (directory (or (getenv "SSL_CERT_DIR") "/etc/ssl/certs")))
-    (if (or (and file (file-exists? file))
+    (if (or file
             (and=> (stat directory #f)
                    (lambda (st)
                      (> (stat:nlink st) 2))))
