@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
@@ -620,8 +620,9 @@ security standards.")
        ("zip" ,zip)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("rust" ,rust)
-       ("cargo" ,rust "cargo")
+      ;; Icecat 60 checkes for rust>=1.24
+     `(("rust" ,rust-1.24)
+       ("cargo" ,rust-1.24 "cargo")
        ("perl" ,perl)
        ("python" ,python-2) ; Python 3 not supported
        ("python2-pysqlite" ,python2-pysqlite)
