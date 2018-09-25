@@ -837,8 +837,8 @@ REPORTER, which should be a <progress-reporter> object."
        (make-custom-binary-input-port "progress-port-proc"
                                       read! #f #f
                                       (lambda ()
-                                        (close-connection port)
-                                        (stop)))))))
+                                        (stop)
+                                        (close-port port)))))))
 
 (define-syntax with-networking
   (syntax-rules ()
