@@ -4550,7 +4550,7 @@ displayed.")
              ;; Why does it not work? Delete for now.
              (delete-file "tests/test_socket.py")
              #t))
-         (replace 'check (lambda _ (zero? (system* "nosetests" "-v")))))))
+         (replace 'check (lambda _ (invoke "nosetests" "-v"))))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)
