@@ -907,6 +907,34 @@ API for locking files.")
 (define-public python2-lockfile
   (package-with-python2 python-lockfile))
 
+(define-public python-semantic-version
+  (package
+    (name "python-semantic-version")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "semantic_version" version))
+       (sha256
+        (base32
+         "1h2l9xyg1zzsda6kjcmfcgycbvrafwci283vcr1v5sbk01l2hhra"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ; PyPI tarball lacks tests
+    (home-page "https://github.com/rbarrois/python-semanticversion")
+    (synopsis "Semantic versioning module for Python")
+    (description
+     "The @code{semantic_version} class is a small library for handling
+@uref{https://semver.org/, semantic versioning} (@dfn{SemVer}) in Python.
+
+It can compare versions, generate a new version that represents a bump in one of
+the version levels, and check whether any given string is a proper semantic
+version identifier.")
+    (license license:bsd-3)))
+
+(define-public python2-semantic-version
+  (package-with-python2 python-semantic-version))
+
 (define-public python-setuptools
   (package
     (name "python-setuptools")
