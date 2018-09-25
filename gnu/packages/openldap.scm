@@ -295,6 +295,7 @@ servers from Python programs.")
        ("nspr" ,nspr)
        ("nss" ,nss)
        ("openldap" ,openldap)
+       ("openssl" ,openssl)             ; #included by net-snmp
        ("pcre" ,pcre)
        ("perl" ,perl)
        ("python" ,python)
