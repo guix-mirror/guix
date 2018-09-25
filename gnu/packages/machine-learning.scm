@@ -750,7 +750,24 @@ data analysis.")
     (license license:bsd-3)))
 
 (define-public python2-scikit-learn
-  (package-with-python2 python-scikit-learn))
+  (let ((parent (package-with-python2 python-scikit-learn)))
+    (package (inherit parent)
+      (arguments
+       (substitute-keyword-arguments (package-arguments parent)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'check
+               (lambda _
+                 ;; Restrict OpenBLAS threads to prevent segfaults while testing!
+                 (setenv "OPENBLAS_NUM_THREADS" "1")
+                 ;; Some tests expect to be able to write to HOME.
+                 (setenv "HOME" "/tmp")
+                 ;; Disable tests that require network access
+                 (delete-file "sklearn/datasets/tests/test_kddcup99.py")
+                 (delete-file "sklearn/datasets/tests/test_mldata.py")
+                 (delete-file "sklearn/datasets/tests/test_rcv1.py")
+                 (invoke "pytest" "sklearn")
+                 #t)))))))))
 
 (define-public python-autograd
   (let* ((commit "442205dfefe407beffb33550846434baa90c4de7")

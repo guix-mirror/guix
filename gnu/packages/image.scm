@@ -1347,16 +1347,18 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
 (define-public libiptcdata
   (package
     (name "libiptcdata")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                                  version "/" name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/ianw/libiptcdata"
+                                  "/releases/download/release_"
+                                  (string-join (string-split version #\.) "_")
+                                  "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "03pfvkmmx762iydq0q207x2028d275pbdysfsgpmrr0ywy63pxkr"))))
+                "17m2bscc76r1bymjgb44fbbfrdsjfqyb2ivg9wchyllm8pgx1560"))))
     (build-system gnu-build-system)
-    (home-page "http://libiptcdata.sourceforge.net/")
+    (home-page "https://github.com/ianw/libiptcdata")
     (synopsis "IPTC metadata manipulation library")
     (description
      "Libiptcdata is a C library for manipulating the International Press

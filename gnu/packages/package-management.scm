@@ -566,13 +566,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "100")
+    (version "102")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0sh7g26i5ndpa8l7xq6rnijbi3jz5izjn0b98zcnm6wpgghszw48"))))
+                "0v2z98xx7n4viw12yq83flpb9ir5ahy1gn44pic0i3dam18xhcm6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

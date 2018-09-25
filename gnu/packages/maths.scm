@@ -814,8 +814,11 @@ incompatible with HDF5.")
                 (mkdir-p flib)
                 (mkdir-p finc)
                 (mkdir-p fex)
-                (rename-file (string-append bin "/h5fc")
-                             (string-append fbin "/h5fc"))
+                ;; Note: When built with --enable-parallel, the 'h5fc' file
+                ;; doesn't exist, hence this condition.
+                (when (file-exists? (string-append bin "/h5fc"))
+                  (rename-file (string-append bin "/h5fc")
+                               (string-append fbin "/h5fc")))
                 (for-each (lambda (file)
                             (rename-file file
                                          (string-append flib "/" (basename file))))
@@ -1034,10 +1037,13 @@ Swath).")
      `(("mpi" ,openmpi)
        ,@(package-inputs hdf5)))
     (arguments
-     (substitute-keyword-arguments `(#:configure-flags '("--enable-parallel")
-                                     ,@(package-arguments hdf5))
+     (substitute-keyword-arguments (package-arguments hdf5)
+       ((#:configure-flags flags)
+        ``("--enable-parallel" ,@(delete "--enable-cxx" ,flags)))
        ((#:phases phases)
         `(modify-phases ,phases
+           (add-after 'build 'mpi-setup
+             ,%openmpi-setup)
            (add-before 'check 'patch-tests
              (lambda _
                ;; OpenMPI's mpirun will exit with non-zero status if it
@@ -1396,6 +1402,13 @@ can solve two kinds of problems:
        ("less" ,less)
        ("ghostscript" ,ghostscript)
        ("gnuplot" ,gnuplot)))
+    ;; Octave code uses this variable to detect directories holding multiple CA
+    ;; certificates to verify peers with.  This is required for the networking
+    ;; functions that require encryption to work properly.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CURLOPT_CAPATH")
+            (files '("etc/ssl/certs")))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-shell="

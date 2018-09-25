@@ -1135,7 +1135,7 @@ with several different talk daemons at the same time.")
 (define-public gloox
   (package
     (name "gloox")
-    (version "1.0.17")
+    (version "1.0.21")
     (source
      (origin
        (method url-fetch)
@@ -1143,7 +1143,7 @@ with several different talk daemons at the same time.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "09c01jr5nrm7f1ly42wg0pqqscmp48pv8y2fjx1vwbavjxdq59ri"))))
+         "1k57qgif1yii515m6jaqaibkdysfab6394bpawd2l67321f1a4rw"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)
@@ -1472,15 +1472,16 @@ is also scriptable and extensible via Guile.")
 (define-public libmesode
   (package
     (name "libmesode")
-    (version "0.9.1")
+    (version "0.9.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/boothj5/libmesode/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/boothj5/libmesode.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0iaj56fkd5bjvqpvq3324ni895rmbj1akbfqipjydnghfwaym4z6"))))
+                "06f5nfaypvxrbsinxa1k2vrxrs7kqmg38g4wwwk5d63hpn1pj8ak"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)

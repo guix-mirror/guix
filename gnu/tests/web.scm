@@ -32,6 +32,7 @@
   #:use-module (guix store)
   #:export (%test-httpd
             %test-nginx
+            %test-varnish
             %test-php-fpm
             %test-hpcguix-web
             %test-tailon))
@@ -166,6 +167,46 @@ HTTP-PORT."
    (description "Connect to a running NGINX server.")
    (value (run-webserver-test name %nginx-os
                               #:log-file "/var/log/nginx/access.log"))))
+
+
+;;;
+;;; Varnish
+;;;
+
+(define %varnish-vcl
+  (mixed-text-file
+   "varnish-test.vcl"
+   "vcl 4.0;
+backend dummy { .host = \"127.1.1.1\"; }
+sub vcl_recv { return(synth(200, \"OK\")); }
+sub vcl_synth {
+  synthetic(\"" %index.html-contents "\");
+  set resp.http.Content-Type = \"text/plain\";
+  return(deliver);
+}"))
+
+(define %varnish-os
+  (simple-operating-system
+   (dhcp-client-service)
+   ;; Pretend to be a web server that serves %index.html-contents.
+   (service varnish-service-type
+            (varnish-configuration
+             (name "/tmp/server")
+             ;; Use a small VSL buffer to fit in the test VM.
+             (parameters '(("vsl_space" . "4M")))
+             (vcl %varnish-vcl)))
+   ;; Proxy the "server" using the builtin configuration.
+   (service varnish-service-type
+            (varnish-configuration
+             (parameters '(("vsl_space" . "4M")))
+             (backend "localhost:80")
+             (listen '(":8080"))))))
+
+(define %test-varnish
+  (system-test
+   (name "varnish")
+   (description "Test the Varnish Cache server.")
+   (value (run-webserver-test "varnish-default" %varnish-os))))
 
 
 ;;;

@@ -2936,18 +2936,15 @@ indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
 (define-public hmmer
   (package
     (name "hmmer")
-    (version "3.1b2")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://eddylab.org/software/hmmer"
-             (version-major version) "/"
-             version "/hmmer-" version ".tar.gz"))
+             "http://eddylab.org/software/hmmer/hmmer-" version ".tar.gz"))
        (sha256
         (base32
-         "0djmgc0pfli0jilfx8hql1axhwhqxqb8rxg2r5rg07aw73sfs5nx"))
-       (patches (search-patches "hmmer-remove-cpu-specificity.patch"))))
+         "171bivy6xhgjsz5nv53n81pc3frnwz29ylblawk2bv46szwjjqd5"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (home-page "http://hmmer.org/")
@@ -2957,12 +2954,10 @@ indexing scheme is called a @dfn{Hierarchical Graph FM index} (HGFM).")
 sequences, and for making protein sequence alignments.  It implements methods
 using probabilistic models called profile hidden Markov models (profile
 HMMs).")
-    (license (list license:gpl3+
-                   ;; The bundled library 'easel' is distributed
-                   ;; under The Janelia Farm Software License.
-                   (license:non-copyleft
-                    "file://easel/LICENSE"
-                    "See easel/LICENSE in the distribution.")))))
+    ;; hmmer uses non-portable SSE intrinsics so building fails on other
+    ;; platforms.
+    (supported-systems '("x86_64-linux" "i686-linux"))
+    (license license:bsd-3)))
 
 (define-public htseq
   (package
@@ -4800,66 +4795,79 @@ phylogenies.")
 (define-public rsem
   (package
     (name "rsem")
-    (version "1.2.20")
+    (version "1.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "http://deweylab.biostat.wisc.edu/rsem/src/rsem-"
-                       version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/deweylab/RSEM.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "0nzdc0j0hjllhsd5f2xli95dafm3nawskigs140xzvjk67xh0r9q"))
-       (patches (search-patches "rsem-makefile.patch"))
+        (base32 "1jlq11d1p8qp64w75yj8cnbbd1a93viq10pzsbwal7vdn8fg13j1"))
+       (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
         '(begin
-           ;; remove bundled copy of boost
+           ;; remove bundled copy of boost and samtools
            (delete-file-recursively "boost")
+           (delete-file-recursively "samtools-1.3")
            #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
+       #:make-flags
+       (list (string-append "BOOST="
+                            (assoc-ref %build-inputs "boost")
+                            "/include/")
+             (string-append "SAMHEADERS="
+                            (assoc-ref %build-inputs "htslib")
+                            "/include/htslib/sam.h")
+             (string-append "SAMLIBS="
+                            (assoc-ref %build-inputs "htslib")
+                            "/lib/libhts.a"))
        #:phases
        (modify-phases %standard-phases
          ;; No "configure" script.
          ;; Do not build bundled samtools library.
          (replace 'configure
-                  (lambda _
-                    (substitute* "Makefile"
-                      (("^all : sam/libbam.a") "all : "))
-                    #t))
+           (lambda _
+             (substitute* "Makefile"
+               (("^all : \\$\\(PROGRAMS\\).*") "all: $(PROGRAMS)\n")
+               (("^\\$\\(SAMLIBS\\).*") ""))
+             #t))
          (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (string-append (assoc-ref outputs "out")))
-                           (bin (string-append out "/bin/"))
-                           (perl (string-append out "/lib/perl5/site_perl")))
-                      (mkdir-p bin)
-                      (mkdir-p perl)
-                      (for-each (lambda (file)
-                                  (install-file file bin))
-                                (find-files "." "rsem-.*"))
-                      (install-file "rsem_perl_utils.pm" perl))
-                    #t))
-         (add-after
-          'install 'wrap-program
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (for-each (lambda (prog)
-                          (wrap-program (string-append out "/bin/" prog)
-                            `("PERL5LIB" ":" prefix
-                              (,(string-append out "/lib/perl5/site_perl")))))
-                        '("rsem-plot-transcript-wiggles"
-                          "rsem-calculate-expression"
-                          "rsem-generate-ngvector"
-                          "rsem-run-ebseq"
-                          "rsem-prepare-reference")))
-            #t)))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (string-append (assoc-ref outputs "out")))
+                    (bin (string-append out "/bin/"))
+                    (perl (string-append out "/lib/perl5/site_perl")))
+               (mkdir-p bin)
+               (mkdir-p perl)
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         (find-files "." "rsem-.*"))
+               (install-file "rsem_perl_utils.pm" perl))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (prog)
+                           (wrap-program (string-append out "/bin/" prog)
+                             `("PERL5LIB" ":" prefix
+                               (,(string-append out "/lib/perl5/site_perl")))))
+                         '("rsem-calculate-expression"
+                           "rsem-control-fdr"
+                           "rsem-generate-data-matrix"
+                           "rsem-generate-ngvector"
+                           "rsem-plot-transcript-wiggles"
+                           "rsem-prepare-reference"
+                           "rsem-run-ebseq"
+                           "rsem-run-prsem-testing-procedure")))
+             #t)))))
     (inputs
      `(("boost" ,boost)
-       ("ncurses" ,ncurses)
        ("r-minimal" ,r-minimal)
        ("perl" ,perl)
-       ("samtools" ,samtools-0.1)
+       ("htslib" ,htslib-1.3)
        ("zlib" ,zlib)))
     (home-page "http://deweylab.biostat.wisc.edu/rsem/")
     (synopsis "Estimate gene expression levels from RNA-Seq data")
@@ -13723,3 +13731,141 @@ juicer) and single-resolution or multi-resolution @code{.cool} files (for
 cooler).  Both @code{hic} and @code{cool} files describe Hi-C contact
 matrices.")
     (license license:expat)))
+
+(define-public r-pore
+  (package
+    (name "r-pore")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/rpore/" version
+                       "/poRe_" version ".tar.gz"))
+       (sha256
+        (base32 "0pih9nljbv8g4x8rkk29i7aqq681b782r5s5ynp4nw9yzqnmmksv"))))
+    (properties `((upstream-name . "poRe")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bit64" ,r-bit64)
+       ("r-data-table" ,r-data-table)
+       ("r-rhdf5" ,r-rhdf5)
+       ("r-shiny" ,r-shiny)
+       ("r-svdialogs" ,r-svdialogs)))
+    (home-page "https://sourceforge.net/projects/rpore/")
+    (synopsis "Visualize Nanopore sequencing data")
+    (description
+     "This package provides graphical user interfaces to organize and visualize Nanopore
+sequencing data.")
+    ;; This is free software but the license variant is unclear:
+    ;; <https://github.com/mw55309/poRe_docs/issues/10>.
+    (license license:bsd-3)))
+
+(define-public r-xbioc
+  (let ((revision "1")
+        (commit "f798c187e376fd1ba27abd559f47bbae7e3e466b"))
+    (package
+      (name "r-xbioc")
+      (version (git-version "0.1.15" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/renozao/xbioc.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "03hffh2f6z71y6l6dqpa5cql3hdaw7zigdi8sm2dzgx379k9rgrr"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-annotationdbi" ,r-annotationdbi)
+         ("r-assertthat" ,r-assertthat)
+         ("r-biobase" ,r-biobase)
+         ("r-biocinstaller" ,r-biocinstaller)
+         ("r-digest" ,r-digest)
+         ("r-pkgmaker" ,r-pkgmaker)
+         ("r-plyr" ,r-plyr)
+         ("r-reshape2" ,r-reshape2)
+         ("r-stringr" ,r-stringr)))
+      (home-page "https://github.com/renozao/xbioc/")
+      (synopsis "Extra base functions for Bioconductor")
+      (description "This package provides extra utility functions to perform
+common tasks in the analysis of omics data, leveraging and enhancing features
+provided by Bioconductor packages.")
+      (license license:gpl3+))))
+
+(define-public r-cssam
+  (let ((revision "1")
+        (commit "9ec58c982fa551af0d80b1a266890d92954833f2"))
+    (package
+      (name "r-cssam")
+      (version (git-version "1.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/shenorrLab/csSAM.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "128syf9v39gk0z3ip000qpsjbg6l1siyq6c8b0hz41dzg5achyb3"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-formula" ,r-formula)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-pkgmaker" ,r-pkgmaker)
+         ("r-plyr" ,r-plyr)
+         ("r-rngtools" ,r-rngtools)
+         ("r-scales" ,r-scales)))
+      (home-page "https://github.com/shenorrLab/csSAM/")
+      (synopsis "Cell type-specific statistical analysis of microarray")
+      (description "This package implements the method csSAM that computes
+cell-specific differential expression from measured cell proportions using
+SAM.")
+      ;; Any version
+      (license license:lgpl2.1+))))
+
+(define-public r-bseqsc
+  (let ((revision "1")
+        (commit "fef3f3e38dcf3df37103348b5780937982b43b98"))
+    (package
+      (name "r-bseqsc")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/shenorrLab/bseqsc.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1prw13wa20f7wlc3gkkls66n1kxz8d28qrb8icfqdwdnnv8w5qg8"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-abind" ,r-abind)
+         ("r-annotationdbi" ,r-annotationdbi)
+         ("r-biobase" ,r-biobase)
+         ("r-cssam" ,r-cssam)
+         ("r-dplyr" ,r-dplyr)
+         ("r-e1071" ,r-e1071)
+         ("r-edger" ,r-edger)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-nmf" ,r-nmf)
+         ("r-openxlsx" ,r-openxlsx)
+         ("r-pkgmaker" ,r-pkgmaker)
+         ("r-plyr" ,r-plyr)
+         ("r-preprocesscore" ,r-preprocesscore)
+         ("r-rngtools" ,r-rngtools)
+         ("r-scales" ,r-scales)
+         ("r-stringr" ,r-stringr)
+         ("r-xbioc" ,r-xbioc)))
+      (home-page "https://github.com/shenorrLab/bseqsc")
+      (synopsis "Deconvolution of bulk sequencing experiments using single cell data")
+      (description "BSeq-sc is a bioinformatics analysis pipeline that
+leverages single-cell sequencing data to estimate cell type proportion and
+cell type-specific gene expression differences from RNA-seq data from bulk
+tissue samples.  This is a companion package to the publication \"A
+single-cell transcriptomic map of the human and mouse pancreas reveals inter-
+and intra-cell population structure.\" Baron et al. Cell Systems (2016)
+@url{https://www.ncbi.nlm.nih.gov/pubmed/27667365}.")
+      (license license:gpl2+))))

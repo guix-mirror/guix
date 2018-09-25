@@ -8,6 +8,7 @@
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -190,7 +191,21 @@
             tailon-configuration-config-file
             tailon-configuration-package
 
-            tailon-service-type))
+            tailon-service-type
+
+            <varnish-configuration>
+            varnish-configuration
+            varnish-configuration?
+            varnish-configuration-package
+            varnish-configuration-name
+            varnish-configuration-backend
+            varnish-configuration-vcl
+            varnish-configuration-listen
+            varnish-configuration-storage
+            varnish-configuration-parameters
+            varnish-configuration-extra-options
+
+            varnish-service-type))
 
 ;;; Commentary:
 ;;;
@@ -1162,3 +1177,82 @@ files.")
                   (files (append (tailon-configuration-file-files old-config-file)
                                  files))))))))
    (default-value (tailon-configuration))))
+
+
+;;;
+;;; Varnish
+;;;
+
+(define-record-type* <varnish-configuration>
+  varnish-configuration make-varnish-configuration
+  varnish-configuration?
+  (package             varnish-configuration-package          ;<package>
+                       (default varnish))
+  (name                varnish-configuration-name             ;string
+                       (default "default"))
+  (backend             varnish-configuration-backend          ;string
+                       (default "localhost:8080"))
+  (vcl                 varnish-configuration-vcl              ;#f | <file-like>
+                       (default #f))
+  (listen              varnish-configuration-listen           ;list of strings
+                       (default '("localhost:80")))
+  (storage             varnish-configuration-storage          ;list of strings
+                       (default '("malloc,128m")))
+  (parameters          varnish-configuration-parameters       ;list of string pairs
+                       (default '()))
+  (extra-options       varnish-configuration-extra-options    ;list of strings
+                       (default '())))
+
+(define %varnish-accounts
+  (list (user-group
+         (name "varnish")
+         (system? #t))
+        (user-account
+         (name "varnish")
+         (group "varnish")
+         (system? #t)
+         (comment "Varnish Cache User")
+         (home-directory "/var/varnish")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define varnish-shepherd-service
+  (match-lambda
+    (($ <varnish-configuration> package name backend vcl listen storage
+                                parameters extra-options)
+     (list (shepherd-service
+            (provision (list (symbol-append 'varnish- (string->symbol name))))
+            (documentation (string-append "The Varnish Web Accelerator"
+                                          " (" name ")"))
+            (requirement '(networking))
+            (start #~(make-forkexec-constructor
+                      (list #$(file-append package "/sbin/varnishd")
+                            "-n" #$name
+                            #$@(if vcl
+                                   #~("-f" #$vcl)
+                                   #~("-b" #$backend))
+                            #$@(append-map (lambda (a) (list "-a" a)) listen)
+                            #$@(append-map (lambda (s) (list "-s" s)) storage)
+                            #$@(append-map (lambda (p)
+                                             (list "-p" (format #f "~a=~a"
+                                                                (car p) (cdr p))))
+                                           parameters)
+                            #$@extra-options)
+                      ;; Varnish will drop privileges to the "varnish" user when
+                      ;; it exists.  Not passing #:user here allows the service
+                      ;; to bind to ports < 1024.
+                      #:pid-file (if (string-prefix? "/" #$name)
+                                     (string-append #$name "/_.pid")
+                                     (string-append "/var/varnish/" #$name "/_.pid"))))
+            (stop #~(make-kill-destructor)))))))
+
+(define varnish-service-type
+  (service-type
+   (name 'varnish)
+   (description "Run the Varnish cache server.")
+   (extensions
+    (list (service-extension account-service-type
+                             (const %varnish-accounts))
+          (service-extension shepherd-root-service-type
+                             varnish-shepherd-service)))
+   (default-value
+     (varnish-configuration))))

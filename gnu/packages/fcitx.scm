@@ -75,7 +75,7 @@
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("dbus"             ,dbus)
-       ("enchant"          ,enchant)
+       ("enchant"          ,enchant-1.6)
        ("gettext"          ,gettext-minimal)
        ("gtk2"             ,gtk+-2)
        ("gtk3"             ,gtk+)

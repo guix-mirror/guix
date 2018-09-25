@@ -1242,7 +1242,8 @@ access to mpv's powerful playback capabilities.")
               (sha256
                (base32
                 "0vvh89hvp8qg9an9vcmwb7d9k3nixhxaz6zi65qdjnd0i56kkcz6"))
-              (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
+              (patches (search-patches "libvpx-use-after-free-in-postproc.patch"
+                                       "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-shared"

@@ -358,6 +358,21 @@ EOF
 guix package --bootstrap -m "$module_dir/manifest.scm"
 guix package -I | grep guile
 test `guix package -I | wc -l` -eq 1
+guix package --rollback --bootstrap
+
+# Applying a manifest file with inferior packages.
+cat > "$module_dir/manifest.scm"<<EOF
+(use-modules (guix inferior))
+
+(define i
+  (open-inferior "$abs_top_srcdir" #:command "scripts/guix"))
+
+(let ((guile (car (lookup-inferior-packages i "guile-bootstrap"))))
+  (packages->manifest (list guile)))
+EOF
+guix package --bootstrap -m "$module_dir/manifest.scm"
+guix package -I | grep guile
+test `guix package -I | wc -l` -eq 1
 
 # Error reporting.
 cat > "$module_dir/manifest.scm"<<EOF

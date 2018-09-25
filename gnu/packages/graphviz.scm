@@ -220,17 +220,18 @@ be used either as a standalone application, or as a python library.")
 (define-public python-pydot
   (package
     (name "python-pydot")
-    (version "1.2.3")
+    (version "1.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pydot" version))
        (sha256
         (base32
-         "00imlz0033dygb9gdag1xr0cybn33gk5jsdi9ffbszzr97rd7dgd"))))
+         "1dhy4jpp646jslh2yks6klwwbaxcs905byyny880gl1iap8y5llj"))))
     (build-system python-build-system)
-    ;; FIXME: No tests in PyPi release tarball.
-    (arguments '(#:tests? #f))
+    (native-inputs
+     ;; For tests.
+     `(("python-chardet" ,python-chardet)))
     (propagated-inputs
      `(("python-pyparsing" ,python-pyparsing)))
     (home-page "https://github.com/erocarrera/pydot")

@@ -725,7 +725,7 @@ mixed vector/bitmap output.")
 (define-public virtualgl
   (package
     (name "virtualgl")
-    (version "2.5.2")
+    (version "2.6")
     (source
      (origin
        (method url-fetch)
@@ -734,16 +734,17 @@ mixed vector/bitmap output.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0rnid3hwrry9d5d4m7sygq00xxx976rgk00a3557m9r5kxbmy476"))))
+         "1ck1d0w19cgyqvrb9mdlj6l5db90xf18yln71kdninlqxvpgj6h7"))))
     (arguments
-     `(#:tests? #f ;; no tests are available
+     `(#:tests? #f                      ; no tests are available
        #:configure-flags (list
-                           (string-append "-DCMAKE_INSTALL_LIBDIR="
-                                          (assoc-ref %outputs "out") "/lib")
-                           "-DVGL_USESSL=1"))) ;; use OpenSSL
+                          (string-append "-DCMAKE_INSTALL_LIBDIR="
+                                         (assoc-ref %outputs "out") "/lib")
+                          "-DVGL_USESSL=1"))) ; use OpenSSL
     (build-system cmake-build-system)
     (inputs `(("glu" ,glu)
               ("libjpeg-turbo" ,libjpeg-turbo)
+              ("libxtst" ,libxtst)
               ("mesa" ,mesa)
               ("openssl" ,openssl)))
     (native-inputs `(("pkg-config" ,pkg-config)))

@@ -44,7 +44,7 @@
 (define-public ibus
   (package
    (name "ibus")
-   (version "1.5.17")
+   (version "1.5.19")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/ibus/ibus/"
@@ -52,22 +52,29 @@
                                  version "/ibus-" version ".tar.gz"))
              (sha256
               (base32
-               "06fj7lawww5d5w73pk249191lvmpz7shlxfxia74bjkpb42shiq3"))))
+               "0a94bnpm24581317hdnihwr4cniriml10p4ffgxg14xhvaccfrjb"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:tests? #f  ; tests fail because there's no connection to dbus
-      #:configure-flags '("--disable-emoji-dict" ; cannot find emoji.json path
+      #:configure-flags `("--disable-emoji-dict" ; cannot find emoji.json path
+                          "--disable-python2"
+                          "--enable-python-library"
+                          ,(string-append "--with-ucd-dir="
+                                          (getcwd) "/ucd")
                           "--enable-wayland")
       #:make-flags
       (list "CC=gcc"
             (string-append "pyoverridesdir="
                            (assoc-ref %outputs "out")
-                           "/lib/python2.7/site-packages/gi/overrides/")
-            (string-append "py2overridesdir="
-                           (assoc-ref %outputs "out")
-                           "/lib/python2.7/site-packages/gi/overrides/"))
+                           "/lib/python3.6/site-packages/gi/overrides/"))
       #:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'prepare-ucd-dir
+          (lambda* (#:key inputs #:allow-other-keys)
+            (mkdir-p "../ucd")
+            (symlink (assoc-ref inputs "unicode-blocks") "../ucd/Blocks.txt")
+            (symlink (assoc-ref inputs "unicode-nameslist") "../ucd/NamesList.txt")
+            #t))
         (add-before 'configure 'disable-dconf-update
           (lambda _
             (substitute* "data/dconf/Makefile.in"
@@ -117,11 +124,23 @@
       ("wayland" ,wayland)
       ("xmodmap" ,xmodmap)
       ("iso-codes" ,iso-codes)
-      ("pygobject2" ,python2-pygobject)
-      ("python2" ,python-2)))
+      ("pygobject2" ,python-pygobject)
+      ("python" ,python)))
    (native-inputs
     `(("glib" ,glib "bin") ; for glib-genmarshal
       ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
+      ("unicode-nameslist"
+       ,(origin
+          (method url-fetch)
+          (uri "https://www.unicode.org/Public/UNIDATA/NamesList.txt")
+          (sha256
+           (base32 "0yr2h0nfqhirfi3bxl33z6cc94qqshlpgi06c25xh9754irqsgv8"))))
+      ("unicode-blocks"
+       ,(origin
+          (method url-fetch)
+          (uri "https://www.unicode.org/Public/UNIDATA/Blocks.txt")
+          (sha256
+           (base32 "0lnh9iazikpr548bd7nkaq9r3vfljfvz0rg2462prac8qxk7ni8b"))))
       ("vala" ,vala)
       ("pkg-config" ,pkg-config)))
    (native-search-paths

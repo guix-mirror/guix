@@ -170,15 +170,15 @@ as required.")
 (define-public libfilezilla
   (package
     (name "libfilezilla")
-    (version "0.13.1")
+    (version "0.13.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.filezilla-project.org/"
+       (uri (string-append "https://download.filezilla-project.org/"
                            name "/" name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "0347zkapp0wrhfm1yzw7wa1v3lww65ch176scifxn8f9068f1ixb"))))
+         "0z9cqscca4w94j9npgcknrrw8gfwn5ids903042fczlr977j0i19"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -207,16 +207,14 @@ output.
 (define-public filezilla
   (package
     (name "filezilla")
-    (version "3.31.0")
+    (version "3.37.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://sourceforge.net/projects/" name
-                           "/files/FileZilla_Client/" version
-                           "/FileZilla_" version "_src" ".tar.bz2"))
+       (uri (string-append "https://download.filezilla-project.org/client/"
+                           "FileZilla_" version "_src.tar.bz2"))
        (sha256
-        (base32
-         "1rfysb8dil35a7bzj2kw0mzzkys39d7yn6ipsbk8l6rkwfvnii8l"))))
+        (base32 "1bbxlm8gc0r5jing8xmkdbhj5a1qfbjn8varhny3mrk1am4m7s7l"))))
     (build-system gnu-build-system)
     (arguments
       ;; Don't let filezilla phone home to check for updates.

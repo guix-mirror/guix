@@ -715,8 +715,8 @@ and verifies that it matches the intended target hostname.")
             (setenv "PYTHONPATH"
                     (string-append (getcwd) ":"
                                    (getenv "PYTHONPATH")))
-            (and (zero? (system* "./runexamples.sh"))
-                 (zero? (system* "nosetests" "-v"))))))))
+            (invoke "./runexamples.sh")
+            (invoke "nosetests" "-v"))))))
    (home-page "https://github.com/fhs/python-hdf4")
    (synopsis "Python interface to the NCSA HDF4 library")
    (description
@@ -854,6 +854,34 @@ API for locking files.")
 
 (define-public python2-lockfile
   (package-with-python2 python-lockfile))
+
+(define-public python-semantic-version
+  (package
+    (name "python-semantic-version")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "semantic_version" version))
+       (sha256
+        (base32
+         "1h2l9xyg1zzsda6kjcmfcgycbvrafwci283vcr1v5sbk01l2hhra"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ; PyPI tarball lacks tests
+    (home-page "https://github.com/rbarrois/python-semanticversion")
+    (synopsis "Semantic versioning module for Python")
+    (description
+     "The @code{semantic_version} class is a small library for handling
+@uref{https://semver.org/, semantic versioning} (@dfn{SemVer}) in Python.
+
+It can compare versions, generate a new version that represents a bump in one of
+the version levels, and check whether any given string is a proper semantic
+version identifier.")
+    (license license:bsd-3)))
+
+(define-public python2-semantic-version
+  (package-with-python2 python-semantic-version))
 
 (define-public python-setuptools
   (package
@@ -3263,16 +3291,13 @@ library, libgit2 implements Git plumbing.")
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
-    (version "2.2.0")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/pyparsing/pyparsing"
-                           "/pyparsing-" version
-                           "/pyparsing-" version ".tar.gz"))
+       (uri (pypi-uri "pyparsing" version))
        (sha256
-        (base32
-         "016b9gh606aa44sq92jslm89bg874ia0yyiyb643fa6dgbsbqch8"))))
+        (base32 "06dgd0iilvf8m0ssmfpcbh8l6jf0zkp8adbb84llksg17crfx4zl"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -3295,7 +3320,7 @@ library, libgit2 implements Git plumbing.")
                 (list "docs" "htmldoc" "examples")
                 (list doc html-doc examples))
                #t))))))
-    (home-page "http://pyparsing.wikispaces.com")
+    (home-page "https://github.com/pyparsing/pyparsing")
     (synopsis "Python parsing class library")
     (description
      "The pyparsing module is an alternative approach to creating and
@@ -4239,15 +4264,14 @@ PNG, PostScript, PDF, and SVG file output.")
 (define-public python-decorator
   (package
     (name "python-decorator")
-    (version "4.2.1")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "decorator" version))
        (sha256
-        (base32 "03iaf116rm3w8b4agb8hzf6z9331mrvi4khfxq35zkx17sgxsikx"))))
+        (base32 "0308djallnh00v112y5b7nadl657ysmkp6vc8xn51d6yzc9zm7n3"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; no test target
     (home-page "https://pypi.python.org/pypi/decorator/")
     (synopsis "Python module to simplify usage of decorators")
     (description
@@ -4422,7 +4446,7 @@ displayed.")
              ;; Why does it not work? Delete for now.
              (delete-file "tests/test_socket.py")
              #t))
-         (replace 'check (lambda _ (zero? (system* "nosetests" "-v")))))))
+         (replace 'check (lambda _ (invoke "nosetests" "-v"))))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)
@@ -5099,21 +5123,21 @@ interfaces in an easy and portable manner.")
 (define-public python-networkx
   (package
     (name "python-networkx")
-    (version "2.1")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "networkx" version ".zip"))
        (sha256
-        (base32 "1ccb8mfz4m821k9y0cigkbq42q2sbb4dj5fbjshp0awp32j2q9v4"))))
+        (base32 "12swxb15299v9vqjsq4z8rgh5sdhvpx497xwnhpnb0gynrx6zra5"))))
     (build-system python-build-system)
-    ;; python-decorator is needed at runtime
+    ;; python-decorator is needed at runtime.
     (propagated-inputs
      `(("python-decorator" ,python-decorator)))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("unzip" ,unzip)))
-    (home-page "http://networkx.github.io/")
+    (home-page "https://networkx.github.io/")
     (synopsis "Python module for creating and manipulating graphs and networks")
     (description
       "NetworkX is a Python package for the creation, manipulation, and study
@@ -12117,14 +12141,14 @@ address is valid and really exists.")
 (define-public python-marshmallow
   (package
     (name "python-marshmallow")
-    (version "3.0.0b3")
+    (version "3.0.0b14")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "marshmallow" version))
       (sha256
        (base32
-        "07mcrij1yvk85lvgx44wwr9pc80xryghvlgayb057g1cazcypysd"))))
+        "1digk3f5cfk7wmlka65mc7bzsd96pbsgcsvp6pimd5b4ff9zb5p3"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -12391,15 +12415,24 @@ library.")
 (define-public python-rencode
   (package
    (name "python-rencode")
-   (version "1.0.3")
+   (version "1.0.5")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "rencode" version))
      (sha256
       (base32
-       "08if5yax1xn5yfp8p3765ccjmfcv9di7i4m5jckgnwvdsgznwkbj"))))
+       "0mzwdq1is7kyyr32i5k4iz6g5xxdvmiyc132jnc60p9m6lnwjrpv"))))
    (build-system python-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-before 'check 'delete-bogus-test
+          ;; This test requires /home/aresch/Downloads, which is not provided by
+          ;; the build environment.
+          (lambda _
+            (delete-file "rencode/t.py")
+            #t)))))
    (native-inputs `(("pkg-config" ,pkg-config)
                     ("python-cython" ,python-cython)))
    (home-page "https://github.com/aresch/rencode")

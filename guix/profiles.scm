@@ -314,12 +314,31 @@ file name."
   "Return a list of manifest entries, one for each item listed in PACKAGES.
 Elements of PACKAGES can be either package objects or package/string tuples
 denoting a specific output of a package."
+  (define inferiors-loaded?
+    ;; This hack allows us to provide seamless integration for inferior
+    ;; packages while not having a hard dependency on (guix inferior).
+    (resolve-module '(guix inferior) #f #f #:ensure #f))
+
+  (define (inferior->entry)
+    (module-ref (resolve-interface '(guix inferior))
+                'inferior-package->manifest-entry))
+
   (manifest
    (map (match-lambda
-         ((package output)
-          (package->manifest-entry package output))
-         ((? package? package)
-          (package->manifest-entry package)))
+          ((package output)
+           (package->manifest-entry package output))
+          ((? package? package)
+           (package->manifest-entry package))
+          ((thing output)
+           (if inferiors-loaded?
+               ((inferior->entry) thing output)
+               (throw 'wrong-type-arg 'packages->manifest
+                      "Wrong package object: ~S" (list thing) (list thing))))
+          (thing
+           (if inferiors-loaded?
+               ((inferior->entry) thing)
+               (throw 'wrong-type-arg 'packages->manifest
+                      "Wrong package object: ~S" (list thing) (list thing)))))
         packages)))
 
 (define (manifest->gexp manifest)

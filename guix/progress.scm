@@ -70,11 +70,11 @@ stopped."
     (($ <progress-reporter> start report stop)
      (start))))
 
-(define (progress-reporter-report! reporter)
+(define (progress-reporter-report! reporter . args)
   "Low-level procedure to lead REPORTER to emit a report."
   (match reporter
     (($ <progress-reporter> start report stop)
-     (report))))
+     (apply report args))))
 
 (define (stop-progress-reporter! reporter)
   "Low-level procedure to stop REPORTER."

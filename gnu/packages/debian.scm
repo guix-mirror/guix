@@ -1,5 +1,8 @@
+;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;;
+;;; This file is part of GNU Guix.
 ;;;
 ;;; GNU Guix is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
@@ -71,7 +74,7 @@ contains the archive keys used for that.")
 (define-public ubuntu-keyring
   (package
     (name "ubuntu-keyring")
-    (version "2018.02.28")
+    (version "2018.09.18.1")
     (source
       (origin
         (method url-fetch)
@@ -79,7 +82,7 @@ contains the archive keys used for that.")
                             "+files/" name "_" version ".tar.gz"))
         (sha256
          (base32
-          "1zj3012cz7rlx9pm39wnwa0lmi1h38n6bkgbz81vnmcsvqsc9a3a"))))
+          "0csx2n62rj9rxjv4y8qhby7l9rbybfwrb0406pc2cjr7f2yk91af"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

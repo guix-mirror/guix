@@ -712,13 +712,13 @@ default) of the repository.")
 (define-public python-gitdb
   (package
     (name "python-gitdb")
-    (version "2.0.3")
+    (version "2.0.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "gitdb2" version))
               (sha256
                (base32
-                "02azg62mr99b7cllyjrly77np3vw32y8nrxpa2xjapiyaga2j3mn"))))
+                "0i608q9c47rdsmyac1cn6s0hzwwj7cb957y8fc9wacc5lnw8ak5v"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -733,7 +733,7 @@ default) of the repository.")
                                                   "file" (number->string filecount))
                             (lambda (port)
                               (format port "~a" filecount))))
-                        (and
+                        (begin
                          (invoke "git" "init")
                          (invoke "git" "config" "user.name" "Total Git")
                          (invoke "git" "config" "user.email" "git@localhost")

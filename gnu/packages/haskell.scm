@@ -6729,7 +6729,7 @@ documents.")
 (define-public ghc-xml-conduit
   (package
     (name "ghc-xml-conduit")
-    (version "1.7.1.2")
+    (version "1.8.0.1")
     (source
      (origin
        (method url-fetch)
@@ -6737,11 +6737,12 @@ documents.")
                            "xml-conduit-" version ".tar.gz"))
        (sha256
         (base32
-         "0n4k0rq9j5cc9kdvj9xbx8gmiqlyk5x6pw8yxzw5wfsw7qkych2s"))))
+         "177gmyigxql1pn3ncz0r8annwv5cbxnihbgrrg1dhm4gmc9jy2wq"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
        ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-doctest" ,ghc-doctest)
        ("ghc-resourcet" ,ghc-resourcet)
        ("ghc-text" ,ghc-text)
        ("ghc-xml-types" ,ghc-xml-types)
@@ -6762,7 +6763,7 @@ the @code{conduit} package.")
 (define-public ghc-pandoc-citeproc
   (package
     (name "ghc-pandoc-citeproc")
-    (version "0.12.2.5")
+    (version "0.14.3.1")
     (source
      (origin
        (method url-fetch)
@@ -6771,7 +6772,7 @@ the @code{conduit} package.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1l58nbflcnlznc93qimkk7ghk2gv8kipf45zf88piqa2zys41yyx"))))
+         "0yj6rckwsc9vig40cm15ry0j3d01xpk04qma9n4byhal6v4b5h22"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases

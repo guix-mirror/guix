@@ -47,9 +47,9 @@
             channel-instance-checkout
 
             latest-channel-instances
-            channel-instance-derivations
             latest-channel-derivation
-            channel-instances->manifest))
+            channel-instances->manifest
+            channel-instances->derivation))
 
 ;;; Commentary:
 ;;;
@@ -294,13 +294,17 @@ channel instances."
                                           (zip instances derivations))))
     (return (manifest entries))))
 
+(define (channel-instances->derivation instances)
+  "Return the derivation of the profile containing INSTANCES, a list of
+channel instances."
+  (mlet %store-monad ((manifest (channel-instances->manifest instances)))
+    (profile-derivation manifest)))
+
 (define latest-channel-instances*
   (store-lift latest-channel-instances))
 
 (define* (latest-channel-derivation #:optional (channels %default-channels))
   "Return as a monadic value the derivation that builds the profile for the
 latest instances of CHANNELS."
-  (mlet* %store-monad ((instances ((store-lift latest-channel-instances)
-                                   channels))
-                       (manifest  (channel-instances->manifest instances)))
-    (profile-derivation manifest)))
+  (mlet %store-monad ((instances (latest-channel-instances* channels)))
+    (channel-instances->derivation instances)))

@@ -808,14 +808,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
   %D%/packages/patches/hdf-eos5-fix-szip.patch			\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
-  %D%/packages/patches/hmmer-remove-cpu-specificity.patch	\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
-  %D%/packages/patches/icecat-bug-1413868-pt1.patch		\
-  %D%/packages/patches/icecat-CVE-2018-5157-and-CVE-2018-5158.patch	\
+  %D%/packages/patches/icecat-CVE-2018-12383.patch		\
   %D%/packages/patches/icecat-use-system-graphite2.patch	\
   %D%/packages/patches/icecat-use-system-harfbuzz.patch		\
   %D%/packages/patches/icedtea-6-hotspot-gcc-segfault-workaround.patch  \
@@ -918,6 +916,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libutils-remove-damaging-includes.patch	\
   %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
+  %D%/packages/patches/libvpx-use-after-free-in-postproc.patch	\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
   %D%/packages/patches/lierolibre-check-unaligned-access.patch	\
@@ -1114,7 +1113,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/reptyr-fix-gcc-7.patch			\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpcbind-CVE-2017-8779.patch		\
-  %D%/packages/patches/rsem-makefile.patch			\
   %D%/packages/patches/rtags-separate-rct.patch			\
   %D%/packages/patches/racket-store-checksum-override.patch	\
   %D%/packages/patches/ruby-rubygems-276-for-ruby24.patch	\
