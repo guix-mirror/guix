@@ -12262,3 +12262,42 @@ execute its commands and resize images.")
       (description "Synosaurus is a thesaurus fontend for Emacs with pluggable
 backends, including the @command{wordnet} offline backend.")
       (license license:gpl3+))))
+
+(define-public emacs-all-the-icons
+  (package
+    (name "emacs-all-the-icons")
+    (version "3.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/domtronn/all-the-icons.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1sdl33117lccznj38021lwcdnpi9nxmym295q6y460y4dm4lx0jn"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:include '("\\.el$" "^data/" "^fonts/")
+       ;; Compiling "test/" fails with "Symbol’s value as variable is void:
+       ;; all-the-icons--root-code".  Ignoring tests.
+       #:exclude '("^test/")
+       #:tests? #f))
+    (propagated-inputs
+     `(("f" ,emacs-f)
+       ("memoize" ,emacs-memoize)))
+    (home-page "https://github.com/domtronn/all-the-icons.el")
+    (synopsis "Collect icon fonts and propertize them within Emacs")
+    (description "All-the-icons is a utility package to collect various icon
+fonts and propertize them within Emacs.  Icon fonts allow you to propertize
+and format icons the same way you would normal text.  This enables things such
+as better scaling of and anti aliasing of the icons.")
+    ;; Package is released under Expat license.  Elisp files are licensed
+    ;; under GPL3+.  Fonts come with various licenses: Expat for
+    ;; "all-the-icons.ttf" and "file-icons.ttf", Apache License 2.0 for
+    ;; "material-design-icons.ttf", and SIL OFL 1.1 for "fontawesome.ttf",
+    ;; "ocitcons.ttf" and "weathericons.ttf".
+    (license
+     (list license:expat license:gpl3+ license:silofl1.1 license:asl2.0))))
+
