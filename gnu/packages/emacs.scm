@@ -782,9 +782,6 @@ different tools.  It highlights errors and warnings inline in the buffer, and
 provides an optional IDE-like error list.")
     (license license:gpl3+)))                     ;+GFDLv1.3+ for the manual
 
-(define-public flycheck
-  (deprecated-package "flycheck" emacs-flycheck))
-
 
 ;;;
 ;;; Web browsing.
@@ -1066,9 +1063,6 @@ light user interface.")
     (home-page "https://www.gnu.org/software/emms/")
     (license license:gpl3+)))
 
-(define-public emms
-  (deprecated-package "emacs-emms" emacs-emms))
-
 (define-public emacs-emms-player-mpv
   ;; A new mpv backend is included in Emms from 5.0.
   (deprecated-package "emacs-emms-player-mpv" emacs-emms))
@@ -1088,7 +1082,7 @@ light user interface.")
          "0ifszi930pnaxk1x8pcydmvnp06868gc7nfx14q17zbajbx735k6"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emms" ,emms)))
+     `(("emms" ,emacs-emms)))
     (home-page "https://github.com/momomo5717/emms-mode-line-cycle")
     (synopsis "Display the EMMS mode line as a ticker")
     (description
@@ -2722,9 +2716,6 @@ view the build status of those servers' build jobs, and possibly to trigger
 build jobs.")
     (license license:gpl3+)))
 
-(define-public butler
-  (deprecated-package "emacs-butler" emacs-butler))
-
 (define-public emacs-company
   (package
     (name "emacs-company")
@@ -2873,9 +2864,6 @@ for quotation marks, dashes, and ellipses.  For example, typing @kbd{\"}
 automatically inserts a Unicode opening or closing quotation mark, depending
 on context.")
     (license license:gpl3+)))
-
-(define-public typo
-  (deprecated-package "emacs-typo" emacs-typo))
 
 (define-public emacs-scheme-complete
   (let ((commit "9b5cf224bf2a5994bc6d5b152ff487517f1a9bb5"))
@@ -8060,9 +8048,6 @@ navigation with the grails mode.")
 @code{org-tree-slide-mode} to enter the slideshow mode, and then @kbd{C->} and
 @kbd{C-<} to jump to the next and previous slide.")
       (license license:gpl3+))))
-
-(define-public org-tree-slide
-  (deprecated-package "emacs-org-tree-slide" emacs-org-tree-slide))
 
 (define-public emacs-scratch-el
   (let ((commit "2cdf2b841ce7a0987093f65b0cc431947549f897")
