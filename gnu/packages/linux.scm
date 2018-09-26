@@ -3668,6 +3668,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
 (define-public rng-tools
   (package
     (name "rng-tools")
+    (home-page "https://github.com/nhorman/rng-tools")
     (version "6.4")
     (source (origin
               (method url-fetch)
@@ -3691,7 +3692,6 @@ The collection contains a set of bandwidth and latency benchmark such as:
     (description
      "Monitor a hardware random number generator, and supply entropy
 from that to the system kernel's @file{/dev/random} machinery.")
-    (home-page "https://sourceforge.net/projects/gkernel")
     ;; The source package is offered under the GPL2+, but the files
     ;; 'rngd_rdrand.c' and 'rdrand_asm.S' are only available under the GPL2.
     (license (list license:gpl2 license:gpl2+))))
