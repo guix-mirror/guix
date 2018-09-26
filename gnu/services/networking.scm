@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -191,19 +191,7 @@ fe80::1%lo0 apps.facebook.com\n")
                              (cons* #$dhclient "-nw"
                                     "-pf" #$pid-file ifaces))))
                    (and (zero? (cdr (waitpid pid)))
-                        (let loop ()
-                          (catch 'system-error
-                            (lambda ()
-                              (call-with-input-file #$pid-file read))
-                            (lambda args
-                              ;; 'dhclient' returned before PID-FILE was created,
-                              ;; so try again.
-                              (let ((errno (system-error-errno args)))
-                                (if (= ENOENT errno)
-                                    (begin
-                                      (sleep 1)
-                                      (loop))
-                                    (apply throw args))))))))))
+                        (read-pid-file #$pid-file)))))
       (stop #~(make-kill-destructor))))))
 
 (define* (dhcp-client-service #:key (dhcp isc-dhcp))
