@@ -173,14 +173,14 @@ and provides a \"top-like\" mode (monitoring).")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://alpha.gnu.org/gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1lgmsbxn8i8xdasxzkdp2cml75n128pplw6icvmspl6s0n9xmw8n"))))
+                "1wmciqml9yplnx1s4ynn00giqyk06rbrcsgvpjj2df47sawk2jp8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
