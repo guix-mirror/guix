@@ -35,7 +35,7 @@
 (define-public newsboat
   (package
     (name "newsboat")
-    (version "2.12")
+    (version "2.13")
     (source
      (origin
        (method url-fetch)
@@ -43,7 +43,7 @@
                            "/newsboat-" version ".tar.xz"))
        (sha256
         (base32
-         "1x23zlgljaqf46v7sp8wnkyf6wighvirvn48ankpa34yr8mvrgcv"))))
+         "0pik1d98ydzqi6055vdbkjg5krwifbk2hy2f5jp5p1wcy2s16dn7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
