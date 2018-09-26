@@ -3671,13 +3671,13 @@ The collection contains a set of bandwidth and latency benchmark such as:
     (home-page "https://github.com/nhorman/rng-tools")
     (version "6.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/nhorman/rng-tools/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "005krksl8iz37l5p1nx8apl1yg7q78yrsb6inby31d2g5ck8nnwa"))))
+                "10r8vy240q04xx6j48qm063w0ssp0dkxchvq6x3fwd9bwp8m3sj7"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
