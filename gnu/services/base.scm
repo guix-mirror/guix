@@ -685,17 +685,20 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
   (shepherd-service-type
    'virtual-terminal
    (lambda (utf8?)
-     (shepherd-service
-      (documentation "Set virtual terminals in UTF-8 module.")
-      (provision '(virtual-terminal))
-      (requirement '(root-file-system))
-      (start #~(lambda _
-                 (call-with-output-file
-                     "/sys/module/vt/parameters/default_utf8"
-                   (lambda (port)
-                     (display 1 port)))
-                 #t))
-      (stop #~(const #f))))
+     (let ((knob "/sys/module/vt/parameters/default_utf8"))
+       (shepherd-service
+        (documentation "Set virtual terminals in UTF-8 module.")
+        (provision '(virtual-terminal))
+        (requirement '(root-file-system))
+        (start #~(lambda _
+                   ;; In containers /sys is read-only so don't insist on
+                   ;; writing to this file.
+                   (unless (= 1 (call-with-input-file #$knob read))
+                     (call-with-output-file #$knob
+                       (lambda (port)
+                         (display 1 port))))
+                   #t))
+        (stop #~(const #f)))))
    #t))                                           ;default to UTF-8
 
 (define console-keymap-service-type
