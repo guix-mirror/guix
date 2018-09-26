@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -268,13 +269,19 @@ Libraries with some extra bells and whistles.")
          (add-before 'configure 'set-system-actions
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((xkeyboard (assoc-ref inputs "xkeyboard-config"))
-                   (utils     (assoc-ref inputs "util-linux")))
+                   (utils     (assoc-ref inputs "util-linux"))
+                   (libc      (assoc-ref inputs "libc")))
                ;; We need to patch the path to 'base.lst' to be able
                ;; to switch the keyboard layout in E.
-               (substitute* "src/modules/xkbswitch/e_mod_parse.c"
+               (substitute* (list "src/modules/xkbswitch/e_mod_parse.c"
+                                  "src/modules/wizard/page_011.c")
                  (("/usr/share/X11/xkb/rules/xorg.lst")
                   (string-append xkeyboard
                                  "/share/X11/xkb/rules/base.lst")))
+               (substitute* (list "src/bin/e_intl.c"
+                                  "src/modules/conf_intl/e_int_config_intl.c"
+                                  "src/modules/wizard/page_010.c")
+                 (("locale -a") (string-append libc "/bin/locale -a")))
                (substitute* "src/modules/everything/evry_plug_apps.c"
                  (("/usr/bin/") ""))
                (substitute* "configure"
