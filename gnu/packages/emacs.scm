@@ -12301,3 +12301,25 @@ as better scaling of and anti aliasing of the icons.")
     (license
      (list license:expat license:gpl3+ license:silofl1.1 license:asl2.0))))
 
+(define-public emacs-powerline
+  (package
+    (name "emacs-powerline")
+    (version "2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/milkypostman/powerline.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1hp3xp18943n0rlggz55150020ivw8gvi1vyxkr4z8xhpwq4gaar"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/milkypostman/powerline/")
+    (synopsis "Mode-line plugin for Emacs")
+    (description "Powerline is a utility plugin which allows you to create
+a better-looking, more functional Emacs mode-line.  A collection of predefined
+themes comes with the package.")
+    (license license:gpl3+)))
+
