@@ -1702,13 +1702,21 @@ scientific applications modeled by partial differential equations.")
   (package (inherit petsc)
     (name "petsc-openmpi")
     (inputs
-     `(("openmpi" ,openmpi)
-       ("hdf5" ,hdf5-parallel-openmpi)
+     `(("hdf5" ,hdf5-parallel-openmpi)
+       ("metis" ,metis)
+       ("mumps" ,mumps-openmpi)
+       ("openmpi" ,openmpi)
+       ("scalapack" ,scalapack)
+       ("scotch" ,pt-scotch)
        ,@(package-inputs petsc)))
     (arguments
      (substitute-keyword-arguments (package-arguments petsc)
        ((#:configure-flags cf)
         ``("--with-mpiexec=mpirun"
+           "--with-metis=1"
+           "--with-mumps=1"
+           "--with-scalapack=1"
+           "--with-ptscotch=1"
            ,(string-append "--with-mpi-dir="
                            (assoc-ref %build-inputs "openmpi"))
            ,(string-append "--with-hdf5-include="
@@ -1718,9 +1726,9 @@ scientific applications modeled by partial differential equations.")
            ,@(delete "--with-mpi=0" ,cf)))
        ((#:phases phases)
         `(modify-phases ,phases
-           (add-before 'check 'mpi-setup
+           (add-before 'configure 'mpi-setup
              ,%openmpi-setup)))))
-    (synopsis "Library to solve PDEs (with MPI support)")))
+    (synopsis "Library to solve PDEs (with MUMPS and MPI support)")))
 
 (define-public petsc-complex-openmpi
   (package (inherit petsc-complex)
@@ -1736,7 +1744,6 @@ scientific applications modeled by partial differential equations.")
                            (assoc-ref %build-inputs "openmpi"))
            ,@(delete "--with-mpi=0" ,cf)))))
     (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
-
 
 (define-public python-kiwisolver
   (package
