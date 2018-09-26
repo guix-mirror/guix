@@ -1881,7 +1881,12 @@ item of @var{packages}."
                             (string-append linux-module-directory "/"
                                            kernel-release))
                            (old-umask (umask #o022)))
-                      (make-static-device-nodes directory)
+                      ;; If we're in a container, DIRECTORY might not exist,
+                      ;; for instance because the host runs a different
+                      ;; kernel.  In that case, skip it; we'll just miss a few
+                      ;; nodes like /dev/fuse.
+                      (when (file-exists? directory)
+                        (make-static-device-nodes directory))
                       (umask old-umask))
 
                     (let ((pid (fork+exec-command (list udevd))))
