@@ -347,6 +347,17 @@ private network between hosts on the internet.")
         (base32
          "0pqk43kd7crqhg6qgnl8kapncwgw1xgaf02zarzypcw64kvdih9h"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-FHS-file-names
+           (lambda _
+             (substitute* "sshuttle/client.py"
+               (("/usr/bin/env") (which "env")))
+             (substitute* "sshuttle/ssh.py"
+               ;; Perhaps this is unreachable, but don't let's take risks.
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
        ;; For tests only.
