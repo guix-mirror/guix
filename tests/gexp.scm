@@ -615,6 +615,8 @@
                                                 `(("graph" ,two))
                                                 #:modules
                                                 '((guix build store-copy)
+                                                  (guix progress)
+                                                  (guix records)
                                                   (guix sets)
                                                   (guix build utils))))
                          (ok? (built-derivations (list drv)))
@@ -817,6 +819,8 @@
        (two (gexp->derivation "two"
                               #~(symlink #$one #$output:chbouib)))
        (build -> (with-imported-modules '((guix build store-copy)
+                                          (guix progress)
+                                          (guix records)
                                           (guix sets)
                                           (guix build utils))
                    #~(begin
