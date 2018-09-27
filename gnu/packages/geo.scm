@@ -955,3 +955,34 @@ OpenStreetMap data.")
 PostgreSQL / PostGIS database suitable for applications like rendering into a
 map, geocoding with Nominatim, or general analysis.")
     (license license:gpl2+)))
+
+(define-public tippecanoe
+  (package
+    (name "tippecanoe")
+    (version "1.31.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mapbox/tippecanoe/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1057na1dkgjaryr7jr15lqkxpam111d3l5zdpdkqzzzpxmdjxqcf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases (delete 'configure))
+       #:test-target "test"
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (inputs
+     `(("perl" ,perl)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/mapbox/tippecanoe")
+    (synopsis "Vector tile server for maps")
+    (description "Tippecanoe creates scale-independent view of data, so that
+the texture and density of features is visible at every zoom level, instead of
+dropping features at lower levels.")
+    (license license:bsd-2)))
