@@ -39,6 +39,8 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages glib)
@@ -874,3 +876,34 @@ encoder in C++.  The developer using protozero has to manually translate the
     (license (list
                license:asl2.0; for folly
                license:bsd-2))))
+
+(define-public libosmium
+  (package
+    (name "libosmium")
+    (version "2.14.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/osmcode/libosmium/archive/v"
+                version ".tar.gz"))
+    (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0d9b46qiw7zkw1h9lygjdwqxnbhm3c7v8kydzw9f9f778cyagc94"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("boost" ,boost)
+       ("expat" ,expat)
+       ("gdal" ,gdal)
+       ("geos" ,geos)
+       ("proj.4" ,proj.4)
+       ("protozero" ,protozero)
+       ("sparsehash" ,sparsehash)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("doxygen" ,doxygen)))
+    (home-page "https://osmcode.org/libosmium/")
+    (synopsis "C++ library for working with OpenStreetMap data")
+    (description "Libosmium is a fast and flexible C++ library for working with
+OpenStreetMap data.")
+    (license license:boost1.0)))
