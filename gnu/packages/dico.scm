@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,14 +38,14 @@
 (define-public dico
   (package
     (name "dico")
-    (version "2.6")
+    (version "2.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/dico/dico-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0zmi041gv5nd5fmyzgdrgrsy2pvjaq9p8dvvhxwi842hiyng5b7i"))))
+               "0dg4aacnmlf3ljssd7dwh8z5644xzq8k1501mbsx8nz8p8a9mbsq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-guile-site-dir=" %output
@@ -57,7 +58,11 @@
                       ;; infrastructure.  Gag it.
                       (setenv "GUILE_AUTO_COMPILE" "0")
                       (setenv "GUILE_WARN_DEPRECATED" "no")
-                      #t)))))
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      ;; Test '71: append + dooffs + env' fails if $V is not 2.
+                      (invoke "make" "check" "V=2"))))))
     (inputs
      `(("m4" ,m4)                                 ;used at run time
        ("pcre" ,pcre)
