@@ -990,13 +990,14 @@ types are supported, as is encryption.")
     (name "rocksdb")
     (version "5.12.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/facebook/rocksdb"
-                                  "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/facebook/rocksdb")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jcwgsjhk4hdfr2wf549blkgb89vwcdb5i2ahhqs6zf3mm20i3bf"))
+                "0islyg33hr52gqhcgvv58gmgzxw12w3175mhf2mli5w60lx8f8hi"))
               (modules '((guix build utils)))
               (snippet
                '(begin
