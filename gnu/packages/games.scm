@@ -2122,27 +2122,36 @@ on the screen and keyboard to display letters.")
 (define-public raincat
   (package
     (name "raincat")
-    (version "1.2")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "http://hackage.haskell.org/package/Raincat/Raincat-"
-             version
-             ".tar.gz"))
+       (uri (string-append "http://hackage.haskell.org/package/Raincat/"
+                           "Raincat-" version ".tar.gz"))
        (sha256
         (base32
-         "1zyxkvjxkadwakg03xnjii1hx0gs45ap9rfkpi4kxipzxppq1klk"))))
+         "10y9zi22m6hf13c9h8zd9vg7mljpwbw0r3djb6r80bna701fdf6c"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/raincat")
+                 `("LD_LIBRARY_PATH" ":" =
+                   (,(string-append (assoc-ref inputs "freeglut")
+                                    "/lib"))))
+               #t))))))
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
        ("ghc-random" ,ghc-random)
        ("ghc-glut" ,ghc-glut)
        ("freeglut" ,freeglut)
        ("ghc-opengl" ,ghc-opengl)
-       ("ghc-sdl" ,ghc-sdl)
-       ("ghc-sdl-image" ,ghc-sdl-image)
-       ("ghc-sdl-mixer" ,ghc-sdl-mixer)))
+       ("ghc-sdl2" ,ghc-sdl2)
+       ("ghc-sdl2-image" ,ghc-sdl2-image)
+       ("ghc-sdl2-mixer" ,ghc-sdl2-mixer)))
     (home-page "http://www.bysusanlin.com/raincat/")
     (synopsis "Puzzle game with a cat in lead role")
     (description "Project Raincat is a game developed by Carnegie Mellon
