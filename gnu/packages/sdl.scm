@@ -33,6 +33,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system haskell)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages fcitx)
@@ -40,6 +41,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages ibus)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
@@ -520,3 +522,40 @@ sound and device input (keyboards, joysticks, mice, etc.).")
 The bindings are written in pure Scheme using Guile's foreign function
 interface.")
     (license lgpl3+)))
+
+(define-public ghc-sdl2
+  (package
+    (name "ghc-sdl2")
+    (version "2.4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "sdl2/sdl2-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p4b12fmxps0sbnkqdfy0qw19s355yrkw7fgw6xz53wzq706k991"))))
+    (build-system haskell-build-system)
+    (arguments '(#:tests? #f)) ; tests require graphical environment
+    (inputs
+     `(("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-linear" ,ghc-linear)
+       ("ghc-statevar" ,ghc-statevar)
+       ("ghc-text" ,ghc-text)
+       ("ghc-vector" ,ghc-vector)
+       ("sdl2" ,sdl2)))
+    (native-inputs
+     `(("ghc-weigh" ,ghc-weigh)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://hackage.haskell.org/package/sdl2")
+    (synopsis "High- and low-level bindings to the SDL library")
+    (description
+     "This package contains bindings to the SDL 2 library, in both high- and
+low-level forms.  The @code{SDL} namespace contains high-level bindings, where
+enumerations are split into sum types, and we perform automatic
+error-checking.  The @code{SDL.Raw} namespace contains an almost 1-1
+translation of the C API into Haskell FFI calls.  As such, this does not
+contain sum types nor error checking.  Thus this namespace is suitable for
+building your own abstraction over SDL, but is not recommended for day-to-day
+programming.")
+    (license bsd-3)))
