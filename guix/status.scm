@@ -24,10 +24,7 @@
   #:autoload   (guix build syscalls) (terminal-columns)
   #:use-module ((guix build download)
                 #:select (nar-uri-abbreviation))
-  #:use-module ((guix store)
-                #:select (current-build-output-port
-                          current-store-protocol-version
-                          log-file))
+  #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -334,8 +331,13 @@ addition to build events."
     (('build-failed drv . _)
      (format port (failure (G_ "build of ~a failed")) drv)
      (newline port)
-     (format port (info (G_ "View build log at '~a'.~%"))
-             (log-file #f drv)))
+     (match (derivation-log-file drv)
+       (#f
+        (format port (failure (G_ "Could not find build log for '~a'."))
+                drv))
+       (log
+        (format port (info (G_ "View build log at '~a'.")) log)))
+     (newline port))
     (('substituter-started item _ ...)
      (when (or print-log? (not (extended-build-trace-supported?)))
        (format port (info (G_ "substituting ~a...")) item)

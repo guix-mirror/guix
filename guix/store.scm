@@ -152,6 +152,7 @@
             store-path-package-name
             store-path-hash-part
             direct-store-path
+            derivation-log-file
             log-file))
 
 (define %protocol-version #x162)
@@ -1706,21 +1707,26 @@ syntactically valid store path."
                 (and (string-every %nix-base32-charset hash)
                      hash))))))
 
+(define (derivation-log-file drv)
+  "Return the build log file for DRV, a derivation file name, or #f if it
+could not be found."
+  (let* ((base    (basename drv))
+         (log     (string-append (dirname %state-directory) ; XXX
+                                 "/log/guix/drvs/"
+                                 (string-take base 2) "/"
+                                 (string-drop base 2)))
+         (log.gz  (string-append log ".gz"))
+         (log.bz2 (string-append log ".bz2")))
+    (cond ((file-exists? log.gz) log.gz)
+          ((file-exists? log.bz2) log.bz2)
+          ((file-exists? log) log)
+          (else #f))))
+
 (define (log-file store file)
   "Return the build log file for FILE, or #f if none could be found.  FILE
 must be an absolute store file name, or a derivation file name."
   (cond ((derivation-path? file)
-         (let* ((base    (basename file))
-                (log     (string-append (dirname %state-directory) ; XXX
-                                        "/log/guix/drvs/"
-                                        (string-take base 2) "/"
-                                        (string-drop base 2)))
-                (log.gz  (string-append log ".gz"))
-                (log.bz2 (string-append log ".bz2")))
-           (cond ((file-exists? log.gz) log.gz)
-                 ((file-exists? log.bz2) log.bz2)
-                 ((file-exists? log) log)
-                 (else #f))))
+         (derivation-log-file file))
         (else
          (match (valid-derivers store file)
            ((derivers ...)
