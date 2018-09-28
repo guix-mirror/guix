@@ -587,3 +587,28 @@ programming.")
     (description "This package provides Haskell bindings to
 @code{SDL2_mixer}.")
     (license bsd-3)))
+
+(define-public ghc-sdl2-image
+  (package
+    (name "ghc-sdl2-image")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/sdl2-image/"
+                           "sdl2-image-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pr6dkg73cy9z0w54lrkj9c5bhxj56nl92lxikjy8kz6nyr455rr"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-sdl2" ,ghc-sdl2)
+       ("ghc-text" ,ghc-text)
+       ("sdl2-image" ,sdl2-image)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://hackage.haskell.org/package/sdl2-image")
+    (synopsis "Bindings to SDL2_image")
+    (description "This package provides Haskell bindings to
+@code{SDL2_image}.")
+    (license expat)))
