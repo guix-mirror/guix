@@ -275,10 +275,10 @@ on."
     GREEN    BOLD GREEN          RESET  GREEN  BLUE)
    ("^(phase)(.*)(failed after)(.*)(seconds)(.*)"
     RED BLUE RED BLUE RED BLUE)
-   ("^(.*)(error|fail|failed|FAIL|FAILED)([[:blank:]]*)(:)(.*)"
+   ("^(.*)(error|fail|failed|\\<FAIL|FAILED)([[:blank:]]*)(:)(.*)"
     RESET  RED                           BOLD         BOLD BOLD)
    ("^(.*)(warning)([[:blank:]]*)(:)(.*)"
-    RESET  ORANGE   BOLD        BOLD BOLD)))
+    RESET  MAGENTA   BOLD        BOLD BOLD)))
 
 (define* (print-build-event event old-status status
                             #:optional (port (current-error-port))
