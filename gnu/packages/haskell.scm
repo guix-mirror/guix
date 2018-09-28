@@ -10557,4 +10557,26 @@ expose it from another module in the hierarchy.
 @end itemize")
     (license license:expat)))
 
+(define-public ghc-weigh
+  (package
+    (name "ghc-weigh")
+    (version "0.0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/weigh/"
+                           "weigh-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zw2a997gxgdzqmd7j730kxgynzmjvvlkw84dajmfzf1v9pbij7x"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-split" ,ghc-split)
+       ("ghc-temporary" ,ghc-temporary)))
+    (home-page "https://github.com/fpco/weigh#readme")
+    (synopsis "Measure allocations of a Haskell functions/values")
+    (description "This package provides tools to measure the memory usage of a
+Haskell value or function.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
