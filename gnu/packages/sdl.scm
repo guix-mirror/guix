@@ -559,3 +559,31 @@ contain sum types nor error checking.  Thus this namespace is suitable for
 building your own abstraction over SDL, but is not recommended for day-to-day
 programming.")
     (license bsd-3)))
+
+(define-public ghc-sdl2-mixer
+  (package
+    (name "ghc-sdl2-mixer")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/sdl2-mixer/"
+                           "sdl2-mixer-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k8avyccq5l9z7bwxigim312yaancxl1sr3q6a96bcm7pnhiak0g"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-sdl2" ,ghc-sdl2)
+       ("ghc-vector" ,ghc-vector)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://hackage.haskell.org/package/sdl2-mixer")
+    (synopsis "Bindings to SDL2 mixer")
+    (description "This package provides Haskell bindings to
+@code{SDL2_mixer}.")
+    (license bsd-3)))
