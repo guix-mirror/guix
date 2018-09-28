@@ -10579,4 +10579,47 @@ expose it from another module in the hierarchy.
 Haskell value or function.")
     (license license:bsd-3)))
 
+(define-public ghc-linear
+  (package
+    (name "ghc-linear")
+    (version "1.20.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/linear/"
+                           "linear-" version ".tar.gz"))
+       (sha256
+        (base32
+         "046vkvxlb0s286qr55s0c6db0rlwbm1cmlmwhrrkqbkzhfcipgay"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-adjunctions" ,ghc-adjunctions)
+       ("ghc-base-orphans" ,ghc-base-orphans)
+       ("ghc-bytes" ,ghc-bytes)
+       ("ghc-cereal" ,ghc-cereal)
+       ("ghc-distributive" ,ghc-distributive)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-lens" ,ghc-lens)
+       ("ghc-reflection" ,ghc-reflection)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-void" ,ghc-void)))
+    (native-inputs
+     `(("cabal-doctest" ,cabal-doctest)
+       ("ghc-doctest" ,ghc-doctest)
+       ("ghc-simple-reflect" ,ghc-simple-reflect)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "http://github.com/ekmett/linear/")
+    (synopsis "Linear algebra library for Haskell")
+    (description
+     "This package provides types and combinators for linear algebra on free
+vector spaces.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
