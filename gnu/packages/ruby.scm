@@ -1211,12 +1211,15 @@ standard output stream.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-tests
-          (lambda _
-            (substitute* "Rakefile"
-              (("system \"shindo") "system \"./bin/shindo")
-              ;; This test doesn't work, so we disable it.
-              (("fail \"The build_error test should fail") "#"))
-            #t)))))
+           (lambda _
+             (substitute* "tests/tests_helper.rb"
+               (("-rubygems") ""))
+             (substitute* "Rakefile"
+               (("system \"shindo") "system \"./bin/shindo")
+               ;; This test doesn't work, so we disable it.
+               (("fail \"The build_error test should fail") "#")
+               ((" -rubygems") ""))
+             #t)))))
     (propagated-inputs
      `(("ruby-formatador" ,ruby-formatador)))
     (synopsis "Simple depth first Ruby testing")
