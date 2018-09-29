@@ -436,8 +436,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.18-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.72")
-(define %linux-libre-4.14-hash "1ngz5p8mvga45y1n6hbw6niy0ji5mfl4vc3bxlckjg42dcp5qf64")
+(define %linux-libre-4.14-version "4.14.73")
+(define %linux-libre-4.14-hash "0s2aphqgasx0lnprb2hzaqgbcd5i9774gfyhz5a6sqj6dygr00xy")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
