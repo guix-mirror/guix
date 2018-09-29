@@ -1366,3 +1366,25 @@ Prometheus HTTP API.")
     (description "This is a union of Go Prometheus libraries")
     (home-page (package-home-page go-github-com-client-golang-prometheus))
     (license (package-license go-github-com-client-golang-prometheus))))
+
+(define-public go-gopkg.in-asn1-ber.v1
+  (package
+    (name "go-gopkg.in-asn1-ber.v1")
+    (version "1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gopkg.in/asn1-ber.v1")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1y8bvzbxpw0lfnn7pbcdwzqj4l90qj6xf88dvv9pxd9yl5g6cskx"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/asn1-ber.v1"))
+    (synopsis "ASN.1 BER encoding and decoding in Go")
+    (description "This package provides ASN.1 BER encoding and decoding in the
+Go language.")
+    (home-page "https://gopkg.in/asn1-ber.v1")
+    (license expat)))
