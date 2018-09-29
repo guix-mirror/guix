@@ -294,23 +294,23 @@ back-end for the LLVM compiler framework.")
 (define-public pocl
   (package
     (name "pocl")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/pocl/pocl.git")
              (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
        (sha256
-        (base32 "1z3sqn20ddv1030adchpzs65qng436gc2mb99p213mkh95jkh1l5"))))
+        (base32 "0fyiwd9nrqhl0jsac0bx17p9acpfzhyxp50mmp28mzn7psb9qidg"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
      `(("libltdl" ,libltdl)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("clang" ,clang)
-       ("hwloc" ,hwloc "lib")
+       ("hwloc" ,hwloc-2.0 "lib")
        ("llvm" ,llvm)
        ("ocl-icd" ,ocl-icd)))
     (arguments
