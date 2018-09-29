@@ -2914,6 +2914,11 @@ Ruby's large and slower test/unit.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test
+           (lambda -
+             (substitute* "tests/hsl_triple_test.rb"
+               (("0\\\\\\.0%")
+                "0\\.?0?%"))))
          (replace 'build
           (lambda _
             (invoke "gem" "build" "term-ansicolor.gemspec"))))))
