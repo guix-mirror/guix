@@ -1388,3 +1388,28 @@ Prometheus HTTP API.")
 Go language.")
     (home-page "https://gopkg.in/asn1-ber.v1")
     (license expat)))
+
+(define-public go-gopkg.in-ldap.v2
+  (package
+    (name "go-gopkg.in-ldap.v2")
+    (version "2.5.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gopkg.in/ldap.v2")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wf81wy04nhkqs0dg5zkivr4sh37r83bxrfwjz9vr4jq6vmljr3h"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/ldap.v2"
+       #:tests? #f)) ; the test suite requires network access
+    (propagated-inputs
+     `(("go-gopkg.in-asn1-ber.v1" ,go-gopkg.in-asn1-ber.v1)))
+    (synopsis "LDAP v3 functionality for Go")
+    (description "This package provides basic LDAP v3 functionality in the Go
+language.")
+    (home-page "https://gopkg.in/ldap.v2")
+    (license expat)))
