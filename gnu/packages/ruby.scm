@@ -5456,8 +5456,16 @@ strings or files.")
        ("ruby-diffy" ,ruby-diffy)
        ("ruby-terminfo" ,ruby-terminfo)))
     (arguments
-     ;; No Rakefile
-     `(#:tests? #f))
+     `(;; This package contains tests for a sass implementation, and the to
+       ;; avoid any circular dependencies, the tests are not run here
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-test
+           (lambda _
+             (delete-file "spec/values/colors/alpha_hex-3.5/error")
+             (substitute* "spec/values/colors/alpha_hex-3.5/expected_output.css"
+               (("string") "color")))))))
     (home-page "https://github.com/sass/sass-spec")
     (synopsis "Test suite for Sass")
     (description "Sass Spec is a test suite for Sass.  Test cases are all in
