@@ -5498,18 +5498,19 @@ the @file{spec} directory.")
 (define-public ruby-sass
   (package
     (name "ruby-sass")
-    (version "3.5.7")
+    (version "3.6.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "sass" version))
               (sha256
                (base32
-                "1sy7xsbgpcy90j5ynbq967yplffp74pvph3r8ivn2sv2b44q6i61"))))
+                "18c6prbw9wl8bqhb2435pd9s0lzarl3g7xf8pmyla28zblvwxmyh"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-sass-listen" ,ruby-sass-listen)))
     (native-inputs
-     `(("ruby-sass-spec" ,ruby-sass-spec)))
+     `(("ruby-sass-spec" ,ruby-sass-spec)
+       ("ruby-mathn" ,ruby-mathn)))
     (home-page "http://sass-lang.com/")
     (synopsis "CSS extension language")
     (description "Sass is a CSS extension language.  It extends CSS with
