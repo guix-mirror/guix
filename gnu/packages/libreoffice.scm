@@ -28,6 +28,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages libreoffice)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
@@ -939,7 +940,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
          "149ziasibplihfxlzafzcm4737ns30hg9175967b43c81yv5f335"))
        (patches (search-patches "libreoffice-icu.patch"
                                 "libreoffice-glm.patch"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("bison" ,bison)
        ("cppunit" ,cppunit-1.14)
@@ -1017,6 +1018,9 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
     (arguments
      `(#:tests? #f ; Building the tests already fails.
        #:make-flags '("build-nocheck") ; Do not build unit tests, which fails.
+       ;; XXX Remove this if glib-or-gtk-build-system changes to in-source-tree
+       ;; builds by default.
+       #:out-of-source? #f
        #:phases
          (modify-phases %standard-phases
            (add-before 'configure 'prepare-src
