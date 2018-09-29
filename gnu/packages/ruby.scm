@@ -5108,6 +5108,29 @@ are doing, you can fiddle with every last bit of your email directly.")
     (home-page "https://github.com/mikel/mail")
     (license license:expat)))
 
+(define-public ruby-mathn
+  (package
+    (name "ruby-mathn")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mathn" version))
+       (sha256
+        (base32
+         "1wn812llln9jzgybz2d7536q39z3gi99i6fi0j1dapcpzvhgrr0p"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "Extends math operations for increased precision")
+    (description
+     "This gem makes mathematical operations more precise in Ruby and
+integrates other mathematical standard libraries.  Prior to Ruby 2.5,
+@code{mathn} was part of the Ruby standard library.")
+    (home-page "https://github.com/ruby/mathn")
+    (license license:bsd-2)))
+
 (define-public ruby-code-statistics
   (package
     (name "ruby-code-statistics")
