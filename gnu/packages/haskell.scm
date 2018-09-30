@@ -8134,6 +8134,7 @@ helper functions for Lists, Maybes, Tuples, Functions.")
        ("ghc-utility-ht" ,ghc-utility-ht)
        ("ghc-data-accessor-transformers" ,ghc-data-accessor-transformers)
        ("ghc-data-accessor" ,ghc-data-accessor)
+       ("ghc-semigroups" ,ghc-semigroups)
        ("gnuplot" ,gnuplot)))
     (arguments
      `(#:phases
