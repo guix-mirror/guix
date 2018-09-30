@@ -2804,9 +2804,14 @@ isn't available, portable implementations are used.")
                (base32
                 "1ly3v41jacc6lrsvg4j3m5a6zs90gr8dyif5m6bf34hj1k5cgg0n"))))
     (build-system haskell-build-system)
+    ;; This package needs an older version of tasty.
+    (arguments '(#:tests? #f))
     (inputs
      `(("ghc-parsec" ,ghc-parsec)
        ("ghc-concatenative" ,ghc-concatenative)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
     (home-page "http://patch-tag.com/r/salazar/indents")
     (synopsis "Indentation sensitive parser-combinators for parsec")
     (description
