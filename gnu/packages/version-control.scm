@@ -8,7 +8,7 @@
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -2103,7 +2103,7 @@ directory full of HOWTOs.")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "6.20180807")
+    (version "6.20180926")
     (source
      (origin
        (method url-fetch)
@@ -2111,7 +2111,7 @@ directory full of HOWTOs.")
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
         (base32
-         "1wkqh1y58m0z1mf2j33qhndpxcjwv8mbv384kdk17vn0lp9zas1s"))))
+         "1251rj8h63y30sfqk0zh670yhz14p256y59n3590pg015pf3575d"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
