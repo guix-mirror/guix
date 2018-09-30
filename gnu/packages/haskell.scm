@@ -8999,6 +8999,11 @@ that are much lighter weight than IO-threads.")
         (base32
          "0y27gafkib0x0fn39qfn2rkgsfrm09ng35sbb5dwr7rclhnxz59l"))))
     (build-system haskell-build-system)
+    (arguments
+     '(#:cabal-revision
+       ("2" "1bx70yqkn62ii17fjv3pig4hklrzkqd09zj67zzjiyjzmn04fir3")
+       ;; Two tests fail: "Discrete CDF is OK" and "Quantile is CDF inverse".
+       #:tests? #f))
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
        ("ghc-base-orphans" ,ghc-base-orphans)
@@ -9018,8 +9023,6 @@ that are much lighter weight than IO-threads.")
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
-    (arguments
-     `(#:tests? #f)) ; FIXME: Test-Suite `spec` fails.
     (home-page "https://github.com/bos/mwc-random")
     (synopsis "Haskell library of statistical types, data, and functions")
     (description "This library provides a number of common functions
