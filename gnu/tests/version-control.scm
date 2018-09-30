@@ -2,7 +2,6 @@
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,17 +27,14 @@
   #:use-module (gnu services)
   #:use-module (gnu services version-control)
   #:use-module (gnu services cgit)
-  #:use-module (gnu services ssh)
   #:use-module (gnu services web)
   #:use-module (gnu services networking)
   #:use-module (gnu packages version-control)
-  #:use-module (gnu packages ssh)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix modules)
   #:export (%test-cgit
-            %test-git-http
-            %test-gitolite))
+            %test-git-http))
 
 (define README-contents
   "Hello!  This is what goes inside the 'README' file.")
@@ -304,111 +300,3 @@ HTTP-PORT."
    (name "git-http")
    (description "Connect to a running Git HTTP server.")
    (value (run-git-http-test))))
-
-
-;;;
-;;; Gitolite.
-;;;
-
-(define %gitolite-test-admin-keypair
-  (computed-file
-   "gitolite-test-admin-keypair"
-   (with-imported-modules (source-module-closure
-                           '((guix build utils)))
-     #~(begin
-         (use-modules (ice-9 match) (srfi srfi-26)
-                      (guix build utils))
-
-         (mkdir #$output)
-         (invoke #$(file-append openssh "/bin/ssh-keygen")
-                 "-f" (string-append #$output "/test-admin")
-                 "-t" "rsa"
-                 "-q"
-                 "-N" "")))))
-
-(define %gitolite-os
-  (simple-operating-system
-   (dhcp-client-service)
-   (service openssh-service-type)
-   (service gitolite-service-type
-            (gitolite-configuration
-             (admin-pubkey
-              (file-append %gitolite-test-admin-keypair "/test-admin.pub"))))))
-
-(define (run-gitolite-test)
-  (define os
-    (marionette-operating-system
-     %gitolite-os
-     #:imported-modules '((gnu services herd)
-                          (guix combinators))))
-
-  (define vm
-    (virtual-machine
-     (operating-system os)
-     (port-forwardings `((2222 . 22)))))
-
-  (define test
-    (with-imported-modules '((gnu build marionette)
-                             (guix build utils))
-      #~(begin
-          (use-modules (srfi srfi-64)
-                       (rnrs io ports)
-                       (gnu build marionette)
-                       (guix build utils))
-
-          (define marionette
-            (make-marionette (list #$vm)))
-
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-begin "gitolite")
-
-          ;; Wait for sshd to be up and running.
-          (test-assert "service running"
-            (marionette-eval
-             '(begin
-                (use-modules (gnu services herd))
-                (start-service 'ssh-daemon))
-             marionette))
-
-          (display #$%gitolite-test-admin-keypair)
-
-          (setenv "GIT_SSH_VARIANT" "ssh")
-          (setenv "GIT_SSH_COMMAND"
-                  (string-join
-                   '(#$(file-append openssh "/bin/ssh")
-                     "-i" #$(file-append %gitolite-test-admin-keypair
-                                         "/test-admin")
-                     "-o" "UserKnownHostsFile=/dev/null"
-                     "-o" "StrictHostKeyChecking=no")))
-
-          (test-assert "cloning the admin repository"
-            (invoke #$(file-append git "/bin/git")
-                    "clone" "-v"
-                    "ssh://git@localhost:2222/gitolite-admin"
-                    "/tmp/clone"))
-
-          (test-assert "admin key exists"
-            (file-exists? "/tmp/clone/keydir/test-admin.pub"))
-
-          (with-directory-excursion "/tmp/clone"
-            (invoke #$(file-append git "/bin/git")
-                    "-c" "user.name=Guix" "-c" "user.email=guix"
-                    "commit"
-                    "-m" "Test commit"
-                    "--allow-empty")
-
-            (test-assert "pushing, and the associated hooks"
-              (invoke #$(file-append git "/bin/git") "push")))
-
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
-
-  (gexp->derivation "gitolite" test))
-
-(define %test-gitolite
-  (system-test
-   (name "gitolite")
-   (description "Clone the Gitolite admin repository.")
-   (value (run-gitolite-test))))
