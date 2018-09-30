@@ -8489,20 +8489,21 @@ generated SQL and optimize it for your backend.")
 (define-public shellcheck
   (package
     (name "shellcheck")
-    (version "0.4.6")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/koalaman/shellcheck/archive/"
-                           "v" version ".tar.gz"))
+       (uri (string-append
+             "https://hackage.haskell.org/package/ShellCheck/ShellCheck-"
+             version ".tar.gz"))
        (sha256
         (base32
-         "1qkd69lc34n3l23ss9rq1azvx49bfq4hi4bmaj76rgxybscxhg0w"))
+         "0z1hscbr11hwkq8k1v0vaa947hb9m6k4cm831jk1gpj8dxrk151b"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-json" ,ghc-json)
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-parsec" ,ghc-parsec)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)))
     (home-page "https://github.com/koalaman/shellcheck")
