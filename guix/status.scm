@@ -383,14 +383,20 @@ addition to build events."
   actual hash:   ~a~%"))
              expected actual))
     (('build-log line)
-     ;; The daemon prefixes early messages coming with 'guix substitute' with
-     ;; "substitute:".  These are useful ("updating substitutes from URL"), so
-     ;; let them through.
-     (if (string-prefix? "substitute: " line)
-         (begin
-           (format port line)
-           (force-output port))
-         (print-log-line line)))
+     ;; TODO: Better distinguish daemon messages and build log lines.
+     (cond ((string-prefix? "substitute: " line)
+            ;; The daemon prefixes early messages coming with 'guix
+            ;; substitute' with "substitute:".  These are useful ("updating
+            ;; substitutes from URL"), so let them through.
+            (format port line)
+            (force-output port))
+           ((string-prefix? "waiting for locks" line)
+            ;; This is when a derivation is already being built and we're just
+            ;; waiting for the build to complete.
+            (display (info (string-trim-right line)) port)
+            (newline))
+           (else
+            (print-log-line line))))
     (_
      event)))
 
