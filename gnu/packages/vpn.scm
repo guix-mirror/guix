@@ -355,8 +355,7 @@ private network between hosts on the internet.")
              (substitute* "sshuttle/client.py"
                (("/usr/bin/env") (which "env")))
              (substitute* "sshuttle/ssh.py"
-               ;; Perhaps this is unreachable, but don't let's take risks.
-               (("/bin/sh") (which "sh")))
+               (("/bin/sh") "sh"))
              #t)))))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
