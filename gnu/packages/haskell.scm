@@ -8338,6 +8338,14 @@ Rust syntax.  It is intended to be useful for two different purposes:
         (base32
           "03zycmwrchhqvi37fdvlzz2d1vl4hy0i8xyys1zznw38qfq0h2i5"))))
     (build-system haskell-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "wave.cabal"
+               (("temporary.* < 1\\.3")
+                "temporary >= 1.1 && < 1.4")))))))
     (inputs
      `(("ghc-cereal" ,ghc-cereal)
        ("ghc-data-default-class"
