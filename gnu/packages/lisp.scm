@@ -2449,6 +2449,47 @@ not counting tests)
 (define-public ecl-let-plus
   (sbcl-package->ecl-package sbcl-let-plus))
 
+(define-public sbcl-cl-colors
+  (let ((commit "827410584553f5c717eec6182343b7605f707f75"))
+    (package
+      (name "sbcl-cl-colors")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tpapp/cl-colors")
+               (commit commit)))
+         (sha256
+          (base32
+           "0l446lday4hybsm9bq3jli97fvv8jb1d33abg79vbylpwjmf3y9a"))
+         (file-name (git-file-name "cl-colors" version))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("let-plus" ,sbcl-let-plus)))
+      (synopsis "Simple color library for Common Lisp")
+      (description
+       "This is a very simple color library for Common Lisp, providing
+
+@itemize
+@item Types for representing colors in HSV and RGB spaces.
+@item Simple conversion functions between the above types (and also
+hexadecimal representation for RGB).
+@item Some predefined colors (currently X11 color names – of course the
+library does not depend on X11).Because color in your terminal is nice.
+@end itemize
+
+This library is no longer supported by its author.")
+      (home-page "https://github.com/tpapp/cl-colors")
+      (license license:boost1.0))))
+
+(define-public cl-colors
+  (sbcl-package->cl-source-package sbcl-cl-colors))
+
+(define-public ecl-cl-colors
+  (sbcl-package->ecl-package sbcl-cl-colors))
+
 (define-public sbcl-ascii-strings
   (let ((revision "1")
         (changeset "5048480a61243e6f1b02884012c8f25cdbee6d97"))
