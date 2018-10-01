@@ -927,7 +927,7 @@ private (reserved).")
 (define-public perl-socket6
  (package
   (name "perl-socket6")
-  (version "0.28")
+  (version "0.29")
   (source
     (origin
       (method url-fetch)
@@ -937,7 +937,7 @@ private (reserved).")
              ".tar.gz"))
       (sha256
         (base32
-          "11j5jzqbzmwlws9zals43ry2f1nw9qy6im7yhn9ck5rikywrmm5z"))))
+          "054izici8klfxs8hr5rljib28plijpsfymy99xbzdp047bx1b2a6"))))
   (build-system perl-build-system)
   (arguments
    `(#:phases
