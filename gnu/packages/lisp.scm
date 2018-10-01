@@ -63,7 +63,8 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xorg)
   #:use-module (ice-9 match)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-19))
 
 (define (asdf-substitutions lisp)
   ;; Prepend XDG_DATA_DIRS/LISP-bundle-systems to ASDF's
@@ -2755,3 +2756,32 @@ utilities that make it even easier to manipulate text in Common Lisp.  It has
 
 (define-public ecl-cl-string-match
   (sbcl-package->ecl-package sbcl-cl-string-match))
+
+(define-public sbcl-ptester
+  (package
+    (name "sbcl-ptester")
+    (version "20160929")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://beta.quicklisp.org/archive/ptester/"
+                           (date->string (string->date version "~Y~m~d") "~Y-~m-~d")
+                           "/ptester-"
+                           version
+                           "-git.tgz"))
+       (sha256
+        (base32
+         "04rlq1zljhxc65pm31bah3sq3as24l0sdivz440s79qlnnyh13hz"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "http://quickdocs.org/ptester/")
+    (synopsis "Portable test harness package")
+    (description
+     "@command{ptester} is a portable testing framework based on Franz's
+tester module.")
+    (license license:lgpl3+)))
+
+(define-public cl-ptester
+  (sbcl-package->cl-source-package sbcl-ptester))
+
+(define-public ecl-ptester
+  (sbcl-package->ecl-package sbcl-ptester))
