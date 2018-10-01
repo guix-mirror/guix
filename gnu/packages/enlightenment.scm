@@ -269,6 +269,7 @@ Libraries with some extra bells and whistles.")
          (add-before 'configure 'set-system-actions
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((xkeyboard (assoc-ref inputs "xkeyboard-config"))
+                   (setxkbmap (assoc-ref inputs "setxkbmap"))
                    (utils     (assoc-ref inputs "util-linux"))
                    (libc      (assoc-ref inputs "libc")))
                ;; We need to patch the path to 'base.lst' to be able
@@ -278,6 +279,9 @@ Libraries with some extra bells and whistles.")
                  (("/usr/share/X11/xkb/rules/xorg.lst")
                   (string-append xkeyboard
                                  "/share/X11/xkb/rules/base.lst")))
+               (substitute* "src/bin/e_xkb.c"
+                 (("\"setxkbmap \"")
+                  (string-append "\"" setxkbmap "/bin/setxkbmap \"")))
                (substitute* (list "src/bin/e_intl.c"
                                   "src/modules/conf_intl/e_int_config_intl.c"
                                   "src/modules/wizard/page_010.c")
@@ -305,6 +309,7 @@ Libraries with some extra bells and whistles.")
        ("libxcb" ,libxcb)
        ("libxext" ,libxext)
        ("linux-pam" ,linux-pam)
+       ("setxkbmap" ,setxkbmap)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xkeyboard-config" ,xkeyboard-config)))
     (home-page "https://www.enlightenment.org/about-enlightenment")
