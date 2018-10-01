@@ -11614,6 +11614,14 @@ This procedure can be called several times, one for each network
 interface of interest.  Behind the scenes what it does is extend
 @code{static-networking-service-type} with additional network interfaces
 to handle.
+
+For example:
+
+@example
+(static-networking-service "eno1" "192.168.1.82"
+                           #:gateway "192.168.1.2"
+                           #:name-servers '("192.168.1.2"))
+@end example
 @end deffn
 
 @cindex wicd
