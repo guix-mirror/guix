@@ -2703,6 +2703,27 @@ single-byte encoded strings.")
 (define-public ecl-ascii-strings
   (sbcl-package->ecl-package sbcl-ascii-strings))
 
+(define-public sbcl-simple-scanf
+  (package
+    (inherit sbcl-ascii-strings)
+    (name "sbcl-simple-scanf")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("iterate" ,sbcl-iterate)
+       ("proc-parse" ,sbcl-proc-parse)
+       ("parse-float" ,sbcl-parse-float)))
+    (arguments
+     `(#:asd-file "simple-scanf.asd"))
+    (synopsis "Simple scanf-like functionality implementation")
+    (description
+     "A simple scanf-like functionality implementation.")))
+
+(define-public cl-simple-scanf
+  (sbcl-package->cl-source-package sbcl-simple-scanf))
+
+(define-public ecl-simple-scanf
+  (sbcl-package->ecl-package sbcl-simple-scanf))
+
 (define-public sbcl-cl-string-match
   (package
     (inherit sbcl-ascii-strings)
