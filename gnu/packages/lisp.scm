@@ -2558,6 +2558,38 @@ named color.")
 (define-public ecl-prove-asdf
   (sbcl-package->ecl-package sbcl-prove-asdf))
 
+(define-public sbcl-prove
+  (package
+    (inherit sbcl-prove-asdf)
+    (name "sbcl-prove")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("cl-ansi-text" ,sbcl-cl-ansi-text)))
+    (native-inputs
+     `(("prove-asdf" ,sbcl-prove-asdf)))
+    (arguments
+     `(#:asd-file "prove.asd"))
+    (synopsis "Yet another unit testing framework for Common Lisp")
+    (description
+     "This project was originally called @command{cl-test-more}.
+@command{prove} is yet another unit testing framework for Common Lisp.  The
+advantages of @command{prove} are:
+
+@itemize
+@item Various simple functions for testing and informative error messages
+@item ASDF integration
+@item Extensible test reporters
+@item Colorizes the report if it's available (note for SLIME)
+@item Reports test durations
+@end itemize\n")))
+
+(define-public cl-prove
+  (sbcl-package->cl-source-package sbcl-prove))
+
+(define-public ecl-prove
+  (sbcl-package->ecl-package sbcl-prove))
+
 (define-public sbcl-ascii-strings
   (let ((revision "1")
         (changeset "5048480a61243e6f1b02884012c8f25cdbee6d97"))
