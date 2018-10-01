@@ -2333,6 +2333,37 @@ testing.  It is an extension of the library written by Chris Riesbeck.")
 (define-public ecl-lisp-unit
   (sbcl-package->ecl-package sbcl-lisp-unit))
 
+(define-public sbcl-anaphora
+  (package
+    (name "sbcl-anaphora")
+    (version "0.9.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tokenrove/anaphora")
+             (commit version)))
+       (sha256
+        (base32
+         "19wfrk3asimznkli0x2rfy637hwpdgqyvwj3vhq9x7vjvyf5vv6x"))
+       (file-name (git-file-name "anaphora" version))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("rt" ,sbcl-rt)))
+    (synopsis "The anaphoric macro collection from Hell")
+    (description
+     "Anaphora is the anaphoric macro collection from Hell: it includes many
+new fiends in addition to old friends like @command{aif} and
+@command{awhen}.")
+    (home-page "https://github.com/tokenrove/anaphora")
+    (license license:public-domain)))
+
+(define-public cl-anaphora
+  (sbcl-package->cl-source-package sbcl-anaphora))
+
+(define-public ecl-anaphora
+  (sbcl-package->ecl-package sbcl-anaphora))
+
 (define-public sbcl-ascii-strings
   (let ((revision "1")
         (changeset "5048480a61243e6f1b02884012c8f25cdbee6d97"))
