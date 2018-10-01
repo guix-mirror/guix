@@ -2590,6 +2590,45 @@ advantages of @command{prove} are:
 (define-public ecl-prove
   (sbcl-package->ecl-package sbcl-prove))
 
+(define-public sbcl-proc-parse
+  (let ((commit "ac3636834d561bdc2686c956dbd82494537285fd"))
+    (package
+      (name "sbcl-proc-parse")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/proc-parse")
+               (commit commit)))
+         (sha256
+          (base32
+           "06rnl0h4cx6xv2wj3jczmmcxqn2703inmmvg1s4npbghmijsybfh"))
+         (file-name (git-file-name "proc-parse" version))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("babel" ,sbcl-babel)))
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("prove-asdf" ,sbcl-prove-asdf)))
+      (arguments
+       ;; TODO: Tests don't find "proc-parse-test", why?
+       `(#:tests? #f))
+      (synopsis "Procedural vector parser")
+      (description
+       "This is a string/octets parser library for Common Lisp with speed and
+readability in mind.  Unlike other libraries, the code is not a
+pattern-matching-like, but a char-by-char procedural parser.")
+      (home-page "https://github.com/fukamachi/proc-parse")
+      (license license:bsd-2))))
+
+(define-public cl-proc-parse
+  (sbcl-package->cl-source-package sbcl-proc-parse))
+
+(define-public ecl-proc-parse
+  (sbcl-package->ecl-package sbcl-proc-parse))
+
 (define-public sbcl-ascii-strings
   (let ((revision "1")
         (changeset "5048480a61243e6f1b02884012c8f25cdbee6d97"))
