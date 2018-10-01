@@ -2866,3 +2866,25 @@ non-consing thread safe queues and fibonacci priority queues.")
 
 (define-public ecl-queues.simple-queue
   (sbcl-package->ecl-package sbcl-queues.simple-queue))
+
+(define-public sbcl-queues.simple-cqueue
+  (package
+    (inherit sbcl-queues)
+    (name "sbcl-queues.simple-cqueue")
+    (inputs
+     `(("sbcl-queues" ,sbcl-queues)
+       ("sbcl-queues.simple-queue" ,sbcl-queues.simple-queue)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)))
+    (arguments
+     `(#:asd-file "queues.simple-cqueue.asd"))
+    (synopsis "Thread safe queue implementation")
+    (description
+     "This is a simple queue library for Common Lisp with features such as
+non-consing thread safe queues and fibonacci priority queues.")
+    (license license:expat)))
+
+(define-public cl-queues.simple-cqueue
+  (sbcl-package->cl-source-package sbcl-queues.simple-cqueue))
+
+(define-public ecl-queues.simple-cqueue
+  (sbcl-package->ecl-package sbcl-queues.simple-cqueue))
