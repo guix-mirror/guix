@@ -6024,3 +6024,36 @@ on user-defined cut-points of accelerometer counts.
   It also supports importing ActiGraph (AGD) files with @code{readActigraph} and
 @code{queryActigraph} functions.")
     (license license:gpl3+)))
+
+(define-public r-acc
+  (package
+    (name "r-acc")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acc" version))
+       (sha256
+        (base32 "1ii2vm47djxbixa75h690q1s2f9m9x6i8nkygik93j6dayr6kr1m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-circlize" ,r-circlize)
+       ("r-dbi" ,r-dbi)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iterators" ,r-iterators)
+       ("r-mhsmm" ,r-mhsmm)
+       ("r-nleqslv" ,r-nleqslv)
+       ("r-physicalactivity" ,r-physicalactivity)
+       ("r-plyr" ,r-plyr)
+       ("r-r-utils" ,r-r-utils)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-zoo" ,r-zoo)))
+    (home-page "https://cran.r-project.org/web/packages/acc/")
+    (synopsis "Exploring accelerometer data")
+    (description
+     "This package processes accelerometer data from uni-axial and tri-axial devices
+and generates data summaries.  Also, includes functions to plot, analyze, and
+simulate accelerometer data.")
+    (license license:gpl2+)))
