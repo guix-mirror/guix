@@ -5969,3 +5969,25 @@ unobserved (or hidden) state.  Also, this package is suitable for equidistant
 time series data, with multivariate and/or missing data.  Allows user defined
 emission distributions.")
     (license license:gpl2+)))
+
+(define-public r-nleqslv
+  (package
+    (name "r-nleqslv")
+    (version "3.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nleqslv" version))
+       (sha256
+        (base32 "1v9znvncyigw9r25wx2ma0b7ib179b488dl0qsrhp5zrcz7mcjgm"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/nleqslv/")
+    (synopsis "Solve systems of nonlinear equations")
+    (description
+     "The @code{r-nleqslv} package solves a system of nonlinear equations using a
+Broyden or a Newton method with a choice of global strategies such as line
+search and trust region.  There are options for using a numerical or user
+supplied Jacobian, for specifying a banded numerical Jacobian and for allowing a
+singular or ill-conditioned Jacobian.")
+    (license license:gpl2+)))
