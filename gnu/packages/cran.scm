@@ -5946,3 +5946,26 @@ model.  It also provides multiple functions to preprocess the accelerometer data
 previous to the missing data imputation.  These include detecting the wearing
 and the non-wearing time, selecting valid days and subjects, and creating plots.")
     (license license:gpl2+)))
+
+(define-public r-mhsmm
+  (package
+    (name "r-mhsmm")
+    (version "0.4.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mhsmm" version))
+       (sha256
+        (base32 "009dj0zkj1zry7jr9hf4cknb686z50a2l967if64xm0dvjmp7dgs"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-mvtnorm" ,r-mvtnorm)))
+    (home-page "https://github.com/jaredo/mhsmm/")
+    (synopsis "Inference for hidden Markov and semi-Markov models")
+    (description
+     "The @code{r-mhsmm} package implements estimation and prediction methods for
+hidden Markov and semi-Markov models for multiple observation sequences.  Such
+techniques are of interest when observed data is thought to be dependent on some
+unobserved (or hidden) state.  Also, this package is suitable for equidistant
+time series data, with multivariate and/or missing data.  Allows user defined
+emission distributions.")
+    (license license:gpl2+)))
