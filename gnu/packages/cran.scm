@@ -5895,3 +5895,29 @@ hemoglobin to reticulocytes (OFF-score), as well as example data.")
 based on entropy estimates from k-nearest neighbors distances and algorithms
 for the reconstruction of gene regulatory networks.")
     (license license:agpl3+)))
+
+(define-public r-pscl
+  (package
+    (name "r-pscl")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pscl" version))
+       (sha256
+        (base32 "1phf3awsfr4ncqfqzin5m1pz0g7y1zhbcm2sz7358ssw914fd7rc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "https://github.com/atahk/pscl/")
+    (synopsis "Political science computational laboratory")
+    (description
+     "The @code{pscl} is an R package providing classes and methods for:
+@enumerate
+@item Bayesian analysis of roll call data (item-response models);
+@item elementary Bayesian statistics;
+@item maximum likelihood estimation of zero-inflated and hurdle models for count
+data;
+@item utility functions.
+@end enumerate")
+    (license license:gpl2)))
