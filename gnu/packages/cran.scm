@@ -5991,3 +5991,36 @@ search and trust region.  There are options for using a numerical or user
 supplied Jacobian, for specifying a banded numerical Jacobian and for allowing a
 singular or ill-conditioned Jacobian.")
     (license license:gpl2+)))
+
+(define-public r-physicalactivity
+  (package
+    (name "r-physicalactivity")
+    (version "0.2-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "PhysicalActivity" version))
+       (sha256
+        (base32 "14z6plgwyr46vs9m997rvlz8sdglfs9g087an8668zqkzzs2w4ln"))))
+    (properties
+     `((upstream-name . "PhysicalActivity")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/PhysicalActivity/")
+    (synopsis "Procesing accelerometer data for physical activity measurement")
+    (description
+     "This @code{r-physicalactivity} package provides a function @code{wearingMarking}
+for classification of monitor wear and nonwear time intervals in accelerometer
+data collected to assess physical activity.  The package also contains functions
+for making plots of accelerometer data and obtaining the summary of various
+information including daily monitor wear time and the mean monitor wear time
+during valid days.  The revised package version 0.2-1 improved the functions
+regarding speed, robustness and add better support for time zones and daylight
+saving.  In addition, several functions were added:
+@enumerate
+@item the @code{markDelivery} can classify days for ActiGraph delivery by mail;
+@item the @code{markPAI} can categorize physical activity intensity level based
+on user-defined cut-points of accelerometer counts.
+@end enumerate
+  It also supports importing ActiGraph (AGD) files with @code{readActigraph} and
+@code{queryActigraph} functions.")
+    (license license:gpl3+)))
