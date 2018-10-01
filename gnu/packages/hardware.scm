@@ -36,14 +36,14 @@
 (define-public ddcutil
   (package
     (name "ddcutil")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.ddcutil.com/tarballs/"
                            name "-" version ".tar.gz"))
        (sha256
-        (base32 "1b4bm3zhk5vnad6fxf0mn8nrlj3fngifl7nzxgxw0n56hlv7ccv0"))))
+        (base32 "0nhi261vf2n3jpi0a0n6659911kxi3lj7a4h7cmv0ip6sbb8rk88"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
