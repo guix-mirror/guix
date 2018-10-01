@@ -2785,3 +2785,35 @@ tester module.")
 
 (define-public ecl-ptester
   (sbcl-package->ecl-package sbcl-ptester))
+
+(define-public sbcl-puri
+  (package
+    (name "sbcl-puri")
+    (version "20180228")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://beta.quicklisp.org/archive/puri/"
+                           (date->string (string->date version "~Y~m~d") "~Y-~m-~d")
+                           "/puri-"
+                           version
+                           "-git.tgz"))
+       (sha256
+        (base32
+         "1s4r5adrjy5asry45xbcbklxhdjydvf6n55z897nvyw33bigrnbz"))))
+    (build-system asdf-build-system/sbcl)
+    ;; REVIEW: Webiste down?
+    (native-inputs
+     `(("ptester" ,sbcl-ptester)))
+    (home-page "http://files.kpe.io/puri/")
+    (synopsis "Portable URI Library")
+    (description
+     "This is portable Universal Resource Identifier library for Common Lisp
+programs.  It parses URI according to the RFC 2396 specification")
+    (license license:lgpl3+)))
+
+(define-public cl-puri
+  (sbcl-package->cl-source-package sbcl-puri))
+
+(define-public ecl-puri
+  (sbcl-package->ecl-package sbcl-puri))
