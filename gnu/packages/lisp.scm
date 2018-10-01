@@ -2629,6 +2629,45 @@ pattern-matching-like, but a char-by-char procedural parser.")
 (define-public ecl-proc-parse
   (sbcl-package->ecl-package sbcl-proc-parse))
 
+(define-public sbcl-parse-float
+  (let ((commit "2aae569f2a4b2eb3bfb5401a959425dcf151b09c"))
+    (package
+      (name "sbcl-parse-float")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/soemraws/parse-float")
+               (commit commit)))
+         (sha256
+          (base32
+           "08xw8cchhmqcc0byng69m3f5a2izc9y2290jzz2k0qrbibp1fdk7"))
+         (file-name (git-file-name "proc-parse" version))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("babel" ,sbcl-babel)))
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("prove-asdf" ,sbcl-prove-asdf)))
+      (arguments
+       ;; TODO: Tests don't find "proc-parse-test", why?
+       `(#:tests? #f))
+      (synopsis "Parse a floating point value from a string in Common Lisp")
+      (description
+       "This package exports the following function to parse floating-point
+values from a string in Common Lisp.")
+      (home-page "https://github.com/soemraws/parse-float")
+      ;; TODO: Missing license?
+      (license license:public-domain))))
+
+(define-public cl-parse-float
+  (sbcl-package->cl-source-package sbcl-parse-float))
+
+(define-public ecl-parse-float
+  (sbcl-package->ecl-package sbcl-parse-float))
+
 (define-public sbcl-ascii-strings
   (let ((revision "1")
         (changeset "5048480a61243e6f1b02884012c8f25cdbee6d97"))
