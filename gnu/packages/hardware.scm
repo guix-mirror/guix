@@ -116,7 +116,8 @@ calibrated, and restored when the calibration is applied.")
                 (lambda (file)
                   (install-file file doc))
                 (list "FAQ"
-                      "README"))))))))
+                      "README"))
+               #t))))))
     (native-inputs
      ;; Newer GCCs fail with a deluge of "multiple definition of `__foo'" errors.
      `(("gcc" ,gcc-4.9)))
@@ -133,6 +134,54 @@ It runs independently of any operating system, at computer boot-up, so that it
 can scan as much of your RAM as possible for hardware defects.
 
 Memtest86+ cannot currently be used on computers booted with UEFI.")
+    (license license:gpl2)))
+
+(define-public memtester
+  (package
+    (name "memtester")
+    (version "4.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Even the latest release is available under 'old-versions/'.
+       (uri (string-append "http://pyropus.ca/software/memtester/old-versions/"
+                           "memtester-" version ".tar.gz"))
+       (sha256
+        (base32 "127xymmyzb9r6dxqrwd69v7gf8csv8kv7fjvagbglf3wfgyy5pzr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; This is a home-brewed configuration system where the cc/ld command
+           ;; lines are stored in one-line files.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (substitute* (list "conf-cc" "conf-ld")
+                 (("^cc") "gcc"))
+               (substitute* "Makefile"
+                 (("(INSTALLPATH.*=).*" _ assignment)
+                  (string-append assignment out)))
+               #t)))
+         (replace 'check
+           ;; There is no test suite. Test some RAM for a single iteration.
+           (lambda _
+             (invoke "./memtester" "64K" "1"))))))
+    (home-page "http://pyropus.ca/software/memtester/")
+    (synopsis "User-space memory subsystem tester")
+    (description
+     "Memtester stress-tests the memory subsystem of your operating system and
+computer.  It repeatedly writes different patterns to all memory locations,
+reads them back again, and verifies whether the result is the same as what was
+written.  This can help debug even intermittent and non-deterministic errors.
+
+Memtester runs entirely in user space.  This means that you don't need to reboot
+to test your memory, but also that it's not possible to test all of the RAM
+installed in the system.
+
+It can also be told to test memory starting at a particular physical address.")
     (license license:gpl2)))
 
 (define-public msr-tools
