@@ -2817,3 +2817,32 @@ programs.  It parses URI according to the RFC 2396 specification")
 
 (define-public ecl-puri
   (sbcl-package->ecl-package sbcl-puri))
+
+(define-public sbcl-queues
+  (let ((commit "47d4da65e9ea20953b74aeeab7e89a831b66bc94"))
+    (package
+      (name "sbcl-queues")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/oconnore/queues")
+               (commit commit)))
+         (file-name (git-file-name "queues" version))
+         (sha256
+          (base32
+           "0wdhfnzi4v6d97pggzj2aw55si94w4327br94jrmyvwf351wqjvv"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/oconnore/queues")
+      (synopsis "Common Lisp queue library")
+      (description
+       "This is a simple queue library for Common Lisp with features such as
+non-consing thread safe queues and fibonacci priority queues.")
+      (license license:expat))))
+
+(define-public cl-queues
+  (sbcl-package->cl-source-package sbcl-queues))
+
+(define-public ecl-queues
+  (sbcl-package->ecl-package sbcl-queues))
