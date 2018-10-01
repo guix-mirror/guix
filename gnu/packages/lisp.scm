@@ -2528,6 +2528,36 @@ named color.")
 (define-public ecl-cl-ansi-text
   (sbcl-package->ecl-package sbcl-cl-ansi-text))
 
+(define-public sbcl-prove-asdf
+  (let ((commit "4f9122bd393e63c5c70c1fba23070622317cfaa0"))
+    (package
+      (name "sbcl-prove-asdf")
+      (version (git-version "1.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/prove")
+               (commit commit)))
+         (sha256
+          (base32
+           "07sbfw459z8bbjvx1qlmfa8qk2mvbjnnzi2mi0x72blaj8bkl4vc"))
+         (file-name (git-file-name "prove" version))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-file "prove-asdf.asd"))
+      (synopsis "Test requirement for the Common Lisp 'prove' library")
+      (description
+       "Test requirement for the Common Lisp @command{prove} library.")
+      (home-page "https://github.com/fukamachi/prove")
+      (license license:expat))))
+
+(define-public cl-prove-asdf
+  (sbcl-package->cl-source-package sbcl-prove-asdf))
+
+(define-public ecl-prove-asdf
+  (sbcl-package->ecl-package sbcl-prove-asdf))
+
 (define-public sbcl-ascii-strings
   (let ((revision "1")
         (changeset "5048480a61243e6f1b02884012c8f25cdbee6d97"))
