@@ -2364,6 +2364,49 @@ new fiends in addition to old friends like @command{aif} and
 (define-public ecl-anaphora
   (sbcl-package->ecl-package sbcl-anaphora))
 
+(define-public sbcl-lift
+  (let ((commit "7d49a66c62759535624037826891152223d4206c"))
+    (package
+      (name "sbcl-lift")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gwkkwg/lift")
+               (commit commit)))
+         (sha256
+          (base32
+           "127v5avpz1i4m0lkaxqrq8hrl69rdazqaxf6s8awf0nd7wj2g4dp"))
+         (file-name (git-file-name "lift" version))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; The tests require a debugger, but we run with the debugger disabled.
+       '(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           ;; Do this to ensure the 'reset-gzip-timestamps phase works.
+           (add-after 'unpack 'make-gzips-writeable
+             (lambda _
+               (for-each (lambda (file)
+                           (chmod file #o755))
+                         (find-files "." "\\.gz$")))))))
+      (synopsis "LIsp Framework for Testing")
+      (description
+       "The LIsp Framework for Testing (LIFT) is a unit and system test tool for LISP.
+Though inspired by SUnit and JUnit, it's built with Lisp in mind.  In LIFT,
+testcases are organized into hierarchical testsuites each of which can have
+its own fixture.  When run, a testcase can succeed, fail, or error.  LIFT
+supports randomized testing, benchmarking, profiling, and reporting.")
+      (home-page "https://github.com/gwkkwg/lift")
+      (license license:x11-style))))
+
+(define-public cl-lift
+  (sbcl-package->cl-source-package sbcl-lift))
+
+(define-public ecl-lift
+  (sbcl-package->ecl-package sbcl-lift))
+
 (define-public sbcl-ascii-strings
   (let ((revision "1")
         (changeset "5048480a61243e6f1b02884012c8f25cdbee6d97"))
