@@ -2407,6 +2407,48 @@ supports randomized testing, benchmarking, profiling, and reporting.")
 (define-public ecl-lift
   (sbcl-package->ecl-package sbcl-lift))
 
+(define-public sbcl-let-plus
+  (let ((commit "5f14af61d501ecead02ec6b5a5c810efc0c9fdbb"))
+    (package
+      (name "sbcl-let-plus")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/let-plus")
+               (commit commit)))
+         (sha256
+          (base32
+           "0i050ca2iys9f5mb7dgqgqdxfnc3b0rnjdwv95sqd490vkiwrsaj"))
+         (file-name (git-file-name "let-plus" version))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("anaphora" ,sbcl-anaphora)))
+      (native-inputs
+       `(("lift" ,sbcl-lift)))
+      (synopsis "Destructuring extension of let*")
+      (description
+       "This library implements the let+ macro, which is a dectructuring
+extension of let*.  It features:
+
+@itemize
+@item Clean, consistent syntax and small implementation (less than 300 LOC,
+not counting tests)
+@item Placeholder macros allow editor hints and syntax highlighting
+@item @command{&ign} for ignored values (in forms where that makes sense)
+@item Very easy to extend
+@end itemize\n")
+      (home-page "https://github.com/sharplispers/let-plus")
+      (license license:boost1.0))))
+
+(define-public cl-let-plus
+  (sbcl-package->cl-source-package sbcl-let-plus))
+
+(define-public ecl-let-plus
+  (sbcl-package->ecl-package sbcl-let-plus))
+
 (define-public sbcl-ascii-strings
   (let ((revision "1")
         (changeset "5048480a61243e6f1b02884012c8f25cdbee6d97"))
