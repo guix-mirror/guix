@@ -5921,3 +5921,28 @@ data;
 @item utility functions.
 @end enumerate")
     (license license:gpl2)))
+
+(define-public r-accelmissing
+  (package
+    (name "r-accelmissing")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "accelmissing" version))
+       (sha256
+        (base32 "1nql9inx6azdzi3z4sfm2vdml2mms6krl8wzlf1dn1c97ahn57fy"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mice" ,r-mice)
+       ("r-pscl" ,r-pscl)))
+    (home-page "https://cran.r-project.org/web/packages/accelmissing/")
+    (synopsis "Missing value imputation for accelerometer data")
+    (description
+     "This package provides a statistical method to impute the missing values in
+accelerometer data.  The methodology includes both parametric and
+semi-parametric multiple imputations under the zero-inflated Poisson lognormal
+model.  It also provides multiple functions to preprocess the accelerometer data
+previous to the missing data imputation.  These include detecting the wearing
+and the non-wearing time, selecting valid days and subjects, and creating plots.")
+    (license license:gpl2+)))
