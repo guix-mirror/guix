@@ -2304,6 +2304,35 @@ pretty, documentation is code.")
 (define-public ecl-mgl-pax
   (sbcl-package->ecl-package sbcl-mgl-pax))
 
+(define-public sbcl-lisp-unit
+  (let ((commit "89653a232626b67400bf9a941f9b367da38d3815"))
+    (package
+      (name "sbcl-lisp-unit")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/OdonataResearchLLC/lisp-unit")
+               (commit commit)))
+         (sha256
+          (base32
+           "0p6gdmgr7p383nvd66c9y9fp2bjk4jx1lpa5p09g43hr9y9pp9ry"))
+         (file-name (git-file-name "lisp-unit" version))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Common Lisp Test framework inspired by JUnit to be simple of use")
+      (description
+       "@command{lisp-unit} is a Common Lisp library that supports unit
+testing.  It is an extension of the library written by Chris Riesbeck.")
+      (home-page "https://github.com/OdonataResearchLLC/lisp-unit")
+      (license license:expat))))
+
+(define-public cl-lisp-unit
+  (sbcl-package->cl-source-package sbcl-lisp-unit))
+
+(define-public ecl-lisp-unit
+  (sbcl-package->ecl-package sbcl-lisp-unit))
+
 (define-public sbcl-ascii-strings
   (let ((revision "1")
         (changeset "5048480a61243e6f1b02884012c8f25cdbee6d97"))
