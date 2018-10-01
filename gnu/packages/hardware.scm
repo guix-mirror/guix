@@ -18,6 +18,7 @@
 
 (define-module (gnu packages hardware)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
@@ -73,6 +74,66 @@ ddcutil allows colour-related settings to be saved at the time a monitor is
 calibrated, and restored when the calibration is applied.")
     (license (list license:bsd-3        ; FindDDCUtil.cmake
                    license:gpl2+))))    ; everything else
+
+;; Distinct from memtest86, which is obsolete.
+(define-public memtest86+
+  (package
+    (name "memtest86+")
+    ;; Update the description when/if UEFI support is released.
+    (version "5.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.memtest.org/download/5.01/memtest86+-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0fch1l55753y6jkk0hj8f6vw4h1kinkn9ysp22dq5g9zjnvjf88l"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:system "i686-linux"            ; the result runs outside of any OS
+       #:tests? #f                      ; no way to test this
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (replace 'build
+           ;; The default 'make all' does wonderful things, like scp(1) a file to
+           ;; 192.168.0.12. Build the bootable images and nothing more.
+           (lambda _
+             (invoke "make"
+                     "memtest"          ; ELF executable
+                     "memtest.bin")))   ; DOS/MBR boot sector
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib/memtest86+"))
+                    (doc (string-append out "/share/doc/memtest86+-" ,version)))
+               (for-each
+                (lambda (file)
+                  (install-file file lib))
+                (list "memtest"
+                      "memtest.bin"))
+               (for-each
+                (lambda (file)
+                  (install-file file doc))
+                (list "FAQ"
+                      "README"))))))))
+    (native-inputs
+     ;; Newer GCCs fail with a deluge of "multiple definition of `__foo'" errors.
+     `(("gcc" ,gcc-4.9)))
+    (supported-systems (list "i686-linux" "x86_64-linux"))
+    (home-page "https://www.memtest.org/")
+    (synopsis "Thorough real-mode memory tester")
+    (description
+     "Memtest86+ is a thorough, stand-alone memory test for x86 systems.  It
+repeatedly writes different patterns to all memory locations, reads them back
+again, and verifies whether the result is the same as what was written.  This
+can help debug even intermittent and non-deterministic errors.
+
+It runs independently of any operating system, at computer boot-up, so that it
+can scan as much of your RAM as possible for hardware defects.
+
+Memtest86+ cannot currently be used on computers booted with UEFI.")
+    (license license:gpl2)))
 
 (define-public msr-tools
   (package
