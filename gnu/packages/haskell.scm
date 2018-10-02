@@ -10753,6 +10753,37 @@ permissions while atomically writing to a file.")
 @code{Sources}, @code{Sinks}, and @code{Conduits}.")
     (license license:bsd-3)))
 
+(define-public ghc-lzma
+  (package
+    (name "ghc-lzma")
+    (version "0.0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/lzma/"
+                           "lzma-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0i416gqi8j55nd1pqbkxvf3f6hn6fjys6gq98lkkxphva71j30xg"))))
+    (build-system haskell-build-system)
+    (arguments
+     '(#:tests? #f ; requires older versions of QuickCheck and tasty.
+       #:cabal-revision
+       ("3" "1sify6gnsalyp6dakfzi0mdy5jcz2kcp9jsdsgkmxd40nfzgd44m")))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (home-page "https://github.com/hvr/lzma")
+    (synopsis "LZMA/XZ compression and decompression")
+    (description
+     "This package provides a pure interface for compressing and
+decompressing LZMA streams of data represented as lazy @code{ByteString}s.  A
+monadic incremental interface is provided as well.")
+    (license license:bsd-3)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
