@@ -10784,6 +10784,45 @@ decompressing LZMA streams of data represented as lazy @code{ByteString}s.  A
 monadic incremental interface is provided as well.")
     (license license:bsd-3)))
 
+(define-public ghc-stm-conduit
+  (package
+    (name "ghc-stm-conduit")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/stm-conduit/"
+                           "stm-conduit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0paapljn7nqfzrx889y0n8sszci38mdiaxkgr0bb00ph9246rr7z"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-stm" ,ghc-stm)
+       ("ghc-stm-chans" ,ghc-stm-chans)
+       ("ghc-cereal" ,ghc-cereal)
+       ("ghc-cereal-conduit" ,ghc-cereal-conduit)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-async" ,ghc-async)
+       ("ghc-monad-loops" ,ghc-monad-loops)
+       ("ghc-unliftio" ,ghc-unliftio)))
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://github.com/cgaebel/stm-conduit")
+    (synopsis "Introduces conduits to channels and promotes using conduits concurrently")
+    (description
+     "This package provides two simple conduit wrappers around STM channels: a
+source and a sink.")
+    (license license:bsd-3)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
