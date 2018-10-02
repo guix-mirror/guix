@@ -10664,6 +10664,33 @@ various backends that allows rendering to Gtk windows, PDF, PS, PNG and SVG
 documents, amongst others.")
     (license license:bsd-3)))
 
+(define-public ghc-chart-cairo
+  (package
+    (name "ghc-chart-cairo")
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/Chart-cairo/"
+                           "Chart-cairo-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0iany6lfyfb1cw0pxfs5aw5k0a6x41m6ql9ad9w59biwdckbsyqr"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-cairo" ,ghc-cairo)
+       ("ghc-colour" ,ghc-colour)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-operational" ,ghc-operational)
+       ("ghc-lens" ,ghc-lens)
+       ("ghc-chart" ,ghc-chart)))
+    (home-page "https://github.com/timbod7/haskell-chart/wiki")
+    (synopsis "Cairo backend for Charts")
+    (description "This package provides a Cairo vector graphics rendering
+backend for the Charts library.")
+    (license license:bsd-3)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
