@@ -6180,3 +6180,23 @@ each time step, contributing to a diverse final repertoire.")
 (gene) networks (C3NET).  This is a version of the algorithm C3NET with
 directional network.")
     (license license:gpl3+)))
+
+(define-public r-aca
+  (package
+    (name "r-aca")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACA" version))
+       (sha256
+        (base32 "1i3hm27nvnkvc39xlh0d1blq8q0q02czmvgi3cazmjx3jvxay0vq"))))
+    (properties `((upstream-name . "ACA")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/ACA/")
+    (synopsis "Abrupt change-point or aberration detection in point series")
+    (description
+     "This package offers an interactive function for the detection of breakpoints in
+series.")
+    ;; Any version of the GPL
+    (license (list license:gpl2+ license:gpl3+))))
