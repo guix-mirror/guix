@@ -10691,6 +10691,41 @@ documents, amongst others.")
 backend for the Charts library.")
     (license license:bsd-3)))
 
+(define-public ghc-atomic-write
+  (package
+    (name "ghc-atomic-write")
+    (version "0.2.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/atomic-write/atomic-write-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1iaq0hprxcv0sl1sgwcgmm87zraf738va1bciwnx2jkk3k1v9iyv"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-temporary" ,ghc-temporary)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-text" ,ghc-text)))
+    (native-inputs
+     `(("ghc-temporary" ,ghc-temporary)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-text" ,ghc-text)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/stackbuilders/atomic-write")
+    (synopsis "Atomically write to a file")
+    (description
+     "Atomically write to a file on POSIX-compliant systems while preserving
+permissions.  @code{mv} is an atomic operation.  This makes it simple to write
+to a file atomically just by using the @code{mv} operation.  However, this
+will destroy the permissions on the original file.  This library preserves
+permissions while atomically writing to a file.")
+    (license license:expat)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
