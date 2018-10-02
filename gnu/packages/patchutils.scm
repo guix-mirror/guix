@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -92,7 +92,7 @@ listing the files modified by a patch.")
 (define-public quilt
   (package
     (name "quilt")
-    (version "0.61")
+    (version "0.65")
     (source
      (origin
       (method url-fetch)
@@ -100,7 +100,8 @@ listing the files modified by a patch.")
                           name "-" version ".tar.gz"))
       (sha256
        (base32
-        "1hwz58djkq9cv46sjwxbp2v5m8yjr41kd0nm1zm1xm6418khmv0y"))))
+        "06b816m2gz9jfif7k9v2hrm7fz76zjg5pavf7hd3ifybwn4cgjzn"))
+      (patches (search-patches "quilt-test-fix-regex.patch"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)
               ("less" ,less)
@@ -116,8 +117,16 @@ listing the files modified by a patch.")
                  '("test/run"
                    "test/edit.test") 
                (("/bin/sh") (which "sh")))
-             ;; TODO: Run the mail tests once the mail feature can be supported.
-             (delete-file "test/mail.test")
+             (substitute* "test/create-delete.test"
+               ;; We'd rather use quilt's compat/getopt than declare a
+               ;; dependency on util-linux, but this test fails because of
+               ;; compat/getopt's handling of "---" in this test, so remove it
+               ;; for now.
+               ((" ---") ""))
+             (substitute* '("test/empty-files.test" "test/faildiff.test")
+               ;; compat/getopt seems not to handle splitting of short opts
+               ;; from its arguments.
+               (("-pab") "-p ab"))
              #t))
          (add-after 'install 'wrap-program
            ;; quilt's configure checks for the absolute path to the utilities it
