@@ -10726,6 +10726,33 @@ will destroy the permissions on the original file.  This library preserves
 permissions while atomically writing to a file.")
     (license license:expat)))
 
+(define-public ghc-cereal-conduit
+  (package
+    (name "ghc-cereal-conduit")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "cereal-conduit/cereal-conduit-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1srr7agvgfw78q5s1npjq5sgynvhjgllpihiv37ylkwqm4c4ap6r"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-cereal" ,ghc-cereal)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/snoyberg/conduit")
+    (synopsis "Turn Data.Serialize Gets and Puts into Sources, Sinks, and Conduits")
+    (description
+     "This package turn @code{Data.Serialize} @code{Gets} and @code{Puts} into
+@code{Sources}, @code{Sinks}, and @code{Conduits}.")
+    (license license:bsd-3)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
