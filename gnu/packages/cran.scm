@@ -6131,3 +6131,31 @@ that are part of an activity bout, and find the maximum 10-minute average count
 value.  The functions are generally very flexible, allowing for a variety of
 algorithms to be implemented.")
     (license license:gpl3)))
+
+(define-public r-absim
+  (package
+    (name "r-absim")
+    (version "0.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AbSim" version))
+       (sha256
+        (base32 "16ddjk8b6xw80ch4jis1y751i9561wdxh0gifbf15qiz3vjckq8m"))))
+    (properties `((upstream-name . "AbSim")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-powerlaw" ,r-powerlaw)))
+    (home-page "https://cran.r-project.org/web/packages/AbSim/")
+    (synopsis "Time resolved simulations of antibody repertoires")
+    (description
+     "This package provides simulation methods for the evolution of antibody repertoires.
+  The heavy and light chain variable region of both human and C57BL/6 mice can
+be simulated in a time-dependent fashion.  Both single lineages using one set of
+V-, D-, and J-genes or full repertoires can be simulated.  The algorithm begins
+with an initial V-D-J recombination event, starting the first phylogenetic tree.
+  Upon completion, the main loop of the algorithm begins, with each iteration
+representing one simulated time step.  Various mutation events are possible at
+each time step, contributing to a diverse final repertoire.")
+    (license license:gpl2)))
