@@ -43,6 +43,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-crypto)
   #:use-module (gnu packages haskell-web)
@@ -10586,6 +10587,82 @@ conflicts, expose it.
 expose it from another module in the hierarchy.
 @end itemize")
     (license license:expat)))
+
+(define-public ghc-cairo
+  (package
+    (name "ghc-cairo")
+    (version "0.13.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/cairo/"
+                           "cairo-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wxylv4d8120ri0vgar168ikqa9m6533ipdwi38qlmxmw20ws2j2"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:modules ((guix build haskell-build-system)
+                  (guix build utils)
+                  (ice-9 match)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         ;; FIXME: This is a copy of the standard configure phase with a tiny
+         ;; difference: this package needs the -package-db flag to be passed
+         ;; to "runhaskell" in addition to the "configure" action, because it
+         ;; depends on gtk2hs-buildtools, which provide setup hooks.  Without
+         ;; this option the Setup.hs file cannot be evaluated.  The
+         ;; haskell-build-system should be changed to pass "-package-db" to
+         ;; "runhaskell" in any case.
+         (replace 'configure
+           (lambda* (#:key outputs inputs tests? (configure-flags '())
+                     #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (input-dirs (match inputs
+                                  (((_ . dir) ...)
+                                   dir)
+                                  (_ '())))
+                    (ghc-path (getenv "GHC_PACKAGE_PATH"))
+                    (params (append `(,(string-append "--prefix=" out))
+                                    `(,(string-append "--libdir=" out "/lib"))
+                                    `(,(string-append "--bindir=" out "/bin"))
+                                    `(,(string-append
+                                        "--docdir=" out
+                                        "/share/doc/" ((@@ (guix build haskell-build-system)
+                                                           package-name-version) out)))
+                                    '("--libsubdir=$compiler/$pkg-$version")
+                                    '("--package-db=../package.conf.d")
+                                    '("--global")
+                                    `(,@(map
+                                         (cut string-append "--extra-include-dirs=" <>)
+                                         (search-path-as-list '("include") input-dirs)))
+                                    `(,@(map
+                                         (cut string-append "--extra-lib-dirs=" <>)
+                                         (search-path-as-list '("lib") input-dirs)))
+                                    (if tests?
+                                        '("--enable-tests")
+                                        '())
+                                    configure-flags)))
+               (unsetenv "GHC_PACKAGE_PATH")
+               (apply invoke "runhaskell" "-package-db=../package.conf.d"
+                      "Setup.hs" "configure" params)
+               (setenv "GHC_PACKAGE_PATH" ghc-path)
+               #t))))))
+    (inputs
+     `(("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-text" ,ghc-text)
+       ("cairo" ,cairo)))
+    (native-inputs
+     `(("ghc-gtk2hs-buildtools" ,ghc-gtk2hs-buildtools)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://projects.haskell.org/gtk2hs/")
+    (synopsis "Haskell bindings to the Cairo vector graphics library")
+    (description
+     "Cairo is a library to render high quality vector graphics.  There exist
+various backends that allows rendering to Gtk windows, PDF, PS, PNG and SVG
+documents, amongst others.")
+    (license license:bsd-3)))
 
 (define-public ghc-weigh
   (package
