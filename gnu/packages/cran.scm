@@ -6200,3 +6200,31 @@ directional network.")
 series.")
     ;; Any version of the GPL
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-acceptancesampling
+  (package
+    (name "r-acceptancesampling")
+    (version "1.0-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AcceptanceSampling" version))
+       (sha256
+        (base32 "18krmmyn8pn11aqd81kbvka68lnd36mnpdh7p3pz9r4m4vjj007x"))))
+    (properties
+     `((upstream-name . "AcceptanceSampling")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/AcceptanceSampling/")
+    (synopsis "Creation and evaluation of acceptance sampling plans")
+    (description
+     "This @code{r-acceptancesampling} provides functionality for creating and evaluating
+acceptance sampling plans.  Acceptance sampling is a methodology commonly used
+in quality control and improvement.  International standards of acceptance
+sampling provide sampling plans for specific circumstances.  The aim of this
+package is to provide an easy-to-use interface to visualize single, double or
+multiple sampling plans.  In addition, methods have been provided to enable the
+user to assess sampling plans against pre-specified levels of performance, as
+measured by the probability of acceptance for a given level of quality in the
+lot.")
+    (license license:gpl3+)))
+
