@@ -11313,4 +11313,25 @@ and daemons.  The features include:
 @end enumerate\n")
     (license license:bsd-3)))
 
+(define-public ghc-file-embed
+  (package
+    (name "ghc-file-embed")
+    (version "0.0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/file-embed/"
+                           "file-embed-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lj164cnzqyd487mli91nnr7137a4h4qsasfwsnsh77sx12fpk9k"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/snoyberg/file-embed")
+    (synopsis "Use Template Haskell to embed file contents directly")
+    (description
+     "This package allows you to use Template Haskell to read a file or all
+the files in a directory, and turn them into @code{(path, bytestring)} pairs
+embedded in your Haskell code.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
