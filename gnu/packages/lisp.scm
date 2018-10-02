@@ -3014,3 +3014,15 @@ package.")
                              (string-append
                               (assoc-ref outputs "out")
                               "/include/grovel"))))))))))
+
+(define-public sbcl-cffi
+  (package
+    (inherit sbcl-cffi-toolchain)
+    (name "sbcl-cffi")
+    (inputs (package-inputs sbcl-cffi-bootstrap))
+    (native-inputs
+     `(("cffi-grovel" ,sbcl-cffi-grovel)
+       ("cffi-libffi" ,sbcl-cffi-libffi)
+       ("rt" ,sbcl-rt)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ,@(package-native-inputs sbcl-cffi-bootstrap)))))
