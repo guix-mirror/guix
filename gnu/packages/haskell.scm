@@ -10823,6 +10823,31 @@ monadic incremental interface is provided as well.")
 source and a sink.")
     (license license:bsd-3)))
 
+(define-public ghc-bindings-dsl
+  (package
+    (name "ghc-bindings-dsl")
+    (version "1.0.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/bindings-DSL/"
+                           "bindings-DSL-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kqrd78nspl3lk4a0fqn47d8dirjg3b24dkvkigcrlb81hw35pk3"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/jwiegley/bindings-dsl/wiki")
+    (synopsis "FFI domain specific language, on top of hsc2hs")
+    (description
+     "This is a set of macros to be used when writing Haskell FFI.  They were
+designed to be able to fully describe C interfaces, so that @code{hsc2hs} can
+extract from them all Haskell code needed to mimic such interfaces.  All
+Haskell names used are automatically derived from C names, structures are
+mapped to Haskell instances of @code{Storable}, and there are also macros you
+can use with C code to help write bindings to inline functions or macro
+functions.")
+    (license license:bsd-3)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
