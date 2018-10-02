@@ -10929,6 +10929,48 @@ streaming compression and decompression.")
 based on a binomial heap.")
     (license license:bsd-3)))
 
+(define-public ghc-conduit-algorithms
+  (package
+    (name "ghc-conduit-algorithms")
+    (version "0.0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "conduit-algorithms/conduit-algorithms-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "07gx2q3d1bbfw14q41rmqg0i4m018pci10lswc0k1ij6lw7sb9fd"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-async" ,ghc-async)
+       ("ghc-bzlib-conduit" ,ghc-bzlib-conduit)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-combinators" ,ghc-conduit-combinators)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-lzma-conduit" ,ghc-lzma-conduit)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-pqueue" ,ghc-pqueue)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-stm-conduit" ,ghc-stm-conduit)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-unliftio-core" ,ghc-unliftio-core)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-th" ,ghc-test-framework-th)))
+    (home-page "https://github.com/luispedro/conduit-algorithms#readme")
+    (synopsis "Conduit-based algorithms")
+    (description
+     "This package provides algorithms on @code{Conduits}, including higher
+level asynchronous processing and some other utilities.")
+    (license license:expat)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
