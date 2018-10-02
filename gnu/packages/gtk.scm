@@ -777,54 +777,26 @@ application suites.")
 (define-public guile-cairo
   (package
     (name "guile-cairo")
-    (version "1.4.1")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://download.gna.org/guile-cairo/guile-cairo-"
-                    version
-                    ".tar.gz"))
+              (uri (string-append "mirror://savannah/guile-cairo/guile-cairo-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1f5nd9n46n6cwfl1byjml02q3y2hgn7nkx98km1czgwarxl7ws3x"))))
+                "0p6xrhf2k6n5dybn88050za7h90gnd7534n62l53vsca187pwgdf"))
+              (modules '((guix build utils)))
+              (snippet
+               (begin
+                 '(begin
+                    ;; Install Scheme files in …/guile/site/X.Y.
+                    (substitute* (find-files "." "^Makefile\\.in$")
+                      (("^(.*)dir = (.*)/guile/site(.*)" _ name prefix suffix)
+                       (string-append name "dir = " prefix
+                                      "/guile/site/@GUILE_EFFECTIVE_VERSION@"
+                                      suffix)))
+                    #t)))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:modules ((guix build utils)
-                  (guix build gnu-build-system)
-                  (ice-9 popen)
-                  (ice-9 rdelim))
-
-       #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'set-module-directory
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Install modules under $out/share/guile/site/2.0.
-                      (let ((out (assoc-ref outputs "out"))
-                            (effective
-                             (read-line
-                              (open-pipe* OPEN_READ "guile" "-c"
-                                          "(display (effective-version))"))))
-                        (substitute* "Makefile.in"
-                          (("scmdir = ([[:graph:]]+).*" _ value)
-                           (string-append "scmdir = " value "/" effective "\n")))
-                        (substitute* "cairo/Makefile.in"
-                          (("moduledir = ([[:graph:]]+).*" _ value)
-                           (string-append "moduledir = "
-                                          "$(prefix)/share/guile/site/"
-                                          effective "/cairo\n'")))
-                        #t)))
-                  (add-after 'install 'install-missing-file
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; By default 'vector-types.scm' is not installed, so do
-                      ;; it here.
-                      (let ((out (assoc-ref outputs "out"))
-                            (effective
-                             (read-line
-                              (open-pipe* OPEN_READ "guile" "-c"
-                                          "(display (effective-version))"))))
-                        (install-file "cairo/vector-types.scm"
-                                      (string-append out "/share/guile/site/"
-                                                     effective "/cairo"))
-                        #t))))))
     (inputs
      `(("guile-lib" ,guile-lib)
        ("expat" ,expat)
