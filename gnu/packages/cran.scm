@@ -6228,3 +6228,31 @@ measured by the probability of acceptance for a given level of quality in the
 lot.")
     (license license:gpl3+)))
 
+(define-public r-acclma
+  (package
+    (name "r-acclma")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACCLMA" version))
+       (sha256
+        (base32 "1na27sp18fq12gp6vxgqw1ffsz2yi1d8xvrxbrzx5g1kqxrayy0v"))))
+    (properties `((upstream-name . "ACCLMA")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/ACCLMA/")
+    (synopsis "ACC & LMA graph plotting")
+    (description
+     "This package contains a function that imports data from a @acronym{Comma-Separated
+Values, @acronym{CSV}} file, or uses manually entered data from the format (x,
+y, weight) and plots the appropriate @acronym{Absolute Concentration Curve,
+@acronym{ACC}} vs @acronym{Line of Independence, @acronym{LOI}} graph and
+@acronym{@acronym{LOI} Minus @acronym{ACC}, @acronym{LMA}} graph.  The main
+function is plotLMA (source file, header) that takes a data set and plots the
+appropriate @acronym{LMA} and @acronym{ACC} graphs.  If no source file (a
+string) was passed, a manual data entry window is opened.  The header parameter
+indicates by TRUE/FALSE (false by default) if the source @acronym{CSV} file has
+a header row or not.  The dataset should contain only one independent variable
+(x) and one dependent variable (y) and can contain a weight for each
+observation.")
+    (license license:gpl2)))
