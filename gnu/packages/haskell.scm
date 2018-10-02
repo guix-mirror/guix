@@ -10848,6 +10848,37 @@ can use with C code to help write bindings to inline functions or macro
 functions.")
     (license license:bsd-3)))
 
+(define-public ghc-lzma-conduit
+  (package
+    (name "ghc-lzma-conduit")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/lzma-conduit/"
+                           "lzma-conduit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hm72da7xk9l3zxjh274yg444vf405djxqbkf3q3p2qhicmxlmg9"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-lzma" ,ghc-lzma)
+       ("ghc-resourcet" ,ghc-resourcet)))
+    (native-inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/alphaHeavy/lzma-conduit")
+    (synopsis "Conduit interface for lzma/xz compression")
+    (description
+     "This package provides a @code{Conduit} interface for the LZMA
+compression algorithm used in the @code{.xz} file format.")
+    (license license:bsd-3)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
