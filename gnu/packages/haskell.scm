@@ -11334,4 +11334,34 @@ the files in a directory, and turn them into @code{(path, bytestring)} pairs
 embedded in your Haskell code.")
     (license license:bsd-3)))
 
+(define-public ghc-safeio
+  (package
+    (name "ghc-safeio")
+    (version "0.0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/safeio/"
+                           "safeio-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04g3070cbjdqj0h9l9ii6470xcbn40xfv4fr89a8yvnkdim9nyfm"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-combinators" ,ghc-conduit-combinators)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-resourcet" ,ghc-resourcet)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-th" ,ghc-test-framework-th)))
+    (home-page "https://github.com/luispedro/safeio")
+    (synopsis "Write output to disk atomically")
+    (description
+     "This package implements utilities to perform atomic output so as to
+avoid the problem of partial intermediate files.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
