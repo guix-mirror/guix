@@ -11249,4 +11249,25 @@ main = defaultMain")))
 @code{inline-c}.")
     (license license:expat)))
 
+(define-public ghc-bytestring-lexing
+  (package
+    (name "ghc-bytestring-lexing")
+    (version "0.5.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "bytestring-lexing/bytestring-lexing-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0wrzniawhgpphc6yx1v972gyqxdbv0pizaz9bafahrshyb9svy81"))))
+    (build-system haskell-build-system)
+    (home-page "http://code.haskell.org/~wren/")
+    (synopsis "Parse and produce literals from strict or lazy bytestrings")
+    (description
+     "This package provides tools to parse and produce literals efficiently
+from strict or lazy bytestrings.")
+    (license license:bsd-2)))
+
 ;;; haskell.scm ends here
