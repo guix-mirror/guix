@@ -2994,3 +2994,23 @@ package.")
        ("cffi-grovel" ,sbcl-cffi-grovel)
        ("trivial-features" ,sbcl-trivial-features)
        ("libffi" ,libffi)))))
+
+(define-public sbcl-cffi-grovel
+  (package
+    (inherit sbcl-cffi-toolchain)
+    (name "sbcl-cffi-grovel")
+    (inputs
+     `(("libffi" ,libffi)
+       ("cffi" ,sbcl-cffi-bootstrap)
+       ("cffi-toolchain" ,sbcl-cffi-toolchain)
+       ("alexandria" ,sbcl-alexandria)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-cffi-toolchain)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'build 'install-headers
+             (lambda* (#:key outputs #:allow-other-keys)
+               (install-file "grovel/common.h"
+                             (string-append
+                              (assoc-ref outputs "out")
+                              "/include/grovel"))))))))))
