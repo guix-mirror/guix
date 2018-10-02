@@ -10907,6 +10907,28 @@ compression algorithm used in the @code{.xz} file format.")
 streaming compression and decompression.")
     (license license:bsd-3)))
 
+(define-public ghc-pqueue
+  (package
+    (name "ghc-pqueue")
+    (version "1.4.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "pqueue/pqueue-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zvwm1zcqqq5n101s1brjhgbay8rf9fviq6gxbplf40i63m57p1x"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://hackage.haskell.org/package/pqueue")
+    (synopsis "Reliable, persistent, fast priority queues")
+    (description
+     "This package provides a fast, reliable priority queue implementation
+based on a binomial heap.")
+    (license license:bsd-3)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
