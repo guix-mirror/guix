@@ -161,12 +161,6 @@ struct Settings {
     /* Whether to build in chroot. */
     bool useChroot;
 
-    /* Set of ssh connection strings for the ssh substituter */
-    Strings sshSubstituterHosts;
-
-    /* Whether to use the ssh substituter at all */
-    bool useSshSubstituter;
-
     /* Whether to impersonate a Linux 2.6 machine on newer kernels. */
     bool impersonateLinux26;
 
@@ -211,12 +205,6 @@ struct Settings {
 
     /* Whether to show a stack trace if Nix evaluation fails. */
     bool showTrace;
-
-    /* A list of URL prefixes that can return Nix build logs. */
-    Strings logServers;
-
-    /* Whether the importNative primop should be enabled */
-    bool enableImportNative;
 
 private:
     SettingsMap settings, overrides;
