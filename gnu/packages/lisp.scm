@@ -2930,3 +2930,45 @@ non-consing thread safe queues and fibonacci priority queues.")
 
 (define-public ecl-queues.priority-cqueue
   (sbcl-package->ecl-package sbcl-queues.priority-cqueue))
+
+(define sbcl-cffi-bootstrap
+  (package
+    (name "sbcl-cffi-bootstrap")
+    (version "0.19.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cffi/cffi/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "07bc3c1fbfx17wgrvx6bh9byilfzfwv5n597cfdllm0vzwvbmiyk"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("libffi" ,libffi)
+       ("alexandria" ,sbcl-alexandria)
+       ("babel" ,sbcl-babel)
+       ("trivial-features" ,sbcl-trivial-features)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "libffi/libffi.lisp"
+               (("libffi.so.6" all) (string-append
+                                     (assoc-ref inputs "libffi")
+                                     "/lib/" all)))
+             (substitute* "toolchain/c-toolchain.lisp"
+               (("\"cc\"") (format #f "~S" (which "gcc")))))))
+       #:asd-system-name "cffi"
+       #:tests? #f))
+    (home-page "https://common-lisp.net/project/cffi/")
+    (synopsis "Common Foreign Function Interface for Common Lisp")
+    (description "The Common Foreign Function Interface (CFFI)
+purports to be a portable foreign function interface for Common Lisp.
+The CFFI library is composed of a Lisp-implementation-specific backend
+in the CFFI-SYS package, and a portable frontend in the CFFI
+package.")
+    (license license:expat)))
