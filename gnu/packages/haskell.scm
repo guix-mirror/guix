@@ -11270,4 +11270,47 @@ main = defaultMain")))
 from strict or lazy bytestrings.")
     (license license:bsd-2)))
 
+(define-public ghc-configurator
+  (package
+    (name "ghc-configurator")
+    (version "0.3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "configurator/configurator-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1d1iq1knwiq6ia5g64rw5hqm6dakz912qj13r89737rfcxmrkfbf"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+    (home-page "http://github.com/bos/configurator")
+    (synopsis "Configuration management")
+    (description
+     "This package provides a configuration management library for programs
+and daemons.  The features include:
+
+@enumerate
+@item Automatic, dynamic reloading in response to modifications to
+  configuration files.
+@item A simple, but flexible, configuration language, supporting several of
+  the most commonly needed types of data, along with interpolation of strings
+  from the configuration or the system environment (e.g. @code{$(HOME)}).
+@item Subscription-based notification of changes to configuration properties.
+@item An @code{import} directive allows the configuration of a complex
+  application to be split across several smaller files, or common configuration
+  data to be shared across several applications.
+@end enumerate\n")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
