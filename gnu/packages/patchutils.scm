@@ -37,6 +37,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml))
 
 (define-public patchutils
@@ -109,7 +110,8 @@ listing the files modified by a patch.")
     (inputs `(("perl" ,perl)
               ("less" ,less)
               ("file" ,file)
-              ("ed" ,ed)))
+              ("ed" ,ed)
+              ("diffstat" ,diffstat)))
     (arguments
      '(#:parallel-tests? #f
        #:phases
@@ -140,6 +142,7 @@ listing the files modified by a patch.")
                     (coreutils (assoc-ref inputs "coreutils"))
                     (diffutils (assoc-ref inputs "diffutils"))
                     (findutils (assoc-ref inputs "findutils"))
+                    (diffstat  (assoc-ref inputs "diffstat"))
                     (less      (assoc-ref inputs "less"))
                     (file      (assoc-ref inputs "file"))
                     (ed        (assoc-ref inputs "ed"))
@@ -151,7 +154,8 @@ listing the files modified by a patch.")
                    ,(map (lambda (dir)
                            (string-append dir "/bin"))
                          (list coreutils diffutils findutils
-                               less file ed sed bash grep)))))
+                               less file ed sed bash grep
+                               diffstat)))))
              #t)))))
     (home-page "https://savannah.nongnu.org/projects/quilt/")
     (synopsis "Script for managing patches to software")
