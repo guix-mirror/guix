@@ -11180,4 +11180,37 @@ Haskell value or function.")
 vector spaces.")
     (license license:bsd-3)))
 
+(define-public ghc-safe-exceptions
+  (package
+    (name "ghc-safe-exceptions")
+    (version "0.1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "safe-exceptions/safe-exceptions-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0sd0zfsm9pcll5bzzj523rbn45adjrnavdkz52hgmdjjgdcdrk8q"))))
+    (build-system haskell-build-system)
+    (arguments
+     '(#:cabal-revision
+       ("4" "0fid41gishzsyb47wzxhd5falandfirqcp760hcja81qjpfmqd32")))
+    (inputs `(("ghc-exceptions" ,ghc-exceptions)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-void" ,ghc-void)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/fpco/safe-exceptions")
+    (synopsis "Safe, consistent, and easy exception handling")
+    (description "Runtime exceptions - as exposed in @code{base} by the
+@code{Control.Exception} module - have long been an intimidating part of the
+Haskell ecosystem.  This package is intended to overcome this.  It provides a
+safe and simple API on top of the existing exception handling machinery.  The
+API is equivalent to the underlying implementation in terms of power but
+encourages best practices to minimize the chances of getting the exception
+handling wrong.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
