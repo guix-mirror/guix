@@ -11044,6 +11044,31 @@ are described in a file named @code{package.yaml}.  Both @code{cabal2nix} and
 @code{package.yaml}.")
     (license license:expat)))
 
+(define-public ghc-raw-strings-qq
+  (package
+    (name "ghc-raw-strings-qq")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "raw-strings-qq/raw-strings-qq-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1lxy1wy3awf52968iy5y9r5z4qgnn2sxkdrh7js3m9gadb11w09f"))))
+    (build-system haskell-build-system)
+    (native-inputs `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/23Skidoo/raw-strings-qq")
+    (synopsis "Raw string literals for Haskell")
+    (description
+     "This package provides a quasiquoter for raw string literals, i.e. string
+literals that don't recognise the standard escape sequences.  Basically, they
+make your code more readable by freeing you from the responsibility to escape
+backslashes.  They are useful when working with regular expressions,
+DOS/Windows paths and markup languages (such as XML).")
+    (license license:bsd-3)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
