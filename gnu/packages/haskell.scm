@@ -11069,6 +11069,52 @@ backslashes.  They are useful when working with regular expressions,
 DOS/Windows paths and markup languages (such as XML).")
     (license license:bsd-3)))
 
+(define-public ghc-inline-c
+  (package
+    (name "ghc-inline-c")
+    (version "0.6.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/inline-c/"
+                           "inline-c-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vbfrsqsi7mdziqsnj68bsqlwbqxxhvrmy9rv6w8z18d1m8w3n6h"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-Setup.hs
+           (lambda _
+             (with-output-to-file "Setup.hs"
+               (lambda _
+                 (display "\
+import Distribution.Simple
+main = defaultMain")))
+             #t)))))
+    (inputs
+     `(("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
+       ("ghc-cryptohash" ,ghc-cryptohash)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-parsers" ,ghc-parsers)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-raw-strings-qq" ,ghc-raw-strings-qq)
+       ("ghc-regex-posix" ,ghc-regex-posix)))
+    (home-page "http://hackage.haskell.org/package/inline-c")
+    (synopsis "Write Haskell source files including C code inline")
+    (description
+     "inline-c lets you seamlessly call C libraries and embed high-performance
+inline C code in Haskell modules.  Haskell and C can be freely intermixed in
+the same source file, and data passed to and from code in either language with
+minimal overhead.  No FFI required.")
+    (license license:expat)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
