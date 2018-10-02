@@ -3003,6 +3003,17 @@ Haskell library @code{regex-base}.")
         (base32
          "1sjkpkgv4phy5b5v2lr89x4vx4dh44pj0sbvlsp6n86w9v6v4jwb"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-dependencies
+           (lambda _
+             (substitute* "regex.cabal"
+               (("base-compat.*>=.*0.6.*")
+                "base-compat >= 0.6\n")
+               (("template-haskell.*>=.*2.7.*")
+                "template-haskell >= 2.7\n"))
+             #t)))))
     (inputs
      `(("ghc-base-compat" ,ghc-base-compat)
        ("ghc-hashable" ,ghc-hashable)
