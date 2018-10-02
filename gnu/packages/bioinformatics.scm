@@ -38,6 +38,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system haskell)
   #:use-module (guix build-system ocaml)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
@@ -72,6 +73,8 @@
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-check)
+  #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
@@ -13970,3 +13973,87 @@ enrichment analysis (GSEA) calculation with or without the absolute filtering.
   Without filtering, users can perform (original) two-tailed or one-tailed
 absolute GSEA.")
     (license license:gpl2)))
+
+(define-public ngless
+  (package
+    (name "ngless")
+    (version "0.9.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/ngless/ngless.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0mc2gi7h4lx74zylvyp76mvc0w6706j858ii9vlgzqsw6acpr117"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:haddock? #f ; The haddock phase fails with: NGLess/CmdArgs.hs:20:1:
+                     ; error: parse error on input import
+                     ; import Options.Applicative
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-cabal-file
+           (lambda _ (invoke "hpack") #t)))))
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-async" ,ghc-async)
+       ("ghc-atomic-write" ,ghc-atomic-write)
+       ("ghc-bytestring-lexing" ,ghc-bytestring-lexing)
+       ("ghc-chart" ,ghc-chart)
+       ("ghc-chart-cairo" ,ghc-chart-cairo)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-algorithms" ,ghc-conduit-algorithms)
+       ("ghc-conduit-combinators" ,ghc-conduit-combinators)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-configurator" ,ghc-configurator)
+       ("ghc-convertible" ,ghc-convertible)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-double-conversion" ,ghc-double-conversion)
+       ("ghc-edit-distance" ,ghc-edit-distance)
+       ("ghc-either" ,ghc-either)
+       ("ghc-errors" ,ghc-errors)
+       ("ghc-extra" ,ghc-extra)
+       ("ghc-filemanip" ,ghc-filemanip)
+       ("ghc-file-embed" ,ghc-file-embed)
+       ("ghc-gitrev" ,ghc-gitrev)
+       ("ghc-hashtables" ,ghc-hashtables)
+       ("ghc-http-conduit" ,ghc-http-conduit)
+       ("ghc-inline-c" ,ghc-inline-c)
+       ("ghc-inline-c-cpp" ,ghc-inline-c-cpp)
+       ("ghc-intervalmap" ,ghc-intervalmap)
+       ("ghc-missingh" ,ghc-missingh)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-regex" ,ghc-regex)
+       ("ghc-safe" ,ghc-safe)
+       ("ghc-safeio" ,ghc-safeio)
+       ("ghc-strict" ,ghc-strict)
+       ("ghc-tar" ,ghc-tar)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unliftio" ,ghc-unliftio)
+       ("ghc-unliftio-core" ,ghc-unliftio-core)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-zlib" ,ghc-zlib)))
+    (propagated-inputs
+     `(("r-r6" ,r-r6)
+       ("r-hdf5r" ,r-hdf5r)
+       ("r-iterators" ,r-iterators)
+       ("r-itertools" ,r-itertools)
+       ("r-matrix" ,r-matrix)))
+    (native-inputs
+     `(("ghc-hpack" ,ghc-hpack)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit",ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-test-framework-th" ,ghc-test-framework-th)))
+    (home-page "https://gitlab.com/ngless/ngless")
+    (synopsis "DSL for processing next-generation sequencing data")
+    (description "Ngless is a domain-specific language for
+@dfn{next-generation sequencing} (NGS) data processing.")
+    (license license:expat)))
