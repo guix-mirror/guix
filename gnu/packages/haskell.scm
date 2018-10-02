@@ -10999,6 +10999,51 @@ level asynchronous processing and some other utilities.")
 Haskell.")
     (license license:expat)))
 
+(define-public ghc-hpack
+  (package
+    (name "ghc-hpack")
+    (version "0.28.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/hpack/"
+                           "hpack-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18w0h76jdp3mk9vin8da9iz3cwhcxmw787xy8wlh8bxcpcr16q5r"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-bifunctors" ,ghc-bifunctors)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-glob" ,ghc-glob)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-http-client-tls" ,ghc-http-client-tls)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-yaml" ,ghc-yaml)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-interpolate" ,ghc-interpolate)
+       ("ghc-mockery" ,ghc-mockery)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-temporary" ,ghc-temporary)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/sol/hpack")
+    (synopsis "Tools for an alternative Haskell package format")
+    (description
+     "Hpack is a format for Haskell packages.  It is an alternative to the
+Cabal package format and follows different design principles.  Hpack packages
+are described in a file named @code{package.yaml}.  Both @code{cabal2nix} and
+@code{stack} support @code{package.yaml} natively.  For other build tools the
+@code{hpack} executable can be used to generate a @code{.cabal} file from
+@code{package.yaml}.")
+    (license license:expat)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
