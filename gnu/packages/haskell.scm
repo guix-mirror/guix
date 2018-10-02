@@ -11213,4 +11213,40 @@ encourages best practices to minimize the chances of getting the exception
 handling wrong.")
     (license license:expat)))
 
+(define-public ghc-inline-c-cpp
+  (package
+    (name "ghc-inline-c-cpp")
+    (version "0.2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/inline-c-cpp/"
+                           "inline-c-cpp-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rk7fmpkmxw9hhwr8df29kadnf0ybnwj64ggdbnsdrpfyhnkisci"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-Setup.hs
+           (lambda _
+             (with-output-to-file "Setup.hs"
+               (lambda _
+                 (display "\
+import Distribution.Simple
+main = defaultMain")))
+             #t)))))
+    (inputs
+     `(("ghc-inline-c" ,ghc-inline-c)
+       ("ghc-safe-exceptions" ,ghc-safe-exceptions)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://hackage.haskell.org/package/inline-c-cpp")
+    (synopsis "Lets you embed C++ code into Haskell")
+    (description
+     "This package provides utilities to inline C++ code into Haskell using
+@code{inline-c}.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
