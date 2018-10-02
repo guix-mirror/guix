@@ -10879,6 +10879,34 @@ functions.")
 compression algorithm used in the @code{.xz} file format.")
     (license license:bsd-3)))
 
+(define-public ghc-bzlib-conduit
+  (package
+    (name "ghc-bzlib-conduit")
+    (version "0.3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/bzlib-conduit/"
+                           "bzlib-conduit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fd2hnr782s7qgipazg2yxwia9qqhkvm9bcm90773c3zkxa13n23"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-bindings-dsl" ,ghc-bindings-dsl)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-resourcet" ,ghc-resourcet)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-random" ,ghc-random)))
+    (home-page "https://github.com/snoyberg/bzlib-conduit")
+    (synopsis "Streaming compression/decompression via conduits")
+    (description
+     "This package provides Haskell bindings to bzlib and Conduit support for
+streaming compression and decompression.")
+    (license license:bsd-3)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
