@@ -10971,6 +10971,34 @@ based on a binomial heap.")
 level asynchronous processing and some other utilities.")
     (license license:expat)))
 
+(define-public ghc-interpolate
+  (package
+    (name "ghc-interpolate")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/interpolate/"
+                           "interpolate-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gkaj98yz363v38fv78sqby236mp8yqwqcilx7kr2b9z0w3204bf"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-haskell-src-meta" ,ghc-haskell-src-meta)))
+    (native-inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("ghc-text" ,ghc-text)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/sol/interpolate")
+    (synopsis "String interpolation library")
+    (description "This package provides a string interpolation library for
+Haskell.")
+    (license license:expat)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
