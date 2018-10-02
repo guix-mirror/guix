@@ -6159,3 +6159,24 @@ with an initial V-D-J recombination event, starting the first phylogenetic tree.
 representing one simulated time step.  Various mutation events are possible at
 each time step, contributing to a diverse final repertoire.")
     (license license:gpl2)))
+
+(define-public r-ac3net
+  (package
+    (name "r-ac3net")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Ac3net" version))
+       (sha256
+        (base32 "1ns4n0xxz6p34c11bj0k7nzgmyqr9mis2b0g5nfz37dbikndyqyz"))))
+    (properties `((upstream-name . "Ac3net")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)))
+    (home-page "https://cran.r-project.org/web/packages/Ac3net/")
+    (synopsis "Inferring directional conservative causal core gene networks")
+    (description "This package infers directional Conservative causal core
+(gene) networks (C3NET).  This is a version of the algorithm C3NET with
+directional network.")
+    (license license:gpl3+)))
