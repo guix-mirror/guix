@@ -84,11 +84,12 @@
 (define (normalize-dependency dependency)
   "Normalize the name of DEPENDENCY.  Handles dependency definitions of the
 dependency-def form described by
-<https://common-lisp.net/project/asdf/asdf.html#The-defsystem-grammar>."
+<https://common-lisp.net/project/asdf/asdf.html#The-defsystem-grammar>.
+Assume that any symbols in DEPENDENCY will be in upper-case."
   (match dependency
-    ((':version name rest ...)
+    ((':VERSION name rest ...)
      `(:version ,(normalize-string name) ,@rest))
-    ((':feature feature-specification dependency-specification)
+    ((':FEATURE feature-specification dependency-specification)
      `(:feature
        ,feature-specification
        ,(normalize-dependency dependency-specification)))
