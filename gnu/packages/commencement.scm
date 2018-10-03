@@ -1620,25 +1620,12 @@ exec " gcc "/bin/" program
                     ,cf)))))
      (inputs (%boot0-inputs)))))
 
-;; Use a "fixed" package source for this early libstdc++ variant so we can
-;; update GCC 4.9 without triggering a full rebuild.
-(define gcc-for-libstdc++
-  (package
-    (inherit gcc-4.9)
-    (source (origin
-              (inherit (package-source gcc-4.9))
-              (patches (search-patches "gcc-4.9-libsanitizer-fix.patch"
-                                       "gcc-arm-bug-71399.patch"
-                                       "gcc-asan-missing-include.patch"
-                                       "gcc-libvtv-runpath.patch"
-                                       "gcc-fix-texi2pod.patch"))))))
-
 (define libstdc++-boot0
   ;; GCC's libcc1 is always built as a shared library (the top-level
   ;; 'Makefile.def' forcefully adds --enable-shared) and thus needs to refer
   ;; to libstdc++.so.  We cannot build libstdc++-5.3 because it relies on
   ;; C++14 features missing in some of our bootstrap compilers.
-  (let ((lib (package-with-bootstrap-guile (make-libstdc++ gcc-for-libstdc++))))
+  (let ((lib (package-with-bootstrap-guile (make-libstdc++ gcc-4.9))))
     (package
       (inherit lib)
       (name "libstdc++-boot0")
