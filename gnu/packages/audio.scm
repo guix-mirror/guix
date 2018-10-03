@@ -2245,7 +2245,7 @@ aimed at audio/musical applications.")
        ("vamp" ,vamp)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://breakfastquay.com/rubberband/")
+    (home-page "https://breakfastquay.com/rubberband/")
     (synopsis "Audio time-stretching and pitch-shifting library")
     (description
      "Rubber Band is a library and utility program that permits changing the
