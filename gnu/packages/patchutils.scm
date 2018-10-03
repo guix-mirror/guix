@@ -103,7 +103,9 @@ listing the files modified by a patch.")
       (sha256
        (base32
         "06b816m2gz9jfif7k9v2hrm7fz76zjg5pavf7hd3ifybwn4cgjzn"))
-      (patches (search-patches "quilt-test-fix-regex.patch"))))
+      (patches (search-patches "quilt-test-fix-regex.patch"
+                               "quilt-compat-getopt-fix-second-separator.patch"
+                               "quilt-compat-getopt-fix-option-with-nondigit-param.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gnu-gettext)))
@@ -122,16 +124,6 @@ listing the files modified by a patch.")
                  '("test/run"
                    "test/edit.test") 
                (("/bin/sh") (which "sh")))
-             (substitute* "test/create-delete.test"
-               ;; We'd rather use quilt's compat/getopt than declare a
-               ;; dependency on util-linux, but this test fails because of
-               ;; compat/getopt's handling of "---" in this test, so remove it
-               ;; for now.
-               ((" ---") ""))
-             (substitute* '("test/empty-files.test" "test/faildiff.test")
-               ;; compat/getopt seems not to handle splitting of short opts
-               ;; from its arguments.
-               (("-pab") "-p ab"))
              #t))
          (add-after 'install 'wrap-program
            ;; quilt's configure checks for the absolute path to the utilities it

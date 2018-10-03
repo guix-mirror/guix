@@ -1102,6 +1102,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/quilt-test-fix-regex.patch		\
+  %D%/packages/patches/quilt-compat-getopt-fix-second-separator.patch	\
+  %D%/packages/patches/quilt-compat-getopt-fix-option-with-nondigit-param.patch	\
   %D%/packages/patches/qtwebkit-pbutils-include.patch		\
   %D%/packages/patches/rapicorn-isnan.patch			\
   %D%/packages/patches/raptor2-heap-overflow.patch		\
