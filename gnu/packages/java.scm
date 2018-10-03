@@ -4288,6 +4288,85 @@ setter and getter method.")
 file filters and endian classes.")
     (license license:asl2.0)))
 
+(define-public java-commons-exec-1.1
+  (package
+    (name "java-commons-exec")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/commons/exec/source/"
+                           "commons-exec-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "025dk8xgj10lxwwwqp0hng2rn7fr4vcirxzydqzx9k4dim667alk"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "-Dmaven.junit.jar="
+                            (assoc-ref %build-inputs "java-junit")
+                            "/share/java/junit.jar"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'delete-network-tests
+           (lambda _
+             (delete-file "src/test/java/org/apache/commons/exec/DefaultExecutorTest.java")
+             (substitute* "src/test/java/org/apache/commons/exec/TestRunner.java"
+              (("suite\\.addTestSuite\\(DefaultExecutorTest\\.class\\);") ""))
+             #t))
+         ;; The "build" phase automatically tests.
+         (delete 'check)
+         (replace 'install (install-jars "target")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://commons.apache.org/proper/commons-exec/")
+    (synopsis "Common program execution related classes")
+    (description "Commons-Exec simplifies executing external processes.")
+    (license license:asl2.0)))
+
+(define-public java-commons-exec
+  (package
+    (inherit java-commons-exec-1.1)
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/commons/exec/source/"
+                           "commons-exec-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "17yb4h6f8l49c5iyyvda4z2nmw0bxrx857nrwmsr7mmpb7x441yv"))))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "-Dmaven.junit.jar="
+                            (assoc-ref %build-inputs "java-junit")
+                            "/share/java/junit.jar")
+             "-Dmaven.compiler.source=1.7"
+             "-Dmaven.compiler.target=1.7")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'delete-network-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; This test hangs indefinitely.
+             (delete-file "src/test/java/org/apache/commons/exec/issues/Exec60Test.java")
+             (substitute* "src/test/java/org/apache/commons/exec/issues/Exec41Test.java"
+              (("ping -c 10 127.0.0.1") "sleep 10"))
+             (substitute* "src/test/java/org/apache/commons/exec/issues/Exec49Test.java"
+              (("/bin/ls") "ls"))
+             (call-with-output-file "src/test/scripts/ping.sh"
+               (lambda (port)
+                 (format port "#!~a/bin/sh\nsleep $1\n"
+                              (assoc-ref inputs "bash"))))
+             #t))
+         ;; The "build" phase automatically tests.
+         (delete 'check)
+         (replace 'install (install-jars "target")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))))
+
 (define-public java-commons-lang
   (package
     (name "java-commons-lang")
