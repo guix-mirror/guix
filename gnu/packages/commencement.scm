@@ -1731,13 +1731,18 @@ exec " gcc "/bin/" program
                       #t)))
                 ,(match (%current-system)
                    ((or "i686-linux" "x86_64-linux")
-                    '(add-after 'build 'libtool-workaround
-                      (lambda _
-                        ;; libtool: install: /gnu/store/7swwdnq02lqk4xkd8740fxdj1h4va38l-bootstrap-binaries-0/bin/install -c .libs/libcc1.so.0.0.0 /gnu/store/8qf47i99nxz9jvrmq5va0g3q1yvs3x74-gcc-cross-boot0-5.5.0-lib/lib/./libcc1.so.0.0.0
-                        ;; /gnu/store/7swwdnq02lqk4xkd8740fxdj1h4va38l-bootstrap-binaries-0/bin/install: cannot stat '.libs/libcc1.so.0.0.0': No such file or directory
-                        (system* "touch"
-                                 "libcc1/.libs/libcc1.so.0.0.0"
-                                 "libcc1/.libs/libcc1plugin.so.0.0.0"))))
+                    '(add-before 'configure 'fix-libcc1
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        ;; libcc1.so NEEDs libgcc_s.so, so provide one here
+                        ;; to placate the 'validate-runpath' phase.
+                        (substitute* "libcc1/Makefile.in"
+                          (("la_LDFLAGS =")
+                           (string-append "la_LDFLAGS = -Wl,-rpath="
+                                          (assoc-ref inputs "gcc") "/lib")))
+                        ;; XXX: "g++ -v" is broken (see also libstdc++ above).
+                        (substitute* "libcc1/configure"
+                          (("g\\+\\+ -v") "true"))
+                        #t)))
                    (_ identity))
                 (add-after 'install 'symlink-libgcc_eh
                   (lambda* (#:key outputs #:allow-other-keys)
