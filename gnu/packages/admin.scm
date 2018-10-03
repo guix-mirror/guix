@@ -1194,9 +1194,6 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out"))
                             (qt '("qtbase" "qtsvg")))
-                        (substitute* "wpa_gui.desktop"
-                          (("Exec=wpa_gui")
-                           (string-append "Exec=" out "/bin/wpa_gui")))
                         (install-file "wpa_gui" (string-append out "/bin"))
                         (install-file "wpa_gui.desktop"
                                       (string-append out "/share/applications"))
