@@ -923,7 +923,23 @@ organized in a hash table or B+ tree.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0cdwa4094x3yx7vn98xykvnlp9rngvd58d19vs3vh5hrvggccg93"))))
+                "0cdwa4094x3yx7vn98xykvnlp9rngvd58d19vs3vh5hrvggccg93"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Adjust the bundled gnulib to work with glibc 2.28.  See e.g.
+                  ;; "m4-gnulib-libio.patch".  This is a phase rather than patch
+                  ;; or snippet to work around <https://bugs.gnu.org/32347>.
+                  (substitute* (find-files "lib" "\\.c$")
+                    (("#if defined _IO_ftrylockfile")
+                     "#if defined _IO_EOF_SEEN"))
+                  (substitute* "lib/stdio-impl.h"
+                    (("^/\\* BSD stdio derived implementations")
+                     (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
+                                    "# define _IO_IN_BACKUP 0x100\n"
+                                    "#endif\n\n"
+                                    "/* BSD stdio derived implementations")))
+                  #t))))
     (build-system gnu-build-system)
 
     ;; Running tests in parallel leads to test failures and crashes in
