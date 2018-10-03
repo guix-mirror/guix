@@ -591,6 +591,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/azr3.patch				\
   %D%/packages/patches/bash-completion-directories.patch	\
+  %D%/packages/patches/bastet-change-source-of-unordered_set.patch	\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
   %D%/packages/patches/beignet-correct-file-names.patch		\
   %D%/packages/patches/binutils-aarch64-symbol-relocation.patch	\

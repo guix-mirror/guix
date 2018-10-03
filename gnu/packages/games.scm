@@ -181,6 +181,70 @@ more advanced player there are new game modes and a wide variety of physics
 settings to tweak as well.")
     (license license:gpl2+)))
 
+(define-public bastet
+  (package
+    (name "bastet")
+    (version "0.43.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fph/bastet.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "09kamxapm9jw9przpsgjfg33n9k94bccv65w95dakj0br33a75wn"))
+       (patches
+        (search-patches "bastet-change-source-of-unordered_set.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CXXFLAGS=-I"
+                            (assoc-ref %build-inputs "boost") "/include"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (replace 'check
+           ;; The 'Test' target builds the tests, but doesn't actually run them.
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "Test" make-flags)
+             (setenv "HOME" ".")
+             (invoke "./Test")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (share   (string-append out "/share"))
+                    (hicolor (string-append share "/icons/hicolor")))
+               (install-file "bastet"
+                             (string-append out "/bin"))
+
+               (install-file "bastet.desktop"
+                             (string-append share "/applications"))
+               (install-file "bastet.svg"
+                             (string-append hicolor "/scalable/apps"))
+
+               (install-file "bastet.appdata.xml"
+                             (string-append share "/appdata"))
+
+               (install-file "bastet.6"
+                             (string-append out "/share/man/man6"))
+               #t))))))
+    (native-inputs
+     `(("hicolor-icon-theme" ,hicolor-icon-theme)))
+    (inputs
+     `(("boost" ,boost)
+       ("ncurses" ,ncurses)))
+    (home-page "http://fph.altervista.org/prog/bastet.html")
+    (synopsis "Antagonistic Tetris-style falling brick game for text terminals")
+    (description
+     "Bastet (short for Bastard Tetris) is a simple ncurses-based falling brick
+game.  Unlike normal Tetris, Bastet does not choose the next brick at random.
+Instead, it uses a special algorithm to choose the worst brick possible.
+
+Playing bastet can be a painful experience, especially if you usually make
+canyons and wait for the long I-shaped block to clear four rows at a time.")
+    (license license:gpl3+)))
+
 (define-public cataclysm-dda
   (let ((commit "ad3b0c3d521292d119f97a83390e7acfe9e9e7f7")
         (revision "1"))
