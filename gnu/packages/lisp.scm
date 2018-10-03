@@ -62,6 +62,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages databases)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19))
@@ -3026,3 +3027,44 @@ package.")
        ("rt" ,sbcl-rt)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)
        ,@(package-native-inputs sbcl-cffi-bootstrap)))))
+
+(define-public sbcl-cl-sqlite
+  (let ((commit "c738e66d4266ef63a1debc4ef4a1b871a068c112"))
+    (package
+      (name "sbcl-cl-sqlite")
+      (version (git-version "0.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dmitryvk/cl-sqlite")
+               (commit commit)))
+         (file-name (git-file-name "cl-sqlite" version))
+         (sha256
+          (base32
+           "1ng45k1hdb84sqjryrfx93g66bsbybmpy301wd0fdybnc5jzr36q"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("iterate" ,sbcl-iterate)
+         ("cffi" ,sbcl-cffi)
+         ("sqlite" ,sqlite)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)))
+      (arguments
+       `(#:tests? #f                    ; Upstream seems to have issues with tests: https://github.com/dmitryvk/cl-sqlite/issues/7
+         #:asd-file "sqlite.asd"
+         #:asd-system-name "sqlite"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "sqlite-ffi.lisp"
+                 (("libsqlite3" all) (string-append
+                                      (assoc-ref inputs "sqlite")"/lib/" all))))))))
+      (home-page "https://common-lisp.net/project/cl-sqlite/")
+      (synopsis "Common Lisp binding for SQLite")
+      (description
+       "The @command{cl-sqlite} package is an interface to the SQLite embedded
+relational database engine.")
+      (license license:public-domain))))
