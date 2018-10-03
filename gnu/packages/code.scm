@@ -403,13 +403,13 @@ functionality such as HTML output.")
   (package
     (name "rtags")
     (version "2.18")
-    (home-page "https://github.com/Andersbakken/rtags")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append home-page "/archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Andersbakken/rtags.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (patches (search-patches "rtags-separate-rct.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -424,7 +424,7 @@ functionality such as HTML output.")
              #t)))
        (sha256
         (base32
-         "0scjbp1z201q8njvrxqz7lk2m9b6k2rxd5q1shrng6532r7ndif2"))))
+         "0raqjbkl1ykga4ahgl9xw49cgh3cyqcf42z36z7d6fz1fw192kg0"))))
     (build-system cmake-build-system)
     (arguments
      '(#:build-type "RelWithDebInfo"
@@ -442,6 +442,7 @@ functionality such as HTML output.")
        ("lua" ,lua)
        ("rct" ,rct)
        ("selene" ,selene)))
+    (home-page "https://github.com/Andersbakken/rtags")
     (synopsis "Indexer for the C language family with Emacs integration")
     (description
      "RTags is a client/server application that indexes C/C++ code and keeps a
