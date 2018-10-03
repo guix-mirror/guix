@@ -1641,17 +1641,13 @@ exec " gcc "/bin/" program
               (substitute-keyword-arguments (package-arguments lib)
                 ((#:phases phases)
                  `(modify-phases ,phases
-                    ;; FIXME: why doesn't this package build libstdc++.so.6.0.20,
-                    ;; when gcc-mesboot builds it fine?
-                    ;; libtool: install: /gnu/store/7swwdnq02lqk4xkd8740fxdj1h4va38l-bootstrap-binaries-0/bin/install -c .libs/libstdc++.so.6.0.20 /gnu/store/np5pmdlwfin3vmqk88chh0fgs0ncki79-libstdc++-boot0-4.8.5/lib/libstdc++.so.6.0.20
-                    ;; /gnu/store/7swwdnq02lqk4xkd8740fxdj1h4va38l-bootstrap-binaries-0/bin/install: cannot stat '.libs/libstdc++.so.6.0.20': No such file or directory
-                    (add-after 'build 'copy-libstdc++-
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        (let ((gcc (assoc-ref %build-inputs "gcc"))
-                              (out (assoc-ref outputs "out")))
-                          (copy-file (string-append gcc "/lib/libstdc++.so.6.0.20")
-                                     (string-append "src/.libs/libstdc++.so.6.0.20"))
-                          #t)))))))
+                    (add-after 'unpack 'workaround-wrapper-bug
+                      ;; XXX: The crude gcc-cross-wrapper causes "g++ -v" to
+                      ;; fail, which in turn confuses the configure script.
+                      (lambda _
+                        (substitute* "libstdc++-v3/configure"
+                          (("g\\+\\+ -v") "true"))
+                        #t))))))
              (_ (package-arguments lib)))))
       (inputs (%boot0-inputs))
       (native-inputs '()))))
