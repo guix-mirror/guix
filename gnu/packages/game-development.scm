@@ -397,7 +397,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.1.6")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -405,7 +405,7 @@ support.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "194ciw8688mikndvxivzb8ql5vm405pkwnn4srzm7ymwfc4xygb0"))))
+                "13dlf5kzvhhjkhy19118x3diakmraz4m9kxrsdam8dms6xivb6lp"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
