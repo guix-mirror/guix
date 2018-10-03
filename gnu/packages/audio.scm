@@ -449,7 +449,14 @@ tools.")
              "CXXFLAGS=-std=gnu++11"
              "CFLAGS=-std=gnu++11"
              (string-append "prefix=" %output)
-             (string-append "pkgdatadir=" %output "/share/azr3-jack"))))
+             (string-append "pkgdatadir=" %output "/share/azr3-jack"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'fix-timestamp
+           (lambda _
+             (let ((early-1980 315619200)) ; 1980-01-02 UTC
+               (utime "azr3.1" early-1980 early-1980))
+             #t)))))
     (inputs
      `(("gtkmm" ,gtkmm-2)
        ("lvtk" ,lvtk)
