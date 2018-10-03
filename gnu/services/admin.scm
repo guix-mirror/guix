@@ -125,11 +125,9 @@ for ROTATION."
 
 (define (default-jobs rottlog)
   (list #~(job '(next-hour '(0))                  ;midnight
-               (lambda ()
-                 (system* #$(file-append rottlog "/sbin/rottlog"))))
+               #$(file-append rottlog "/sbin/rottlog"))
         #~(job '(next-hour '(12))                 ;noon
-               (lambda ()
-                 (system* #$(file-append rottlog "/sbin/rottlog"))))))
+               #$(file-append rottlog "/sbin/rottlog"))))
 
 (define-record-type* <rottlog-configuration>
   rottlog-configuration make-rottlog-configuration
