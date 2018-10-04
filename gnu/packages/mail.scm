@@ -2559,14 +2559,13 @@ PGP handling, multiple servers, and secure connections.")
     (version "2.6.11")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/lefcha/imapfilter/archive/"
-                       "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lefcha/imapfilter.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1yslvwr3w5fnl06gfrp0lim8zdlasx3cvgd2fsqi0695xnb9bsms"))))
+        (base32 "0cjnp7vqmgqym2zswabkmwlbj21r063vw7wkwxglj08z5qyjl5ps"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
