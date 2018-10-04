@@ -5192,6 +5192,8 @@ functions of Tidy.")
     (arguments
      `(#:tests? #f                      ; no tests included
        #:configure-flags (list (string-append "-DUSE_SYSTEM_MBEDTLS=on")
+                               (string-append "-DENABLE_HTTP2=on")
+                               (string-append "-DUSE_SYSTEM_NGHTTP2=on")
                                (string-append "-DENABLE_TOMAHAWK=on")
                                (string-append "-DWEBROOT_DIR="
                                               (assoc-ref %outputs "out")
@@ -5214,10 +5216,11 @@ functions of Tidy.")
                  `("PATH" ":" prefix (,mbed)))))))))
     (inputs
      ;; TODO: package "hiawatha-monitor", an optional dependency of "hiawatha".
-     `(("mbedtls-apache" ,mbedtls-for-hiawatha)
-       ("zlib" ,zlib)
-       ("libxslt" ,libxslt)
-       ("libxml2" ,libxml2)))
+     `(("libxslt" ,libxslt)
+       ("libxml2" ,libxml2)
+       ("mbedtls-apache" ,mbedtls-for-hiawatha)
+       ("nghttp2" ,nghttp2 "lib")
+       ("zlib" ,zlib)))
     (home-page "https://www.hiawatha-webserver.org")
     (synopsis "Webserver with focus on security")
     (description
