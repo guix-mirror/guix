@@ -464,19 +464,22 @@ and in creating applications based on the Enlightenment Foundation Library suite
     (home-page "http://smhouston.us/ephoto/")
     (synopsis "EFL image viewer/editor/manipulator/slideshow creator")
     (description "Ephoto is an image viewer and editor written using the
-@dfn{Enlightenment Foundation Libraries} (EFL).  It focuses on simplicity and ease
-of use, while taking advantage of the speed and small footprint the EFL provide.
+@dfn{Enlightenment Foundation Libraries} (EFL).  It focuses on simplicity and
+ease of use, while taking advantage of the speed and small footprint the EFL
+provide.
 
 Ephoto’s features include:
 @enumerate
-@item Browsing the filesystem and displaying images in an easy to use grid view.
+@item Browsing the file system and displaying images in an easy-to-use grid view.
 @item Browsing images in a single image view format.
 @item Viewing images in a slideshow.
 @item Editing your image with features such as cropping, auto enhance,
 blurring, sharpening, brightness/contrast/gamma adjustments, hue/saturation/value
 adjustments, and color level adjustment.
-@item Applying artistic filters to your image such as black and white and old photo.
-@item Drag And Drop along with file operations to easy maintain your photo directories.
+@item Applying artistic filters to your image such as black and white and old
+photo.
+@item Drag And Drop along with file operations to easily maintain your photo
+directories.
 @end enumerate\n")
     (license (list
                license:bsd-2 ; Ephoto's thumbnailing code
