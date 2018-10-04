@@ -6243,12 +6243,12 @@ lot.")
     (home-page "https://cran.r-project.org/web/packages/ACCLMA/")
     (synopsis "ACC & LMA graph plotting")
     (description
-     "This package contains a function that imports data from a @acronym{Comma-Separated
-Values, @acronym{CSV}} file, or uses manually entered data from the format (x,
-y, weight) and plots the appropriate @acronym{Absolute Concentration Curve,
-@acronym{ACC}} vs @acronym{Line of Independence, @acronym{LOI}} graph and
-@acronym{@acronym{LOI} Minus @acronym{ACC}, @acronym{LMA}} graph.  The main
-function is plotLMA (source file, header) that takes a data set and plots the
+     "This package contains a function that imports data from a @acronym{CSV,
+Comma-Separated Values} file, or uses manually entered data from the format (x,
+y, weight) and plots the appropriate @acronym{ACC, Absolute Concentration
+Curve} vs @acronym{LOI, Line of Independence} graph and
+@acronym{LMA, @acronym{LOI} Minus @acronym{ACC}} graph.  The main
+function is @code{plotLMA} (source file, header) that takes a data set and plots the
 appropriate @acronym{LMA} and @acronym{ACC} graphs.  If no source file (a
 string) was passed, a manual data entry window is opened.  The header parameter
 indicates by TRUE/FALSE (false by default) if the source @acronym{CSV} file has
