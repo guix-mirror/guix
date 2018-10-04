@@ -611,7 +611,7 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
     (license gpl3+)))
 
 (define %mescc-tools-seed ; todo: add tarballs to alpha.gnu.org/pub/mes/bootstrap/
-  (let ((commit"29aae8c72e195cbb2f965f05a997b984a4f158fb"))
+  (let ((commit "dc4e20e74924a5c80a2b7a77b4d7b927234fa71c"))
     (origin
       (method url-fetch)
       (uri (string-append "https://gitlab.com/janneke/mescc-tools-seed"
@@ -619,7 +619,7 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                           "/mescc-tools-seed-" commit ".tar.gz"))
       (sha256
        (base32
-        "0rqip3j2qsppvjvmhhmjqdv70n64q6vkg2p6vpx87h1dbggdjk3v")))))
+        "1lj7df73vxanmffmiwkhcn83r7yd9n8568nkki06bqq5zg526nyz")))))
 
 (define %mes-seed
   (let ((commit "bed429ae315c2c57e9dd428a4dcf3f0d332ef064"))
