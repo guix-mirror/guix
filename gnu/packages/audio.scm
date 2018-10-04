@@ -413,11 +413,6 @@ engineers, musicians, soundtrack editors and composers.")
              (substitute* "src/prefs/MidiIOPrefs.cpp"
                (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h"))
              #t)))
-       ;; The translation Makefile generation is performed improperly for
-       ;; out-of-tree builds.
-       ;; XXX This can be removed if the glib-or-gkt-build-system
-       ;; switches to #:out-of-source? #t. See <https://bugs.gnu.org/32887>.
-       #:out-of-source? #f
        ;; The test suite is not "well exercised" according to the developers,
        ;; and fails with various errors.  See
        ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
