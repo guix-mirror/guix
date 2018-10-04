@@ -28,14 +28,14 @@
 (define-public nickle
   (package
     (name "nickle")
-    (version "2.81")
+    (version "2.82")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nickle.org/release/nickle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1daqsflnqqgfkq6w6dknbm42avz70f5qxn7qidvgp472i4a37acr"))))
+                "0jy96z01qbrnmsrywn5mfa14615qdix6b8520qd65c6yjyrk8gs0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("readline" ,readline)))
