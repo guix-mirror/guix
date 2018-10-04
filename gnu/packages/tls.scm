@@ -842,7 +842,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.7.6")
+    (version "2.13.0")
     (source
      (origin
        (method url-fetch)
@@ -852,13 +852,14 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "0fl2nrxvlgx9ja7yy3kd1zadpr98fxbvn3f6fl2mj87gryhkfqlk"))))
+         "1nh6xfyxs3mnnpgc6pancvdhv6ihz9lhsxdlg90gqa8n5r6lwfsr"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
        (list "-DUSE_SHARED_MBEDTLS_LIBRARY=ON")))
     (native-inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("python" ,python)))
     (synopsis "Small TLS library")
     (description
      "@code{mbed TLS}, formerly known as PolarSSL, makes it trivially easy
