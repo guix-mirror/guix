@@ -1,0 +1,222 @@
+From c184e95096881a13f29ebd7fc507fe305d3d8de5 Mon Sep 17 00:00:00 2001
+From: Jan Nieuwenhuizen <janneke@gnu.org>
+Date: Thu, 4 Oct 2018 22:03:31 +0200
+Subject: [PATCH] build.sh: Update for mes 0.18.
+
+---
+ build.sh   | 92 +++++++++++++++++++++++++++++++++++++-----------------
+ install.sh |  6 ++--
+ 2 files changed, 66 insertions(+), 32 deletions(-)
+
+diff --git a/build.sh b/build.sh
+index 335a7bb..19a0029 100755
+--- a/build.sh
++++ b/build.sh
+@@ -18,7 +18,8 @@
+ # along with mescc-tools.  If not, see <http://www.gnu.org/licenses/>.
+ 
+ set -eux
+-MES_SEED=${MES_SEED-../mescc-tools-seed/libs}
++MES_PREFIX=${MES_PREFIX-../mes}
++MES_SEED=${MES_SEED-../mes-seed}
+ MESCC_TOOLS_SEED=${MESCC_TOOLS_SEED-../mescc-tools-seed}
+ 
+ #########################################
+@@ -32,15 +33,23 @@ MESCC_TOOLS_SEED=${MESCC_TOOLS_SEED-../mescc-tools-seed}
+ # blood-elf
+ # Create proper debug segment
+ $MESCC_TOOLS_SEED/blood-elf\
++    -f $MESCC_TOOLS_SEED/file_print.M1\
++    -f $MESCC_TOOLS_SEED/match.M1\
++    -f $MESCC_TOOLS_SEED/numerate_number.M1\
++    -f $MESCC_TOOLS_SEED/string.M1\
+     -f $MESCC_TOOLS_SEED/blood-elf.M1\
+     -o blood-elf-blood-elf-footer.M1
+ 
+ # Build
+ # M1-macro phase
+ $MESCC_TOOLS_SEED/M1 --LittleEndian --Architecture 1\
+-    -f $MES_SEED/x86.M1\
+-    -f $MES_SEED/crt1.M1\
+-    -f $MES_SEED/libc+tcc-mes.M1\
++    -f $MES_PREFIX/lib/x86-mes/x86.M1\
++    -f $MES_SEED/x86-mes/crt1.S\
++    -f $MES_SEED/x86-mes/libc+tcc.S\
++    -f $MESCC_TOOLS_SEED/file_print.M1\
++    -f $MESCC_TOOLS_SEED/match.M1\
++    -f $MESCC_TOOLS_SEED/numerate_number.M1\
++    -f $MESCC_TOOLS_SEED/string.M1\
+     -f $MESCC_TOOLS_SEED/blood-elf.M1\
+     -f blood-elf-blood-elf-footer.M1\
+     -o blood-elf.hex2
+@@ -49,7 +58,7 @@ $MESCC_TOOLS_SEED/hex2\
+     --LittleEndian\
+     --Architecture 1\
+     --BaseAddress 0x1000000\
+-    -f $MES_SEED/elf32-header.hex2\
++    -f $MES_PREFIX/lib/x86-mes/elf32-header.hex2\
+     -f blood-elf.hex2\
+     --exec_enable\
+     -o bin/blood-elf
+@@ -65,9 +74,13 @@ $MESCC_TOOLS_SEED/hex2\
+ $MESCC_TOOLS_SEED/M1 \
+     --LittleEndian\
+     --Architecture 1\
+-    -f $MES_SEED/x86.M1\
+-    -f $MES_SEED/crt1.M1\
+-    -f $MES_SEED/libc+tcc-mes.M1\
++    -f $MES_PREFIX/lib/x86-mes/x86.M1\
++    -f $MES_SEED/x86-mes/crt1.S\
++    -f $MES_SEED/x86-mes/libc+tcc.S\
++    -f $MESCC_TOOLS_SEED/file_print.M1\
++    -f $MESCC_TOOLS_SEED/match.M1\
++    -f $MESCC_TOOLS_SEED/numerate_number.M1\
++    -f $MESCC_TOOLS_SEED/string.M1\
+     -f $MESCC_TOOLS_SEED/M1.M1\
+     -f M1-footer.M1\
+     -o M1.hex2
+@@ -76,7 +89,7 @@ $MESCC_TOOLS_SEED/hex2 \
+     --LittleEndian\
+     --Architecture 1\
+     --BaseAddress 0x1000000\
+-    -f $MES_SEED/elf32-header.hex2\
++    -f $MES_PREFIX/lib/x86-mes/elf32-header.hex2\
+     -f M1.hex2\
+     --exec_enable\
+     -o bin/M1
+@@ -92,9 +105,13 @@ $MESCC_TOOLS_SEED/hex2 \
+ ./bin/M1 \
+     --LittleEndian\
+     --Architecture 1\
+-    -f $MES_SEED/x86.M1\
+-    -f $MES_SEED/crt1.M1\
+-    -f $MES_SEED/libc+tcc-mes.M1\
++    -f $MES_PREFIX/lib/x86-mes/x86.M1\
++    -f $MES_SEED/x86-mes/crt1.S\
++    -f $MES_SEED/x86-mes/libc+tcc.S\
++    -f $MESCC_TOOLS_SEED/file_print.M1\
++    -f $MESCC_TOOLS_SEED/match.M1\
++    -f $MESCC_TOOLS_SEED/numerate_number.M1\
++    -f $MESCC_TOOLS_SEED/string.M1\
+     -f $MESCC_TOOLS_SEED/hex2.M1\
+     -f hex2-footer.M1\
+     -o hex2.hex2
+@@ -103,10 +120,10 @@ $MESCC_TOOLS_SEED/hex2 \
+       --LittleEndian\
+       --Architecture 1\
+       --BaseAddress 0x1000000\
+-      -f $MES_SEED/elf32-header.hex2\
++      -f $MES_PREFIX/lib/x86-mes/elf32-header.hex2\
+       -f hex2.hex2\
+       --exec_enable\
+-      -o bin/hex2
++      -o bin/hex2-0
+ 
+ #########################
+ # Phase-1 Self-host     #
+@@ -123,18 +140,22 @@ $MESCC_TOOLS_SEED/hex2 \
+ ./bin/M1 \
+     --LittleEndian\
+     --Architecture 1\
+-    -f $MES_SEED/x86.M1\
+-    -f $MES_SEED/crt1.M1\
+-    -f $MES_SEED/libc+tcc-mes.M1\
++    -f $MES_PREFIX/lib/x86-mes/x86.M1\
++    -f $MES_SEED/x86-mes/crt1.S\
++    -f $MES_SEED/x86-mes/libc+tcc.S\
++    -f $MESCC_TOOLS_SEED/file_print.M1\
++    -f $MESCC_TOOLS_SEED/match.M1\
++    -f $MESCC_TOOLS_SEED/numerate_number.M1\
++    -f $MESCC_TOOLS_SEED/string.M1\
+     -f $MESCC_TOOLS_SEED/blood-elf.M1\
+     -f blood-elf-blood-elf-footer.M1\
+     -o blood-elf.hex2
+ # Hex2-linker phase
+-./bin/hex2 \
++./bin/hex2-0 \
+     --LittleEndian\
+     --Architecture 1\
+     --BaseAddress 0x1000000\
+-    -f $MES_SEED/elf32-header.hex2\
++    -f $MES_PREFIX/lib/x86-mes/elf32-header.hex2\
+     -f blood-elf.hex2\
+     --exec_enable\
+     -o blood-elf
+@@ -150,18 +171,22 @@ $MESCC_TOOLS_SEED/hex2 \
+ ./bin/M1 \
+     --LittleEndian\
+     --Architecture 1\
+-    -f $MES_SEED/x86.M1\
+-    -f $MES_SEED/crt1.M1\
+-    -f $MES_SEED/libc+tcc-mes.M1\
++    -f $MES_PREFIX/lib/x86-mes/x86.M1\
++    -f $MES_SEED/x86-mes/crt1.S\
++    -f $MES_SEED/x86-mes/libc+tcc.S\
++    -f $MESCC_TOOLS_SEED/file_print.M1\
++    -f $MESCC_TOOLS_SEED/match.M1\
++    -f $MESCC_TOOLS_SEED/numerate_number.M1\
++    -f $MESCC_TOOLS_SEED/string.M1\
+     -f $MESCC_TOOLS_SEED/M1.M1\
+     -f M1-footer.M1\
+     -o M1.hex2
+ # Hex2-linker phase
+-./bin/hex2 \
++./bin/hex2-0 \
+     --LittleEndian\
+     --Architecture 1\
+     --BaseAddress 0x1000000\
+-    -f $MES_SEED/elf32-header.hex2\
++    -f $MES_PREFIX/lib/x86-mes/elf32-header.hex2\
+     -f M1.hex2\
+     --exec_enable\
+     -o bin/M1
+@@ -177,18 +202,27 @@ $MESCC_TOOLS_SEED/hex2 \
+ ./bin/M1 \
+     --LittleEndian\
+     --Architecture 1\
+-    -f $MES_SEED/x86.M1\
+-    -f $MES_SEED/crt1.M1\
+-    -f $MES_SEED/libc+tcc-mes.M1\
++    -f $MES_PREFIX/lib/x86-mes/x86.M1\
++    -f $MES_SEED/x86-mes/crt1.S\
++    -f $MES_SEED/x86-mes/libc+tcc.S\
++    -f $MESCC_TOOLS_SEED/file_print.M1\
++    -f $MESCC_TOOLS_SEED/match.M1\
++    -f $MESCC_TOOLS_SEED/numerate_number.M1\
++    -f $MESCC_TOOLS_SEED/string.M1\
+     -f $MESCC_TOOLS_SEED/hex2.M1\
+     -f hex2-footer.M1\
+     -o hex2.hex2
+ # Hex2-linker phase
+-./bin/hex2 \
++./bin/hex2-0 \
+       --LittleEndian\
+       --Architecture 1\
+       --BaseAddress 0x1000000\
+-      -f $MES_SEED/elf32-header.hex2\
++      -f $MES_PREFIX/lib/x86-mes/elf32-header.hex2\
+       -f hex2.hex2\
+       --exec_enable\
+       -o bin/hex2
++
++# TODO
++touch bin/exec_enable
++touch bin/get_machine
++touch bin/kaem
+diff --git a/install.sh b/install.sh
+index e4dccff..29e58d6 100644
+--- a/install.sh
++++ b/install.sh
+@@ -18,6 +18,6 @@
+ PREFIX=${PREFIX-usr}
+ 
+ mkdir -p "$PREFIX/bin"
+-cp blood-elf "$PREFIX/bin/blood-elf"
+-cp hex2 "$PREFIX/bin/hex2"
+-cp M1 "$PREFIX/bin/M1"
++cp bin/blood-elf "$PREFIX/bin/blood-elf"
++cp bin/hex2 "$PREFIX/bin/hex2"
++cp bin/M1 "$PREFIX/bin/M1"
+-- 
+2.18.0
+

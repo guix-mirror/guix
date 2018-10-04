@@ -107,77 +107,70 @@
       (propagated-inputs '()))))
 
 (define mescc-tools-boot
-  (let ((version "0.4")
-        (revision "1")
-        (commit "f02b8f4fda8d0c5c11a1d63a02b2bfdfab55abc5"))
-    (package-with-bootstrap-guile
-     (package
-       (inherit mescc-tools)
-       (name "mescc-tools-boot")
-       (version (string-append version "-" revision "." (string-take commit 7)))
-       (source (origin
-                 (method url-fetch)
-                 (uri (string-append "https://gitlab.com/janneke/mescc-tools"
-                                     "/-/archive/" commit
-                                     "/mescc-tools-" commit ".tar.gz"))
-                 (file-name (string-append name "-" version ".tar.gz"))
-                 (sha256
-                  (base32
-                   "14xw954ad4lnnyflgnwvzfhd3kqimniilzzyf4x23vljky2npkbf"))))
-       (inputs '())
-       (propagated-inputs '())
-       (native-inputs
-        `(("mescc-tools-seed" ,%mescc-tools-seed)
-          ("mes-source" ,(package-source mes-boot0))
+  (package-with-bootstrap-guile
+   (package
+     (inherit mescc-tools)
+     (name "mescc-tools-boot")
+     (source (origin
+               (inherit (package-source mescc-tools))
+               (patches (search-patches "mescc-tools-boot.patch"))))
+     (inputs '())
+     (propagated-inputs '())
+     (native-inputs
+      `(("mescc-tools-seed" ,%mescc-tools-seed)
+        ("mes-source" ,(package-source mes-boot0))
 
-          ("coreutils" ,%bootstrap-coreutils&co)
-          ("mes-seed" ,%mes-seed)))
-       (build-system gnu-build-system)
-       (arguments
-        `(#:implicit-inputs? #f
-          #:guile ,%bootstrap-guile
-          #:strip-binaries? #f ; binutil's strip b0rkes MesCC/M1/hex2 binaries
-          #:phases
-          (modify-phases %standard-phases
-            (add-after 'unpack 'unpack-seeds
-              (lambda* (#:key outputs #:allow-other-keys)
-                (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
-                       (mescc-tools-seed (assoc-ref %build-inputs "mescc-tools-seed"))
-                       (mes-seed (assoc-ref %build-inputs "mes-seed"))
-                       (mes-source (assoc-ref %build-inputs "mes-source"))
-                       (out (assoc-ref %outputs "out")))
-                  (with-directory-excursion ".."
-                    (and
-                     (mkdir-p "mescc-tools-seed")
-                     (invoke "tar" "--strip=1" "-C" "mescc-tools-seed"
-                             "-xvf" mescc-tools-seed)
-                     (mkdir-p "mes-source")
-                     (invoke "tar" "--strip=1" "-C" "mes-source"
-                             "-xvf" mes-source)
-                     (mkdir-p "mes-seed")
-                     (invoke "tar" "--strip=1" "-C" "mes-seed"
-                             "-xvf" mes-seed))))))
-            (replace 'configure
-              (lambda* (#:key outputs #:allow-other-keys)
-                (let ((coreutils (assoc-ref %build-inputs "coreutils"))
-                      (out (assoc-ref %outputs "out")))
-                  (setenv "PATH" (string-append coreutils "/bin"
-                                                ":" "../mescc-tools-seed"))
-                  (format (current-error-port) "PATH=~s\n" (getenv "PATH"))
-                  (setenv "PREFIX" out)
-                  (setenv "MES_PREFIX" "../mes-source")
-                  (setenv "MESCC_TOOLS_SEED" "../mescc-tools-seed")
-                  (setenv "MES_SEED" "../mes-seed")
-                  #t)))
-            (replace 'build
-              (lambda _
-               (invoke "sh" "build.sh")))
-            (replace 'check
-              (lambda _
-                (invoke "sh" "check.sh")))
-            (replace 'install
-              (lambda _
-                (invoke "sh" "install.sh"))))))))))
+        ("coreutils" ,%bootstrap-coreutils&co)
+        ("mes-seed" ,%mes-seed)))
+     (build-system gnu-build-system)
+     (arguments
+      `(#:implicit-inputs? #f
+        #:guile ,%bootstrap-guile
+        #:strip-binaries? #f   ; binutil's strip b0rkes MesCC/M1/hex2 binaries
+        #:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'unpack-seeds
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
+                     (mescc-tools-seed (assoc-ref %build-inputs "mescc-tools-seed"))
+                     (mes-seed (assoc-ref %build-inputs "mes-seed"))
+                     (mes-source (assoc-ref %build-inputs "mes-source"))
+                     (out (assoc-ref %outputs "out")))
+                (with-directory-excursion ".."
+                  (and
+                   (mkdir-p "mescc-tools-seed")
+                   (invoke "tar" "--strip=1" "-C" "mescc-tools-seed"
+                           "-xvf" mescc-tools-seed)
+                   (mkdir-p "mes-source")
+                   (invoke "tar" "--strip=1" "-C" "mes-source"
+                           "-xvf" mes-source)
+                   (mkdir-p "mes-seed")
+                   (invoke "tar" "--strip=1" "-C" "mes-seed"
+                           "-xvf" mes-seed))))))
+          (replace 'configure
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((coreutils (assoc-ref %build-inputs "coreutils"))
+                    (out (assoc-ref %outputs "out")))
+                (setenv "PATH" (string-append coreutils "/bin"
+                                              ":" "../mescc-tools-seed"))
+                (format (current-error-port) "PATH=~s\n" (getenv "PATH"))
+                (setenv "PREFIX" out)
+                (setenv "MES_PREFIX" "../mes-source")
+                (setenv "MESCC_TOOLS_SEED" "../mescc-tools-seed")
+                (setenv "MES_SEED" "../mes-seed")
+                #t)))
+          (replace 'build
+            (lambda _
+              (invoke "sh" "build.sh")))
+          (replace 'check
+            (lambda _
+              ;; bootstrap build.sh lacks exec_enable, get_machine, and
+              ;; kaem_machine
+              ;; (invoke "sh" "check.sh")
+              #t))
+          (replace 'install
+            (lambda _
+              (invoke "sh" "install.sh")))))))))
 
 (define nyacc-boot
   (let ((version "0.86.0")
