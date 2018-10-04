@@ -288,34 +288,25 @@ BAM files.")
 (define-public bcftools
   (package
     (name "bcftools")
-    (version "1.8")
+    (version "1.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/samtools/bcftools/releases/download/"
-                    version "/bcftools-" version ".tar.bz2"))
+              (uri (string-append "https://github.com/samtools/bcftools/"
+                                  "releases/download/"
+                                  version "/bcftools-" version ".tar.bz2"))
               (sha256
                (base32
-                "1vgw2mwngq20c530zim52zvgmw1lci8rzl33pvh44xqk3xlzvjsa"))
+                "1j3h638i8kgihzyrlnpj82xg1b23sijibys9hvwari3fy7kd0dkg"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Delete bundled htslib.
-                          (delete-file-recursively "htslib-1.8")
+                          (delete-file-recursively "htslib-1.9")
                           #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:test-target "test"
-       #:configure-flags (list "--with-htslib=system")
-       #:make-flags
-       (list
-        "USE_GPL=1"
-        "LIBS=-lgsl -lgslcblas"
-        (string-append "prefix=" (assoc-ref %outputs "out"))
-        (string-append "HTSDIR=" (assoc-ref %build-inputs "htslib") "/include")
-        (string-append "HTSLIB=" (assoc-ref %build-inputs "htslib") "/lib/libhts.so")
-        (string-append "BGZIP=" (assoc-ref %build-inputs "htslib") "/bin/bgzip")
-        (string-append "TABIX=" (assoc-ref %build-inputs "htslib") "/bin/tabix")
-        (string-append "PACKAGE_VERSION=" ,version))
+     `(#:configure-flags
+       (list "--enable-libgsl")
+       #:test-target "test"
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'patch-tests
