@@ -5195,17 +5195,20 @@ functions of Tidy.")
                                (string-append "-DENABLE_HTTP2=on")
                                (string-append "-DUSE_SYSTEM_NGHTTP2=on")
                                (string-append "-DENABLE_TOMAHAWK=on")
+                               (string-append "-DLOG_DIR=/var/log/hiawatha")
+                               (string-append "-DPID_DIR=/run")
                                (string-append "-DWEBROOT_DIR="
                                               (assoc-ref %outputs "out")
-                                              "/share/hiawatha/html"))
+                                              "/share/hiawatha/html")
+                               (string-append "-DWORK_DIR=/var/lib/hiawatha"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'remove-empty-dirs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
-               ;; The directories in "var" are empty, remove them.
-               (delete-file-recursively (string-append out "/var"))
-               #t)))
+         (add-after 'unpack 'install-no-empty-directories
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("install\\(DIRECTORY DESTINATION" match)
+                (string-append "#" match)))
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure 'hiawatha' finds 'mbedtls'.
