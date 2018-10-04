@@ -3512,7 +3512,7 @@ performance.")
 (define-public htslib
   (package
     (name "htslib")
-    (version "1.8")
+    (version "1.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3520,7 +3520,7 @@ performance.")
                     version "/htslib-" version ".tar.bz2"))
               (sha256
                (base32
-                "18bw0mn9pj5wgarnlaxmf1bb8pdqgl1zd6czirqcr62ajpn1xvy0"))))
+                "16ljv43sc3fxmv63w7b2ff8m1s7h89xhazwmbm1bicz8axq8fjz0"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)
