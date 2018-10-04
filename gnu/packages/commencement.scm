@@ -85,8 +85,8 @@
                               ; for speed-up?
 
 (define mes-boot0
-  (let ((version "0.17.1")
-        (revision "2")
+  (let ((version "0.18")
+        (revision "0")
         (commit #f))
     (package
       (inherit mes)
@@ -101,7 +101,7 @@
                                         "/mes-" commit ".tar.gz"))
                     (sha256
                      (base32
-                      "1dfnchrz3fb8x220bz28i6p3ql2xfahk9mzin3vk8lyw45s12r5g")))
+                      "1whbzahv16bwhavr2azqli0dcbk29p9rsqfbjl69la135z8vgdhx")))
                   (package-source mes)))
       (native-inputs '())
       (propagated-inputs '()))))
