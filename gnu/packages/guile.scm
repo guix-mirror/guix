@@ -318,8 +318,8 @@ without requiring the source code to be rewritten.")
 
 (define-public guile-next
   ;; This is the upcoming Guile 3.0, with JIT support.
-  (let ((commit "a74b4a45fab1a78e34954bce5f031e8a9765f827")
-        (revision "0"))
+  (let ((commit "6f3357b0df64c4be17e72079864c09a542f1c779")
+        (revision "1"))
     (package
       (inherit guile-2.2)
       (name "guile-next")
@@ -331,7 +331,7 @@ without requiring the source code to be rewritten.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0kq6mabv7j4gdlwmpz3iaddv98sc7awkl2358sg8j50sg10yw8nx"))
+                  "1c2xy5cflg0hws48914rz3z8mdmf8w3lblfic0kxnymcmdv9cbhv"))
                 (file-name (git-file-name name version))))
       (native-inputs
        `(("autoconf", autoconf)
