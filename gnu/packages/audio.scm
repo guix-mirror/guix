@@ -418,7 +418,7 @@ engineers, musicians, soundtrack editors and composers.")
        ;; and fails with various errors.  See
        ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
        #:tests? #f))
-    (home-page "http://audacity.sourceforge.net/")
+    (home-page "https://www.audacityteam.org/")
     (synopsis "Software for recording and editing sounds")
     (description
      "Audacity is a multi-track audio editor designed for recording, playing
