@@ -5173,7 +5173,7 @@ functions of Tidy.")
 (define-public hiawatha
   (package
     (name "hiawatha")
-    (version "10.7")
+    (version "10.8.3")
     (source
      (origin
        (method url-fetch)
@@ -5181,15 +5181,16 @@ functions of Tidy.")
                            "hiawatha-" version ".tar.gz"))
        (modules '((guix build utils)))
        (snippet '(begin
-                   ;; We use our packaged mbedtls, so delete the included copy.
-                   (delete-file-recursively "mbedtls")
+                   ;; We use packaged libraries, so delete the bundled copies.
+                   (for-each delete-file-recursively
+                             (list "nghttp2" "mbedtls"))
                    #t))
        (sha256
         (base32
-         "0x2zfc8kc6c7rl4gwymwmg13w1c60biv6c6c9fvzpnl59bc9jgin"))))
+         "0w7047pwijhsbvvv1qjynp7gvn0nil56w82f7ax0gabrg7ddzk6s"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; No tests included
+     `(#:tests? #f                      ; no tests included
        #:configure-flags (list (string-append "-DUSE_SYSTEM_MBEDTLS=on")
                                (string-append "-DENABLE_TOMAHAWK=on")
                                (string-append "-DWEBROOT_DIR="
@@ -5212,8 +5213,8 @@ functions of Tidy.")
                (wrap-program (string-append sbin "/hiawatha")
                  `("PATH" ":" prefix (,mbed)))))))))
     (inputs
-     ;; TODO: package "hiawatha-monitor", an optional dependency of "hiawatha"
-     `(("mbedtls-apache" ,mbedtls-apache) ;Hiawatha includes this version.
+     ;; TODO: package "hiawatha-monitor", an optional dependency of "hiawatha".
+     `(("mbedtls-apache" ,mbedtls-for-hiawatha)
        ("zlib" ,zlib)
        ("libxslt" ,libxslt)
        ("libxml2" ,libxml2)))

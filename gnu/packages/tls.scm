@@ -869,6 +869,24 @@ coding footprint.")
     (home-page "https://tls.mbed.org")
     (license license:asl2.0)))
 
+;; The Hiawatha Web server requires some specific features to be enabled.
+(define-public mbedtls-for-hiawatha
+  (hidden-package
+   (package
+     (inherit mbedtls-apache)
+     (arguments
+      (substitute-keyword-arguments
+          `(#:phases
+            (modify-phases %standard-phases
+              (add-after 'configure 'configure-extra-features
+                (lambda _
+                  (for-each (lambda (feature)
+                              (invoke "scripts/config.pl" "set" feature))
+                            (list "MBEDTLS_THREADING_C"
+                                  "MBEDTLS_THREADING_PTHREAD"))
+                  #t)))
+            ,@(package-arguments mbedtls-apache)))))))
+
 (define-public ghc-tls
   (package
     (name "ghc-tls")
