@@ -5073,9 +5073,9 @@ viewer.")
         (base32 "1m33xsfwz0s8qi45lylagfllqg7fphf4dr0780rsvw75av9wk06h"))))
     (arguments
      `(#:tests? #f ;no "check" target
+       #:make-flags
+       (list "LIBCURSES=-lncurses")
        ,@(substitute-keyword-arguments (package-arguments samtools)
-           ((#:make-flags flags)
-            `(cons "LIBCURSES=-lncurses" ,flags))
            ((#:phases phases)
             `(modify-phases ,phases
                (replace 'install
