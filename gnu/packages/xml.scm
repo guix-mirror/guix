@@ -770,17 +770,17 @@ server, collect the answer, and finally decoding the XML to Perl.")
 (define-public perl-xml-feed
   (package
     (name "perl-xml-feed")
-    (version "0.53")
+    (version "0.54")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/D/DA/DAVECROSS/"
                                   "XML-Feed-" version ".tar.gz"))
               (sha256
                (base32
-                "07b165g6wk8kqwpl49r3n0kag6p2nrkyp3ch0h8qyxb6nrnkkq7c"))))
+                "0ydyi7wdhv8325h7j27vrlwiqxll56sn8zy5nbzhpma3nrf61bci"))))
     (build-system perl-build-system)
     (arguments
-     `(#:tests? #f)) ; Tests require internet connection
+     `(#:tests? #f))                    ; tests require internet connection
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-uri" ,perl-uri)
