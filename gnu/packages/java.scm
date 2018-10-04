@@ -7664,6 +7664,55 @@ configuration.")
     (description "This package is the jaxb annotations module for jackson.")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
 
+(define-public java-fasterxml-jackson-modules-base-mrbean
+  (package
+    (name "java-fasterxml-jackson-modules-base-mrbean")
+    (version "2.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-modules-base/archive/"
+                                  "jackson-modules-base-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1wws95xi8sppp6b0k2vvjdjyynl20r1a4dwrhai08lzlria6blp5"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-modules-base-mrbean.jar"
+       #:source-dir "mrbean/src/main/java"
+       #:test-dir "mrbean/src/test"
+       #:test-exclude
+       ;; Base class for tests
+       (list "**/BaseTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out (string-append "mrbean/src/main/java/com/fasterxml/"
+                                        "jackson/module/mrbean/PackageVersion.java"))
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.module.mrbean")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.module.mrbean")
+                 (("@projectartifactid@") "jackson-module-mrbean")))
+             #t)))))
+    (inputs
+     `(("java-asm" ,java-asm)
+       ("java-fasterxml-jackson-annotations"
+        ,java-fasterxml-jackson-annotations)
+       ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)
+       ("java-fasterxml-jackson-databind" ,java-fasterxml-jackson-databind)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/FasterXML/jackson-modules-base")
+    (synopsis "POJO type materialization for Java")
+    (description "This package implements POJO type materialization.
+Databinders can construct implementation classes for Java interfaces as part
+of deserialization.")
+    (license license:asl2.0)))
+
 (define-public java-snakeyaml
   (package
     (name "java-snakeyaml")
