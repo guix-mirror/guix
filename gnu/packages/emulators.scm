@@ -1055,7 +1055,7 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.4")
+    (version "1.7.5")
     (source
      (origin
        (method git-fetch)
@@ -1064,7 +1064,7 @@ emulation community.  It provides highly accurate emulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1gagdwydj6kl3gzi9z1rjgrbjvi325f8159fdaryzf5gjj8avp8m"))))
+        (base32 "1jfpgl34jjxn3dvxd1kd564swkw7v98hnn562v998b7vllz3dxdm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
