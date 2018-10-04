@@ -748,7 +748,8 @@ utilities for data translation and processing.")
     (synopsis "Spatial database extender for PostgreSQL")
     (description "PostGIS is a spatial database extender for PostgreSQL
 object-relational database.  It adds support for geographic objects allowing
-location queries to be run in SQL.")
+location queries to be run in SQL.  This package provides a PostgreSQL
+extension.")
     (license (list
                ;; General license
                license:gpl2+
