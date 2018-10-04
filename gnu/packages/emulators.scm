@@ -1058,12 +1058,13 @@ emulation community.  It provides highly accurate emulation.")
     (version "1.7.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/libretro/RetroArch/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libretro/RetroArch.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0h6y2hpjg4b470jvn9ghwp0k3a527sbb6xhia17frlm9w9v5028w"))))
+        (base32 "1gagdwydj6kl3gzi9z1rjgrbjvi325f8159fdaryzf5gjj8avp8m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
