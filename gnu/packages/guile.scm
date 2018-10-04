@@ -355,7 +355,15 @@ without requiring the source code to be rewritten.")
                (lambda _
                  ;; Remove this test that's bound to fail.
                  (delete-file "test-suite/tests/version.test")
-                 #t)))))))))
+                 #t))))))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "GUILE_LOAD_PATH")
+              (files '("share/guile/site/3.0")))
+             (search-path-specification
+              (variable "GUILE_LOAD_COMPILED_PATH")
+              (files '("lib/guile/3.0/site-ccache"
+                       "share/guile/site/3.0"))))))))
 
 (define (make-guile-readline guile)
   (package
