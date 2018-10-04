@@ -291,12 +291,14 @@ engineers, musicians, soundtrack editors and composers.")
     (version "2.2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/audacity/audacity/archive"
-                           "/Audacity-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/audacity/audacity.git")
+             (commit (string-append "Audacity-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "18q7i77ynihx7xp45lz2lv0k0wrh6736pcrivlpwrxjgbvyqx7km"))
+         "10maxmjxbmjybj7n4m7a9bbm7g8xxw8f8vbsf7c9ih5j2gr15ihs"))
        (patches (search-patches "audacity-build-with-system-portaudio.patch"))
        (modules '((guix build utils)))
        (snippet
