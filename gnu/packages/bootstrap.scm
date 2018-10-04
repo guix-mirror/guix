@@ -633,7 +633,7 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
         "0vdb4kc05a1kdpmsi8dg425d5f33kp28sgl2fi3s320pc0v4dv13")))))
 
 (define %tinycc-seed
-  (let ((commit "f6e7682891ab72ba66e9f5b9401eaed4e4733cfd"))
+  (let ((commit "843d47ca682617f21333b50c67851797b8c3fd04"))
     (origin
       (method url-fetch)
       (uri (string-append "https://gitlab.com/janneke/tinycc-seed"
@@ -641,7 +641,7 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                           "/tinycc-seed-" commit ".tar.gz"))
       (sha256
        (base32
-        "0hzjd0iyghj4zphwn3ppyclq7k9qqg3xam9fj9hsrr2m0ibvr387")))))
+        "0599wwv30js03l1rpmvzfclq3jadzvq04pi29j45nf6fyfg5hhqb")))))
 
 (define %srfi-43
   (origin
