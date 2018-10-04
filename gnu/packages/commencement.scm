@@ -304,8 +304,8 @@
   ;; ported to 0.9.27, alas the resulting tcc is buggy.  Once MesCC is more
   ;; mature, this package should use the 0.9.27 sources (or later).
   (let ((version "0.9.26")
-        (revision "3")
-        (commit "812e9343e4520ec90934fd7f47134416ad0dce07"))
+        (revision "4")
+        (commit "46ee3f18477575b189ac224eac853e96afd571e1"))
     (package-with-bootstrap-guile
      (package
        (inherit tcc)
@@ -318,7 +318,7 @@
                                      "/tinycc-" commit ".tar.gz"))
                  (sha256
                   (base32
-                   "0c68hmi6ryb3bmbmdrr5knhz61li3mlhkmxvji6khgkb199znlqc"))))
+                   "0kq2si81piszpdcnp78w1lp5jd291srbx1f71fir08ybidiriw35"))))
        (build-system gnu-build-system)
        (supported-systems '("i686-linux" "x86_64-linux"))
        (inputs '())
