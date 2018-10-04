@@ -224,6 +224,7 @@ lines.")
     (propagated-inputs
      `(("python-decorator" ,python-decorator)
        ("python-nbformat" ,python-nbformat)
+       ("python-pandas" ,python-pandas)
        ("python-pytz" ,python-pytz)
        ("python-requests" ,python-requests)
        ("python-six" ,python-six)))
