@@ -622,7 +622,7 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
         "1lj7df73vxanmffmiwkhcn83r7yd9n8568nkki06bqq5zg526nyz")))))
 
 (define %mes-seed
-  (let ((commit "bed429ae315c2c57e9dd428a4dcf3f0d332ef064"))
+  (let ((commit "057fd36735b5605fe582d6b3625f793a62922206"))
     (origin
       (method url-fetch)
       (uri (string-append "https://gitlab.com/janneke/mes-seed"
@@ -630,7 +630,7 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                           "/mes-seed-" commit ".tar.gz"))
       (sha256
        (base32
-        "0k7iv9djcky18r8lm0zq96xj5nz8v5kg1clf7a2y8r47n6wzww8s")))))
+        "0vdb4kc05a1kdpmsi8dg425d5f33kp28sgl2fi3s320pc0v4dv13")))))
 
 (define %tinycc-seed
   (let ((commit "f6e7682891ab72ba66e9f5b9401eaed4e4733cfd"))
