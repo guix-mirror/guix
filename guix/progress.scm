@@ -304,12 +304,12 @@ progress reports, write \"build trace\" lines to be processed elsewhere."
                      log-port)))
    (report (rate-limited report-progress %progress-interval))
    (stop (lambda ()
-           (report-progress size)
-           (display (format #f "@ download-succeeded ~a ~a ~a~%"
-                            file url
-                            (or (and=> (stat file #f) stat:size)
-                                size))
-                    log-port)))))
+           (let ((size (or (and=> (stat file #f) stat:size)
+                           size)))
+             (report-progress size)
+             (display (format #f "@ download-succeeded ~a ~a ~a~%"
+                              file url size)
+                      log-port))))))
 
 ;; TODO: replace '(@ (guix build utils) dump-port))'.
 (define* (dump-port* in out
