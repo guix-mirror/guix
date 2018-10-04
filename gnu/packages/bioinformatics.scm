@@ -4997,7 +4997,7 @@ to the user's query of interest.")
 (define-public samtools
   (package
     (name "samtools")
-    (version "1.8")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
@@ -5006,15 +5006,19 @@ to the user's query of interest.")
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
-         "05myg7bs90i68qbqab9cdg9rqj2xh39azibrx82ipzc5kcfvqhn9"))))
+         "10ilqbmm7ri8z431sn90lvbjwizd0hhkf9rcqw8j823hf26nhgq8"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Delete bundled htslib.
+                   (delete-file-recursively "htslib-1.9")
+                   #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
                   (ice-9 regex)
                   (guix build gnu-build-system)
                   (guix build utils))
-       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:configure-flags (list "--with-ncurses" "--with-htslib=system")
+       #:configure-flags (list "--with-ncurses")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-tests
