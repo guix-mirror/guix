@@ -2006,18 +2006,25 @@ with Python.")
 (define-public deeptools
   (package
     (name "deeptools")
-    (version "2.5.1")
+    (version "3.1.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/deeptools/deepTools/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/deeptools/deepTools.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q8i12l2gvk4n2s8lhyzwhh9g4qbc8lrk5l7maz00yvd5g6z5540"))))
+                "06fdpp6cg3xiwryxjhixvfysl4z0ps1crjgia587qa9ikqpsa7fd"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This phase fails, but it's not needed.
+         (delete 'reset-gzip-timestamps))))
     (inputs
-     `(("python-scipy" ,python-scipy)
+     `(("python-plotly" ,python-plotly)
+       ("python-scipy" ,python-scipy)
        ("python-numpy" ,python-numpy)
        ("python-numpydoc" ,python-numpydoc)
        ("python-matplotlib" ,python-matplotlib)
