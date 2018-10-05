@@ -289,6 +289,8 @@ tasks is performed.  Write PREFIX at the beginning of the line."
                                   #:optional (log-port (current-output-port)))
   "Like 'progress-reporter/file', but instead of returning human-readable
 progress reports, write \"build trace\" lines to be processed elsewhere."
+  (define total 0)                                ;bytes transferred
+
   (define (report-progress transferred)
     (define message
       (format #f "@ download-progress ~a ~a ~a ~a~%"
@@ -299,13 +301,16 @@ progress reports, write \"build trace\" lines to be processed elsewhere."
 
   (progress-reporter
    (start (lambda ()
+            (set! total 0)
             (display (format #f "@ download-started ~a ~a ~a~%"
                              file url (or size "-"))
                      log-port)))
-   (report (rate-limited report-progress %progress-interval))
+   (report (let ((report (rate-limited report-progress %progress-interval)))
+             (lambda (transferred)
+               (set! total transferred)
+               (report transferred))))
    (stop (lambda ()
-           (let ((size (or (and=> (stat file #f) stat:size)
-                           size)))
+           (let ((size (or size total)))
              (report-progress size)
              (display (format #f "@ download-succeeded ~a ~a ~a~%"
                               file url size)
