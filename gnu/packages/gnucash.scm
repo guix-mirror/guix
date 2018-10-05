@@ -175,17 +175,15 @@ financial calculations or scheduled transactions.")
 (define gnucash-docs
   (package
     (name "gnucash-docs")
-    ;;(version (package-version gnucash))
-    ;; The current version of gnucash-docs is not available at the moment.
-    (version "3.2")
+    (version (package-version gnucash))
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/gnucash/gnucash-docs/"
+       (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
                            version "/gnucash-docs-" version ".tar.gz"))
        (sha256
         (base32
-         "1763m6d8gkhllwb9rnr9ifch39brmh7kr2m6icqfbc53a91m56j6"))))
+         "10v4hw4lh888r8yv473pqrvzfjg8dwamk62sghs93rn88ndwm16c"))))
     (build-system gnu-build-system)
     ;; These are native-inputs because they are only required for building the
     ;; documentation.
