@@ -3068,3 +3068,63 @@ package.")
        "The @command{cl-sqlite} package is an interface to the SQLite embedded
 relational database engine.")
       (license license:public-domain))))
+
+(define-public sbcl-parenscript
+  (let ((commit "061d8e286c81c3f45c84fb2b11ee7d83f590a8f8"))
+    (package
+      (name "sbcl-parenscript")
+      (version (git-version "2.6" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/parenscript/parenscript")
+               (commit commit)))
+         (file-name (git-file-name "parenscript" version))
+         (sha256
+          (base32
+           "1kbhgsjbikc73m5cwdp4d4fdafyqcr1b7b630qjrziql0nh6mi3k"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("anaphora" ,sbcl-anaphora)
+         ("named-readtables" ,sbcl-named-readtables)))
+      (home-page "https://common-lisp.net/project/parenscript/")
+      (synopsis "Translator from a subset of Common Lisp to JavaScript")
+      (description
+       "Parenscript is a translator from an extended subset of Common Lisp to
+JavaScript.  Parenscript code can run almost identically on both the
+browser (as JavaScript) and server (as Common Lisp).
+
+Parenscript code is treated the same way as Common Lisp code, making the full
+power of Lisp macros available for JavaScript.  This provides a web
+development environment that is unmatched in its ability to reduce code
+duplication and provide advanced meta-programming facilities to web
+developers.
+
+At the same time, Parenscript is different from almost all other \"language
+X\" to JavaScript translators in that it imposes almost no overhead:
+
+@itemize
+@item No run-time dependencies: Any piece of Parenscript code is runnable
+as-is.  There are no JavaScript files to include.
+@item Native types: Parenscript works entirely with native JavaScript data
+types.  There are no new types introduced, and object prototypes are not
+touched.
+@item Native calling convention: Any JavaScript code can be called without the
+need for bindings.  Likewise, Parenscript can be used to make efficient,
+self-contained JavaScript libraries.
+@item Readable code: Parenscript generates concise, formatted, idiomatic
+JavaScript code.  Identifier names are preserved.  This enables seamless
+debugging in tools like Firebug.
+@item Efficiency: Parenscript introduces minimal overhead for advanced Common
+Lisp features.  The generated code is almost as fast as hand-written
+JavaScript.
+@end itemize\n")
+      (license license:bsd-3))))
+
+(define-public cl-parenscript
+  (sbcl-package->cl-source-package sbcl-parenscript))
+
+(define-public ecl-parenscript
+  (sbcl-package->ecl-package sbcl-parenscript))
