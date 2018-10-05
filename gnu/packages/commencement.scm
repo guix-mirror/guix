@@ -2195,7 +2195,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   `(("libc" ,glibc-final)
     ("libc:static" ,glibc-final "static")
     ("gcc" ,(gcc-boot0-wrapped))
-    ,@(fold alist-delete (%boot1-inputs) '("libc" "gcc"))))
+    ,@(fold alist-delete (%boot1-inputs) '("libc" "gcc" "linux-libre-headers"))))
 
 (define binutils-final
   (package-with-bootstrap-guile
