@@ -1121,7 +1121,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.29.0")
+    (version "0.29.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1129,7 +1129,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "06bk8836brzik1qmq8kycwg5n35r438sd2176k6msjg5rrwghakp"))
+                "08x63hlpj6s8xixmdbx6raff5p5mih7cnk0bcql9f3wrs5hx9ygr"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -1271,7 +1271,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.09.08")
+    (version "2018.09.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1279,7 +1279,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0vwc4faqdddrb3nm4fzmkr60n5rc2zwyy8jwrrjad60kcp8isf05"))))
+                "0mlsdmddmyy3xaqy366k48xds14g17l81al3kglndjkbrrji63sb"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion

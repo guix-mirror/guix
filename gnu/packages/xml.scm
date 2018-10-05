@@ -786,17 +786,17 @@ server, collect the answer, and finally decoding the XML to Perl.")
 (define-public perl-xml-feed
   (package
     (name "perl-xml-feed")
-    (version "0.53")
+    (version "0.54")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/D/DA/DAVECROSS/"
                                   "XML-Feed-" version ".tar.gz"))
               (sha256
                (base32
-                "07b165g6wk8kqwpl49r3n0kag6p2nrkyp3ch0h8qyxb6nrnkkq7c"))))
+                "0ydyi7wdhv8325h7j27vrlwiqxll56sn8zy5nbzhpma3nrf61bci"))))
     (build-system perl-build-system)
     (arguments
-     `(#:tests? #f)) ; Tests require internet connection
+     `(#:tests? #f))                    ; tests require internet connection
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-uri" ,perl-uri)
@@ -1136,7 +1136,7 @@ XSLT and EXSLT.")
 (define-public html-xml-utils
  (package
    (name "html-xml-utils")
-   (version "7.6")
+   (version "7.7")
    (source
     (origin
       (method url-fetch)
@@ -1145,7 +1145,7 @@ XSLT and EXSLT.")
             version ".tar.gz"))
       (sha256
        (base32
-        "0l97ps089byy62838wf2jwvvc465iw29z9r5kwmwcq7f3bn11y3m"))))
+        "1vwqp5q276j8di9zql3kygf31z2frp2c59yjqlrvvwcvccvkcdwr"))))
    (build-system gnu-build-system)
    (home-page "https://www.w3.org/Tools/HTML-XML-utils/")
    (synopsis "Command line utilities to manipulate HTML and XML files")
@@ -2094,7 +2094,6 @@ derivations of regular expressions.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-parsec" ,ghc-parsec)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-hxt-charproperties" ,ghc-hxt-charproperties)
        ("ghc-hxt-unicode" ,ghc-hxt-unicode)
        ("ghc-hxt-regex-xmlschema" ,ghc-hxt-regex-xmlschema)

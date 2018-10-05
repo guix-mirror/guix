@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,7 @@
 (define-public mtools
   (package
     (name "mtools")
-    (version "4.0.18")
+    (version "4.0.19")
     (source
      (origin
       (method url-fetch)
@@ -35,7 +36,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1hxciksv7av5ilnkvwbidyxxr1gzn24lr0mz9z8drkml7780im1h"))))
+        "003qnj4rs22v2sih3is55scvav8xq9p1dp5b7gnyl67a60ky516r"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/mtools/")
     (synopsis "Access MS-DOS disks without mounting")

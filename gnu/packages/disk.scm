@@ -631,14 +631,15 @@ passphrases.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
+         (add-after 'unpack 'patch-FHS-file-names
            (lambda _
              (substitute* "autogen.sh"
                (("/bin/sh") (which "sh")))
              (substitute* "git-version-gen"
                (("/bin/sh") (which "sh")))
              (substitute* "git-version"
-               (("/bin/bash") (which "bash"))))))
+               (("/bin/bash") (which "bash")))
+             #t)))
        #:make-flags
        (let ((out (assoc-ref %outputs "out")))
          (list (string-append "BASH_COMPLETION_DIR=" out

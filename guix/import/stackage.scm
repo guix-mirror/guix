@@ -43,15 +43,12 @@
 
 (define (lts-info-ghc-version lts-info)
   "Retruns the version of the GHC compiler contained in LTS-INFO."
-  (match lts-info
-    ((("snapshot" ("ghc" . version) _ _) _)  version)
-    (_ #f)))
+  (and=> (assoc-ref lts-info "snapshot")
+         (cut assoc-ref <> "ghc")))
 
 (define (lts-info-packages lts-info)
-  "Returns the alist of packages contained in LTS-INFO."
-  (match lts-info
-    ((("packages" pkg ...) . _) pkg)
-    (_ '())))
+  "Retruns the alist of packages contained in LTS-INFO."
+  (or (assoc-ref lts-info "packages") '()))
 
 (define (leave-with-message fmt . args)
   (raise (condition (&message (message (apply format #f fmt args))))))

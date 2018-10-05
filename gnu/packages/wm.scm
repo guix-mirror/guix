@@ -455,7 +455,7 @@ desktop environment.")
 (define-public xmonad
   (package
     (name "xmonad")
-    (version "0.14")
+    (version "0.14.2")
     (synopsis "Tiling window manager")
     (source (origin
               (method url-fetch)
@@ -463,11 +463,10 @@ desktop environment.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lq3k0ap7jxrrswpd954mqa6h8diccbif5srcgbmr39y6y8x0mm4"))))
+                "0gqyivpw8z1x73p1l1fpyq1wc013a1c07r6xn1a82liijs91b949"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
-       ("ghc-mtl"                   ,ghc-mtl)
        ("ghc-quickcheck"            ,ghc-quickcheck)
        ("ghc-semigroups"            ,ghc-semigroups)
        ("ghc-setlocale"             ,ghc-setlocale)
@@ -505,14 +504,14 @@ tiled on several screens.")
 (define-public xmobar
   (package
     (name "xmobar")
-    (version "0.27")
+    (version "0.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmobar/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0agx490q6sbmv3vfq33ys8dsrgwizj3bmha4i1pkxz5wp5q8cx3l"))))
+                "1xh87asg8y35srvp7d3gyyy4bkxsw122liihxgzgm8pqv2z3h4zd"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
@@ -560,11 +559,11 @@ Haskell, no knowledge of the language is required to install and use it.")
          "1660w3xhbfrlq8b8s1rviq2mcn1vyqpypli4023gqxwry52brk6y"))))
     (build-system haskell-build-system)
     (propagated-inputs
-     `(("ghc-mtl" ,ghc-mtl)
-       ("ghc-old-time" ,ghc-old-time)
+     `(("ghc-old-time" ,ghc-old-time)
        ("ghc-random" ,ghc-random)
        ("ghc-utf8-string" ,ghc-utf8-string)
        ("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-semigroups", ghc-semigroups)
        ("ghc-x11" ,ghc-x11)
        ("ghc-x11-xft" ,ghc-x11-xft)
        ("xmonad" ,xmonad)))

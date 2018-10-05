@@ -458,7 +458,7 @@ on stdout instead of using a socket as the Emacsclient does.")
              (method url-fetch)
              (uri (string-append
                    "https://github.com/magit/magit/releases/download/"
-                   version "/" name "-" version ".tar.gz"))
+                   version "/magit-" version ".tar.gz"))
              (sha256
               (base32
                "1ygaah3dd3nxpyd17297xgvdcgr7pgzzwlmpnmchki0kiwgg3sbc"))))
@@ -782,9 +782,6 @@ different tools.  It highlights errors and warnings inline in the buffer, and
 provides an optional IDE-like error list.")
     (license license:gpl3+)))                     ;+GFDLv1.3+ for the manual
 
-(define-public flycheck
-  (deprecated-package "flycheck" emacs-flycheck))
-
 
 ;;;
 ;;; Web browsing.
@@ -1066,9 +1063,6 @@ light user interface.")
     (home-page "https://www.gnu.org/software/emms/")
     (license license:gpl3+)))
 
-(define-public emms
-  (deprecated-package "emacs-emms" emacs-emms))
-
 (define-public emacs-emms-player-mpv
   ;; A new mpv backend is included in Emms from 5.0.
   (deprecated-package "emacs-emms-player-mpv" emacs-emms))
@@ -1088,7 +1082,7 @@ light user interface.")
          "0ifszi930pnaxk1x8pcydmvnp06868gc7nfx14q17zbajbx735k6"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emms" ,emms)))
+     `(("emms" ,emacs-emms)))
     (home-page "https://github.com/momomo5717/emms-mode-line-cycle")
     (synopsis "Display the EMMS mode line as a ticker")
     (description
@@ -2722,9 +2716,6 @@ view the build status of those servers' build jobs, and possibly to trigger
 build jobs.")
     (license license:gpl3+)))
 
-(define-public butler
-  (deprecated-package "emacs-butler" emacs-butler))
-
 (define-public emacs-company
   (package
     (name "emacs-company")
@@ -2873,9 +2864,6 @@ for quotation marks, dashes, and ellipses.  For example, typing @kbd{\"}
 automatically inserts a Unicode opening or closing quotation mark, depending
 on context.")
     (license license:gpl3+)))
-
-(define-public typo
-  (deprecated-package "emacs-typo" emacs-typo))
 
 (define-public emacs-scheme-complete
   (let ((commit "9b5cf224bf2a5994bc6d5b152ff487517f1a9bb5"))
@@ -6994,8 +6982,8 @@ Emacs.")
                (substitute* "bin/ert-runner"
                  (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
                   (string-append "ERT_RUNNER=\"" out
-                                 "/share/emacs/site-lisp/guix.d/"
-                                 ,name "-" ,version)))
+                                 "/share/emacs/site-lisp/guix.d/ert-runner-"
+                                 ,version)))
                (install-file "bin/ert-runner" (string-append out "/bin"))
                (wrap-program (string-append out "/bin/ert-runner")
                  (list "EMACSLOADPATH" ":" 'prefix
@@ -8019,7 +8007,7 @@ supports multiple backends such as @code{vlc}, @code{mpg123},
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/Groovy-Emacs-Modes/" name
+                    "https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes"
                     "/archive/" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
@@ -8060,9 +8048,6 @@ navigation with the grails mode.")
 @code{org-tree-slide-mode} to enter the slideshow mode, and then @kbd{C->} and
 @kbd{C-<} to jump to the next and previous slide.")
       (license license:gpl3+))))
-
-(define-public org-tree-slide
-  (deprecated-package "emacs-org-tree-slide" emacs-org-tree-slide))
 
 (define-public emacs-scratch-el
   (let ((commit "2cdf2b841ce7a0987093f65b0cc431947549f897")
@@ -10425,8 +10410,8 @@ perform regression test for packages that provide font-lock rules.")
       (license license:gpl3+))))
 
 (define-public emacs-racket-mode
-  (let ((commit "92c33487f6c707880ac3f6169e7ea65ddffd1463")
-        (revision "1"))
+  (let ((commit "b977873e6128f8399432dcd60cc39f6a6f803d9c")
+        (revision "2"))
     (package
       (name "emacs-racket-mode")
       (version (string-append "0.0.2" "-" revision "."
@@ -10440,7 +10425,7 @@ perform regression test for packages that provide font-lock rules.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "19q6ym10gj2xdzzcgh3wdbq1xv8cv7nlrhv2b0bjvvdjzhiki472"))))
+           "0vp4bbbplqvmnhjpl6ajrlydmrhqzil56cfbs18m5c5fddx0zlh7"))))
       (build-system emacs-build-system)
       (arguments
        `(#:include '("\\.el$" "\\.rkt$")))
@@ -12277,3 +12262,96 @@ execute its commands and resize images.")
       (description "Synosaurus is a thesaurus fontend for Emacs with pluggable
 backends, including the @command{wordnet} offline backend.")
       (license license:gpl3+))))
+
+(define-public emacs-all-the-icons
+  (package
+    (name "emacs-all-the-icons")
+    (version "3.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/domtronn/all-the-icons.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1sdl33117lccznj38021lwcdnpi9nxmym295q6y460y4dm4lx0jn"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:include '("\\.el$" "^data/" "^fonts/")
+       ;; Compiling "test/" fails with "Symbol’s value as variable is void:
+       ;; all-the-icons--root-code".  Ignoring tests.
+       #:exclude '("^test/")
+       #:tests? #f))
+    (propagated-inputs
+     `(("f" ,emacs-f)
+       ("memoize" ,emacs-memoize)))
+    (home-page "https://github.com/domtronn/all-the-icons.el")
+    (synopsis "Collect icon fonts and propertize them within Emacs")
+    (description "All-the-icons is a utility package to collect various icon
+fonts and propertize them within Emacs.  Icon fonts allow you to propertize
+and format icons the same way you would normal text.  This enables things such
+as better scaling of and anti aliasing of the icons.")
+    ;; Package is released under Expat license.  Elisp files are licensed
+    ;; under GPL3+.  Fonts come with various licenses: Expat for
+    ;; "all-the-icons.ttf" and "file-icons.ttf", Apache License 2.0 for
+    ;; "material-design-icons.ttf", and SIL OFL 1.1 for "fontawesome.ttf",
+    ;; "ocitcons.ttf" and "weathericons.ttf".
+    (license
+     (list license:expat license:gpl3+ license:silofl1.1 license:asl2.0))))
+
+(define-public emacs-powerline
+  (package
+    (name "emacs-powerline")
+    (version "2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/milkypostman/powerline.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1hp3xp18943n0rlggz55150020ivw8gvi1vyxkr4z8xhpwq4gaar"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/milkypostman/powerline/")
+    (synopsis "Mode-line plugin for Emacs")
+    (description "Powerline is a utility plugin which allows you to create
+a better-looking, more functional Emacs mode-line.  A collection of predefined
+themes comes with the package.")
+    (license license:gpl3+)))
+
+(define-public emacs-spaceline
+  (package
+    (name "emacs-spaceline")
+    (version "2.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/TheBB/spaceline.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1q8r95zfrh0vxna5ml2pq9b9f66clfqcl4d2qy2aizkvzyxg6skl"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("dash" ,emacs-dash)
+       ("powerline" ,emacs-powerline)
+       ("s" ,emacs-s)))
+    (home-page "https://github.com/TheBB/spaceline")
+    (synopsis "Powerline theme from Spacemacs")
+    (description "Spaceline provides Spacemacs' mode-line theme.
+This package provides features for three kinds of users.
+
+@itemize
+@item You just want to use the Spacemacs mode-line theme and forget about it.
+@item You want to use something similar to the Spacemacs mode-line theme, but
+with a handful of easy tweaks.
+@item You want an easy-to-use library for building your own mode-line from
+scratch, and you think the Spacemacs theme looks good.
+@end itemize")
+    (license license:gpl3+)))

@@ -36,6 +36,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cargo)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
@@ -62,6 +63,7 @@
   #:use-module (gnu packages rust)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages readline))
 
@@ -495,12 +497,28 @@ security standards.")
         "0lqx7g79x15941rhjr3qsfwsny6vzc7d7abdmvjy6jjbqkqlc1zl"))
       (patches
        (list
-        (search-patch "icecat-avoid-bundled-libraries.patch")
-        ;; FIXME (search-patch "icecat-use-system-harfbuzz.patch")
-        ;; FIXME (search-patch "icecat-use-system-graphite2.patch")
+        (search-patch  "icecat-avoid-bundled-libraries.patch")
+        (search-patch  "icecat-use-system-graphite2+harfbuzz.patch")
+        (search-patch  "icecat-use-system-media-libs.patch")
         (mozilla-patch "icecat-CVE-2018-12385.patch"      "80a4a7ef2813" "1vgcbimpnfjqj934v0cryq1g13xac3wfmd4jyhcb5s60x8xyssf5")
         (search-patch  "icecat-CVE-2018-12383.patch")
-        (mozilla-patch "icecat-bug-1489744.patch"         "6546ee839d30" "11mhvj77r789b428bfxqq5wdx8yr7lbrdjzr8qjj6fw197pldn51")))
+        (mozilla-patch "icecat-bug-1489744.patch"         "6546ee839d30" "11mhvj77r789b428bfxqq5wdx8yr7lbrdjzr8qjj6fw197pldn51")
+        (mozilla-patch "icecat-CVE-2018-12386.patch"      "4808fcb2e6ca" "05sc881l7sh8bag8whd2ggdn198lskqcxq8f41scfpqscw6xs5d5")
+        (mozilla-patch "icecat-CVE-2018-12387.patch"      "b8f5c37486e1" "0lvmbh126m695kgdbasy1y5xh9n1j08cwdhn071mgvj6yn8cns5z")
+        (mozilla-patch "icecat-bug-1464751.patch"         "d5d00faf0465" "1mj7dbb06brwrk0mvap0z4lfl2hwz1cj6dwjvdrisxm046pdw98i")
+        (mozilla-patch "icecat-bug-1472538.patch"         "11462f2b98f2" "1nxgh0plzilylx8r73r7d74pv66qwjqxmd7nqii33p0snl2jjfzs")
+        (mozilla-patch "icecat-bug-1478685.patch"         "098585dc86fc" "1b0x4qdh6isvffmibvc8ad8z62m3iky9q6jq0z6gyvn8q252cqal")
+        (mozilla-patch "icecat-bug-1486080.patch"         "3f8d57d936ea" "0pz2c18wcgj44v0j8my9xbm90m4bsjcvzmavj569fi8bh6s6zz8p")
+        (mozilla-patch "icecat-bug-1423278.patch"         "878ceaee5634" "0i47s5nvrx9vqbnj6s9y9f4ffww20p8nviqa6frg676y1188xlyl")
+        (mozilla-patch "icecat-bug-1442010.patch"         "87be1b98ec9a" "15f4l18c7hz9aqn89gg3dwmdidfwgn10dywgpzydm8mps45amx7j")
+        (mozilla-patch "icecat-bug-1484559.patch"         "99e58b5307ce" "02fdgbliwzi2r2376wg6k1rky1isfka0smac4ii2cll01jhpfrn6")
+        (mozilla-patch "icecat-bug-1487098.patch"         "f25ce451a492" "18nzg39iyxza1686180qk9cc88l5j2hf1h35d62lrqmdgd9vcj33")
+        (mozilla-patch "icecat-bug-1484905.patch"         "35c26bc231df" "0qh8d4z6y03h5xh7djci26a01l6zq667lg2k11f6zzg7z2j0h67x")
+        (mozilla-patch "icecat-bug-1488061.patch"         "050d0cfa8e3d" "05ql798ynbyz5pvyri4b95j4ixmgnny3zl7sd2ckfrrbm9mxh627")
+        (mozilla-patch "icecat-bug-1434963-pt1.patch"     "1e6dad87efed" "1v00a6cmgswjk54041jyv1ib129fxshpzwk6mn6lr0v5hylk3bx9")
+        (mozilla-patch "icecat-bug-1434963-pt2.patch"     "6558c46df9ea" "0vdy9dm9w5k1flhcfxwvvff0aa415b5mgmmq5r37i83686768xfb")
+        (mozilla-patch "icecat-bug-1434963-pt3.patch"     "686fcfa8abd6" "0ihqr11aq4b0y7mx7bwn8yzn25mv3k2gdphm951mj1g85qg35ann")
+        (mozilla-patch "icecat-bug-1491132.patch"         "14120e0c74d6" "188c5fbhqqhmlk88p70l6d97skh7xy4jhqdby1ri3h9ix967515j")))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -517,26 +535,37 @@ security standards.")
                       ;; FIXME: A script from the bundled nspr is used.
                       ;;"nsprpub"
                       ;;
-                      ;; TODO: Use system media libraries.  Waiting for:
+                      ;; FIXME: With the update to IceCat 60, using system NSS
+                      ;;        broke certificate validation.  See
+                      ;;        <https://bugs.gnu.org/32833>.  For now, we use
+                      ;;        the bundled NSPR and NSS.  TODO: Investigate,
+                      ;;        and try to unbundle these libraries again.
+                      ;; UNBUNDLE-ME! "security/nss"
+                      ;;
+                      ;; TODO: Use more system media libraries.  See:
                       ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=517422>
-                      ;;   * libogg
-                      ;;   * libtheora
-                      ;;   * libvorbis
-                      ;;   * libtremor (not yet in guix)
+                      ;;   * libtheora: esr60 wants v1.2, not yet released.
+                      ;;   * soundtouch: avoiding the bundled library would
+                      ;;     result in some loss of functionality.  There's
+                      ;;     also an issue with exception handling
+                      ;;     configuration.  It seems that this is needed in
+                      ;;     some moz.build:
+                      ;;       DEFINES['ST_NO_EXCEPTION_HANDLING'] = 1
                       ;;   * libopus
                       ;;   * speex
-                      ;;   * soundtouch (not yet in guix)
                       ;;
                       "modules/freetype2"
                       "modules/zlib"
                       "modules/libbz2"
-                      ;; UNBUNDLE-ME "ipc/chromium/src/third_party/libevent"
+                      "ipc/chromium/src/third_party/libevent"
                       "media/libjpeg"
                       "media/libvpx"
-                      "security/nss"
-                      ;; UNBUNDLE-ME "gfx/cairo"
-                      ;; UNBUNDLE-ME "gfx/harfbuzz"
-                      ;; UNBUNDLE-ME "gfx/graphite2"
+                      "media/libogg"
+                      "media/libvorbis"
+                      ;; "media/libtheora" ; wants theora-1.2, not yet released
+                      "media/libtremor"
+                      "gfx/harfbuzz"
+                      "gfx/graphite2"
                       "js/src/ctypes/libffi"
                       "db/sqlite3"))
           ;; Delete .pyc files, typically present in icecat source tarballs
@@ -550,23 +579,25 @@ security standards.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("bzip2" ,bzip2)
-       ;; UNBUNDLE-ME ("cairo" ,cairo)
        ("cups" ,cups)
        ("dbus-glib" ,dbus-glib)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("gtk+-2" ,gtk+-2)
-       ;; UNBUNDLE-ME ("graphite2" ,graphite2)
+       ("graphite2" ,graphite2)
        ("pango" ,pango)
        ("freetype" ,freetype)
-       ;; UNBUNDLE-ME ("harfbuzz" ,harfbuzz)
+       ("harfbuzz" ,harfbuzz)
        ("hunspell" ,hunspell)
        ("libcanberra" ,libcanberra)
        ("libgnome" ,libgnome)
        ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libogg" ,libogg)
+       ;; ("libtheora" ,libtheora) ; wants theora-1.2, not yet released
+       ("libvorbis" ,libvorbis)
        ("libxft" ,libxft)
-       ;; UNBUNDLE-ME ("libevent" ,libevent-2.0)
+       ("libevent" ,libevent)
        ("libxinerama" ,libxinerama)
        ("libxscrnsaver" ,libxscrnsaver)
        ("libxcomposite" ,libxcomposite)
@@ -579,8 +610,10 @@ security standards.")
        ("pulseaudio" ,pulseaudio)
        ("mesa" ,mesa)
        ("mit-krb5" ,mit-krb5)
-       ("nspr" ,nspr)
-       ("nss" ,nss)
+       ;; See <https://bugs.gnu.org/32833>
+       ;;   and related comments in the 'snippet' above.
+       ;; UNBUNDLE-ME! ("nspr" ,nspr)
+       ;; UNBUNDLE-ME! ("nss" ,nss)
        ("sqlite" ,sqlite)
        ("startup-notification" ,startup-notification)
        ("unzip" ,unzip)
@@ -638,15 +671,21 @@ security standards.")
                            "--with-system-zlib"
                            "--with-system-bz2"
                            "--with-system-jpeg"        ; must be libjpeg-turbo
-                           ;; UNBUNDLE-ME "--with-system-libevent"
+                           "--with-system-libevent"
+                           "--with-system-ogg"
+                           "--with-system-vorbis"
+                           ;; "--with-system-theora" ; wants theora-1.2, not yet released
                            "--with-system-libvpx"
                            "--with-system-icu"
-                           "--with-system-nspr"
-                           "--with-system-nss"
-                           ;; UNBUNDLE-ME "--with-system-harfbuzz"
-                           ;; UNBUNDLE-ME "--with-system-graphite2"
+                           
+                           ;; See <https://bugs.gnu.org/32833>
+                           ;;   and related comments in the 'snippet' above.
+                           ;; UNBUNDLE-ME! "--with-system-nspr"
+                           ;; UNBUNDLE-ME! "--with-system-nss"
+                           
+                           "--with-system-harfbuzz"
+                           "--with-system-graphite2"
                            "--enable-system-pixman"
-                           ;; UNBUNDLE-ME "--enable-system-cairo"
                            "--enable-system-ffi"
                            "--enable-system-hunspell"
                            "--enable-system-sqlite"
@@ -696,8 +735,11 @@ security standards.")
     'avcodec', 'avutil', 'pulse' ]\n\n"
                               all)))
             #t))
+         (replace 'bootstrap
+           (lambda _
+             (invoke "sh" "-c" "autoconf old-configure.in > old-configure")))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
-           (lambda* _
+           (lambda _
              (use-modules (guix build cargo-build-system))
              (let ((null-file "/dev/null")
                    (null-hash "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"))

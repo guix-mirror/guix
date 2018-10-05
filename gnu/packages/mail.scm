@@ -2556,17 +2556,16 @@ PGP handling, multiple servers, and secure connections.")
 (define-public imapfilter
   (package
     (name "imapfilter")
-    (version "2.6.11")
+    (version "2.6.12")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/lefcha/imapfilter/archive/"
-                       "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lefcha/imapfilter.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1yslvwr3w5fnl06gfrp0lim8zdlasx3cvgd2fsqi0695xnb9bsms"))))
+        (base32 "0vzpc54fjf5vb5vx5w0fl20xvx1k9cg6a3hbl86mm8kwsqf3wrab"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f

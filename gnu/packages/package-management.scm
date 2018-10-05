@@ -101,8 +101,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.15.0")
-        (commit "3d43017026f9995ad128915db8ca5eafe061bf75")
-        (revision 3))
+        (commit "1d0be47ab680db938ac8da1ee65e1de91e198f67")
+        (revision 5))
     (package
       (name "guix")
 
@@ -118,7 +118,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "167rzz2h33xmmchkplwzfq94s5jwdn5nabsq2lb84s54ps0sm89m"))
+                  "19cn4ndmr9cqd7qh6w3nchbmdpaawdl9kc6g0v6g680vzcja417k"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -493,7 +493,7 @@ symlinks to the files in a common directory such as /usr/local.")
 (define-public rpm
   (package
     (name "rpm")
-    (version "4.13.0.2")
+    (version "4.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.rpm.org/releases/rpm-"
@@ -501,40 +501,20 @@ symlinks to the files in a common directory such as /usr/local.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1521y4ghjns449kzpwkjn9cksh686383xnfx0linzlalqc3jqgig"))))
+                "0armd7dqr8bl0isx8l4xlylm7dikasmxhhcbz336fkp2x30w5jw0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-external-db"   ;use the system's bdb
                            "--enable-python"
                            "--without-lua")
        #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'set-nspr-search-path
+                  (add-before 'configure 'set-nss-library-path
                     (lambda* (#:key inputs #:allow-other-keys)
-                      ;; nspr.pc contains the right -I flag pointing to
-                      ;; 'include/nspr', but unfortunately 'configure' doesn't
-                      ;; use 'pkg-config'.  Thus, augment CPATH.
-                      ;; Likewise for NSS.
-                      (let ((nspr (assoc-ref inputs "nspr"))
-                            (nss  (assoc-ref inputs "nss")))
-                        (setenv "CPATH"
-                                (string-append (getenv "C_INCLUDE_PATH") ":"
-                                               nspr "/include/nspr:"
-                                               nss "/include/nss"))
+                      (let ((nss (assoc-ref inputs "nss")))
                         (setenv "LIBRARY_PATH"
                                 (string-append (getenv "LIBRARY_PATH") ":"
                                                nss "/lib/nss"))
-                        #t)))
-                  (add-after 'install 'fix-rpm-symlinks
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; 'make install' gets these symlinks wrong.  Fix them.
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin")))
-                        (with-directory-excursion bin
-                          (for-each (lambda (file)
-                                      (delete-file file)
-                                      (symlink "rpm" file))
-                                    '("rpmquery" "rpmverify"))
-                          #t)))))))
+                        #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -550,7 +530,7 @@ symlinks to the files in a common directory such as /usr/local.")
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)
        ("cpio" ,cpio)))
-    (home-page "http://www.rpm.org/")
+    (home-page "http://rpm.org/")
     (synopsis "The RPM Package Manager")
     (description
      "The RPM Package Manager (RPM) is a command-line driven package

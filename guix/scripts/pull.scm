@@ -20,6 +20,7 @@
 (define-module (guix scripts pull)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix status)
   #:use-module (guix scripts)
   #:use-module (guix store)
   #:use-module (guix config)
@@ -61,6 +62,8 @@
   `((system . ,(%current-system))
     (substitutes? . #t)
     (build-hook? . #t)
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
     (graft? . #t)
     (verbosity . 0)))
 
@@ -447,36 +450,37 @@ Use '~/.config/guix/channels.scm' instead."))
               #t)                                 ;XXX: not very useful
              (else
               (with-store store
-                (parameterize ((%graft? (assoc-ref opts 'graft?))
-                               (%repository-cache-directory cache))
-                  (set-build-options-from-command-line store opts)
-                  (honor-x509-certificates store)
+                (with-status-report print-build-event
+                  (parameterize ((%graft? (assoc-ref opts 'graft?))
+                                 (%repository-cache-directory cache))
+                    (set-build-options-from-command-line store opts)
+                    (honor-x509-certificates store)
 
-                  (let ((instances (latest-channel-instances store channels)))
-                    (format (current-error-port)
-                            (N_ "Building from this channel:~%"
-                                "Building from these channels:~%"
-                                (length instances)))
-                    (for-each (lambda (instance)
-                                (let ((channel
-                                       (channel-instance-channel instance)))
-                                  (format (current-error-port)
-                                          "  ~10a~a\t~a~%"
-                                          (channel-name channel)
-                                          (channel-url channel)
-                                          (string-take
-                                           (channel-instance-commit instance)
-                                           7))))
-                              instances)
-                    (parameterize ((%guile-for-build
-                                    (package-derivation
-                                     store
-                                     (if (assoc-ref opts 'bootstrap?)
-                                         %bootstrap-guile
-                                         (canonical-package guile-2.2)))))
-                      (run-with-store store
-                        (build-and-install instances profile
-                                           #:verbose?
-                                           (assoc-ref opts 'verbose?)))))))))))))
+                    (let ((instances (latest-channel-instances store channels)))
+                      (format (current-error-port)
+                              (N_ "Building from this channel:~%"
+                                  "Building from these channels:~%"
+                                  (length instances)))
+                      (for-each (lambda (instance)
+                                  (let ((channel
+                                         (channel-instance-channel instance)))
+                                    (format (current-error-port)
+                                            "  ~10a~a\t~a~%"
+                                            (channel-name channel)
+                                            (channel-url channel)
+                                            (string-take
+                                             (channel-instance-commit instance)
+                                             7))))
+                                instances)
+                      (parameterize ((%guile-for-build
+                                      (package-derivation
+                                       store
+                                       (if (assoc-ref opts 'bootstrap?)
+                                           %bootstrap-guile
+                                           (canonical-package guile-2.2)))))
+                        (run-with-store store
+                          (build-and-install instances profile
+                                             #:verbose?
+                                             (assoc-ref opts 'verbose?))))))))))))))
 
 ;;; pull.scm ends here

@@ -173,14 +173,14 @@ and provides a \"top-like\" mode (monitoring).")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://alpha.gnu.org/gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1lgmsbxn8i8xdasxzkdp2cml75n128pplw6icvmspl6s0n9xmw8n"))))
+                "1wmciqml9yplnx1s4ynn00giqyk06rbrcsgvpjj2df47sawk2jp8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -613,7 +613,7 @@ connection alive.")
          (bind-minor-version "11")
          (bind-patch-version "4")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "1")      ; for patch release, e.g. "6"
+         (bind-release-version "2")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -730,7 +730,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "08zyy13b8ydfbg26b3y6mw299qs89ba90gymraqqjsgjicydrq5h"))))
+                      "04fq17zksd2b3w6w6padps5n7b6s2lasxpksbhl4378h56vgfnm8"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -1194,9 +1194,6 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out"))
                             (qt '("qtbase" "qtsvg")))
-                        (substitute* "wpa_gui.desktop"
-                          (("Exec=wpa_gui")
-                           (string-append "Exec=" out "/bin/wpa_gui")))
                         (install-file "wpa_gui" (string-append out "/bin"))
                         (install-file "wpa_gui.desktop"
                                       (string-append out "/share/applications"))

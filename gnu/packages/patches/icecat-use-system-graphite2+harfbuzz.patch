@@ -1,0 +1,226 @@
+Allow building against system-wide graphite2/harfbuzz.
+See <https://bugzilla.mozilla.org/show_bug.cgi?id=847568>
+Based on:
+  https://svnweb.freebsd.org/ports/head/www/firefox-esr/files/patch-bug847568?revision=472833&view=co
+Modified for use with patch -p1, and to apply cleanly to GNU IceCat.
+
+--- icecat-60.2.0/config/system-headers.mozbuild
++++ icecat-60.2.0/config/system-headers.mozbuild
+@@ -1311,6 +1311,19 @@
+         'pixman.h',
+     ]
+ 
++if CONFIG['MOZ_SYSTEM_GRAPHITE2']:
++    system_headers += [
++        'graphite2/Font.h',
++        'graphite2/Segment.h',
++    ]
++
++if CONFIG['MOZ_SYSTEM_HARFBUZZ']:
++    system_headers += [
++        'harfbuzz/hb-glib.h',
++        'harfbuzz/hb-ot.h',
++        'harfbuzz/hb.h',
++    ]
++
+ if CONFIG['MOZ_SYSTEM_LIBVPX']:
+     system_headers += [
+         'vpx_mem/vpx_mem.h',
+--- icecat-60.2.0/dom/base/moz.build
++++ icecat-60.2.0/dom/base/moz.build
+@@ -474,6 +474,9 @@
+ if CONFIG['MOZ_X11']:
+     CXXFLAGS += CONFIG['TK_CFLAGS']
+ 
++if CONFIG['MOZ_SYSTEM_HARFBUZZ']:
++    CXXFLAGS += CONFIG['MOZ_HARFBUZZ_CFLAGS']
++
+ GENERATED_FILES += [
+     'PropertyUseCounterMap.inc',
+     'UseCounterList.h',
+--- icecat-60.2.0/gfx/graphite2/moz-gr-update.sh
++++ icecat-60.2.0/gfx/graphite2/moz-gr-update.sh
+@@ -1,6 +1,7 @@
+ #!/bin/bash
+ 
+ # Script used to update the Graphite2 library in the mozilla source tree
++# and bump version for --with-system-graphite2
+ 
+ # This script lives in gfx/graphite2, along with the library source,
+ # but must be run from the top level of the mozilla-central tree.
+@@ -37,12 +38,16 @@ echo "See" $0 "for update procedure." >> gfx/graphite2/README.mozilla
+ #find gfx/graphite2/ -name "*.cpp" -exec perl -p -i -e "s/<cstdio>/<stdio.h>/;s/Windows.h/windows.h/;" {} \;
+ #find gfx/graphite2/ -name "*.h" -exec perl -p -i -e "s/<cstdio>/<stdio.h>/;s/Windows.h/windows.h/;" {} \;
+ 
++# chase version for --with-system-graphite2
++perl -p -i -e "s/[0-9]+\,[0-9]+\,[0-9]+/$RELEASE/ and tr/./,/ \
++  if /GR2_VERSION_REQUIRE/" old-configure.in
++
+ # summarize what's been touched
+ echo Updated to $RELEASE.
+ echo Here is what changed in the gfx/graphite2 directory:
+ echo
+ 
+-hg stat gfx/graphite2
++hg stat old-configure.in gfx/graphite2
+ 
+ echo
+ echo If gfx/graphite2/src/files.mk has changed, please make corresponding
+--- icecat-60.2.0/gfx/moz.build
++++ icecat-60.2.0/gfx/moz.build
+@@ -10,6 +10,12 @@ with Files('**'):
+ if CONFIG['MOZ_TREE_CAIRO']:
+     DIRS += ['cairo']
+ 
++if not CONFIG['MOZ_SYSTEM_GRAPHITE2']:
++    DIRS += ['graphite2/src' ]
++
++if not CONFIG['MOZ_SYSTEM_HARFBUZZ']:
++    DIRS += ['harfbuzz/src']
++
+ DIRS += [
+     '2d',
+     'ycbcr',
+@@ -18,8 +24,6 @@ DIRS += [
+     'qcms',
+     'gl',
+     'layers',
+-    'graphite2/src',
+-    'harfbuzz/src',
+     'ots/src',
+     'thebes',
+     'ipc',
+--- icecat-60.2.0/gfx/skia/generate_mozbuild.py
++++ icecat-60.2.0/gfx/skia/generate_mozbuild.py
+@@ -148,6 +148,9 @@
+         '-Wno-unused-private-field',
+     ]
+ 
++if CONFIG['MOZ_SYSTEM_HARFBUZZ']:
++    CXXFLAGS += CONFIG['MOZ_HARFBUZZ_CFLAGS']
++
+ if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('gtk3', 'android'):
+     CXXFLAGS += CONFIG['MOZ_CAIRO_CFLAGS']
+     CXXFLAGS += CONFIG['CAIRO_FT_CFLAGS']
+--- icecat-60.2.0/gfx/skia/moz.build
++++ icecat-60.2.0/gfx/skia/moz.build
+@@ -822,6 +822,9 @@
+         '-Wno-unused-private-field',
+     ]
+ 
++if CONFIG['MOZ_SYSTEM_HARFBUZZ']:
++    CXXFLAGS += CONFIG['MOZ_HARFBUZZ_CFLAGS']
++
+ if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('gtk3', 'android'):
+     CXXFLAGS += CONFIG['MOZ_CAIRO_CFLAGS']
+     CXXFLAGS += CONFIG['CAIRO_FT_CFLAGS']
+--- icecat-60.2.0/gfx/thebes/moz.build
++++ icecat-60.2.0/gfx/thebes/moz.build
+@@ -272,7 +272,13 @@
+ 
+ LOCAL_INCLUDES += CONFIG['SKIA_INCLUDES']
+ 
+-DEFINES['GRAPHITE2_STATIC'] = True
++if CONFIG['MOZ_SYSTEM_GRAPHITE2']:
++    CXXFLAGS += CONFIG['MOZ_GRAPHITE2_CFLAGS']
++else:
++    DEFINES['GRAPHITE2_STATIC'] = True
++
++if CONFIG['MOZ_SYSTEM_HARFBUZZ']:
++    CXXFLAGS += CONFIG['MOZ_HARFBUZZ_CFLAGS']
+ 
+ if CONFIG['CC_TYPE'] == 'clang':
+     # Suppress warnings from Skia header files.
+--- icecat-60.2.0/intl/unicharutil/util/moz.build
++++ icecat-60.2.0/intl/unicharutil/util/moz.build
+@@ -25,4 +25,7 @@ UNIFIED_SOURCES += [
+     'nsUnicodeProperties.cpp',
+ ]
+ 
++if CONFIG['MOZ_SYSTEM_HARFBUZZ']:
++    CXXFLAGS += CONFIG['MOZ_HARFBUZZ_CFLAGS']
++
+ FINAL_LIBRARY = 'xul'
+--- icecat-60.2.0/netwerk/dns/moz.build
++++ icecat-60.2.0/netwerk/dns/moz.build
+@@ -76,3 +76,6 @@
+ 
+ if CONFIG['CC_TYPE'] in ('clang', 'gcc'):
+     CXXFLAGS += ['-Wno-error=shadow']
++
++if CONFIG['MOZ_SYSTEM_HARFBUZZ']:
++    CXXFLAGS += CONFIG['MOZ_HARFBUZZ_CFLAGS']
+--- icecat-60.2.0/old-configure.in
++++ icecat-60.2.0/old-configure.in
+@@ -3995,6 +3995,27 @@
+ AC_SUBST(MOZ_LINUX_32_SSE2_STARTUP_ERROR)
+ 
+ dnl ========================================================
++dnl Check for graphite2
++dnl ========================================================
++if test -n "$MOZ_SYSTEM_GRAPHITE2"; then
++    dnl graphite2.pc has bogus version, check manually
++    _SAVE_CFLAGS=$CFLAGS
++    CFLAGS="$CFLAGS $MOZ_GRAPHITE2_CFLAGS"
++    AC_TRY_COMPILE([ #include <graphite2/Font.h>
++                     #define GR2_VERSION_REQUIRE(major,minor,bugfix)  \
++                             ( GR2_VERSION_MAJOR * 10000 + GR2_VERSION_MINOR \
++                               * 100 + GR2_VERSION_BUGFIX >= \
++                               (major) * 10000 + (minor) * 100 + (bugfix) )
++                   ], [
++                     #if !GR2_VERSION_REQUIRE(1,3,10)
++                     #error "Insufficient graphite2 version."
++                     #endif
++                   ], [],
++                   [AC_MSG_ERROR([--with-system-graphite2 requested but no working libgraphite2 found])])
++    CFLAGS=$_SAVE_CFLAGS
++fi
++
++dnl ========================================================
+ dnl Check for pixman and cairo
+ dnl ========================================================
+ 
+--- icecat-60.2.0/toolkit/library/moz.build
++++ icecat-60.2.0/toolkit/library/moz.build
+@@ -235,6 +235,12 @@
+ if CONFIG['MOZ_SYSTEM_PNG']:
+     OS_LIBS += CONFIG['MOZ_PNG_LIBS']
+ 
++if CONFIG['MOZ_SYSTEM_GRAPHITE2']:
++    OS_LIBS += CONFIG['MOZ_GRAPHITE2_LIBS']
++
++if CONFIG['MOZ_SYSTEM_HARFBUZZ']:
++    OS_LIBS += CONFIG['MOZ_HARFBUZZ_LIBS']
++
+ if CONFIG['MOZ_SYSTEM_HUNSPELL']:
+     OS_LIBS += CONFIG['MOZ_HUNSPELL_LIBS']
+ 
+--- icecat-60.2.0/toolkit/moz.configure
++++ icecat-60.2.0/toolkit/moz.configure
+@@ -1051,6 +1051,26 @@
+ add_old_configure_assignment('FT2_CFLAGS',
+                              ft2_info.cflags)
+ 
++# Graphite2
++# ==============================================================
++option('--with-system-graphite2',
++       help="Use system graphite2 (located with pkgconfig)")
++
++system_graphite2 = pkg_check_modules('MOZ_GRAPHITE2', 'graphite2',
++                                     when='--with-system-graphite2')
++
++set_config('MOZ_SYSTEM_GRAPHITE2', depends_if(system_graphite2)(lambda _: True))
++
++# HarfBuzz
++# ==============================================================
++option('--with-system-harfbuzz',
++       help="Use system harfbuzz (located with pkgconfig)")
++
++system_harfbuzz = pkg_check_modules('MOZ_HARFBUZZ', 'harfbuzz >= 1.7.4',
++                                    when='--with-system-harfbuzz')
++
++set_config('MOZ_SYSTEM_HARFBUZZ', depends_if(system_harfbuzz)(lambda _: True))
++
+ # Mortar
+ # ==============================================================
+ option('--enable-mortar', help='Enable mortar extension')

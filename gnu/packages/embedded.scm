@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix svn-download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix build utils)
@@ -1104,3 +1106,40 @@ and displaying decoded target responses.
 @end enumerate")
     (home-page "https://www.freecalypso.org/")
     (license license:public-domain)))
+
+(define-public stlink
+  (package
+    (name "stlink")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/texane/stlink/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01z1cz1a5xbbhd163qrqcgp4bi1k145pb80jmwdz50g7sfzmy570"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:configure-flags
+       (let* ((out (assoc-ref %outputs "out"))
+              (etc (in-vicinity out "etc"))
+              (modprobe (in-vicinity etc "modprobe.d"))
+              (udev-rules (in-vicinity etc "udev/rules.d")))
+         (list (string-append "-DSTLINK_UDEV_RULES_DIR=" udev-rules)
+               (string-append "-DSTLINK_MODPROBED_DIR=" modprobe)))))
+    (inputs
+     `(("libusb" ,libusb)))
+    (synopsis "Programmer for STM32 Discovery boards")
+    (description "This package provides a firmware programmer for the STM32
+Discovery boards.  It supports two versions of the chip: ST-LINK/V1 (on
+STM32VL discovery kits) and ST-LINK/V2 (on STM32L discovery and later kits).
+Two different transport layers are used: ST-LINK/V1 uses SCSI passthru
+commands over USB, and ST-LINK/V2 and ST-LINK/V2-1 (seen on Nucleo boards) use
+raw USB commands.")
+    (home-page "https://github.com/texane/stlink")
+    ;; The flashloaders/stm32l0x.s and flashloaders/stm32lx.s source files are
+    ;; licensed under the GPLv2+.
+    (license (list license:bsd-3 license:gpl2+))))

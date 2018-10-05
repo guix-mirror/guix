@@ -399,8 +399,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.18.9")
-(define %linux-libre-hash "0wwmhnfvcsdlqhzwwwyz1x5a3ldjky6l0xir1pi6pysr0lak402x")
+(define %linux-libre-version "4.18.12")
+(define %linux-libre-hash "1mcnb1mm7m6i9s591c3kx0f1vbzhbl3w92w137swcm9zifqpci5r")
 
 (define %linux-libre-4.18-patches
   (list %boot-logo-patch
@@ -430,8 +430,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.18-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.71")
-(define %linux-libre-4.14-hash "1akvykaccy7ikl8v04grwxvgs4z2rrs7drf2s85ysqwq79mdh3gq")
+(define %linux-libre-4.14-version "4.14.74")
+(define %linux-libre-4.14-hash "0cxyx2yinnc8q0hmhb0swjgdz3s0ry7wxzyqss9f2i74xjjz4rm0")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -440,14 +440,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.128"
-                    "0lww23xcyyg0dwzrap5x9d700gy3lbxln55n6sqqkm7m89dkqwha"
+  (make-linux-libre "4.9.131"
+                    "11pxwl7dmisbf2szg9qzkvhlpk68clh5l478n7b62q7hd8j3hxlv"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.157"
-                    "00bnfqwkr0jfdabmwx5qk5bqxn5vwnnzwqbm5rfg7lggii74kk54"
+  (make-linux-libre "4.4.159"
+                    "12wrhni1ikmakwv55cgzsznx9llzp82irsisbjjs7bc8z2hzwr6l"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -3668,15 +3668,16 @@ The collection contains a set of bandwidth and latency benchmark such as:
 (define-public rng-tools
   (package
     (name "rng-tools")
-    (version "6.4")
+    (home-page "https://github.com/nhorman/rng-tools")
+    (version "6.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/nhorman/rng-tools/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "005krksl8iz37l5p1nx8apl1yg7q78yrsb6inby31d2g5ck8nnwa"))))
+                "11kw1rcgzmgzwk7g1w2g0nzjraqb0pf24gxpy50k4ls2qxslw3rk"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
@@ -3691,7 +3692,6 @@ The collection contains a set of bandwidth and latency benchmark such as:
     (description
      "Monitor a hardware random number generator, and supply entropy
 from that to the system kernel's @file{/dev/random} machinery.")
-    (home-page "https://sourceforge.net/projects/gkernel")
     ;; The source package is offered under the GPL2+, but the files
     ;; 'rngd_rdrand.c' and 'rdrand_asm.S' are only available under the GPL2.
     (license (list license:gpl2 license:gpl2+))))
@@ -4827,19 +4827,20 @@ interface to this kernel feature.")
 (define-public mbpfan
   (package
     (name "mbpfan")
-    (version "2.0.2")
+    (version "2.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dgraziotin/mbpfan/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dgraziotin/mbpfan.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wifsws9icki95hhfh4zw1hmk07ddmkcz9mg5a9jr7q2kkrk01cx"))))
+         "1gysq778rkl6dvvj9a1swxcl15wvz0bng5bn4nwq118cl8p8pask"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; tests ask to be run as root
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
                             "CC=gcc"))
@@ -4850,7 +4851,7 @@ interface to this kernel feature.")
              (substitute* "Makefile"
                (("/usr") ""))
              #t))
-         (delete 'configure)))) ; There's no configure phase.
+         (delete 'configure))))         ; there's no configure phase
     (home-page "https://github.com/dgraziotin/mbpfan")
     (synopsis "Control fan speed on Macbooks")
     (description

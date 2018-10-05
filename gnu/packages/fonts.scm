@@ -1210,7 +1210,7 @@ ExtraLight, Light, Book, Medium, Semibold, Bold & ExtraBold")
 (define-public font-culmus
   (package
     (name "font-culmus")
-    (version "0.132")
+    (version "0.133")
     (source
      (origin
        (method url-fetch)
@@ -1219,7 +1219,7 @@ ExtraLight, Light, Book, Medium, Semibold, Bold & ExtraBold")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1djxalm26r7bcq33ckmfa15xfs6pmqzvcl64d5lqa1dl01bl4j4z"))))
+         "02akysgsqhi15cck54xcacm16q5raf4l7shgb8fnj7xr3c1pbfyp"))))
     (build-system font-build-system)
     (arguments
      `(#:phases

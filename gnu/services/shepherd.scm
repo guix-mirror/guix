@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
             %default-modules
 
             shepherd-service-file
+            %containerized-shepherd-service
 
             shepherd-service-lookup-procedure
             shepherd-service-back-edges
@@ -326,10 +328,25 @@ symbols provided/required by a service."
   (lambda (service)
     (vhash-foldq* cons '() service edges)))
 
+(define %containerized-shepherd-service
+  ;; XXX: This service works around a bug in the Shepherd 0.5.0: shepherd
+  ;; calls reboot(2) (via 'disable-reboot-on-ctrl-alt-del') when it starts,
+  ;; but in a container that fails with EINVAL.  This was fixed in Shepherd
+  ;; commit 92e806bac1abaeeaf5d60f0ab50d1ae85ba6a62f.
+  (simple-service 'containerized-shepherd
+                  shepherd-root-service-type
+                  (list (shepherd-service
+                         (provision '(containerized-shepherd))
+                         (start #~(lambda ()
+                                    (set! (@@ (shepherd)
+                                              disable-reboot-on-ctrl-alt-del)
+                                      (const #t))
+                                    #t))))))
+
 (define (shepherd-service-upgrade live target)
   "Return two values: the subset of LIVE (a list of <live-service>) that needs
 to be unloaded, and the subset of TARGET (a list of <shepherd-service>) that
-needs to be loaded."
+need to be restarted to complete their upgrade."
   (define (essential? service)
     (memq (first (live-service-provision service))
           '(root shepherd)))
@@ -346,12 +363,6 @@ needs to be loaded."
     (and=> (lookup-live (shepherd-service-canonical-name service))
            live-service-running))
 
-  (define (stopped service)
-    (match (lookup-live (shepherd-service-canonical-name service))
-      (#f #f)
-      (service (and (not (live-service-running service))
-                    service))))
-
   (define live-service-dependents
     (shepherd-service-back-edges live
                                  #:provision live-service-provision
@@ -362,16 +373,14 @@ needs to be loaded."
       (#f (every obsolete? (live-service-dependents service)))
       (_  #f)))
 
-  (define to-load
-    ;; Only load services that are either new or currently stopped.
-    (remove running? target))
+  (define to-restart
+    ;; Restart services that are currently running.
+    (filter running? target))
 
   (define to-unload
-    ;; Unload services that are (1) no longer required, or (2) are in TO-LOAD.
-    (remove essential?
-            (append (filter obsolete? live)
-                    (filter-map stopped to-load))))
+    ;; Unload services that are no longer required.
+    (remove essential? (filter obsolete? live)))
 
-  (values to-unload to-load))
+  (values to-unload to-restart))
 
 ;;; shepherd.scm ends here

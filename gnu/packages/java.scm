@@ -4288,6 +4288,85 @@ setter and getter method.")
 file filters and endian classes.")
     (license license:asl2.0)))
 
+(define-public java-commons-exec-1.1
+  (package
+    (name "java-commons-exec")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/commons/exec/source/"
+                           "commons-exec-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "025dk8xgj10lxwwwqp0hng2rn7fr4vcirxzydqzx9k4dim667alk"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "-Dmaven.junit.jar="
+                            (assoc-ref %build-inputs "java-junit")
+                            "/share/java/junit.jar"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'delete-network-tests
+           (lambda _
+             (delete-file "src/test/java/org/apache/commons/exec/DefaultExecutorTest.java")
+             (substitute* "src/test/java/org/apache/commons/exec/TestRunner.java"
+              (("suite\\.addTestSuite\\(DefaultExecutorTest\\.class\\);") ""))
+             #t))
+         ;; The "build" phase automatically tests.
+         (delete 'check)
+         (replace 'install (install-jars "target")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://commons.apache.org/proper/commons-exec/")
+    (synopsis "Common program execution related classes")
+    (description "Commons-Exec simplifies executing external processes.")
+    (license license:asl2.0)))
+
+(define-public java-commons-exec
+  (package
+    (inherit java-commons-exec-1.1)
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/commons/exec/source/"
+                           "commons-exec-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "17yb4h6f8l49c5iyyvda4z2nmw0bxrx857nrwmsr7mmpb7x441yv"))))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "-Dmaven.junit.jar="
+                            (assoc-ref %build-inputs "java-junit")
+                            "/share/java/junit.jar")
+             "-Dmaven.compiler.source=1.7"
+             "-Dmaven.compiler.target=1.7")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'delete-network-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; This test hangs indefinitely.
+             (delete-file "src/test/java/org/apache/commons/exec/issues/Exec60Test.java")
+             (substitute* "src/test/java/org/apache/commons/exec/issues/Exec41Test.java"
+              (("ping -c 10 127.0.0.1") "sleep 10"))
+             (substitute* "src/test/java/org/apache/commons/exec/issues/Exec49Test.java"
+              (("/bin/ls") "ls"))
+             (call-with-output-file "src/test/scripts/ping.sh"
+               (lambda (port)
+                 (format port "#!~a/bin/sh\nsleep $1\n"
+                              (assoc-ref inputs "bash"))))
+             #t))
+         ;; The "build" phase automatically tests.
+         (delete 'check)
+         (replace 'install (install-jars "target")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))))
+
 (define-public java-commons-lang
   (package
     (name "java-commons-lang")
@@ -7584,6 +7663,55 @@ configuration.")
     (synopsis "Jaxb annotations jackson module")
     (description "This package is the jaxb annotations module for jackson.")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
+
+(define-public java-fasterxml-jackson-modules-base-mrbean
+  (package
+    (name "java-fasterxml-jackson-modules-base-mrbean")
+    (version "2.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-modules-base/archive/"
+                                  "jackson-modules-base-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1wws95xi8sppp6b0k2vvjdjyynl20r1a4dwrhai08lzlria6blp5"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-modules-base-mrbean.jar"
+       #:source-dir "mrbean/src/main/java"
+       #:test-dir "mrbean/src/test"
+       #:test-exclude
+       ;; Base class for tests
+       (list "**/BaseTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out (string-append "mrbean/src/main/java/com/fasterxml/"
+                                        "jackson/module/mrbean/PackageVersion.java"))
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.module.mrbean")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.module.mrbean")
+                 (("@projectartifactid@") "jackson-module-mrbean")))
+             #t)))))
+    (inputs
+     `(("java-asm" ,java-asm)
+       ("java-fasterxml-jackson-annotations"
+        ,java-fasterxml-jackson-annotations)
+       ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)
+       ("java-fasterxml-jackson-databind" ,java-fasterxml-jackson-databind)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/FasterXML/jackson-modules-base")
+    (synopsis "POJO type materialization for Java")
+    (description "This package implements POJO type materialization.
+Databinders can construct implementation classes for Java interfaces as part
+of deserialization.")
+    (license license:asl2.0)))
 
 (define-public java-snakeyaml
   (package

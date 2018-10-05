@@ -5895,3 +5895,364 @@ hemoglobin to reticulocytes (OFF-score), as well as example data.")
 based on entropy estimates from k-nearest neighbors distances and algorithms
 for the reconstruction of gene regulatory networks.")
     (license license:agpl3+)))
+
+(define-public r-pscl
+  (package
+    (name "r-pscl")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pscl" version))
+       (sha256
+        (base32 "1phf3awsfr4ncqfqzin5m1pz0g7y1zhbcm2sz7358ssw914fd7rc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "https://github.com/atahk/pscl/")
+    (synopsis "Political science computational laboratory")
+    (description
+     "The @code{pscl} is an R package providing classes and methods for:
+@enumerate
+@item Bayesian analysis of roll call data (item-response models);
+@item elementary Bayesian statistics;
+@item maximum likelihood estimation of zero-inflated and hurdle models for count
+data;
+@item utility functions.
+@end enumerate")
+    (license license:gpl2)))
+
+(define-public r-accelmissing
+  (package
+    (name "r-accelmissing")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "accelmissing" version))
+       (sha256
+        (base32 "1nql9inx6azdzi3z4sfm2vdml2mms6krl8wzlf1dn1c97ahn57fy"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mice" ,r-mice)
+       ("r-pscl" ,r-pscl)))
+    (home-page "https://cran.r-project.org/web/packages/accelmissing/")
+    (synopsis "Missing value imputation for accelerometer data")
+    (description
+     "This package provides a statistical method to impute the missing values in
+accelerometer data.  The methodology includes both parametric and
+semi-parametric multiple imputations under the zero-inflated Poisson lognormal
+model.  It also provides multiple functions to preprocess the accelerometer data
+previous to the missing data imputation.  These include detecting the wearing
+and the non-wearing time, selecting valid days and subjects, and creating plots.")
+    (license license:gpl2+)))
+
+(define-public r-mhsmm
+  (package
+    (name "r-mhsmm")
+    (version "0.4.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mhsmm" version))
+       (sha256
+        (base32 "009dj0zkj1zry7jr9hf4cknb686z50a2l967if64xm0dvjmp7dgs"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-mvtnorm" ,r-mvtnorm)))
+    (home-page "https://github.com/jaredo/mhsmm/")
+    (synopsis "Inference for hidden Markov and semi-Markov models")
+    (description
+     "The @code{r-mhsmm} package implements estimation and prediction methods for
+hidden Markov and semi-Markov models for multiple observation sequences.  Such
+techniques are of interest when observed data is thought to be dependent on some
+unobserved (or hidden) state.  Also, this package is suitable for equidistant
+time series data, with multivariate and/or missing data.  Allows user defined
+emission distributions.")
+    (license license:gpl2+)))
+
+(define-public r-nleqslv
+  (package
+    (name "r-nleqslv")
+    (version "3.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nleqslv" version))
+       (sha256
+        (base32 "1v9znvncyigw9r25wx2ma0b7ib179b488dl0qsrhp5zrcz7mcjgm"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/nleqslv/")
+    (synopsis "Solve systems of nonlinear equations")
+    (description
+     "The @code{r-nleqslv} package solves a system of nonlinear equations using a
+Broyden or a Newton method with a choice of global strategies such as line
+search and trust region.  There are options for using a numerical or user
+supplied Jacobian, for specifying a banded numerical Jacobian and for allowing a
+singular or ill-conditioned Jacobian.")
+    (license license:gpl2+)))
+
+(define-public r-physicalactivity
+  (package
+    (name "r-physicalactivity")
+    (version "0.2-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "PhysicalActivity" version))
+       (sha256
+        (base32 "14z6plgwyr46vs9m997rvlz8sdglfs9g087an8668zqkzzs2w4ln"))))
+    (properties
+     `((upstream-name . "PhysicalActivity")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/PhysicalActivity/")
+    (synopsis "Procesing accelerometer data for physical activity measurement")
+    (description
+     "This @code{r-physicalactivity} package provides a function @code{wearingMarking}
+for classification of monitor wear and nonwear time intervals in accelerometer
+data collected to assess physical activity.  The package also contains functions
+for making plots of accelerometer data and obtaining the summary of various
+information including daily monitor wear time and the mean monitor wear time
+during valid days.  The revised package version 0.2-1 improved the functions
+regarding speed, robustness and add better support for time zones and daylight
+saving.  In addition, several functions were added:
+@enumerate
+@item the @code{markDelivery} can classify days for ActiGraph delivery by mail;
+@item the @code{markPAI} can categorize physical activity intensity level based
+on user-defined cut-points of accelerometer counts.
+@end enumerate
+  It also supports importing ActiGraph (AGD) files with @code{readActigraph} and
+@code{queryActigraph} functions.")
+    (license license:gpl3+)))
+
+(define-public r-acc
+  (package
+    (name "r-acc")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acc" version))
+       (sha256
+        (base32 "1ii2vm47djxbixa75h690q1s2f9m9x6i8nkygik93j6dayr6kr1m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-circlize" ,r-circlize)
+       ("r-dbi" ,r-dbi)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iterators" ,r-iterators)
+       ("r-mhsmm" ,r-mhsmm)
+       ("r-nleqslv" ,r-nleqslv)
+       ("r-physicalactivity" ,r-physicalactivity)
+       ("r-plyr" ,r-plyr)
+       ("r-r-utils" ,r-r-utils)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-zoo" ,r-zoo)))
+    (home-page "https://cran.r-project.org/web/packages/acc/")
+    (synopsis "Exploring accelerometer data")
+    (description
+     "This package processes accelerometer data from uni-axial and tri-axial devices
+and generates data summaries.  Also, includes functions to plot, analyze, and
+simulate accelerometer data.")
+    (license license:gpl2+)))
+
+(define-public r-rbenchmark
+  (package
+    (name "r-rbenchmark")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rbenchmark" version))
+       (sha256
+        (base32 "010fn3qwnk2k411cbqyvra1d12c3bhhl3spzm8kxffmirj4p2al9"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/rbenchmark/")
+    (synopsis "Benchmarking routine for R")
+    (description
+     "This @code{r-rbenchmark} package is inspired by the Perl module Benchmark,
+and is intended to facilitate benchmarking of arbitrary R code.  The library
+consists of just one function, benchmark, which is a simple wrapper around
+system.time.  Given a specification of the benchmarking process (counts of
+replications, evaluation environment) and an arbitrary number of expressions,
+benchmark evaluates each of the expressions in the specified environment,
+replicating the evaluation as many times as specified, and returning the results
+conveniently wrapped into a data frame.")
+    (license license:gpl2+)))
+
+(define-public r-dvmisc
+  (package
+    (name "r-dvmisc")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dvmisc" version))
+       (sha256
+        (base32 "1dy0yykskwhkql19bhzmbwsgv028afc8jh9yqwbczj6f3vpv31zh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-rbenchmark" ,r-rbenchmark)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/dvmisc/")
+    (synopsis "Faster computation of common statistics and miscellaneous functions")
+    (description
+     "This package implements faster versions of base R functions (e.g. mean, standard
+deviation, covariance, weighted mean), mostly written in C++, along with
+miscellaneous functions for various purposes (e.g. create the histogram with
+fitted probability density function or probability mass function curve, create
+the body mass index groups, assess the linearity assumption in logistic
+regression).")
+    (license license:gpl2)))
+
+(define-public r-accelerometry
+  (package
+    (name "r-accelerometry")
+    (version "3.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "accelerometry" version))
+       (sha256
+        (base32 "13xzrwhr4i1nj9c8vrmfdg2rmrc8n446iihcyxmy99sm99hpzyip"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dvmisc" ,r-dvmisc)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/accelerometry/")
+    (synopsis "Functions for processing accelerometer data")
+    (description
+     "This package provides a collection of functions that perform operations on
+time-series accelerometer data, such as identify the non-wear time, flag minutes
+that are part of an activity bout, and find the maximum 10-minute average count
+value.  The functions are generally very flexible, allowing for a variety of
+algorithms to be implemented.")
+    (license license:gpl3)))
+
+(define-public r-absim
+  (package
+    (name "r-absim")
+    (version "0.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AbSim" version))
+       (sha256
+        (base32 "16ddjk8b6xw80ch4jis1y751i9561wdxh0gifbf15qiz3vjckq8m"))))
+    (properties `((upstream-name . "AbSim")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-powerlaw" ,r-powerlaw)))
+    (home-page "https://cran.r-project.org/web/packages/AbSim/")
+    (synopsis "Time resolved simulations of antibody repertoires")
+    (description
+     "This package provides simulation methods for the evolution of antibody repertoires.
+  The heavy and light chain variable region of both human and C57BL/6 mice can
+be simulated in a time-dependent fashion.  Both single lineages using one set of
+V-, D-, and J-genes or full repertoires can be simulated.  The algorithm begins
+with an initial V-D-J recombination event, starting the first phylogenetic tree.
+  Upon completion, the main loop of the algorithm begins, with each iteration
+representing one simulated time step.  Various mutation events are possible at
+each time step, contributing to a diverse final repertoire.")
+    (license license:gpl2)))
+
+(define-public r-ac3net
+  (package
+    (name "r-ac3net")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Ac3net" version))
+       (sha256
+        (base32 "1ns4n0xxz6p34c11bj0k7nzgmyqr9mis2b0g5nfz37dbikndyqyz"))))
+    (properties `((upstream-name . "Ac3net")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)))
+    (home-page "https://cran.r-project.org/web/packages/Ac3net/")
+    (synopsis "Inferring directional conservative causal core gene networks")
+    (description "This package infers directional Conservative causal core
+(gene) networks (C3NET).  This is a version of the algorithm C3NET with
+directional network.")
+    (license license:gpl3+)))
+
+(define-public r-aca
+  (package
+    (name "r-aca")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACA" version))
+       (sha256
+        (base32 "1i3hm27nvnkvc39xlh0d1blq8q0q02czmvgi3cazmjx3jvxay0vq"))))
+    (properties `((upstream-name . "ACA")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/ACA/")
+    (synopsis "Abrupt change-point or aberration detection in point series")
+    (description
+     "This package offers an interactive function for the detection of breakpoints in
+series.")
+    ;; Any version of the GPL
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-acceptancesampling
+  (package
+    (name "r-acceptancesampling")
+    (version "1.0-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "AcceptanceSampling" version))
+       (sha256
+        (base32 "18krmmyn8pn11aqd81kbvka68lnd36mnpdh7p3pz9r4m4vjj007x"))))
+    (properties
+     `((upstream-name . "AcceptanceSampling")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/AcceptanceSampling/")
+    (synopsis "Creation and evaluation of acceptance sampling plans")
+    (description
+     "This @code{r-acceptancesampling} provides functionality for creating and evaluating
+acceptance sampling plans.  Acceptance sampling is a methodology commonly used
+in quality control and improvement.  International standards of acceptance
+sampling provide sampling plans for specific circumstances.  The aim of this
+package is to provide an easy-to-use interface to visualize single, double or
+multiple sampling plans.  In addition, methods have been provided to enable the
+user to assess sampling plans against pre-specified levels of performance, as
+measured by the probability of acceptance for a given level of quality in the
+lot.")
+    (license license:gpl3+)))
+
+(define-public r-acclma
+  (package
+    (name "r-acclma")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACCLMA" version))
+       (sha256
+        (base32 "1na27sp18fq12gp6vxgqw1ffsz2yi1d8xvrxbrzx5g1kqxrayy0v"))))
+    (properties `((upstream-name . "ACCLMA")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/ACCLMA/")
+    (synopsis "ACC & LMA graph plotting")
+    (description
+     "This package contains a function that imports data from a @acronym{CSV,
+Comma-Separated Values} file, or uses manually entered data from the format (x,
+y, weight) and plots the appropriate @acronym{ACC, Absolute Concentration
+Curve} vs @acronym{LOI, Line of Independence} graph and
+@acronym{LMA, @acronym{LOI} Minus @acronym{ACC}} graph.  The main
+function is @code{plotLMA} (source file, header) that takes a data set and plots the
+appropriate @acronym{LMA} and @acronym{ACC} graphs.  If no source file (a
+string) was passed, a manual data entry window is opened.  The header parameter
+indicates by TRUE/FALSE (false by default) if the source @acronym{CSV} file has
+a header row or not.  The dataset should contain only one independent variable
+(x) and one dependent variable (y) and can contain a weight for each
+observation.")
+    (license license:gpl2)))

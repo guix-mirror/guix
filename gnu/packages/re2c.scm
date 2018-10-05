@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +26,7 @@
 (define-public re2c
   (package
     (name "re2c")
-    (version "1.0.3")
+    (version "1.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/skvadrik/" name
@@ -33,7 +34,7 @@
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0lnbj15hhgi3r40ipskmg178m18d8n5nph78sci6lprk7zgf0mng"))))
+               "1ksifjn18v6nra935dpqllmvkqgcdsggfjgmj77282x0gqrrfrc5"))))
     (build-system gnu-build-system)
     (home-page "http://re2c.org/")
     (synopsis "Lexer generator for C/C++")

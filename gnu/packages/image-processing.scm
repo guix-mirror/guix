@@ -200,7 +200,7 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
 (define-public opencv
   (package
     (name "opencv")
-    (version "3.4.1")
+    (version "3.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/opencv/opencv/archive/"
@@ -208,7 +208,7 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
               (file-name (string-append name "-" version ".zip"))
               (sha256
                (base32
-                "1g8pvnlkzzp50amd89149hqsbvsc2hq3vk1d6a9fksdcx8ra9g94"))
+                "0pycx1pz8lj794q32mlalyc3ijqxwsyin65r26nh4yc0p71xiirp"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -345,7 +345,7 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
                                "opencv/opencv_extra/zip/" version))
            (file-name (string-append "opencv-extra-" version ".zip"))
            (sha256
-            (base32 "0wfh3pvfxqydf7hsccp50npcsg37sf6fqi6cd3zkc4qil9zhpbps"))))
+            (base32 "0yd1vidzbg6himxyh4yzivywijg8548kfmcn421khabnipm7l74y"))))
        ("opencv-contrib"
         ,(origin
            (method url-fetch)
@@ -353,7 +353,7 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
                                "opencv/opencv_contrib/zip/" version))
            (file-name (string-append "opencv-contrib-" version ".zip"))
            (sha256
-           (base32 "18zm0qmjcdvg90c33gzv0ws0xdaid1xpqzz2xa9l2x12qkr6zj3p"))))))
+           (base32 "0j0ci6ia1qwklp9hq07ypl0vkngj1wrgh6n98n657m5d0pyp4m0g"))))))
     (inputs `(("libjpeg" ,libjpeg)
               ("libpng" ,libpng)
               ("jasper" ,jasper)

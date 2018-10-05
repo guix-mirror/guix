@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +38,11 @@
             progress-reporter/silent
             progress-reporter/file
             progress-reporter/bar
+            progress-reporter/trace
 
+            display-download-progress
+            erase-current-line
+            progress-bar
             byte-count->string
             current-terminal-columns
 
@@ -183,6 +187,46 @@ width of the bar is BAR-WIDTH."
 move the cursor to the beginning of the line."
   (display "\r\x1b[K" port))
 
+(define* (display-download-progress file size
+                                    #:key
+                                    start-time (transferred 0)
+                                    (log-port (current-error-port)))
+  "Write the progress report to LOG-PORT.  Use START-TIME (a SRFI-19 time
+object) and TRANSFERRED (a total number of bytes) to determine the
+throughput."
+  (define elapsed
+    (duration->seconds
+     (time-difference (current-time time-monotonic) start-time)))
+  (if (number? size)
+      (let* ((%  (* 100.0 (/ transferred size)))
+             (throughput (/ transferred elapsed))
+             (left       (format #f " ~a  ~a" file
+                                 (byte-count->string size)))
+             (right      (format #f "~a/s ~a ~a~6,1f%"
+                                 (byte-count->string throughput)
+                                 (seconds->string elapsed)
+                                 (progress-bar %) %)))
+        (erase-current-line log-port)
+        (display (string-pad-middle left right
+                                    (current-terminal-columns))
+                 log-port)
+        (force-output log-port))
+      (let* ((throughput (/ transferred elapsed))
+             (left       (format #f " ~a" file))
+             (right      (format #f "~a/s ~a | ~a transferred"
+                                 (byte-count->string throughput)
+                                 (seconds->string elapsed)
+                                 (byte-count->string transferred))))
+        (erase-current-line log-port)
+        (display (string-pad-middle left right
+                                    (current-terminal-columns))
+                 log-port)
+        (force-output log-port))))
+
+(define %progress-interval
+  ;; Default interval between subsequent outputs for rate-limited displays.
+  (make-time time-monotonic 200000000 0))
+
 (define* (progress-reporter/file file size
                                  #:optional (log-port (current-output-port))
                                  #:key (abbreviation basename))
@@ -192,44 +236,16 @@ ABBREVIATION used to shorten FILE for display."
   (let ((start-time (current-time time-monotonic))
         (transferred 0))
     (define (render)
-      "Write the progress report to LOG-PORT."
-      (define elapsed
-        (duration->seconds
-         (time-difference (current-time time-monotonic) start-time)))
-      (if (number? size)
-          (let* ((%  (* 100.0 (/ transferred size)))
-                 (throughput (/ transferred elapsed))
-                 (left       (format #f " ~a  ~a"
-                                     (abbreviation file)
-                                     (byte-count->string size)))
-                 (right      (format #f "~a/s ~a ~a~6,1f%"
-                                     (byte-count->string throughput)
-                                     (seconds->string elapsed)
-                                     (progress-bar %) %)))
-            (erase-current-line log-port)
-            (display (string-pad-middle left right
-                                        (current-terminal-columns))
-                     log-port)
-            (force-output log-port))
-          (let* ((throughput (/ transferred elapsed))
-                 (left       (format #f " ~a"
-                                     (abbreviation file)))
-                 (right      (format #f "~a/s ~a | ~a transferred"
-                                     (byte-count->string throughput)
-                                     (seconds->string elapsed)
-                                     (byte-count->string transferred))))
-            (erase-current-line log-port)
-            (display (string-pad-middle left right
-                                        (current-terminal-columns))
-                     log-port)
-            (force-output log-port))))
+      (display-download-progress (abbreviation file) size
+                                 #:start-time start-time
+                                 #:transferred transferred
+                                 #:log-port log-port))
 
     (progress-reporter
      (start render)
      ;; Report the progress every 300ms or longer.
      (report
-      (let ((rate-limited-render
-             (rate-limited render (make-time time-monotonic 300000000 0))))
+      (let ((rate-limited-render (rate-limited render %progress-interval)))
         (lambda (value)
           (set! transferred value)
           (rate-limited-render))))
@@ -268,6 +284,32 @@ tasks is performed.  Write PREFIX at the beginning of the line."
              (display prefix port)
              (newline port))
            (force-output port)))))
+
+(define* (progress-reporter/trace file url size
+                                  #:optional (log-port (current-output-port)))
+  "Like 'progress-reporter/file', but instead of returning human-readable
+progress reports, write \"build trace\" lines to be processed elsewhere."
+  (define (report-progress transferred)
+    (define message
+      (format #f "@ download-progress ~a ~a ~a ~a~%"
+              file url (or size "-") transferred))
+
+    (display message log-port)                    ;should be atomic
+    (flush-output-port log-port))
+
+  (progress-reporter
+   (start (lambda ()
+            (display (format #f "@ download-started ~a ~a ~a~%"
+                             file url (or size "-"))
+                     log-port)))
+   (report (rate-limited report-progress %progress-interval))
+   (stop (lambda ()
+           (let ((size (or (and=> (stat file #f) stat:size)
+                           size)))
+             (report-progress size)
+             (display (format #f "@ download-succeeded ~a ~a ~a~%"
+                              file url size)
+                      log-port))))))
 
 ;; TODO: replace '(@ (guix build utils) dump-port))'.
 (define* (dump-port* in out

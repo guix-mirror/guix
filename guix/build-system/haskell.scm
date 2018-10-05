@@ -21,6 +21,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix derivations)
+  #:use-module (guix download)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -48,14 +49,35 @@
   (let ((haskell (resolve-interface '(gnu packages haskell))))
     (module-ref haskell 'ghc)))
 
+(define (source-url->revision-url url revision)
+  "Convert URL (a Hackage source URL) to the URL for the Cabal file at
+version REVISION."
+  (let* ((last-slash (string-rindex url #\/))
+         (next-slash (string-rindex url #\/ 0 last-slash)))
+    (string-append (substring url 0 next-slash)
+                   (substring url last-slash (- (string-length url)
+                                                (string-length ".tar.gz")))
+                   "/revision/" revision ".cabal")))
+
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
                 (haskell (default-haskell))
+                cabal-revision
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:target #:haskell #:inputs #:native-inputs))
+    '(#:target #:haskell #:cabal-revision #:inputs #:native-inputs))
+
+  (define (cabal-revision->origin cabal-revision)
+    (match cabal-revision
+      ((revision hash)
+       (origin
+         (method url-fetch)
+         (uri (source-url->revision-url (origin-uri source) revision))
+         (sha256 (base32 hash))
+         (file-name (string-append name "-" revision ".cabal"))))
+      (#f #f)))
 
   (and (not target)                               ;XXX: no cross-compilation
        (bag
@@ -64,6 +86,9 @@
          (host-inputs `(,@(if source
                               `(("source" ,source))
                               '())
+                        ,@(match (cabal-revision->origin cabal-revision)
+                            (#f '())
+                            (revision `(("cabal-revision" ,revision))))
                         ,@inputs
 
                         ;; Keep the standard inputs of 'gnu-build-system'.
@@ -103,6 +128,11 @@ provides a 'Setup.hs' file as its build system."
                                    source)
                                   (source
                                    source))
+                      #:cabal-revision ,(match (assoc-ref inputs
+                                                          "cabal-revision")
+                                          (((? derivation? revision))
+                                           (derivation->output-path revision))
+                                          (revision revision))
                       #:configure-flags ,configure-flags
                       #:haddock-flags ,haddock-flags
                       #:system ,system

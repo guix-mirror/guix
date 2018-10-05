@@ -2466,13 +2466,13 @@ void DerivationGoal::registerOutputs()
 
             /* Check the hash. */
             Hash h2 = recursive ? hashPath(ht, actualPath).first : hashFile(ht, actualPath);
-            if (h != h2)
-                throw BuildError(
-                    format("%1% hash mismatch for output path `%2%'\n"
-			   "  expected: %3%\n"
-			   "  actual:   %4%")
-                    % i->second.hashAlgo % path
-		    % printHash16or32(h) % printHash16or32(h2));
+            if (h != h2) {
+		if (settings.printBuildTrace)
+		    printMsg(lvlError, format("@ hash-mismatch %1% %2% %3% %4%")
+			     % path % i->second.hashAlgo
+			     % printHash16or32(h) % printHash16or32(h2));
+                throw BuildError(format("hash mismatch for store item '%1%'") % path);
+	    }
         }
 
         /* Get rid of all weird permissions.  This also checks that
@@ -3157,11 +3157,14 @@ void SubstitutionGoal::finished()
                 throw Error(format("unknown hash algorithm in `%1%'") % expectedHashStr);
             Hash expectedHash = parseHash16or32(hashType, string(expectedHashStr, n + 1));
             Hash actualHash = hashType == htSHA256 ? hash.first : hashPath(hashType, destPath).first;
-            if (expectedHash != actualHash)
-                throw SubstError(format("hash mismatch in downloaded path `%1%'\n"
-					"  expected: %2%\n"
-					"  actual:   %3%")
-                    % storePath % printHash(expectedHash) % printHash(actualHash));
+            if (expectedHash != actualHash) {
+		if (settings.printBuildTrace)
+		    printMsg(lvlError, format("@ hash-mismatch %1% %2% %3% %4%")
+			     % storePath % "sha256"
+			     % printHash16or32(expectedHash)
+			     % printHash16or32(actualHash));
+                throw SubstError(format("hash mismatch for substituted item `%1%'") % storePath);
+	    }
         }
 
     } catch (SubstError & e) {

@@ -902,7 +902,7 @@ private (reserved).")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.17")
+  (version "1.18")
   (source
     (origin
       (method url-fetch)
@@ -914,7 +914,7 @@ private (reserved).")
                        version ".tar.gz")))
       (sha256
         (base32
-          "1q62w9rf2w8kjzqagzr0rdn20ybl8gj3l6cdq4k8fw0sxa7zsycs"))))
+          "1lx902cbvlfl63bqfdrnyavmfwbjvrfdnwgdc1dgs1wpzja19kjj"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))
@@ -927,7 +927,7 @@ private (reserved).")
 (define-public perl-socket6
  (package
   (name "perl-socket6")
-  (version "0.28")
+  (version "0.29")
   (source
     (origin
       (method url-fetch)
@@ -937,7 +937,7 @@ private (reserved).")
              ".tar.gz"))
       (sha256
         (base32
-          "11j5jzqbzmwlws9zals43ry2f1nw9qy6im7yhn9ck5rikywrmm5z"))))
+          "054izici8klfxs8hr5rljib28plijpsfymy99xbzdp047bx1b2a6"))))
   (build-system perl-build-system)
   (arguments
    `(#:phases

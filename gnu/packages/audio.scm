@@ -321,7 +321,7 @@ engineers, musicians, soundtrack editors and composers.")
               ;; "sbsms"
               ))
            #t))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)
        ("gtk+" ,gtk+)
@@ -410,16 +410,12 @@ engineers, musicians, soundtrack editors and composers.")
                (("../lib-src/portmidi/porttime/porttime.h") "porttime.h"))
              (substitute* "src/prefs/MidiIOPrefs.cpp"
                (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h"))
-             #t))
-         (add-after 'install 'wrap-program
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/audacity")
-               ;; For GtkFileChooserDialog.
-               `("GSETTINGS_SCHEMA_DIR" =
-                 (,(string-append (assoc-ref inputs "gtk+")
-                                  "/share/glib-2.0/schemas"))))
              #t)))
+       ;; The translation Makefile generation is performed improperly for
+       ;; out-of-tree builds.
+       ;; XXX This can be removed if the glib-or-gkt-build-system
+       ;; switches to #:out-of-source? #t. See <https://bugs.gnu.org/32887>.
+       #:out-of-source? #f
        ;; The test suite is not "well exercised" according to the developers,
        ;; and fails with various errors.  See
        ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
@@ -453,7 +449,14 @@ tools.")
              "CXXFLAGS=-std=gnu++11"
              "CFLAGS=-std=gnu++11"
              (string-append "prefix=" %output)
-             (string-append "pkgdatadir=" %output "/share/azr3-jack"))))
+             (string-append "pkgdatadir=" %output "/share/azr3-jack"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'fix-timestamp
+           (lambda _
+             (let ((early-1980 315619200)) ; 1980-01-02 UTC
+               (utime "azr3.1" early-1980 early-1980))
+             #t)))))
     (inputs
      `(("gtkmm" ,gtkmm-2)
        ("lvtk" ,lvtk)
@@ -2244,7 +2247,7 @@ aimed at audio/musical applications.")
        ("vamp" ,vamp)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://breakfastquay.com/rubberband/")
+    (home-page "https://breakfastquay.com/rubberband/")
     (synopsis "Audio time-stretching and pitch-shifting library")
     (description
      "Rubber Band is a library and utility program that permits changing the

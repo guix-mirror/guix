@@ -33,3 +33,17 @@ Fixes needed when avoiding bundled libraries.
      '/dom/base',
      '/dom/storage',
      '/ipc/glue',
+--- icecat-60.2.0/media/webrtc/trunk/webrtc/base/rtc_task_queue_gn/moz.build.orig	2018-09-13 17:40:54.000000000 -0400
++++ icecat-60.2.0/media/webrtc/trunk/webrtc/base/rtc_task_queue_gn/moz.build	2018-09-23 21:33:12.319975105 -0400
+@@ -130,11 +130,6 @@
+     DEFINES["WEBRTC_POSIX"] = True
+     DEFINES["_FILE_OFFSET_BITS"] = "64"
+ 
+-    LOCAL_INCLUDES += [
+-        "/ipc/chromium/src/third_party/libevent/include/",
+-        "/ipc/chromium/src/third_party/libevent/linux/"
+-    ]
+-
+     UNIFIED_SOURCES += [
+         "/media/webrtc/trunk/webrtc/base/task_queue_libevent.cc",
+         "/media/webrtc/trunk/webrtc/base/task_queue_posix.cc"

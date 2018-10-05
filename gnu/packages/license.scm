@@ -61,7 +61,7 @@ Regexp::Pattern is a convention for organizing reusable regex patterns.")
 (define-public perl-string-copyright
   (package
     (name "perl-string-copyright")
-    (version "0.003005")
+    (version "0.003006")
     (source
      (origin
        (method url-fetch)
@@ -70,7 +70,7 @@ Regexp::Pattern is a convention for organizing reusable regex patterns.")
              version ".tar.gz"))
        (sha256
         (base32
-         "12c6x4c10gr46ryc3dpwgfi6wggmgy4a1ls2hwhcpdm3wvzy5619"))))
+         "0fzymv065nn3glwnw34nkyadzw2dh4rcz8avmki4zrnk4k45m01a"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-number-range" ,perl-number-range)))

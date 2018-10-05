@@ -665,7 +665,7 @@ servers or clients for more complicated applications.")
 (define-public perl-crypt-openssl-rsa
  (package
   (name "perl-crypt-openssl-rsa")
-  (version "0.30")
+  (version "0.31")
   (source
     (origin
       (method url-fetch)
@@ -675,7 +675,7 @@ servers or clients for more complicated applications.")
              ".tar.gz"))
       (sha256
         (base32
-          "1b19kaaw4wda8dy6kjiwqa2prpbs2dqcyjyj9zdh5wbs74qkbq93"))))
+          "0djl5i6kibl7862b6ih29q8dhg5zpwzq77q9j8hp6xngshx40ws1"))))
   (build-system perl-build-system)
   (native-inputs
    `(("perl-crypt-openssl-guess" ,perl-crypt-openssl-guess)))
@@ -826,7 +826,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.7.6")
+    (version "2.13.0")
     (source
      (origin
        (method url-fetch)
@@ -836,13 +836,14 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "0fl2nrxvlgx9ja7yy3kd1zadpr98fxbvn3f6fl2mj87gryhkfqlk"))))
+         "1nh6xfyxs3mnnpgc6pancvdhv6ihz9lhsxdlg90gqa8n5r6lwfsr"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
        (list "-DUSE_SHARED_MBEDTLS_LIBRARY=ON")))
     (native-inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("python" ,python)))
     (synopsis "Small TLS library")
     (description
      "@code{mbed TLS}, formerly known as PolarSSL, makes it trivially easy
@@ -852,21 +853,38 @@ coding footprint.")
     (home-page "https://tls.mbed.org")
     (license license:asl2.0)))
 
+;; The Hiawatha Web server requires some specific features to be enabled.
+(define-public mbedtls-for-hiawatha
+  (hidden-package
+   (package
+     (inherit mbedtls-apache)
+     (arguments
+      (substitute-keyword-arguments
+          `(#:phases
+            (modify-phases %standard-phases
+              (add-after 'configure 'configure-extra-features
+                (lambda _
+                  (for-each (lambda (feature)
+                              (invoke "scripts/config.pl" "set" feature))
+                            (list "MBEDTLS_THREADING_C"
+                                  "MBEDTLS_THREADING_PTHREAD"))
+                  #t)))
+            ,@(package-arguments mbedtls-apache)))))))
+
 (define-public ghc-tls
   (package
     (name "ghc-tls")
-    (version "1.3.8")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "tls/tls-" version ".tar.gz"))
               (sha256
                (base32
-                "1rdidf18i781c0vdvy9yn79yh08hmcacf6fp3sgghyiy3h0wyh5l"))))
+                "1y083724mym28n6xfaz7pcc7zqxdhjpaxpbvzxfbs25qq2px3smv"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-mtl" ,ghc-mtl)
-       ("ghc-cereal" ,ghc-cereal)
+     `(("ghc-cereal" ,ghc-cereal)
        ("ghc-data-default-class" ,ghc-data-default-class)
        ("ghc-memory" ,ghc-memory)
        ("ghc-cryptonite" ,ghc-cryptonite)

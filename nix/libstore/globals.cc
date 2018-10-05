@@ -42,7 +42,6 @@ Settings::Settings()
     syncBeforeRegistering = false;
     useSubstitutes = true;
     useChroot = false;
-    useSshSubstituter = false;
     impersonateLinux26 = false;
     keepLog = true;
 #if HAVE_BZLIB_H
@@ -60,7 +59,6 @@ Settings::Settings()
     envKeepDerivations = false;
     lockCPU = getEnv("NIX_AFFINITY_HACK", "1") == "1";
     showTrace = false;
-    enableImportNative = false;
 }
 
 
@@ -142,11 +140,6 @@ void Settings::update()
     _get(gcKeepDerivations, "gc-keep-derivations");
     _get(autoOptimiseStore, "auto-optimise-store");
     _get(envKeepDerivations, "env-keep-derivations");
-    _get(sshSubstituterHosts, "ssh-substituter-hosts");
-    _get(useSshSubstituter, "use-ssh-substituter");
-    _get(logServers, "log-servers");
-    _get(enableImportNative, "allow-unsafe-native-code-during-evaluation");
-    _get(useCaseHack, "use-case-hack");
 
     string subs = getEnv("NIX_SUBSTITUTERS", "default");
     if (subs == "default") {
@@ -157,8 +150,6 @@ void Settings::update()
 #endif
         substituters.push_back(nixLibexecDir + "/nix/substituters/download-using-manifests.pl");
         substituters.push_back(nixLibexecDir + "/nix/substituters/download-from-binary-cache.pl");
-        if (useSshSubstituter)
-            substituters.push_back(nixLibexecDir + "/nix/substituters/download-via-ssh");
     } else
         substituters = tokenizeString<Strings>(subs, ":");
 }

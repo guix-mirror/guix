@@ -24,6 +24,7 @@
 
 (define-module (guix scripts package)
   #:use-module (guix ui)
+  #:use-module (guix status)
   #:use-module (guix store)
   #:use-module (guix grafts)
   #:use-module (guix derivations)
@@ -330,7 +331,8 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
     (graft? . #t)
     (substitutes? . #t)
     (build-hook? . #t)
-    (print-build-trace? . #t)))
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)))
 
 (define (show-help)
   (display (G_ "Usage: guix package [OPTION]...
@@ -941,15 +943,12 @@ processed, #f otherwise."
     (or (process-query opts)
         (parameterize ((%store  (open-connection))
                        (%graft? (assoc-ref opts 'graft?)))
-          (set-build-options-from-command-line (%store) opts)
-
-          (parameterize ((%guile-for-build
-                          (package-derivation
-                           (%store)
-                           (if (assoc-ref opts 'bootstrap?)
-                               %bootstrap-guile
-                               (canonical-package guile-2.2))))
-                         (current-build-output-port
-                          (build-output-port #:verbose? verbose?
-                                             #:port (duplicate-port (current-error-port) "w"))))
-            (process-actions (%store) opts))))))
+          (with-status-report print-build-event/quiet
+            (set-build-options-from-command-line (%store) opts)
+            (parameterize ((%guile-for-build
+                            (package-derivation
+                             (%store)
+                             (if (assoc-ref opts 'bootstrap?)
+                                 %bootstrap-guile
+                                 (canonical-package guile-2.2)))))
+              (process-actions (%store) opts)))))))
