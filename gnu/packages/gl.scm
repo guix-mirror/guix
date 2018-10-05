@@ -224,7 +224,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "18.1.5")
+    (version "18.2.2")
     (source
       (origin
         (method url-fetch)
@@ -236,7 +236,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1sldv7l3g6jfx0yn16kvxlik1qiy037lypdqpvsqc0v6lvqydnv9"))
+          "1i3ky3d210vi3f5hlr9la1kspdyv093npndxsbzdklw95aqq5fn3"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system gnu-build-system)
@@ -256,6 +256,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("libva" ,(force libva-without-mesa))
         ("libxml2" ,libxml2)
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
+        ("libxrandr" ,libxrandr)
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
             ((or "x86_64-linux" "i686-linux")
@@ -293,9 +294,6 @@ also known as DXTn or DXTC) for Mesa.")
          "--enable-gles2"
          "--enable-gbm"
          "--enable-shared-glapi"
-         ;; Without floating point texture support, drivers such as Nouveau
-         ;; are stuck at OpenGL 2.1 instead of OpenGL 3.0+.
-         "--enable-texture-float"
 
          ;; Enable Vulkan on i686-linux and x86-64-linux.
          ,@(match (%current-system)
