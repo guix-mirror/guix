@@ -148,6 +148,7 @@
   (package
     (name "python2")
     (version "2.7.14")
+    (replacement python-2/fixed)
     (source
      (origin
       (method url-fetch)
@@ -344,6 +345,18 @@ data types.")
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
 
+(define python-2/fixed
+  (package
+    (inherit python-2)
+    (source (origin
+              (inherit (package-source python-2))
+              (patches (append
+                        (origin-patches (package-source python-2))
+                        (search-patches "python2-CVE-2018-1060.patch"
+                                        "python2-CVE-2018-1061.patch"
+                                        "python2-CVE-2018-14647.patch"
+                                        "python2-CVE-2018-1000802.patch")))))))
+
 (define-public python2-called-python
   ;; Both 2.x and 3.x used to be called "python".  In commit
   ;; a7714d42de2c3082f3609d1e63c83d703fb39cf9 (March 2018), we renamed the
@@ -482,7 +495,7 @@ data types.")
 ;; Python (Tk -> libxcb -> Python.)
 
 (define-public python2-minimal
-  (package (inherit python-2)
+  (package/inherit python-2
     (name "python2-minimal")
     (outputs '("out"))
 
