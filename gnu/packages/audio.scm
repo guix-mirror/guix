@@ -1234,7 +1234,7 @@ PS, and DAB+.")
         `(list (string-append "prefix=" (assoc-ref %outputs "out"))
                "world"))))
     (native-inputs
-     `(("llvm" ,llvm-3.8-with-rtti)
+     `(("llvm" ,llvm-3.8)
        ("which" ,which)
        ("xxd" ,xxd)
        ("ctags" ,emacs-minimal)  ; for ctags

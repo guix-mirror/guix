@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
@@ -65,6 +65,7 @@
                            "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
                            "-DBUILD_SHARED_LIBS:BOOL=TRUE"
                            "-DLLVM_ENABLE_FFI:BOOL=TRUE"
+                           "-DLLVM_REQUIRES_RTTI=1" ; For some third-party utilities
                            "-DLLVM_INSTALL_UTILS=ON") ; Needed for rustc.
 
        ;; Don't use '-g' during the build, to save space.
@@ -278,18 +279,6 @@ code analysis tools.")
       (sha256
        (base32
         "1ybmnid4pw2hxn12ax5qa5kl1ldfns0njg8533y3mzslvd5cx0kf"))))))
-
-;; This is for Faust 2
-(define-public llvm-3.8-with-rtti
-  (package (inherit llvm-3.8)
-    (name "llvm-with-rtti")
-    (arguments
-     (substitute-keyword-arguments (package-arguments llvm)
-       ((#:configure-flags flags)
-        `(append '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
-                   "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
-                   "-DLLVM_REQUIRES_RTTI=1")
-                 ,flags))))))
 
 (define-public clang-runtime-3.8
   (clang-runtime-from-llvm
