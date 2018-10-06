@@ -357,6 +357,7 @@ data types.")
   (package (inherit python-2)
     (name "python")
     (version "3.6.5")
+    (replacement python-3/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -456,6 +457,24 @@ data types.")
 ;; Current 3.x version.
 (define-public python-3 python-3.6)
 
+(define python-3/fixed
+  (package
+    (inherit python-3)
+    (source (origin
+              (inherit (package-source python-3))
+              (patches (append (origin-patches (package-source python-3))
+                               (search-patches "python-CVE-2018-14647.patch")))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-3)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'delete-broken-test
+             (lambda _
+               ;; Delete test which fails on recent kernels:
+               ;; <https://bugs.python.org/issue34587>.
+               (delete-file "Lib/test/test_socket.py")
+               #t))))))))
+
 ;; Current major version.
 (define-public python python-3)
 
@@ -474,7 +493,7 @@ data types.")
               ("zlib" ,zlib)))))
 
 (define-public python-minimal
-  (package (inherit python)
+  (package/inherit python
     (name "python-minimal")
     (outputs '("out"))
 
@@ -486,8 +505,7 @@ data types.")
               ("zlib" ,zlib)))))
 
 (define-public python-debug
-  (package
-    (inherit python)
+  (package/inherit python
     (name "python-debug")
     (outputs '("out" "debug"))
     (build-system gnu-build-system)
@@ -506,7 +524,7 @@ for more information.")))
 (define* (wrap-python3 python
                        #:optional
                        (name (string-append (package-name python) "-wrapper")))
-  (package (inherit python)
+  (package/inherit python
     (name name)
     (source #f)
     (build-system trivial-build-system)
