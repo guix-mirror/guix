@@ -132,14 +132,14 @@ with a flexible variety of user interfaces.")
 (define-public cppunit
   (package
     (name "cppunit")
-    (version "1.13.2")
+    (version "1.14.0")
     (source (origin
              (method url-fetch)
               (uri (string-append "http://dev-www.libreoffice.org/src/"
                                   name "-" version ".tar.gz"))
              (sha256
               (base32
-               "17s2kzmkw3kfjhpp72rfppyd7syr7bdq5s69syj2nvrlwd3d4irz"))))
+               "1027cyfx5gsjkdkaf6c2wnjh68882grw8n672018cj3vs9lrhmix"))))
     ;; Explicitly link with libdl. This is expected to be done by packages
     ;; relying on cppunit for their tests. However, not all of them do.
     ;; If we added the linker flag to such packages, we would pollute all
@@ -153,23 +153,6 @@ with a flexible variety of user interfaces.")
 unit testing.  Test output is in XML for automatic testing and GUI based for
 supervised tests.")
     (license license:lgpl2.1))) ; no copyright notices. LGPL2.1 is in the tarball
-
-;; Some packages require this newer version of cppunit.  However, it needs
-;; C++11 support, which is not enabled by default in our current GCC, and
-;; updating in-place would require adding CXXFLAGS to many dependent packages.
-;; Thus, keep as a separate variable for now.
-;; TODO: Remove this when our default GCC is updated to 6 or higher.
-(define-public cppunit-1.14
-  (package
-    (inherit cppunit)
-    (version "1.14.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://dev-www.libreoffice.org/src/"
-                                  "cppunit-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1027cyfx5gsjkdkaf6c2wnjh68882grw8n672018cj3vs9lrhmix"))))))
 
 ;; When dependent packages upgraded to use newer version of catch, this one should
 ;; be removed.

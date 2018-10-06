@@ -1011,7 +1011,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("cppunit" ,cppunit-1.14)
+       ("cppunit" ,cppunit)
        ("flex" ,flex)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
