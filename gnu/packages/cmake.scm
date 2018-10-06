@@ -116,7 +116,8 @@
              ;; Help cmake's bootstrap process to find system libraries
              (begin
                (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-               (setenv "CMAKE_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
+               (setenv "CMAKE_INCLUDE_PATH" (or (getenv "CPATH")
+                                                (getenv "C_INCLUDE_PATH")))
                #t)))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
