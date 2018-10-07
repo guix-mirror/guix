@@ -3766,7 +3766,7 @@ A modified copy of yajl is used, and included in the package.")
 (define-public ruby-yard
   (package
     (name "ruby-yard")
-    (version "0.9.6")
+    (version "0.9.16")
     (source
      (origin
        (method url-fetch)
@@ -3776,7 +3776,7 @@ A modified copy of yajl is used, and included in the package.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0rsz4bghgx7fryzyhlz8wlnd2m9xgyvf1xhrq58mnzfrrfm41bdg"))))
+         "0sqpbayy9sb406jh0zqg6qha1xds863qz9531dh6vp58hc00clfq"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -5672,27 +5672,6 @@ support the tests found in Prawn, a pure Ruby PDF generation library.")
     (description "This is an experimental gem that extracts low-level PDF
 functionality from Prawn.")
     (license license:gpl3+)))
-
-(define-public ruby-yard
-  (package
-    (name "ruby-yard")
-    (version "0.9.16")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "yard" version))
-              (sha256
-               (base32
-                "0lmmr1839qgbb3zxfa7jf5mzy17yjl1yirwlgzdhws4452gqhn67"))))
-    (build-system ruby-build-system)
-    (arguments `(#:test-target "spec"))
-    (home-page "https://yardoc.org/")
-    (synopsis "Ruby documentation tool")
-    (description "YARD is a documentation generation tool for the Ruby
-programming language.  It enables the user to generate consistent, usable
-documentation that can be exported to a number of formats very easily, and
-also supports extending for custom Ruby constructs such as custom class level
-definitions.")
-    (license license:expat)))
 
 (define-public ruby-prawn
   (package
