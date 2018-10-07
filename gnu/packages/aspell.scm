@@ -45,7 +45,8 @@
       (sha256
        (base32
         "1qgn5psfyhbrnap275xjfrzppf5a83fb67gpql0kfqv37al869gm"))
-      (patches (search-patches "aspell-default-dict-dir.patch"))))
+      (patches (search-patches "aspell-default-dict-dir.patch"
+                               "aspell-gcc-compat.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
