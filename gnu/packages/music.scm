@@ -1726,7 +1726,7 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.47-1")
+    (version "0.49-0")
     (source (origin
               (method url-fetch)
               (uri
@@ -1734,16 +1734,20 @@ export.")
                               version ".src.tar.gz"))
               (sha256
                (base32
-                "0k5s949kqd7yw97h3m8z81bjz32bis9m4ih8df1z0ymipnafca67"))))
+                "18rzqbpgnnvyslap7k0ly87aw1bbxkb0rk5agpr423ibs9slxq6j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
+       #:configure-flags
+       (list
+        "--enable-jack"
+        (string-append "--with-wish=" (string-append
+                                       (assoc-ref %build-inputs "tk")
+                                       "/bin/wish8.6")))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-wish-path
+         (add-before 'configure 'fix-with-path
            (lambda _
-             (substitute* "src/s_inter.c"
-               (("  wish ") (string-append "  " (which "wish8.6") " ")))
              (substitute* "tcl/pd-gui.tcl"
                (("exec wish ") (string-append "exec " (which "wish8.6") " ")))
              #t))
