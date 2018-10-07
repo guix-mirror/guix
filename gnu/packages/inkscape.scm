@@ -86,6 +86,13 @@
            (lambda _
              (substitute* "share/icons/application/CMakeLists.txt"
               (("gtk-update-icon-cache") "true"))
+             #t))
+         (add-before 'configure 'dont-use-system-includes
+           (lambda _
+             ;; Don't add redundant -isystem includes which confuses GCC7.
+             (substitute* "CMakeScripts/DefineDependsandFlags.cmake"
+               (("include_directories\\(SYSTEM")
+                "include_directories("))
              #t)))))
     (home-page "https://inkscape.org/")
     (synopsis "Vector graphics editor")
