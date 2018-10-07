@@ -3635,7 +3635,8 @@ throwing people around in pseudo-randomly generated buildings.")
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "sdl-union")
+                     (string-append (getenv "CPATH") ":"
+                                    (assoc-ref inputs "sdl-union")
                                     "/include/SDL"))))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
