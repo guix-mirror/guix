@@ -209,8 +209,7 @@ SAC is an interface for CSS parsers.")
     (build-system ant-build-system)
     (arguments
      `(#:build-target "jar-main"
-       ;; TODO: More detailed tests are available.
-       #:test-target "junit-basic"
+       #:test-target "junit"
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-reproducible
