@@ -11344,27 +11344,25 @@ the GIF result.")
       (license license:gpl3+))))
 
 (define-public emacs-google-translate
-  (let ((commit "d8b84a8359fcc697114d1298840e9a45b111c974"))
-    (package
-      (name "emacs-google-translate")
-      (version (git-version "0.11.14" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/atykhonov/google-translate")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "1qs4hcg1i2m487z50nnwgs0sa2xj4lpgizbrvi2yda0mf3m75fgc"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/atykhonov/google-translate")
-      (synopsis "Emacs interface to Google Translate")
-      (description
-       "This packages provides an Emacs interface to the Google Translate
+  (package
+    (name "emacs-google-translate")
+    (version "0.11.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/atykhonov/google-translate/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zxvfagbaf5mxi528mz33c8vxdk86wj0xx5y2jfy97wi8dzrwn3g"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/atykhonov/google-translate")
+    (synopsis "Emacs interface to Google Translate")
+    (description
+     "This packages provides an Emacs interface to the Google Translate
 on-line service.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-company
   (let ((commit "acc9c7901e094c1591327a0db1ec7a439f67a84d"))
