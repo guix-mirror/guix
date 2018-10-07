@@ -2429,6 +2429,47 @@ and managing stations, can be controlled remotely via fifo, and can run
 event-based scripts for scrobbling, notifications, etc.")
     (license license:expat)))
 
+(define-public picard
+  (package
+    (name "picard")
+    (version "2.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://musicbrainz.osuosl.org/pub/musicbrainz/"
+                    "picard/picard-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ds3ylpqn717fnzcjrfn05v5xram01bj6n3hwn9igmkd1jgf8vhc"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "picard/const/__init__.py"
+               (("pyfpcalc")
+                (string-append
+                 "pyfpcalc', '"
+                 (assoc-ref inputs "chromaprint") "/bin/fpcalc")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "python" "setup.py" "install"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "--root=/"))))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (inputs
+     `(("chromaprint" ,chromaprint)
+       ("python-pyqt" ,python-pyqt)
+       ("python-mutagen" ,python-mutagen)))
+    (home-page "https://picard.musicbrainz.org/")
+    (synopsis "Graphical music tagging application")
+    (description
+     "MusicBrainz Picard is a music tagging application, supporting multiple
+formats, looking up tracks through metadata and audio fingerprints.")
+    (license license:gpl2+)))
+
 (define-public python-mutagen
   (package
     (name "python-mutagen")
