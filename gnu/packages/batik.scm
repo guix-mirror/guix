@@ -88,3 +88,71 @@ public interface TimeEvent extends Event {
     (description "This package provides a SAC interface by the W3C.
 SAC is an interface for CSS parsers.")
     (license license:w3c)))
+
+(define-public java-w3c-svg-1.0
+  (package
+    (name "java-w3c-svg")
+    (version "20010904")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://www.w3.org/TR/2001/REC-SVG-" version
+                            "/java-binding.zip"))
+        (sha256
+         (base32
+          "0gnxvx51bg6ijplf6l2q0i1m07101f7fickawshfygnsdjqfdnbp"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "w3c-svg.jar"
+       #:source-dir "."
+       #:tests? #f ; No tests exist.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (invoke "unzip" source)))
+         (add-after 'unpack 'patch-interface
+           (lambda _
+             ;; Make it compatible with batik.
+             ;; This is equivalent to usingxml commons externals'
+             ;; "externals" part from https://xerces.apache.org/mirrors.cgi
+             (substitute* "SVGFEConvolveMatrixElement.java"
+              (("public SVGAnimatedLength[ ]*getKernelUnitLength")
+               "public SVGAnimatedNumber getKernelUnitLength"))
+             (substitute* "SVGFEMorphologyElement.java"
+              (("public SVGAnimatedLength[ ]*getRadius")
+               "public SVGAnimatedNumber getRadius"))
+             (call-with-output-file "EventListenerInitializer.java"
+               (lambda (port)
+                 (format port "
+// License: http://www.apache.org/licenses/LICENSE-2.0
+package org.w3c.dom.svg;
+public interface EventListenerInitializer {
+    public void initializeEventListeners(SVGDocument doc);
+}
+
+")))
+             #t)))))
+    (propagated-inputs
+     `(("java-w3c-smil" ,java-w3c-smil-3.0)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://www.w3.org/Style/CSS/SAC/")
+    (synopsis "W3C SVG interface")
+    (description "This package provides a SVG interface.")
+    (license license:w3c)))
+
+(define-public java-w3c-svg
+  (package
+    (inherit java-w3c-svg-1.0)
+    (version "20110816")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://www.w3.org/TR/2011/REC-SVG11-" version
+                            "/java-binding.zip"))
+        (sha256
+         (base32
+          "0jicqcrxav8ggs37amgvvwgc2f0qp1c5wns4rb2i3si83s2m09ns"))))
+    (propagated-inputs
+     `())))
