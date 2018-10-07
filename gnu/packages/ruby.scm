@@ -194,25 +194,6 @@ a focus on simplicity and productivity.")
                (("/bin/sh") (which "sh")))
              #t)))))))
 
-(define-public ruby-concurrent
-  (package
-    (name "ruby-concurrent")
-    (version "1.0.5")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "concurrent-ruby" version))
-              (sha256
-               (base32
-                "183lszf5gx84kcpb779v6a2y0mx9sssy8dgppng1z9a505nj1qcf"))))
-    (build-system ruby-build-system)
-    (arguments `(#:tests? #f)); No rakefile
-    (home-page "https://github.com/ruby-concurrency/concurrent-ruby")
-    (synopsis "Concurrency tools for Ruby")
-    (description "This gem provides concurrency tools for Ruby.  It provides
-a library of common thread-safe types and data-structures as well as abstractions
-for concurrency and communication between threads.")
-    (license license:expat)))
-
 (define-public ruby-highline
   (package
     (name "ruby-highline")
