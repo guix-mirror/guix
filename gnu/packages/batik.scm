@@ -186,3 +186,48 @@ public interface EventListenerInitializer {
     (description "This package provides a SAC interface by the W3C.
 SAC is an interface for CSS parsers.")
     (license license:w3c)))
+
+(define-public java-xmlgraphics-commons
+  (package
+    (name "java-xmlgraphics-commons")
+    (version "2.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "mirror://apache/xmlgraphics/commons/source/xmlgraphics-commons-"
+              version "-src.tar.gz"))
+        (sha256
+         (base32
+          "0a432a4ca3vgnbada5cy9mlmfzmq6hi4i176drfxrp17q2d43w23"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "jar-main"
+       ;; TODO: More detailed tests are available--but they need
+       ;; commons-xml-resolver.
+       ;; TODO: Provide commons-xml-resolver.
+       #:test-target "junit-basic"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             (substitute* "build.xml"
+              (("<attribute name=\"Build-Id\" value=\"[^\"]*\"")
+               "<attribute name=\"Build-Id\" value=\"\""))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-share (string-append out "/share/java")))
+               (for-each (lambda (name)
+                           (install-file name out-share))
+                         (find-files "build"
+                                     "xmlgraphics-commons.*\\.jar$"))
+               #t))))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://xmlgraphics.apache.org/commons/")
+    (synopsis "XMLGraphics constants")
+    (description "This package provides XMLGraphics constants (originally
+from @code{batik}).")
+    (license license:asl2.0)))
