@@ -234,6 +234,7 @@ SAC is an interface for CSS parsers.")
                #t))))))
     (native-inputs
      `(("java-apache-xml-commons-resolver" ,java-apache-xml-commons-resolver)
+       ("java-cglib" ,java-cglib)
        ("java-hamcrest" ,java-hamcrest-core)
        ("java-junit" ,java-junit)
        ("java-mockito" ,java-mockito-1)
