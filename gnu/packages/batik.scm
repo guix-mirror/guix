@@ -26,7 +26,8 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages java)
-  #:use-module (gnu packages textutils))
+  #:use-module (gnu packages textutils)
+  #:use-module (gnu packages xml))
 
 (define-public java-w3c-smil-3.0
   (package
@@ -199,13 +200,16 @@ SAC is an interface for CSS parsers.")
               version "-src.tar.gz"))
         (sha256
          (base32
-          "0a432a4ca3vgnbada5cy9mlmfzmq6hi4i176drfxrp17q2d43w23"))))
+          "0a432a4ca3vgnbada5cy9mlmfzmq6hi4i176drfxrp17q2d43w23"))
+        (modules '((guix build utils)))
+        (snippet
+         `(begin
+            (delete-file-recursively "lib")
+            #t))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "jar-main"
-       ;; TODO: More detailed tests are available--but they need
-       ;; commons-xml-resolver.
-       ;; TODO: Provide commons-xml-resolver.
+       ;; TODO: More detailed tests are available.
        #:test-target "junit-basic"
        #:phases
        (modify-phases %standard-phases
@@ -214,6 +218,11 @@ SAC is an interface for CSS parsers.")
              (substitute* "build.xml"
               (("<attribute name=\"Build-Id\" value=\"[^\"]*\"")
                "<attribute name=\"Build-Id\" value=\"\""))
+             #t))
+         (add-before 'build 'prepare-build-directories
+           (lambda _
+             (mkdir "lib")
+             (mkdir "lib/build")
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -225,7 +234,14 @@ SAC is an interface for CSS parsers.")
                                      "xmlgraphics-commons.*\\.jar$"))
                #t))))))
     (native-inputs
-     `(("java-junit" ,java-junit)))
+     `(("java-apache-xml-commons-resolver" ,java-apache-xml-commons-resolver)
+       ("java-hamcrest" ,java-hamcrest-core)
+       ("java-junit" ,java-junit)
+       ("java-mockito" ,java-mockito-1)
+       ("java-objenesis" ,java-objenesis)))
+    (propagated-inputs
+     `(("java-commons-io" ,java-commons-io)
+       ("java-commons-logging-minimal" ,java-commons-logging-minimal)))
     (home-page "https://xmlgraphics.apache.org/commons/")
     (synopsis "XMLGraphics constants")
     (description "This package provides XMLGraphics constants (originally
