@@ -77,6 +77,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/backup.scm			\
   %D%/packages/base.scm				\
   %D%/packages/bash.scm				\
+  %D%/packages/batik.scm			\
   %D%/packages/bdw-gc.scm			\
   %D%/packages/benchmark.scm			\
   %D%/packages/bioconductor.scm			\
