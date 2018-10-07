@@ -156,3 +156,33 @@ public interface EventListenerInitializer {
           "0jicqcrxav8ggs37amgvvwgc2f0qp1c5wns4rb2i3si83s2m09ns"))))
     (propagated-inputs
      `())))
+
+(define-public java-w3c-sac
+  (package
+    (name "java-w3c-sac")
+    (version "1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://www.w3.org/2002/06/sacjava-" version
+                            ".zip"))
+        (sha256
+         (base32
+          "1djp2nnzf8jchnwz1ij9i5jfx4cg1ryf3lbw133yzjy0wkhcla52"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "w3c-sac.jar"
+       #:source-dir "sac-1.3"
+       #:tests? #f ; No tests exist.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (invoke "unzip" source))))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://www.w3.org/Style/CSS/SAC/")
+    (synopsis "W3C SAC interface for CSS parsers in Java")
+    (description "This package provides a SAC interface by the W3C.
+SAC is an interface for CSS parsers.")
+    (license license:w3c)))
