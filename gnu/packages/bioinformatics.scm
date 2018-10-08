@@ -14057,3 +14057,63 @@ absolute GSEA.")
     (description "Ngless is a domain-specific language for
 @dfn{next-generation sequencing} (NGS) data processing.")
     (license license:expat)))
+
+(define-public filtlong
+  ;; The recommended way to install is to clone the git repository
+  ;; https://github.com/rrwick/Filtlong#installation
+  ;; and the lastest release is more than nine months old
+  (let ((commit "d1bb46dfe8bc7efe6257b5ce222c04bfe8aedaab")
+        (revision "1"))
+    (package
+      (name "filtlong")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rrwick/Filtlong.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1xr92r820x8qlkcr3b57iw223yq8vjgyi42jr79w2xgw47qzr575"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; no check target
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (scripts (string-append out "/share/filtlong/scripts")))
+                 (install-file "bin/filtlong" bin)
+                 (install-file "scripts/histogram.py" scripts)
+                 (install-file "scripts/read_info_histograms.sh" scripts))
+               #t))
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (path (getenv "PYTHONPATH")))
+                 (wrap-program (string-append out
+                                              "/share/filtlong/scripts/histogram.py")
+                   `("PYTHONPATH" ":" prefix (,path))))
+               #t))
+           (add-before 'check 'patch-tests
+             (lambda _
+               (substitute* "scripts/read_info_histograms.sh"
+                 (("awk") (which "gawk")))
+               #t)))))
+      (inputs
+       `(("gawk" ,gawk)                 ;for read_info_histograms.sh
+         ("python" ,python-2)           ;required for histogram.py
+         ("zlib" ,zlib)))
+      (home-page "https://github.com/rrwick/Filtlong/")
+      (synopsis "Tool for quality filtering of Nanopore and PacBio data")
+      (description
+       "The Filtlong package is a tool for filtering long reads by quality.
+It can take a set of long reads and produce a smaller, better subset.  It uses
+both read length (longer is better) and read identity (higher is better) when
+choosing which reads pass the filter.")
+      (license (list license:gpl3       ;filtlong
+                     license:asl2.0))))) ;histogram.py
