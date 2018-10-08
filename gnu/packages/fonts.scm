@@ -1328,3 +1328,27 @@ produce readable, high-quality publications.  The font comes with regular and
 italics shapes.  This package provides only TrueType files (TTF).")
     (home-page "https://software.sil.org/gentium/")
     (license license:silofl1.1)))
+
+(define-public font-sil-charis
+  (package
+    (name "font-sil-charis")
+    (version "5.000")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://software.sil.org/downloads/r/charis/CharisSIL-"
+                    version ".zip"))
+              (sha256
+               (base32
+                "1zcvw37f1a7gkml3yfm6hxh93844llm7xj4w52600qq3ndrm8gjy"))))
+    ;; As for Gentium (see above), the TTF files are considered source.
+    (build-system font-build-system)
+    (synopsis "Serif font for the Cyrillic and Latin alphabets")
+    (description
+     "Charis SIL is a Unicode-based font family that supports the wide range
+of languages that use the Latin and Cyrillic scripts.  It is specially
+designed to make long texts pleasant and easy to read, even in less than ideal
+reproduction and display environments.  This package provides only TrueType
+files (TTF).")
+    (home-page "https://software.sil.org/charis/")
+    (license license:silofl1.1)))
