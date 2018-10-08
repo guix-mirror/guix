@@ -4397,7 +4397,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.21.0")
+    (version "0.22.1")
     (source
      (origin
        (method url-fetch)
@@ -4411,7 +4411,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                             version "-nodeps.tar.xz")))
        (sha256
         (base32
-         "0mmnkch8s9l7dh136yjvcyjr0vmyzv7z370rlcyir91qz6gg82n1"))
+         "1qc90wwbxvjzqq66n8kfr0a2ny7sfvv2n84si67jiv2887d0ws6k"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
