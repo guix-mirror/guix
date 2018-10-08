@@ -273,6 +273,15 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                     (string-append
                      "\"-Wl,-rpath=" gcclib "\", \"-lgcc_s\", ")))
 
+                 ;; XXX Commit 65fa2b615b72c1fa61a7 in the Go repo.  We do this
+                 ;; without a patch because ((guix packages) patch-and-repack)
+                 ;; resets file mtimes, and parts of Go's test suite rely on
+                 ;; those timestamps.
+                 ;; <https://github.com/golang/go/issues/26369>
+                 (substitute* "cmd/internal/objfile/elf.go"
+                   (("PT_LOAD")
+                     "PT_LOAD && p.Flags&elf.PF_X != 0"))
+
                  ;; Disable failing tests: these tests attempt to access
                  ;; commands or network resources which are neither available
                  ;; nor necessary for the build to succeed.
