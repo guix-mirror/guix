@@ -1302,3 +1302,29 @@ Kannada, Malayalam, Manipuri, Oriya, Punjabi, Tamil and Telugu scripts.")
      "Inria Sans and Inria Serif are the two members of a type family designed
 for Inria, a public research institute in computer science and mathematics.")
     (license license:silofl1.1)))
+
+(define-public font-sil-gentium
+  (package
+    (name "font-sil-gentium")
+    (version "5.000")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://software.sil.org/downloads/r/gentium/GentiumPlus-"
+                    version ".zip"))
+              (sha256
+               (base32
+                "0m7189870hha217n1vgpmf89mwggrxkh679ffi1lxpnjggqi2n9k"))))
+    ;; Note: The zip file provides TTF files only, but the developer release,
+    ;; which contains additional files, has a 'SOURCES.txt' file that says
+    ;; that "the primary source files for the fonts are the fonts themselves".
+    ;; Thus it looks like the TTF can be considered source.
+    (build-system font-build-system)
+    (synopsis "Serif font for the Cyrillic, Greek, and Latin alphabets")
+    (description
+     "Gentium is a typeface family designed to enable the diverse ethnic
+groups around the world who use the Latin, Cyrillic and Greek scripts to
+produce readable, high-quality publications.  The font comes with regular and
+italics shapes.  This package provides only TrueType files (TTF).")
+    (home-page "https://software.sil.org/gentium/")
+    (license license:silofl1.1)))
