@@ -386,123 +386,9 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        ,@(package-native-inputs go-1.4)))
     (supported-systems %supported-systems)))
 
-(define-public go-1.10
-  (package
-    (inherit go-1.9)
-    (name "go")
-    (version "1.10.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://storage.googleapis.com/golang/"
-                           name version ".src.tar.gz"))
-       (sha256
-        (base32
-         "10ap5pan71y2hdwzv4cg8wx4sy8fkcz5520rm1ldjg25xmjlkr3g"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments go-1.9)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'prebuild
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
-                      (ld (string-append (assoc-ref inputs "libc") "/lib"))
-                      (loader (car (find-files ld "^ld-linux.+")))
-                      (net-base (assoc-ref inputs "net-base"))
-                      (tzdata-path
-                       (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
-                      (output (assoc-ref outputs "out")))
-
-                 ;; Removing net/ tests, which fail when attempting to access
-                 ;; network resources not present in the build container.
-                 (for-each delete-file
-                           '("net/listen_test.go"
-                             "net/parse_test.go"
-                             "net/cgo_unix_test.go"))
-
-                 (substitute* "os/os_test.go"
-                   (("/usr/bin") (getcwd))
-                   (("/bin/pwd") (which "pwd"))
-                   (("/bin/sh") (which "sh")))
-
-                 ;; Add libgcc to runpath
-                 (substitute* "cmd/link/internal/ld/lib.go"
-                   (("!rpath.set") "true"))
-                 (substitute* "cmd/go/internal/work/gccgo.go"
-                   (("cgoldflags := \\[\\]string\\{\\}")
-                    (string-append "cgoldflags := []string{"
-                                   "\"-rpath=" gcclib "\""
-                                   "}"))
-                   (("\"-lgcc_s\", ")
-                    (string-append
-                     "\"-Wl,-rpath=" gcclib "\", \"-lgcc_s\", ")))
-                 (substitute* "cmd/go/internal/work/gc.go"
-                   (("ldflags = setextld\\(ldflags, compiler\\)")
-                    (string-append
-                     "ldflags = setextld(ldflags, compiler)\n"
-                     "ldflags = append(ldflags, \"-r\")\n"
-                     "ldflags = append(ldflags, \"" gcclib "\")\n")))
-
-                 ;; Disable failing tests: these tests attempt to access
-                 ;; commands or network resources which are neither available
-                 ;; nor necessary for the build to succeed.
-                 (for-each
-                  (match-lambda
-                    ((file regex)
-                     (substitute* file
-                       ((regex all before test_name)
-                        (string-append before "Disabled" test_name)))))
-                  '(("net/net_test.go" "(.+)(TestShutdownUnix.+)")
-                    ("net/dial_test.go" "(.+)(TestDialTimeout.+)")
-                    ("os/os_test.go" "(.+)(TestHostname.+)")
-                    ("time/format_test.go" "(.+)(TestParseInSydney.+)")
-                    ("time/format_test.go" "(.+)(TestParseInLocation.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestCatStdin.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestCatGoodAndBadFile.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestExitStatus.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestPipes.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestStdinClose.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestIgnorePipeErrorOnSuccess.+)")
-                    ("syscall/syscall_unix_test.go" "(.+)(TestPassFD\\(.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles/areturn.+)")
-                    ("cmd/go/go_test.go" "(.+)(TestCoverageWithCgo.+)")
-                    ("cmd/go/go_test.go" "(.+)(TestTwoPkgConfigs.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestOutputStderrCapture.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestExtraFilesRace.+)")
-                    ("net/lookup_test.go" "(.+)(TestLookupPort.+)")
-                    ("syscall/exec_linux_test.go"
-                     "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")))
-
-                 ;; fix shebang for testar script
-                 ;; note the target script is generated at build time.
-                 (substitute* "../misc/cgo/testcarchive/carchive_test.go"
-                   (("#!/usr/bin/env") (string-append "#!" (which "env"))))
-
-                 (substitute* "net/lookup_unix.go"
-                   (("/etc/protocols") (string-append net-base "/etc/protocols")))
-                 (substitute* "net/port_unix.go"
-                   (("/etc/services") (string-append net-base "/etc/services")))
-                 (substitute* "time/zoneinfo_unix.go"
-                   (("/usr/share/zoneinfo/") tzdata-path))
-                 (substitute* (find-files "cmd" "\\.go")
-                   (("/lib(64)?/ld-linux.*\\.so\\.[0-9]") loader))
-                 #t)))
-           (replace 'set-bootstrap-variables
-             (lambda* (#:key outputs inputs #:allow-other-keys)
-               ;; Tell the build system where to find the bootstrap Go.
-               (let ((go  (assoc-ref inputs "go")))
-                 (setenv "GOROOT_BOOTSTRAP" go)
-                 (setenv "GOGC" "400")
-                 ;; Go 1.10 tries to write to $HOME in a test
-                 (setenv "HOME" "/tmp")
-                 #t)))))))))
-
 (define-public go-1.11
   (package
-    (inherit go-1.10)
+    (inherit go-1.9)
     (name "go")
     (version "1.11.1")
     (source
@@ -514,7 +400,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
         (base32
          "05qivf2f59pv4bfrmdr4m0xvswkmvvl9c5a2h5dy45g2k8b8r3sm"))))
     (arguments
-     (substitute-keyword-arguments (package-arguments go-1.10)
+     (substitute-keyword-arguments (package-arguments go-1.9)
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'prebuild
@@ -533,7 +419,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            '("net/listen_test.go"
                              "net/parse_test.go"
                              "net/cgo_unix_test.go"
-                             ;; A side affect of these test scripts is testing
+                             ;; A side effect of these test scripts is testing
                              ;; cgo. Attempts at using cgo flags and
                              ;; directives with these scripts as specified
                              ;; here (https://golang.org/cmd/cgo/) have not
@@ -616,7 +502,13 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                    (("/usr/share/zoneinfo/") tzdata-path))
                  (substitute* (find-files "cmd" "\\.go")
                    (("/lib(64)?/ld-linux.*\\.so\\.[0-9]") loader))
-                 #t)))))))))
+                 #t)))
+           (replace 'set-bootstrap-variables
+             (lambda* (#:key outputs inputs #:allow-other-keys)
+               ;; Tell the build system where to find the bootstrap Go.
+               (let ((go  (assoc-ref inputs "go")))
+                 (setenv "GOROOT_BOOTSTRAP" go)
+                 (setenv "GOGC" "400"))))))))))
 
 (define-public go go-1.9)
 
