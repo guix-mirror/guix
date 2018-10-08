@@ -735,7 +735,8 @@ measuring and checking the width of strings, with support east asian text.")
                                  unzip
                                  "/bin/unzip',")))
                ;; Makefile is wrong.
-               (chmod config #o644)))))))
+               (chmod config #o644)
+               #t))))))
     (synopsis "Recover text from @file{.docx} files, with good formatting")
     (description
      "@command{docx2txt} is a Perl based command line utility to convert
