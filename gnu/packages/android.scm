@@ -863,14 +863,14 @@ useful for reverse engineering, analysis of Android applications and more.")
 (define-public fdroidserver
   (package
     (name "fdroidserver")
-    (version "1.0.9")
+    (version "1.0.10")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fdroidserver" version))
         (sha256
          (base32
-          "0cwb1fmindw6v9jkiim9yn3496rk1pvnk94s1r0vz2hxgz16xp7n"))))
+          "0n6kkby65qzqdx1jn72grfffvr1w1j1rby5pwm9z8rymmsh8s0pm"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

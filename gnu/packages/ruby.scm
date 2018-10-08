@@ -1211,12 +1211,15 @@ standard output stream.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-tests
-          (lambda _
-            (substitute* "Rakefile"
-              (("system \"shindo") "system \"./bin/shindo")
-              ;; This test doesn't work, so we disable it.
-              (("fail \"The build_error test should fail") "#"))
-            #t)))))
+           (lambda _
+             (substitute* "tests/tests_helper.rb"
+               (("-rubygems") ""))
+             (substitute* "Rakefile"
+               (("system \"shindo") "system \"./bin/shindo")
+               ;; This test doesn't work, so we disable it.
+               (("fail \"The build_error test should fail") "#")
+               ((" -rubygems") ""))
+             #t)))))
     (propagated-inputs
      `(("ruby-formatador" ,ruby-formatador)))
     (synopsis "Simple depth first Ruby testing")
@@ -2911,6 +2914,11 @@ Ruby's large and slower test/unit.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test
+           (lambda -
+             (substitute* "tests/hsl_triple_test.rb"
+               (("0\\\\\\.0%")
+                "0\\.?0?%"))))
          (replace 'build
           (lambda _
             (invoke "gem" "build" "term-ansicolor.gemspec"))))))
@@ -5100,6 +5108,29 @@ are doing, you can fiddle with every last bit of your email directly.")
     (home-page "https://github.com/mikel/mail")
     (license license:expat)))
 
+(define-public ruby-mathn
+  (package
+    (name "ruby-mathn")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mathn" version))
+       (sha256
+        (base32
+         "1wn812llln9jzgybz2d7536q39z3gi99i6fi0j1dapcpzvhgrr0p"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "Extends math operations for increased precision")
+    (description
+     "This gem makes mathematical operations more precise in Ruby and
+integrates other mathematical standard libraries.  Prior to Ruby 2.5,
+@code{mathn} was part of the Ruby standard library.")
+    (home-page "https://github.com/ruby/mathn")
+    (license license:bsd-2)))
+
 (define-public ruby-code-statistics
   (package
     (name "ruby-code-statistics")
@@ -5448,8 +5479,16 @@ strings or files.")
        ("ruby-diffy" ,ruby-diffy)
        ("ruby-terminfo" ,ruby-terminfo)))
     (arguments
-     ;; No Rakefile
-     `(#:tests? #f))
+     `(;; This package contains tests for a sass implementation, and the to
+       ;; avoid any circular dependencies, the tests are not run here
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-test
+           (lambda _
+             (delete-file "spec/values/colors/alpha_hex-3.5/error")
+             (substitute* "spec/values/colors/alpha_hex-3.5/expected_output.css"
+               (("string") "color")))))))
     (home-page "https://github.com/sass/sass-spec")
     (synopsis "Test suite for Sass")
     (description "Sass Spec is a test suite for Sass.  Test cases are all in
@@ -5459,18 +5498,19 @@ the @file{spec} directory.")
 (define-public ruby-sass
   (package
     (name "ruby-sass")
-    (version "3.5.7")
+    (version "3.6.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "sass" version))
               (sha256
                (base32
-                "1sy7xsbgpcy90j5ynbq967yplffp74pvph3r8ivn2sv2b44q6i61"))))
+                "18c6prbw9wl8bqhb2435pd9s0lzarl3g7xf8pmyla28zblvwxmyh"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-sass-listen" ,ruby-sass-listen)))
     (native-inputs
-     `(("ruby-sass-spec" ,ruby-sass-spec)))
+     `(("ruby-sass-spec" ,ruby-sass-spec)
+       ("ruby-mathn" ,ruby-mathn)))
     (home-page "http://sass-lang.com/")
     (synopsis "CSS extension language")
     (description "Sass is a CSS extension language.  It extends CSS with

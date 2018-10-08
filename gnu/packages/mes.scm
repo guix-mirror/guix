@@ -63,15 +63,14 @@ extensive examples, including parsers for the Javascript and C99 languages.")
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version "0.17.1")
+      (version "0.18")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "mirror://gnu/mes/"
                                     "mes-" version ".tar.gz"))
-                (patches (search-patches "mes-nyacc-0.86.0.patch"))
                 (sha256
                  (base32
-                  "02g8zig53ffd0ai8kqhv2zj7bj2366a8hr6ydkwakmi2d1amyrna"))))
+                  "1dsaaqyanzsq9m5wrcd2bjhb3qd6928c9q97rg5r730pyqjwxyxf"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs

@@ -47,6 +47,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages pulseaudio)
@@ -186,7 +187,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.30")
+    (version "0.32")
     (source (origin
               (method url-fetch)
               (uri
@@ -195,11 +196,14 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "18qj3cgqczgfk334x0ywxwa1ckrk9fbjyp34n4zzcxwaifshrzp3"))))
+                "1b01q1pcaw5yyhvmlffc3h0r3w8qy7rhn55a7xj4qkcfqvs8ap08"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list "-Dcurses=ncurses")
+       ;; Otherwise, they are installed incorrectly, in
+       ;; '$out/share/man/man/man1'.
+       (list (string-append "-Dmandir=" (assoc-ref %outputs "out")
+                            "/share"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'expand-C++-include-path
@@ -211,11 +215,13 @@ player daemon.")
                (setenv path (string-append c++ ":" (getenv path)))
                #t))))))
     (inputs `(("gcc", gcc-8)            ; for its C++14 support
-              ("glib" ,glib)
+              ("boost" ,boost)
+              ("pcre" ,pcre)
               ("libmpdclient" ,libmpdclient)
               ("ncurses" ,ncurses)))
     (native-inputs `(("gettext" ,gettext-minimal) ; for xgettext
-                     ("pkg-config" ,pkg-config)))
+                     ("pkg-config" ,pkg-config)
+                     ("python-sphinx" ,python-sphinx)))
     (synopsis "Curses Music Player Daemon client")
     (description "ncmpc is a fully featured MPD client, which runs in a
 terminal using ncurses.")

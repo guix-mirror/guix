@@ -43,6 +43,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-crypto)
   #:use-module (gnu packages haskell-web)
@@ -3003,6 +3004,17 @@ Haskell library @code{regex-base}.")
         (base32
          "1sjkpkgv4phy5b5v2lr89x4vx4dh44pj0sbvlsp6n86w9v6v4jwb"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-dependencies
+           (lambda _
+             (substitute* "regex.cabal"
+               (("base-compat.*>=.*0.6.*")
+                "base-compat >= 0.6\n")
+               (("template-haskell.*>=.*2.7.*")
+                "template-haskell >= 2.7\n"))
+             #t)))))
     (inputs
      `(("ghc-base-compat" ,ghc-base-compat)
        ("ghc-hashable" ,ghc-hashable)
@@ -10576,6 +10588,533 @@ expose it from another module in the hierarchy.
 @end itemize")
     (license license:expat)))
 
+(define-public ghc-cairo
+  (package
+    (name "ghc-cairo")
+    (version "0.13.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/cairo/"
+                           "cairo-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wxylv4d8120ri0vgar168ikqa9m6533ipdwi38qlmxmw20ws2j2"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:modules ((guix build haskell-build-system)
+                  (guix build utils)
+                  (ice-9 match)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         ;; FIXME: This is a copy of the standard configure phase with a tiny
+         ;; difference: this package needs the -package-db flag to be passed
+         ;; to "runhaskell" in addition to the "configure" action, because it
+         ;; depends on gtk2hs-buildtools, which provide setup hooks.  Without
+         ;; this option the Setup.hs file cannot be evaluated.  The
+         ;; haskell-build-system should be changed to pass "-package-db" to
+         ;; "runhaskell" in any case.
+         (replace 'configure
+           (lambda* (#:key outputs inputs tests? (configure-flags '())
+                     #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (input-dirs (match inputs
+                                  (((_ . dir) ...)
+                                   dir)
+                                  (_ '())))
+                    (ghc-path (getenv "GHC_PACKAGE_PATH"))
+                    (params (append `(,(string-append "--prefix=" out))
+                                    `(,(string-append "--libdir=" out "/lib"))
+                                    `(,(string-append "--bindir=" out "/bin"))
+                                    `(,(string-append
+                                        "--docdir=" out
+                                        "/share/doc/" ((@@ (guix build haskell-build-system)
+                                                           package-name-version) out)))
+                                    '("--libsubdir=$compiler/$pkg-$version")
+                                    '("--package-db=../package.conf.d")
+                                    '("--global")
+                                    `(,@(map
+                                         (cut string-append "--extra-include-dirs=" <>)
+                                         (search-path-as-list '("include") input-dirs)))
+                                    `(,@(map
+                                         (cut string-append "--extra-lib-dirs=" <>)
+                                         (search-path-as-list '("lib") input-dirs)))
+                                    (if tests?
+                                        '("--enable-tests")
+                                        '())
+                                    configure-flags)))
+               (unsetenv "GHC_PACKAGE_PATH")
+               (apply invoke "runhaskell" "-package-db=../package.conf.d"
+                      "Setup.hs" "configure" params)
+               (setenv "GHC_PACKAGE_PATH" ghc-path)
+               #t))))))
+    (inputs
+     `(("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-text" ,ghc-text)
+       ("cairo" ,cairo)))
+    (native-inputs
+     `(("ghc-gtk2hs-buildtools" ,ghc-gtk2hs-buildtools)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://projects.haskell.org/gtk2hs/")
+    (synopsis "Haskell bindings to the Cairo vector graphics library")
+    (description
+     "Cairo is a library to render high quality vector graphics.  There exist
+various backends that allows rendering to Gtk windows, PDF, PS, PNG and SVG
+documents, amongst others.")
+    (license license:bsd-3)))
+
+(define-public ghc-chart-cairo
+  (package
+    (name "ghc-chart-cairo")
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/Chart-cairo/"
+                           "Chart-cairo-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0iany6lfyfb1cw0pxfs5aw5k0a6x41m6ql9ad9w59biwdckbsyqr"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-cairo" ,ghc-cairo)
+       ("ghc-colour" ,ghc-colour)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-operational" ,ghc-operational)
+       ("ghc-lens" ,ghc-lens)
+       ("ghc-chart" ,ghc-chart)))
+    (home-page "https://github.com/timbod7/haskell-chart/wiki")
+    (synopsis "Cairo backend for Charts")
+    (description "This package provides a Cairo vector graphics rendering
+backend for the Charts library.")
+    (license license:bsd-3)))
+
+(define-public ghc-atomic-write
+  (package
+    (name "ghc-atomic-write")
+    (version "0.2.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/atomic-write/atomic-write-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1iaq0hprxcv0sl1sgwcgmm87zraf738va1bciwnx2jkk3k1v9iyv"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-temporary" ,ghc-temporary)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-text" ,ghc-text)))
+    (native-inputs
+     `(("ghc-temporary" ,ghc-temporary)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-text" ,ghc-text)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/stackbuilders/atomic-write")
+    (synopsis "Atomically write to a file")
+    (description
+     "Atomically write to a file on POSIX-compliant systems while preserving
+permissions.  @code{mv} is an atomic operation.  This makes it simple to write
+to a file atomically just by using the @code{mv} operation.  However, this
+will destroy the permissions on the original file.  This library preserves
+permissions while atomically writing to a file.")
+    (license license:expat)))
+
+(define-public ghc-cereal-conduit
+  (package
+    (name "ghc-cereal-conduit")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "cereal-conduit/cereal-conduit-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1srr7agvgfw78q5s1npjq5sgynvhjgllpihiv37ylkwqm4c4ap6r"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-cereal" ,ghc-cereal)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/snoyberg/conduit")
+    (synopsis "Turn Data.Serialize Gets and Puts into Sources, Sinks, and Conduits")
+    (description
+     "This package turn @code{Data.Serialize} @code{Gets} and @code{Puts} into
+@code{Sources}, @code{Sinks}, and @code{Conduits}.")
+    (license license:bsd-3)))
+
+(define-public ghc-lzma
+  (package
+    (name "ghc-lzma")
+    (version "0.0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/lzma/"
+                           "lzma-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0i416gqi8j55nd1pqbkxvf3f6hn6fjys6gq98lkkxphva71j30xg"))))
+    (build-system haskell-build-system)
+    (arguments
+     '(#:tests? #f ; requires older versions of QuickCheck and tasty.
+       #:cabal-revision
+       ("3" "1sify6gnsalyp6dakfzi0mdy5jcz2kcp9jsdsgkmxd40nfzgd44m")))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (home-page "https://github.com/hvr/lzma")
+    (synopsis "LZMA/XZ compression and decompression")
+    (description
+     "This package provides a pure interface for compressing and
+decompressing LZMA streams of data represented as lazy @code{ByteString}s.  A
+monadic incremental interface is provided as well.")
+    (license license:bsd-3)))
+
+(define-public ghc-stm-conduit
+  (package
+    (name "ghc-stm-conduit")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/stm-conduit/"
+                           "stm-conduit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0paapljn7nqfzrx889y0n8sszci38mdiaxkgr0bb00ph9246rr7z"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-stm" ,ghc-stm)
+       ("ghc-stm-chans" ,ghc-stm-chans)
+       ("ghc-cereal" ,ghc-cereal)
+       ("ghc-cereal-conduit" ,ghc-cereal-conduit)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-async" ,ghc-async)
+       ("ghc-monad-loops" ,ghc-monad-loops)
+       ("ghc-unliftio" ,ghc-unliftio)))
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://github.com/cgaebel/stm-conduit")
+    (synopsis "Introduces conduits to channels and promotes using conduits concurrently")
+    (description
+     "This package provides two simple conduit wrappers around STM channels: a
+source and a sink.")
+    (license license:bsd-3)))
+
+(define-public ghc-bindings-dsl
+  (package
+    (name "ghc-bindings-dsl")
+    (version "1.0.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/bindings-DSL/"
+                           "bindings-DSL-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kqrd78nspl3lk4a0fqn47d8dirjg3b24dkvkigcrlb81hw35pk3"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/jwiegley/bindings-dsl/wiki")
+    (synopsis "FFI domain specific language, on top of hsc2hs")
+    (description
+     "This is a set of macros to be used when writing Haskell FFI.  They were
+designed to be able to fully describe C interfaces, so that @code{hsc2hs} can
+extract from them all Haskell code needed to mimic such interfaces.  All
+Haskell names used are automatically derived from C names, structures are
+mapped to Haskell instances of @code{Storable}, and there are also macros you
+can use with C code to help write bindings to inline functions or macro
+functions.")
+    (license license:bsd-3)))
+
+(define-public ghc-lzma-conduit
+  (package
+    (name "ghc-lzma-conduit")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/lzma-conduit/"
+                           "lzma-conduit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hm72da7xk9l3zxjh274yg444vf405djxqbkf3q3p2qhicmxlmg9"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-lzma" ,ghc-lzma)
+       ("ghc-resourcet" ,ghc-resourcet)))
+    (native-inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/alphaHeavy/lzma-conduit")
+    (synopsis "Conduit interface for lzma/xz compression")
+    (description
+     "This package provides a @code{Conduit} interface for the LZMA
+compression algorithm used in the @code{.xz} file format.")
+    (license license:bsd-3)))
+
+(define-public ghc-bzlib-conduit
+  (package
+    (name "ghc-bzlib-conduit")
+    (version "0.3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/bzlib-conduit/"
+                           "bzlib-conduit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fd2hnr782s7qgipazg2yxwia9qqhkvm9bcm90773c3zkxa13n23"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-bindings-dsl" ,ghc-bindings-dsl)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-resourcet" ,ghc-resourcet)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-random" ,ghc-random)))
+    (home-page "https://github.com/snoyberg/bzlib-conduit")
+    (synopsis "Streaming compression/decompression via conduits")
+    (description
+     "This package provides Haskell bindings to bzlib and Conduit support for
+streaming compression and decompression.")
+    (license license:bsd-3)))
+
+(define-public ghc-pqueue
+  (package
+    (name "ghc-pqueue")
+    (version "1.4.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "pqueue/pqueue-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zvwm1zcqqq5n101s1brjhgbay8rf9fviq6gxbplf40i63m57p1x"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://hackage.haskell.org/package/pqueue")
+    (synopsis "Reliable, persistent, fast priority queues")
+    (description
+     "This package provides a fast, reliable priority queue implementation
+based on a binomial heap.")
+    (license license:bsd-3)))
+
+(define-public ghc-conduit-algorithms
+  (package
+    (name "ghc-conduit-algorithms")
+    (version "0.0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "conduit-algorithms/conduit-algorithms-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "07gx2q3d1bbfw14q41rmqg0i4m018pci10lswc0k1ij6lw7sb9fd"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-async" ,ghc-async)
+       ("ghc-bzlib-conduit" ,ghc-bzlib-conduit)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-combinators" ,ghc-conduit-combinators)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-lzma-conduit" ,ghc-lzma-conduit)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-pqueue" ,ghc-pqueue)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-stm-conduit" ,ghc-stm-conduit)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-unliftio-core" ,ghc-unliftio-core)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-th" ,ghc-test-framework-th)))
+    (home-page "https://github.com/luispedro/conduit-algorithms#readme")
+    (synopsis "Conduit-based algorithms")
+    (description
+     "This package provides algorithms on @code{Conduits}, including higher
+level asynchronous processing and some other utilities.")
+    (license license:expat)))
+
+(define-public ghc-interpolate
+  (package
+    (name "ghc-interpolate")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/interpolate/"
+                           "interpolate-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gkaj98yz363v38fv78sqby236mp8yqwqcilx7kr2b9z0w3204bf"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-haskell-src-meta" ,ghc-haskell-src-meta)))
+    (native-inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("ghc-text" ,ghc-text)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/sol/interpolate")
+    (synopsis "String interpolation library")
+    (description "This package provides a string interpolation library for
+Haskell.")
+    (license license:expat)))
+
+(define-public ghc-hpack
+  (package
+    (name "ghc-hpack")
+    (version "0.28.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/hpack/"
+                           "hpack-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18w0h76jdp3mk9vin8da9iz3cwhcxmw787xy8wlh8bxcpcr16q5r"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-bifunctors" ,ghc-bifunctors)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-glob" ,ghc-glob)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-http-client-tls" ,ghc-http-client-tls)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-yaml" ,ghc-yaml)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-interpolate" ,ghc-interpolate)
+       ("ghc-mockery" ,ghc-mockery)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-temporary" ,ghc-temporary)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/sol/hpack")
+    (synopsis "Tools for an alternative Haskell package format")
+    (description
+     "Hpack is a format for Haskell packages.  It is an alternative to the
+Cabal package format and follows different design principles.  Hpack packages
+are described in a file named @code{package.yaml}.  Both @code{cabal2nix} and
+@code{stack} support @code{package.yaml} natively.  For other build tools the
+@code{hpack} executable can be used to generate a @code{.cabal} file from
+@code{package.yaml}.")
+    (license license:expat)))
+
+(define-public ghc-raw-strings-qq
+  (package
+    (name "ghc-raw-strings-qq")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "raw-strings-qq/raw-strings-qq-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1lxy1wy3awf52968iy5y9r5z4qgnn2sxkdrh7js3m9gadb11w09f"))))
+    (build-system haskell-build-system)
+    (native-inputs `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/23Skidoo/raw-strings-qq")
+    (synopsis "Raw string literals for Haskell")
+    (description
+     "This package provides a quasiquoter for raw string literals, i.e. string
+literals that don't recognise the standard escape sequences.  Basically, they
+make your code more readable by freeing you from the responsibility to escape
+backslashes.  They are useful when working with regular expressions,
+DOS/Windows paths and markup languages (such as XML).")
+    (license license:bsd-3)))
+
+(define-public ghc-inline-c
+  (package
+    (name "ghc-inline-c")
+    (version "0.6.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/inline-c/"
+                           "inline-c-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vbfrsqsi7mdziqsnj68bsqlwbqxxhvrmy9rv6w8z18d1m8w3n6h"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-Setup.hs
+           (lambda _
+             (with-output-to-file "Setup.hs"
+               (lambda _
+                 (display "\
+import Distribution.Simple
+main = defaultMain")))
+             #t)))))
+    (inputs
+     `(("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
+       ("ghc-cryptohash" ,ghc-cryptohash)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-parsers" ,ghc-parsers)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-raw-strings-qq" ,ghc-raw-strings-qq)
+       ("ghc-regex-posix" ,ghc-regex-posix)))
+    (home-page "http://hackage.haskell.org/package/inline-c")
+    (synopsis "Write Haskell source files including C code inline")
+    (description
+     "inline-c lets you seamlessly call C libraries and embed high-performance
+inline C code in Haskell modules.  Haskell and C can be freely intermixed in
+the same source file, and data passed to and from code in either language with
+minimal overhead.  No FFI required.")
+    (license license:expat)))
+
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
@@ -10640,5 +11179,189 @@ Haskell value or function.")
      "This package provides types and combinators for linear algebra on free
 vector spaces.")
     (license license:bsd-3)))
+
+(define-public ghc-safe-exceptions
+  (package
+    (name "ghc-safe-exceptions")
+    (version "0.1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "safe-exceptions/safe-exceptions-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0sd0zfsm9pcll5bzzj523rbn45adjrnavdkz52hgmdjjgdcdrk8q"))))
+    (build-system haskell-build-system)
+    (arguments
+     '(#:cabal-revision
+       ("4" "0fid41gishzsyb47wzxhd5falandfirqcp760hcja81qjpfmqd32")))
+    (inputs `(("ghc-exceptions" ,ghc-exceptions)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-void" ,ghc-void)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/fpco/safe-exceptions")
+    (synopsis "Safe, consistent, and easy exception handling")
+    (description "Runtime exceptions - as exposed in @code{base} by the
+@code{Control.Exception} module - have long been an intimidating part of the
+Haskell ecosystem.  This package is intended to overcome this.  It provides a
+safe and simple API on top of the existing exception handling machinery.  The
+API is equivalent to the underlying implementation in terms of power but
+encourages best practices to minimize the chances of getting the exception
+handling wrong.")
+    (license license:expat)))
+
+(define-public ghc-inline-c-cpp
+  (package
+    (name "ghc-inline-c-cpp")
+    (version "0.2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/inline-c-cpp/"
+                           "inline-c-cpp-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rk7fmpkmxw9hhwr8df29kadnf0ybnwj64ggdbnsdrpfyhnkisci"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'create-Setup.hs
+           (lambda _
+             (with-output-to-file "Setup.hs"
+               (lambda _
+                 (display "\
+import Distribution.Simple
+main = defaultMain")))
+             #t)))))
+    (inputs
+     `(("ghc-inline-c" ,ghc-inline-c)
+       ("ghc-safe-exceptions" ,ghc-safe-exceptions)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://hackage.haskell.org/package/inline-c-cpp")
+    (synopsis "Lets you embed C++ code into Haskell")
+    (description
+     "This package provides utilities to inline C++ code into Haskell using
+@code{inline-c}.")
+    (license license:expat)))
+
+(define-public ghc-bytestring-lexing
+  (package
+    (name "ghc-bytestring-lexing")
+    (version "0.5.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "bytestring-lexing/bytestring-lexing-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0wrzniawhgpphc6yx1v972gyqxdbv0pizaz9bafahrshyb9svy81"))))
+    (build-system haskell-build-system)
+    (home-page "http://code.haskell.org/~wren/")
+    (synopsis "Parse and produce literals from strict or lazy bytestrings")
+    (description
+     "This package provides tools to parse and produce literals efficiently
+from strict or lazy bytestrings.")
+    (license license:bsd-2)))
+
+(define-public ghc-configurator
+  (package
+    (name "ghc-configurator")
+    (version "0.3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "configurator/configurator-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1d1iq1knwiq6ia5g64rw5hqm6dakz912qj13r89737rfcxmrkfbf"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+    (home-page "http://github.com/bos/configurator")
+    (synopsis "Configuration management")
+    (description
+     "This package provides a configuration management library for programs
+and daemons.  The features include:
+
+@enumerate
+@item Automatic, dynamic reloading in response to modifications to
+  configuration files.
+@item A simple, but flexible, configuration language, supporting several of
+  the most commonly needed types of data, along with interpolation of strings
+  from the configuration or the system environment (e.g. @code{$(HOME)}).
+@item Subscription-based notification of changes to configuration properties.
+@item An @code{import} directive allows the configuration of a complex
+  application to be split across several smaller files, or common configuration
+  data to be shared across several applications.
+@end enumerate\n")
+    (license license:bsd-3)))
+
+(define-public ghc-file-embed
+  (package
+    (name "ghc-file-embed")
+    (version "0.0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/file-embed/"
+                           "file-embed-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lj164cnzqyd487mli91nnr7137a4h4qsasfwsnsh77sx12fpk9k"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/snoyberg/file-embed")
+    (synopsis "Use Template Haskell to embed file contents directly")
+    (description
+     "This package allows you to use Template Haskell to read a file or all
+the files in a directory, and turn them into @code{(path, bytestring)} pairs
+embedded in your Haskell code.")
+    (license license:bsd-3)))
+
+(define-public ghc-safeio
+  (package
+    (name "ghc-safeio")
+    (version "0.0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/safeio/"
+                           "safeio-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04g3070cbjdqj0h9l9ii6470xcbn40xfv4fr89a8yvnkdim9nyfm"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-combinators" ,ghc-conduit-combinators)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-resourcet" ,ghc-resourcet)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-th" ,ghc-test-framework-th)))
+    (home-page "https://github.com/luispedro/safeio")
+    (synopsis "Write output to disk atomically")
+    (description
+     "This package implements utilities to perform atomic output so as to
+avoid the problem of partial intermediate files.")
+    (license license:expat)))
 
 ;;; haskell.scm ends here

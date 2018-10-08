@@ -1,0 +1,32 @@
+Make sure the client respects the storage quota set by the server:
+
+https://github.com/borgbackup/borg/issues/4093
+
+Patch copied from upstream source repository:
+
+https://github.com/borgbackup/borg/commit/975cc33206e0e3644626fb7204c34d2157715b61
+
+From 975cc33206e0e3644626fb7204c34d2157715b61 Mon Sep 17 00:00:00 2001
+From: Manu <manu@snapdragon.cc>
+Date: Wed, 3 Oct 2018 23:47:36 +0800
+Subject: [PATCH] Add storage_quota for forced_result if set by serve command.
+
+---
+ src/borg/archiver.py | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/borg/archiver.py b/src/borg/archiver.py
+index 916725e7..279194c1 100644
+--- a/src/borg/archiver.py
++++ b/src/borg/archiver.py
+@@ -4276,6 +4276,7 @@ def get_args(self, argv, cmd):
+             result.restrict_to_paths = forced_result.restrict_to_paths
+             result.restrict_to_repositories = forced_result.restrict_to_repositories
+             result.append_only = forced_result.append_only
++            result.storage_quota = forced_result.storage_quota
+         return result
+ 
+     def parse_args(self, args=None):
+-- 
+2.19.1
+

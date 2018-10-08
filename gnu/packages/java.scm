@@ -9634,6 +9634,39 @@ Candidate Recommendation, and will correctly serialize XML 1.1 documents if
 the DOM level 3 load/save API's are in use.")
     (license license:asl2.0)))
 
+(define-public java-jakarta-regexp
+  (package
+    (name "java-jakarta-regexp")
+    (version "1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://archive.apache.org/dist/jakarta/regexp/jakarta-regexp-"
+              version ".tar.gz"))
+        (sha256
+         (base32
+          "0zg9rmyif48dck0cv6ynpxv23mmcsx265am1fnnxss7brgw0ms3r"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+          (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (out-share (string-append out "/share/java")))
+                (mkdir-p out-share)
+                (for-each (lambda (name)
+                            (install-file name out-share))
+                          (find-files "build" "^jakarta-regexp-.*\\.jar$"))
+                #t))))))
+    (home-page "https://attic.apache.org/projects/jakarta-regexp.html")
+    (synopsis "Regular expression parser generator for Java.")
+    (description "@code{jakarta-regexp} is an old regular expression parser
+generator for Java.")
+    (license license:asl2.0)))
+
 (define-public java-jline
   (package
     (name "java-jline")
