@@ -1777,6 +1777,42 @@ programming methods as well as for realizing complex systems for large-scale
 projects.")
     (license license:bsd-3)))
 
+(define-public libpd
+  (package
+    (name "libpd")
+    (version "0.11.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/libpd/libpd.git")
+                    (commit version)
+                    (recursive? #t)))   ; for the 'pure-data' submodule
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1bcg1d9iyf9n37hwwphmih0c8rd1xcqykil5z1cax6xfs76552nk"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "make" "install"
+                       (string-append "prefix=" out)
+                       ;; XXX: Fix the last 2 lines of 'install' target.
+                       "LIBPD_IMPLIB=NO"
+                       "LIBPD_DEF=NO")))))))
+    (home-page "http://libpd.cc/")
+    (synopsis "Pure Data as an embeddable audio synthesis library")
+    (description
+     "Libpd provides Pure Data as an embeddable audio synthesis library.  Its
+main purpose is to liberate raw audio rendering from audio and MIDI drivers.")
+    (license license:bsd-3)))
+
 (define-public portmidi
   (package
     (name "portmidi")
