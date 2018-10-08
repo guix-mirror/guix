@@ -39,6 +39,7 @@
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
+;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -12353,3 +12354,24 @@ with a handful of easy tweaks.
 scratch, and you think the Spacemacs theme looks good.
 @end itemize")
     (license license:gpl3+)))
+
+(define-public emacs-column-marker
+  (package
+    (name "emacs-column-marker")
+    (version "9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://www.emacswiki.org/emacs/download/column-marker.el")
+       (sha256 (base32 "05bv198zhqw5hqq6cr11mhz02dpca74hhp1ycwq369m0yb2naxy9"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/ColumnMarker")
+    (synopsis "Emacs mode for highlighting columns")
+    (description
+     "With @code{column-marker.el} you can highlight any number of text columns.
+Three such highlight column markers are provided by default.  This is
+especially useful for languages like COBOL or Fortran where certain columns
+have special meaning.  It is also handy for aligning text across long vertical
+distances.  Multi-column characters, such as @kbd{TAB} are treated
+correctly.")
+    (license license:gpl2+)))
