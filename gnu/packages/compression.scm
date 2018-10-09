@@ -1695,14 +1695,13 @@ or junctions, and always follows hard links.")
   (package
     (name "zstd")
     (version "1.3.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/facebook/zstd/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1iwxcpxg51yskiwfw5nhsflvcm3pk4184kkfpm61hsxniwa1cmbz"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/facebook/zstd/releases/download/"
+                           "v" version "/zstd-" version ".tar.gz"))
+       (sha256
+        (base32 "1525b31jmbiczjj1n58nckdzky4cdnbwcsil3zgy4cx03v0a0cp8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
