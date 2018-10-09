@@ -26,6 +26,7 @@
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix derivations)
+  #:use-module ((guix profiles) #:select (%profile-directory))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-37)
@@ -169,8 +170,7 @@ Show what and how will/would be built."
 
     (define age
       (match (false-if-not-found
-              (lstat (string-append (config-directory #:ensure? #f)
-                                    "/current")))
+              (lstat (string-append %profile-directory "/current-guix")))
         (#f    #f)
         (stat  (- (time-second (current-time time-utc))
                   (stat:mtime stat)))))

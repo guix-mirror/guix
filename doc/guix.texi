@@ -2831,7 +2831,7 @@ generation---i.e., the previous Guix---and so on:
 $ guix package -p ~/.config/guix/current --roll-back
 switched from generation 3 to 2
 $ guix package -p ~/.config/guix/current --delete-generations=1
-deleting /home/charlie/.config/guix/current-1-link
+deleting /var/guix/profiles/per-user/charlie/current-guix-1-link
 @end example
 
 The @command{guix pull} command is usually invoked with no arguments,

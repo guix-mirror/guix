@@ -227,6 +227,53 @@ Download and deploy the latest version of Guix.\n"))
 
 
 ;;;
+;;; Profile.
+;;;
+
+(define %current-profile
+  ;; The "real" profile under /var/guix.
+  (string-append %profile-directory "/current-guix"))
+
+(define %user-profile-directory
+  ;; The user-friendly name of %CURRENT-PROFILE.
+  (string-append (config-directory #:ensure? #f) "/current"))
+
+(define (migrate-generations profile directory)
+  "Migration the generations of PROFILE to DIRECTORY."
+  (format (current-error-port)
+          (G_ "Migrating profile generations to '~a'...~%")
+          %profile-directory)
+  (for-each (lambda (generation)
+              (let ((source (generation-file-name profile generation))
+                    (target (string-append directory "/current-guix-"
+                                           (number->string generation)
+                                           "-link")))
+                (rename-file source target)))
+            (profile-generations profile)))
+
+(define (ensure-default-profile)
+  (ensure-profile-directory)
+
+  ;; In 0.15.0+ we'd create ~/.config/guix/current-[0-9]*-link symlinks.  Move
+  ;; them to %PROFILE-DIRECTORY.
+  (unless (string=? %profile-directory
+                    (dirname (canonicalize-profile %user-profile-directory)))
+    (migrate-generations %user-profile-directory %profile-directory))
+
+  ;; Make sure ~/.config/guix/current points to /var/guix/profiles/….
+  (let ((link %user-profile-directory))
+    (unless (equal? (false-if-exception (readlink link))
+                    %current-profile)
+      (catch 'system-error
+        (lambda ()
+          (false-if-exception (delete-file link))
+          (symlink %current-profile link))
+        (lambda args
+          (leave (G_ "while creating symlink '~a': ~a~%")
+                 link (strerror (system-error-errno args))))))))
+
+
+;;;
 ;;; Queries.
 ;;;
 
@@ -438,9 +485,8 @@ Use '~/.config/guix/channels.scm' instead."))
                                           (list %default-options)))
             (cache    (string-append (cache-directory) "/pull"))
             (channels (channel-list opts))
-            (profile  (or (assoc-ref opts 'profile)
-                          (string-append (config-directory) "/current"))))
-
+            (profile  (or (assoc-ref opts 'profile) %current-profile)))
+       (ensure-default-profile)
        (cond ((assoc-ref opts 'query)
               (process-query opts profile))
              ((assoc-ref opts 'dry-run?)
