@@ -221,6 +221,10 @@ guix build -e "(begin
 guix build -e '#~(mkdir #$output)' -d
 guix build -e '#~(mkdir #$output)' -d | grep 'gexp\.drv'
 
+# Same with a file-like object.
+guix build -e '(computed-file "foo" #~(mkdir #$output))' -d
+guix build -e '(computed-file "foo" #~(mkdir #$output))' -d | grep 'foo\.drv'
+
 # Building from a package file.
 cat > "$module_dir/package.scm"<<EOF
 (use-modules (gnu))

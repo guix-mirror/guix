@@ -6365,9 +6365,8 @@ retrieved using the @option{--log-file} option.
 
 @item --file=@var{file}
 @itemx -f @var{file}
-
-Build the package or derivation that the code within @var{file}
-evaluates to.
+Build the package, derivation, or other file-like object that the code within
+@var{file} evaluates to (@pxref{G-Expressions, file-like objects}).
 
 As an example, @var{file} might contain a package definition like this
 (@pxref{Defining Packages}):
