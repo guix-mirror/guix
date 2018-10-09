@@ -341,11 +341,8 @@ and ALIST2 differ, display HEADING upfront."
   (display-new/upgraded-packages (package-alist gen1)
                                  (package-alist gen2)))
 
-(define (process-query opts)
-  "Process any query specified by OPTS."
-  (define profile
-    (string-append (config-directory) "/current"))
-
+(define (process-query opts profile)
+  "Process any query on PROFILE specified by OPTS."
   (match (assoc-ref opts 'query)
     (('list-generations pattern)
      (define (list-generations profile numbers)
@@ -445,7 +442,7 @@ Use '~/.config/guix/channels.scm' instead."))
                           (string-append (config-directory) "/current"))))
 
        (cond ((assoc-ref opts 'query)
-              (process-query opts))
+              (process-query opts profile))
              ((assoc-ref opts 'dry-run?)
               #t)                                 ;XXX: not very useful
              (else
