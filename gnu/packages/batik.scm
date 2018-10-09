@@ -23,6 +23,7 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system ant)
+  #:use-module (guix build utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages java)
@@ -155,6 +156,11 @@ public interface EventListenerInitializer {
         (sha256
          (base32
           "0jicqcrxav8ggs37amgvvwgc2f0qp1c5wns4rb2i3si83s2m09ns"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-w3c-svg-1.0)
+       ((#:phases phases)
+       `(modify-phases ,phases
+          (delete 'patch-interface)))))
     (propagated-inputs
      `())))
 
