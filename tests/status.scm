@@ -20,7 +20,9 @@
   #:use-module (guix status)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
-  #:use-module (srfi srfi-64))
+  #:use-module (srfi srfi-64)
+  #:use-module (rnrs bytevectors)
+  #:use-module (rnrs io ports))
 
 (test-begin "status")
 
@@ -111,5 +113,23 @@
       (display "Almost done!\n" port)
       (display "@ substituter-succeeded baz\n" port)
       (list first (get-status)))))
+
+(test-equal "build-output-port, UTF-8"
+  '((build-log "lambda is λ!\n"))
+  (let-values (((port get-status) (build-event-output-port cons '()))
+               ((bv)              (string->utf8 "lambda is λ!\n")))
+    (put-bytevector port bv)
+    (force-output port)
+    (get-status)))
+
+(test-equal "current-build-output-port, UTF-8 + garbage"
+  ;; What about a mixture of UTF-8 + garbage?
+  '((build-log "garbage: �lambda: λ\n"))
+  (let-values (((port get-status) (build-event-output-port cons '())))
+    (display "garbage: " port)
+    (put-bytevector port #vu8(128))
+    (put-bytevector port (string->utf8 "lambda: λ\n"))
+    (force-output port)
+    (get-status)))
 
 (test-end "status")

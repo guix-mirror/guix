@@ -34,6 +34,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (ice-9 binary-ports)
+  #:autoload   (ice-9 rdelim) (read-string)
   #:use-module (rnrs bytevectors)
   #:use-module ((system foreign)
                 #:select (bytevector->pointer pointer->bytevector))
@@ -429,6 +430,22 @@ ON-CHANGE can display the build status, build events, etc."
 (define %newline
   (char-set #\return #\newline))
 
+(define (maybe-utf8->string bv)
+  "Attempt to decode BV as UTF-8 string and return it.  Gracefully handle the
+case where BV does not contain only valid UTF-8."
+  (catch 'decoding-error
+    (lambda ()
+      (utf8->string bv))
+    (lambda _
+      ;; This is the sledgehammer but it's the only safe way we have to
+      ;; properly handle this.  It's expensive but it's rarely needed.
+      (let ((port (open-bytevector-input-port bv)))
+        (set-port-encoding! port "UTF-8")
+        (set-port-conversion-strategy! port 'substitute)
+        (let ((str (read-string port)))
+          (close-port port)
+          str)))))
+
 (define* (build-event-output-port proc #:optional (seed (build-status)))
   "Return an output port for use as 'current-build-output-port' that calls
 PROC with its current state value, initialized with SEED, on every build
@@ -464,7 +481,7 @@ The second return value is a thunk to retrieve the current state."
       (pointer->bytevector ptr count)))
 
   (define (write! bv offset count)
-    (let loop ((str (utf8->string (bytevector-range bv offset count))))
+    (let loop ((str (maybe-utf8->string (bytevector-range bv offset count))))
       (match (string-index str %newline)
         ((? integer? cr)
          (let ((tail (string-take str (+ 1 cr))))
