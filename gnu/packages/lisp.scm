@@ -3162,3 +3162,36 @@ settings ensure a very simple mode of operation, similar to that provided by
 
 (define-public ecl-cl-json
   (sbcl-package->ecl-package sbcl-cl-json))
+
+(define-public sbcl-unix-opts
+  (package
+    (name "sbcl-unix-opts")
+    (version "0.1.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libre-man/unix-opts")
+             (commit version)))
+       (file-name (git-file-name "unix-opts" version))
+       (sha256
+        (base32
+         "08djdi1ard09fijb7w9bdmhmwd98b1hzmcnjw9fqjiqa0g3b44rr"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://github.com/hankhero/cl-json")
+    (synopsis "Unix-style command line options parser")
+    (description
+     "This is a minimalistic parser of command line options.  The main
+advantage of the library is the ability to concisely define command line
+options once and then use this definition for parsing and extraction of
+command line arguments, as well as printing description of command line
+options (you get --help for free).  This way you don't need to repeat
+yourself.  Also, @command{unix-opts} doesn't depend on anything and allows to
+precisely control behavior of the parser via Common Lisp restarts.")
+    (license license:expat)))
+
+(define-public cl-unix-opts
+  (sbcl-package->cl-source-package sbcl-unix-opts))
+
+(define-public ecl-unix-opts
+  (sbcl-package->ecl-package sbcl-unix-opts))
