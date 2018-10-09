@@ -35,7 +35,6 @@
   #:use-module (gnu packages m4)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system asdf)
@@ -256,28 +255,31 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
 (define-public clisp
   (package
     (name "clisp")
-    (version "2.49-60")
+    (version "2.49-92")
     (source
      (origin
-       (method hg-fetch)
-       (uri (hg-reference
-             (url "http://hg.code.sf.net/p/clisp/clisp")
-             (changeset "clisp_2_49_60-2017-06-25")))
-       (file-name (string-append name "-" version "-checkout"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/gnu-clisp/clisp")
+             (commit "clisp-2.49.92-2018-02-18")))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0qjv3z274rbdmb941hy03hl63f4z7bmci234f8dyz4skgfr82d3i"))
-       (patches (search-patches "clisp-glibc-2.26.patch"
-                                "clisp-remove-failing-test.patch"))))
+        (base32 "0k2dmgl0miz3767iks4p0mvp6xw0ysyxhjpklyh11j010rmh6hqb"))
+       (patches (search-patches "clisp-remove-failing-test.patch"))))
     (build-system gnu-build-system)
     (inputs `(("libffcall" ,libffcall)
               ("ncurses" ,ncurses)
               ("readline" ,readline)
               ("libsigsegv" ,libsigsegv)))
     (arguments
-     '(#:configure-flags '("--enable-portability"
-                           "--with-dynamic-ffi"
-                           "--with-dynamic-modules"
-                           "--with-module=rawsock")
+     `(#:configure-flags '(,@(if (string-prefix? "armhf-linux"
+                                                 (or (%current-system)
+                                                     (%current-target-system)))
+                                 '("CFLAGS=-falign-functions=4")
+                                 '())
+                            "--with-dynamic-ffi"
+                            "--with-dynamic-modules"
+                            "--with-module=rawsock")
        #:build #f
        #:phases
        (modify-phases %standard-phases
@@ -288,6 +290,10 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
              ;; many places where our automatic patching misses them.  Therefore
              ;; we do the following, in this early (post-unpack) phase, to solve
              ;; the problem from its root.
+             (substitute* '("src/clisp-link.in"
+                            "src/unix.d"
+                            "src/makemake.in")
+               (("/bin/sh") (which "sh")))
              (substitute* (find-files "." "configure|Makefile")
                (("/bin/sh") "sh"))
              (substitute* '("src/clisp-link.in")
@@ -295,7 +301,7 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
              #t)))
        ;; Makefiles seem to have race conditions.
        #:parallel-build? #f))
-    (home-page "http://www.clisp.org/")
+    (home-page "https://clisp.sourceforge.io/")
     (synopsis "A Common Lisp implementation")
     (description
      "GNU CLISP is an implementation of ANSI Common Lisp.  Common Lisp is a
