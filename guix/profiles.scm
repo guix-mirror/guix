@@ -1652,19 +1652,18 @@ to user ~s.")
                                                (getuid))))))))))
 
 (define (canonicalize-profile profile)
-  "If PROFILE is %USER-PROFILE-DIRECTORY, return %CURRENT-PROFILE.  Otherwise
-return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
-'-p' was omitted."                           ; see <http://bugs.gnu.org/17939>
-
-  ;; Trim trailing slashes so that the basename comparison below works as
-  ;; intended.
+  "If PROFILE points to a profile in %PROFILE-DIRECTORY, return that.
+Otherwise return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile'
+as if '-p' was omitted."  ; see <http://bugs.gnu.org/17939>
+  ;; Trim trailing slashes so 'readlink' can do its job.
   (let ((profile (string-trim-right profile #\/)))
-    (if (and %user-profile-directory
-             (string=? (canonicalize-path (dirname profile))
-                       (dirname %user-profile-directory))
-             (string=? (basename profile) (basename %user-profile-directory)))
-        %current-profile
-        profile)))
+    (catch 'system-error
+      (lambda ()
+        (let ((target (readlink profile)))
+          (if (string=? (dirname target) %profile-directory)
+              target
+              profile)))
+      (const profile))))
 
 (define (user-friendly-profile profile)
   "Return either ~/.guix-profile if that's what PROFILE refers to, directly or
