@@ -3128,3 +3128,37 @@ JavaScript.
 
 (define-public ecl-parenscript
   (sbcl-package->ecl-package sbcl-parenscript))
+
+(define-public sbcl-cl-json
+  (let ((commit "6dfebb9540bfc3cc33582d0c03c9ec27cb913e79"))
+    (package
+      (name "sbcl-cl-json")
+      (version (git-version "0.5" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hankhero/cl-json")
+               (commit commit)))
+         (file-name (git-file-name "cl-json" version))
+         (sha256
+          (base32
+           "0fx3m3x3s5ji950yzpazz4s0img3l6b3d6l3jrfjv0lr702496lh"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (home-page "https://github.com/hankhero/cl-json")
+      (synopsis "JSON encoder and decoder for Common-Lisp")
+      (description
+       "@command{cl-json} provides an encoder of Lisp objects to JSON format
+and a corresponding decoder of JSON data to Lisp objects.  Both the encoder
+and the decoder are highly customizable; at the same time, the default
+settings ensure a very simple mode of operation, similar to that provided by
+@command{yason} or @command{st-json}.")
+      (license license:expat))))
+
+(define-public cl-json
+  (sbcl-package->cl-source-package sbcl-cl-json))
+
+(define-public ecl-cl-json
+  (sbcl-package->ecl-package sbcl-cl-json))
