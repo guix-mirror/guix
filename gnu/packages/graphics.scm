@@ -705,7 +705,8 @@ and understanding different BRDFs (and other component functions).")
        (list (string-append "--x-includes=" (assoc-ref %build-inputs "libx11")
                             "/include")
              (string-append "--x-libraries=" (assoc-ref %build-inputs "libx11")
-                            "/lib"))
+                            "/lib")
+             "--disable-examples")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'autoreconf
