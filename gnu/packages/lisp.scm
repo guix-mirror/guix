@@ -3252,3 +3252,30 @@ Lisp implementations.")
 
 (define-public ecl-closer-mop
   (sbcl-package->ecl-package sbcl-closer-mop))
+
+(define sbcl-cl-cffi-gtk-boot0
+  (let ((commit "29443c5aaca975709df8025c4649366d882033cb"))
+    (package
+      (name "sbcl-cl-cffi-gtk-boot0")
+      (version (git-version "0.11.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Ferada/cl-cffi-gtk/")
+               (commit commit)))
+         (file-name (git-file-name "cl-cffi-gtk" version))
+         (sha256
+          (base32
+           "0f6s92sf8xyzh1yksqx8bsy1sv0zmy0c13j3b8bavaba5hlxpxah"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("iterate" ,sbcl-iterate)
+         ("cffi" ,sbcl-cffi)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (home-page "https://github.com/Ferada/cl-cffi-gtk/")
+      (synopsis "Common Lisp binding for GTK+3")
+      (description
+       "@command{cl-cffi-gtk} is a Lisp binding to GTK+ 3 (GIMP Toolkit) which
+is a library for creating graphical user interfaces.")
+      (license license:lgpl3))))
