@@ -3087,7 +3087,7 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.4.12")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
@@ -3095,7 +3095,7 @@ with support for HD extensions.")
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
         (base32
-         "0n9skdap1vnl6w52fx0gsrjlk7w3xgdwi62ycyf96h29rx059z6a"))))
+         "0vd7320k7s2zcn2vganclxbr1vav18ghld27rcwskvcc3dm8prii"))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))
