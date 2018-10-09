@@ -140,8 +140,8 @@ public interface EventListenerInitializer {
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://www.w3.org/Style/CSS/SAC/")
-    (synopsis "W3C SVG interface")
-    (description "This package provides a SVG interface.")
+    (synopsis "W3C SVG 1.0 interface")
+    (description "This package provides a SVG 1.0 interface.")
     (license license:w3c)))
 
 (define-public java-w3c-svg
@@ -162,7 +162,9 @@ public interface EventListenerInitializer {
        `(modify-phases ,phases
           (delete 'patch-interface)))))
     (propagated-inputs
-     `())))
+     `())
+    (synopsis "W3C SVG interface")
+    (description "This package provides a SVG interface.")))
 
 (define-public java-w3c-sac
   (package
