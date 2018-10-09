@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -189,6 +190,58 @@ TTF (TrueType/OpenType Font) files.")
     ;; license header, and the wrapper source contains no license header.
     (license license:bsd-2)
     (home-page "https://github.com/wget/ttf2eot")))
+
+(define-public ttf2pt1
+  (package
+    (name "ttf2pt1")
+    (version "3.4.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ttf2pt1/ttf2pt1/"
+                                  version "/ttf2pt1-" version ".tgz"))
+              (sha256
+               (base32
+                "1l718n4k4widx49xz7qrj4mybzb8q67kp2jw7f47604ips4654mf"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove trailing backslashes in the sed expression of the
+                  ;; 'install' rule since sed would otherwise fail.
+                  (substitute* "Makefile"
+                    (("\\|;\\\\[[:space:]]*$") "|; "))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                                ;no tests
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "Makefile"
+                          (("INSTDIR =.*")
+                           (string-append "INSTDIR = " out "\n"))
+                          (("OWNER = .*")
+                           "OWNER = `id -un`\n")
+                          (("GROUP = .*")
+                           "GROUP = `id -g`\n"))
+                        #t)))
+                  (replace 'build
+                    (lambda _
+                      (invoke "make" "-j"
+                              (number->string (parallel-job-count))
+                              "all" "CC=gcc"))))))
+    (inputs `(("perl" ,perl)))
+    (synopsis "Convert TrueType fonts to Postscript Type 1")
+    (description
+     "TTF2PT1 provides tools to convert most TrueType fonts (or other formats
+supported by the FreeType library) to an Adobe Type 1 @file{.pfa} or
+@file{.pfb} file.  Another use is as a hinting engine: feed it an unhinted or
+poorly hinted Adobe Type 1 font through the FreeType library and get it back
+with freshly generated hints.  The files produced by default are in
+human-readable form, which further needs to be encoded with t1utilities to
+work with most software requiring Type 1 fonts.")
+    (home-page "http://ttf2pt1.sourceforge.net/")
+    (license license:bsd-3)))
 
 (define-public woff2
   (let ((commit "4e698b8c6c5e070d53c340db9ddf160e21070ede")
