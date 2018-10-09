@@ -709,17 +709,16 @@ and understanding different BRDFs (and other component functions).")
              "--disable-examples")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
+         (replace 'bootstrap
            (lambda _
              ;; let's call configure from configure phase and not now
              (substitute* "autogen.sh" (("./configure") "# ./configure"))
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("libtool" ,libtool)
        ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("bash" ,bash)))
+       ("automake" ,automake)))
     (inputs
      `(("libx11" ,libx11)
        ("freetype" ,freetype)
