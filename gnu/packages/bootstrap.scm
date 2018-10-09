@@ -51,9 +51,7 @@
             %bootstrap-inputs
             %bootstrap-mes
             %mescc-tools-seed
-            %mes-seed
-            %srfi-43
-            %tinycc-seed))
+            %srfi-43))
 
 ;;; Commentary:
 ;;;
@@ -680,28 +678,6 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
        (base32
         "1lj7df73vxanmffmiwkhcn83r7yd9n8568nkki06bqq5zg526nyz")))))
 
-(define %mes-seed
-  (let ((commit "057fd36735b5605fe582d6b3625f793a62922206"))
-    (origin
-      (method url-fetch)
-      (uri (string-append "https://gitlab.com/janneke/mes-seed"
-                          "/-/archive/" commit
-                          "/mes-seed-" commit ".tar.gz"))
-      (sha256
-       (base32
-        "0vdb4kc05a1kdpmsi8dg425d5f33kp28sgl2fi3s320pc0v4dv13")))))
-
-(define %tinycc-seed
-  (let ((commit "843d47ca682617f21333b50c67851797b8c3fd04"))
-    (origin
-      (method url-fetch)
-      (uri (string-append "https://gitlab.com/janneke/tinycc-seed"
-                          "/-/archive/" commit
-                          "/tinycc-seed-" commit ".tar.gz"))
-      (sha256
-       (base32
-        "0599wwv30js03l1rpmvzfclq3jadzvq04pi29j45nf6fyfg5hhqb")))))
-
 (define %srfi-43
   (origin
     (method url-fetch)
@@ -718,9 +694,8 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
         ((or "i686-linux" "x86_64-linux")
          `(("linux-libre-headers" ,%bootstrap-linux-libre-headers)
            ("mescc-tools-seed" ,%mescc-tools-seed)
-           ("mes-seed" ,%mes-seed)
-           ("srfi-43" ,%srfi-43 )
-           ("tinycc-seed" ,%tinycc-seed)))
+           ("mes" ,%bootstrap-mes)
+           ("srfi-43" ,%srfi-43 )))
         (_
          `(("libc" ,%bootstrap-glibc)
            ("gcc" ,%bootstrap-gcc)

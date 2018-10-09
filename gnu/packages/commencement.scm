@@ -102,13 +102,7 @@
                     (sha256
                      (base32
                       "1whbzahv16bwhavr2azqli0dcbk29p9rsqfbjl69la135z8vgdhx")))
-                  (origin
-                    (method url-fetch)
-                    (uri (string-append "mirror://gnu/mes/"
-                                        "mes-" version ".tar.gz"))
-                    (sha256
-                     (base32
-                      "1dsaaqyanzsq9m5wrcd2bjhb3qd6928c9q97rg5r730pyqjwxyxf")))))
+                  (package-source mes)))
       (native-inputs '())
       (propagated-inputs '()))))
 
@@ -135,8 +129,8 @@
       `(("mescc-tools-seed" ,%mescc-tools-seed)
         ("mes-source" ,(package-source mes-boot0))
 
-        ("coreutils" ,%bootstrap-coreutils&co)
-        ("mes-seed" ,%mes-seed)))
+        ("bootstrap-mes" ,%bootstrap-mes)
+        ("coreutils" ,%bootstrap-coreutils&co)))
      (build-system gnu-build-system)
      (arguments
       `(#:implicit-inputs? #f
@@ -148,7 +142,6 @@
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
                      (mescc-tools-seed (assoc-ref %build-inputs "mescc-tools-seed"))
-                     (mes-seed (assoc-ref %build-inputs "mes-seed"))
                      (mes-source (assoc-ref %build-inputs "mes-source"))
                      (out (assoc-ref %outputs "out")))
                 (with-directory-excursion ".."
@@ -159,12 +152,11 @@
                    (mkdir-p "mes-source")
                    (invoke "tar" "--strip=1" "-C" "mes-source"
                            "-xvf" mes-source)
-                   (mkdir-p "mes-seed")
-                   (invoke "tar" "--strip=1" "-C" "mes-seed"
-                           "-xvf" mes-seed))))))
+                  #t)))))
           (replace 'configure
             (lambda* (#:key outputs #:allow-other-keys)
               (let ((coreutils (assoc-ref %build-inputs "coreutils"))
+                    (bootstrap-mes (assoc-ref %build-inputs "bootstrap-mes"))
                     (out (assoc-ref %outputs "out")))
                 (setenv "PATH" (string-append coreutils "/bin"
                                               ":" "../mescc-tools-seed"))
@@ -172,7 +164,7 @@
                 (setenv "PREFIX" out)
                 (setenv "MES_PREFIX" "../mes-source")
                 (setenv "MESCC_TOOLS_SEED" "../mescc-tools-seed")
-                (setenv "MES_SEED" "../mes-seed")
+                (setenv "MES_SEED" (string-append bootstrap-mes "/lib"))
                 #t)))
           (replace 'build
             (lambda _
@@ -223,7 +215,7 @@
         ("nyacc-source" ,(package-source nyacc-boot))
 
         ("coreutils" , %bootstrap-coreutils&co)
-        ("mes-seed" ,%mes-seed)
+        ("bootstrap-mes" ,%bootstrap-mes)
         ,@(if %fake-bootstrap?  ; cheat: fast non-bootstrap testing with Guile
               `(("guile" ,%bootstrap-guile)
                 ("srfi-43" ,%srfi-43)) ; guile-2.0.9 lacks srfi-43; cherry-pick
@@ -239,13 +231,12 @@
               (let ((coreutils (assoc-ref %build-inputs "coreutils"))
                     (srfi-43 (assoc-ref %build-inputs "srfi-43"))
                     (nyacc-source (assoc-ref %build-inputs "nyacc-source"))
-                    (mes-seed (assoc-ref %build-inputs "mes-seed")))
+                    (bootstrap-mes (assoc-ref %build-inputs "bootstrap-mes")))
                 (with-directory-excursion ".."
                   (and
                    (mkdir-p "nyacc-source")
                    (invoke "tar" "--strip=1" "-C" "nyacc-source" "-xvf" nyacc-source)
-                   (mkdir-p "mes-seed")
-                   (invoke "tar" "--strip=1" "-C" "mes-seed" "-xvf" mes-seed)
+                   (symlink (string-append bootstrap-mes "/lib") "mes-seed")
                    (or (not srfi-43)
                        (and (mkdir-p "srfi")
                             (copy-file srfi-43 "srfi/srfi-43.scm")
@@ -256,7 +247,7 @@
                 (symlink (string-append "../nyacc-source/module") "nyacc")
                 (setenv "GUILE_LOAD_PATH" "nyacc")
                 (setenv "GUILE_TOOLS" "true") ; no tools in bootstrap-guile
-                (invoke "bash" "-x" "configure.sh"
+                (invoke "bash" "configure.sh"
                         (string-append "--prefix=" out))
                 (setenv "MES" "src/mes")
                 (setenv "MESCC" "scripts/mescc")
@@ -286,15 +277,16 @@
           (replace 'check
             (lambda _
               (when ,%fake-bootstrap?
-                ;; breaks with guile-2.0
+                ;; break with guile-2.0
                 (delete-file "scaffold/boot/50-primitive-load.scm")
                 (delete-file "scaffold/boot/51-module.scm"))
               (and
                (setenv "MES_ARENA" "100000000")
                (setenv "DIFF" "sh scripts/diff.scm")
-               (invoke "sh" "-x" "build-aux/test.sh" "scaffold/tests/t")
-               (invoke "sh" "-x" "build-aux/test.sh" "scaffold/tests/63-struct-cell")
-               (invoke "sh" "-x" "check.sh"))))
+               ;; fail fast tests
+               ;; (invoke "sh" "-x" "build-aux/test.sh" "scaffold/tests/t")
+               ;; (invoke "sh" "-x" "build-aux/test.sh" "scaffold/tests/63-struct-cell")
+               (invoke "sh" "check.sh"))))
           (replace 'install
             (lambda _
               (invoke "sh" "install.sh"))))))
@@ -319,8 +311,8 @@
   ;; ported to 0.9.27, alas the resulting tcc is buggy.  Once MesCC is more
   ;; mature, this package should use the 0.9.27 sources (or later).
   (let ((version "0.9.26")
-        (revision "4")
-        (commit "46ee3f18477575b189ac224eac853e96afd571e1"))
+        (revision "5")
+        (commit "c7b3f59d1a71e71b470f859b20f0cfe840f3954d"))
     (package-with-bootstrap-guile
      (package
        (inherit tcc)
@@ -333,19 +325,18 @@
                                      "/tinycc-" commit ".tar.gz"))
                  (sha256
                   (base32
-                   "0kq2si81piszpdcnp78w1lp5jd291srbx1f71fir08ybidiriw35"))))
+                   "1agz5w5q6dm51n63hsxii33hxdghmdiacbb5zzxzac3aarfxjb2m"))))
        (build-system gnu-build-system)
        (supported-systems '("i686-linux" "x86_64-linux"))
        (inputs '())
        (propagated-inputs '())
        (native-inputs
         `(("mes" ,mes-boot)
-          ("mes-seed" ,%mes-seed)
           ("mescc-tools" ,mescc-tools-boot)
           ("nyacc-source" ,(package-source nyacc-boot))
 
           ("coreutils" , %bootstrap-coreutils&co)
-          ("tinycc-seed" ,%tinycc-seed)
+          ("bootstrap-mes" ,%bootstrap-mes)
           ,@(if %fake-bootstrap? ; cheat: fast non-bootstrap testing with Guile
                 `(("guile" ,%bootstrap-guile)
                   ("srfi-43" ,%srfi-43)) ; guile-2.0.9 lacks srfi-43; cherry-pick
@@ -361,8 +352,7 @@
                 (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
                        (srfi-43 (assoc-ref %build-inputs "srfi-43"))
                        (nyacc-source (assoc-ref %build-inputs "nyacc-source"))
-                       (mes-seed (assoc-ref %build-inputs "mes-seed"))
-                       (tinycc-seed (assoc-ref %build-inputs "tinycc-seed")))
+                       (bootstrap-mes (assoc-ref %build-inputs "bootstrap-mes")))
                   (setenv "PATH" (string-append
                                   coreutils "/bin"))
                   (format (current-error-port) "PATH=~s\n" (getenv "PATH"))
@@ -371,12 +361,7 @@
                      (mkdir-p "nyacc-source")
                      (invoke "tar" "--strip=1" "-C" "nyacc-source"
                              "-xvf" nyacc-source)
-                     (mkdir-p "mes-seed")
-                     (invoke "tar" "--strip=1" "-C" "mes-seed"
-                             "-xvf" mes-seed)
-                     (mkdir-p "tinycc-seed")
-                     (invoke "tar" "--strip=1" "-C" "tinycc-seed"
-                             "-xvf" tinycc-seed)
+                     (symlink (string-append bootstrap-mes "/lib") "mes-seed")
                      (or (not srfi-43)
                          (and (mkdir-p "srfi")
                               (copy-file srfi-43 "srfi/srfi-43.scm")
