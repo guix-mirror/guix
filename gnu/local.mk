@@ -1247,9 +1247,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
   %D%/packages/patches/zathura-pdf-mupdf-link-to-jpeg-libraries.patch \
-  %D%/packages/patches/zathura-plugindir-environment-variable.patch	\
-  %D%/packages/patches/zstd-fix-stdin-list-without-tty.patch	\
-  %D%/packages/patches/zstd-fix-stdin-list-test.patch
+  %D%/packages/patches/zathura-plugindir-environment-variable.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in
