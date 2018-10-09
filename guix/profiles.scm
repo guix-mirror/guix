@@ -1249,7 +1249,7 @@ the entries in MANIFEST."
   (define config.scm
     (scheme-file "config.scm"
                  #~(begin
-                     (define-module (guix config)
+                     (define-module #$'(guix config) ;placate Geiser
                        #:export (%libz))
 
                      (define %libz
