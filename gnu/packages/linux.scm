@@ -3760,7 +3760,11 @@ systems with high needs or limited user interaction, such as headless servers.
 indirect effects of hardware events on hidden processor state using the HArdware
 Volatile Entropy Gathering and Expansion (@dfn{HAVEGE}) algorithm.  It tunes
 itself to its environment and provides the same built-in test suite for the
-output stream as used on certified hardware security devices.")
+output stream as used on certified hardware security devices.
+
+The quality of the randomness produced by this algorithm has not been proven.
+It is recommended to run it together with another entropy source like rngd, and
+not as a replacement for it.")
     (license (list (license:non-copyleft "file://nist/mconf.h")
                    (license:non-copyleft "file://nist/packtest.c")
                    license:public-domain        ; nist/dfft.c
