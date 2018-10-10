@@ -468,6 +468,14 @@ Please follow our code formatting rules, possibly running the
 @command{etc/indent-code.el} script to do that automatically for you
 (@pxref{Formatting Code}).
 
+@item
+When possible, use mirrors in the source URL (@pxref{Invoking guix download}).
+Use reliable URLs, not generated ones.  For instance, GitHub archives are not
+necessarily identical from one generation to the next, so in this case it's
+often better to clone the repository.  Don't use the @command{name} field in
+the URL: it is not very useful and if the name changes, the URL will probably
+be wrong.
+
 @end enumerate
 
 When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as
