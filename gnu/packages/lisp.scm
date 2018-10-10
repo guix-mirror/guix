@@ -64,6 +64,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages webkit)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19))
@@ -3443,3 +3444,43 @@ is a library for creating graphical user interfaces.")
        ;; TODO: Tests fail with memory fault.
        ;; See https://github.com/Ferada/cl-cffi-gtk/issues/24.
        #:tests? #f))))
+
+(define-public sbcl-cl-webkit
+  (let ((commit "cd2a9008e0c152e54755e8a7f07b050fe36bab31"))
+    (package
+      (name "sbcl-cl-webkit")
+      (version (git-version "2.4" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/atlas-engineer/cl-webkit")
+               (commit commit)))
+         (file-name (git-file-name "cl-webkit" version))
+         (sha256
+          (base32
+           "0f5lyn9i7xrn3g1bddga377mcbawkbxydijpg389q4n04gqj0vwf"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("cl-cffi-gtk" ,sbcl-cl-cffi-gtk)
+         ("webkitgtk" ,webkitgtk)))
+      (arguments
+       `(#:asd-file "webkit2/cl-webkit2.asd"
+         #:asd-system-name "cl-webkit2"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "webkit2/webkit2.init.lisp"
+                 (("libwebkit2gtk" all)
+                  (string-append
+                   (assoc-ref inputs "webkitgtk") "/lib/" all))))))))
+      (home-page "https://github.com/atlas-engineer/cl-webkit")
+      (synopsis "Binding to WebKitGTK+ for Common Lisp")
+      (description
+       "@command{cl-webkit} is a binding to WebKitGTK+ for Common Lisp,
+currently targeting WebKit version 2.  The WebKitGTK+ library adds web
+browsing capabilities to an application, leveraging the full power of the
+WebKit browsing engine.")
+      (license license:expat))))
