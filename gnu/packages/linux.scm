@@ -4250,12 +4250,14 @@ Light is the successor of lightscript.")
                (setenv "TLP_SHCPL"
                        (string-append out "/share/bash-completion/completions"))
                (setenv "TLP_MAN" (string-append out "/share/man"))
-               (setenv "TLP_META" (string-append out "/share/metainfo")))))
+               (setenv "TLP_META" (string-append out "/share/metainfo"))
+               #t)))
          (delete 'check)                ; no tests
          (add-before 'install 'fix-installation
            (lambda _
              ;; Stop the Makefile from trying to create system directories.
-             (substitute* "Makefile" (("\\[ -f \\$\\(_CONF\\) \\]") "#"))))
+             (substitute* "Makefile" (("\\[ -f \\$\\(_CONF\\) \\]") "#"))
+             #t))
          (replace 'install
            (lambda _
              (invoke "make" "install-tlp" "install-man")
@@ -4289,7 +4291,8 @@ Light is the successor of lightscript.")
                                                        "pciutils"
                                                        "rfkill"
                                                        "wireless-tools"))))))
-                         bin-files)))))))
+                         bin-files)
+               #t))))))
     (home-page "http://linrunner.de/en/tlp/tlp.html")
     (synopsis "Power management tool for Linux")
     (description "TLP is a power management tool for Linux.  It comes with
