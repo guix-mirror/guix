@@ -600,27 +600,28 @@ passphrases.")
 (define-public ndctl
   (package
     (name "ndctl")
-    (version "61.2")
+    (version "63")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pmem/ndctl")
+                    (url "https://github.com/pmem/ndctl.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0vid78jzhmzh505bpwn8mvlamfhcvl6rlfjc29y4yn7zslpydxl7"))))
+                "060nsza8xic769bxj3pvl70a9885bwrc0myw16l095i3z6w7yzwq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
        ("automake" ,automake)
        ("autoconf" ,autoconf)
+       ("bash-completion" ,bash-completion)
        ("docbook-xsl" ,docbook-xsl)
        ("libtool" ,libtool)
        ("libxml2" ,libxml2)
        ("pkg-config" ,pkg-config)
        ("xmlto" ,xmlto)
-       ;; Required for offline docbook generation:
+       ;; Required for offline docbook generation.
        ("which" ,which)))
     (inputs
      `(("eudev" ,eudev)
@@ -628,12 +629,13 @@ passphrases.")
        ("kmod" ,kmod)
        ("util-linux" ,util-linux)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "--disable-asciidoctor"    ; use docbook-xsl instead
+             "--without-systemd")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-FHS-file-names
            (lambda _
-             (substitute* "autogen.sh"
-               (("/bin/sh") (which "sh")))
              (substitute* "git-version-gen"
                (("/bin/sh") (which "sh")))
              (substitute* "git-version"
