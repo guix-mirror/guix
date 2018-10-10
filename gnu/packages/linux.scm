@@ -3626,14 +3626,14 @@ The following service daemons are also provided:
 (define-public perftest
   (package
     (name "perftest")
-    (version "4.2-0.8")
+    (version "4.4-0.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/linux-rdma/perftest/releases/download/V"
-                           version "/perftest-" version ".g0e24e67.tar.gz"))
+       (uri (string-append "https://github.com/linux-rdma/perftest/releases/download/v"
+                           version "/perftest-" version ".g0927198.tar.gz"))
        (sha256
-        (base32 "1r3pxn7cx3grb8myb4q1b0pk447pc06cifd0v7ym13xw00372dlx"))))
+        (base32 "11ix4h0rrmqqyi84y55a9xnkvwsmwq0sywr46hvxzm4rqz4ma8vq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
