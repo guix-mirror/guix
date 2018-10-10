@@ -3755,11 +3755,12 @@ such as frequency and voltage scaling.")
 Linux's @file{/dev/random} and @file{/dev/urandom} devices.  The kernel's
 standard mechanisms for filling the entropy pool may not be sufficient for
 systems with high needs or limited user interaction, such as headless servers.
+
 @command{haveged} runs as a privileged daemon, harvesting randomness from the
 indirect effects of hardware events on hidden processor state using the HArdware
-Volatile Entropy Gathering and Expansion (HAVEGE) algorithm.  It tunes itself to
-its environment and provides the same built-in test suite for the output stream
-as used on certified hardware security devices.")
+Volatile Entropy Gathering and Expansion (@dfn{HAVEGE}) algorithm.  It tunes
+itself to its environment and provides the same built-in test suite for the
+output stream as used on certified hardware security devices.")
     (license (list (license:non-copyleft "file://nist/mconf.h")
                    (license:non-copyleft "file://nist/packtest.c")
                    license:public-domain        ; nist/dfft.c
