@@ -249,14 +249,14 @@ access to servers running the Discord protocol.")
 (define-public hexchat
   (package
     (name "hexchat")
-    (version "2.14.1")
+    (version "2.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "18h3l34zmazjlfx3irg7k7swppa62ad9ffbl0j3ry8p2xfyf8cmh"))))
+                "064nq151nzsljv97dmkifyl162d2738vbgvm1phx7yv04pjvk4kp"))))
     (build-system meson-build-system)
     (native-inputs `(("gettext" ,gettext-minimal)
                      ("perl" ,perl)
