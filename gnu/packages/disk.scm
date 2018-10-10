@@ -559,28 +559,28 @@ automatically finding out which program to use for what file type.")
 (define-public volume-key
   (package
     (name "volume-key")
-    (version "0.3.11")
+    (version "0.3.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/volume_key/volume_key-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0vaz15rcgdkh5z4yxc22x76wi44gh50jxnrqz5avaxz4bb17kcp6"))))
+                "16rhfz6sjwxlmss1plb2wv2i3jq6wza02rmz1d2jrlnsq67p98vc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("util-linux" ,util-linux)
        ("swig" ,swig)
-       ("python" ,python-3)))           ; Used to generate the Python bindings.
+       ("python" ,python-3)))           ; used to generate the Python bindings
     (inputs
      `(("cryptsetup" ,cryptsetup)
        ("nss" ,nss)
-       ("lvm2" ,lvm2)                   ; For "-ldevmapper".
+       ("lvm2" ,lvm2)                   ; for "-ldevmapper"
        ("glib" ,glib)
        ("gpgme" ,gpgme)))
     (arguments
-     `(#:tests? #f ; Not sure how tests are supposed to pass, even when run manually.
+     `(#:tests? #f ; not sure how tests are supposed to pass, even when run manually
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-python.h-path
