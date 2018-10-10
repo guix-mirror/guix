@@ -823,6 +823,30 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
 render model libraries.")
       (license license:lgpl2.0+))))
 
+(define-public kicad-symbols
+  (package
+    (name "kicad-symbols")
+    (version "5.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/KiCad/kicad-symbols.git")
+                    (commit version)))
+              (file-name (string-append "kicad-symbols-" version "-checkout"))
+              (sha256
+               (base32
+                "18z5vpdq7hy2mpvm5vz1dz3ra3a5iybavvlzi8q2bmmdb6gsvf64"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; No tests exist
+    (home-page "http://kicad-pcb.org/")
+    (synopsis "Official KiCad schematic symbol libraries for KiCad 5")
+    (description "This package contains the official KiCad schematic symbol
+libraries for KiCad 5.")
+    ;; TODO: Exception: "To the extent that the creation of electronic designs that use 'Licensed Material' can be considered to be 'Adapted Material', then the copyright holder waives article 3 of the license with respect to these designs and any generated files which use data provided as part of the 'Licensed Material'."
+    ;; See <https://github.com/KiCad/kicad-symbols/blob/master/LICENSE.md>.
+    (license license:cc-by-sa4.0)))
+
 (define-public linsmith
   (package
     (name "linsmith")
