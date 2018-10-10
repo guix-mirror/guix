@@ -698,14 +698,15 @@ to create devices with respective mappings for the ATARAID sets discovered.")
 (define-public libblockdev
   (package
     (name "libblockdev")
-    (version "2.18")
+    (version "2.20")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/storaged-project/libblockdev/releases/download/"
+              (uri (string-append "https://github.com/storaged-project/"
+                                  "libblockdev/releases/download/"
                                   version "-1/libblockdev-" version ".tar.gz"))
               (sha256
                (base32
-                "1a3kpdr9s6g7nfibazi92i27wbv692b5gm2r24gimis6l6jq4pbh"))))
+                "092snk5jyv48na4d46v1ckiy859zwpb3r0ivnxv3km5vzsp76y7q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -738,6 +739,4 @@ manipulation of block devices.  It has a plugin-based architecture where each
 technology (like LVM, Btrfs, MD RAID, Swap...) is implemented in a separate
 plugin, possibly with multiple implementations (e.g. using LVM CLI or the new
 LVM D-Bus API).")
-    ;; XXX: Copying says LGPL2.1, but the source files with license
-    ;; information are GPL2+.
-    (license license:gpl2+)))
+    (license license:lgpl2.1+)))
