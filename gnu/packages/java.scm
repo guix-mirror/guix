@@ -1808,6 +1808,55 @@ new Date();"))
      "This package provides the Java development kit OpenJDK.")
     (license license:gpl2+)))
 
+(define-public openjdk10
+  (package
+    (inherit openjdk9)
+    (name "openjdk")
+    (version "10.46")
+    (source (origin
+              (method url-fetch)
+              (uri "http://hg.openjdk.java.net/jdk/jdk/archive/6fa770f9f8ab.tar.bz2")
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0zywq2203b4hx4jms9vbwvjcj1d3k2v3qpx4s33729fkpmid97r4"))
+              (modules '((guix build utils)))
+              (snippet
+                `(begin
+                   (for-each delete-file (find-files "." ".*.bin$"))
+                   (for-each delete-file (find-files "." ".*.exe$"))
+                   (for-each delete-file (find-files "." ".*.jar$"))
+                   #t))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments openjdk9)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (replace 'fix-java-shebangs
+              (lambda _
+                ;; This file was "fixed" by patch-source-shebangs, but it requires
+                ;; this exact first line.
+                (substitute* "make/data/blacklistedcertsconverter/blacklisted.certs.pem"
+                  (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))
+                #t))
+            (replace 'configure
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (invoke "bash" "./configure"
+                        (string-append "--with-freetype=" (assoc-ref inputs "freetype"))
+                        "--disable-freetype-bundling"
+                        "--disable-warnings-as-errors"
+                        "--disable-hotspot-gtest"
+                        "--with-giflib=system"
+                        "--with-libjpeg=system"
+                        "--with-native-debug-symbols=zipped"
+                        (string-append "--prefix=" (assoc-ref outputs "out")))
+                #t))))))
+    (native-inputs
+     `(("openjdk9" ,openjdk9)
+       ("openjdk9:jdk" ,openjdk9 "jdk")
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))))
+
 (define-public icedtea icedtea-8)
 
 
