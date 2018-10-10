@@ -3224,3 +3224,31 @@ the Common Lisp programming language.")
 
 (define-public ecl-trivial-garbage
   (sbcl-package->ecl-package sbcl-trivial-garbage))
+
+(define-public sbcl-closer-mop
+  (let ((commit "fac29ce90e3a46e1fc6cf182190e193526fa9dbc"))
+    (package
+      (name "sbcl-closer-mop")
+      (version (git-version  "1.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/pcostanza/closer-mop")
+               (commit commit)))
+         (sha256
+          (base32 "0hvh77y869h8fg9di5snyg85fxq6fdh9gj1igmx1g6j6j5x915dl"))
+         (file-name (git-file-name "closer-mop" version ))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/pcostanza/closer-mop")
+      (synopsis "Rectifies absent or incorrect CLOS MOP features")
+      (description "Closer to MOP is a compatibility layer that rectifies many
+of the absent or incorrect CLOS MOP features across a broad range of Common
+Lisp implementations.")
+      (license license:expat))))
+
+(define-public cl-closer-mop
+  (sbcl-package->cl-source-package sbcl-closer-mop))
+
+(define-public ecl-closer-mop
+  (sbcl-package->ecl-package sbcl-closer-mop))
