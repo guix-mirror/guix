@@ -2420,13 +2420,13 @@ SQLAlchemy Database Toolkit for Python.")
 (define-public python-pickleshare
   (package
     (name "python-pickleshare")
-    (version "0.7.4")
+    (version "0.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pickleshare" version))
        (sha256
-        (base32 "0yvk14dzxk7g6qpr7iw23vzqbsr0dh4ij4xynkhnzpfz4xr2bac4"))))
+        (base32 "1jmghg3c53yp1i8cm6pcrm280ayi8621rwyav9fac7awjr3kss47"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
