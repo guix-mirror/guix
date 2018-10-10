@@ -3195,3 +3195,32 @@ precisely control behavior of the parser via Common Lisp restarts.")
 
 (define-public ecl-unix-opts
   (sbcl-package->ecl-package sbcl-unix-opts))
+
+(define-public sbcl-trivial-garbage
+  (package
+    (name "sbcl-trivial-garbage")
+    (version "0.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/trivial-garbage/trivial-garbage/archive/v"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0b244nlszkrqawsnp568clnx32xmvjmbbagbz7625w9n0yq7396y"))
+       (file-name (string-append "trivial-garbage-" version ".tar.gz"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("rt" ,sbcl-rt)))
+    (home-page "https://common-lisp.net/project/trivial-garbage/")
+    (synopsis "Portable GC-related APIs for Common Lisp")
+    (description "@command{trivial-garbage} provides a portable API to
+finalizers, weak hash-tables and weak pointers on all major implementations of
+the Common Lisp programming language.")
+    (license license:public-domain)))
+
+(define-public cl-trivial-garbage
+  (sbcl-package->cl-source-package sbcl-trivial-garbage))
+
+(define-public ecl-trivial-garbage
+  (sbcl-package->ecl-package sbcl-trivial-garbage))
