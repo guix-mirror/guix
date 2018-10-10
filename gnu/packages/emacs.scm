@@ -3034,7 +3034,7 @@ in @code{html-mode}.")
 (define-public emacs-slime
   (package
     (name "emacs-slime")
-    (version "2.20")
+    (version "2.22")
     (source
      (origin
        (file-name (string-append name "-" version ".tar.gz"))
@@ -3044,7 +3044,7 @@ in @code{html-mode}.")
              version ".tar.gz"))
        (sha256
         (base32
-         "086lq5y4pvj9wihy0si02xxvyzpzz8mcg3hz1cvy9zxlyjwzr1gk"))))
+         "07vaib1n4zyh5yy30gdpq0bc5cv6w84piml5b3mfc9ibjhaykkms"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))
