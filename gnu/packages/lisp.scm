@@ -3484,3 +3484,48 @@ currently targeting WebKit version 2.  The WebKitGTK+ library adds web
 browsing capabilities to an application, leveraging the full power of the
 WebKit browsing engine.")
       (license license:expat))))
+
+(define-public sbcl-lparallel
+  (package
+    (name "sbcl-lparallel")
+    (version "2.8.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lmj/lparallel/")
+             (commit (string-append "lparallel-" version))))
+       (file-name (git-file-name "lparallel" version))
+       (sha256
+        (base32
+         "0g0aylrbbrqsz0ahmwhvnk4cmc2931fllbpcfgzsprwnqqd7vwq9"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("trivial-garbage" ,sbcl-trivial-garbage)))
+    (home-page "https://lparallel.org/")
+    (synopsis "Parallelism for Common Lisp")
+    (description
+     "@command{lparallel} is a library for parallel programming in Common
+Lisp, featuring:
+
+@itemize
+@item a simple model of task submission with receiving queue,
+@item constructs for expressing fine-grained parallelism,
+@item asynchronous condition handling across thread boundaries,
+@item parallel versions of map, reduce, sort, remove, and many others,
+@item promises, futures, and delayed evaluation constructs,
+@item computation trees for parallelizing interconnected tasks,
+@item bounded and unbounded FIFO queues,
+@item high and low priority tasks,
+@item task killing by category,
+@item integrated timeouts.
+@end itemize\n")
+    (license license:expat)))
+
+(define-public cl-lparallel
+  (sbcl-package->cl-source-package sbcl-lparallel))
+
+(define-public ecl-lparallel
+  (sbcl-package->ecl-package sbcl-lparallel))
