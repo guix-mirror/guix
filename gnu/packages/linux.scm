@@ -3737,15 +3737,16 @@ such as frequency and voltage scaling.")
 (define-public haveged
   (package
     (name "haveged")
-    (version "1.9.2")
+    (version "1.9.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://www.issihosts.com/haveged/haveged-"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jirka-h/haveged.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0w5ypz6451msckivjriwyw8djydlwffam7x23xh626s2vzdrlzgp"))))
+        (base32 "1hrwzjd4byq4fdrg8svww3d8x449k80jxxrjy9v6jvzhfv19rvxr"))))
     (build-system gnu-build-system)
     (home-page "http://www.issihosts.com/haveged")
     (synopsis "Entropy source for the Linux random number generator")
