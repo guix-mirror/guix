@@ -528,13 +528,15 @@ Duperemove can also take input from the @command{fdupes} program.")
     (build-system python-build-system)
     (inputs
      `(("w3m" ,w3m)))
-    (native-inputs                      ;for tests
-     `(("python-flake8" ,python-flake8)
-       ("python-pylint" ,python-pylint)
-       ("python-pytest" ,python-pytest)
-       ("which" ,which)))
+    (native-inputs
+     `(("which" ,which)
+
+       ;; For tests.
+       ("python-pytest" ,python-pytest)))
     (arguments
-     '(#:phases
+     '( ;; The 'test' target runs developer tools like pylint, which fail.
+       #:test-target "test_pytest"
+       #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'wrap-program
            ;; Tell 'ranger' where 'w3mimgdisplay' is.
@@ -548,9 +550,9 @@ Duperemove can also take input from the @command{fdupes} program.")
                  `("W3MIMGDISPLAY_PATH" ":" prefix (,w3mimgdisplay)))
                #t)))
          (replace 'check
-           ;; Running 'make test' simply prints 'Ran 0 tests in 0.000s'.
-           (lambda _
-             (invoke "py.test" "tests"))))))
+           ;; The default check phase simply prints 'Ran 0 tests in 0.000s'.
+           (lambda* (#:key test-target #:allow-other-keys)
+             (invoke "make" test-target))))))
     (home-page "https://ranger.github.io/")
     (synopsis "Console file manager")
     (description "ranger is a console file manager with Vi key bindings.  It
