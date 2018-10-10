@@ -1192,13 +1192,15 @@ Guile's foreign function interface.")
        #:tests? #f ; test suite is non-deterministic :(
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'wrap-haunt
-                    (lambda* (#:key outputs #:allow-other-keys)
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; Wrap the 'haunt' command to refer to the right
                       ;; modules.
                       (let* ((out  (assoc-ref outputs "out"))
                              (bin  (string-append out "/bin"))
                              (site (string-append
-                                    out "/share/guile/site")))
+                                    out "/share/guile/site"))
+                             (deps (list (assoc-ref inputs "guile-reader")
+                                         (assoc-ref inputs "guile-commonmark"))))
                         (match (scandir site)
                           (("." ".." version)
                            (let ((modules (string-append site "/" version))
@@ -1207,9 +1209,19 @@ Guile's foreign function interface.")
                                                     "/site-ccache")))
                              (wrap-program (string-append bin "/haunt")
                                `("GUILE_LOAD_PATH" ":" prefix
-                                 (,modules))
+                                 (,modules
+                                  ,@(map (lambda (dep)
+                                           (string-append dep
+                                                          "/share/guile/site/"
+                                                          version))
+                                         deps)))
                                `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                                 (,compiled-modules)))
+                                 (,compiled-modules
+                                  ,@(map (lambda (dep)
+                                           (string-append dep "/lib/guile/"
+                                                          version
+                                                          "/site-ccache"))
+                                         deps))))
                              #t)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
