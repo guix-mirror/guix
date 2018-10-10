@@ -295,7 +295,7 @@ window shows the list of currently connected networks and their channels, the
 current conversation and the list of users.  It uses colors to differentiate
 between users and to highlight messages.  It checks spelling using available
 dictionaries.  HexChat can be extended with multiple addons.")
-    (home-page "http://hexchat.net/")
+    (home-page "https://hexchat.net/")
     (license license:gpl2+)))
 
 (define-public ngircd
