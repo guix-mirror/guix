@@ -367,7 +367,9 @@ the Nix package manager.")
        ,@(alist-delete "guile" (package-inputs guix))))
     (propagated-inputs
      `(("gnutls" ,gnutls/guile-2.0)
+       ("guile-gcrypt" ,guile2.0-gcrypt)
        ("guile-json" ,guile2.0-json)
+       ("guile-sqlite3" ,guile2.0-sqlite3)
        ("guile-ssh" ,guile2.0-ssh)
        ("guile-git" ,guile2.0-git)))))
 

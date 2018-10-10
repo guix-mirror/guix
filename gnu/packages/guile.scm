@@ -19,6 +19,7 @@
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1150,6 +1151,9 @@ Guile's foreign function interface.")
     (description
      "This package provides Guile bindings to the SQLite database system.")
     (license license:gpl3+)))
+
+(define-public guile2.0-sqlite3
+  (package-for-guile-2.0 guile-sqlite3))
 
 (define-public haunt
   (package

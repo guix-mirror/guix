@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2018 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -67,7 +67,8 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system python)
+  #:use-module (srfi srfi-1))
 
 (define-public libgpg-error
   (package
@@ -484,6 +485,13 @@ hash functions, message authentication codes (MAC), public-key cryptography,
 strong randomness, and more.  It is implemented using the foreign function
 interface (FFI) of Guile.")
     (license license:gpl3+)))
+
+(define-public guile2.0-gcrypt
+  (package (inherit guile-gcrypt)
+    (name "guile2.0-gcrypt")
+    (inputs
+     `(("guile" ,guile-2.0)
+       ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
 
 (define-public python-gpg
   (package
