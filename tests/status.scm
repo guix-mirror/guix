@@ -125,7 +125,10 @@
 
 (test-equal "current-build-output-port, UTF-8 + garbage"
   ;; What about a mixture of UTF-8 + garbage?
-  '((build-log #f "garbage: �lambda: λ\n"))
+  (let ((replacement (cond-expand
+                      ((and guile-2 (not guile-2.2)) "?")
+                      (else "�"))))
+    `((build-log #f ,(string-append "garbage: " replacement "lambda: λ\n"))))
   (let-values (((port get-status) (build-event-output-port cons '())))
     (display "garbage: " port)
     (put-bytevector port #vu8(128))

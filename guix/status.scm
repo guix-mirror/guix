@@ -588,8 +588,9 @@ The second return value is a thunk to retrieve the current state."
 
   ;; The build port actually receives Unicode strings.
   (set-port-encoding! port "UTF-8")
-  (setvbuf port (cond-expand (guile-2.2 'line) (else _IOLBF)))
-
+  (cond-expand
+    ((and guile-2 (not guile-2.2)) #t)
+    (else (setvbuf port 'line)))
   (values port (lambda () %state)))
 
 (define (call-with-status-report on-event thunk)
