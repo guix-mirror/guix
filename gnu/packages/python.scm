@@ -142,7 +142,8 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public python-2.7
   (package
@@ -13550,6 +13551,20 @@ file system events on Linux.")
         (base32
          "17h3na0rdh8xq30w4b9pizgkdxmm51896bxw600x84jflg9vaxn4"))))
     (build-system python-build-system)
+    (arguments
+     `(,@(if (any (cute string-prefix? <> (or (%current-system)
+                                              (%current-target-system)))
+                  '("armhf" "i686"))
+        '(#:phases
+          (modify-phases %standard-phases
+          ;; This is required for 32-bit hardware.
+          ;; TODO: Try to remove this when upgrading.
+          (add-after 'unpack 'patch-test
+            (lambda _
+              (substitute* "more_itertools/tests/test_more.py"
+                (("10 \\*\\* 10") "9 ** 9"))
+              #t))))
+        '())))
     (propagated-inputs
      `(("python-six" ,python-six-bootstrap)))
     (home-page "https://github.com/erikrose/more-itertools")
