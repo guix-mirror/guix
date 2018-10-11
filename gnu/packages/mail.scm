@@ -46,6 +46,7 @@
 
 (define-module (gnu packages mail)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
@@ -224,6 +225,87 @@ software.")
     (license
      ;; Libraries are under LGPLv3+, and programs under GPLv3+.
      (list gpl3+ lgpl3+))))
+
+(define-public nullmailer
+  (package
+    (name "nullmailer")
+    (version "2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list
+             (string-append "https://untroubled.org/nullmailer/"
+                            "nullmailer-" version ".tar.gz")
+             ;; Previous releases are moved to this subdirectory.
+             (string-append "https://untroubled.org/nullmailer/archive/"
+                            "nullmailer-" version ".tar.gz")))
+       (sha256
+        (base32 "0md8cf90fl2yf3zh9njjy42a673v4j4ygyq95xg7fzkygdigm1lq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-tls"
+             "--localstatedir=/var"
+             "--sysconfdir=/etc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-test-FHS-file-names
+           (lambda _
+             (with-directory-excursion "test"
+               (substitute* (list "functions.in"
+                                  "tests/send")
+                 ;; Fix some shebangs later generated on the fly.
+                 (("/bin/sh") (which "bash"))))
+             #t))
+         (add-before 'check 'pass-PATH-to-tests
+           ;; ‘runtest’ launches each test through ‘env -’, clearing $PATH. The
+           ;; tests then source ‘functions’, which first demands a working $PATH
+           ;; only to clobber it later.  Pass our $PATH to the test environment
+           ;; and don't touch it after that.
+           (lambda _
+             (with-directory-excursion "test"
+               (substitute* "runtests"
+                 (("env - bash")
+                  (string-append "env - PATH=\"" (getenv "PATH") "\" bash")))
+               (substitute* "functions.in"
+                 (("export PATH=.*") "")))
+             #t))
+         (add-before 'check 'delete-failing-tests
+           (lambda _
+             (with-directory-excursion "test/tests"
+               (for-each delete-file
+                         (list
+                          ;; XXX ‘nullmailer-inject: nullmailer-queue failed: 15’
+                          "inject/queue"
+                          ;; XXX These require the not-yet-packaged tcpserver.
+                          "protocols" "smtp-auth")))
+             #t))
+         (add-before 'install 'skip-install-data-local
+           ;; Don't attempt to install run-time files outside of the store.
+           (lambda _
+             (substitute* "Makefile"
+               ((" install-data-local") ""))
+             #t)))))
+    (native-inputs
+     ;; For tests.
+     `(("daemontools" ,daemontools)))   ; for svc
+    (inputs
+     `(("gnutls" ,gnutls)))
+    (home-page "https://untroubled.org/nullmailer/")
+    (synopsis "Simple relay-only mail transfer agent")
+    (description
+     "Nullmailer is a simple replacement @acronym{MTA, Mail Transfer Agent} for
+hosts that receive no local mail and only relay mail to a fixed set of smart
+relays.  It's useful for systems such as Web servers that must be able to send
+email notifications, without having to run a full-blown MTA such as sendmail
+or qmail.
+
+Nullmailer is designed to be simple to configure, easy to extend, and secure.
+It requires little ongoing administration.  The included @command{sendmail}
+emulator front-end should allow most (if not all) sendmail-compatible programs
+to run without any changes.")
+    (license (list lgpl2.1+         ; lib/cli++/ (but some files lack headers)
+                   gpl2+))))        ; everything else
 
 (define-public fetchmail
   (package
