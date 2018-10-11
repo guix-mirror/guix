@@ -347,12 +347,14 @@ the Nix package manager.")
                        "install-nodist_pkglibexecSCRIPTS")
 
                ;; We need to tell 'guix-daemon' which 'guix' command to use.
-               ;; Here we use a questionable hack where we hard-code
-               ;; "~root/.config", which could be wrong (XXX).
+               ;; Here we use a questionable hack where we hard-code root's
+               ;; current guix, which could be wrong (XXX).  Note that scripts
+               ;; like 'guix perform-download' do not run as root so we assume
+               ;; that they have access to /var/guix/profiles/per-user/root.
                (let ((out (assoc-ref outputs "out")))
                  (substitute* (find-files (string-append out "/libexec"))
                    (("exec \".*/bin/guix\"")
-                    "exec ~root/.config/guix/current/bin/guix"))
+                    "exec /var/guix/profiles/per-user/root/current-guix/bin/guix"))
                  #t)))
            (delete 'wrap-program)))))))
 
