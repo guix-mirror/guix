@@ -239,6 +239,50 @@ triangulations.")
     (license (license:non-copyleft "file://COPYING.txt"
                                    "See COPYING in the distribution."))))
 
+(define-public python-cvxopt
+  (package
+    (name "python-cvxopt")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cvxopt/cvxopt.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05mnjil9palaa48xafdfh4f5pr4z7aqjr995rwl08qfyxs8y0crf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CVXOPT_BLAS_LIB" "openblas")
+             (setenv "CVXOPT_BUILD_FFTW" "1")
+             (setenv "CVXOPT_BUILD_GLPK" "1")
+             (setenv "CVXOPT_BUILD_GSL" "1")
+             #t)))))
+    (inputs
+     `(("fftw" ,fftw)
+       ("glpk" ,glpk)
+       ("gsl" ,gsl)
+       ("lapack" ,lapack)
+       ("openblas" ,openblas)
+       ("suitesparse" ,suitesparse)))
+    (home-page "https://www.cvxopt.org")
+    (synopsis "Python library for convex optimization")
+    (description
+     "CVXOPT is a package for convex optimization based on the Python
+programming language.  Its main purpose is to make the development of software
+for convex optimization applications straightforward by building on Python’s
+extensive standard library and on the strengths of Python as a high-level
+programming language.")
+    (license license:gpl3+)))
+
+(define-public python2-cvxopt
+  (package-with-python2 python-cvxopt))
+
 (define-public units
   (package
    (name "units")
