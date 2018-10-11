@@ -1665,13 +1665,20 @@ as if '-p' was omitted."  ; see <http://bugs.gnu.org/17939>
               profile)))
       (const profile))))
 
+(define %known-shorthand-profiles
+  ;; Known shorthand forms for profiles that the user manipulates.
+  (list (string-append (config-directory #:ensure? #f) "/current")
+        %user-profile-directory))
+
 (define (user-friendly-profile profile)
-  "Return either ~/.guix-profile if that's what PROFILE refers to, directly or
-indirectly, or PROFILE."
-  (if (and %user-profile-directory
-           (false-if-exception
-            (string=? (readlink %user-profile-directory) profile)))
-      %user-profile-directory
+  "Return either ~/.guix-profile or ~/.config/guix/current if that's what
+PROFILE refers to, directly or indirectly, or PROFILE."
+  (or (find (lambda (shorthand)
+              (and shorthand
+                   (let ((target (false-if-exception
+                                  (readlink shorthand))))
+                     (and target (string=? target profile)))))
+            %known-shorthand-profiles)
       profile))
 
 ;;; profiles.scm ends here
