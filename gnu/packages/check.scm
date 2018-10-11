@@ -879,7 +879,8 @@ subprocess and see the output as well as any file modifications.")
        (uri (pypi-uri "testtools" version))
        (sha256
         (base32
-         "0n8519lk8aaa91vymz842831181wf7fss98hyllhygi3z1nfq9sq"))))
+         "0n8519lk8aaa91vymz842831181wf7fss98hyllhygi3z1nfq9sq"))
+       (patches (search-patches "python-testtools.patch"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))
     (propagated-inputs
