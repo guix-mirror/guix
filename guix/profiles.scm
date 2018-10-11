@@ -28,7 +28,8 @@
   #:use-module ((guix config) #:select (%state-directory))
   #:use-module ((guix utils) #:hide (package-name->name+version))
   #:use-module ((guix build utils)
-                #:select (package-name->name+version))
+                #:select (package-name->name+version mkdir-p))
+  #:use-module (guix i18n)
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix derivations)
@@ -127,6 +128,7 @@
             %user-profile-directory
             %profile-directory
             %current-profile
+            ensure-profile-directory
             canonicalize-profile
             user-friendly-profile))
 
@@ -1609,6 +1611,45 @@ because the NUMBER is zero.)"
   ;; Call it `guix-profile', not `profile', to allow Guix profiles to
   ;; coexist with Nix profiles.
   (string-append %profile-directory "/guix-profile"))
+
+(define (ensure-profile-directory)
+  "Attempt to create /…/profiles/per-user/$USER if needed."
+  (let ((s (stat %profile-directory #f)))
+    (unless (and s (eq? 'directory (stat:type s)))
+      (catch 'system-error
+        (lambda ()
+          (mkdir-p %profile-directory))
+        (lambda args
+          ;; Often, we cannot create %PROFILE-DIRECTORY because its
+          ;; parent directory is root-owned and we're running
+          ;; unprivileged.
+          (raise (condition
+                  (&message
+                   (message
+                    (format #f
+                            (G_ "while creating directory `~a': ~a")
+                            %profile-directory
+                            (strerror (system-error-errno args)))))
+                  (&fix-hint
+                   (hint
+                    (format #f (G_ "Please create the @file{~a} directory, \
+with you as the owner.")
+                            %profile-directory))))))))
+
+    ;; Bail out if it's not owned by the user.
+    (unless (or (not s) (= (stat:uid s) (getuid)))
+      (raise (condition
+              (&message
+               (message
+                (format #f (G_ "directory `~a' is not owned by you")
+                        %profile-directory)))
+              (&fix-hint
+               (hint
+                (format #f (G_ "Please change the owner of @file{~a} \
+to user ~s.")
+                        %profile-directory (or (getenv "USER")
+                                               (getenv "LOGNAME")
+                                               (getuid))))))))))
 
 (define (canonicalize-profile profile)
   "If PROFILE is %USER-PROFILE-DIRECTORY, return %CURRENT-PROFILE.  Otherwise
