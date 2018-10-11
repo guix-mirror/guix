@@ -11735,19 +11735,39 @@ using nucleotide or amino-acid sequence data.")
 (define-public kallisto
   (package
     (name "kallisto")
-    (version "0.43.1")
+    (version "0.44.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/pachterlab/"
-                                  "kallisto/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pachterlab/kallisto.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "03j3iqhvq7ya3c91gidly3k3jvgm97vjq4scihrlxh315j696r11"))))
+                "0nj382jiywqnpgvyhichajpkkh5r0bapn43f4dx40zdaq5v4m40m"))))
     (build-system cmake-build-system)
-    (arguments `(#:tests? #f))          ; no "check" target
+    (arguments
+     `(#:tests? #f          ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-use-bundled-htslib
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("^ExternalProject_Add" m)
+                (string-append "if (NEVER)\n" m))
+               (("^\\)")
+                (string-append ")\nendif(NEVER)"))
+               (("include_directories\\(\\$\\{htslib_PREFIX.*" m)
+                (string-append "# " m)))
+             (substitute* "src/CMakeLists.txt"
+               (("target_link_libraries\\(kallisto kallisto_core pthread \
+\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/../ext/htslib/libhts.a\\)")
+                "target_link_libraries(kallisto kallisto_core pthread hts)")
+               (("include_directories\\(\\.\\./ext/htslib\\)") ""))
+             #t)))))
     (inputs
      `(("hdf5" ,hdf5)
+       ("htslib" ,htslib)
        ("zlib" ,zlib)))
     (home-page "http://pachterlab.github.io/kallisto/")
     (synopsis "Near-optimal RNA-Seq quantification")
