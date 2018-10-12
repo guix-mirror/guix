@@ -87,7 +87,8 @@ dnl We require pkg.m4 (from pkg-config) and guile.m4 (from Guile.)
 dnl Make sure they are available.
 m4_pattern_forbid([PKG_CHECK_MODULES])
 m4_pattern_forbid([GUILE_MODULE_AVAILABLE])
-m4_pattern_forbid([^GUILE_P$])
+m4_pattern_forbid([^GUILE_P])
+m4_pattern_allow([^GUILE_PKG_ERRORS])
 m4_pattern_forbid([^GUIX_])
 
 dnl Search for 'guile' and 'guild'.  This macro defines
