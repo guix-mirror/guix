@@ -60,17 +60,22 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (license (list gpl3+ lgpl3+))))
 
 (define-public mes
-  (let ((triplet "i686-unknown-linux-gnu"))
+  (let ((triplet "i686-unknown-linux-gnu")
+        (version "0.18")
+        (revision "0")
+        (commit "08f04f559670d9e8f57eb03bb9b13f4d0b81cedf"))
     (package
       (name "mes")
-      (version "0.18")
+      (version (string-append version "-" revision "." (string-take commit 7)))
       (source (origin
                 (method url-fetch)
-                (uri (string-append "mirror://gnu/mes/"
-                                    "mes-" version ".tar.gz"))
+                (uri (string-append
+                      "https://git.savannah.gnu.org/cgit/mes.git/snapshot/"
+                      name "-" commit
+                      ".tar.gz"))
                 (sha256
                  (base32
-                  "1dsaaqyanzsq9m5wrcd2bjhb3qd6928c9q97rg5r730pyqjwxyxf"))))
+                  "1b7wz9k38pfrz707pd4p8s54q903jr167q73ya7qkna89sxj3wna"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
@@ -93,10 +98,11 @@ extensive examples, including parsers for the Javascript and C99 languages.")
        `(#:strip-binaries? #f))  ; binutil's strip b0rkes MesCC/M1/hex2 binaries
       (synopsis "Scheme interpreter and C compiler for full source bootstrapping")
       (description
-       "GNU Mes [Maxwell Equations of Software] aims to create full source
-bootstrapping for GuixSD.  It consists of a mutual self-hosting [close to
-Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
-[Guile] Scheme.")
+       "GNU Mes--Maxwell Equations of Software--brings the Reduced
+Binary Seed bootstrap to GuixSD and aims to help create full source
+bootstrapping for GNU/Linux distributions.  It consists of a mutual
+self-hosting Scheme interpreter in C and a Nyacc-based C compiler in
+Scheme and is compatible with Guile.")
       (home-page "https://gnu.org/software/mes")
       (license gpl3+))))
 

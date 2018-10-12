@@ -102,7 +102,13 @@
                     (sha256
                      (base32
                       "1whbzahv16bwhavr2azqli0dcbk29p9rsqfbjl69la135z8vgdhx")))
-                  (package-source mes)))
+                  (origin
+                    (method url-fetch)
+                    (uri (string-append "mirror://gnu/mes/"
+                                        "mes-" version ".tar.gz"))
+                    (sha256
+                     (base32
+                      "1dsaaqyanzsq9m5wrcd2bjhb3qd6928c9q97rg5r730pyqjwxyxf")))))
       (native-inputs '())
       (propagated-inputs '()))))
 
