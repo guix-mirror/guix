@@ -88,6 +88,7 @@ dnl Make sure they are available.
 m4_pattern_forbid([PKG_CHECK_MODULES])
 m4_pattern_forbid([GUILE_MODULE_AVAILABLE])
 m4_pattern_forbid([^GUILE_P$])
+m4_pattern_forbid([^GUIX_])
 
 dnl Search for 'guile' and 'guild'.  This macro defines
 dnl 'GUILE_EFFECTIVE_VERSION'.
@@ -231,8 +232,6 @@ AC_MSG_RESULT([$LIBGCRYPT])
 AC_SUBST([LIBGCRYPT])
 AC_SUBST([LIBGCRYPT_PREFIX])
 AC_SUBST([LIBGCRYPT_LIBDIR])
-
-GUIX_ASSERT_LIBGCRYPT_USABLE
 
 dnl Library name of zlib suitable for 'dynamic-link'.
 GUIX_LIBZ_LIBDIR([libz_libdir])
