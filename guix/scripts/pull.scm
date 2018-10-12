@@ -239,7 +239,7 @@ Download and deploy the latest version of Guix.\n"))
   (string-append (config-directory #:ensure? #f) "/current"))
 
 (define (migrate-generations profile directory)
-  "Migration the generations of PROFILE to DIRECTORY."
+  "Migrate the generations of PROFILE to DIRECTORY."
   (format (current-error-port)
           (G_ "Migrating profile generations to '~a'...~%")
           %profile-directory)
@@ -251,7 +251,10 @@ Download and deploy the latest version of Guix.\n"))
                       (target (string-append directory "/current-guix-"
                                              (number->string generation)
                                              "-link")))
-                  (rename-file source target)))
+                  ;; Note: Don't use 'rename-file' as SOURCE and TARGET might
+                  ;; live on different file systems.
+                  (symlink (readlink source) target)
+                  (delete-file source)))
               (profile-generations profile))
     (symlink current (string-append directory "/current-guix"))))
 
