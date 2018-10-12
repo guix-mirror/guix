@@ -117,9 +117,18 @@
    (package
      (inherit mescc-tools)
      (name "mescc-tools-boot")
+     (version "0.5.2")
      (source (origin
-               (inherit (package-source mescc-tools))
-               (patches (search-patches "mescc-tools-boot.patch"))))
+               (method url-fetch)
+               (uri (string-append
+                     "http://git.savannah.nongnu.org/cgit/mescc-tools.git/snapshot/"
+                     name "-Release_" version
+                     ".tar.gz"))
+               (patches (search-patches "mescc-tools-boot.patch"))
+               (file-name (string-append "mescc-tools" "-" version ".tar.gz"))
+               (sha256
+                (base32
+                 "01x7bhmgwyf6mc2g1hcvibhps98nllacqm4f0j5l51b1mbi18pc2"))))
      (inputs '())
      (propagated-inputs '())
      (native-inputs

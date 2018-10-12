@@ -106,31 +106,33 @@ Scheme and is compatible with Guile.")
       (license gpl3+))))
 
 (define-public mescc-tools
-  (package
-    (name "mescc-tools")
-    (version "0.5.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://git.savannah.nongnu.org/cgit/mescc-tools.git/snapshot/"
-                    name "-Release_" version
-                    ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "01x7bhmgwyf6mc2g1hcvibhps98nllacqm4f0j5l51b1mbi18pc2"))))
-    (build-system gnu-build-system)
-    (supported-systems '("i686-linux" "x86_64-linux"))
-    (arguments
-     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:test-target "test"
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
-    (synopsis "Tools for the full source bootstrapping process")
-    (description
-     "Mescc-tools is a collection of tools for use in a full source
+  (let ((commit "bb062b0da7bf2724ca40f9002b121579898d4ef7")
+        (revision "0")
+        (version "0.5.2"))
+    (package
+      (name "mescc-tools")
+      (version (string-append version "-" revision "." (string-take commit 7)))
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "https://git.savannah.nongnu.org/cgit/mescc-tools.git/snapshot/"
+                      name "-" commit
+                      ".tar.gz"))
+                (sha256
+                 (base32
+                  "1h6j57wyf91i42b26f8msbv6451cw3nm4nmpl1fckp9c7vi8mwkh"))))
+      (build-system gnu-build-system)
+      (supported-systems '("i686-linux" "x86_64-linux"))
+      (arguments
+       `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:test-target "test"
+         #:phases (modify-phases %standard-phases
+                    (delete 'configure))))
+      (synopsis "Tools for the full source bootstrapping process")
+      (description
+       "Mescc-tools is a collection of tools for use in a full source
 bootstrapping process.  It consists of the M1 macro assembler, the hex2
 linker, the blood-elf symbol table generator, the kaem shell, exec_enable and
 get_machine.")
     (home-page "https://savannah.nongnu.org/projects/mescc-tools")
-    (license gpl3+)))
+    (license gpl3+))))
