@@ -9,6 +9,7 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system asdf)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages admin)
@@ -562,6 +564,151 @@ interface.")
     ;; applies to Lisp code according to them.
     (license (list license:lgpl2.1
                    license:clarified-artistic)))) ;TRIVIAL-LDAP package
+
+(define-public clojure
+  (let* ((remove-archives '(begin
+                             (for-each delete-file
+                                       (find-files "." ".*\\.(jar|zip)"))
+                             #t))
+         (submodule (lambda (prefix version hash)
+                      (origin
+                        (method url-fetch)
+                        (uri (string-append "https://github.com/clojure/"
+                                            prefix version ".tar.gz"))
+                        (sha256 (base32 hash))
+                        (modules '((guix build utils)))
+                        (snippet remove-archives)))))
+    (package
+      (name "clojure")
+      (version "1.9.0")
+      (source
+       (origin
+         (method url-fetch)
+         (uri
+          (string-append "https://github.com/clojure/clojure/archive/clojure-"
+                         version ".tar.gz"))
+         (sha256
+          (base32 "0xjbzcw45z32vsn9pifp7ndysjzqswp5ig0jkjpivigh2ckkdzha"))
+         (modules '((guix build utils)))
+         (snippet remove-archives)))
+      (build-system ant-build-system)
+      (arguments
+       `(#:modules ((guix build ant-build-system)
+                    (guix build utils)
+                    (ice-9 ftw)
+                    (ice-9 regex)
+                    (srfi srfi-1)
+                    (srfi srfi-26))
+         #:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-submodule-sources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (for-each
+                (lambda (name)
+                  (mkdir-p name)
+                  (with-directory-excursion name
+                    (invoke "tar"
+                            ;; Use xz for repacked tarball.
+                            "--xz"
+                            "--extract"
+                            "--verbose"
+                            "--file" (assoc-ref inputs name)
+                            "--strip-components=1"))
+                  (copy-recursively (string-append name "/src/main/clojure/")
+                                    "src/clj/"))
+                '("core-specs-alpha-src"
+                  "data-generators-src"
+                  "spec-alpha-src"
+                  "test-check-src"
+                  "test-generative-src"
+                  "tools-namespace-src"))
+               #t))
+           (add-after 'unpack 'fix-manifest-classpath
+             (lambda _
+               (substitute* "build.xml"
+                 (("<attribute name=\"Class-Path\" value=\".\"/>") ""))
+               #t))
+           ;; The javadoc target is not built by default.
+           (add-after 'build 'build-doc
+             (lambda _
+               (invoke "ant" "javadoc")))
+           ;; Needed since no install target is provided.
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((java-dir (string-append (assoc-ref outputs "out")
+                                              "/share/java/")))
+                 ;; Install versioned to avoid collisions.
+                 (install-file (string-append "clojure-" ,version ".jar")
+                               java-dir)
+                 #t)))
+           ;; Needed since no install-doc target is provided.
+           (add-after 'install 'install-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((doc-dir (string-append (assoc-ref outputs "out")
+                                             "/share/doc/clojure-"
+                                             ,version "/")))
+                 (copy-recursively "doc/clojure" doc-dir)
+                 (copy-recursively "target/javadoc/"
+                                   (string-append doc-dir "javadoc/"))
+                 (for-each (cut install-file <> doc-dir)
+                           (filter (cut string-match
+                                     ".*\\.(html|markdown|md|txt)"
+                                     <>)
+                                   (scandir "./")))
+                 #t))))))
+      ;; The native-inputs below are needed to run the tests.
+      (native-inputs
+       `(("core-specs-alpha-src"
+          ,(submodule "core.specs.alpha/archive/core.specs.alpha-"
+                      "0.1.24"
+                      "0v2a0svf1ar2y42ajxwsjr7zmm5j7pp2zwrd2jh3k7xzd1p9x1fv"))
+         ("data-generators-src"
+          ,(submodule "data.generators/archive/data.generators-"
+                      "0.1.2"
+                      "0kki093jp4ckwxzfnw8ylflrfqs8b1i1wi9iapmwcsy328dmgzp1"))
+         ("spec-alpha-src"
+          ,(submodule "spec.alpha/archive/spec.alpha-"
+                      "0.1.143"
+                      "00alf0347licdn773w2jarpllyrbl52qz4d8mw61anjksacxylzz"))
+         ("test-check-src"
+          ,(submodule "test.check/archive/test.check-"
+                      "0.9.0"
+                      "0p0mnyhr442bzkz0s4k5ra3i6l5lc7kp6ajaqkkyh4c2k5yck1md"))
+         ("test-generative-src"
+          ,(submodule "test.generative/archive/test.generative-"
+                      "0.5.2"
+                      "1pjafy1i7yblc7ixmcpfq1lfbyf3jaljvkgrajn70sws9xs7a9f8"))
+         ("tools-namespace-src"
+          ,(submodule "tools.namespace/archive/tools.namespace-"
+                      "0.2.11"
+                      "10baak8v0hnwz2hr33bavshm7y49mmn9zsyyms1dwjz45p5ymhy0"))))
+      (home-page "https://clojure.org/")
+      (synopsis "Lisp dialect running on the JVM")
+      (description "Clojure is a dynamic, general-purpose programming language,
+combining the approachability and interactive development of a scripting
+language with an efficient and robust infrastructure for multithreaded
+programming.  Clojure is a compiled language, yet remains completely dynamic
+– every feature supported by Clojure is supported at runtime.  Clojure
+provides easy access to the Java frameworks, with optional type hints and type
+inference, to ensure that calls to Java can avoid reflection.
+
+Clojure is a dialect of Lisp, and shares with Lisp the code-as-data philosophy
+and a powerful macro system.  Clojure is predominantly a functional programming
+language, and features a rich set of immutable, persistent data structures.
+When mutable state is needed, Clojure offers a software transactional memory
+system and reactive Agent system that ensure clean, correct, multithreaded
+designs.")
+      ;; Clojure is licensed under EPL1.0
+      ;; ASM bytecode manipulation library is licensed under BSD-3
+      ;; Guava Murmur3 hash implementation is licensed under APL2.0
+      ;; src/clj/repl.clj is licensed under CPL1.0
+      ;;
+      ;; See readme.html or readme.txt for details.
+      (license (list license:epl1.0
+                     license:bsd-3
+                     license:asl2.0
+                     license:cpl1.0)))))
 
 (define-public femtolisp
   (let ((commit "68c5b1225572ecf2c52baf62f928063e5a30511b")
