@@ -243,9 +243,7 @@ Download and deploy the latest version of Guix.\n"))
   (format (current-error-port)
           (G_ "Migrating profile generations to '~a'...~%")
           %profile-directory)
-  (let ((current (basename
-                  (generation-file-name profile
-                                        (generation-number profile)))))
+  (let ((current (generation-number profile)))
     (for-each (lambda (generation)
                 (let ((source (generation-file-name profile generation))
                       (target (string-append directory "/current-guix-"
@@ -256,7 +254,9 @@ Download and deploy the latest version of Guix.\n"))
                   (symlink (readlink source) target)
                   (delete-file source)))
               (profile-generations profile))
-    (symlink current (string-append directory "/current-guix"))))
+    (symlink (string-append "current-guix-"
+                            (number->string current) "-link")
+             (string-append directory "/current-guix"))))
 
 (define (ensure-default-profile)
   (ensure-profile-directory)
