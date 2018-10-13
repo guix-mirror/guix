@@ -36,6 +36,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ant)
+  #:use-module (guix build-system clojure)
   #:use-module (guix build-system asdf)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages admin)
@@ -1606,6 +1607,58 @@ compressor.  It works on data produced by @code{parse-js} to generate a
      `(("sbcl" ,sbcl)
        ("sbcl-cl-uglify-js" ,sbcl-cl-uglify-js)))
     (synopsis "JavaScript compressor")))
+
+(define-public clojure-instaparse
+  (let ((commit "dcfffad5b065e750f0f5835f017cdd8188b8ca2e")
+        (version "1.4.9")) ; upstream forget to tag this release
+    (package
+      (name "clojure-instaparse")
+      (version version)
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Engelberg/instaparse.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "002mrgin4z3dqy88r1lak7smd0m7x8d22vmliw0m6w6mh5pa17lk"))))
+      (build-system clojure-build-system)
+      (arguments
+       '(#:doc-dirs '("docs/")))
+      (synopsis "No grammar left behind")
+      (description
+       "Instaparse aims to be the simplest way to build parsers in Clojure.
+
+@itemize
+@item Turns @emph{standard EBNF or ABNF notation} for context-free grammars
+into an executable parser that takes a string as an input and produces a parse
+tree for that string.
+
+@item @dfn{No Grammar Left Behind}: Works for @emph{any} context-free grammar,
+including @emph{left-recursive}, @emph{right-recursive}, and @emph{ambiguous}
+grammars.
+
+@item Extends the power of context-free grammars with PEG-like syntax for
+lookahead and negative lookahead.
+
+@item Supports both of Clojure's most popular tree formats (hiccup and enlive)
+as output targets
+
+@item Detailed reporting of parse errors.
+
+@item Optionally produces lazy sequence of all parses (especially useful for
+diagnosing and debugging ambiguous grammars).
+
+@item ``Total parsing'' mode where leftover string is embedded in the parse
+tree.
+
+@item Optional combinator library for building grammars programmatically.
+
+@item Performant.
+@end itemize")
+      (home-page "https://github.com/Engelberg/instaparse")
+      (license license:epl1.0))))
 
 (define-public confusion-mdl
   (let* ((commit "12a055581fc262225272df43287dae48281900f5"))
