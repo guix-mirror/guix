@@ -566,18 +566,12 @@ interface.")
                    license:clarified-artistic)))) ;TRIVIAL-LDAP package
 
 (define-public clojure
-  (let* ((remove-archives '(begin
-                             (for-each delete-file
-                                       (find-files "." ".*\\.(jar|zip)"))
-                             #t))
-         (submodule (lambda (prefix version hash)
-                      (origin
-                        (method url-fetch)
-                        (uri (string-append "https://github.com/clojure/"
-                                            prefix version ".tar.gz"))
-                        (sha256 (base32 hash))
-                        (modules '((guix build utils)))
-                        (snippet remove-archives)))))
+  (let ((submodule (lambda (prefix version hash)
+                     (origin
+                       (method url-fetch)
+                       (uri (string-append "https://github.com/clojure/"
+                                           prefix version ".tar.gz"))
+                       (sha256 (base32 hash))))))
     (package
       (name "clojure")
       (version "1.9.0")
@@ -588,9 +582,7 @@ interface.")
           (string-append "https://github.com/clojure/clojure/archive/clojure-"
                          version ".tar.gz"))
          (sha256
-          (base32 "0xjbzcw45z32vsn9pifp7ndysjzqswp5ig0jkjpivigh2ckkdzha"))
-         (modules '((guix build utils)))
-         (snippet remove-archives)))
+          (base32 "0xjbzcw45z32vsn9pifp7ndysjzqswp5ig0jkjpivigh2ckkdzha"))))
       (build-system ant-build-system)
       (arguments
        `(#:modules ((guix build ant-build-system)
@@ -609,8 +601,6 @@ interface.")
                   (mkdir-p name)
                   (with-directory-excursion name
                     (invoke "tar"
-                            ;; Use xz for repacked tarball.
-                            "--xz"
                             "--extract"
                             "--verbose"
                             "--file" (assoc-ref inputs name)
