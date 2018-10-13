@@ -7576,13 +7576,13 @@ minimal and fast API targeting the following uses:
 (define-public python-icalendar
   (package
     (name "python-icalendar")
-    (version "4.0.1")
+    (version "4.0.2")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "icalendar" version))
              (sha256
               (base32
-               "139y79y6ijl39m5bj771r43vpah9s4ly7d1k76la6hrx7l144ak8"))))
+               "13003kw2vbas1ha146vv3x2rdg9k7w38rdzxj63vi1i67jgjldl0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
