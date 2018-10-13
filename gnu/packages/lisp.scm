@@ -614,10 +614,10 @@ interface.")
       (build-system ant-build-system)
       (arguments
        `(#:modules ((guix build ant-build-system)
+                    (guix build java-utils)
                     (guix build utils)
                     (ice-9 ftw)
                     (ice-9 regex)
-                    (srfi srfi-1)
                     (srfi srfi-26))
          #:test-target "test"
          #:phases
@@ -641,34 +641,22 @@ interface.")
                (substitute* "build.xml"
                  (("<attribute name=\"Class-Path\" value=\".\"/>") ""))
                #t))
-           ;; The javadoc target is not built by default.
-           (add-after 'build 'build-doc
-             (lambda _
-               (invoke "ant" "javadoc")))
-           ;; Needed since no install target is provided.
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((java-dir (string-append (assoc-ref outputs "out")
-                                              "/share/java/")))
-                 ;; Install versioned to avoid collisions.
-                 (install-file (string-append "clojure-" ,version ".jar")
-                               java-dir)
-                 #t)))
-           ;; Needed since no install-doc target is provided.
+           (add-after 'build 'build-javadoc ant-build-javadoc)
+           (replace 'install (install-jars "./"))
            (add-after 'install 'install-doc
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((doc-dir (string-append (assoc-ref outputs "out")
                                              "/share/doc/clojure-"
                                              ,version "/")))
                  (copy-recursively "doc/clojure" doc-dir)
-                 (copy-recursively "target/javadoc/"
-                                   (string-append doc-dir "javadoc/"))
                  (for-each (cut install-file <> doc-dir)
                            (filter (cut string-match
                                      ".*\\.(html|markdown|md|txt)"
                                      <>)
                                    (scandir "./")))
-                 #t))))))
+                 #t)))
+           (add-after 'install-doc 'install-javadoc
+             (install-javadoc "target/javadoc/")))))
       (native-inputs libraries)
       (home-page "https://clojure.org/")
       (synopsis "Lisp dialect running on the JVM")
