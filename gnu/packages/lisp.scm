@@ -566,12 +566,40 @@ interface.")
                    license:clarified-artistic)))) ;TRIVIAL-LDAP package
 
 (define-public clojure
-  (let ((submodule (lambda (prefix version hash)
-                     (origin
-                       (method url-fetch)
-                       (uri (string-append "https://github.com/clojure/"
-                                           prefix version ".tar.gz"))
-                       (sha256 (base32 hash))))))
+  (let* ((lib (lambda (prefix version hash)
+                (origin (method url-fetch)
+                        (uri (string-append "https://github.com/clojure/"
+                                            prefix version ".tar.gz"))
+                        (sha256 (base32 hash)))))
+         ;; The libraries below are needed to run the tests.
+         (libraries
+          `(("core-specs-alpha-src"
+             ,(lib "core.specs.alpha/archive/core.specs.alpha-"
+                   "0.1.24"
+                   "0v2a0svf1ar2y42ajxwsjr7zmm5j7pp2zwrd2jh3k7xzd1p9x1fv"))
+            ("data-generators-src"
+             ,(lib "data.generators/archive/data.generators-"
+                   "0.1.2"
+                   "0kki093jp4ckwxzfnw8ylflrfqs8b1i1wi9iapmwcsy328dmgzp1"))
+            ("spec-alpha-src"
+             ,(lib "spec.alpha/archive/spec.alpha-"
+                   "0.1.143"
+                   "00alf0347licdn773w2jarpllyrbl52qz4d8mw61anjksacxylzz"))
+            ("test-check-src"
+             ,(lib "test.check/archive/test.check-"
+                   "0.9.0"
+                   "0p0mnyhr442bzkz0s4k5ra3i6l5lc7kp6ajaqkkyh4c2k5yck1md"))
+            ("test-generative-src"
+             ,(lib "test.generative/archive/test.generative-"
+                   "0.5.2"
+                   "1pjafy1i7yblc7ixmcpfq1lfbyf3jaljvkgrajn70sws9xs7a9f8"))
+            ("tools-namespace-src"
+             ,(lib "tools.namespace/archive/tools.namespace-"
+                   "0.2.11"
+                   "10baak8v0hnwz2hr33bavshm7y49mmn9zsyyms1dwjz45p5ymhy0"))))
+         (library-names (match libraries
+                          (((library-name _) ...)
+                           library-name))))
     (package
       (name "clojure")
       (version "1.9.0")
@@ -594,27 +622,21 @@ interface.")
          #:test-target "test"
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'unpack-submodule-sources
+           (add-after 'unpack 'unpack-library-sources
              (lambda* (#:key inputs #:allow-other-keys)
-               (for-each
-                (lambda (name)
-                  (mkdir-p name)
-                  (with-directory-excursion name
-                    (invoke "tar"
-                            "--extract"
-                            "--verbose"
-                            "--file" (assoc-ref inputs name)
-                            "--strip-components=1"))
-                  (copy-recursively (string-append name "/src/main/clojure/")
-                                    "src/clj/"))
-                '("core-specs-alpha-src"
-                  "data-generators-src"
-                  "spec-alpha-src"
-                  "test-check-src"
-                  "test-generative-src"
-                  "tools-namespace-src"))
+               (define (extract-library name)
+                 (mkdir-p name)
+                 (with-directory-excursion name
+                   (invoke "tar"
+                           "--extract"
+                           "--verbose"
+                           "--file" (assoc-ref inputs name)
+                           "--strip-components=1"))
+                 (copy-recursively (string-append name "/src/main/clojure/")
+                                   "src/clj/"))
+               (for-each extract-library ',library-names)
                #t))
-           (add-after 'unpack 'fix-manifest-classpath
+           (add-after 'unpack-library-sources 'fix-manifest-classpath
              (lambda _
                (substitute* "build.xml"
                  (("<attribute name=\"Class-Path\" value=\".\"/>") ""))
@@ -647,32 +669,7 @@ interface.")
                                      <>)
                                    (scandir "./")))
                  #t))))))
-      ;; The native-inputs below are needed to run the tests.
-      (native-inputs
-       `(("core-specs-alpha-src"
-          ,(submodule "core.specs.alpha/archive/core.specs.alpha-"
-                      "0.1.24"
-                      "0v2a0svf1ar2y42ajxwsjr7zmm5j7pp2zwrd2jh3k7xzd1p9x1fv"))
-         ("data-generators-src"
-          ,(submodule "data.generators/archive/data.generators-"
-                      "0.1.2"
-                      "0kki093jp4ckwxzfnw8ylflrfqs8b1i1wi9iapmwcsy328dmgzp1"))
-         ("spec-alpha-src"
-          ,(submodule "spec.alpha/archive/spec.alpha-"
-                      "0.1.143"
-                      "00alf0347licdn773w2jarpllyrbl52qz4d8mw61anjksacxylzz"))
-         ("test-check-src"
-          ,(submodule "test.check/archive/test.check-"
-                      "0.9.0"
-                      "0p0mnyhr442bzkz0s4k5ra3i6l5lc7kp6ajaqkkyh4c2k5yck1md"))
-         ("test-generative-src"
-          ,(submodule "test.generative/archive/test.generative-"
-                      "0.5.2"
-                      "1pjafy1i7yblc7ixmcpfq1lfbyf3jaljvkgrajn70sws9xs7a9f8"))
-         ("tools-namespace-src"
-          ,(submodule "tools.namespace/archive/tools.namespace-"
-                      "0.2.11"
-                      "10baak8v0hnwz2hr33bavshm7y49mmn9zsyyms1dwjz45p5ymhy0"))))
+      (native-inputs libraries)
       (home-page "https://clojure.org/")
       (synopsis "Lisp dialect running on the JVM")
       (description "Clojure is a dynamic, general-purpose programming language,
@@ -693,7 +690,7 @@ designs.")
       ;; ASM bytecode manipulation library is licensed under BSD-3
       ;; Guava Murmur3 hash implementation is licensed under APL2.0
       ;; src/clj/repl.clj is licensed under CPL1.0
-      ;;
+
       ;; See readme.html or readme.txt for details.
       (license (list license:epl1.0
                      license:bsd-3
