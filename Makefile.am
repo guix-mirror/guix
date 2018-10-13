@@ -329,6 +329,7 @@ SCM_TESTS =					\
   tests/base16.scm				\
   tests/base32.scm				\
   tests/base64.scm				\
+  tests/channels.scm				\
   tests/cpan.scm				\
   tests/cpio.scm				\
   tests/crate.scm				\
