@@ -7353,9 +7353,7 @@ config files.")
     (version "0.12.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.io/packages/source/C/ConfigArgParse/"
-                    "ConfigArgParse-" version ".tar.gz"))
+              (uri (pypi-uri "ConfigArgParse" version))
               (sha256
                (base32
                 "0fgkiqh6r3rbkdq3k8c48m85g52k96686rw3a6jg4lcncrkpvk98"))))
