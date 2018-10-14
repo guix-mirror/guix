@@ -1608,6 +1608,33 @@ compressor.  It works on data produced by @code{parse-js} to generate a
        ("sbcl-cl-uglify-js" ,sbcl-cl-uglify-js)))
     (synopsis "JavaScript compressor")))
 
+(define-public clojure-core-match
+  (let ((commit "1837ffbd4a150e8f3953b2d9ed5cf4a4ad3720a7")
+        (revision "1")) ; this is the 1st commit buildable with clojure 1.9
+    (package
+      (name "clojure-core-match")
+      (version (git-version "0.3.0-alpha5" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/clojure/core.match.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "04bdlp5dgkrqzrz0lw3mfwmygj2218qnm1cz3dkb9wy4m0238s4d"))))
+      (build-system clojure-build-system)
+      (arguments
+       '(#:source-dirs '("src/main/clojure")
+         #:test-dirs '("src/test/clojure")
+         #:doc-dirs '()))
+      (synopsis "Optimized pattern matching for Clojure")
+      (description
+       "An optimized pattern matching library for Clojure.
+It supports Clojure 1.5.1 and later as well as ClojureScript.")
+      (home-page "https://github.com/clojure/core.match")
+      (license license:epl1.0))))
+
 (define-public clojure-instaparse
   (let ((commit "dcfffad5b065e750f0f5835f017cdd8188b8ca2e")
         (version "1.4.9")) ; upstream forget to tag this release
