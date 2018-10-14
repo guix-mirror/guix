@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -650,7 +651,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.09.1")
+    (version "6.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -659,7 +660,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xqpqws4jsv7fyawcjzwaw544qbfh29xq164kdf30a9v1n3yklp4"))))
+                "072pk5h9w0vhw0ncc9dn90haw1yv18v04iwwjn8nsp6930w7dvxd"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -674,7 +675,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
      `(("bison" ,bison)
        ("flex" ,flex)
        ("zlib" ,zlib)))
-    (home-page "http://csound.github.io/")
+    (home-page "https://csound.com/")
     (synopsis "Sound and music computing system")
     (description
      "Csound is a user-programmable and user-extensible sound processing
