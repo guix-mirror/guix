@@ -1711,6 +1711,28 @@ tree.
       (home-page "https://github.com/Engelberg/instaparse")
       (license license:epl1.0))))
 
+(define-public clojure-tools-macro
+  (package
+    (name "clojure-tools-macro")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/clojure/tools.macro/archive"
+                       "/tools.macro-" version ".tar.gz"))
+       (sha256
+        (base32 "0fs64a0g63xx6g7sj6vrsqknhl90s0isf6k053nw8vv5prfzc7v6"))))
+    (build-system clojure-build-system)
+    (arguments
+     '(#:source-dirs '("src/main/clojure/")
+       #:test-dirs '("src/test/clojure/")
+       #:doc-dirs '()))
+    (synopsis "Utilities for macro writers")
+    (description "Tools for writing macros.")
+    (home-page "https://github.com/clojure/tools.macro")
+    (license license:epl1.0)))
+
 (define-public confusion-mdl
   (let* ((commit "12a055581fc262225272df43287dae48281900f5"))
     (package
