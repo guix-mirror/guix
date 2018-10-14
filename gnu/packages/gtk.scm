@@ -469,7 +469,11 @@ highlighting and other features typical of a source code editor.")
              ;; ERROR:pixbuf-jpeg.c:74:test_type9_rotation_exif_tag:
              ;; assertion failed (error == NULL): Data differ
              ;; (gdk-pixbuf-error-quark, 0)
-             ((".*'pixbuf-jpeg'.*") ""))
+             ((".*'pixbuf-jpeg'.*") "")
+             ;; Extend the timeout of the test suite.
+             ;; TODO: Check upstreaming effort:
+             ;; https://gitlab.gnome.org/GNOME/gdk-pixbuf/merge_requests/21
+             (("300") "1800"))
            #t))
         (add-before 'configure 'aid-install-script
           (lambda* (#:key outputs #:allow-other-keys)
