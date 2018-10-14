@@ -319,8 +319,9 @@ addition to build events."
      (format port (info (G_ "building ~a...")) drv)
      (newline port))
     (('build-succeeded drv . _)
-     (format port (success (G_ "successfully built ~a")) drv)
-     (newline port)
+     (when (or print-log? (not (extended-build-trace-supported?)))
+       (format port (success (G_ "successfully built ~a")) drv)
+       (newline port))
      (match (build-status-building status)
        (() #t)
        (ongoing                                   ;when max-jobs > 1
