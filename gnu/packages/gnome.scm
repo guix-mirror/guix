@@ -7220,6 +7220,71 @@ It supports ripping to any audio codec supported by a GStreamer plugin, such as
 mp3, Ogg Vorbis and FLAC")
     (license license:gpl2+)))
 
+(define-public soundconverter
+  (package
+    (name "soundconverter")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/soundconverter/trunk/"
+                           version "/+download/"
+                           "soundconverter-" version ".tar.xz"))
+
+       (sha256
+        (base32
+         "1wrxf5py54xplrf97qp24pzbis0cvax5c6k0c7vr3z3ry8r7gd7c"))
+       (patches
+        (search-patches
+         "soundconverter-remove-gconf-dependency.patch"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           (guix build glib-or-gtk-build-system)
+                           ,@%gnu-build-system-modules)
+
+       #:modules ((guix build glib-or-gtk-build-system)
+                  (guix build utils)
+                  ((guix build gnu-build-system) #:prefix gnu:)
+                  ((guix build python-build-system) #:prefix python:))
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-POTFILES.in
+           (lambda _
+             (substitute* "po/POTFILES.in"
+               ;; This file doesn't exist, so without removing it, the 'check
+               ;; phase fails for the po directory
+               (("soundconverter/gconfstore\\.py") ""))))
+         (add-after 'install 'wrap-soundconverter-for-python
+           (assoc-ref python:%standard-phases 'wrap))
+         (add-after 'install 'wrap-soundconverter
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                   (gst-plugin-path   (getenv "GST_PLUGIN_SYSTEM_PATH")))
+               (wrap-program (string-append out "/bin/soundconverter")
+                 `("GI_TYPELIB_PATH"        ":" prefix (,gi-typelib-path))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (home-page "http://soundconverter.org/")
+    (synopsis "Convert between audio formats with a graphical interface")
+    (description
+     "SoundConverter supports converting between many audio formats including
+Opus, Ogg Vorbis, FLAC and more.  It supports parallel conversion, and
+configurable file renaming. ")
+    (license license:gpl3)))
+
 (define-public workrave
   (let ((commit "v1_10_21"))
     (package
