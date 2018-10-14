@@ -1608,6 +1608,30 @@ compressor.  It works on data produced by @code{parse-js} to generate a
        ("sbcl-cl-uglify-js" ,sbcl-cl-uglify-js)))
     (synopsis "JavaScript compressor")))
 
+(define-public clojure-algo-generic
+  (package
+    (name "clojure-algo-generic")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/clojure/algo.generic/archive"
+                       "/algo.generic-" version ".tar.gz"))
+       (sha256
+        (base32 "12w9681i545gp1af4576z1qbixwps1j13c16fmcc7zsb0bd1zr7w"))))
+    (build-system clojure-build-system)
+    (arguments
+     '(#:source-dirs '("src/main/clojure/")
+       #:test-dirs '("src/test/clojure/")
+       #:doc-dirs '()))
+    (synopsis "Generic versions of common functions")
+    (description
+     "Generic versions of commonly used functions, implemented as multimethods
+that can be implemented for any data type.")
+    (home-page "https://github.com/clojure/algo.generic")
+    (license license:epl1.0)))
+
 (define-public clojure-core-match
   (let ((commit "1837ffbd4a150e8f3953b2d9ed5cf4a4ad3720a7")
         (revision "1")) ; this is the 1st commit buildable with clojure 1.9
