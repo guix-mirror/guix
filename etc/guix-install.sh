@@ -160,6 +160,9 @@ chk_sys_arch()
         aarch64)
             local arch=aarch64
             ;;
+	armv7l)
+	    local arch=armhf
+	    ;;
         *)
             _err "${ERR}Unsupported CPU type: ${arch}"
             exit 1
