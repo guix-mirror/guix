@@ -1632,6 +1632,33 @@ that can be implemented for any data type.")
     (home-page "https://github.com/clojure/algo.generic")
     (license license:epl1.0)))
 
+(define-public clojure-algo-monads
+  (package
+    (name "clojure-algo-monads")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/clojure/algo.monads/archive"
+                       "/algo.monads-" version ".tar.gz"))
+       (sha256
+        (base32 "14gbvfgmrda990h45yn7zag83vp1kdkz4f4yzmyvkr0sjihlgdmq"))))
+    (build-system clojure-build-system)
+    (arguments
+     '(#:source-dirs '("src/main/clojure/")
+       #:test-dirs '("src/test/clojure/")
+       #:doc-dirs '()))
+    (native-inputs
+     `(("clojure-tools-macro" ,clojure-tools-macro)))
+    (synopsis
+     "Monad Macros and Definitions")
+    (description
+     "This library contains the most commonly used monads as well as macros for
+defining and using monads and useful monadic functions.")
+    (home-page "https://github.com/clojure/algo.monads")
+    (license license:epl1.0)))
+
 (define-public clojure-core-match
   (let ((commit "1837ffbd4a150e8f3953b2d9ed5cf4a4ad3720a7")
         (revision "1")) ; this is the 1st commit buildable with clojure 1.9
