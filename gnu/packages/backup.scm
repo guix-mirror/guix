@@ -862,7 +862,7 @@ is like a time machine for your data. ")
 (define-public restic
   (package
     (name "restic")
-    (version "0.9.2")
+    (version "0.9.3")
     ;; TODO Try packaging the bundled / vendored dependencies in the 'vendor/'
     ;; directory.
     (source (origin
@@ -873,7 +873,7 @@ is like a time machine for your data. ")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15bwkydxcg4xhrnqxvxji8wacrsndb1a6frj98wggfaijqzfx3lg"))))
+                "1l1ddnf61pfsrry97qwhhdzywin2mgnbrkhcc9pabsdfk602anmr"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/restic/restic"
@@ -887,6 +887,8 @@ is like a time machine for your data. ")
              (with-directory-excursion (string-append
                                         "src/github.com/restic/restic-"
                                         ,version)
+               ;; Disable 'restic self-update'.  It makes little sense in Guix.
+               (substitute* "build.go" (("selfupdate") ""))
                (invoke "go" "run" "build.go"))))
 
          (replace 'check
