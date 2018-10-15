@@ -401,7 +401,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
         (sha256
          (base32
           "090hp4216isis8q5gb7bwzia8rfyzni54z21jnwm97x3hiy6ibpb"))
-        (patches (search-patches "x265-arm-asm-primitives.patch"))
+        (patches (search-patches "x265-detect512-all-arches.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
                     (delete-file-recursively "source/compat/getopt")
@@ -409,12 +409,8 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
-       ;; Currently the source code doesn't check for aarch64.
-       ,@(if (any (cute string-prefix? <> (or (%current-system)
-                                              (%current-target-system)))
-                  '("armhf" "aarch64"))
-           '(#:configure-flags '("-DENABLE_PIC=TRUE"))
-           '())
+       ;; Ensure position independent code for everyone.
+       #:configure-flags '("-DENABLE_PIC=TRUE")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'prepare-build
