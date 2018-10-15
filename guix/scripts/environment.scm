@@ -176,6 +176,7 @@ COMMAND or an interactive shell in that environment.\n"))
     (graft? . #t)
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
     (verbosity . 0)))
 
 (define (tag-package-arg opts arg)

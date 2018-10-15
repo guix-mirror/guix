@@ -296,7 +296,8 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
     (substitutes? . #t)
     (build-hook? . #t)
     (print-build-trace? . #t)
-    (print-extended-build-trace? . #t)))
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)))
 
 (define (show-help)
   (display (G_ "Usage: guix package [OPTION]...

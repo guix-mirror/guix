@@ -395,6 +395,8 @@ options handled by 'set-build-options-from-command-line', and listed in
                      #:print-build-trace (assoc-ref opts 'print-build-trace?)
                      #:print-extended-build-trace?
                      (assoc-ref opts 'print-extended-build-trace?)
+                     #:multiplexed-build-output?
+                     (assoc-ref opts 'multiplexed-build-output?)
                      #:verbosity (assoc-ref opts 'verbosity)))
 
 (define set-build-options-from-command-line*
@@ -505,6 +507,7 @@ options handled by 'set-build-options-from-command-line', and listed in
     (build-hook? . #t)
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
     (verbosity . 0)))
 
 (define (show-help)

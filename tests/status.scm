@@ -22,7 +22,8 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs bytevectors)
-  #:use-module (rnrs io ports))
+  #:use-module (rnrs io ports)
+  #:use-module (ice-9 match))
 
 (test-begin "status")
 
@@ -115,7 +116,7 @@
       (list first (get-status)))))
 
 (test-equal "build-output-port, UTF-8"
-  '((build-log "lambda is λ!\n"))
+  '((build-log #f "lambda is λ!\n"))
   (let-values (((port get-status) (build-event-output-port cons '()))
                ((bv)              (string->utf8 "lambda is λ!\n")))
     (put-bytevector port bv)
@@ -124,12 +125,56 @@
 
 (test-equal "current-build-output-port, UTF-8 + garbage"
   ;; What about a mixture of UTF-8 + garbage?
-  '((build-log "garbage: �lambda: λ\n"))
+  '((build-log #f "garbage: �lambda: λ\n"))
   (let-values (((port get-status) (build-event-output-port cons '())))
     (display "garbage: " port)
     (put-bytevector port #vu8(128))
     (put-bytevector port (string->utf8 "lambda: λ\n"))
     (force-output port)
     (get-status)))
+
+(test-equal "compute-status, multiplexed build output"
+  (list (build-status
+         (building '("foo.drv"))
+         (downloading (list (download "bar" "http://example.org/bar"
+                                      #:size 999
+                                      #:start 'now))))
+        (build-status
+         (building '("foo.drv"))
+         (downloading (list (download "bar" "http://example.org/bar"
+                                      #:size 999
+                                      #:transferred 42
+                                      #:start 'now))))
+        (build-status
+         ;; XXX: Should "bar.drv" be present twice?
+         (builds-completed '("bar.drv" "foo.drv"))
+         (downloads-completed (list (download "bar" "http://example.org/bar"
+                                              #:size 999
+                                              #:transferred 999
+                                              #:start 'now
+                                              #:end 'now)))))
+  (let-values (((port get-status)
+                (build-event-output-port (lambda (event status)
+                                           (compute-status event status
+                                                           #:current-time
+                                                           (const 'now)
+                                                           #:derivation-path->output-path
+                                                           (match-lambda
+                                                             ("bar.drv" "bar")))))))
+    (display "@ build-started foo.drv 121\n" port)
+    (display "@ build-started bar.drv 144\n" port)
+    (display "@ build-log 121 6\nHello!" port)
+    (display "@ build-log 144 50
+@ download-started bar http://example.org/bar 999\n" port)
+    (let ((first (get-status)))
+      (display "@ build-log 121 30\n@ build-started FAKE!.drv 555\n")
+      (display "@ build-log 144 54
+@ download-progress bar http://example.org/bar 999 42\n"
+               port)
+      (let ((second (get-status)))
+        (display "@ download-succeeded bar http://example.org/bar 999\n" port)
+        (display "@ build-succeeded foo.drv\n" port)
+        (display "@ build-succeeded bar.drv\n" port)
+        (list first second (get-status))))))
 
 (test-end "status")

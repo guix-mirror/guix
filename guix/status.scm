@@ -116,7 +116,10 @@
     (string=? item (download-item download))))
 
 (define* (compute-status event status
-                         #:key (current-time current-time))
+                         #:key
+                         (current-time current-time)
+                         (derivation-path->output-path
+                          derivation-path->output-path))
   "Given EVENT, a tuple like (build-started \"/gnu/store/...-foo.drv\" ...),
 compute a new status based on STATUS."
   (match event
@@ -142,8 +145,7 @@ compute a new status based on STATUS."
       (inherit status)
       (building (remove (lambda (drv)
                           (equal? (false-if-exception
-                                   (derivation->output-path
-                                    (read-derivation-from-file drv)))
+                                   (derivation-path->output-path drv))
                                   item))
                         (build-status-building status)))
       (downloading (cons (download item uri #:size size
@@ -218,6 +220,12 @@ build traces\" such as \"@ download-progress\" traces."
   ;; Support for extended build traces was added in protocol version #x162.
   (and (current-store-protocol-version)
        (>= (current-store-protocol-version) #x162)))
+
+(define (multiplexed-output-supported?)
+  "Return true if the daemon supports \"multiplexed output\"--i.e., \"@
+build-log\" traces."
+  (and (current-store-protocol-version)
+       (>= (current-store-protocol-version) #x163)))
 
 (define spin!
   (let ((steps (circular-list "\\" "|" "/" "-")))
@@ -313,7 +321,8 @@ addition to build events."
         (lambda (line)
           (spin! port))))
 
-  (display "\r" port)                             ;erase the spinner
+  (unless print-log?
+    (display "\r" port))                          ;erase the spinner
   (match event
     (('build-started drv . _)
      (format port (info (G_ "building ~a...")) drv)
@@ -384,21 +393,28 @@ addition to build events."
   expected hash: ~a
   actual hash:   ~a~%"))
              expected actual))
-    (('build-log line)
-     ;; TODO: Better distinguish daemon messages and build log lines.
-     (cond ((string-prefix? "substitute: " line)
-            ;; The daemon prefixes early messages coming with 'guix
-            ;; substitute' with "substitute:".  These are useful ("updating
-            ;; substitutes from URL"), so let them through.
-            (format port line)
-            (force-output port))
-           ((string-prefix? "waiting for locks" line)
-            ;; This is when a derivation is already being built and we're just
-            ;; waiting for the build to complete.
-            (display (info (string-trim-right line)) port)
-            (newline))
-           (else
-            (print-log-line line))))
+    (('build-log pid line)
+     (if (multiplexed-output-supported?)
+         (if (not pid)
+             (begin
+               ;; LINE comes from the daemon, not from builders.  Let it
+               ;; through.
+               (display line port)
+               (force-output port))
+             (print-log-line line))
+         (cond ((string-prefix? "substitute: " line)
+                ;; The daemon prefixes early messages coming with 'guix
+                ;; substitute' with "substitute:".  These are useful ("updating
+                ;; substitutes from URL"), so let them through.
+                (display line port)
+                (force-output port))
+               ((string-prefix? "waiting for locks" line)
+                ;; This is when a derivation is already being built and we're just
+                ;; waiting for the build to complete.
+                (display (info (string-trim-right line)) port)
+                (newline))
+               (else
+                (print-log-line line)))))
     (_
      event)))
 
@@ -428,9 +444,6 @@ ON-CHANGE can display the build status, build events, etc."
 ;;; Build port.
 ;;;
 
-(define %newline
-  (char-set #\return #\newline))
-
 (define (maybe-utf8->string bv)
   "Attempt to decode BV as UTF-8 string and return it.  Gracefully handle the
 case where BV does not contain only valid UTF-8."
@@ -446,6 +459,28 @@ case where BV does not contain only valid UTF-8."
         (let ((str (read-string port)))
           (close-port port)
           str)))))
+
+(define (bytevector-index bv number offset count)
+  "Search for NUMBER in BV starting from OFFSET and reading up to COUNT bytes;
+return the offset where NUMBER first occurs or #f if it could not be found."
+  (let loop ((offset offset)
+             (count count))
+    (cond ((zero? count) #f)
+          ((= (bytevector-u8-ref bv offset) number) offset)
+          (else (loop (+ 1 offset) (- count 1))))))
+
+(define (split-lines str)
+  "Split STR into lines in a way that preserves newline characters."
+  (let loop ((str str)
+             (result '()))
+    (if (string-null? str)
+        (reverse result)
+        (match (string-index str #\newline)
+          (#f
+           (loop "" (cons str result)))
+          (index
+           (loop (string-drop str (+ index 1))
+                 (cons (string-take str (+ index 1)) result)))))))
 
 (define* (build-event-output-port proc #:optional (seed (build-status)))
   "Return an output port for use as 'current-build-output-port' that calls
@@ -467,33 +502,83 @@ The second return value is a thunk to retrieve the current state."
     ;; Current state for PROC.
     seed)
 
+  ;; When true, this represents the current state while reading a
+  ;; "@ build-log" trace: the current builder PID, the previously-read
+  ;; bytevectors, and the number of bytes that remain to be read.
+  (define %build-output-pid #f)
+  (define %build-output '())
+  (define %build-output-left #f)
+
   (define (process-line line)
-    (if (string-prefix? "@ " line)
-        (match (string-tokenize (string-drop line 2))
-          (((= string->symbol event-name) args ...)
-           (set! %state
-             (proc (cons event-name args)
-                   %state))))
-        (set! %state (proc (list 'build-log line)
-                           %state))))
+    (cond ((string-prefix? "@ " line)
+           (match (string-tokenize (string-drop line 2))
+             (("build-log" (= string->number pid) (= string->number len))
+              (set! %build-output-pid pid)
+              (set! %build-output '())
+              (set! %build-output-left len))
+             (((= string->symbol event-name) args ...)
+              (set! %state
+                (proc (cons event-name args)
+                      %state)))))
+          (else
+           (set! %state (proc (list 'build-log #f line)
+                              %state)))))
+
+  (define (process-build-output pid output)
+    ;; Transform OUTPUT in 'build-log' events or download events as generated
+    ;; by extended build traces.
+    (define (line->event line)
+      (match (and (string-prefix? "@ " line)
+                  (string-tokenize (string-drop line 2)))
+        ((type . args)
+         (if (or (string-prefix? "download-" type)
+                 (string=? "build-remote" type))
+             (cons (string->symbol type) args)
+             `(build-log ,pid ,line)))
+        (_
+         `(build-log ,pid ,line))))
+
+    (let* ((lines  (split-lines output))
+           (events (map line->event lines)))
+      (set! %state (fold proc %state events))))
 
   (define (bytevector-range bv offset count)
     (let ((ptr (bytevector->pointer bv offset)))
       (pointer->bytevector ptr count)))
 
   (define (write! bv offset count)
-    (let loop ((str (maybe-utf8->string (bytevector-range bv offset count))))
-      (match (string-index str %newline)
-        ((? integer? cr)
-         (let ((tail (string-take str (+ 1 cr))))
-           (process-line (string-concatenate-reverse
-                          (cons tail %fragments)))
-           (set! %fragments '())
-           (loop (string-drop str (+ 1 cr)))))
-        (#f
-         (unless (string-null? str)
-           (set! %fragments (cons str %fragments)))
-         count))))
+    (if %build-output-pid
+        (let ((keep (min count %build-output-left)))
+          (set! %build-output
+            (let ((bv* (make-bytevector keep)))
+              (bytevector-copy! bv offset bv* 0 keep)
+              (cons bv* %build-output)))
+          (set! %build-output-left
+            (- %build-output-left keep))
+
+          (when (zero? %build-output-left)
+            (process-build-output %build-output-pid
+                                  (string-concatenate-reverse
+                                   (map maybe-utf8->string %build-output))) ;XXX
+            (set! %build-output '())
+            (set! %build-output-pid #f))
+          keep)
+        (match (bytevector-index bv (char->integer #\newline)
+                                 offset count)
+          ((? integer? cr)
+           (let* ((tail (maybe-utf8->string
+                         (bytevector-range bv offset (- cr -1 offset))))
+                  (line (string-concatenate-reverse
+                         (cons tail %fragments))))
+             (process-line line)
+             (set! %fragments '())
+             (- cr -1 offset)))
+          (#f
+           (unless (zero? count)
+             (let ((str (maybe-utf8->string
+                         (bytevector-range bv offset count))))
+               (set! %fragments (cons str %fragments))))
+           count))))
 
   (define port
     (make-custom-binary-output-port "filtering-input-port"

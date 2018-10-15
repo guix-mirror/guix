@@ -64,6 +64,7 @@
     (build-hook? . #t)
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
     (graft? . #t)
     (verbosity . 0)))
 
