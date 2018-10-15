@@ -1228,7 +1228,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
   %D%/packages/patches/wxmaxima-do-not-use-old-gnuplot-parameters.patch	\
   %D%/packages/patches/x265-arm-asm-primitives.patch		\
-  %D%/packages/patches/x265-fix-ppc64le-build.patch		\
   %D%/packages/patches/xapian-revert-5489fb2f8.patch		\
   %D%/packages/patches/xboing-CVE-2004-0149.patch		\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\

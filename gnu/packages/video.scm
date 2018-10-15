@@ -392,7 +392,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "2.8")
+    (version "2.9")
     (source
       (origin
         (method url-fetch)
@@ -400,9 +400,8 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "0qx8mavwdzdpkkby7n29i9av7zsnklavacwfz537mf62q2pzjnbf"))
-        (patches (search-patches "x265-fix-ppc64le-build.patch"
-                                 "x265-arm-asm-primitives.patch"))
+          "090hp4216isis8q5gb7bwzia8rfyzni54z21jnwm97x3hiy6ibpb"))
+        (patches (search-patches "x265-arm-asm-primitives.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
                     (delete-file-recursively "source/compat/getopt")
