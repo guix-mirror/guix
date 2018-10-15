@@ -480,7 +480,8 @@ test = { path = \"../libtest\" }
      `(("jemalloc" ,jemalloc-4.5.0)
        ("llvm" ,llvm-3.9.1)
        ("openssl" ,openssl)
-       ("libcurl" ,curl))) ; For "cargo"
+       ("libssh2" ,libssh2) ; For "cargo"
+       ("libcurl" ,curl)))  ; For "cargo"
 
     ;; rustc invokes gcc, so we need to set its search paths accordingly.
     ;; Note: duplicate its value here to cope with circular dependencies among
@@ -649,18 +650,11 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
     (name "rust")
     (version "1.23.0")
     (source (rust-source version "14fb8vhjzsxlbi6yrn1r6fl5dlbdd1m92dn5zj5gmzfwf4w9ar3l"))
+    ;; Use rust-bootstrap@1.22 package to build rust 1.23
     (native-inputs
-     `(("bison" ,bison) ; For the tests
-       ("cmake" ,cmake)
-       ("flex" ,flex) ; For the tests
-       ("gdb" ,gdb)   ; For the tests
-       ("git" ,git)
-       ("procps" ,procps) ; For the tests
-       ("python-2" ,python-2)
-       ("rustc-bootstrap" ,rust-bootstrap)
-       ("cargo-bootstrap" ,rust-bootstrap "cargo")
-       ("pkg-config" ,pkg-config) ; For "cargo"
-       ("which" ,which)))
+     (alist-replace "cargo-bootstrap" (list rust-bootstrap "cargo")
+                    (alist-replace "rustc-bootstrap" (list rust-bootstrap)
+                                   (package-native-inputs rust-1.20))))
     (arguments
      (substitute-keyword-arguments (package-arguments rust-1.20)
        ((#:phases phases)
@@ -692,6 +686,9 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
                  #t)))))))))
 
+;;; Rust 1.25 release support work with llvm 6--but build with llvm 6 is
+;;; not determenistic due to <https://github.com/rust-lang/rust/issues/50556>.
+;;; Keep using llvm 3.9.1 until builds become determenistic
 (define-public rust-1.25
   (let ((base-rust
          (rust-bootstrapped-package rust-1.24 "1.25.0"
@@ -699,10 +696,6 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
           #:patches '("rust-1.25-accept-more-detailed-gdb-lines.patch"))))
     (package
       (inherit base-rust)
-      (inputs
-       ;; Use LLVM 6.0
-       (alist-replace "llvm" (list llvm)
-                      (package-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
@@ -713,14 +706,9 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    ;; This test wants to update the crate index.
                    (("fn no_index_update") "#[ignore]\nfn no_index_update"))
                  #t))
-             (add-after 'configure 'enable-codegen-tests
-               (lambda _
-                 (substitute* "config.toml"
-                   (("codegen-tests = false") ""))
-                 #t))
              ;; FIXME: Re-enable this test if it's indeed supposed to work.
              ;; See <https://github.com/rust-lang/rust/issues/54178>.
-             (add-after 'enable-codegen-tests 'disable-nil-enum-test
+             (add-after 'configure 'disable-nil-enum-test
                (lambda _
                  (substitute* "src/test/debuginfo/nil-enum.rs"
                    (("ignore-lldb") "ignore-gdb"))
@@ -795,7 +783,8 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                                     #:patches
                                     '("rust-coresimd-doctest.patch"
                                       "rust-bootstrap-stage0-test.patch"
-                                      "rust-1.25-accept-more-detailed-gdb-lines.patch"))))
+                                      "rust-1.25-accept-more-detailed-gdb-lines.patch"
+                                      "rust-mdbook-support-reproducible-builds-by-forcing-window.search.patch"))))
     (package
       (inherit base-rust)
       (arguments
@@ -808,4 +797,10 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  ;; `prefix' directory should exist before `install' call
                  (mkdir-p (assoc-ref outputs "out"))
                  (mkdir-p (assoc-ref outputs "cargo"))
+                 #t))
+             (add-after 'patch-cargo-tests 'disable-thinlto-test
+               (lambda* _
+                 ;; thinlto required llvm 6.0 for work
+                 (substitute* "src/tools/cargo/tests/testsuite/path.rs"
+                   (("fn thin_lto_works") "#[ignore]\nfn thin_lto_works"))
                  #t)))))))))
