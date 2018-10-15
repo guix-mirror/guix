@@ -127,7 +127,7 @@ struct Settings {
        a fixed format to allow its progress to be monitored.  Each
        line starts with a "@".  The following are defined:
 
-       @ build-started <drvpath> <outpath> <system> <logfile>
+       @ build-started <drvpath> <outpath> <system> <logfile> <pid>
        @ build-failed <drvpath> <outpath> <exitcode> <error text>
        @ build-succeeded <drvpath> <outpath>
        @ substituter-started <outpath> <substituter>
@@ -138,6 +138,13 @@ struct Settings {
        conceivably contain lines in this format printed by the
        builders. */
     bool printBuildTrace;
+
+    /* When true, 'buildDerivations' prefixes lines coming from builders so
+       that clients know exactly which line comes from which builder, and
+       which line comes from the daemon itself.  The prefix for data coming
+       from builders is "log:PID:LEN:DATA" where PID uniquely identifies the
+       builder (PID is given in "build-started" traces.)  */
+    bool multiplexedBuildOutput;
 
     /* Amount of reserved space for the garbage collector
        (/nix/var/nix/db/reserved). */

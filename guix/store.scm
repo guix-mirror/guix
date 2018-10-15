@@ -155,7 +155,7 @@
             derivation-log-file
             log-file))
 
-(define %protocol-version #x162)
+(define %protocol-version #x163)
 
 (define %worker-magic-1 #x6e697863)               ; "nixc"
 (define %worker-magic-2 #x6478696f)               ; "dxio"
@@ -709,6 +709,15 @@ encoding conversion errors."
                             ;; disabled by default.
                             print-extended-build-trace?
 
+                            ;; When true, the daemon prefixes builder output
+                            ;; with "@ build-log" traces so we can
+                            ;; distinguish it from daemon output, and we can
+                            ;; distinguish each builder's output
+                            ;; (PRINT-BUILD-TRACE must be true as well.)  The
+                            ;; latter is particularly useful when
+                            ;; MAX-BUILD-JOBS > 1.
+                            multiplexed-build-output?
+
                             build-cores
                             (use-substitutes? #t)
 
@@ -756,6 +765,10 @@ encoding conversion errors."
                      ,@(if print-build-trace
                            `(("print-extended-build-trace"
                               . ,(if print-extended-build-trace? "1" "0")))
+                           '())
+                     ,@(if multiplexed-build-output?
+                           `(("multiplexed-build-output"
+                              . ,(if multiplexed-build-output? "true" "false")))
                            '())
                      ,@(if timeout
                            `(("build-timeout" . ,(number->string timeout)))
