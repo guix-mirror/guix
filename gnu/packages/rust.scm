@@ -776,7 +776,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (("fn no_index_update") "#[ignore]\nfn no_index_update"))
                  #t)))))))))
 
-(define-public rust
+(define-public rust-1.27
   (let ((base-rust
          (rust-bootstrapped-package rust-1.26 "1.27.2"
                                     "0pg1s37bhx9zqbynxyydq5j6q7kij9vxkcv8maz0m25prm88r0cs"
@@ -804,3 +804,37 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  (substitute* "src/tools/cargo/tests/testsuite/path.rs"
                    (("fn thin_lto_works") "#[ignore]\nfn thin_lto_works"))
                  #t)))))))))
+
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.27 "1.28.0"
+                                    "11k4rn77bca2rikykkk9fmprrgjswd4x4kaq7fia08vgkir82nhx"
+                                    #:patches
+                                    '("rust-coresimd-doctest.patch"
+                                      "rust-bootstrap-stage0-test.patch"
+                                      "rust-1.25-accept-more-detailed-gdb-lines.patch"
+                                      "rust-mdbook-support-reproducible-builds-by-forcing-window.search.patch"))))
+    (package
+      (inherit base-rust)
+      (inputs
+       ;; Use LLVM 6.0
+       (alist-replace "llvm" (list llvm)
+                      (package-inputs base-rust)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'configure 'enable-codegen-tests
+               ;; Codegen tests should pass with llvm 6, so enable them.
+               (lambda* _
+                 (substitute* "config.toml"
+                   (("codegen-tests = false") ""))
+                 #t))
+             (add-after 'patch-tests 'disable-amd64-avx-test
+               ;; That test would fail on x86_64 machines without avx.
+               (lambda* _
+                 (substitute* "src/test/run-pass/issue-44056.rs"
+                   (("only-x86_64") "ignore-test"))
+                 #t))
+             ;; The thinlto test should pass with llvm 6.
+             (delete 'disable-thinlto-test))))))))
