@@ -272,7 +272,7 @@ code analysis tools.")
    "16gc2gdmp5c800qvydrdhsp0bzb97s8wrakl6i8a4lgslnqnf2fk"
    '("clang-runtime-asan-build-fixes.patch"
      "clang-runtime-esan-build-fixes.patch"
-     "clang-3.5-libsantitizer-ustat-fix.patch")))
+     "clang-3.5-libsanitizer-ustat-fix.patch")))
 
 (define-public clang-3.9.1
   (clang-from-llvm llvm-3.9.1 clang-runtime-3.9.1
@@ -297,7 +297,7 @@ code analysis tools.")
    llvm-3.8
    "0p0y85c7izndbpg2l816z7z7558axq11d5pwkm4h11sdw7d13w0d"
    '("clang-runtime-asan-build-fixes.patch"
-     "clang-3.5-libsantitizer-ustat-fix.patch")))
+     "clang-3.5-libsanitizer-ustat-fix.patch")))
 
 (define-public clang-3.8
   (clang-from-llvm llvm-3.8 clang-runtime-3.8
@@ -321,7 +321,7 @@ code analysis tools.")
    llvm-3.7
    "10c1mz2q4bdq9bqfgr3dirc6hz1h3sq8573srd5q5lr7m7j6jiwx"
    '("clang-runtime-asan-build-fixes.patch"
-     "clang-3.5-libsantitizer-ustat-fix.patch")))
+     "clang-3.5-libsanitizer-ustat-fix.patch")))
 
 (define-public clang-3.7
   (clang-from-llvm llvm-3.7 clang-runtime-3.7
