@@ -1768,6 +1768,19 @@ trees (LSM), for sustained throughput under random insert workloads.")
     ;; configure.ac: WiredTiger requires a 64-bit build.
     (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))))
 
+(define-public wiredtiger-3
+  (package
+    (inherit wiredtiger)
+    (name "wiredtiger")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://source.wiredtiger.com/releases/wiredtiger-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "014awypv579ascg4jbx4pndj2wld337m79yyzrzyr7hxrff139jx"))))))
+
 (define-public guile-wiredtiger
   (package
     (name "guile-wiredtiger")
