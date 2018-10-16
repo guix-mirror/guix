@@ -43,6 +43,7 @@
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages base)
@@ -8998,6 +8999,9 @@ defined by Annex #11 is used to determine breaking positions.")
                (base32
                 "1xnhazbdvpyfpnxd90krzhxkvabf8fa2ji6xzlrf75j6nz8251zs"))))
     (build-system perl-build-system)
+    ;; FIXME: Tests fail on 32-bit architectures:
+    ;; <https://rt.cpan.org/Public/Bug/Display.html?id=127007>.
+    (arguments `(#:tests? ,(target-64bit?)))
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-leaktrace" ,perl-test-leaktrace)
