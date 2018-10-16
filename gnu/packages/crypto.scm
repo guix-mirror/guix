@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -854,3 +855,36 @@ public-key cryptography.  Asignify is designed to be portable and self-contained
 with zero external dependencies.  Asignify can verify OpenBSD signatures, but it
 cannot sign messages in OpenBSD format yet.")
       (license license:bsd-2))))
+
+(define-public enchive
+  (package
+    (name "enchive")
+    (version "3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/skeeto/" name "/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "17hrxpp4cpn10bk48sfvfjc8hghky34agsnypam1v9f36kbalqfk"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; no check target         '
+       #:make-flags (list "CC=gcc" "PREFIX=$(out)")
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'install 'post-install
+                    (lambda _
+                      (let* ((out (assoc-ref %outputs "out"))
+                             (lisp (string-append out "/share/emacs/site-lisp")))
+                        (install-file "enchive-mode.el" lisp)
+                        #t))))))
+    (synopsis "Encrypted personal archives")
+    (description
+     "Enchive is a tool to encrypt files to yourself for long-term
+archival.  It's a focused, simple alternative to more complex solutions such as
+GnuPG or encrypted filesystems.  Enchive has no external dependencies and is
+trivial to build for local use.  Portability is emphasized over performance.")
+    (home-page "https://github.com/skeeto/enchive")
+    (license license:unlicense)))
