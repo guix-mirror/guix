@@ -3658,7 +3658,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.4j")
+    (version "10.4t")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3669,11 +3669,12 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "0909p4xvbi1c2jc5rdgrf8b1c60fmsaapabsi6yyglh5znkf0k27"))))
+                "0phqhmnzmc16a23qb4fkil0flzb86kibdckf1r35nc3l0k4193nn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
-       #:make-flags '("CXXFLAGS=-std=c++11")
+       #:make-flags '("HYPERROGUE_USE_GLEW=1"
+                      "HYPERROGUE_USE_PNG=1")
        #:phases
        (modify-phases %standard-phases
          (add-after 'set-paths 'set-sdl-paths
@@ -3696,12 +3697,16 @@ throwing people around in pseudo-randomly generated buildings.")
                   (string-append dejavu-dir "/" dejavu-font)))
                (substitute* music-file
                  (("\\*/")
-                  (string-append share-dir "/sounds/"))))
-             ;; Fix Makefile.
-             (substitute* "Makefile"
-               (("g\\+\\+ langen.cpp")
-                "g++ langen.cpp ${CXXFLAGS}")
-               (("savepng.c") "savepng.cpp"))
+                  (string-append share-dir "/sounds/")))
+               (substitute* "sound.cpp"
+                 (("musicfile = \"\"")
+                  (string-append "musicfile = \""
+                                 share-dir "/" music-file "\"")))
+               ;; Disable build machine CPU optimizations and warnings treated
+               ;; as errors.
+               (substitute* "Makefile"
+                 (("-march=native") "")
+                 (("-Werror") "")))
              #t))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3709,7 +3714,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     (bin (string-append out "/bin"))
                     (share-dir (string-append out "/share/hyperrogue")))
                (mkdir-p bin)
-               (copy-file "hyper" (string-append bin "/hyperrogue"))
+               (install-file "hyperrogue" bin)
                (install-file "hyperrogue-music.txt" share-dir))
              #t))
          (add-after 'install 'install-data
@@ -3741,7 +3746,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "0w61iv2rn93hi0q3hxyyyf9xcr8vi9zd7fjvpz5adpgf94jm3zsc"))))
+             "1xd9v8zzgi8m5ar8g4gy1xx5zqwidz3gn1knz0lwib3kbxx4drpg"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
