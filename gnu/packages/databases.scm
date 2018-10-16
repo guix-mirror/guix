@@ -1784,16 +1784,16 @@ trees (LSM), for sustained throughput under random insert workloads.")
 (define-public guile-wiredtiger
   (package
     (name "guile-wiredtiger")
-    (version "0.6.3")
+    (version "0.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://framagit.org/a-guile-mind/guile-wiredtiger.git")
-                    (commit "070ed68139d99c279f058a6c293f00292d35dbd7")))
+                    (commit "340ad4bc2ff4dcc6216a2f5c6f9172ca320ac66b")))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "14rna97wsylajzxfif95wnblq85csgcfc666gh5dl0ssgd7x8llh"))))
+                "15j36bvxxzil7qpwlmh1rffqpva3ynvrcpqhhqbj2c9208ayz595"))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-tests? #f  ;; tests can't be run in parallel, yet.
@@ -1801,21 +1801,19 @@ trees (LSM), for sustained throughput under random insert workloads.")
        (list (string-append "--with-libwiredtiger-prefix="
                             (assoc-ref %build-inputs "wiredtiger")))
        #:make-flags '("GUILE_AUTO_COMPILE=0")))
-    ;; TODO: Remove microkanren.scm when we have a separate package
-    ;; for it.
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("wiredtiger" ,wiredtiger)
+     `(("wiredtiger" ,wiredtiger-3)
        ("guile" ,guile-2.2)))
     (propagated-inputs
-     `(("guile-lib" ,guile-lib)))                 ;for (htmlprag)
+     `(("guile-bytestructures" ,guile-bytestructures)))
     (synopsis "WiredTiger bindings for GNU Guile")
     (description
      "This package provides Guile bindings to the WiredTiger ``NoSQL''
-database.  Various higher level database abstractions.")
+database.")
     (home-page "https://framagit.org/a-guile-mind/guile-wiredtiger")
     (license license:gpl3+)))
 
