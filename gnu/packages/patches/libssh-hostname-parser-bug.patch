@@ -1,31 +1,17 @@
-Fix "Hostname" parsing in OpenSSH config files, as reported
-at <https://red.libssh.org/issues/260>.
-
-From: Niels Ole Salscheider <niels_ole@salscheider-online.de>
-Date: Mon, 8 May 2017 17:36:13 +0200
-Subject: [PATCH] Fix reading of the first parameter
-
-This is a fixup for 7b8b5eb4eac314a3a29be812bef0264c6611f6e7.
-Previously, it would return as long as the parameter was _not_ seen
-before. It also did not handle the case for the unsupported opcode (-1)
+It does not handle the case for the unsupported opcode (-1)
 which would cause a segfault when accessing the "seen" array.
----
- src/config.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/src/config.c b/src/config.c
-index 7c03b27..238a655 100644
+index c5313ec8..72e07639 100644
 --- a/src/config.c
 +++ b/src/config.c
-@@ -218,8 +218,9 @@ static int ssh_config_parse_line(ssh_session session, const char *line,
+@@ -218,7 +218,8 @@ static int ssh_config_parse_line(ssh_session session, const char *line,
    }
  
    opcode = ssh_config_get_opcode(keyword);
 -  if (*parsing == 1 && opcode != SOC_HOST) {
--      if (seen[opcode] == 0) {
 +  if (*parsing == 1 && opcode != SOC_HOST &&
 +      opcode > SOC_UNSUPPORTED && opcode < SOC_END) {
-+      if (seen[opcode] == 1) {
+       if (seen[opcode] != 0) {
            return 0;
        }
-       seen[opcode] = 1;
