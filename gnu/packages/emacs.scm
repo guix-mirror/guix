@@ -4307,14 +4307,14 @@ strings, and code folding.")
 (define-public emacs-nodejs-repl
   (package
     (name "emacs-nodejs-repl")
-    (version "0.1.6")
+    (version "0.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/abicky/nodejs-repl.el"
                                   "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "0sphg1jxi3a5l0gqdp27d0qgyjaiq2p293av9zm8ksm0vwqp3fr9"))
+                "0hq2cqdq2668yf48g7qnkci90nhih1gnhacsgz355jnib56lhmkz"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abicky/nodejs-repl.el")
