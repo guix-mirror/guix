@@ -1068,8 +1068,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/pygpgme-disable-problematic-tests.patch  \
   %D%/packages/patches/pyqt-configure.patch			\
   %D%/packages/patches/pyqt-public-sip.patch			\
-  %D%/packages/patches/python2-CVE-2018-1060.patch		\
-  %D%/packages/patches/python2-CVE-2018-1061.patch		\
   %D%/packages/patches/python2-CVE-2018-14647.patch		\
   %D%/packages/patches/python2-CVE-2018-1000802.patch		\
   %D%/packages/patches/python-2-deterministic-build-info.patch	\

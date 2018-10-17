@@ -323,9 +323,7 @@ data types.")
               (inherit (package-source python-2))
               (patches (append
                         (origin-patches (package-source python-2))
-                        (search-patches "python2-CVE-2018-1060.patch"
-                                        "python2-CVE-2018-1061.patch"
-                                        "python2-CVE-2018-14647.patch"
+                        (search-patches "python2-CVE-2018-14647.patch"
                                         "python2-CVE-2018-1000802.patch")))))))
 
 (define-public python2-called-python
@@ -419,17 +417,7 @@ data types.")
     (source (origin
               (inherit (package-source python-3))
               (patches (append (origin-patches (package-source python-3))
-                               (search-patches "python-CVE-2018-14647.patch")))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments python-3)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'delete-broken-test
-             (lambda _
-               ;; Delete test which fails on recent kernels:
-               ;; <https://bugs.python.org/issue34587>.
-               (delete-file "Lib/test/test_socket.py")
-               #t))))))))
+                               (search-patches "python-CVE-2018-14647.patch")))))))
 
 ;; Current major version.
 (define-public python python-3)
