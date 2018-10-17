@@ -427,7 +427,7 @@ everything from small to very large projects with speed and efficiency.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.26.6")
+    (version "0.26.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -435,7 +435,7 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0qjn1v5q282v8jih8rqjdqxr5v4n4manr0c8i3nnrf6sxd3xssbn"))
+                "1vy4dnbvhcq3pw8n8zz6clnsv2xnkrichl8k96w3lb6yyk0lln35"))
               (patches (search-patches "libgit2-mtime-0.patch"))
 
               ;; Remove bundled software.
