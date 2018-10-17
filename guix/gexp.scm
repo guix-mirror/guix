@@ -438,6 +438,14 @@ This is the declarative counterpart of 'gexp->file'."
   (base   file-append-base)                    ;<package> | <derivation> | ...
   (suffix file-append-suffix))                 ;list of strings
 
+(define (write-file-append file port)
+  (match file
+    (($ <file-append> base suffix)
+     (format port "#<file-append ~s ~s>" base
+             (string-join suffix)))))
+
+(set-record-type-printer! <file-append> write-file-append)
+
 (define (file-append base . suffix)
   "Return a <file-append> object that expands to the concatenation of BASE and
 SUFFIX."

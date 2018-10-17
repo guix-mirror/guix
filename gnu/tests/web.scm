@@ -125,7 +125,7 @@ HTTP-PORT."
 
 (define %httpd-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service httpd-service-type
             (httpd-configuration
              (config
@@ -154,7 +154,7 @@ HTTP-PORT."
 (define %nginx-os
   ;; Operating system under test.
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service nginx-service-type
             (nginx-configuration
              (log-directory "/var/log/nginx")
@@ -188,7 +188,7 @@ sub vcl_synth {
 
 (define %varnish-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    ;; Pretend to be a web server that serves %index.html-contents.
    (service varnish-service-type
             (varnish-configuration
@@ -237,7 +237,7 @@ echo(\"Computed by php:\".((string)(2+3)));
 (define %php-fpm-os
   ;; Operating system under test.
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service php-fpm-service-type)
    (service nginx-service-type
             (nginx-configuration
@@ -392,7 +392,7 @@ HTTP-PORT, along with php-fpm."
 
 (define %hpcguix-web-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service hpcguix-web-service-type
             (hpcguix-web-configuration
              (specs %hpcguix-web-specs)))))
@@ -407,7 +407,7 @@ HTTP-PORT, along with php-fpm."
 (define %tailon-os
   ;; Operating system under test.
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service tailon-service-type
             (tailon-configuration
              (config-file

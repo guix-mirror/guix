@@ -53,6 +53,7 @@
                static-networking-service-type)
   #:export (%facebook-host-aliases
             dhcp-client-service
+            dhcp-client-service-type
 
             dhcpd-service-type
             dhcpd-configuration
@@ -202,9 +203,10 @@ fe80::1%lo0 apps.facebook.com\n")
                                     "-pf" #$pid-file ifaces))))
                    (and (zero? (cdr (waitpid pid)))
                         (read-pid-file #$pid-file)))))
-      (stop #~(make-kill-destructor))))))
+      (stop #~(make-kill-destructor))))
+   isc-dhcp))
 
-(define* (dhcp-client-service #:key (dhcp isc-dhcp))
+(define* (dhcp-client-service #:key (dhcp isc-dhcp)) ;deprecated
   "Return a service that runs @var{dhcp}, a Dynamic Host Configuration
 Protocol (DHCP) client, on all the non-loopback network interfaces."
   (service dhcp-client-service-type dhcp))

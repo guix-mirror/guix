@@ -36,7 +36,7 @@
 
 (define %opensmtpd-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service opensmtpd-service-type
             (opensmtpd-configuration
              (config-file
@@ -155,7 +155,7 @@ accept from any for local deliver to mbox
 
 (define %exim-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service mail-aliases-service-type '())
    (service exim-service-type
             (exim-configuration
@@ -283,7 +283,7 @@ acl_check_data:
 
 (define %dovecot-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (dovecot-service #:config
                     (dovecot-configuration
                      (disable-plaintext-auth? #f)

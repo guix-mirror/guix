@@ -11546,10 +11546,11 @@ The @code{(gnu services networking)} module provides services to configure
 the network interface.
 
 @cindex DHCP, networking service
-@deffn {Scheme Procedure} dhcp-client-service [#:dhcp @var{isc-dhcp}]
-Return a service that runs @var{dhcp}, a Dynamic Host Configuration
-Protocol (DHCP) client, on all the non-loopback network interfaces.
-@end deffn
+@defvr {Scheme Variable} dhcp-client-service-type
+This is the type of services that run @var{dhcp}, a Dynamic Host Configuration
+Protocol (DHCP) client, on all the non-loopback network interfaces.  Its value
+is the DHCP client package to use, @code{isc-dhcp} by default.
+@end defvr
 
 @deffn {Scheme Procedure} dhcpd-service-type
 This type defines a service that runs a DHCP daemon.  To create a
@@ -17168,7 +17169,7 @@ A helper function to quickly add php to an @code{nginx-server-configuration}.
 
 A simple services setup for nginx with php can look like this:
 @example
-(services (cons* (dhcp-client-service)
+(services (cons* (service dhcp-client-service-type)
                  (service php-fpm-service-type)
                  (service nginx-service-type
                           (nginx-server-configuration

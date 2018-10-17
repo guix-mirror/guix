@@ -153,8 +153,8 @@ cat > "$tmpfile" <<EOF
 
 (operating-system
   $OS_BASE
-  (services (cons* (dhcp-client-service)
-                   (dhcp-client-service) ;twice!
+  (services (cons* (service dhcp-client-service-type)
+                   (service dhcp-client-service-type) ;twice!
                    %base-services)))
 EOF
 
