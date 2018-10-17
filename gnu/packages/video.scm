@@ -1860,41 +1860,36 @@ and custom quantization matrices.")
     (license license:gpl2+)))
 
 (define-public streamlink
-  ;; Release tarball doesn't contain ‘tests/resources/dash/’ directory.
-  (let ((commit "2dca7930a938f60b48d8e23260963ea7c49d979f"))
-    (package
-      (name "streamlink")
-      (version (git-version "0.13.0" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/streamlink/streamlink.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0vq19aspshim63aj8yl2p64ykrbk2mwwlawdx427b3j2djlc5qhw"))))
-      (build-system python-build-system)
-      (home-page "https://github.com/streamlink/streamlink")
-      (native-inputs
-       `(("python-freezegun" ,python-freezegun)
-         ("python-pytest" ,python-pytest)
-         ("python-mock" ,python-mock)
-         ("python-requests-mock" ,python-requests-mock)))
-      (propagated-inputs
-       `(("python-pysocks" ,python-pysocks)
-         ("python-websocket-client" ,python-websocket-client)
-         ("python-iso3166" ,python-iso3166)
-         ("python-iso639" ,python-iso639)
-         ("python-isodate", python-isodate)
-         ("python-pycryptodome" ,python-pycryptodome)
-         ("python-requests" ,python-requests)
-         ("python-urllib3" ,python-urllib3)))
-      (synopsis "Extract streams from various services")
-      (description "Streamlink is command-line utility that extracts streams
+  (package
+    (name "streamlink")
+    (version "0.14.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "streamlink" version))
+        (sha256
+         (base32
+          "0l2145fd60i76afjisfxd48cwhwyir07i7s3bnimdq5db2kzkix8"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/streamlink/streamlink")
+    (native-inputs
+     `(("python-freezegun" ,python-freezegun)
+       ("python-pytest" ,python-pytest)
+       ("python-mock" ,python-mock)
+       ("python-requests-mock" ,python-requests-mock)))
+    (propagated-inputs
+     `(("python-pysocks" ,python-pysocks)
+       ("python-websocket-client" ,python-websocket-client)
+       ("python-iso3166" ,python-iso3166)
+       ("python-iso639" ,python-iso639)
+       ("python-isodate", python-isodate)
+       ("python-pycryptodome" ,python-pycryptodome)
+       ("python-requests" ,python-requests)
+       ("python-urllib3" ,python-urllib3)))
+    (synopsis "Extract streams from various services")
+    (description "Streamlink is command-line utility that extracts streams
 from sites like Twitch.tv and pipes them into a video player of choice.")
-      (license license:bsd-2))))
+    (license license:bsd-2)))
 
 (define-public livestreamer
   (deprecated-package "livestreamer" streamlink))
