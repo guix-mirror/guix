@@ -19,6 +19,7 @@
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -224,6 +225,20 @@ without requiring the source code to be rewritten.")
    (home-page "https://www.gnu.org/software/guile/")
    (license license:lgpl3+)))
 
+(define-public guile-2.0.13
+  ;; For testing a "minimal" Guix
+  (hidden-package
+   (package (inherit guile-2.0)
+     (name "guile")
+     (version "2.0.13")
+     (source (origin
+               (method url-fetch)
+               (uri (string-append "mirror://gnu/guile/guile-" version
+                                   ".tar.xz"))
+               (sha256
+                (base32
+                 "12yqkr974y91ylgw6jnmci2v90i90s7h9vxa4zk0sai8vjnz4i1p")))))))
+
 (define-public guile-2.2
   (package (inherit guile-2.0)
     (name "guile")
@@ -292,39 +307,14 @@ without requiring the source code to be rewritten.")
     (package
       (inherit guile-2.2)
       (name "guile-next")
-      (version (git-version "2.99" revision commit))
+      (version "2.9.1")
       (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.savannah.gnu.org/git/guile.git")
-                      (commit commit)))
+                (inherit (package-source guile-2.2))
+                (uri (string-append "https://alpha.gnu.org/gnu/guile/guile-"
+                                    version ".tar.xz"))
                 (sha256
                  (base32
-                  "1c2xy5cflg0hws48914rz3z8mdmf8w3lblfic0kxnymcmdv9cbhv"))
-                (file-name (git-file-name name version))))
-      (native-inputs
-       `(("autoconf", autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("gettext" ,gnu-gettext)
-         ("texinfo" ,texinfo)
-         ("flex" ,flex)
-         ,@(package-native-inputs guile-2.2)))
-      (arguments
-       (substitute-keyword-arguments (package-arguments guile-2.2)
-         ((#:phases phases '%standard-phases)
-          ;; XXX: The default 'bootstrap' phase tries to execute the
-          ;; ./bootstrap directory.
-          `(modify-phases ,phases
-             (replace 'bootstrap
-               (lambda _
-                 (patch-shebang "build-aux/git-version-gen")
-                 (invoke "autoreconf" "-vfi")))
-             (add-before 'check 'skip-version-test
-               (lambda _
-                 ;; Remove this test that's bound to fail.
-                 (delete-file "test-suite/tests/version.test")
-                 #t))))))
+                  "0iba93yqn6mvgid0rfsrg4amym36pg9m8cqdplxsy222blrj9gh1"))))
       (native-search-paths
        (list (search-path-specification
               (variable "GUILE_LOAD_PATH")
@@ -332,7 +322,9 @@ without requiring the source code to be rewritten.")
              (search-path-specification
               (variable "GUILE_LOAD_COMPILED_PATH")
               (files '("lib/guile/3.0/site-ccache"
-                       "share/guile/site/3.0"))))))))
+                       "share/guile/site/3.0")))))
+      (properties '((ftp-server . "alpha.gnu.org")
+                    (upstream-name . "guile"))))))
 
 (define (make-guile-readline guile)
   (package
@@ -1143,6 +1135,9 @@ Guile's foreign function interface.")
      "This package provides Guile bindings to the SQLite database system.")
     (license license:gpl3+)))
 
+(define-public guile2.0-sqlite3
+  (package-for-guile-2.0 guile-sqlite3))
+
 (define-public haunt
   (package
     (name "haunt")
@@ -1161,13 +1156,15 @@ Guile's foreign function interface.")
        #:tests? #f ; test suite is non-deterministic :(
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'wrap-haunt
-                    (lambda* (#:key outputs #:allow-other-keys)
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; Wrap the 'haunt' command to refer to the right
                       ;; modules.
                       (let* ((out  (assoc-ref outputs "out"))
                              (bin  (string-append out "/bin"))
                              (site (string-append
-                                    out "/share/guile/site")))
+                                    out "/share/guile/site"))
+                             (deps (list (assoc-ref inputs "guile-reader")
+                                         (assoc-ref inputs "guile-commonmark"))))
                         (match (scandir site)
                           (("." ".." version)
                            (let ((modules (string-append site "/" version))
@@ -1176,9 +1173,19 @@ Guile's foreign function interface.")
                                                     "/site-ccache")))
                              (wrap-program (string-append bin "/haunt")
                                `("GUILE_LOAD_PATH" ":" prefix
-                                 (,modules))
+                                 (,modules
+                                  ,@(map (lambda (dep)
+                                           (string-append dep
+                                                          "/share/guile/site/"
+                                                          version))
+                                         deps)))
                                `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                                 (,compiled-modules)))
+                                 (,compiled-modules
+                                  ,@(map (lambda (dep)
+                                           (string-append dep "/lib/guile/"
+                                                          version
+                                                          "/site-ccache"))
+                                         deps))))
                              #t)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)

@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -417,7 +418,7 @@ engineers, musicians, soundtrack editors and composers.")
        ;; and fails with various errors.  See
        ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
        #:tests? #f))
-    (home-page "http://audacity.sourceforge.net/")
+    (home-page "https://www.audacityteam.org/")
     (synopsis "Software for recording and editing sounds")
     (description
      "Audacity is a multi-track audio editor designed for recording, playing
@@ -650,7 +651,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.09.1")
+    (version "6.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -659,7 +660,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xqpqws4jsv7fyawcjzwaw544qbfh29xq164kdf30a9v1n3yklp4"))))
+                "072pk5h9w0vhw0ncc9dn90haw1yv18v04iwwjn8nsp6930w7dvxd"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -674,7 +675,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
      `(("bison" ,bison)
        ("flex" ,flex)
        ("zlib" ,zlib)))
-    (home-page "http://csound.github.io/")
+    (home-page "https://csound.com/")
     (synopsis "Sound and music computing system")
     (description
      "Csound is a user-programmable and user-extensible sound processing
@@ -1915,7 +1916,7 @@ lv2-c++-tools.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://kcat.strangesoft.net/openal-releases/openal-soft-"
+                    "http://openal-soft.org/openal-releases/openal-soft-"
                     version ".tar.bz2"))
               (sha256
                (base32
@@ -1952,7 +1953,7 @@ emitters are among the features handled by the API.  More advanced effects,
 including air absorption, occlusion, and environmental reverb, are available
 through the EFX extension.  It also facilitates streaming audio, multi-channel
 buffers, and audio capture.")
-    (home-page "http://kcat.strangesoft.net/openal.html")
+    (home-page "http://openal-soft.org/")
     (license license:lgpl2.0+)))
 
 (define-public freealut
@@ -3089,7 +3090,7 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.4.12")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
@@ -3097,7 +3098,7 @@ with support for HD extensions.")
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
         (base32
-         "0n9skdap1vnl6w52fx0gsrjlk7w3xgdwi62ycyf96h29rx059z6a"))))
+         "0vd7320k7s2zcn2vganclxbr1vav18ghld27rcwskvcc3dm8prii"))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))

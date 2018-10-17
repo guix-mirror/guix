@@ -594,7 +594,7 @@ static void performOp(bool trusted, unsigned int clientVersion,
                 if (name == "build-timeout" || name == "build-max-silent-time"
                     || name == "build-max-jobs" || name == "build-cores"
                     || name == "build-repeat"
-                    || name == "use-ssh-substituter")
+                    || name == "multiplexed-build-output")
                     settings.set(name, value);
                 else
                     settings.set(trusted ? name : "untrusted-" + name, value);

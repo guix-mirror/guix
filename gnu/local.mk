@@ -622,7 +622,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/clementine-fix-sqlite.patch		\
   %D%/packages/patches/clementine-remove-crypto++-dependency.patch	\
   %D%/packages/patches/clementine-use-openssl.patch		\
-  %D%/packages/patches/clisp-glibc-2.26.patch			\
   %D%/packages/patches/clisp-remove-failing-test.patch		\
   %D%/packages/patches/clucene-pkgconfig.patch			\
   %D%/packages/patches/clx-remove-demo.patch			\
@@ -660,7 +659,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/elogind-glibc-2.27.patch			\
   %D%/packages/patches/einstein-build.patch			\
   %D%/packages/patches/emacs-exec-path.patch			\
-  %D%/packages/patches/emacs-exwm-fix-fullscreen-issue.patch	\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
   %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\
   %D%/packages/patches/emacs-highlight-stages-add-gexp.patch	\
@@ -1070,6 +1068,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/pygpgme-disable-problematic-tests.patch  \
   %D%/packages/patches/pyqt-configure.patch			\
   %D%/packages/patches/pyqt-public-sip.patch			\
+  %D%/packages/patches/python2-CVE-2018-1060.patch		\
+  %D%/packages/patches/python2-CVE-2018-1061.patch		\
+  %D%/packages/patches/python2-CVE-2018-14647.patch		\
+  %D%/packages/patches/python2-CVE-2018-1000802.patch		\
   %D%/packages/patches/python-2-deterministic-build-info.patch	\
   %D%/packages/patches/python-2.7-adjust-tests.patch		\
   %D%/packages/patches/python-2.7-search-paths.patch		\
@@ -1078,6 +1080,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-deterministic-build-info.patch	\
   %D%/packages/patches/python-3-search-paths.patch		\
   %D%/packages/patches/python-3-fix-tests.patch			\
+  %D%/packages/patches/python-CVE-2018-14647.patch		\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
   %D%/packages/patches/python-cairocffi-dlopen-path.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
@@ -1232,8 +1235,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wpa-supplicant-fix-nonce-reuse.patch	\
   %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
   %D%/packages/patches/wxmaxima-do-not-use-old-gnuplot-parameters.patch	\
-  %D%/packages/patches/x265-arm-asm-primitives.patch		\
-  %D%/packages/patches/x265-fix-ppc64le-build.patch		\
+  %D%/packages/patches/x265-detect512-all-arches.patch		\
   %D%/packages/patches/xapian-revert-5489fb2f8.patch		\
   %D%/packages/patches/xboing-CVE-2004-0149.patch		\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
@@ -1251,9 +1253,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
   %D%/packages/patches/zathura-pdf-mupdf-link-to-jpeg-libraries.patch \
-  %D%/packages/patches/zathura-plugindir-environment-variable.patch	\
-  %D%/packages/patches/zstd-fix-stdin-list-without-tty.patch	\
-  %D%/packages/patches/zstd-fix-stdin-list-test.patch
+  %D%/packages/patches/zathura-plugindir-environment-variable.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in

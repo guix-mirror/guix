@@ -904,7 +904,11 @@ is not supported."
         version))
 
   (define guile
-    (guile-for-build guile-version))
+    ;; When PULL-VERSION >= 1, produce a self-contained Guix and use Guile 2.2
+    ;; unconditionally.
+    (guile-for-build (if (>= pull-version 1)
+                         "2.2"
+                         guile-version)))
 
   (mbegin %store-monad
     (set-guile-for-build guile)
@@ -913,7 +917,8 @@ is not supported."
                                #:name (string-append "guix-"
                                                      (shorten version))
                                #:pull-version pull-version
-                               #:guile-version guile-version
+                               #:guile-version (if (>= pull-version 1)
+                                                   "2.2" guile-version)
                                #:guile-for-build guile)))
       (if guix
           (lower-object guix)

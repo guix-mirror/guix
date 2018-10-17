@@ -47,6 +47,8 @@ Import and convert the CRAN package for PACKAGE-NAME.\n"))
   (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "
+  -r, --recursive        import packages recursively"))
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))

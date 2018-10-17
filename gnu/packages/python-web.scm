@@ -26,6 +26,7 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,6 +127,85 @@ Callback Hell.
 asynchronous DNS resolutions with a synchronous looking interface by
 using @url{https://github.com/saghul/pycares,pycares}.")
     (license license:expat)))
+
+(define-public python-falcon
+  (package
+    (name "python-falcon")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "falcon" version))
+       (sha256
+        (base32
+         "1i0vmqsk24z4biirqhpvas9h28wy7nmpy3jvnb6rz2imq04zd09r"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-mimeparse" ,python-mimeparse)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-cython" ,python-cython) ;for faster binaries
+       ("python-pytest" ,python-pytest)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-testtools" ,python-testtools)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-msgpack" ,python-msgpack)))
+    (home-page "https://falconframework.org")
+    (synopsis
+     "Web framework for building APIs and application backends")
+    (description
+     "Falcon is a web API framework for building microservices, application
+backends and higher-level frameworks.  Among its features are:
+@itemize
+@item Optimized and extensible code base
+@item Routing via URI templates and REST-inspired resource
+classes
+@item Access to headers and bodies through request and response
+classes
+@item Request processing via middleware components and hooks
+@item Idiomatic HTTP error responses
+@item Straightforward exception handling
+@item Unit testing support through WSGI helpers and mocks
+@item Compatible with both CPython and PyPy
+@item Cython support for better performance when used with CPython
+@end itemize")
+    (license license:asl2.0)))
+
+(define-public python2-falcon
+  (package-with-python2 python-falcon))
+
+(define-public python-falcon-cors
+  (package
+    (name "python-falcon-cors")
+    (version "1.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "falcon-cors" version))
+       (sha256
+        (base32
+         "12pym7hwsbd8b0c1azn95nas8gm3f1qpr6lpyx0958xm65ffr20p"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-falcon" ,python-falcon)))
+    (home-page
+     "https://github.com/lwcolton/falcon-cors")
+    (synopsis "Falcon @dfn{cross-origin resource sharing} (CORS) library")
+    (description "This middleware provides @dfn{cross-origin resource
+sharing} (CORS) support for Falcon.  It allows applying a specially crafted
+CORS object to the incoming requests, enabling the ability to serve resources
+over a different origin than that of the web application.")
+    (license license:asl2.0)))
+
+(define-public python2-falcon-cors
+  (package-with-python2 python-falcon-cors))
 
 (define-public python-furl
   (package

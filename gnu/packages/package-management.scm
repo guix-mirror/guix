@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -101,8 +102,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.15.0")
-        (commit "1d0be47ab680db938ac8da1ee65e1de91e198f67")
-        (revision 5))
+        (commit "f9a8fce10f2d99efec7cb1dd0f6c5f0df9d1b2df")
+        (revision 6))
     (package
       (name "guix")
 
@@ -118,7 +119,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "19cn4ndmr9cqd7qh6w3nchbmdpaawdl9kc6g0v6g680vzcja417k"))
+                  "1733d5id0h44rrkyj9xw4fcqr1wawcfi8igpgk5wsn1iq4qqwv5f"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -232,13 +233,13 @@
                                         (map (cut string-append <>
                                                   "/share/guile/site/"
                                                   effective)
-                                             deps)
+                                             (delete #f deps))
                                         ":"))
                                (gopath (string-join
                                         (map (cut string-append <>
                                                   "/lib/guile/" effective
                                                   "/site-ccache")
-                                             deps)
+                                             (delete #f deps))
                                         ":")))
 
                           (wrap-program (string-append out "/bin/guix")
@@ -345,12 +346,14 @@ the Nix package manager.")
                        "install-nodist_pkglibexecSCRIPTS")
 
                ;; We need to tell 'guix-daemon' which 'guix' command to use.
-               ;; Here we use a questionable hack where we hard-code
-               ;; "~root/.config", which could be wrong (XXX).
+               ;; Here we use a questionable hack where we hard-code root's
+               ;; current guix, which could be wrong (XXX).  Note that scripts
+               ;; like 'guix perform-download' do not run as root so we assume
+               ;; that they have access to /var/guix/profiles/per-user/root.
                (let ((out (assoc-ref outputs "out")))
                  (substitute* (find-files (string-append out "/libexec"))
                    (("exec \".*/bin/guix\"")
-                    "exec ~root/.config/guix/current/bin/guix"))
+                    "exec /var/guix/profiles/per-user/root/current-guix/bin/guix"))
                  #t)))
            (delete 'wrap-program)))))))
 
@@ -363,9 +366,28 @@ the Nix package manager.")
        ,@(alist-delete "guile" (package-inputs guix))))
     (propagated-inputs
      `(("gnutls" ,gnutls/guile-2.0)
+       ("guile-gcrypt" ,guile2.0-gcrypt)
        ("guile-json" ,guile2.0-json)
+       ("guile-sqlite3" ,guile2.0-sqlite3)
        ("guile-ssh" ,guile2.0-ssh)
        ("guile-git" ,guile2.0-git)))))
+
+(define-public guix-minimal
+  ;; A version of Guix which is built with the minimal set of dependencies, as
+  ;; outlined in the README "Requirements" section.  Intended as a CI job, so
+  ;; marked as hidden.
+  (let ((guix guile2.0-guix))
+    (hidden-package
+     (package
+       (inherit guix)
+       (name "guix-minimal")
+       (inputs
+        `(("guile" ,guile-2.0.13)
+          ,@(alist-delete "guile" (package-inputs guix))))
+       (propagated-inputs
+        (fold alist-delete
+              (package-propagated-inputs guix)
+              '("guile-json" "guile-ssh")))))))
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical

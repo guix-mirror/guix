@@ -395,6 +395,8 @@ options handled by 'set-build-options-from-command-line', and listed in
                      #:print-build-trace (assoc-ref opts 'print-build-trace?)
                      #:print-extended-build-trace?
                      (assoc-ref opts 'print-extended-build-trace?)
+                     #:multiplexed-build-output?
+                     (assoc-ref opts 'multiplexed-build-output?)
                      #:verbosity (assoc-ref opts 'verbosity)))
 
 (define set-build-options-from-command-line*
@@ -505,6 +507,7 @@ options handled by 'set-build-options-from-command-line', and listed in
     (build-hook? . #t)
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
     (verbosity . 0)))
 
 (define (show-help)
@@ -623,7 +626,7 @@ must be one of 'package', 'all', or 'transitive'~%")
   "Read the arguments from OPTS and return a list of high-level objects to
 build---packages, gexps, derivations, and so on."
   (define (validate-type x)
-    (unless (or (package? x) (derivation? x) (gexp? x) (procedure? x))
+    (unless (or (derivation? x) (file-like? x) (gexp? x) (procedure? x))
       (leave (G_ "~s: not something we can build~%") x)))
 
   (define (ensure-list x)
@@ -700,6 +703,10 @@ package '~a' has no source~%")
                               (set-guile-for-build (default-guile))
                               (proc))
                             #:system system)))
+                   ((? file-like? obj)
+                    (list (run-with-store store
+                            (lower-object obj system
+                                          #:target (assoc-ref opts 'target)))))
                    ((? gexp? gexp)
                     (list (run-with-store store
                             (mbegin %store-monad

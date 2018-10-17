@@ -820,7 +820,8 @@ libpanel, librsvg and quartz.")
                (let* ((out (assoc-ref outputs "out"))
                       (bin (string-append out "/bin")))
                  ;; 'unison-fsmonitor' is used in "unison -repeat watch" mode.
-                 (install-file "src/unison-fsmonitor" bin))))
+                 (install-file "src/unison-fsmonitor" bin)
+                 #t)))
            (add-after 'install 'install-doc
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((doc (string-append (assoc-ref outputs "doc")
@@ -829,21 +830,19 @@ libpanel, librsvg and quartz.")
                  ;; This file needs write-permissions, because it's
                  ;; overwritten by 'docs' during documentation generation.
                  (chmod "src/strings.ml" #o600)
-                 (and (zero? (system* "make" "docs"
-                                      "TEXDIRECTIVES=\\\\draftfalse"))
-                      (begin
-                        (for-each (lambda (f)
-                                    (install-file f doc))
-                                  (map (lambda (ext)
-                                         (string-append
-                                          "doc/unison-manual." ext))
-                                       ;; Install only html documentation,
-                                       ;; since the build is currently
-                                       ;; non-reproducible with the ps, pdf,
-                                       ;; and dvi docs.
-                                       '(;;"ps" "pdf" "dvi"
-                                         "html")))
-                        #t))))))))
+                 (invoke "make" "docs"
+                         "TEXDIRECTIVES=\\\\draftfalse")
+                 (for-each (lambda (f)
+                             (install-file f doc))
+                           (map (lambda (ext)
+                                  (string-append "doc/unison-manual." ext))
+                                ;; Install only html documentation,
+                                ;; since the build is currently
+                                ;; non-reproducible with the ps, pdf,
+                                ;; and dvi docs.
+                                '(;; "ps" "pdf" "dvi"
+                                  "html")))
+                 #t))))))
     (home-page "https://www.cis.upenn.edu/~bcpierce/unison/")
     (synopsis "File synchronizer")
     (description

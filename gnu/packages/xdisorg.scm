@@ -1497,3 +1497,27 @@ before the system goes to sleep.")
      "Pyperclip is a clipboard module for Python, handling copy/pasting from
 the X11 clipboard")
     (license license:bsd-3)))
+
+(define-public numlockx
+  (package
+    (name "numlockx")
+    (version "1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    ;; It seems that upstream is gone.
+                    (url "https://github.com/rg3/numlockx")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1w49fayhwzn5rx0z1q2lrvm7z8jrd34lgb89p853a024bixc3cf2"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("xorg-server" ,xorg-server)))
+    (home-page "https://github.com/rg3/numlockx")
+    (synopsis "Turns on the numlock key in X11")
+    (description "@command{numlockx} is a tiny program that lets you turn on
+the numlock key in X11.  It can be called from the user's initialization files
+to automatically turn it on on login.")
+    (license license:expat)))

@@ -47,4 +47,5 @@ the query."
 (define (json-fetch-alist url)
   "Return an alist representation of the JSON resource URL, or #f if URL
 returns 403 or 404."
-  (hash-table->alist (json-fetch url)))
+  (and=> (json-fetch url)
+         hash-table->alist))

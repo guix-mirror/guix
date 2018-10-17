@@ -36,6 +36,7 @@ Settings::Settings()
     buildTimeout = 0;
     useBuildHook = true;
     printBuildTrace = false;
+    multiplexedBuildOutput = false;
     reservedSize = 8 * 1024 * 1024;
     fsyncMetadata = true;
     useSQLiteWAL = true;
@@ -120,6 +121,7 @@ void Settings::update()
     _get(maxBuildJobs, "build-max-jobs");
     _get(buildCores, "build-cores");
     _get(thisSystem, "system");
+    _get(multiplexedBuildOutput, "multiplexed-build-output");
     _get(maxSilentTime, "build-max-silent-time");
     _get(buildTimeout, "build-timeout");
     _get(reservedSize, "gc-reserved-space");

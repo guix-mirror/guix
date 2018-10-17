@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -305,3 +306,67 @@ brushstrokes which is used by MyPaint and GIMP.")
 MyPaint.")
     (home-page "https://github.com/Jehan/mypaint-brushes")
     (license license:cc0)))
+
+(define-public gimp-resynthesizer
+  ;; GIMP does not respect any plugin search path environment variable, so after
+  ;; installation users have to edit their GIMP settings to include
+  ;; "$HOME/.guix-profile/lib/gimp/2.0/plug-ins/" in
+  ;; “Edit->Preferences->Folders->Plug Ins”.
+  (package
+    (name "gimp-resynthesizer")
+    (version "2.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/bootchk/resynthesizer/archive/v"
+			   version ".tar.gz"))
+       (sha256
+        (base32
+         "0l3404w6rqny7h3djskxf149gzx6x4qhndgbh3403c9lbh4pi1kr"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `( ;; Turn off tests to avoid:
+       ;; make[1]: *** No rule to make target '../src/resynth-gui.c', needed by 'resynthesizer.pot'.  Stop.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+	 (add-after 'unpack 'set-env
+	   (lambda _
+	     (setenv "CONFIG_SHELL" (which "sh"))
+	     #t))
+	 (add-after 'configure 'set-prefix
+           ;; Install plugin under $prefix, not under GIMP's libdir.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((target (string-append (assoc-ref outputs "out")
+                                          "/lib/gimp/"
+                                          ,(version-major
+                                            (package-version gimp))
+                                          ".0")))
+               (substitute* (list "src/resynthesizer/Makefile"
+				  "src/resynthesizer-gui/Makefile")
+		 (("GIMP_LIBDIR = .*")
+                  (string-append "GIMP_LIBDIR = " target "\n")))
+               (mkdir-p target)
+               #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf-wrapper)
+       ("automake" ,automake)
+       ("glib" ,glib "bin")                       ; glib-gettextize
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gimp" ,gimp)
+       ("gdk-pixbuf" ,gdk-pixbuf)                 ; needed by gimp-2.0.pc
+       ("cairo" ,cairo)
+       ("gegl" ,gegl)
+       ("gtk+" ,gtk+-2)                           ; needed by gimpui-2.0.pc
+       ("glib" ,glib)))
+    (home-page "https://github.com/bootchk/resynthesizer")
+    (synopsis "GIMP plugins for texture synthesis")
+    (description
+     "This package provides resynthesizer plugins for GIMP, which encompasses
+tools for healing selections (content-aware fill), enlarging the canvas and
+healing the border, increasing the resolution while adding detail, and
+transfering the style of an image.")
+    (license license:gpl3+)))

@@ -399,8 +399,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.18.12")
-(define %linux-libre-hash "1mcnb1mm7m6i9s591c3kx0f1vbzhbl3w92w137swcm9zifqpci5r")
+(define %linux-libre-version "4.18.14")
+(define %linux-libre-hash "1gwwx8l283w8v1zylw2haqahvjns5dzqxx9li2586nnl8cfmfnwc")
 
 (define %linux-libre-4.18-patches
   (list %boot-logo-patch
@@ -430,8 +430,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.18-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.74")
-(define %linux-libre-4.14-hash "0cxyx2yinnc8q0hmhb0swjgdz3s0ry7wxzyqss9f2i74xjjz4rm0")
+(define %linux-libre-4.14-version "4.14.76")
+(define %linux-libre-4.14-hash "1y5zqf84ngb6f5f85xpd4bdy6mlxr52x19bx3mdrp82awc9fvr7q")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -440,14 +440,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.131"
-                    "11pxwl7dmisbf2szg9qzkvhlpk68clh5l478n7b62q7hd8j3hxlv"
+  (make-linux-libre "4.9.133"
+                    "1vr94czdv5alzsgm2k1r6wqm01r2zafrayjn10l6kdr4g7aga488"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.159"
-                    "12wrhni1ikmakwv55cgzsznx9llzp82irsisbjjs7bc8z2hzwr6l"
+  (make-linux-libre "4.4.161"
+                    "1q6bsndpjgw72mybhl5l8vrxs4mimg6821bjgi1pjkxbc7nd921b"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -962,6 +962,8 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
              (substitute* "strace.c"
                (("/bin/sh") (which "sh")))
              #t)))
+       ;; Don't fail if the architecture doesn't support different personalities.
+       #:configure-flags '("--enable-mpers=check")
        ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32459>.
        #:parallel-tests? #f))           ; undeterministic failures
     (native-inputs `(("perl" ,perl)))
@@ -2667,14 +2669,14 @@ isolation or root privileges.")
 (define-public hdparm
   (package
     (name "hdparm")
-    (version "9.55")
+    (version "9.56")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" name "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ivdvrzimaayiq03by8mcq0mhmdljndj06h012zkdpw34irnpixm"))))
+                "1np42qyhb503khvacnjcl3hb1dqly68gj0a1xip3j5qhbxlyvybg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
@@ -3626,14 +3628,14 @@ The following service daemons are also provided:
 (define-public perftest
   (package
     (name "perftest")
-    (version "4.2-0.8")
+    (version "4.4-0.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/linux-rdma/perftest/releases/download/V"
-                           version "/perftest-" version ".g0e24e67.tar.gz"))
+       (uri (string-append "https://github.com/linux-rdma/perftest/releases/download/v"
+                           version "/perftest-" version ".g0927198.tar.gz"))
        (sha256
-        (base32 "1r3pxn7cx3grb8myb4q1b0pk447pc06cifd0v7ym13xw00372dlx"))))
+        (base32 "11ix4h0rrmqqyi84y55a9xnkvwsmwq0sywr46hvxzm4rqz4ma8vq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -3737,15 +3739,16 @@ such as frequency and voltage scaling.")
 (define-public haveged
   (package
     (name "haveged")
-    (version "1.9.2")
+    (version "1.9.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://www.issihosts.com/haveged/haveged-"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jirka-h/haveged.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0w5ypz6451msckivjriwyw8djydlwffam7x23xh626s2vzdrlzgp"))))
+        (base32 "1hrwzjd4byq4fdrg8svww3d8x449k80jxxrjy9v6jvzhfv19rvxr"))))
     (build-system gnu-build-system)
     (home-page "http://www.issihosts.com/haveged")
     (synopsis "Entropy source for the Linux random number generator")
@@ -3754,11 +3757,16 @@ such as frequency and voltage scaling.")
 Linux's @file{/dev/random} and @file{/dev/urandom} devices.  The kernel's
 standard mechanisms for filling the entropy pool may not be sufficient for
 systems with high needs or limited user interaction, such as headless servers.
+
 @command{haveged} runs as a privileged daemon, harvesting randomness from the
 indirect effects of hardware events on hidden processor state using the HArdware
-Volatile Entropy Gathering and Expansion (HAVEGE) algorithm.  It tunes itself to
-its environment and provides the same built-in test suite for the output stream
-as used on certified hardware security devices.")
+Volatile Entropy Gathering and Expansion (@dfn{HAVEGE}) algorithm.  It tunes
+itself to its environment and provides the same built-in test suite for the
+output stream as used on certified hardware security devices.
+
+The quality of the randomness produced by this algorithm has not been proven.
+It is recommended to run it together with another entropy source like rngd, and
+not as a replacement for it.")
     (license (list (license:non-copyleft "file://nist/mconf.h")
                    (license:non-copyleft "file://nist/packtest.c")
                    license:public-domain        ; nist/dfft.c
@@ -4248,12 +4256,14 @@ Light is the successor of lightscript.")
                (setenv "TLP_SHCPL"
                        (string-append out "/share/bash-completion/completions"))
                (setenv "TLP_MAN" (string-append out "/share/man"))
-               (setenv "TLP_META" (string-append out "/share/metainfo")))))
+               (setenv "TLP_META" (string-append out "/share/metainfo"))
+               #t)))
          (delete 'check)                ; no tests
          (add-before 'install 'fix-installation
            (lambda _
              ;; Stop the Makefile from trying to create system directories.
-             (substitute* "Makefile" (("\\[ -f \\$\\(_CONF\\) \\]") "#"))))
+             (substitute* "Makefile" (("\\[ -f \\$\\(_CONF\\) \\]") "#"))
+             #t))
          (replace 'install
            (lambda _
              (invoke "make" "install-tlp" "install-man")
@@ -4287,7 +4297,8 @@ Light is the successor of lightscript.")
                                                        "pciutils"
                                                        "rfkill"
                                                        "wireless-tools"))))))
-                         bin-files)))))))
+                         bin-files)
+               #t))))))
     (home-page "http://linrunner.de/en/tlp/tlp.html")
     (synopsis "Power management tool for Linux")
     (description "TLP is a power management tool for Linux.  It comes with

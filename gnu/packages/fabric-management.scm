@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,33 +42,38 @@
 (define-public opensm
   (package
     (name "opensm")
-    (version "3.3.20")
+    (version "3.3.21")
     (source
      (origin
        (method url-fetch)
        (uri
-        (string-append "https://www.openfabrics.org/downloads/management/opensm-"
-                       version ".tar.gz"))
-       (sha256 (base32 "162sg1w7kgy8ayl8a4dcbrfacmnfy2lr9a2yjyq0k65rmd378zg1"))))
+        (string-append "https://github.com/linux-rdma/opensm/releases/download/"
+                       version "/opensm-" version ".tar.gz"))
+       (sha256
+        (base32 "0j4vp118w1l47vs4had46ynybklyacxjlya0r15jg0y01l4j9l2h"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("flex" ,flex)
-       ("bison" ,bison)))
+     `(("bison" ,bison)
+       ("flex" ,flex)
+
+       ;; The 3.3.21 'release' tarball isn't properly bootstrapped.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (inputs
      `(("rdma-core" ,rdma-core)))
     (arguments
      `(#:configure-flags '("--disable-static")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'doc
+         (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((base (assoc-ref outputs "out"))
                     (doc  (string-append base "/share/doc/"
                                          ,name "-" ,version)))
                (for-each (lambda (file)
                            (install-file file doc))
-                         (append (list "AUTHORS" "COPYING" "ChangeLog")
-                                 (find-files "doc")))
+                         (find-files "doc"))
                #t))))))
     (home-page "https://www.openfabrics.org/")
     (synopsis "OpenIB InfiniBand Subnet Manager and management utilities")

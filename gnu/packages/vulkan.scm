@@ -346,11 +346,10 @@ shader compilation.")
       (license license:asl2.0))))
 
 (define-public vkd3d
-  (let ((commit "020c119e2da0786d8be0615cff961c190b00d62d") ; Release 1.0.
-        (revision "0"))
+  (let ((commit "ecda316ef54d70bf1b3e860755241bb75873e53f")) ; Release 1.1.
     (package
      (name "vkd3d")
-     (version "1.0")
+     (version "1.1")
      (source
       (origin
        (method git-fetch)
@@ -359,7 +358,7 @@ shader compilation.")
              (commit commit)))
        (sha256
         (base32
-         "084svxhigs8r0725jv6gs7wwrxb9x4igyg5bgvgpcfw4aq0k69gn"))
+         "05a28kspy8gzng181w28zjqdb3pj2ss83b0lwnppxbcdzsz7rvrf"))
        (file-name (string-append name "-" version "-checkout"))))
      (build-system gnu-build-system)
      (arguments

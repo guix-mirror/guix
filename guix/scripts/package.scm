@@ -68,50 +68,14 @@
 
 (define (ensure-default-profile)
   "Ensure the default profile symlink and directory exist and are writable."
-
-  (define (rtfm)
-    (format (current-error-port)
-            (G_ "Try \"info '(guix) Invoking guix package'\" for \
-more information.~%"))
-    (exit 1))
+  (ensure-profile-directory)
 
   ;; Create ~/.guix-profile if it doesn't exist yet.
   (when (and %user-profile-directory
              %current-profile
              (not (false-if-exception
                    (lstat %user-profile-directory))))
-    (symlink %current-profile %user-profile-directory))
-
-  (let ((s (stat %profile-directory #f)))
-    ;; Attempt to create /…/profiles/per-user/$USER if needed.
-    (unless (and s (eq? 'directory (stat:type s)))
-      (catch 'system-error
-        (lambda ()
-          (mkdir-p %profile-directory))
-        (lambda args
-          ;; Often, we cannot create %PROFILE-DIRECTORY because its
-          ;; parent directory is root-owned and we're running
-          ;; unprivileged.
-          (format (current-error-port)
-                  (G_ "error: while creating directory `~a': ~a~%")
-                  %profile-directory
-                  (strerror (system-error-errno args)))
-          (format (current-error-port)
-                  (G_ "Please create the `~a' directory, with you as the owner.~%")
-                  %profile-directory)
-          (rtfm))))
-
-    ;; Bail out if it's not owned by the user.
-    (unless (or (not s) (= (stat:uid s) (getuid)))
-      (format (current-error-port)
-              (G_ "error: directory `~a' is not owned by you~%")
-              %profile-directory)
-      (format (current-error-port)
-              (G_ "Please change the owner of `~a' to user ~s.~%")
-              %profile-directory (or (getenv "USER")
-                                     (getenv "LOGNAME")
-                                     (getuid)))
-      (rtfm))))
+    (symlink %current-profile %user-profile-directory)))
 
 (define (delete-generations store profile generations)
   "Delete GENERATIONS from PROFILE.
@@ -332,7 +296,8 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
     (substitutes? . #t)
     (build-hook? . #t)
     (print-build-trace? . #t)
-    (print-extended-build-trace? . #t)))
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)))
 
 (define (show-help)
   (display (G_ "Usage: guix package [OPTION]...

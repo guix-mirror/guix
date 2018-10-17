@@ -886,3 +886,30 @@ Time-Course experiments) analyses 4sU-seq and RNA-seq time-course data in
 order to evaluate synthesis, processing and degradation rates and assess via
 modeling the rates that determines changes in mature mRNA levels.")
     (license license:gpl2)))
+
+(define-public r-dnabarcodes
+  (package
+    (name "r-dnabarcodes")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DNABarcodes" version))
+       (sha256
+        (base32
+         "0xhna7f0kr7pp2hqwara5i57m9mdr65shflfxiyw6yy3g90pgb5x"))))
+    (properties `((upstream-name . "DNABarcodes")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://bioconductor.org/packages/DNABarcodes")
+    (synopsis "Create and analyze DNA barcodes")
+    (description
+     "This package offers tools to create DNA barcode sets capable of
+correcting insertion, deletion, and substitution errors.  Existing barcodes
+can be analyzed regarding their minimal, maximal and average distances between
+barcodes.  Finally, reads that start with a (possibly mutated) barcode can be
+demultiplexed, i.e. assigned to their original reference barcode.")
+    (license license:gpl2)))

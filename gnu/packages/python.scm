@@ -149,6 +149,7 @@
   (package
     (name "python2")
     (version "2.7.15")
+    (replacement python-2/fixed)
     (source
      (origin
       (method url-fetch)
@@ -315,6 +316,18 @@ data types.")
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
 
+(define python-2/fixed
+  (package
+    (inherit python-2)
+    (source (origin
+              (inherit (package-source python-2))
+              (patches (append
+                        (origin-patches (package-source python-2))
+                        (search-patches "python2-CVE-2018-1060.patch"
+                                        "python2-CVE-2018-1061.patch"
+                                        "python2-CVE-2018-14647.patch"
+                                        "python2-CVE-2018-1000802.patch")))))))
+
 (define-public python2-called-python
   ;; Both 2.x and 3.x used to be called "python".  In commit
   ;; a7714d42de2c3082f3609d1e63c83d703fb39cf9 (March 2018), we renamed the
@@ -328,6 +341,7 @@ data types.")
   (package (inherit python-2)
     (name "python")
     (version "3.7.0")
+    (replacement python-3/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -399,6 +413,24 @@ data types.")
 ;; Current 3.x version.
 (define-public python-3 python-3.7)
 
+(define python-3/fixed
+  (package
+    (inherit python-3)
+    (source (origin
+              (inherit (package-source python-3))
+              (patches (append (origin-patches (package-source python-3))
+                               (search-patches "python-CVE-2018-14647.patch")))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-3)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'delete-broken-test
+             (lambda _
+               ;; Delete test which fails on recent kernels:
+               ;; <https://bugs.python.org/issue34587>.
+               (delete-file "Lib/test/test_socket.py")
+               #t))))))))
+
 ;; Current major version.
 (define-public python python-3)
 
@@ -406,7 +438,7 @@ data types.")
 ;; Python (Tk -> libxcb -> Python.)
 
 (define-public python2-minimal
-  (package (inherit python-2)
+  (package/inherit python-2
     (name "python2-minimal")
     (outputs '("out"))
 
@@ -417,7 +449,7 @@ data types.")
               ("zlib" ,zlib)))))
 
 (define-public python-minimal
-  (package (inherit python)
+  (package/inherit python
     (name "python-minimal")
     (outputs '("out"))
 
@@ -429,8 +461,7 @@ data types.")
               ("zlib" ,zlib)))))
 
 (define-public python-debug
-  (package
-    (inherit python)
+  (package/inherit python
     (name "python-debug")
     (outputs '("out" "debug"))
     (build-system gnu-build-system)
@@ -449,7 +480,7 @@ for more information.")))
 (define* (wrap-python3 python
                        #:optional
                        (name (string-append (package-name python) "-wrapper")))
-  (package (inherit python)
+  (package/inherit python
     (name name)
     (source #f)
     (build-system trivial-build-system)
@@ -1653,7 +1684,7 @@ software.")
 (define-public python-mimeparse
   (package
     (name "python-mimeparse")
-    (version "0.1.4")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
@@ -1662,10 +1693,14 @@ software.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1hyxg09kaj02ri0rmwjqi86wk4nd1akvv7n0dx77azz76wga4s9w"))))
+         "0y2g6cl660bpz11srgqyvvm8gmywpgyx8g0xfvbiyr0af0yv1r3n"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; no setup.py test command
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "./mimeparse_test.py"))))))
     (home-page
      "https://github.com/dbtsai/python-mimeparse")
     (synopsis "Python library for parsing MIME types")
@@ -7254,9 +7289,7 @@ config files.")
     (version "0.12.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.io/packages/source/C/ConfigArgParse/"
-                    "ConfigArgParse-" version ".tar.gz"))
+              (uri (pypi-uri "ConfigArgParse" version))
               (sha256
                (base32
                 "0fgkiqh6r3rbkdq3k8c48m85g52k96686rw3a6jg4lcncrkpvk98"))))
@@ -11350,7 +11383,7 @@ editors.")
 (define-public python2-backports-functools-lru-cache
   (package
     (name "python2-backports-functools-lru-cache")
-    (version "1.3")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
@@ -11358,7 +11391,7 @@ editors.")
        (uri (pypi-uri "backports.functools_lru_cache" version))
        (sha256
         (base32
-         "158ysf2hb0q4p4695abfiym9x1ywg0dgh8a3apd7gqaaxjy22jj4"))))
+         "06jgv8gib4fhky0p5cmxdghvsgjyzcdgk48k8pxb1ccf11znk64x"))))
     (build-system python-build-system)
     (native-inputs
      `(("python2-setuptools-scm" ,python2-setuptools-scm)))

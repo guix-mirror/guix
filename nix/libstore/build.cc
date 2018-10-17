@@ -1652,8 +1652,8 @@ HookReply DerivationGoal::tryBuildHook()
     worker.childStarted(shared_from_this(), hook->pid, fds, false, false);
 
     if (settings.printBuildTrace)
-        printMsg(lvlError, format("@ build-started %1% - %2% %3%")
-            % drvPath % drv.platform % logFile);
+        printMsg(lvlError, format("@ build-started %1% - %2% %3% %4%")
+            % drvPath % drv.platform % logFile % hook->pid);
 
     return rpAccept;
 }
@@ -2038,8 +2038,8 @@ void DerivationGoal::startBuilder()
     if (!msg.empty()) throw Error(msg);
 
     if (settings.printBuildTrace) {
-        printMsg(lvlError, format("@ build-started %1% - %2% %3%")
-            % drvPath % drv.platform % logFile);
+        printMsg(lvlError, format("@ build-started %1% - %2% %3% %4%")
+            % drvPath % drv.platform % logFile % pid);
     }
 
 }
@@ -2736,6 +2736,19 @@ void DerivationGoal::deleteTmpDir(bool force)
 
 void DerivationGoal::handleChildOutput(int fd, const string & data)
 {
+    string prefix;
+
+    if (settings.multiplexedBuildOutput) {
+	/* Print a prefix that allows clients to determine whether a message
+	   comes from the daemon or from a build process, and in the latter
+	   case, which build process it comes from.  The PID here matches the
+	   one given in "@ build-started" traces; it's shorter that the
+	   derivation file name, hence this choice.  */
+	prefix = "@ build-log "
+	    + std::to_string(pid < 0 ? hook->pid : pid)
+	    + " " + std::to_string(data.size()) + "\n";
+    }
+
     if ((hook && fd == hook->builderOut.readSide) ||
         (!hook && fd == builderOut.readSide))
     {
@@ -2748,7 +2761,7 @@ void DerivationGoal::handleChildOutput(int fd, const string & data)
             return;
         }
         if (verbosity >= settings.buildVerbosity)
-            writeToStderr(data);
+            writeToStderr(prefix + data);
 
 	if (gzLogFile) {
 	    if (data.size() > 0) {
@@ -2767,7 +2780,7 @@ void DerivationGoal::handleChildOutput(int fd, const string & data)
     }
 
     if (hook && fd == hook->fromHook.readSide)
-        writeToStderr(data);
+        writeToStderr(prefix + data);
 }
 
 

@@ -249,14 +249,14 @@ access to servers running the Discord protocol.")
 (define-public hexchat
   (package
     (name "hexchat")
-    (version "2.14.1")
+    (version "2.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "18h3l34zmazjlfx3irg7k7swppa62ad9ffbl0j3ry8p2xfyf8cmh"))))
+                "064nq151nzsljv97dmkifyl162d2738vbgvm1phx7yv04pjvk4kp"))))
     (build-system meson-build-system)
     (native-inputs `(("gettext" ,gettext-minimal)
                      ("perl" ,perl)
@@ -295,7 +295,7 @@ window shows the list of currently connected networks and their channels, the
 current conversation and the list of users.  It uses colors to differentiate
 between users and to highlight messages.  It checks spelling using available
 dictionaries.  HexChat can be extended with multiple addons.")
-    (home-page "http://hexchat.net/")
+    (home-page "https://hexchat.net/")
     (license license:gpl2+)))
 
 (define-public ngircd
@@ -873,7 +873,7 @@ protocols.")
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.2.7")
+    (version "0.2.8")
     (source
      (origin
        (method url-fetch)
@@ -882,7 +882,7 @@ protocols.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1lcw979zakyb5kzy8yfk87js3bzfz3k2jxidda6ga6ljdnqdpxmy"))))
+         "0qlkimlvbd24nlj7w9b5rpz1r807magqxmfylc1mlxsqhmfi5zj7"))))
     (arguments
      `(#:tests? #f)) ; FIXME: Testsuite seems to stay stuck on test 3. Disable
                      ; for now.

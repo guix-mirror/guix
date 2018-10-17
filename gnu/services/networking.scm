@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -101,6 +101,16 @@
             modem-manager-configuration
             modem-manager-configuration?
             modem-manager-service-type
+
+            <wpa-supplicant-configuration>
+            wpa-supplicant-configuration
+            wpa-supplicant-configuration?
+            wpa-supplicant-configuration-wpa-supplicant
+            wpa-supplicant-configuration-pid-file
+            wpa-supplicant-configuration-dbus?
+            wpa-supplicant-configuration-interface
+            wpa-supplicant-configuration-config-file
+            wpa-supplicant-configuration-extra-options
             wpa-supplicant-service-type
 
             openvswitch-service-type
@@ -1019,28 +1029,62 @@ networking."))))
 ;;; WPA supplicant
 ;;;
 
+(define-record-type* <wpa-supplicant-configuration>
+  wpa-supplicant-configuration make-wpa-supplicant-configuration
+  wpa-supplicant-configuration?
+  (wpa-supplicant     wpa-supplicant-configuration-wpa-supplicant ;<package>
+                      (default wpa-supplicant))
+  (pid-file           wpa-supplicant-configuration-pid-file       ;string
+                      (default "/var/run/wpa_supplicant.pid"))
+  (dbus?              wpa-supplicant-configuration-dbus?          ;Boolean
+                      (default #t))
+  (interface          wpa-supplicant-configuration-interface      ;#f | string
+                      (default #f))
+  (config-file        wpa-supplicant-configuration-config-file    ;#f | <file-like>
+                      (default #f))
+  (extra-options      wpa-supplicant-configuration-extra-options  ;list of strings
+                      (default '())))
 
-(define (wpa-supplicant-shepherd-service wpa-supplicant)
-  "Return a shepherd service for wpa_supplicant"
-  (list (shepherd-service
-         (documentation "Run WPA supplicant with dbus interface")
-         (provision '(wpa-supplicant))
-         (requirement '(user-processes dbus-system loopback))
-         (start #~(make-forkexec-constructor
-                   (list (string-append #$wpa-supplicant
-                                        "/sbin/wpa_supplicant")
-                         "-u" "-B" "-P/var/run/wpa_supplicant.pid")
-                   #:pid-file "/var/run/wpa_supplicant.pid"))
-         (stop #~(make-kill-destructor)))))
+(define wpa-supplicant-shepherd-service
+  (match-lambda
+    (($ <wpa-supplicant-configuration> wpa-supplicant pid-file dbus? interface
+                                       config-file extra-options)
+     (list (shepherd-service
+            (documentation "Run the WPA supplicant daemon")
+            (provision '(wpa-supplicant))
+            (requirement '(user-processes dbus-system loopback))
+            (start #~(make-forkexec-constructor
+                      (list (string-append #$wpa-supplicant
+                                           "/sbin/wpa_supplicant")
+                            (string-append "-P" #$pid-file)
+                            "-B"        ;run in background
+                            #$@(if dbus?
+                                   #~("-u")
+                                   #~())
+                            #$@(if interface
+                                   #~(string-append "-i" #$interface)
+                                   #~())
+                            #$@(if config-file
+                                   #~(string-append "-c" #$config-file)
+                                   #~())
+                            #$@extra-options)
+                      #:pid-file #$pid-file))
+            (stop #~(make-kill-destructor)))))))
 
 (define wpa-supplicant-service-type
-  (service-type (name 'wpa-supplicant)
-                (extensions
-                 (list (service-extension shepherd-root-service-type
-                                          wpa-supplicant-shepherd-service)
-                       (service-extension dbus-root-service-type list)
-                       (service-extension profile-service-type list)))
-                (default-value wpa-supplicant)))
+  (let ((config->package
+         (match-lambda
+           (($ <wpa-supplicant-configuration> wpa-supplicant)
+            (list wpa-supplicant)))))
+    (service-type (name 'wpa-supplicant)
+                  (extensions
+                   (list (service-extension shepherd-root-service-type
+                                            wpa-supplicant-shepherd-service)
+                         (service-extension dbus-root-service-type config->package)
+                         (service-extension profile-service-type config->package)))
+                  (description "Run the WPA Supplicant daemon, a service that
+implements authentication, key negotiation and more for wireless networks.")
+                  (default-value (wpa-supplicant-configuration)))))
 
 
 ;;;

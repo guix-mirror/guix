@@ -39,6 +39,7 @@
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
+;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3033,7 +3034,7 @@ in @code{html-mode}.")
 (define-public emacs-slime
   (package
     (name "emacs-slime")
-    (version "2.20")
+    (version "2.22")
     (source
      (origin
        (file-name (string-append name "-" version ".tar.gz"))
@@ -3043,7 +3044,7 @@ in @code{html-mode}.")
              version ".tar.gz"))
        (sha256
         (base32
-         "086lq5y4pvj9wihy0si02xxvyzpzz8mcg3hz1cvy9zxlyjwzr1gk"))))
+         "07vaib1n4zyh5yy30gdpq0bc5cv6w84piml5b3mfc9ibjhaykkms"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))
@@ -4306,14 +4307,14 @@ strings, and code folding.")
 (define-public emacs-nodejs-repl
   (package
     (name "emacs-nodejs-repl")
-    (version "0.1.6")
+    (version "0.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/abicky/nodejs-repl.el"
                                   "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "0sphg1jxi3a5l0gqdp27d0qgyjaiq2p293av9zm8ksm0vwqp3fr9"))
+                "0hq2cqdq2668yf48g7qnkci90nhih1gnhacsgz355jnib56lhmkz"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abicky/nodejs-repl.el")
@@ -5199,11 +5200,11 @@ extensions.")
       (license license:gpl3+))))
 
 (define-public emacs-evil-collection
-  (let ((commit "b55ae90f367e103e6568ae00779a8a51c68a0104")
-        (revision "3"))
+  (let ((commit "abc9dd60f71ccc1f24803a12d853f84b4a8b258c")
+        (revision "4"))
     (package
       (name "emacs-evil-collection")
-      (version (git-version "20180911" revision commit))
+      (version (git-version "0.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -5212,7 +5213,7 @@ extensions.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "0n7bzi5s7rqi78l1424sxvsk2g46z7ksq02xx5jrmqymnij90jml"))))
+                  "0c9l93vrsl6kzx8gg305dq8qkb2dr3s10fww7lh382911pdmsh7v"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
@@ -5928,8 +5929,20 @@ Yasnippet.")
                (base32
                 "01by0c4lqi2cw8xmbxkjw7m9x78zssm31sx4hdpw5j35s2951j0f"))))
     (build-system emacs-build-system)
+    (inputs
+     `(("recutils" ,recutils)))
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((recutils (assoc-ref inputs "recutils")))
+               ;; Specify the absolute file names of the various
+               ;; programs so that everything works out-of-the-box.
+               (substitute* "helm-system-packages-guix.el"
+                 (("recsel") (string-append recutils "/bin/recsel")))))))))
     (home-page "https://github.com/emacs-helm/helm-system-packages")
     (synopsis "Helm System Packages is an interface to your package manager")
     (description "List all available packages in Helm (with installed
@@ -6575,14 +6588,14 @@ which code derived from Kelvin H's org-page.")
 (define-public emacs-xelb
   (package
     (name "emacs-xelb")
-    (version "0.15")
+    (version "0.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/xelb-"
                                   version ".tar"))
               (sha256
                (base32
-                "031rvgprsqhf344p9wsczr50vj2qcpwdmhxi80jdbrsm7wyxf3qz"))))
+                "03wsr1jr7f7zfd80h864rd4makwh4widdnj1kjv2xyjwdgap9rl8"))))
     (build-system emacs-build-system)
     ;; The following functions and variables needed by emacs-xelb are
     ;; not included in emacs-minimal:
@@ -6614,7 +6627,7 @@ It should enable you to implement low-level X11 applications.")
 (define-public emacs-exwm
   (package
     (name "emacs-exwm")
-    (version "0.19")
+    (version "0.20")
     (synopsis "Emacs X window manager")
     (source (origin
               (method url-fetch)
@@ -6622,8 +6635,7 @@ It should enable you to implement low-level X11 applications.")
                                   version ".tar"))
               (sha256
                (base32
-                "11xd2w4h3zdwkdxypvmcz8s7q72cn76lfr9js77jbizyj6b04lr0"))
-              (patches (search-patches "emacs-exwm-fix-fullscreen-issue.patch"))))
+                "0nhhzbkm0mkj7sd1dy2c19cmn56gyaj9nl8kgy86h4fp63hjaz04"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-xelb" ,emacs-xelb)))
@@ -11344,27 +11356,25 @@ the GIF result.")
       (license license:gpl3+))))
 
 (define-public emacs-google-translate
-  (let ((commit "d8b84a8359fcc697114d1298840e9a45b111c974"))
-    (package
-      (name "emacs-google-translate")
-      (version (git-version "0.11.14" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/atykhonov/google-translate")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "1qs4hcg1i2m487z50nnwgs0sa2xj4lpgizbrvi2yda0mf3m75fgc"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/atykhonov/google-translate")
-      (synopsis "Emacs interface to Google Translate")
-      (description
-       "This packages provides an Emacs interface to the Google Translate
+  (package
+    (name "emacs-google-translate")
+    (version "0.11.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/atykhonov/google-translate/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zxvfagbaf5mxi528mz33c8vxdk86wj0xx5y2jfy97wi8dzrwn3g"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/atykhonov/google-translate")
+    (synopsis "Emacs interface to Google Translate")
+    (description
+     "This packages provides an Emacs interface to the Google Translate
 on-line service.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-company
   (let ((commit "acc9c7901e094c1591327a0db1ec7a439f67a84d"))
@@ -12355,3 +12365,24 @@ with a handful of easy tweaks.
 scratch, and you think the Spacemacs theme looks good.
 @end itemize")
     (license license:gpl3+)))
+
+(define-public emacs-column-marker
+  (package
+    (name "emacs-column-marker")
+    (version "9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://www.emacswiki.org/emacs/download/column-marker.el")
+       (sha256 (base32 "05bv198zhqw5hqq6cr11mhz02dpca74hhp1ycwq369m0yb2naxy9"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/ColumnMarker")
+    (synopsis "Emacs mode for highlighting columns")
+    (description
+     "With @code{column-marker.el} you can highlight any number of text columns.
+Three such highlight column markers are provided by default.  This is
+especially useful for languages like COBOL or Fortran where certain columns
+have special meaning.  It is also handy for aligning text across long vertical
+distances.  Multi-column characters, such as @kbd{TAB} are treated
+correctly.")
+    (license license:gpl2+)))
