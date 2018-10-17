@@ -1000,7 +1000,7 @@ Every puzzle has a complete solution, although there may be more than one.")
 (define-public retux
   (package
     (name "retux")
-    (version "1.3.5")
+    (version "1.3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/retux/"
@@ -1008,7 +1008,7 @@ Every puzzle has a complete solution, although there may be more than one.")
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "1pcrh3z16fl412r3k7xccrgika19ahb1xh90jihgl8yy7zza2i6p"))))
+                "01bidh4zisjp3nc436x0g85v60dvwb3ig37i7y01sa71j8fm4fmb"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no check target
