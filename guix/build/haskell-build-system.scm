@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,6 +79,7 @@ and parameters ~s~%"
          (doc (assoc-ref outputs "doc"))
          (lib (assoc-ref outputs "lib"))
          (bin (assoc-ref outputs "bin"))
+         (name-version (strip-store-file-name out))
          (input-dirs (match inputs
                        (((_ . dir) ...)
                         dir)
@@ -88,7 +90,7 @@ and parameters ~s~%"
                          `(,(string-append "--bindir=" (or bin out) "/bin"))
                          `(,(string-append
                              "--docdir=" (or doc out)
-                             "/share/doc/" (package-name-version out)))
+                             "/share/doc/" name-version))
                          '("--libsubdir=$compiler/$pkg-$version")
                          `(,(string-append "--package-db=" %tmp-db-dir))
                          '("--global")
@@ -127,12 +129,6 @@ and parameters ~s~%"
   "Install a given Haskell package."
   (run-setuphs "copy" '()))
 
-(define (package-name-version store-dir)
-  "Given a store directory STORE-DIR return 'name-version' of the package."
-  (let* ((base (basename store-dir)))
-    (string-drop base
-                 (+ 1 (string-index base #\-)))))
-
 (define (grep rx port)
   "Given a regular-expression RX including a group, read from PORT until the
 first match and return the content of the group."
@@ -147,7 +143,7 @@ first match and return the content of the group."
 (define* (setup-compiler #:key system inputs outputs #:allow-other-keys)
   "Setup the compiler environment."
   (let* ((haskell (assoc-ref inputs "haskell"))
-         (name-version (package-name-version haskell)))
+         (name-version (strip-store-file-name haskell)))
     (cond
      ((string-match "ghc" name-version)
       (make-ghc-package-database system inputs outputs))
@@ -164,6 +160,7 @@ first match and return the content of the group."
 (define (make-ghc-package-database system inputs outputs)
   "Generate the GHC package database."
   (let* ((haskell  (assoc-ref inputs "haskell"))
+         (name-version (strip-store-file-name haskell))
          (input-dirs (match inputs
                        (((_ . dir) ...)
                         dir)
@@ -171,7 +168,7 @@ first match and return the content of the group."
          ;; Silence 'find-files' (see 'evaluate-search-paths')
          (conf-dirs (with-null-error-port
                      (search-path-as-list
-                      `(,(string-append "lib/" (package-name-version haskell)))
+                      `(,(string-append "lib/" name-version))
                       input-dirs #:pattern ".*\\.conf.d$")))
          (conf-files (append-map (cut find-files <> "\\.conf$") conf-dirs)))
     (mkdir-p %tmp-db-dir)
@@ -231,9 +228,10 @@ given Haskell package."
 
   (let* ((out (assoc-ref outputs "out"))
          (haskell  (assoc-ref inputs "haskell"))
+         (name-verion (strip-store-file-name haskell))
          (lib (string-append out "/lib"))
-         (config-dir (string-append lib "/"
-                                    (package-name-version haskell)
+         (config-dir (string-append lib
+                                    "/" name-verion
                                     "/" name ".conf.d"))
          (id-rx (make-regexp "^id: *(.*)$"))
          (config-file (string-append out "/" name ".conf"))
