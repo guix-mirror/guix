@@ -961,6 +961,8 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
              (substitute* "strace.c"
                (("/bin/sh") (which "sh")))
              #t)))
+       ;; Don't fail if the architecture doesn't support different personalities.
+       #:configure-flags '("--enable-mpers=check")
        ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32459>.
        #:parallel-tests? #f))           ; undeterministic failures
     (native-inputs `(("perl" ,perl)))
