@@ -11000,6 +11000,12 @@ Return a service that runs a syslog daemon according to @var{config}.
 information on the configuration file syntax.
 @end deffn
 
+@defvr {Scheme Variable} guix-service-type
+This is the type of the service that runs the build daemon,
+@command{guix-daemon} (@pxref{Invoking guix-daemon}).  Its value must be a
+@code{guix-configuration} record as described below.
+@end defvr
+
 @anchor{guix-configuration-type}
 @deftp {Data Type} guix-configuration
 This data type represents the configuration of the Guix build daemon.
@@ -11059,11 +11065,6 @@ A directory path where the @command{guix-daemon} will perform builds.
 
 @end table
 @end deftp
-
-@deffn {Scheme Procedure} guix-service @var{config}
-Return a service that runs the Guix build daemon according to
-@var{config}.
-@end deffn
 
 @deffn {Scheme Procedure} udev-service [#:udev @var{eudev} #:rules @code{'()}]
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
