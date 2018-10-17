@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
 
 (define-module (gnu packages boost)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -134,6 +136,15 @@ across a broad spectrum of applications.")
               (sha256
                (base32
                 "1jj1aai5rdmd72g90a3pd8sw9vi32zad46xv5av8fhnr48ir6ykj"))))
+    (arguments (substitute-keyword-arguments (package-arguments boost)
+      ((#:phases phases)
+       `(modify-phases ,phases
+          ;; This was removed after boost-1.67.
+          (add-before 'configure 'more-bin-sh-patching
+            (lambda _
+              (substitute* "tools/build/doc/bjam.qbk"
+                (("/bin/sh") (which "sh")))))
+          (delete 'provide-libboost_python)))))
     (properties '((hidden? . #t)))))
 
 (define-public boost-sync
