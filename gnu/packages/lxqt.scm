@@ -166,12 +166,10 @@ for the LXQt desktop environment.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/lxde/lxqt-build-tools/releases/"
-                           "download/" version "/" name "-" version ".tar.xz"))
-       (file-name (string-append name "-" version ".tar.xz"))
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "13b5x26p6ycnwzlgg1cgvlc88wjrjmlb3snrrmzh0xgh9h6hhvd6"))))
+        (base32 "13b5x26p6ycnwzlgg1cgvlc88wjrjmlb3snrrmzh0xgh9h6hhvd6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -184,5 +182,5 @@ for the LXQt desktop environment.")
     (description
      "Lxqt-build-tools is providing several tools needed to build LXQt
 itself as well as other components maintained by the LXQt project.")
-    (home-page "http://lxqt.org")
+    (home-page "https://lxqt.org")
     (license lgpl2.1+)))
