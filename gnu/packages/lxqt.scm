@@ -30,6 +30,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
@@ -413,4 +414,40 @@ allows for launching applications or shutting down the system.")
     (synopsis "Session manager for LXQt")
     (description "lxqt-session provides the standard session manager
 for the LXQt desktop environment.")
+    (license lgpl2.1+)))
+
+(define-public lxqt-sudo
+  (package
+    (name "lxqt-sudo")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1j28wlw4rkzvr85yl78fqkvz7sv7dykm9ghm63xdkskfjbsas1cf"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)
+       ("sudo" ,sudo)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
+       ("lxqt-build-tools" ,lxqt-build-tools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")))
+    (home-page "https://lxqt.org/")
+    (synopsis "GUI frontend for sudo/su")
+    (description "lxqt-sudo is a graphical front-end of commands sudo and su
+respectively.  As such it enables regular users to launch applications with
+permissions of other users including root.")
     (license lgpl2.1+)))
