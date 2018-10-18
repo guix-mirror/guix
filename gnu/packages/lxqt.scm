@@ -40,6 +40,7 @@
   #:use-module (gnu packages lxde)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages pulseaudio)
@@ -74,6 +75,42 @@
     (description "This library provides a Qt implementation of the DBusMenu
 protocol.  The DBusMenu protocol makes it possible for applications to export
 and import their menus over DBus.")
+    (license lgpl2.1+)))
+
+(define-public libfm-qt
+  (package
+    (name "libfm-qt")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0p0lbz7dh5c38zq3yp1v1mm99ymg7mqr3h7yzniif2hipmgvxsv9"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")))
+    (inputs
+     `(("glib" ,glib)
+       ("libexif" ,libexif)
+       ("libfm" ,libfm)
+       ("libxcb" ,libxcb)
+       ("menu-cache" ,menu-cache)
+       ("pcre" ,pcre)
+       ("qtbase" ,qtbase)
+       ("qttools" ,qttools)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("lxqt-build-tools" ,lxqt-build-tools)))
+    (home-page "https://lxqt.org/")
+    (synopsis "Qt binding for libfm")
+    (description "libfm-qt is the Qt port of libfm, a library providing
+components to build desktop file managers which belongs to LXDE.")
     (license lgpl2.1+)))
 
 (define-public liblxqt
