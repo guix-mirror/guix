@@ -470,6 +470,39 @@ as a whole and are not limited to distinct applications.")
 according to the Desktop Notifications Specification.")
     (license license:lgpl2.1+)))
 
+(define-public lxqt-openssh-askpass
+  (package
+    (name "lxqt-openssh-askpass")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0l2272gya8jgv71bvg2hz37lnhiznv4ng3j0p6j79f99hwb5ygpk"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")))
+    (home-page "https://lxqt.org/")
+    (synopsis "GUI to query passwords on behalf of SSH agents")
+    (description "lxqt-openssh-askpass is a GUI to query credentials on behalf
+of other programs.")
+    (license license:lgpl2.1+)))
+
 (define-public lxqt-panel
   (package
     (name "lxqt-panel")
