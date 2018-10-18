@@ -171,6 +171,29 @@ to statistics about the system on which it's run.")
     ;; Libraries are under LGPL2.1+, and programs under GPLv2+.
     (license gpl2+)))
 
+(define-public libsysstat
+  (package
+    (name "libsysstat")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0ngz8v3bixsdg96d5ipcyxd6nsrg52974xdxy9rnimahlv1yaxn3"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))          ; no tests
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)))
+    (home-page "https://lxqt.org/")
+    (synopsis "Library used to query system info and statistics")
+    (description "libsysstat is a library to query system information like CPU
+and memory usage or network traffic.")
+    (license lgpl2.1+)))
+
 (define-public lxqt-build-tools
   (package
     (name "lxqt-build-tools")
