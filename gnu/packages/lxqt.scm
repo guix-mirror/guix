@@ -29,6 +29,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages kde-frameworks)
@@ -37,6 +38,35 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg))
+
+(define-public libdbusmenu-qt
+  (package
+    (name "libdbusmenu-qt")
+    (version "0.9.3+16.04.20160218-0ubuntu1")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Download from github rather than launchpad beacuse launchpad trunk
+       ;; tarball hash is not deterministic.
+       (uri (string-append "https://github.com/unity8-team/" name
+                           "/archive/" version ".tar.gz"))
+       (sha256
+        (base32 "0abwyggnpg50sa9cxphscp5zdkv9nxqnlav55vj21df6q1h3jb5w"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (arguments
+     ;; XXX: Tests require a dbus session and some icons.
+     '(#:tests? #f))
+    (native-inputs
+     `(("doxygen" ,doxygen)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "https://launchpad.net/libdbusmenu-qt")
+    (synopsis "Qt implementation of the DBusMenu spec")
+    (description "This library provides a Qt implementation of the DBusMenu
+protocol.  The DBusMenu protocol makes it possible for applications to export
+and import their menus over DBus.")
+    (license lgpl2.1+)))
 
 (define-public liblxqt
   (package
