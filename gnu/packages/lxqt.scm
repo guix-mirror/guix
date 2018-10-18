@@ -270,6 +270,47 @@ and memory usage or network traffic.")
 LXQt and the system it's running on.")
     (license lgpl2.1+)))
 
+(define-public lxqt-admin
+  (package
+    (name "lxqt-admin")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0qvpv668ja83ydbdrlal1596xhag3xlkbd6qlh9xwdpb7nysvns1"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)
+       ("polkit-qt" ,polkit-qt)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "lxqt-admin-user/CMakeLists.txt"
+               (("DESTINATION \"\\$\\{POLKITQT-1_POLICY_FILES_INSTALL_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/share/polkit-1/actions"))
+             #t)))))
+    (home-page "https://lxqt.org")
+    (synopsis "LXQt system administration tool")
+    (description "lxqt-admin is providing two GUI tools to adjust settings of
+the operating system LXQt is running on.")
+    (license lgpl2.1+)))
+
 (define-public lxqt-build-tools
   (package
     (name "lxqt-build-tools")
