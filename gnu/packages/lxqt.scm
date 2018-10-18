@@ -993,6 +993,36 @@ image viewer.")
     (description "QTermWidget is a terminal emulator widget for Qt 5.")
     (license license:lgpl2.1+)))
 
+(define-public qterminal
+  (package
+    (name "qterminal")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1vlza75br1ys62lgkdz26md729bfpbnasfzswp7hakmgaq1rhms1"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("qtermwidget" ,qtermwidget)))
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")))
+    (home-page "https://lxqt.org/")
+    (synopsis "Lightweight Qt-based terminal emulator")
+    (description "QTerminal is a lightweight Qt terminal emulator based on
+QTermWidget.")
+    (license license:lgpl2.1+)))
+
 (define-public screengrab
   (package
     (name "screengrab")
