@@ -846,6 +846,39 @@ respectively.  As such it enables regular users to launch applications with
 permissions of other users including root.")
     (license license:lgpl2.1+)))
 
+(define-public pavucontrol-qt
+  (package
+    (name "pavucontrol-qt")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0pqvhhgw7d00wqw5v3ghm4l8250zy7bqpvhff6l7y1lw0z2fvcp6"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("glib" ,glib)
+       ("pcre" ,pcre)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")))
+    (home-page "https://lxqt.org/")
+    (synopsis "Pulseaudio mixer in Qt")
+    (description "@code{pavucontrol-qt} is the Qt port of volume control
+@code{pavucontrol} of sound server @code{PulseAudio}.")
+    (license license:lgpl2.1+)))
+
 (define-public pcmanfm-qt
   (package
     (name "pcmanfm-qt")
