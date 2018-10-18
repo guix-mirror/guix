@@ -604,6 +604,50 @@ of other programs.")
 LXQt.")
     (license license:lgpl2.1+)))
 
+(define-public lxqt-powermanagement
+  (package
+    (name "lxqt-powermanagement")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "15nvdypyjwnp7k3d2pkhdbmaqb3ccacmh95rbdbc5mr7yrjy9613"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("kidletime" ,kidletime)
+       ("kwindowsystem" ,kwindowsystem)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)
+       ("solid" ,solid)))
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* '("autostart/CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/etc/xdg"))
+             #t)))))
+    (home-page "https://lxqt.org/")
+    (synopsis "Power management module for LXQt")
+    (description "lxqt-powermanagement is providing tools to monitor power
+management events and optionally trigger actions like e. g. shut down a system
+when laptop batteries are low on power.")
+    (license license:lgpl2.1+)))
+
 (define-public lxqt-runner
   (package
     (name "lxqt-runner")
