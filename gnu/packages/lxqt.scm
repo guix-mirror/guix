@@ -488,3 +488,42 @@ for the LXQt desktop environment.")
 respectively.  As such it enables regular users to launch applications with
 permissions of other users including root.")
     (license lgpl2.1+)))
+
+(define-public pcmanfm-qt
+  (package
+    (name "pcmanfm-qt")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "08jprkkk62pk34q9lxa207bh27xi86fj8jxfd5z3w2m5j5nim5mz"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libfm-qt" ,libfm-qt)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
+       ("lxqt-build-tools" ,lxqt-build-tools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* '("autostart/CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/etc/xdg"))
+             #t)))))
+    (home-page "https://lxqt.org/")
+    (synopsis "File manager and desktop icon manager")
+    (description "PCManFM-Qt is the Qt port of PCManFM, the file manager of
+LXDE.")
+    (license lgpl2.1+)))
