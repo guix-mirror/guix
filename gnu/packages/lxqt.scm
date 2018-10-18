@@ -237,6 +237,39 @@ to statistics about the system on which it's run.")
 and memory usage or network traffic.")
     (license lgpl2.1+)))
 
+(define-public lxqt-about
+  (package
+    (name "lxqt-about")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "08imj7p77ifzfxnn8c482mhrvfx9gi0rb43ab5rw1rkmfvax2n5w"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")))
+    (home-page "https://lxqt.org")
+    (synopsis "Provides information about LXQt and the system")
+    (description "lxqt-about is a dialogue window providing information about
+LXQt and the system it's running on.")
+    (license lgpl2.1+)))
+
 (define-public lxqt-build-tools
   (package
     (name "lxqt-build-tools")
