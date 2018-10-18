@@ -24,16 +24,18 @@
 
 (define-module (gnu packages lxqt)
   #:use-module (guix download)
-  #:use-module ((guix licenses) #:select (lgpl2.1+))
+  #:use-module ((guix licenses))
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages qt)
@@ -144,6 +146,30 @@ components of the LXQt desktop environment.")
     (description "Libqtxdg implements the freedesktop.org xdg specifications
 in Qt.")
     (license lgpl2.1+)))
+
+(define-public libstatgrab
+  (package
+    (name "libstatgrab")
+    (version "0.91")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://ftp.i-scream.org/pub/i-scream/libstatgrab/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1azinx2yzs442ycwq6p15skl3mscmqj7fd5hq7fckhjp92735s83"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-tests")))
+    (native-inputs
+     ;; For testing.
+     `(("perl" ,perl)))
+    (home-page "https://www.i-scream.org/libstatgrab/")
+    (synopsis "Provides access to statistics about the system")
+    (description "libstatgrab is a library that provides cross platform access
+to statistics about the system on which it's run.")
+    ;; Libraries are under LGPL2.1+, and programs under GPLv2+.
+    (license gpl2+)))
 
 (define-public lxqt-build-tools
   (package
