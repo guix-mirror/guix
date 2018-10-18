@@ -992,3 +992,32 @@ image viewer.")
     (synopsis "The terminal widget for QTerminal")
     (description "QTermWidget is a terminal emulator widget for Qt 5.")
     (license license:lgpl2.1+)))
+
+(define-public screengrab
+  (package
+    (name "screengrab")
+    (version "1.99")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "17y8rsx9fixvxv2byq8d6c01vry10nv07f8jy85vz7zp4f0rgzz3"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("libqtxdg" ,libqtxdg)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f))                    ; no tests
+    (home-page "https://lxqt.org/")
+    (synopsis "Crossplatform tool for fast making screenshots")
+    (description "ScreenGrab is a program for fast creating screenshots, and
+easily publishing them on internet image hosting services.")
+    (license license:lgpl2.1+)))
