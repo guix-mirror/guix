@@ -197,6 +197,50 @@ itself as well as other components maintained by the LXQt project.")
     (home-page "https://lxqt.org")
     (license lgpl2.1+)))
 
+(define-public lxqt-globalkeys
+  (package
+    (name "lxqt-globalkeys")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1gyvcjbhi7zpvgz1sf773dv9gc35hx5fz023njp9r4vl0dpcavgd"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
+       ("lxqt-build-tools" ,lxqt-build-tools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* '("autostart/CMakeLists.txt"
+                            "xdg/CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/etc/xdg"))
+             #t)))))
+    (home-page "https://lxqt.org/")
+    (synopsis "Daemon used to register global keyboard shortcuts")
+    (description "lxqt-globalkeys is providing tools to set global keyboard
+shortcuts in LXQt sessions, that is shortcuts which apply to the LXQt session
+as a whole and are not limited to distinct applications.")
+    (license lgpl2.1+)))
+
 (define-public lxqt-session
   (package
     (name "lxqt-session")
