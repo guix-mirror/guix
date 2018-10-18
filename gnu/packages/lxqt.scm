@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,25 +37,33 @@
 (define-public libqtxdg
   (package
     (name "libqtxdg")
-    (version "1.2.0")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
-       (uri
-         (string-append "https://github.com/lxde/libqtxdg/releases/"
-                        "download/" version "/" name "-" version ".tar.xz"))
+       (uri (string-append
+             "https://github.com/lxqt/" name "/releases/download/"
+             version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "1ncqs0lcll5nx69hxfg33m3jfkryjqrjhr2kdci0b8pyaqdv1jc8"))))
+        (base32 "0lq548pa69hfvnbj2ypba5ygm8n6v6g7bqqm8p5g538l1l3394cl"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; test fails with message "Exception"
-       #:configure-flags '("-DBUILD_TESTS=ON")))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(#:configure-flags
+       `("-DBUILD_TESTS=ON"
+         ,(string-append "-DQTXDGX_ICONENGINEPLUGIN_INSTALL_PATH="
+                         %output "/lib/qt5/plugins/iconengines"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Run the tests offscreen.
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
     (propagated-inputs
-     `(("qtbase" ,qtbase))) ; according to Qt5Xdg.pc
-    (home-page "https://github.com/lxde/libqtxdg")
+     ;; required by Qt5XdgIconLoader.pc
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://github.com/lxqt/libqtxdg")
     (synopsis "Qt implementation of freedesktop.org xdg specifications")
     (description "Libqtxdg implements the freedesktop.org xdg specifications
 in Qt.")
