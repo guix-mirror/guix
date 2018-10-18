@@ -29,8 +29,10 @@
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages qt)
@@ -116,43 +118,42 @@ components of the LXQt desktop environment.")
 (define-public lxqt-session
   (package
     (name "lxqt-session")
-    (version "0.9.0")
+    (version "0.13.0")
     (source
      (origin
        (method url-fetch)
-       (uri
-         (string-append "https://github.com/lxde/" name
-                        "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "1sdwcfrfqkg7ibrsncs1skdap9n8wm4rg6n9d0fgdz2q4d45h75a"))))
+        (base32 "1aibppppmg46ybbajx2qc395l0yp9rqlp2am01fqjxadsf8vci5z"))))
     (build-system cmake-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("kwindowsystem" ,kwindowsystem)
+     `(("eudev" ,eudev)
+       ("kwindowsystem" ,kwindowsystem)
        ("liblxqt" ,liblxqt)
        ("libqtxdg" ,libqtxdg)
        ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
        ("qttools" ,qttools)
-       ("qtx11extras" ,qtx11extras)))
+       ("qtx11extras" ,qtx11extras)
+       ("xdg-user-dirs" ,xdg-user-dirs)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("lxqt-build-tools" ,lxqt-build-tools)))
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f
+       #:configure-flags
+       `("-DPULL_TRANSLATIONS=NO")
        #:phases
-        (modify-phases %standard-phases
-          (add-before 'configure 'fix-installation-paths
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
            (lambda _
-             ;; The variable LXQT_TRANSLATIONS_DIR is set in
-             ;; liblxqt-0.9.0/share/cmake/lxqt/lxqt-config.cmake
-             ;; to the liblxqt installation directory, followed by
-             ;; "/share/lxqt/translations".
-             ;; We need to have it point to the current installation
-             ;; directory instead.
-             (substitute* '("lxqt-session/CMakeLists.txt"
-                            "lxqt-config-session/CMakeLists.txt")
-               (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
-                "${CMAKE_INSTALL_PREFIX}/share/lxqt/translations")))))))
-    (home-page "http://lxqt.org/")
+             (substitute* '("autostart/CMakeLists.txt"
+                            "config/CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/etc/xdg"))
+             #t)))))
+    (home-page "https://lxqt.org/")
     (synopsis "Session manager for LXQt")
     (description "lxqt-session provides the standard session manager
 for the LXQt desktop environment.")
