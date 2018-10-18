@@ -36,9 +36,13 @@
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages lxde)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
 
 (define-public libdbusmenu-qt
@@ -262,6 +266,63 @@ itself as well as other components maintained by the LXQt project.")
     (description "lxqt-globalkeys is providing tools to set global keyboard
 shortcuts in LXQt sessions, that is shortcuts which apply to the LXQt session
 as a whole and are not limited to distinct applications.")
+    (license lgpl2.1+)))
+
+(define-public lxqt-panel
+  (package
+    (name "lxqt-panel")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1qraigzq7nc5a2q6f5ybxwx07gxffa3m3bg7fiv6ppwss51xqfd1"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("kguiaddons" ,kguiaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("libdbusmenu-qt" ,libdbusmenu-qt)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)
+       ("libstatgrab" ,libstatgrab)
+       ("libsysstat", libsysstat)
+       ("libxcomposite" ,libxcomposite)
+       ("libxdamage" ,libxdamage)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxrender" ,libxrender)
+       ("lm-sensors" ,lm-sensors "lib")
+       ("lxqt-globalkeys" ,lxqt-globalkeys)
+       ("pcre" ,pcre)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)
+       ("solid" ,solid)
+       ("xcb-util" ,xcb-util)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* '("autostart/CMakeLists.txt"
+                            "menu/CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/etc/xdg"))
+             #t)))))
+    (home-page "https://lxqt.org/")
+    (synopsis "The LXQt desktop panel")
+    (description "lxqt-panel represents the taskbar of LXQt.")
     (license lgpl2.1+)))
 
 (define-public lxqt-session
