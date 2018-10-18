@@ -917,3 +917,30 @@ permissions of other users including root.")
     (description "PCManFM-Qt is the Qt port of PCManFM, the file manager of
 LXDE.")
     (license license:lgpl2.1+)))
+
+(define-public qtermwidget
+  (package
+    (name "qtermwidget")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1c1qzbysxjbikp4bpgphphw4dgpl10gz8m06ccs2c48qxhpyd773"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")))
+    (home-page "https://lxqt.org/")
+    (synopsis "The terminal widget for QTerminal")
+    (description "QTermWidget is a terminal emulator widget for Qt 5.")
+    (license license:lgpl2.1+)))
