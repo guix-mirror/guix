@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -875,8 +875,16 @@ the LZ4 frame format.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-                  (lambda _
-                    (chdir "squashfs-tools"))))))
+           (lambda _
+             (chdir "squashfs-tools")
+             #t))
+         (add-after 'unpack 'fix-glibc-compatability
+           (lambda _
+             (substitute* '("squashfs-tools/mksquashfs.c"
+                            "squashfs-tools/unsquashfs.c")
+               (("<sys/sysinfo.h>")
+                "<sys/sysinfo.h>\n#include <sys/sysmacros.h>"))
+             #t)))))
     (inputs
      `(("lz4" ,lz4)
        ("lzo" ,lzo)
