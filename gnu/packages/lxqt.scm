@@ -47,6 +47,7 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
 
@@ -899,6 +900,44 @@ LXDE.")
 
 
 ;; Extra
+
+(define-public compton-conf
+  (package
+    (name "compton-conf")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0q3yx2a6wf8yahrwgvhmv9sd7gmrhid528vrqy04dg8m5cx1bjci"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libconfig" ,libconfig)
+       ("qtbase" ,qtbase)))
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* '("autostart/CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/etc/xdg"))
+             #t)))))
+    (home-page "https://lxqt.org/")
+    (synopsis "GUI configuration tool for compton X composite manager")
+    (description "@code{compton-conf} is a configuration tool for X composite
+manager Compton.")
+    (license license:lgpl2.1+)))
 
 (define-public lximage-qt
   (package
