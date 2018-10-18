@@ -527,6 +527,50 @@ according to the Desktop Notifications Specification.")
     (description "lxqt-panel represents the taskbar of LXQt.")
     (license license:lgpl2.1+)))
 
+(define-public lxqt-policykit
+  (package
+    (name "lxqt-policykit")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1d97fys6625nk4q6irp0jhsbk30xi7idnii1f3vrrrdcl2cahagp"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)
+       ("pcre" ,pcre)
+       ("polkit-qt" ,polkit-qt)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("polkit" ,polkit)
+       ("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no test target
+       #:configure-flags
+       '("-DPULL_TRANSLATIONS=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* '("autostart/CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/etc/xdg"))
+             #t)))))
+    (home-page "https://lxqt.org/")
+    (synopsis "The LXQt PolicyKit agent")
+    (description "lxqt-policykit is the polkit authentification agent of
+LXQt.")
+    (license license:lgpl2.1+)))
+
 (define-public lxqt-runner
   (package
     (name "lxqt-runner")
