@@ -37,6 +37,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages lxde)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
@@ -323,6 +324,51 @@ as a whole and are not limited to distinct applications.")
     (home-page "https://lxqt.org/")
     (synopsis "The LXQt desktop panel")
     (description "lxqt-panel represents the taskbar of LXQt.")
+    (license lgpl2.1+)))
+
+(define-public lxqt-runner
+  (package
+    (name "lxqt-runner")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0dsg6fdcqbl7gza0sg1pb49zn5x31q7zx77jp7mkf6wc2lv8lali"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)
+       ("lxqt-globalkeys" ,lxqt-globalkeys)
+       ("muparser" ,muparser)
+       ("pcre" ,pcre)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools", qttools)
+       ("lxqt-build-tools" ,lxqt-build-tools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* '("autostart/CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/etc/xdg"))
+             #t)))))
+    (home-page "https://lxqt.org/")
+    (synopsis "Tool used to launch programs quickly by typing their names")
+    (description "lxqt-runner provides a GUI that comes up on the desktop and
+allows for launching applications or shutting down the system.")
     (license lgpl2.1+)))
 
 (define-public lxqt-session
