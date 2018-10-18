@@ -648,6 +648,44 @@ management events and optionally trigger actions like e. g. shut down a system
 when laptop batteries are low on power.")
     (license license:lgpl2.1+)))
 
+(define-public lxqt-qtplugin
+  (package
+    (name "lxqt-qtplugin")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0nnwbc99njpsyqb0cy3x0srcgwa7qrnq0qwcyx7fbvwsq1l8cz56"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libdbusmenu-qt" ,libdbusmenu-qt)
+       ("libfm-qt" ,libfm-qt)
+       ("libqtxdg" ,libqtxdg)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* '("src/CMakeLists.txt")
+               (("DESTINATION \"\\$\\{QT_PLUGINS_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/lib/qt5/plugins"))
+             #t)))))
+    (home-page "https://lxqt.org/")
+    (synopsis "LXQt Qt platform integration plugin")
+    (description "lxqt-qtplugin is providing a library libqtlxqt to integrate
+Qt with LXQt.")
+    (license license:lgpl2.1+)))
+
 (define-public lxqt-runner
   (package
     (name "lxqt-runner")
