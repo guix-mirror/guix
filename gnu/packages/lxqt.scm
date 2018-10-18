@@ -38,41 +38,6 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg))
 
-(define-public libqtxdg
-  (package
-    (name "libqtxdg")
-    (version "3.2.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/lxqt/" name "/releases/download/"
-             version "/" name "-" version ".tar.xz"))
-       (sha256
-        (base32 "0lq548pa69hfvnbj2ypba5ygm8n6v6g7bqqm8p5g538l1l3394cl"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:configure-flags
-       `("-DBUILD_TESTS=ON"
-         ,(string-append "-DQTXDGX_ICONENGINEPLUGIN_INSTALL_PATH="
-                         %output "/lib/qt5/plugins/iconengines"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'pre-check
-           (lambda _
-             ;; Run the tests offscreen.
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
-    (propagated-inputs
-     ;; required by Qt5XdgIconLoader.pc
-     `(("qtbase" ,qtbase)
-       ("qtsvg" ,qtsvg)))
-    (home-page "https://github.com/lxqt/libqtxdg")
-    (synopsis "Qt implementation of freedesktop.org xdg specifications")
-    (description "Libqtxdg implements the freedesktop.org xdg specifications
-in Qt.")
-    (license lgpl2.1+)))
-
 (define-public liblxqt
   (package
     (name "liblxqt")
@@ -113,6 +78,67 @@ in Qt.")
     (synopsis "Core utility library for all LXQt components")
     (description "liblxqt provides the basic libraries shared by the
 components of the LXQt desktop environment.")
+    (license lgpl2.1+)))
+
+(define-public libqtxdg
+  (package
+    (name "libqtxdg")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/lxqt/" name "/releases/download/"
+             version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0lq548pa69hfvnbj2ypba5ygm8n6v6g7bqqm8p5g538l1l3394cl"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       `("-DBUILD_TESTS=ON"
+         ,(string-append "-DQTXDGX_ICONENGINEPLUGIN_INSTALL_PATH="
+                         %output "/lib/qt5/plugins/iconengines"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Run the tests offscreen.
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (propagated-inputs
+     ;; required by Qt5XdgIconLoader.pc
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://github.com/lxqt/libqtxdg")
+    (synopsis "Qt implementation of freedesktop.org xdg specifications")
+    (description "Libqtxdg implements the freedesktop.org xdg specifications
+in Qt.")
+    (license lgpl2.1+)))
+
+(define-public lxqt-build-tools
+  (package
+    (name "lxqt-build-tools")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "13b5x26p6ycnwzlgg1cgvlc88wjrjmlb3snrrmzh0xgh9h6hhvd6"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib" ,glib)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (synopsis "LXQt Build tools")
+    (description
+     "Lxqt-build-tools is providing several tools needed to build LXQt
+itself as well as other components maintained by the LXQt project.")
+    (home-page "https://lxqt.org")
     (license lgpl2.1+)))
 
 (define-public lxqt-session
@@ -157,30 +183,4 @@ components of the LXQt desktop environment.")
     (synopsis "Session manager for LXQt")
     (description "lxqt-session provides the standard session manager
 for the LXQt desktop environment.")
-    (license lgpl2.1+)))
-
-(define-public lxqt-build-tools
-  (package
-    (name "lxqt-build-tools")
-    (version "0.5.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
-                           version "/" name "-" version ".tar.xz"))
-       (sha256
-        (base32 "13b5x26p6ycnwzlgg1cgvlc88wjrjmlb3snrrmzh0xgh9h6hhvd6"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f))                    ; no tests
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("glib" ,glib)))
-    (inputs
-     `(("qtbase" ,qtbase)))
-    (synopsis "LXQt Build tools")
-    (description
-     "Lxqt-build-tools is providing several tools needed to build LXQt
-itself as well as other components maintained by the LXQt project.")
-    (home-page "https://lxqt.org")
     (license lgpl2.1+)))
