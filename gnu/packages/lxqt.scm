@@ -429,6 +429,41 @@ shortcuts in LXQt sessions, that is shortcuts which apply to the LXQt session
 as a whole and are not limited to distinct applications.")
     (license license:lgpl2.1+)))
 
+(define-public lxqt-themes
+  (package
+    (name "lxqt-themes")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "13kkkzjx8bgnwckz79j273azvm4za66i4cp2qhxwdpxh0fwziklf"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)))
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* '("CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_GRAPHICS_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/share/lxqt/graphics"))
+             (substitute* '("themes/CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_SHARE_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/share/lxqt"))
+             #t)))))
+    (home-page "https://lxqt.org/")
+    (synopsis "Themes, graphics and icons for LXQt")
+    (description "This package comprises a number of graphic files and themes
+for LXQt.")
+    ;; The whole package is released under LGPL 2.1+, while the LXQt logo is
+    ;; licensed under CC-BY-SA 3.0.
+    (license license:lgpl2.1+)))
+
 (define-public lxqt-notificationd
   (package
     (name "lxqt-notificationd")
