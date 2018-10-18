@@ -104,11 +104,11 @@ and import their menus over DBus.")
        ("menu-cache" ,menu-cache)
        ("pcre" ,pcre)
        ("qtbase" ,qtbase)
-       ("qttools" ,qttools)
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("lxqt-build-tools" ,lxqt-build-tools)))
+       ("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
     (home-page "https://lxqt.org/")
     (synopsis "Qt binding for libfm")
     (description "libfm-qt is the Qt port of libfm, a library providing
@@ -147,10 +147,10 @@ components to build desktop file managers which belongs to LXDE.")
        ("libxscrnsaver" ,libxscrnsaver)
        ("polkit-qt" ,polkit-qt)
        ("qtsvg" ,qtsvg)
-       ("qttools" ,qttools)
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
-     `(("lxqt-build-tools" ,lxqt-build-tools)))
+     `(("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
     (home-page "https://lxqt.org/")
     (synopsis "Core utility library for all LXQt components")
     (description "liblxqt provides the basic libraries shared by the
@@ -550,12 +550,12 @@ allows for launching applications or shutting down the system.")
        ("libqtxdg" ,libqtxdg)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
-       ("qttools" ,qttools)
        ("qtx11extras" ,qtx11extras)
        ("xdg-user-dirs" ,xdg-user-dirs)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("lxqt-build-tools" ,lxqt-build-tools)))
+       ("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
     (arguments
      `(#:tests? #f
        #:configure-flags
