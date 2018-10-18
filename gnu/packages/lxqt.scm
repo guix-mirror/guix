@@ -31,9 +31,11 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
@@ -335,6 +337,52 @@ the operating system LXQt is running on.")
      "Lxqt-build-tools is providing several tools needed to build LXQt
 itself as well as other components maintained by the LXQt project.")
     (home-page "https://lxqt.org")
+    (license license:lgpl2.1+)))
+
+(define-public lxqt-config
+  (package
+    (name "lxqt-config")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0rizhl2v41kpgp57a61r6nmwcdw8nh9hprrrf33nfrdw8hpwxb95"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("libkscreen" ,libkscreen)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)
+       ("libxcursor" ,libxcursor)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)
+       ("solid" ,solid)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* '("src/CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/etc/xdg"))
+             #t)))))
+    (home-page "https://lxqt.org")
+    (synopsis "Tools to configure LXQt and the underlying operating system")
+    (description "lxqt-config is providing several tools involved in the
+configuration of both LXQt and the underlying operating system.")
     (license license:lgpl2.1+)))
 
 (define-public lxqt-globalkeys
