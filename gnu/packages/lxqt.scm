@@ -429,6 +429,47 @@ shortcuts in LXQt sessions, that is shortcuts which apply to the LXQt session
 as a whole and are not limited to distinct applications.")
     (license license:lgpl2.1+)))
 
+(define-public lxqt-notificationd
+  (package
+    (name "lxqt-notificationd")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "1l0hdbvghyhqgvy4pih7rvz26bc6yc8a3l1bdj11hnkw62h1i7d6"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no test target
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* '("autostart/CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/etc/xdg"))
+             #t)))))
+    (home-page "https://lxqt.org/")
+    (synopsis "The LXQt notification daemon")
+    (description "lxqt-notificationd is LXQt's implementation of a daemon
+according to the Desktop Notifications Specification.")
+    (license license:lgpl2.1+)))
+
 (define-public lxqt-panel
   (package
     (name "lxqt-panel")
