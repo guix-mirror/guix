@@ -50,6 +50,9 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
 
+
+;; Third party libraries
+
 (define-public libdbusmenu-qt
   (package
     (name "libdbusmenu-qt")
@@ -79,40 +82,92 @@ protocol.  The DBusMenu protocol makes it possible for applications to export
 and import their menus over DBus.")
     (license license:lgpl2.1+)))
 
-(define-public libfm-qt
+(define-public libstatgrab
   (package
-    (name "libfm-qt")
-    (version "0.13.1")
+    (name "libstatgrab")
+    (version "0.91")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://ftp.i-scream.org/pub/i-scream/libstatgrab/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1azinx2yzs442ycwq6p15skl3mscmqj7fd5hq7fckhjp92735s83"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-tests")))
+    (native-inputs
+     ;; For testing.
+     `(("perl" ,perl)))
+    (home-page "https://www.i-scream.org/libstatgrab/")
+    (synopsis "Provides access to statistics about the system")
+    (description "libstatgrab is a library that provides cross platform access
+to statistics about the system on which it's run.")
+    ;; Libraries are under LGPL2.1+, and programs under GPLv2+.
+    (license license:gpl2+)))
+
+
+;; Base
+
+(define-public lxqt-build-tools
+  (package
+    (name "lxqt-build-tools")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0p0lbz7dh5c38zq3yp1v1mm99ymg7mqr3h7yzniif2hipmgvxsv9"))))
+        (base32 "13b5x26p6ycnwzlgg1cgvlc88wjrjmlb3snrrmzh0xgh9h6hhvd6"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")))
-    (inputs
-     `(("glib" ,glib)
-       ("libexif" ,libexif)
-       ("libfm" ,libfm)
-       ("libxcb" ,libxcb)
-       ("menu-cache" ,menu-cache)
-       ("pcre" ,pcre)
-       ("qtbase" ,qtbase)
-       ("qtx11extras" ,qtx11extras)))
+     `(#:tests? #f))                    ; no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("lxqt-build-tools" ,lxqt-build-tools)
-       ("qttools" ,qttools)))
-    (home-page "https://lxqt.org/")
-    (synopsis "Qt binding for libfm")
-    (description "libfm-qt is the Qt port of libfm, a library providing
-components to build desktop file managers which belongs to LXDE.")
+       ("glib" ,glib)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (synopsis "LXQt Build tools")
+    (description
+     "Lxqt-build-tools is providing several tools needed to build LXQt
+itself as well as other components maintained by the LXQt project.")
+    (home-page "https://lxqt.org")
+    (license license:lgpl2.1+)))
+
+(define-public libqtxdg
+  (package
+    (name "libqtxdg")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/lxqt/" name "/releases/download/"
+             version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0lq548pa69hfvnbj2ypba5ygm8n6v6g7bqqm8p5g538l1l3394cl"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       `("-DBUILD_TESTS=ON"
+         ,(string-append "-DQTXDGX_ICONENGINEPLUGIN_INSTALL_PATH="
+                         %output "/lib/qt5/plugins/iconengines"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Run the tests offscreen.
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (propagated-inputs
+     ;; required by Qt5XdgIconLoader.pc
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://github.com/lxqt/libqtxdg")
+    (synopsis "Qt implementation of freedesktop.org xdg specifications")
+    (description "Libqtxdg implements the freedesktop.org xdg specifications
+in Qt.")
     (license license:lgpl2.1+)))
 
 (define-public liblxqt
@@ -157,65 +212,6 @@ components to build desktop file managers which belongs to LXDE.")
 components of the LXQt desktop environment.")
     (license license:lgpl2.1+)))
 
-(define-public libqtxdg
-  (package
-    (name "libqtxdg")
-    (version "3.2.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/lxqt/" name "/releases/download/"
-             version "/" name "-" version ".tar.xz"))
-       (sha256
-        (base32 "0lq548pa69hfvnbj2ypba5ygm8n6v6g7bqqm8p5g538l1l3394cl"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:configure-flags
-       `("-DBUILD_TESTS=ON"
-         ,(string-append "-DQTXDGX_ICONENGINEPLUGIN_INSTALL_PATH="
-                         %output "/lib/qt5/plugins/iconengines"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'pre-check
-           (lambda _
-             ;; Run the tests offscreen.
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
-    (propagated-inputs
-     ;; required by Qt5XdgIconLoader.pc
-     `(("qtbase" ,qtbase)
-       ("qtsvg" ,qtsvg)))
-    (home-page "https://github.com/lxqt/libqtxdg")
-    (synopsis "Qt implementation of freedesktop.org xdg specifications")
-    (description "Libqtxdg implements the freedesktop.org xdg specifications
-in Qt.")
-    (license license:lgpl2.1+)))
-
-(define-public libstatgrab
-  (package
-    (name "libstatgrab")
-    (version "0.91")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://ftp.i-scream.org/pub/i-scream/libstatgrab/"
-                           name "-" version ".tar.gz"))
-       (sha256
-        (base32 "1azinx2yzs442ycwq6p15skl3mscmqj7fd5hq7fckhjp92735s83"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags '("--enable-tests")))
-    (native-inputs
-     ;; For testing.
-     `(("perl" ,perl)))
-    (home-page "https://www.i-scream.org/libstatgrab/")
-    (synopsis "Provides access to statistics about the system")
-    (description "libstatgrab is a library that provides cross platform access
-to statistics about the system on which it's run.")
-    ;; Libraries are under LGPL2.1+, and programs under GPLv2+.
-    (license license:gpl2+)))
-
 (define-public libsysstat
   (package
     (name "libsysstat")
@@ -238,6 +234,9 @@ to statistics about the system on which it's run.")
     (description "libsysstat is a library to query system information like CPU
 and memory usage or network traffic.")
     (license license:lgpl2.1+)))
+
+
+;; Core
 
 (define-public lxqt-about
   (package
@@ -311,32 +310,6 @@ LXQt and the system it's running on.")
     (synopsis "LXQt system administration tool")
     (description "lxqt-admin is providing two GUI tools to adjust settings of
 the operating system LXQt is running on.")
-    (license license:lgpl2.1+)))
-
-(define-public lxqt-build-tools
-  (package
-    (name "lxqt-build-tools")
-    (version "0.5.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
-                           version "/" name "-" version ".tar.xz"))
-       (sha256
-        (base32 "13b5x26p6ycnwzlgg1cgvlc88wjrjmlb3snrrmzh0xgh9h6hhvd6"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f))                    ; no tests
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("glib" ,glib)))
-    (inputs
-     `(("qtbase" ,qtbase)))
-    (synopsis "LXQt Build tools")
-    (description
-     "Lxqt-build-tools is providing several tools needed to build LXQt
-itself as well as other components maintained by the LXQt project.")
-    (home-page "https://lxqt.org")
     (license license:lgpl2.1+)))
 
 (define-public lxqt-config
@@ -427,41 +400,6 @@ configuration of both LXQt and the underlying operating system.")
     (description "lxqt-globalkeys is providing tools to set global keyboard
 shortcuts in LXQt sessions, that is shortcuts which apply to the LXQt session
 as a whole and are not limited to distinct applications.")
-    (license license:lgpl2.1+)))
-
-(define-public lxqt-themes
-  (package
-    (name "lxqt-themes")
-    (version "0.13.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
-                           version "/" name "-" version ".tar.xz"))
-       (sha256
-        (base32 "13kkkzjx8bgnwckz79j273azvm4za66i4cp2qhxwdpxh0fwziklf"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("lxqt-build-tools" ,lxqt-build-tools)))
-    (arguments
-     `(#:tests? #f                      ; no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-source
-           (lambda _
-             (substitute* '("CMakeLists.txt")
-               (("DESTINATION \"\\$\\{LXQT_GRAPHICS_DIR\\}")
-                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/share/lxqt/graphics"))
-             (substitute* '("themes/CMakeLists.txt")
-               (("DESTINATION \"\\$\\{LXQT_SHARE_DIR\\}")
-                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/share/lxqt"))
-             #t)))))
-    (home-page "https://lxqt.org/")
-    (synopsis "Themes, graphics and icons for LXQt")
-    (description "This package comprises a number of graphic files and themes
-for LXQt.")
-    ;; The whole package is released under LGPL 2.1+, while the LXQt logo is
-    ;; licensed under CC-BY-SA 3.0.
     (license license:lgpl2.1+)))
 
 (define-public lxqt-notificationd
@@ -846,37 +784,78 @@ respectively.  As such it enables regular users to launch applications with
 permissions of other users including root.")
     (license license:lgpl2.1+)))
 
-(define-public pavucontrol-qt
+(define-public lxqt-themes
   (package
-    (name "pavucontrol-qt")
-    (version "0.4.0")
+    (name "lxqt-themes")
+    (version "0.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0pqvhhgw7d00wqw5v3ghm4l8250zy7bqpvhff6l7y1lw0z2fvcp6"))))
+        (base32 "13kkkzjx8bgnwckz79j273azvm4za66i4cp2qhxwdpxh0fwziklf"))))
     (build-system cmake-build-system)
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)))
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* '("CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_GRAPHICS_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/share/lxqt/graphics"))
+             (substitute* '("themes/CMakeLists.txt")
+               (("DESTINATION \"\\$\\{LXQT_SHARE_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/share/lxqt"))
+             #t)))))
+    (home-page "https://lxqt.org/")
+    (synopsis "Themes, graphics and icons for LXQt")
+    (description "This package comprises a number of graphic files and themes
+for LXQt.")
+    ;; The whole package is released under LGPL 2.1+, while the LXQt logo is
+    ;; licensed under CC-BY-SA 3.0.
+    (license license:lgpl2.1+)))
+
+
+;; File Manager
+
+(define-public libfm-qt
+  (package
+    (name "libfm-qt")
+    (version "0.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0p0lbz7dh5c38zq3yp1v1mm99ymg7mqr3h7yzniif2hipmgvxsv9"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO : prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")))
     (inputs
      `(("glib" ,glib)
+       ("libexif" ,libexif)
+       ("libfm" ,libfm)
+       ("libxcb" ,libxcb)
+       ("menu-cache" ,menu-cache)
        ("pcre" ,pcre)
-       ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("lxqt-build-tools" ,lxqt-build-tools)
        ("qttools" ,qttools)))
-    (arguments
-     '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")))
     (home-page "https://lxqt.org/")
-    (synopsis "Pulseaudio mixer in Qt")
-    (description "@code{pavucontrol-qt} is the Qt port of volume control
-@code{pavucontrol} of sound server @code{PulseAudio}.")
+    (synopsis "Qt binding for libfm")
+    (description "libfm-qt is the Qt port of libfm, a library providing
+components to build desktop file managers which belongs to LXDE.")
     (license license:lgpl2.1+)))
 
 (define-public pcmanfm-qt
@@ -916,6 +895,42 @@ permissions of other users including root.")
     (synopsis "File manager and desktop icon manager")
     (description "PCManFM-Qt is the Qt port of PCManFM, the file manager of
 LXDE.")
+    (license license:lgpl2.1+)))
+
+
+;; Extra
+
+(define-public pavucontrol-qt
+  (package
+    (name "pavucontrol-qt")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0pqvhhgw7d00wqw5v3ghm4l8250zy7bqpvhff6l7y1lw0z2fvcp6"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("glib" ,glib)
+       ("pcre" ,pcre)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("lxqt-build-tools" ,lxqt-build-tools)
+       ("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")))
+    (home-page "https://lxqt.org/")
+    (synopsis "Pulseaudio mixer in Qt")
+    (description "@code{pavucontrol-qt} is the Qt port of volume control
+@code{pavucontrol} of sound server @code{PulseAudio}.")
     (license license:lgpl2.1+)))
 
 (define-public qtermwidget
