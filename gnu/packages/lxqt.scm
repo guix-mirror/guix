@@ -24,7 +24,7 @@
 
 (define-module (gnu packages lxqt)
   #:use-module (guix download)
-  #:use-module ((guix licenses))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
@@ -75,7 +75,7 @@
     (description "This library provides a Qt implementation of the DBusMenu
 protocol.  The DBusMenu protocol makes it possible for applications to export
 and import their menus over DBus.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libfm-qt
   (package
@@ -111,7 +111,7 @@ and import their menus over DBus.")
     (synopsis "Qt binding for libfm")
     (description "libfm-qt is the Qt port of libfm, a library providing
 components to build desktop file managers which belongs to LXDE.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public liblxqt
   (package
@@ -153,7 +153,7 @@ components to build desktop file managers which belongs to LXDE.")
     (synopsis "Core utility library for all LXQt components")
     (description "liblxqt provides the basic libraries shared by the
 components of the LXQt desktop environment.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libqtxdg
   (package
@@ -188,7 +188,7 @@ components of the LXQt desktop environment.")
     (synopsis "Qt implementation of freedesktop.org xdg specifications")
     (description "Libqtxdg implements the freedesktop.org xdg specifications
 in Qt.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libstatgrab
   (package
@@ -212,7 +212,7 @@ in Qt.")
     (description "libstatgrab is a library that provides cross platform access
 to statistics about the system on which it's run.")
     ;; Libraries are under LGPL2.1+, and programs under GPLv2+.
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libsysstat
   (package
@@ -235,7 +235,7 @@ to statistics about the system on which it's run.")
     (synopsis "Library used to query system info and statistics")
     (description "libsysstat is a library to query system information like CPU
 and memory usage or network traffic.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public lxqt-about
   (package
@@ -268,7 +268,7 @@ and memory usage or network traffic.")
     (synopsis "Provides information about LXQt and the system")
     (description "lxqt-about is a dialogue window providing information about
 LXQt and the system it's running on.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public lxqt-admin
   (package
@@ -309,7 +309,7 @@ LXQt and the system it's running on.")
     (synopsis "LXQt system administration tool")
     (description "lxqt-admin is providing two GUI tools to adjust settings of
 the operating system LXQt is running on.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public lxqt-build-tools
   (package
@@ -335,7 +335,7 @@ the operating system LXQt is running on.")
      "Lxqt-build-tools is providing several tools needed to build LXQt
 itself as well as other components maintained by the LXQt project.")
     (home-page "https://lxqt.org")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public lxqt-globalkeys
   (package
@@ -379,7 +379,7 @@ itself as well as other components maintained by the LXQt project.")
     (description "lxqt-globalkeys is providing tools to set global keyboard
 shortcuts in LXQt sessions, that is shortcuts which apply to the LXQt session
 as a whole and are not limited to distinct applications.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public lxqt-panel
   (package
@@ -436,7 +436,7 @@ as a whole and are not limited to distinct applications.")
     (home-page "https://lxqt.org/")
     (synopsis "The LXQt desktop panel")
     (description "lxqt-panel represents the taskbar of LXQt.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public lxqt-runner
   (package
@@ -481,7 +481,7 @@ as a whole and are not limited to distinct applications.")
     (synopsis "Tool used to launch programs quickly by typing their names")
     (description "lxqt-runner provides a GUI that comes up on the desktop and
 allows for launching applications or shutting down the system.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public lxqt-session
   (package
@@ -525,7 +525,7 @@ allows for launching applications or shutting down the system.")
     (synopsis "Session manager for LXQt")
     (description "lxqt-session provides the standard session manager
 for the LXQt desktop environment.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public lxqt-sudo
   (package
@@ -561,7 +561,7 @@ for the LXQt desktop environment.")
     (description "lxqt-sudo is a graphical front-end of commands sudo and su
 respectively.  As such it enables regular users to launch applications with
 permissions of other users including root.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public pcmanfm-qt
   (package
@@ -600,4 +600,4 @@ permissions of other users including root.")
     (synopsis "File manager and desktop icon manager")
     (description "PCManFM-Qt is the Qt port of PCManFM, the file manager of
 LXDE.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
