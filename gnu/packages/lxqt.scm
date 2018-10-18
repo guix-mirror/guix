@@ -966,6 +966,32 @@ image viewer.")
 @code{pavucontrol} of sound server @code{PulseAudio}.")
     (license license:lgpl2.1+)))
 
+(define-public qps
+  (package
+    (name "qps")
+    (version "1.10.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
+                           version "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0pzk83p7a9ax0893s9hp2qkmiilzrf8iqry5a0x1g73hdwm5hm44"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libxrender" ,libxrender)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (arguments
+     '(#:tests? #f))                    ; no tests
+    (home-page "https://lxqt.org/")
+    (synopsis "Qt-based visual process status monitor")
+    (description "@code{qps} is a monitor that displays the status of the
+processes currently in existence, much like code{top} or code{ps}.")
+    (license license:gpl2+)))
+
 (define-public qtermwidget
   (package
     (name "qtermwidget")
