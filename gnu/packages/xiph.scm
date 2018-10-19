@@ -8,6 +8,7 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -411,6 +412,28 @@ streams in the Ogg container (.opus files) including over http(s) on posix and
 windows systems.")
     (license license:bsd-3)
     (home-page "https://www.opus-codec.org")))
+
+(define-public libopusenc
+  (package
+    (name "libopusenc")
+    (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.mozilla.org/pub/opus/"
+                                  "libopusenc-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ffb0vhlymlsq70pxsjj0ksz77yfm2x0a1x8q50kxmnkm1hxp642"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("opus" ,opus)))
+    (synopsis "Library for encoding Opus audio files and streams ")
+    (description "The libopusenc libraries provide a high-level API for
+encoding Opus files and streams.")
+    (home-page "https://www.opus-codec.org/")
+    (license license:bsd-3)))
 
 (define-public icecast
   (package
