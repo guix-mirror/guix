@@ -3424,3 +3424,22 @@ is a library for creating graphical user interfaces.")
                (("libgtk" all)
                 (string-append
                  (assoc-ref inputs "gtk") "/lib/" all))))))))))
+
+(define-public sbcl-cl-cffi-gtk
+  (package
+    (inherit sbcl-cl-cffi-gtk-boot0)
+    (name "sbcl-cl-cffi-gtk")
+    (inputs
+     `(("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
+       ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
+       ("cl-cffi-gtk-gio" ,sbcl-cl-cffi-gtk-gio)
+       ("cl-cffi-gtk-gdk" ,sbcl-cl-cffi-gtk-gdk)
+       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (arguments
+     `(#:asd-file "gtk/cl-cffi-gtk.asd"
+       #:test-asd-file "test/cl-cffi-gtk-test.asd"
+       ;; TODO: Tests fail with memory fault.
+       ;; See https://github.com/Ferada/cl-cffi-gtk/issues/24.
+       #:tests? #f))))
