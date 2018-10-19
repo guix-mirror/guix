@@ -198,8 +198,11 @@ added to the pack."
             (with-directory-excursion %root
               (exit
                (zero? (apply system* "tar"
-                             "-I"
-                             (string-join '#+(compressor-command compressor))
+                             #+@(if (compressor-command compressor)
+                                    #~("-I"
+                                       (string-join
+                                        '#+(compressor-command compressor)))
+                                    #~())
                              "--format=gnu"
 
                              ;; Avoid non-determinism in the archive.  Use
