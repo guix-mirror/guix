@@ -2256,7 +2256,7 @@ writing code that contains string literals that contain code themselves.")
      "This is only useful if you want to start a Swank server in a Lisp
 processes that doesn't run under Emacs.  Lisp processes created by
 @command{M-x slime} automatically start the server.")
-    (license (license (list license:gpl2+ license:public-domain)))))
+    (license (list license:gpl2+ license:public-domain))))
 
 (define-public sbcl-mgl-pax
   (let ((commit "818448418d6b9de74620f606f5b23033c6082769"))
