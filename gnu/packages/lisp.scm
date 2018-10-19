@@ -63,6 +63,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages gtk)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19))
@@ -3279,3 +3280,20 @@ Lisp implementations.")
        "@command{cl-cffi-gtk} is a Lisp binding to GTK+ 3 (GIMP Toolkit) which
 is a library for creating graphical user interfaces.")
       (license license:lgpl3))))
+
+(define-public sbcl-cl-cffi-gtk-glib
+  (package
+    (inherit sbcl-cl-cffi-gtk-boot0)
+    (name "sbcl-cl-cffi-gtk-glib")
+    (inputs
+     `(("glib" ,glib)
+       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
+    (arguments
+     `(#:asd-file "glib/cl-cffi-gtk-glib.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "glib/glib.init.lisp"
+               (("libglib|libgthread" all) (string-append
+                                            (assoc-ref inputs "glib") "/lib/" all))))))))))
