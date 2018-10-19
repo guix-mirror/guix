@@ -3357,3 +3357,24 @@ is a library for creating graphical user interfaces.")
                (("libcairo" all)
                 (string-append
                  (assoc-ref inputs "cairo") "/lib/" all))))))))))
+
+(define-public sbcl-cl-cffi-gtk-pango
+  (package
+    (inherit sbcl-cl-cffi-gtk-boot0)
+    (name "sbcl-cl-cffi-gtk-pango")
+    (inputs
+     `(("pango" ,pango)
+       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
+       ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
+       ("cl-cffi-gtk-cairo" ,sbcl-cl-cffi-gtk-cairo)
+       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
+    (arguments
+     `(#:asd-file "pango/cl-cffi-gtk-pango.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "pango/pango.init.lisp"
+               (("libpango" all)
+                (string-append
+                 (assoc-ref inputs "pango") "/lib/" all))))))))))
