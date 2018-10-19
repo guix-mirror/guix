@@ -4547,3 +4547,39 @@ It also ensures compatibility with the @code{media9} and @code{animate} packages
 space.  If there is not enough space between the command and the bottom of the
 page, a new page will be started.")
     (license license:lppl)))
+
+(define-public texlive-latex-eukdate
+  (package
+    (name "texlive-latex-eukdate")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "svn://www.tug.org/texlive/tags/"
+                                 %texlive-tag "/Master/texmf-dist/"
+                                 "/tex/latex/eukdate"))
+             (revision %texlive-revision)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "18xan116l8w47v560bkw6nbhkrml7g04xrlzk3jrpc7qsyf3n5fz"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/eukdate")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/eukdate")
+    (synopsis "UK format dates, with weekday")
+    (description
+     "The package is used to change the format of @code{\\today}’s date,
+including the weekday, e.g., \"Saturday, 26 June 2008\", the 'UK format', which
+is preferred in many parts of the world, as distinct from that which is used in
+@code{\\maketitle} of the article class, \"June 26, 2008\", the 'US format'.")
+    (license license:lppl)))
