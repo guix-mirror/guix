@@ -718,6 +718,7 @@ audio and video).")
     (build-system scons-build-system)
     (arguments
      `(#:scons-flags (list (string-append "PREFIX=" %output))
+       #:scons ,scons-python2
        #:tests? #f)) ;no "check" target
     (inputs
      `(("boost" ,boost)
