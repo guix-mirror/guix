@@ -4583,3 +4583,40 @@ including the weekday, e.g., \"Saturday, 26 June 2008\", the 'UK format', which
 is preferred in many parts of the world, as distinct from that which is used in
 @code{\\maketitle} of the article class, \"June 26, 2008\", the 'US format'.")
     (license license:lppl)))
+
+(define-public texlive-generic-ulem
+  (package
+    (name "texlive-generic-ulem")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "svn://www.tug.org/texlive/tags/"
+                                 %texlive-tag "/Master/texmf-dist/"
+                                 "/tex/generic/ulem"))
+             (revision %texlive-revision)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1rzdniqq9zk39w8ch8ylx3ywh2mj87s4ivchrsk2b8nx06jyn797"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/ulem")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/ulem")
+    (synopsis "Underline text in TeX")
+    (description
+     "The package provides an @code{\\ul} (underline) command which will break
+over line ends; this technique may be used to replace @code{\\em} (both in that
+form and as the @code{\\emph} command), so as to make output look as if it comes
+from a typewriter.  The package also offers double and wavy underlining, and
+striking out (line through words) and crossing out (/// over words).")
+    (license license:lppl1.3c+)))
