@@ -131,7 +131,13 @@ to statistics about the system on which it's run.")
         (base32 "13b5x26p6ycnwzlgg1cgvlc88wjrjmlb3snrrmzh0xgh9h6hhvd6"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f))                    ; no tests
+     `(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; 'startlxqt' will add LXQT_DATA_DIR to XDG_DATA_DIRS,
+       ;; LXQT_ETC_XDG_DIR to XDG_CONFIG_DIRS, and 'lxqt-about' will report
+       ;; LXQT_ETC_XDG_DIR in its "Technical Info".
+       '("-DLXQT_DATA_DIR=/run/current-system/profile/share"
+         "-DLXQT_ETC_XDG_DIR=/run/current-system/profile/etc/xdg")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib)))
