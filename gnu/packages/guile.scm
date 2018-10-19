@@ -1618,7 +1618,7 @@ you send to a FIFO file.")
 (define-public guile-commonmark
   (package
     (name "guile-commonmark")
-    (version "0.1")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OrangeShark/" name
@@ -1626,24 +1626,12 @@ you send to a FIFO file.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12cb5fqvvgc87f5xp0ih5az305wnjia89l5jba83d0r2p8bfy0b0"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Use the real effective version of Guile in directory names
-               ;; instead of a hard-coded "/2.0".
-               '(begin
-                  (substitute* "configure"
-                    (("ac_subst_vars='")
-                     "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
-                  (substitute* "Makefile.in"
-                    (("moddir =.*")
-                     "moddir = $(datadir)/guile/site/@GUILE_EFFECTIVE_VERSION@\n")
-                    (("godir =.*")
-                     "godir = $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
-                  #t))))
+                "0kzclwkfijj8xka3g9kfj53y67c34ndfy84swdbw3j7y962ndxq6"))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (synopsis "CommonMark parser for Guile")
     (description
      "guile-commonmark is a library for parsing CommonMark, a fully specified
