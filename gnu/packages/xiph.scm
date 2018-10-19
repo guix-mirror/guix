@@ -355,7 +355,7 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
 (define opus-tools
   (package
     (name "opus-tools")
-    (version "0.1.10")
+    (version "0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -363,7 +363,7 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "135jfb9ny3xvd27idsxj7j5ns90lslbyrq70cq3bfwcls4r7add2"))))
+                "11pzl27s4vcz4m18ch72nivbhww2zmzn56wspb7rll1y1nq6rrdl"))))
     (build-system gnu-build-system)
     (arguments
      ;; The package developers misuse pkg-config such that it doesn't work
@@ -374,9 +374,12 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
                                               "/include -I"
                                               (assoc-ref %build-inputs "opus")
                                               "/include/opus"))))
-    (inputs `(("libogg" ,libogg)
-              ("opus" ,opus)
-              ("flac" ,flac)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libopusenc" ,libopusenc)
+       ("opusfile" ,opusfile)
+       ("flac" ,flac)))
     (synopsis
      "Command line utilities to encode, inspect, and decode .opus files")
     (description "Opus is a royalty-free, highly versatile audio codec.
