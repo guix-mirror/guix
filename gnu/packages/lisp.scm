@@ -3318,3 +3318,23 @@ is a library for creating graphical user interfaces.")
              (substitute* "gobject/gobject.init.lisp"
                (("libgobject" all) (string-append
                                     (assoc-ref inputs "glib") "/lib/" all))))))))))
+
+(define-public sbcl-cl-cffi-gtk-gio
+  (package
+    (inherit sbcl-cl-cffi-gtk-boot0)
+    (name "sbcl-cl-cffi-gtk-gio")
+    (inputs
+     `(("glib" ,glib)
+       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
+       ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
+       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
+    (arguments
+     `(#:asd-file "gio/cl-cffi-gtk-gio.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "gio/gio.init.lisp"
+               (("libgio" all)
+                (string-append
+                 (assoc-ref inputs "glib") "/lib/" all))))))))))
