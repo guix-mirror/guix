@@ -4620,3 +4620,60 @@ form and as the @code{\\emph} command), so as to make output look as if it comes
 from a typewriter.  The package also offers double and wavy underlining, and
 striking out (line through words) and crossing out (/// over words).")
     (license license:lppl1.3c+)))
+
+(define-public texlive-latex-pgf
+  (package
+    (name "texlive-latex-pgf")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "svn://www.tug.org/texlive/tags/"
+                                 %texlive-tag "/Master/texmf-dist/"
+                                 "/tex/latex/pgf"))
+             (revision %texlive-revision)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1dq8p10pz8wn0vx412m7d7d5gj1syxly3yqdqvf7lv2xl8zndn5h"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("texlive-latex-pgf-generic"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+             (url (string-append "svn://www.tug.org/texlive/tags/"
+                                 %texlive-tag "/Master/texmf-dist/"
+                                 "/tex/generic/pgf"))
+             (revision %texlive-revision)))
+           (file-name (string-append "texlive-latex-pgf-generic" version "-checkout"))
+           (sha256
+            (base32
+             "0xkxw26sjzr5npjpzpr28yygwdbhzpdd0hsk80gjpidhcxmz393i"))))))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target-generic (string-append (assoc-ref %outputs "out")
+                                              "/share/texmf-dist/tex/generic/pgf"))
+               (target-latex (string-append (assoc-ref %outputs "out")
+                                            "/share/texmf-dist/tex/latex/pgf")))
+           (mkdir-p target-generic)
+           (mkdir-p target-latex)
+           (copy-recursively (assoc-ref %build-inputs "texlive-latex-pgf-generic") target-generic)
+           (copy-recursively (assoc-ref %build-inputs "source") target-latex)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/tikz")
+    (synopsis "Create PostScript and PDF graphics in TeX")
+    (description
+     "PGF is a macro package for creating graphics.  It is platform- and
+format-independent and works together with the most important TeX backend
+drivers, including pdfTeX and dvips.  It comes with a user-friendly syntax layer
+called TikZ.
+
+Its usage is similar to pstricks and the standard picture environment.  PGF
+works with plain (pdf-)TeX, (pdf-)LaTeX, and ConTeXt.  Unlike pstricks, it can
+produce either PostScript or PDF output.")
+    (license license:lppl1.3c+)))
