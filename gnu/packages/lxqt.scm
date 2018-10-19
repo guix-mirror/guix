@@ -155,10 +155,9 @@ itself as well as other components maintained by the LXQt project.")
         (base32 "0lq548pa69hfvnbj2ypba5ygm8n6v6g7bqqm8p5g538l1l3394cl"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags
-       `("-DBUILD_TESTS=ON"
-         ,(string-append "-DQTXDGX_ICONENGINEPLUGIN_INSTALL_PATH="
-                         %output "/lib/qt5/plugins/iconengines"))
+     '(#:configure-flags
+       '("-DBUILD_TESTS=ON"
+         "-DQTXDGX_ICONENGINEPLUGIN_INSTALL_PATH=lib/qt5/plugins/iconengines")
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
