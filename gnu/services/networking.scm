@@ -1064,10 +1064,10 @@ networking."))))
                                    #~("-u")
                                    #~())
                             #$@(if interface
-                                   #~(string-append "-i" #$interface)
+                                   #~((string-append "-i" #$interface))
                                    #~())
                             #$@(if config-file
-                                   #~(string-append "-c" #$config-file)
+                                   #~((string-append "-c" #$config-file))
                                    #~())
                             #$@extra-options)
                       #:pid-file #$pid-file))
