@@ -333,14 +333,14 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
 (define opus
   (package
     (name "opus")
-    (version "1.2.1")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.mozilla.org/pub/opus/opus-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ch7yzgg4bn1g36bpjsfrgs4n19c84d7wpdida6yzifrrhwx7byg"))))
+                "0l651n19h0vhc0sn6w2c95hgqks1i8m4b3j04ncaznzjznp6jgag"))))
     (build-system gnu-build-system)
     (synopsis "Versatile audio codec")
     (description
