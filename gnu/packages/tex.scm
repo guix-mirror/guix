@@ -4492,3 +4492,33 @@ including:
 
 It also ensures compatibility with the @code{media9} and @code{animate} packages.")
     (license license:lppl)))
+
+(define-public texlive-latex-ms
+  (package
+    (name "texlive-latex-ms")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "ms"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0m4wx3yjb5al1qsv995z8fii8xxy96mcfihbnlx43lpgayiwz35s"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/ms"
+       #:tex-format "latex"))
+    (home-page "https://ctan.org/pkg/ms")
+    (synopsis "Various LATEX packages by Martin Schröder")
+    (description
+     "A bundle of LATEX packages by Martin Schröder; the collection comprises:
+
+@itemize
+@item @command{count1to}, make use of fixed TEX counters;
+@item @command{everysel}, set commands to execute every time a font is selected;
+@item @command{everyshi}, set commands to execute whenever a page is shipped out;
+@item @command{multitoc}, typeset the table of contents in multiple columns;
+@item @command{prelim2e}, mark typeset pages as preliminary; and
+@item @command{ragged2e}, typeset ragged text and allow hyphenation.
+@end itemize\n")
+    (license license:lppl1.3c+)))
