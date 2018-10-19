@@ -3338,3 +3338,22 @@ is a library for creating graphical user interfaces.")
                (("libgio" all)
                 (string-append
                  (assoc-ref inputs "glib") "/lib/" all))))))))))
+
+(define-public sbcl-cl-cffi-gtk-cairo
+  (package
+    (inherit sbcl-cl-cffi-gtk-boot0)
+    (name "sbcl-cl-cffi-gtk-cairo")
+    (inputs
+     `(("cairo" ,cairo)
+       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
+       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
+    (arguments
+     `(#:asd-file "cairo/cl-cffi-gtk-cairo.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "cairo/cairo.init.lisp"
+               (("libcairo" all)
+                (string-append
+                 (assoc-ref inputs "cairo") "/lib/" all))))))))))
