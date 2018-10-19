@@ -4522,3 +4522,28 @@ It also ensures compatibility with the @code{media9} and @code{animate} packages
 @item @command{ragged2e}, typeset ragged text and allow hyphenation.
 @end itemize\n")
     (license license:lppl1.3c+)))
+
+(define-public texlive-latex-needspace
+  (package
+    (name "texlive-latex-needspace")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "needspace"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0kw80f5jh4gdpa2ka815abza3gr5z8b929w0745vrlc59pl0017y"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/needspace"
+       #:tex-format "latex"))
+    (inputs
+     `(("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+    (home-page "https://www.ctan.org/pkg/needspace")
+    (synopsis "Insert pagebreak if not enough space")
+    (description
+     "Provides commands to disable pagebreaking within a given vertical
+space.  If there is not enough space between the command and the bottom of the
+page, a new page will be started.")
+    (license license:lppl)))
