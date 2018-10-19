@@ -3091,7 +3091,7 @@ an Emacs minor mode that complements the standard @command{lisp-mode}.
 While lisp-mode supports editing Lisp source files, @command{slime-mode}
 adds support for interacting with a running Common Lisp process
 for compilation, debugging, documentation lookup, and so on.")
-    (license license:gpl2+)))
+    (license (list license:gpl2+ license:public-domain))))
 
 (define-public emacs-popup
   (package
