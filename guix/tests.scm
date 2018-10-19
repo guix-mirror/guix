@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix tests)
+  #:use-module ((guix config) #:select (%storedir %localstatedir))
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
@@ -30,6 +31,7 @@
   #:use-module (ice-9 binary-ports)
   #:use-module (web uri)
   #:export (open-connection-for-tests
+            with-external-store
             random-text
             random-bytevector
             file=?
@@ -73,6 +75,39 @@
       (%guile-for-build (package-derivation store %bootstrap-guile))
 
       store)))
+
+(define (call-with-external-store proc)
+  "Call PROC with an open connection to the external store or #f it there is
+no external store to talk to."
+  (parameterize ((%daemon-socket-uri
+                  (string-append %localstatedir
+                                 "/guix/daemon-socket/socket"))
+                 (%store-prefix %storedir))
+    (define store
+      (catch #t
+        (lambda ()
+          (open-connection))
+        (const #f)))
+
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        ;; Since we're using a different store we must clear the
+        ;; package-derivation cache.
+        (hash-clear! (@@ (guix packages) %derivation-cache))
+
+        (proc store))
+      (lambda ()
+        (when store
+          (close-connection store))))))
+
+(define-syntax-rule (with-external-store store exp ...)
+  "Evaluate EXP with STORE bound to the external store rather than the
+temporary test store, or #f if there is no external store to talk to.
+
+This is meant to be used for tests that need to build packages that would be
+too expensive to build entirely in the test store."
+  (call-with-external-store (lambda (store) exp ...)))
 
 (define (random-seed)
   (or (and=> (getenv "GUIX_TESTS_RANDOM_SEED")

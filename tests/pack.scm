@@ -29,15 +29,12 @@
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-64))
 
-(define %store
-  (open-connection-for-tests))
-
 ;; Globally disable grafts because they can trigger early builds.
 (%graft? #f)
 
-(define-syntax-rule (test-assertm name exp)
+(define-syntax-rule (test-assertm name store exp)
   (test-assert name
-    (run-with-store %store exp
+    (run-with-store store exp
                     #:guile-for-build (%guile-for-build))))
 
 (define %gzip-compressor
@@ -51,37 +48,43 @@
 
 (test-begin "pack")
 
-;; FIXME: The following test would rebuild the world (and likely fail) as a
-;; consequence of commit c45477d2a1a651485feede20fe0f3d15aec48b39 (and related
-;; changes) that made guile-sqlite3 a dependency of the derivation.
-;; See <https://bugs.gnu.org/32184>.
-(test-skip 1)
+;; The following test needs guile-sqlite3, libgcrypt, etc. as a consequence of
+;; commit c45477d2a1a651485feede20fe0f3d15aec48b39 and related changes.  Thus,
+;; run it on the user's store, if it's available, on the grounds that these
+;; dependencies may be already there, or we can get substitutes or build them
+;; quite inexpensively; see <https://bugs.gnu.org/32184>.
 
-(test-assertm "self-contained-tarball"
-  (mlet* %store-monad
-      ((profile (profile-derivation (packages->manifest
-                                     (list %bootstrap-guile))
-                                    #:hooks '()
-                                    #:locales? #f))
-       (tarball (self-contained-tarball "pack" profile
-                                        #:symlinks '(("/bin/Guile"
-                                                      -> "bin/guile"))
-                                        #:compressor %gzip-compressor
-                                        #:archiver %tar-bootstrap))
-       (check   (gexp->derivation
-                 "check-tarball"
-                 #~(let ((bin (string-append "." #$profile "/bin")))
-                     (setenv "PATH"
-                             (string-append #$%tar-bootstrap "/bin"))
-                     (system* "tar" "xvf" #$tarball)
-                     (mkdir #$output)
-                     (exit
-                      (and (file-exists? (string-append bin "/guile"))
-                           (string=? (string-append #$%bootstrap-guile "/bin")
-                                     (readlink bin))
-                           (string=? (string-append ".." #$profile
-                                                    "/bin/guile")
-                                     (readlink "bin/Guile"))))))))
-    (built-derivations (list check))))
+(with-external-store store
+  (unless store (tests-skip 1))
+  (test-assertm "self-contained-tarball" store
+    (mlet* %store-monad
+        ((profile (profile-derivation (packages->manifest
+                                       (list %bootstrap-guile))
+                                      #:hooks '()
+                                      #:locales? #f))
+         (tarball (self-contained-tarball "pack" profile
+                                          #:symlinks '(("/bin/Guile"
+                                                        -> "bin/guile"))
+                                          #:compressor %gzip-compressor
+                                          #:archiver %tar-bootstrap))
+         (check   (gexp->derivation
+                   "check-tarball"
+                   #~(let ((bin (string-append "." #$profile "/bin")))
+                       (setenv "PATH"
+                               (string-append #$%tar-bootstrap "/bin"))
+                       (system* "tar" "xvf" #$tarball)
+                       (mkdir #$output)
+                       (exit
+                        (and (file-exists? (string-append bin "/guile"))
+                             (string=? (string-append #$%bootstrap-guile "/bin")
+                                       (readlink bin))
+                             (string=? (string-append ".." #$profile
+                                                      "/bin/guile")
+                                       (readlink "bin/Guile"))))))))
+      (built-derivations (list check)))))
 
 (test-end)
+
+;; Local Variables:
+;; eval: (put 'test-assertm 'scheme-indent-function 2)
+;; End:
