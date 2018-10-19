@@ -4677,3 +4677,63 @@ Its usage is similar to pstricks and the standard picture environment.  PGF
 works with plain (pdf-)TeX, (pdf-)LaTeX, and ConTeXt.  Unlike pstricks, it can
 produce either PostScript or PDF output.")
     (license license:lppl1.3c+)))
+
+(define-public texlive-latex-koma-script
+  (package
+    (name "texlive-latex-koma-script")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/koma-script"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1g8qg796hc6s092islnybaxs115ldsqwp2vxkk3gpy6vh7wc9r50"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source" . "tex/latex/koma-script"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/koma-script")
+    (synopsis "Bundle of versatile classes and packages")
+    (description
+     "The KOMA-Script bundle provides replacements for the article, report, and
+book classes with emphasis on typography and versatility.  There is also a
+letter class.
+
+The bundle also offers:
+
+@itemize
+@item a package for calculating type areas in the way laid down by the
+typographer Jan Tschichold,
+@item packages for easily changing and defining page styles,
+@item a package scrdate for getting not only the current date but also the name
+of the day, and
+@item a package scrtime for getting the current time.
+@end itemize
+
+All these packages may be used not only with KOMA-Script classes but also with
+the standard classes.
+
+Since every package has its own version number, the version number quoted only
+refers to the version of scrbook, scrreprt, scrartcl, scrlttr2 and
+typearea (which are the main parts of the bundle).")
+    (license license:lppl1.3+)))
