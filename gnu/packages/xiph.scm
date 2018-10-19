@@ -398,13 +398,13 @@ decoding .opus files.")
                (base32
                 "1gq3aszzl5glgbajw5p1f5a1kdyf23w5vjdmwwrk246syin9pkkl"))))
     (build-system gnu-build-system)
+    ;; Required by opusfile.pc and opusurl.pc.
     (propagated-inputs
-     `(("opus" ,opus)))
+     `(("libogg" ,libogg)
+       ("openssl" ,openssl)
+       ("opus" ,opus)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("libogg" ,libogg)
-       ("openssl" ,openssl)))
     (synopsis "Versatile audio codec")
     (description
      "The opusfile library provides seeking, decode, and playback of Opus
