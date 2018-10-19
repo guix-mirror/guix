@@ -5479,6 +5479,58 @@ The XCB util module provides the following libraries:
       "file://COPYING"
       "See COPYING in the distribution."))))
 
+(define-public xcb-util-errors
+  (let ((commit "5d660ebe872cadcdc85de9d6f9afe05de629c030")
+        (revision "1"))
+    (package
+      (name "xcb-util-errors")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://anongit.freedesktop.org/git/xcb/util-errors.git")
+                      (commit commit)
+                      (recursive? #t)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "12bah0iz5k6b9hwlc5zffyfg2gnrajll3gn5s8zmazgynvw72ahg"))))
+     (build-system gnu-build-system)
+     (outputs '("out"))
+     (inputs
+      `(("util-macros" ,util-macros)
+        ("xcb-proto" ,xcb-proto)))
+     (propagated-inputs
+      `(("libxcb" ,libxcb)))
+     (native-inputs
+      `(("autoconf" ,autoconf)
+        ("automake" ,automake)
+        ("libtool" ,libtool)
+        ("python-2" ,python-2)
+        ("pkg-config" ,pkg-config)))
+     (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+          (replace 'bootstrap
+            (lambda _
+              ;; The default 'bootstrap' phase would run 'autogen.sh', which
+              ;; would try to run ./configure and fail due to unpatched
+              ;; shebangs.
+              (invoke "autoreconf" "-v" "--install"))))))
+     (home-page "https://cgit.freedesktop.org/xcb/util-errors/")
+     (synopsis "XCB helper library for printing information about X11 errors")
+     (description
+      "The XCB util module provides a number of libraries which sit on
+top of libxcb, the core X protocol library, and some of the extension
+libraries.  These experimental libraries provide convenience functions
+and interfaces which make the raw X protocol more usable.  Some of the
+libraries also provide client-side code which is not strictly part of
+the X protocol but which has traditionally been provided by Xlib.
+
+The XCB util-errors module provides a utility library that gives human
+readable names to error codes, event codes, and also to major and minor
+numbers.")
+     (license license:x11))))
 
 (define-public xcb-util-image
   (package
