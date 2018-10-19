@@ -3297,3 +3297,24 @@ is a library for creating graphical user interfaces.")
              (substitute* "glib/glib.init.lisp"
                (("libglib|libgthread" all) (string-append
                                             (assoc-ref inputs "glib") "/lib/" all))))))))))
+
+(define-public sbcl-cl-cffi-gtk-gobject
+  (package
+    (inherit sbcl-cl-cffi-gtk-boot0)
+    (name "sbcl-cl-cffi-gtk-gobject")
+    (inputs
+     `(("glib" ,glib)
+       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
+       ("trivial-garbage" ,sbcl-trivial-garbage)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("closer-mop" ,sbcl-closer-mop)
+       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
+    (arguments
+     `(#:asd-file "gobject/cl-cffi-gtk-gobject.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "gobject/gobject.init.lisp"
+               (("libgobject" all) (string-append
+                                    (assoc-ref inputs "glib") "/lib/" all))))))))))
