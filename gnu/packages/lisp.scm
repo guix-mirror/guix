@@ -3378,3 +3378,22 @@ is a library for creating graphical user interfaces.")
                (("libpango" all)
                 (string-append
                  (assoc-ref inputs "pango") "/lib/" all))))))))))
+
+(define-public sbcl-cl-cffi-gtk-gdk-pixbuf
+  (package
+    (inherit sbcl-cl-cffi-gtk-boot0)
+    (name "sbcl-cl-cffi-gtk-gdk-pixbuf")
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
+       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
+    (arguments
+     `(#:asd-file "gdk-pixbuf/cl-cffi-gtk-gdk-pixbuf.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "gdk-pixbuf/gdk-pixbuf.init.lisp"
+               (("libgdk_pixbuf" all)
+                (string-append
+                 (assoc-ref inputs "gdk-pixbuf") "/lib/" all))))))))))
