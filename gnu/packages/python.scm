@@ -8806,23 +8806,10 @@ LDFLAGS and parse the output to build extensions with setup.py.")
 files.  It contains a drop-in replacement for the I/O interface in the
 standard library's @code{bz2} module, including features from the latest
 development version of CPython that are not available in older releases.")
-    (license license:asl2.0)
-    (properties `((python2-variant . ,(delay python2-bz2file))))))
+    (license license:asl2.0)))
 
 (define-public python2-bz2file
-  (let ((base (package-with-python2
-               (strip-python2-variant python-bz2file))))
-    (package
-      (inherit base)
-      (arguments
-       `(#:python ,python-2
-         #:phases
-         (modify-phases %standard-phases
-           ;; 'python setup.py test' does not work as of 0.98.
-           ;; There is only the one test file, so we run it directly.
-           (replace 'check
-                    (lambda _ (zero? (system* "python"
-                                              "test_bz2file.py"))))))))))
+  (package-with-python2 python-bz2file))
 
 (define-public python-future
   (package
