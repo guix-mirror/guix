@@ -3397,3 +3397,30 @@ is a library for creating graphical user interfaces.")
                (("libgdk_pixbuf" all)
                 (string-append
                  (assoc-ref inputs "gdk-pixbuf") "/lib/" all))))))))))
+
+(define-public sbcl-cl-cffi-gtk-gdk
+  (package
+    (inherit sbcl-cl-cffi-gtk-boot0)
+    (name "sbcl-cl-cffi-gtk-gdk")
+    (inputs
+     `(("gtk" ,gtk+)
+       ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
+       ("cl-cffi-gtk-gio" ,sbcl-cl-cffi-gtk-gio)
+       ("cl-cffi-gtk-gdk-pixbuf" ,sbcl-cl-cffi-gtk-gdk-pixbuf)
+       ("cl-cffi-gtk-cairo" ,sbcl-cl-cffi-gtk-cairo)
+       ("cl-cffi-gtk-pango" ,sbcl-cl-cffi-gtk-pango)
+       ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
+    (arguments
+     `(#:asd-file "gdk/cl-cffi-gtk-gdk.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "gdk/gdk.init.lisp"
+               (("libgdk" all)
+                (string-append
+                 (assoc-ref inputs "gtk") "/lib/" all)))
+             (substitute* "gdk/gdk.package.lisp"
+               (("libgtk" all)
+                (string-append
+                 (assoc-ref inputs "gtk") "/lib/" all))))))))))
