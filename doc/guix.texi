@@ -11817,20 +11817,37 @@ objects}).
 @end table
 @end deftp
 
-@cindex NTP
+@cindex NTP (Network Time Protocol), service
 @cindex real time clock
-@deffn {Scheme Procedure} ntp-service [#:ntp @var{ntp}] @
-  [#:servers @var{%ntp-servers}] @
-  [#:allow-large-adjustment? #f]
-Return a service that runs the daemon from @var{ntp}, the
-@uref{http://www.ntp.org, Network Time Protocol package}.  The daemon will
-keep the system clock synchronized with that of @var{servers}.
-@var{allow-large-adjustment?} determines whether @command{ntpd} is allowed to
-make an initial adjustment of more than 1,000 seconds.
-@end deffn
+@defvr {Scheme Variable} ntp-service-type
+This is the type of the service running the the @uref{http://www.ntp.org,
+Network Time Protocol (NTP)} daemon, @command{ntpd}.  The daemon will keep the
+system clock synchronized with that of the specified NTP servers.
+
+The value of this service is an @code{ntpd-configuration} object, as described
+below.
+@end defvr
+
+@deftp {Data Type} ntp-configuration
+This is the data type for the NTP service configuration.
+
+@table @asis
+@item @code{servers} (default: @code{%ntp-servers})
+This is the list of servers (host names) with which @command{ntpd} will be
+synchronized.
+
+@item @code{allow-large-adjustment?} (default: @code{#f})
+This determines whether @command{ntpd} is allowed to make an initial
+adjustment of more than 1,000 seconds.
+
+@item @code{ntp} (default: @code{ntp})
+The NTP package to use.
+@end table
+@end deftp
 
 @defvr {Scheme Variable} %ntp-servers
-List of host names used as the default NTP servers.
+List of host names used as the default NTP servers.  These are servers of the
+@uref{https://www.ntppool.org/en/, NTP Pool Project}.
 @end defvr
 
 @cindex OpenNTPD

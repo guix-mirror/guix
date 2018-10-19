@@ -297,7 +297,8 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
   ntp-configuration?
   (ntp      ntp-configuration-ntp
             (default ntp))
-  (servers  ntp-configuration-servers)
+  (servers  ntp-configuration-servers
+            (default %ntp-servers))
   (allow-large-adjustment? ntp-allow-large-adjustment?
                            (default #f)))
 
@@ -370,9 +371,10 @@ restrict -6 ::1\n"))
                 (description
                  "Run the @command{ntpd}, the Network Time Protocol (NTP)
 daemon of the @uref{http://www.ntp.org, Network Time Foundation}.  The daemon
-will keep the system clock synchronized with that of the given servers.")))
+will keep the system clock synchronized with that of the given servers.")
+                (default-value (ntp-configuration))))
 
-(define* (ntp-service #:key (ntp ntp)
+(define* (ntp-service #:key (ntp ntp)             ;deprecated
                       (servers %ntp-servers)
                       allow-large-adjustment?)
   "Return a service that runs the daemon from @var{ntp}, the
