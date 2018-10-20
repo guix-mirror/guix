@@ -246,8 +246,8 @@ canyons and wait for the long I-shaped block to clear four rows at a time.")
     (license license:gpl3+)))
 
 (define-public cataclysm-dda
-  (let ((commit "ad3b0c3d521292d119f97a83390e7acfe9e9e7f7")
-        (revision "1"))
+  (let ((commit "0b2c194e5c6a06f4fbf14a0ec1260e0f3cf2567c")
+        (revision "2"))
     (package
       (name "cataclysm-dda")
       ;; This denotes the version released after the 0.C release.
@@ -260,7 +260,7 @@ canyons and wait for the long I-shaped block to clear four rows at a time.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1kdgbl8zqd53f5yilm2c9nyq3w6585yxl5jvgxy65dlpzxcqqj7y"))
+                  "1yzsn0y2g27bvbxjvivjyjhkmf2w5na1qqw5qfkswcfqqwym2y33"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
