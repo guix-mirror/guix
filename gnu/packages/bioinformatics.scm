@@ -1707,29 +1707,35 @@ databases.")
 (define-public clipper
   (package
     (name "clipper")
-    (version "1.1")
+    (version "1.2.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/YeoLab/clipper/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/YeoLab/clipper.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pflmsvhbf8izbgwhbhj1i7349sw1f55qpqj8ljmapp16hb0p0qi"))
+                "0fja1rj84wp9vpj8rxpj3n8zqzcqq454m904yp9as1w4phccirjb"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; remove unnecessary setup dependency
                   (substitute* "setup.py"
                     (("setup_requires = .*") ""))
-                  (for-each delete-file
-                            '("clipper/src/peaks.so"
-                              "clipper/src/readsToWiggle.so"))
-                  (delete-file-recursively "dist/")
                   #t))))
     (build-system python-build-system)
-    (arguments `(#:python ,python-2)) ; only Python 2 is supported
+    (arguments
+     `(#:python ,python-2 ; only Python 2 is supported
+       #:phases
+       (modify-phases %standard-phases
+         ;; This is fixed in upstream commit
+         ;; f6c2990198f906bf97730d95695b4bd5a6d01ddb.
+         (add-after 'unpack 'fix-typo
+           (lambda _
+             (substitute* "clipper/src/readsToWiggle.pyx"
+               (("^sc.*") ""))
+             #t)))))
     (inputs
      `(("htseq" ,python2-htseq)
        ("python-pybedtools" ,python2-pybedtools)
