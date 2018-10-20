@@ -1071,15 +1071,12 @@ package provides command line tools using the Bio++ library.")
        #:parallel-build? #f ; not supported
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'set-HOME
+         (add-before 'configure 'set-HOME
           ;; $HOME needs to be set at some point during the configure phase
           (lambda _ (setenv "HOME" "/tmp") #t))
-         (add-after
-          'unpack 'enter-dir
+         (add-after 'unpack 'enter-dir
           (lambda _ (chdir "c++") #t))
-         (add-after
-          'enter-dir 'fix-build-system
+         (add-after 'enter-dir 'fix-build-system
           (lambda _
             (define (which* cmd)
               (cond ((string=? cmd "date")
@@ -1127,31 +1124,31 @@ package provides command line tools using the Bio++ library.")
               (("action=/bin/") "action=")
               (("export PATH") ":"))
             #t))
-         (replace
-          'configure
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out     (assoc-ref outputs "out"))
-                  (lib     (string-append (assoc-ref outputs "lib") "/lib"))
-                  (include (string-append (assoc-ref outputs "include")
-                                          "/include/ncbi-tools++")))
-              ;; The 'configure' script doesn't recognize things like
-              ;; '--enable-fast-install'.
-              (zero? (system* "./configure.orig"
-                              (string-append "--with-build-root=" (getcwd) "/build")
-                              (string-append "--prefix=" out)
-                              (string-append "--libdir=" lib)
-                              (string-append "--includedir=" include)
-                              (string-append "--with-bz2="
-                                             (assoc-ref inputs "bzip2"))
-                              (string-append "--with-z="
-                                             (assoc-ref inputs "zlib"))
-                              (string-append "--with-pcre="
-                                             (assoc-ref inputs "pcre"))
-                              ;; Each library is built twice by default, once
-                              ;; with "-static" in its name, and again
-                              ;; without.
-                              "--without-static"
-                              "--with-dll"))))))))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out     (assoc-ref outputs "out"))
+                   (lib     (string-append (assoc-ref outputs "lib") "/lib"))
+                   (include (string-append (assoc-ref outputs "include")
+                                           "/include/ncbi-tools++")))
+               ;; The 'configure' script doesn't recognize things like
+               ;; '--enable-fast-install'.
+               (invoke "./configure.orig"
+                       (string-append "--with-build-root=" (getcwd) "/build")
+                       (string-append "--prefix=" out)
+                       (string-append "--libdir=" lib)
+                       (string-append "--includedir=" include)
+                       (string-append "--with-bz2="
+                                      (assoc-ref inputs "bzip2"))
+                       (string-append "--with-z="
+                                      (assoc-ref inputs "zlib"))
+                       (string-append "--with-pcre="
+                                      (assoc-ref inputs "pcre"))
+                       ;; Each library is built twice by default, once
+                       ;; with "-static" in its name, and again
+                       ;; without.
+                       "--without-static"
+                       "--with-dll")
+               #t))))))
     (outputs '("out"       ;  21 MB
                "lib"       ; 226 MB
                "include")) ;  33 MB
