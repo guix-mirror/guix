@@ -1376,7 +1376,7 @@ environment set through Direnv.")
 (define-public emacs-ggtags
   (package
     (name "emacs-ggtags")
-    (version "0.8.12")
+    (version "0.8.13")
     (source
      (origin
        (method url-fetch)
@@ -1384,7 +1384,7 @@ environment set through Direnv.")
                            version ".el"))
        (sha256
         (base32
-         "0ny3llk021g6r0s75xdm4hzpbxv393ddm2r6f2xdk8kqnq4gnirp"))))
+         "1qa7lcrcmf76sf6dy8sxbg4adq7rg59fm0n5848w3qxgsr0h45fg"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/leoliu/ggtags")
     (synopsis "Frontend to the GNU Global source code tagging system")
