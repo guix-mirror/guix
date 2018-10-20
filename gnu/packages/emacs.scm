@@ -5599,7 +5599,7 @@ This package contains the library runtime.")
 (define-public emacs-nginx-mode
   (package
     (name "emacs-nginx-mode")
-    (version "1.1.4")
+    (version "1.1.9")
     (source
      (origin
        (method url-fetch)
@@ -5609,7 +5609,7 @@ This package contains the library runtime.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1lvkj07kq0jkskr2f61vqb5rlrbnaz9a76ikq40w6925i2r970rr"))))
+         "0bzyrj6zz1hm67bkhw23bam7qc869s3zg7m1rb1c3aa4n0aw90cq"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ajc/nginx-mode")
     (synopsis "Emacs major mode for editing nginx config files")
