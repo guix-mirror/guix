@@ -30,6 +30,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
+;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4167,30 +4168,21 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.1.2")
+    (version "1.2")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/haikarainen/light")
-                    (commit version)))
+              (method url-fetch)
+              (uri (string-append
+                     "https://github.com/haikarainen/light/archive/v"
+                     version ".tar.gz"))
               (sha256
                (base32
-                "0c934gxav9cgdf94li6dp0rfqmpday9d33vdn9xb2mfp4war9n4w"))))
+                "1gfvsw7gh5pis733l7j54vzp272pvjyzbg8a0pvapfmg0s7mip97"))
+              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (add-after 'unpack 'patch-makefile
-           (lambda _
-             (substitute* "Makefile" (("chown") "#"))
-             #t)))))
     (native-inputs
-     `(("help2man" ,help2man)))
-    (home-page "https://haikarainen.github.io/light")
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (home-page "https://haikarainen.github.io/light/")
     (synopsis "GNU/Linux application to control backlights")
     (description
      "Light is a program to send commands to screen backlight controllers
