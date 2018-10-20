@@ -367,9 +367,9 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
 
              ;; Unpack the tarballs to benefit from shebang patching.
              (with-directory-excursion "third-party"
-               (and (zero? (system* "tar" "xvf" "jansson-2.6.tar.bz2"))
-                    (zero? (system* "tar" "xvf" "zlib-1.2.7.tar.bz2"))
-                    (zero? (system* "tar" "xvf" "bzip2-1.0.6.tar.bz2"))))
+               (invoke "tar" "xvf" "jansson-2.6.tar.bz2")
+               (invoke "tar" "xvf" "zlib-1.2.7.tar.bz2")
+               (invoke "tar" "xvf" "bzip2-1.0.6.tar.bz2"))
              ;; Disable unpacking of tarballs in Makefile.
              (substitute* "system.mk/Makefile.linux"
                (("^\tbzcat .*") "\t@echo \"not unpacking\"\n")
