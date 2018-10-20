@@ -136,24 +136,23 @@
        (modify-phases %standard-phases
          (delete 'configure)
          (replace 'build
-                  (lambda _
-                    (zero? (system* "gcc"
-                                    "-O3"
-                                    "-ffast-math"
-                                    "-finline-functions"
-                                    "-o"
-                                    "aragorn"
-                                    (string-append "aragorn" ,version ".c")))))
+           (lambda _
+             (invoke "gcc"
+                     "-O3"
+                     "-ffast-math"
+                     "-finline-functions"
+                     "-o"
+                     "aragorn"
+                     (string-append "aragorn" ,version ".c"))
+             #t))
          (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (bin (string-append out "/bin"))
-                           (man (string-append out "/share/man/man1")))
-                      (mkdir-p bin)
-                      (install-file "aragorn" bin)
-                      (mkdir-p man)
-                      (install-file "aragorn.1" man))
-                    #t)))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "aragorn" bin)
+               (install-file "aragorn.1" man))
+             #t)))))
     (home-page "http://mbio-serv2.mbioekol.lu.se/ARAGORN")
     (synopsis "Detect tRNA, mtRNA and tmRNA genes in nucleotide sequences")
     (description
