@@ -3488,8 +3488,11 @@ For instance, @code{-S /opt/gnu/bin=bin} creates a @file{/opt/gnu/bin}
 symlink pointing to the @file{bin} sub-directory of the profile.
 
 @item --localstatedir
-Include the ``local state directory'', @file{/var/guix}, in the
-resulting pack.
+@itemx --profile-name=@var{name}
+Include the ``local state directory'', @file{/var/guix}, in the resulting
+pack, and notably the @file{/var/guix/profiles/per-user/root/@var{name}}
+profile---by default @var{name} is @code{guix-profile}, which corresponds to
+@file{~root/.guix-profile}.
 
 @file{/var/guix} contains the store database (@pxref{The Store}) as well
 as garbage-collector roots (@pxref{Invoking guix gc}).  Providing it in
