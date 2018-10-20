@@ -50,6 +50,7 @@ Copyright @copyright{} 2018 Oleg Pykhalov@*
 Copyright @copyright{} 2018 Mike Gerwitz@*
 Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
 Copyright @copyright{} 2018 Gábor Boskovits@*
+Copyright @copyright{} 2018 Florian Pelz@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -16612,6 +16613,10 @@ within the store, for example @code{(file-append mod-wsgi
 @end table
 @end deffn
 
+@defvr {Scheme Variable} %default-httpd-modules
+A default list of @code{httpd-module} objects.
+@end defvr
+
 @deffn {Data Type} httpd-config-file
 This data type represents a configuration file for the httpd service.
 
@@ -16619,6 +16624,32 @@ This data type represents a configuration file for the httpd service.
 @item @code{modules} (default: @code{%default-httpd-modules})
 The modules to load. Additional modules can be added here, or loaded by
 additional configuration.
+
+For example, in order to handle requests for PHP files, you can use Apache’s
+@code{mod_proxy_fcgi} module along with @code{php-fpm-service-type}:
+
+@example
+(service httpd-service-type
+         (httpd-configuration
+          (config
+           (httpd-config-file
+            (modules (cons*
+                      (httpd-module
+                       (name "proxy_module")
+                       (file "modules/mod_proxy.so"))
+                      (httpd-module
+                       (name "proxy_fcgi_module")
+                       (file "modules/mod_proxy_fcgi.so"))
+                      %default-httpd-modules))
+            (extra-config (list "\
+<FilesMatch \\.php$>
+    SetHandler \"proxy:unix:/var/run/php-fpm.sock|fcgi://localhost/\"
+</FilesMatch>"))))))
+(service php-fpm-service-type
+         (php-fpm-configuration
+          (socket "/var/run/php-fpm.sock")
+          (socket-group "httpd")))
+@end example
 
 @item @code{server-root} (default: @code{httpd})
 The @code{ServerRoot} in the configuration file, defaults to the httpd

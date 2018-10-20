@@ -70,6 +70,11 @@
             httpd-config-file-user
             httpd-config-file-group
 
+            <httpd-module>
+            httpd-module
+            httpd-module?
+            %default-httpd-modules
+
             httpd-service-type
 
             <nginx-configuration>
