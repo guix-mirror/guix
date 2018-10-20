@@ -2162,7 +2162,7 @@ keep pressing the key until it selects what you want.  There's also
 (define-public emacs-fill-column-indicator
   (package
     (name "emacs-fill-column-indicator")
-    (version "1.81")
+    (version "1.89")
     (source
      (origin
        (method url-fetch)
@@ -2171,7 +2171,7 @@ keep pressing the key until it selects what you want.  There's also
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1xwyqbjbbicmvhlb85vg4j5snwy1vd7rfk89ws4viws5ljkhhyg8"))))
+         "09ab01np14bdcsr38xf95kpnvxzqr46mdjmphg3pigwnx39a3jvg"))))
     (build-system emacs-build-system)
     (home-page "https://www.emacswiki.org/emacs/FillColumnIndicator")
     (synopsis "Graphically indicate the fill column")
