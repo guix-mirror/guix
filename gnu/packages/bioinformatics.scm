@@ -167,15 +167,16 @@ structure of the predicted RNA.")
     (name "bamm")
     (version "1.7.3")
     (source (origin
-              (method url-fetch)
+              (method git-fetch)
               ;; BamM is not available on pypi.
-              (uri (string-append
-                    "https://github.com/Ecogenomics/BamM/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (git-reference
+                    (url "https://github.com/Ecogenomics/BamM.git")
+                    (commit version)
+                    (recursive? #t)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1f35yxp4pc8aadsvbpg6r4kg2jh4fkjci0iby4iyljm6980sac0s"))
+                "1p83ahi984ipslxlg4yqy1gdnya9rkn1v71z8djgxkm9d2chw4c5"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -197,11 +198,12 @@ structure of the predicted RNA.")
            (lambda _
              (with-directory-excursion "c"
                (let ((sh (which "sh")))
+                 (for-each make-file-writable (find-files "." ".*"))
                  ;; Use autogen so that 'configure' works.
                  (substitute* "autogen.sh" (("/bin/sh") sh))
                  (setenv "CONFIG_SHELL" sh)
-                 (substitute* "configure" (("/bin/sh") sh))
-                 (zero? (system* "./autogen.sh"))))))
+                 (invoke "./autogen.sh")))
+             #t))
          (delete 'build)
          ;; Run tests after installation so compilation only happens once.
          (delete 'check)
@@ -229,7 +231,8 @@ structure of the predicted RNA.")
              ;; There are 2 errors printed, but they are safe to ignore:
              ;; 1) [E::hts_open_format] fail to open file ...
              ;; 2) samtools view: failed to open ...
-             (zero? (system* "nosetests")))))))
+             (invoke "nosetests")
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
