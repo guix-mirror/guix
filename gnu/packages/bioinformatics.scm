@@ -1273,15 +1273,16 @@ errors at the end of reads.")
 (define-public bowtie
   (package
     (name "bowtie")
-    (version "2.3.2")
+    (version "2.3.4.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/BenLangmead/bowtie2/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/BenLangmead/bowtie2.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hwa5r9qbglppb7sz5z79rlmmddr3n51n468jb3wh8rwjgn3yr90"))
+                "1zl3cf327y2p7p03cavymbh7b00djc7lncfaqih33n96iy9q8ibp"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1291,14 +1292,6 @@ errors at the end of reads.")
                     (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\""))
                   #t))))
     (build-system gnu-build-system)
-    (inputs
-     `(("perl" ,perl)
-       ("perl-clone" ,perl-clone)
-       ("perl-test-deep" ,perl-test-deep)
-       ("perl-test-simple" ,perl-test-simple)
-       ("python" ,python-2)
-       ("tbb" ,tbb)
-       ("zlib" ,zlib)))
     (arguments
      '(#:make-flags
        (list "allall"
@@ -1308,11 +1301,21 @@ errors at the end of reads.")
        (modify-phases %standard-phases
          (delete 'configure)
          (replace 'check
-           (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "perl"
-                             "scripts/test/simple_tests.pl"
-                             "--bowtie2=./bowtie2"
-                             "--bowtie2-build=./bowtie2-build")))))))
+           (lambda _
+             (invoke "perl"
+                     "scripts/test/simple_tests.pl"
+                     "--bowtie2=./bowtie2"
+                     "--bowtie2-build=./bowtie2-build")
+             #t)))))
+    (inputs
+     `(("tbb" ,tbb)
+       ("zlib" ,zlib)
+       ("python" ,python-wrapper)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("perl-clone" ,perl-clone)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-simple" ,perl-test-simple)))
     (home-page "http://bowtie-bio.sourceforge.net/bowtie2/index.shtml")
     (synopsis "Fast and sensitive nucleotide sequence read aligner")
     (description
