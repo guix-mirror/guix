@@ -7421,7 +7421,7 @@ created by @code{git format-patch}, from @code{magit}, @code{dired} and
 (define-public emacs-erc-hl-nicks
   (package
     (name "emacs-erc-hl-nicks")
-    (version "1.3.2")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
@@ -7430,7 +7430,7 @@ created by @code{git format-patch}, from @code{magit}, @code{dired} and
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "01svpl9bps5kx4y1wnymakxya2cznqmlynvqv2r500wpnbxczrbs"))))
+         "1a1r2kc3688g8c2ybkpwh88kgmnqhg3h3032g2yn4zr9m0n3vpkr"))))
     (build-system emacs-build-system)
     (synopsis "Nickname highlighting for Emacs ERC")
     (description "@code{erc-hl-nicks} highlights nicknames in ERC, an IRC
