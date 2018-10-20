@@ -38,6 +38,7 @@
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages hurd)
+  #:use-module (gnu packages mes)
   #:use-module (gnu packages multiprecision)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -47,6 +48,7 @@
             %glibc-bootstrap-tarball
             %gcc-bootstrap-tarball
             %guile-bootstrap-tarball
+            %mes-bootstrap-tarball
             %bootstrap-tarballs
 
             %guile-static-stripped))
@@ -533,6 +535,35 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            #t))))
     (inputs `(("gcc" ,%gcc-static)))))
 
+(define %mes-stripped
+  ;; The subset of Mes files needed for bootstrap.
+  (package
+    (inherit mes)
+    (name "mes-stripped")
+    (build-system trivial-build-system)
+    (source #f)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (srfi srfi-1)
+                      (srfi srfi-26)
+                      (guix build utils))
+
+         (setvbuf (current-output-port) _IOLBF)
+         (let* ((out        (assoc-ref %outputs "out"))
+                (libdir     (string-append out "/lib"))
+                (mes        (assoc-ref %build-inputs "mes")))
+
+           (copy-recursively (string-append mes "/lib") libdir)
+           (copy-recursively (string-append mes "/share/mes/lib") libdir)
+           (for-each remove-store-references
+                     (remove (lambda (file) (or (string-suffix? ".h" file)
+                                                (string-suffix? ".c" file)))
+                             (find-files out ".*")))
+           #t))))
+    (inputs `(("mes" ,mes)))))
+
 (define %guile-static
   ;; A statically-linked Guile that is relocatable--i.e., it can search
   ;; .scm and .go files relative to its installation directory, rather
@@ -699,6 +730,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define %guile-bootstrap-tarball
   ;; A tarball with the statically-linked, relocatable Guile.
   (tarball-package %guile-static-stripped))
+
+(define %mes-bootstrap-tarball
+  ;; A tarball with Mes ASCII Seed and binary Mes C Library.
+  (tarball-package %mes-stripped))
 
 (define %bootstrap-tarballs
   ;; A single derivation containing all the bootstrap tarballs, for
