@@ -412,13 +412,16 @@ access the common Google services, and has full asynchronous support.")
      `(("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("cairo" ,cairo)
-       ("glib" ,glib)
-       ("libarchive" ,libarchive)
+     `(("gtk+" ,gtk+)
        ("libjpeg" ,libjpeg)
        ("lcms" ,lcms)
        ("libtiff" ,libtiff)
        ("nettle" ,nettle)))
+    (propagated-inputs
+     ;; In Requires of libgxps.pc.
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("libarchive" ,libarchive)))
     (home-page "https://wiki.gnome.org/Projects/libgxps")
     (synopsis "GObject-based library for handling and rendering XPS documents")
     (description
