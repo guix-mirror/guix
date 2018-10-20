@@ -2512,7 +2512,7 @@ snippets for yasnippet.")
 (define-public emacs-smart-mode-line
   (package
     (name "emacs-smart-mode-line")
-    (version "2.10.1")
+    (version "2.12.0")
     (source
      (origin
        (method url-fetch)
@@ -2521,7 +2521,7 @@ snippets for yasnippet.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0i9wajabrrsjzwd842q0m2611kf0q31p9hg1pdj81177gynkw8l8"))))
+         "1hn8s6laijmg7w1bgwdfrki6h9vxkbgr8rmmssvd5yqyad5w2sba"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-rich-minority" ,emacs-rich-minority)))
