@@ -453,6 +453,20 @@ BED, GFF/GTF, VCF.")
                          (find-files "bin" ".*")))
              #t)))))))
 
+;; Needed for pybedtools.
+(define-public bedtools-2.26
+  (package (inherit bedtools)
+    (name "bedtools")
+    (version "2.26.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/arq5x/bedtools2/releases/"
+                                  "download/v" version "/"
+                                  "bedtools-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0jhavwifnf7lmkb11h9y7dynr8d699h0rd2l52j1pfgircr2zwv5"))))))
+
 (define-public ribotaper
   (package
     (name "ribotaper")
