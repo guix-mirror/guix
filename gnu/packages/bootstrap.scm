@@ -49,6 +49,7 @@
             %bootstrap-gcc
             %bootstrap-glibc
             %bootstrap-inputs
+            %bootstrap-mes
             %mescc-tools-seed
             %mes-seed
             %srfi-43
@@ -612,6 +613,58 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
     (synopsis "Bootstrap binaries of the GNU Compiler Collection")
+    (description synopsis)
+    (home-page #f)
+    (license gpl3+)))
+
+(define %bootstrap-mes
+  ;; The initial Mes.  Uses binaries from a tarball typically built by
+  ;; %MES-BOOTSTRAP-TARBALL.
+  (package
+    (name "bootstrap-mes")
+    (version "0")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 popen))
+         (let ((out     (assoc-ref %outputs "out"))
+               (tar     (assoc-ref %build-inputs "tar"))
+               (xz      (assoc-ref %build-inputs "xz"))
+               (tarball (assoc-ref %build-inputs "tarball")))
+
+           (mkdir out)
+           (copy-file tarball "binaries.tar.xz")
+           (invoke xz "-d" "binaries.tar.xz")
+           (let ((builddir (getcwd))
+                 (bindir   (string-append out "/bin")))
+             (with-directory-excursion out
+               (invoke tar "xvf"
+                       (string-append builddir "/binaries.tar"))))))))
+    (inputs
+     `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
+       ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
+       ("tarball" ,(bootstrap-origin
+                    (origin
+                      (method url-fetch)
+                      (uri (string-append
+                            "http://lilypond.org/janneke/mes/"
+                            (match (%current-system)
+                              ("x86_64-linux" "mes-stripped-0.18-0.08f04f5-x86_64-linux.tar.xz")
+                              ("i686-linux" "mes-stripped-0.18-0.08f04f5-i686-linux.tar.xz"))))
+                      (sha256
+                       (match (%current-system)
+                         ("x86_64-linux"
+                          (base32
+                           "1yhxqf1sm67gwjbkkc26m4lcscvpjfmi71bzy8rhysal4lcj1vc8"))
+                         ("i686-linux"
+                          (base32
+                           "1p116ya9n52852bryh34n7db4mhvi98qifmmwygl7nbyc4dz92jy")))))))))
+    (synopsis "Bootstrap binaries of Mes")
     (description synopsis)
     (home-page #f)
     (license gpl3+)))
