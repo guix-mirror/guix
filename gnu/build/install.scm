@@ -199,7 +199,7 @@ This is used to create the self-contained tarballs with 'guix pack'."
   (mkdir-p* %root-profile)
   (symlink* profile
             (string-append %root-profile "/guix-profile-1-link"))
-  (symlink* (string-append %root-profile "/guix-profile-1-link")
+  (symlink* "guix-profile-1-link"
             (string-append %root-profile "/guix-profile"))
 
   (mkdir-p* "/root")
