@@ -1919,6 +1919,29 @@ files between different genome assemblies.  It supports most commonly used
 file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
     (license license:gpl2+)))
 
+(define-public python-dnaio
+  (package
+    (name "python-dnaio")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dnaio" version))
+       (sha256
+        (base32
+         "0f16m7hdlm0fz1n7y5asy0v9ghyrq17ni1p9iybq22ddzyd49r27"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
+       ("python-xopen" ,python-xopen)))
+    (home-page "https://github.com/marcelm/dnaio/")
+    (synopsis "Read FASTA and FASTQ files efficiently")
+    (description
+     "dnaio is a Python library for fast parsing of FASTQ and also FASTA
+files.  The code was previously part of the cutadapt tool.")
+    (license license:expat)))
+
 (define-public cutadapt
   (package
     (name "cutadapt")
