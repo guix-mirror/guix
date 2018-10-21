@@ -1595,19 +1595,19 @@ also includes an interface for tabix.")
 (define-public python-twobitreader
   (package
     (name "python-twobitreader")
-    (version "3.1.4")
+    (version "3.1.6")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "twobitreader" version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/benjschiller/twobitreader")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q8wnj2kga9nz1lwc4w7qv52smfm536hp6mc8w6s53lhyj0mpi22"))))
+                "1qbxvv1h58cismbk1anpjrkpghsaiy64a11ir3lhy6qch6xf8n62"))))
     (build-system python-build-system)
-    (arguments
-     '(;; Tests are not distributed in the PyPi release.
-       ;; TODO Try building from the Git repo or asking the upstream maintainer
-       ;; to distribute the tests on PyPi.
-       #:tests? #f))
+    ;; Tests are not included
+    (arguments '(#:tests? #f))
     (native-inputs
      `(("python-sphinx" ,python-sphinx)))
     (home-page "https://github.com/benjschiller/twobitreader")
