@@ -2155,42 +2155,42 @@ identify enrichments with functional annotations of the genome.")
 (define-public delly
   (package
     (name "delly")
-    (version "0.7.7")
+    (version "0.7.9")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/tobiasrausch/delly/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dellytools/delly.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
-               (base32 "0dkwy3pyxmi6dhh1lpsr3698ri5sslw9qz67hfys0bz8dgrqwabj"))
-              (patches (search-patches "delly-use-system-libraries.patch"))))
+               (base32 "034jqsxswy9gqdh2zkgc1js99qkv75ks4xvzgmh0284sraagv61z"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "src/htslib")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests to run.
-       #:make-flags '("PARALLEL=1") ; Allow parallel execution at run-time.
+       #:make-flags
+       (list "PARALLEL=1"  ; Allow parallel execution at run-time.
+             (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure) ; There is no configure phase.
-         (replace 'install
-           (lambda _
-             (let ((bin (string-append (assoc-ref %outputs "out") "/bin"))
-                   (templates (string-append (assoc-ref %outputs "out")
+         (add-after 'install 'install-templates
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((templates (string-append (assoc-ref outputs "out")
                                              "/share/delly/templates")))
-               (mkdir-p bin)
                (mkdir-p templates)
                (copy-recursively "excludeTemplates" templates)
-               (install-file "src/cov" bin)
-               (install-file "src/delly" bin)
-               (install-file "src/dpe" bin)))))))
-    (native-inputs
-     `(("python" ,python-2)))
+               #t))))))
     (inputs
      `(("boost" ,boost)
        ("htslib" ,htslib)
        ("zlib" ,zlib)
        ("bzip2" ,bzip2)))
-    (home-page "https://github.com/tobiasrausch/delly")
+    (home-page "https://github.com/dellytools/delly")
     (synopsis "Integrated structural variant prediction method")
     (description "Delly is an integrated structural variant prediction method
 that can discover and genotype deletions, tandem duplications, inversions and
