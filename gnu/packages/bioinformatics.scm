@@ -2537,31 +2537,30 @@ similarity of community members.")
         (delete 'configure)
         (replace 'build
           (lambda* (#:key source #:allow-other-keys)
-            (and (zero? (system* "gcc"
-                                 "-O3"
-                                 "-finline-functions"
-                                 "-funroll-loops"
-                                 "-Wall"
-                                 "-o"
-                                 "FastTree"
-                                 source
-                                 "-lm"))
-                 (zero? (system* "gcc"
-                                 "-DOPENMP"
-                                 "-fopenmp"
-                                 "-O3"
-                                 "-finline-functions"
-                                 "-funroll-loops"
-                                 "-Wall"
-                                 "-o"
-                                 "FastTreeMP"
-                                 source
-                                 "-lm")))))
+            (invoke "gcc"
+                    "-O3"
+                    "-finline-functions"
+                    "-funroll-loops"
+                    "-Wall"
+                    "-o"
+                    "FastTree"
+                    source
+                    "-lm")
+            (invoke "gcc"
+                    "-DOPENMP"
+                    "-fopenmp"
+                    "-O3"
+                    "-finline-functions"
+                    "-funroll-loops"
+                    "-Wall"
+                    "-o"
+                    "FastTreeMP"
+                    source
+                    "-lm")
+            #t))
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
-            (let ((bin (string-append (assoc-ref outputs "out")
-                                      "/bin")))
-              (mkdir-p bin)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
               (install-file "FastTree" bin)
               (install-file "FastTreeMP" bin)
               #t))))))
