@@ -2239,13 +2239,14 @@ data and settings.")
     (version "1.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/maaskola/discrover/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/maaskola/discrover.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0rah9ja4m0rl5mldd6vag9rwrivw1zrqxssfq8qx64m7961fp68k"))))
+         "173fwi2vb6a5kp406hm3jj6j7v4whww796f2qcygp4rpvamh307y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
