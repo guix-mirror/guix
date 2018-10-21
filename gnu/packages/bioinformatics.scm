@@ -2335,36 +2335,41 @@ quantitative phenotypes.")
 (define-public edirect
   (package
     (name "edirect")
-    (version "4.10")
+    (version "10.2.20181018")
     (source (origin
               (method url-fetch)
-              (uri (string-append "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/"
-                                  "versions/2016-05-03/edirect.tar.gz"))
+              (uri (string-append "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect"
+                                  "/versions/" version
+                                  "/edirect-" version ".tar.gz"))
               (sha256
                (base32
-                "15zsprak5yh8c1yrz4r1knmb5s8qcmdid4xdhkh3lqcv64l60hli"))))
+                "091f4aigzpbqih6h82nq566gkp3y07i72yqndmqskfgar1vwgci7"))))
     (build-system perl-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'build)
+         (delete 'check)                ; simple check after install
          (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((target (string-append (assoc-ref outputs "out")
-                                                 "/bin")))
-                      (mkdir-p target)
-                      (install-file "edirect.pl" target)
-                      #t)))
-         (add-after
-          'install 'wrap-program
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            ;; Make sure 'edirect.pl' finds all perl inputs at runtime.
-            (let* ((out (assoc-ref outputs "out"))
-                   (path (getenv "PERL5LIB")))
-              (wrap-program (string-append out "/bin/edirect.pl")
-                `("PERL5LIB" ":" prefix (,path)))))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "edirect.pl"
+                           (string-append (assoc-ref outputs "out") "/bin"))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure 'edirect.pl' finds all perl inputs at runtime.
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (getenv "PERL5LIB")))
+               (wrap-program (string-append out "/bin/edirect.pl")
+                 `("PERL5LIB" ":" prefix (,path))))
+             #t))
+         (add-after 'wrap-program 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke (string-append (assoc-ref outputs "out")
+                                    "/bin/edirect.pl")
+                     "-filter" "-help")
+             #t)))))
     (inputs
      `(("perl-html-parser" ,perl-html-parser)
        ("perl-encode-locale" ,perl-encode-locale)
@@ -2380,6 +2385,7 @@ quantitative phenotypes.")
        ("perl-net-http" ,perl-net-http)
        ("perl-uri" ,perl-uri)
        ("perl-www-robotrules" ,perl-www-robotrules)
+       ("perl-xml-simple" ,perl-xml-simple)
        ("perl" ,perl)))
     (home-page "http://www.ncbi.nlm.nih.gov/books/NBK179288/")
     (synopsis "Tools for accessing the NCBI's set of databases")
