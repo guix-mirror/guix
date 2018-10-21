@@ -3567,7 +3567,7 @@ are a C compiler and glib.  Full API documentation and examples are included.")
        ("fltk" ,fltk)
        ("libogg" ,libogg)
        ("libsamplerate" ,libsamplerate)
-       ("fluidsynth" ,fluidsynth)
+       ("fluidsynth" ,fluidsynth-1)         ;XXX: try using 2.x when updating
        ("libvorbis" ,libvorbis)
        ("alsa-lib" ,alsa-lib)
        ("portaudio" ,portaudio)

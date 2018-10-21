@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1041,7 +1042,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "1.1.11")
+    (version "2.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1050,7 +1051,7 @@ follower.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0n75jq3xgq46hfmjkaaxz3gic77shs4fzajq40c8gk043i84xbdh"))))
+                "1mqyym5qkh8xd1rqj3yhfxbw5dxjcrljb6nkfqzvcarlv4h6rjn7"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -1081,6 +1082,22 @@ specifications.  FluidSynth reads and handles MIDI events from the MIDI input
 device.  It is the software analogue of a MIDI synthesizer.  FluidSynth can
 also play midifiles using a Soundfont.")
     (license license:lgpl2.1+)))
+
+;; gzdoom@3.3.0 and lmms@1.1.3 requires this version.  Remove once no longer
+;; needed.
+(define-public fluidsynth-1
+  (package
+    (inherit fluidsynth)
+    (version "1.1.11")
+    (source (origin
+              (inherit (package-source fluidsynth))
+              (uri (git-reference
+                    (url "https://github.com/FluidSynth/fluidsynth")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "fluidsynth" version))
+              (sha256
+               (base32
+                "0n75jq3xgq46hfmjkaaxz3gic77shs4fzajq40c8gk043i84xbdh"))))))
 
 (define-public faad2
   (package

@@ -5355,7 +5355,7 @@ You can save humanity and get programming skills!")
     (build-system cmake-build-system)
     (inputs `(("bzip2" ,bzip2)
               ("fluid-3" ,fluid-3)
-              ("fluidsynth" ,fluidsynth)
+              ("fluidsynth" ,fluidsynth-1)      ;XXX: try using 2.x when updating
               ("gtk+3" ,gtk+)
               ("libgme" ,libgme)
               ("libjpeg" ,libjpeg)
