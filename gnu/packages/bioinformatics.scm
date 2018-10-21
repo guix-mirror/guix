@@ -2091,14 +2091,14 @@ trees (phylogenies) and characters.")
 (define-public python-py2bit
   (package
     (name "python-py2bit")
-    (version "0.2.1")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py2bit" version))
        (sha256
         (base32
-         "1cdf4qlmgwsh1f4k0wdv2sr8x9qn4366p0k3614vbd0fpqiarxrl"))))
+         "1vw2nvw1yrl7ikkqsqs1pg239yr5nspvd969r1x9arms1k25a1a5"))))
     (build-system python-build-system)
     (home-page "https://github.com/dpryan79/py2bit")
     (synopsis "Access 2bit files using lib2bit")
