@@ -2204,14 +2204,14 @@ accurately delineate genomic rearrangements throughout the genome.")
     (name "diamond")
     (version "0.9.22")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/bbuchfink/diamond/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bbuchfink/diamond.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0adp87r9ak63frdrdmrdfhsn6g0jnnyq1lr2wibvqbxcl37iir9m"))))
+                "0bky78v79g3wmdpsd706cscckgw1v09fg8vdd0z8z0d5b97aj9zl"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
