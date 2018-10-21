@@ -2274,72 +2274,63 @@ of nucleic acid binding proteins.")
     (license license:gpl3+)))
 
 (define-public eigensoft
-  (let ((revision "1")
-        (commit "b14d1e202e21e532536ff8004f0419cd5e259dc7"))
-    (package
-      (name "eigensoft")
-      (version (string-append "6.1.2-"
-                              revision "."
-                              (string-take commit 9)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/DReichLab/EIG.git")
-               (commit commit)))
-         (file-name (string-append "eigensoft-" commit "-checkout"))
-         (sha256
-          (base32
-           "0f5m6k2j5c16xc3xbywcs989xyc26ncy1zfzp9j9n55n9r4xcaiq"))
-         (modules '((guix build utils)))
-         ;; Remove pre-built binaries.
-         (snippet '(begin
-                     (delete-file-recursively "bin")
-                     (mkdir "bin")
-                     #t))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f                    ; There are no tests.
-         #:make-flags '("CC=gcc")
-         #:phases
-         (modify-phases %standard-phases
-           ;; There is no configure phase, but the Makefile is in a
-           ;; sub-directory.
-           (replace 'configure
-             (lambda _
-               (chdir "src")
-               ;; The link flags are incomplete.
-               (substitute* "Makefile"
-                 (("-lgsl") "-lgsl -lm -llapack -llapacke -lpthread"))
-               #t))
-           ;; The provided install target only copies executables to
-           ;; the "bin" directory in the build root.
-           (add-after 'install 'actually-install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin  (string-append out "/bin")))
-                 (for-each (lambda (file)
-                             (install-file file bin))
-                           (find-files "../bin" ".*"))
-                 #t))))))
-      (inputs
-       `(("gsl" ,gsl)
-         ("lapack" ,lapack)
-         ("openblas" ,openblas)
-         ("perl" ,perl)
-         ("gfortran" ,gfortran "lib")))
-      (home-page "https://github.com/DReichLab/EIG")
-      (synopsis "Tools for population genetics")
-      (description "The EIGENSOFT package provides tools for population
+  (package
+    (name "eigensoft")
+    (version "7.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DReichLab/EIG.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1c141fqvhnzibmnf22sv23vbmzm20kjjyrib44cfh75wyndp2d9k"))
+       (modules '((guix build utils)))
+       ;; Remove pre-built binaries.
+       (snippet '(begin
+                   (delete-file-recursively "bin")
+                   (mkdir "bin")
+                   #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                    ; There are no tests.
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         ;; There is no configure phase, but the Makefile is in a
+         ;; sub-directory.
+         (replace 'configure
+           (lambda _ (chdir "src") #t))
+         ;; The provided install target only copies executables to
+         ;; the "bin" directory in the build root.
+         (add-after 'install 'actually-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin")))
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         (find-files "../bin" ".*"))
+               #t))))))
+    (inputs
+     `(("gsl" ,gsl)
+       ("lapack" ,lapack)
+       ("openblas" ,openblas)
+       ("perl" ,perl)
+       ("gfortran" ,gfortran "lib")))
+    (home-page "https://github.com/DReichLab/EIG")
+    (synopsis "Tools for population genetics")
+    (description "The EIGENSOFT package provides tools for population
 genetics and stratification correction.  EIGENSOFT implements methods commonly
 used in population genetics analyses such as PCA, computation of Tracy-Widom
 statistics, and finding related individuals in structured populations.  It
 comes with a built-in plotting script and supports multiple file formats and
 quantitative phenotypes.")
-      ;; The license of the eigensoft tools is Expat, but since it's
-      ;; linking with the GNU Scientific Library (GSL) the effective
-      ;; license is the GPL.
-      (license license:gpl3+))))
+    ;; The license of the eigensoft tools is Expat, but since it's
+    ;; linking with the GNU Scientific Library (GSL) the effective
+    ;; license is the GPL.
+    (license license:gpl3+)))
 
 (define-public edirect
   (package
