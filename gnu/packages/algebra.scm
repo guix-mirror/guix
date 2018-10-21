@@ -257,8 +257,12 @@ precision.")
                (base32
                 "0ds1zh712sr20qh0fih8jnm4nlv90andllp8n263qs7rlhblz551"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))            ;77MiB of documentation
     (arguments
-     `(#:phases
+     `(#:modules ((ice-9 ftw)
+                  (guix build utils)
+                  (guix build gnu-build-system))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-bin-cp
            ;; Some Makefiles contain hard-coded "/bin/cp".
@@ -271,6 +275,28 @@ precision.")
            (lambda _
              (substitute* "check/Makefile.in"
                (("chk_fhan11") ""))
+             #t))
+         (add-after 'install 'install-doc
+           ;; Setting --docdir to "doc" output isn't sufficient as
+           ;; documentation and examples are scattered throughout the source.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc"))
+                    (docdir (string-append doc
+                                           "/share/doc/"
+                                           (string-append ,name "-" ,version))))
+               ;; For some reason, the install process moves
+               ;; "share/giac/examples" instead of "share/giac/doc" to
+               ;; "$(docdir)".  Clean up the mess and start over.
+               (delete-file-recursively (string-append doc "/share"))
+               (mkdir-p docdir)
+               (with-directory-excursion out
+                 (for-each (lambda (f)
+                             (unless (member f '("." ".."))
+                               (copy-recursively (string-append "share/giac/" f)
+                                                 (string-append docdir "/" f))))
+                           (scandir "share/giac"))
+                 (delete-file-recursively "share/giac")))
              #t)))))
     (inputs
      `(("fltk" ,fltk)
