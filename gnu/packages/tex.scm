@@ -4775,3 +4775,37 @@ Since every package has its own version number, the version number quoted only
 refers to the version of scrbook, scrreprt, scrartcl, scrlttr2 and
 typearea (which are the main parts of the bundle).")
     (license license:lppl1.3+)))
+
+(define-public texlive-generic-listofitems
+  (package
+    (name "texlive-generic-listofitems")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/generic/listofitems"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1k50z6ixgwwzy84mi0dr5vcjah5p7wvgq66y45bilm91a4m8sgla"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/listofitems")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/listofitems")
+    (synopsis "Grab items in lists using user-specified seperation character")
+    (description
+     "This package allows one to capture all the items of a list, for which
+the parsing character has been selected by the user, and to access any of
+these items with a simple syntax.")
+    (license license:lppl1.3c+)))
