@@ -1449,13 +1449,14 @@ and more accurate.  BWA-MEM also has better performance than BWA-backtrack for
     (name "bwa-pssm")
     (version "0.5.11")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/pkerpedjiev/bwa-pssm/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pkerpedjiev/bwa-pssm.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "02p7mpbs4mlxmn84g2x4ghak638vbj4lqix2ipx5g84pz9bhdavg"))))
+                "076c4q0cdqz8jgylb067y9zmvxglppnzi3qiscn0xiypgc6lgb5r"))))
     (build-system gnu-build-system)
     (inputs
      `(("gdsl" ,gdsl)
