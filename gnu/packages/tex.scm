@@ -4809,3 +4809,40 @@ typearea (which are the main parts of the bundle).")
 the parsing character has been selected by the user, and to access any of
 these items with a simple syntax.")
     (license license:lppl1.3c+)))
+
+(define-public texlive-latex-readarray
+  (package
+    (name "texlive-latex-readarray")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/readarray"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0c53k180ivn1n7fz3ngvd2w1i5dw3kxml0n64vhki88xsylz7lxp"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/readarray")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (propagated-inputs
+     `(("texlive-generic-listofitems" ,texlive-generic-listofitems)))
+    (home-page "https://www.ctan.org/pkg/readarray")
+    (synopsis "Read, store and recall array-formatted data")
+    (description
+     "This package allows the user to input formatted data into elements of a
+2-D or 3-D array and to recall that data at will by individual cell number.
+The data can be but need not be numerical in nature.  It can be, for example,
+formatted text.")
+    (license license:lppl1.3)))
