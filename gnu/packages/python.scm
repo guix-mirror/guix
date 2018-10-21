@@ -9578,13 +9578,13 @@ docstring and colored output.")
 (define-public python-lazy-object-proxy
   (package
     (name "python-lazy-object-proxy")
-    (version "1.2.2")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "lazy-object-proxy" version))
               (sha256
                (base32
-                "0s22aqqkdscyh8sjspyyax7qa1aiz8p4midrnyf39717fhfczm6x"))))
+                "0yha7q9bhw857fwaby785d63mffhngl9npwzlk9i0pwlkwvbx4gb"))))
     (build-system python-build-system)
     (home-page "https://github.com/ionelmc/python-lazy-object-proxy")
     (synopsis "Lazy object proxy for python")
