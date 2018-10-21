@@ -12386,3 +12386,23 @@ have special meaning.  It is also handy for aligning text across long vertical
 distances.  Multi-column characters, such as @kbd{TAB} are treated
 correctly.")
     (license license:gpl2+)))
+
+(define-public emacs-slime-repl-ansi-color
+  (let ((commit "ad03263f5d4de473bc173b64a6fc3dc1106393d7"))
+    (package
+      (name "emacs-slime-repl-ansi-color")
+      (version (git-version "0.0.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/deadtrickster/slime-repl-ansi-color")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0bpg7gxz310x7bnlg324c507sxc5gxwwz6h64h6kdq141r73vbi4"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/deadtrickster/slime-repl-ansi-color")
+      (synopsis "Color ANSI codes in the REPL of SLIME")
+      (description "Color ANSI codes in the REPL of SLIME")
+      (license license:gpl2+))))
