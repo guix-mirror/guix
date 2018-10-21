@@ -430,11 +430,14 @@ system, and the core design of Django is reused in Grantlee.")
                   (doc (assoc-ref outputs "doc")))
               (substitute* '("configure")
                 (("/bin/pwd") (which "pwd")))
+              (substitute* "src/corelib/global/global.pri"
+                (("/bin/ls") (which "ls")))
 
               (zero? (system*
                       "./configure"
                       "-verbose"
                       "-prefix" out
+                      "-nomake" "examples demos"
                       ;; Note: Don't pass '-docdir' since 'qmake' and
                       ;; libQtCore would record its value, thereby defeating
                       ;; the whole point of having a separate output.
@@ -457,6 +460,8 @@ system, and the core design of Django is reused in Grantlee.")
                       ;; Skip the webkit module; it fails to build on armhf
                       ;; and, apart from that, may pose security risks.
                       "-no-webkit"
+                      ;; don't use the precompiled headers
+                      "-no-pch"
                       ;; drop special machine instructions not supported
                       ;; on all instances of the target
                       ,@(if (string-prefix? "x86_64"
