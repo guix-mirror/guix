@@ -9,4 +9,4 @@ stop on runlevel [016]
 
 task
 
-exec @localstatedir@/guix/profiles/per-user/root/guix-profile/bin/guix publish --user=nobody --port=8181
+exec @localstatedir@/guix/profiles/per-user/root/current-guix/bin/guix publish --user=nobody --port=8181
