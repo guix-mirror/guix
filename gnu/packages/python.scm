@@ -9763,32 +9763,25 @@ etc.")
 (define-public python-stem
   (package
     (name "python-stem")
-    (version "1.6.0")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stem" version))
        (sha256
         (base32
-         "1va9p3ij7lxg6ixfsvaql06dn11l3fgpxmss1dhlvafm7sqizznp"))))
+         "1awiglfiajnx2hva9aqpj3fmdvdb4qg7cwnlfyih827m68y3cq8v"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'fix-test-environment
-           (lambda _
-             ;; Fixes: FileNotFoundError: [Errno 2] No such file or directory:
-             ;; '/tmp/guix-build-python-stem-1.6.0.drv-0/stem-1.6.0/.gitignore'.
-             (with-output-to-file ".gitignore"
-               (lambda _ (format #t "%")))
-             #t))
          (replace 'check
            (lambda _
              (invoke "./run_tests.py" "--unit")
              #t)))))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-pep8" ,python-pep8)
+       ("python-pycodestyle" ,python-pycodestyle)
        ("python-pyflakes" ,python-pyflakes)))
     (home-page "https://stem.torproject.org/")
     (synopsis
