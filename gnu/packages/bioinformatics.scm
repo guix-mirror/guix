@@ -1332,7 +1332,7 @@ gapped, local, and paired-end alignment modes.")
 (define-public tophat
   (package
     (name "tophat")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1340,13 +1340,12 @@ gapped, local, and paired-end alignment modes.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "168zlzykq622zbgkh90a90f1bdgsxkscq2zxzbj8brq80hbjpyp7"))
-              (patches (search-patches "tophat-build-with-later-seqan.patch"))
+                "19add02kv2xhd6ihd779dr7x35ggym3jqr0m5c4315i1yfb0p11p"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Remove bundled SeqAn and samtools
-                  (delete-file-recursively "src/SeqAn-1.3")
+                  (delete-file-recursively "src/SeqAn-1.4.2")
                   (delete-file-recursively "src/samtools-0.1.18")
                   #t))))
     (build-system gnu-build-system)
