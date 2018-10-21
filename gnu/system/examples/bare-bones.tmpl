@@ -44,7 +44,7 @@
 
   ;; Add services to the baseline: a DHCP client and
   ;; an SSH server.
-  (services (cons* (dhcp-client-service)
+  (services (cons* (service dhcp-client-service-type)
                    (service openssh-service-type
                             (openssh-configuration
                               (port-number 2222)))

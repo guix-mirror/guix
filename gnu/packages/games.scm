@@ -246,8 +246,8 @@ canyons and wait for the long I-shaped block to clear four rows at a time.")
     (license license:gpl3+)))
 
 (define-public cataclysm-dda
-  (let ((commit "ad3b0c3d521292d119f97a83390e7acfe9e9e7f7")
-        (revision "1"))
+  (let ((commit "0b2c194e5c6a06f4fbf14a0ec1260e0f3cf2567c")
+        (revision "2"))
     (package
       (name "cataclysm-dda")
       ;; This denotes the version released after the 0.C release.
@@ -260,7 +260,7 @@ canyons and wait for the long I-shaped block to clear four rows at a time.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1kdgbl8zqd53f5yilm2c9nyq3w6585yxl5jvgxy65dlpzxcqqj7y"))
+                  "1yzsn0y2g27bvbxjvivjyjhkmf2w5na1qqw5qfkswcfqqwym2y33"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -1000,7 +1000,7 @@ Every puzzle has a complete solution, although there may be more than one.")
 (define-public retux
   (package
     (name "retux")
-    (version "1.3.5")
+    (version "1.3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/retux/"
@@ -1008,7 +1008,7 @@ Every puzzle has a complete solution, although there may be more than one.")
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "1pcrh3z16fl412r3k7xccrgika19ahb1xh90jihgl8yy7zza2i6p"))))
+                "01bidh4zisjp3nc436x0g85v60dvwb3ig37i7y01sa71j8fm4fmb"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -2137,7 +2137,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.4")
+    (version "1.14.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -2146,7 +2146,7 @@ falling, themeable graphics and sounds, and replays.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1hw1ap8xxpdwyx1sf8fm1g75p6724y3hwb4kpvyqbsq7bwfwsb9i"))))
+                "1kgpj2f22nnx4mwd1zis3s5ny2983aasgqsmz7wnqaq7n6a7ac85"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
@@ -5355,7 +5355,7 @@ You can save humanity and get programming skills!")
     (build-system cmake-build-system)
     (inputs `(("bzip2" ,bzip2)
               ("fluid-3" ,fluid-3)
-              ("fluidsynth" ,fluidsynth)
+              ("fluidsynth" ,fluidsynth-1)      ;XXX: try using 2.x when updating
               ("gtk+3" ,gtk+)
               ("libgme" ,libgme)
               ("libjpeg" ,libjpeg)

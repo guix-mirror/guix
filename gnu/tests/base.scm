@@ -673,7 +673,7 @@ non-ASCII names from /tmp.")
     (name-service-switch %mdns-host-lookup-nss)
     (services (cons* (avahi-service #:debug? #t)
                      (dbus-service)
-                     (dhcp-client-service)        ;needed for multicast
+                     (service dhcp-client-service-type) ;needed for multicast
 
                      ;; Enable heavyweight debugging output.
                      (modify-services (operating-system-user-services

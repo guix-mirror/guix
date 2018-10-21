@@ -65,40 +65,36 @@
   #:use-module (srfi srfi-1))
 
 (define-public libssh
-  ;; This commit from the 'v0-7' branch contains 7 memory-management-related
-  ;; bug fixes that we'd rather have.
-  (let ((commit "239d0f75b5f909174c2ef7fb08d23bcfa6b20ba0")
-        (revision "0"))
-    (package
-      (name "libssh")
-      (version (git-version "0.7.5" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.libssh.org/projects/libssh.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "01w72w1jsgs9ilj3n1gp6qkmdxr9n74i5h2nipi3x1vzm7bv8na1"))
-                (patches (search-patches "libssh-hostname-parser-bug.patch"))
-                (file-name (git-file-name name version))))
-      (build-system cmake-build-system)
-      (outputs '("out" "debug"))
-      (arguments
-       '(#:configure-flags '("-DWITH_GCRYPT=ON")
+  (package
+    (name "libssh")
+    (version "0.7.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.libssh.org/projects/libssh.git")
+                    (commit (string-append "libssh-" version))))
+              (patches (search-patches "libssh-hostname-parser-bug.patch"))
+              (sha256
+               (base32
+                "0slwqa36mhyb6brdv2jvb9fxp7rvsv3ziv67kaxx615jxn52l5pa"))
+              (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (outputs '("out" "debug"))
+    (arguments
+     '(#:configure-flags '("-DWITH_GCRYPT=ON")
 
-         ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test suite.
-         #:tests? #f))
-      (inputs `(("zlib" ,zlib)
-                ("libgcrypt" ,libgcrypt)))
-      (synopsis "SSH client library")
-      (description
-       "libssh is a C library implementing the SSHv2 and SSHv1 protocol for
-client and server implementations.  With libssh, you can remotely execute
-programs, transfer files, and use a secure and transparent tunnel for your
-remote applications.")
-      (home-page "https://www.libssh.org")
-      (license license:lgpl2.1+))))
+       ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test suite.
+       #:tests? #f))
+    (inputs `(("zlib" ,zlib)
+              ("libgcrypt" ,libgcrypt)))
+    (synopsis "SSH client library")
+    (description
+     "libssh is a C library implementing the SSHv2 and SSHv1 protocol for client
+and server implementations.  With libssh, you can remotely execute programs,
+transfer files, and use a secure and transparent tunnel for your remote
+applications.")
+    (home-page "https://www.libssh.org")
+    (license license:lgpl2.1+)))
 
 (define-public libssh2
   (package

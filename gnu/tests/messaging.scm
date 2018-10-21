@@ -35,7 +35,7 @@
   "Run a test of an OS running XMPP-SERVICE, which writes its PID to PID-FILE."
   (define os
     (marionette-operating-system
-     (simple-operating-system (dhcp-client-service)
+     (simple-operating-system (service dhcp-client-service-type)
                               xmpp-service)
      #:imported-modules '((gnu services herd))))
 
@@ -167,7 +167,7 @@
 (define (run-bitlbee-test)
   (define os
     (marionette-operating-system
-     (simple-operating-system (dhcp-client-service)
+     (simple-operating-system (service dhcp-client-service-type)
                               (service bitlbee-service-type
                                        (bitlbee-configuration
                                         (interface "0.0.0.0"))))

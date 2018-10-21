@@ -1376,7 +1376,7 @@ environment set through Direnv.")
 (define-public emacs-ggtags
   (package
     (name "emacs-ggtags")
-    (version "0.8.12")
+    (version "0.8.13")
     (source
      (origin
        (method url-fetch)
@@ -1384,7 +1384,7 @@ environment set through Direnv.")
                            version ".el"))
        (sha256
         (base32
-         "0ny3llk021g6r0s75xdm4hzpbxv393ddm2r6f2xdk8kqnq4gnirp"))))
+         "1qa7lcrcmf76sf6dy8sxbg4adq7rg59fm0n5848w3qxgsr0h45fg"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/leoliu/ggtags")
     (synopsis "Frontend to the GNU Global source code tagging system")
@@ -2162,7 +2162,7 @@ keep pressing the key until it selects what you want.  There's also
 (define-public emacs-fill-column-indicator
   (package
     (name "emacs-fill-column-indicator")
-    (version "1.81")
+    (version "1.89")
     (source
      (origin
        (method url-fetch)
@@ -2171,7 +2171,7 @@ keep pressing the key until it selects what you want.  There's also
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1xwyqbjbbicmvhlb85vg4j5snwy1vd7rfk89ws4viws5ljkhhyg8"))))
+         "09ab01np14bdcsr38xf95kpnvxzqr46mdjmphg3pigwnx39a3jvg"))))
     (build-system emacs-build-system)
     (home-page "https://www.emacswiki.org/emacs/FillColumnIndicator")
     (synopsis "Graphically indicate the fill column")
@@ -2512,7 +2512,7 @@ snippets for yasnippet.")
 (define-public emacs-smart-mode-line
   (package
     (name "emacs-smart-mode-line")
-    (version "2.10.1")
+    (version "2.12.0")
     (source
      (origin
        (method url-fetch)
@@ -2521,7 +2521,7 @@ snippets for yasnippet.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0i9wajabrrsjzwd842q0m2611kf0q31p9hg1pdj81177gynkw8l8"))))
+         "1hn8s6laijmg7w1bgwdfrki6h9vxkbgr8rmmssvd5yqyad5w2sba"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-rich-minority" ,emacs-rich-minority)))
@@ -3091,7 +3091,7 @@ an Emacs minor mode that complements the standard @command{lisp-mode}.
 While lisp-mode supports editing Lisp source files, @command{slime-mode}
 adds support for interacting with a running Common Lisp process
 for compilation, debugging, documentation lookup, and so on.")
-    (license license:gpl2+)))
+    (license (list license:gpl2+ license:public-domain))))
 
 (define-public emacs-popup
   (package
@@ -4757,14 +4757,14 @@ of its name.")
 (define-public emacs-rainbow-mode
   (package
     (name "emacs-rainbow-mode")
-    (version "0.13")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://elpa.gnu.org/packages/rainbow-mode-" version ".el"))
               (sha256
                (base32
-                "1d3aamx6qgqqpqijwsr02ggwrh67gfink1bir0692alfkm3zdddl"))))
+                "0cpga4ax635rfpj7y2vmh7ank0yw00dcy20gjg1mj74r97by8csf"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/rainbow-mode.html")
     (synopsis "Colorize color names in buffers")
@@ -5599,7 +5599,7 @@ This package contains the library runtime.")
 (define-public emacs-nginx-mode
   (package
     (name "emacs-nginx-mode")
-    (version "1.1.4")
+    (version "1.1.9")
     (source
      (origin
        (method url-fetch)
@@ -5609,7 +5609,7 @@ This package contains the library runtime.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1lvkj07kq0jkskr2f61vqb5rlrbnaz9a76ikq40w6925i2r970rr"))))
+         "0bzyrj6zz1hm67bkhw23bam7qc869s3zg7m1rb1c3aa4n0aw90cq"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ajc/nginx-mode")
     (synopsis "Emacs major mode for editing nginx config files")
@@ -5814,7 +5814,7 @@ mode-line.")
 (define-public emacs-yasnippet
   (package
     (name "emacs-yasnippet")
-    (version "0.12.2")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/joaotavora/yasnippet/"
@@ -5822,7 +5822,7 @@ mode-line.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "01jabaz0g67bsziayrxgv74px55fx4nlrcl0csl8f1by2102pwc5"))
+                "12ls2x17agzbrj1xynjbmfa11igqxia4hj4fv6fpr66yci2r1plc"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -7243,7 +7243,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
 (define-public emacs-which-key
   (package
     (name "emacs-which-key")
-    (version "3.0.2")
+    (version "3.3.0")
     (source
      (origin
        (method url-fetch)
@@ -7252,7 +7252,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1xvd70cwq9n31f28viyjxmr3nn8l153gsy6scpszvgvjxkiikv24"))
+         "1lsj314111cp2hjjwnv3f46ws1za6bm39rgy3l19044xf6a68j5w"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (arguments
@@ -7421,7 +7421,7 @@ created by @code{git format-patch}, from @code{magit}, @code{dired} and
 (define-public emacs-erc-hl-nicks
   (package
     (name "emacs-erc-hl-nicks")
-    (version "1.3.2")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
@@ -7430,7 +7430,7 @@ created by @code{git format-patch}, from @code{magit}, @code{dired} and
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "01svpl9bps5kx4y1wnymakxya2cznqmlynvqv2r500wpnbxczrbs"))))
+         "1a1r2kc3688g8c2ybkpwh88kgmnqhg3h3032g2yn4zr9m0n3vpkr"))))
     (build-system emacs-build-system)
     (synopsis "Nickname highlighting for Emacs ERC")
     (description "@code{erc-hl-nicks} highlights nicknames in ERC, an IRC
@@ -9736,7 +9736,7 @@ documentation.")
 (define-public emacs-hy-mode
   (package
     (name "emacs-hy-mode")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
@@ -9745,7 +9745,7 @@ documentation.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0sbga36zkyhzrzcczsyjzll7b9qsa215pnlw51m4li2irm23jh17"))))
+         "0b4pvbr2hf77bq2vsyfsv653q0dab7qzq85wc7kdziw7687jdf2z"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)

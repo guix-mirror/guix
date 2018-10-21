@@ -399,8 +399,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.18.14")
-(define %linux-libre-hash "1gwwx8l283w8v1zylw2haqahvjns5dzqxx9li2586nnl8cfmfnwc")
+(define %linux-libre-version "4.18.15")
+(define %linux-libre-hash "0v6xs85qn1iy2dj3m6s3cfnhbwb1mjy21d9lagjni8dg3jic26hf")
 
 (define %linux-libre-4.18-patches
   (list %boot-logo-patch
@@ -430,8 +430,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.18-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.76")
-(define %linux-libre-4.14-hash "1y5zqf84ngb6f5f85xpd4bdy6mlxr52x19bx3mdrp82awc9fvr7q")
+(define %linux-libre-4.14-version "4.14.77")
+(define %linux-libre-4.14-hash "18y81rga2lhsk7bjckglxz52pvnzf103ar0z2zj611g37wyf83r5")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -440,8 +440,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.133"
-                    "1vr94czdv5alzsgm2k1r6wqm01r2zafrayjn10l6kdr4g7aga488"
+  (make-linux-libre "4.9.134"
+                    "0f5qif27k0mhc57d98arbfkq7zlvg0ra2gz6g5fasblyjz3j7w7h"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -3671,7 +3671,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
   (package
     (name "rng-tools")
     (home-page "https://github.com/nhorman/rng-tools")
-    (version "6.5")
+    (version "6.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page)
@@ -3679,7 +3679,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "11kw1rcgzmgzwk7g1w2g0nzjraqb0pf24gxpy50k4ls2qxslw3rk"))))
+                "0c32sxfvngdjzfmxn5ngc5yxwi8ij3yl216nhzyz9r31qi3m14v7"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.

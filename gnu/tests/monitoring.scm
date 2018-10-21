@@ -85,7 +85,7 @@
 
 (define %prometheus-node-exporter-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service prometheus-node-exporter-service-type
             (prometheus-node-exporter-configuration))))
 

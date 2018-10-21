@@ -53,6 +53,7 @@
                static-networking-service-type)
   #:export (%facebook-host-aliases
             dhcp-client-service
+            dhcp-client-service-type
 
             dhcpd-service-type
             dhcpd-configuration
@@ -202,9 +203,10 @@ fe80::1%lo0 apps.facebook.com\n")
                                     "-pf" #$pid-file ifaces))))
                    (and (zero? (cdr (waitpid pid)))
                         (read-pid-file #$pid-file)))))
-      (stop #~(make-kill-destructor))))))
+      (stop #~(make-kill-destructor))))
+   isc-dhcp))
 
-(define* (dhcp-client-service #:key (dhcp isc-dhcp))
+(define* (dhcp-client-service #:key (dhcp isc-dhcp)) ;deprecated
   "Return a service that runs @var{dhcp}, a Dynamic Host Configuration
 Protocol (DHCP) client, on all the non-loopback network interfaces."
   (service dhcp-client-service-type dhcp))
@@ -295,7 +297,8 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
   ntp-configuration?
   (ntp      ntp-configuration-ntp
             (default ntp))
-  (servers  ntp-configuration-servers)
+  (servers  ntp-configuration-servers
+            (default %ntp-servers))
   (allow-large-adjustment? ntp-allow-large-adjustment?
                            (default #f)))
 
@@ -368,9 +371,10 @@ restrict -6 ::1\n"))
                 (description
                  "Run the @command{ntpd}, the Network Time Protocol (NTP)
 daemon of the @uref{http://www.ntp.org, Network Time Foundation}.  The daemon
-will keep the system clock synchronized with that of the given servers.")))
+will keep the system clock synchronized with that of the given servers.")
+                (default-value (ntp-configuration))))
 
-(define* (ntp-service #:key (ntp ntp)
+(define* (ntp-service #:key (ntp ntp)             ;deprecated
                       (servers %ntp-servers)
                       allow-large-adjustment?)
   "Return a service that runs the daemon from @var{ntp}, the
@@ -1062,10 +1066,10 @@ networking."))))
                                    #~("-u")
                                    #~())
                             #$@(if interface
-                                   #~(string-append "-i" #$interface)
+                                   #~((string-append "-i" #$interface))
                                    #~())
                             #$@(if config-file
-                                   #~(string-append "-c" #$config-file)
+                                   #~((string-append "-c" #$config-file))
                                    #~())
                             #$@extra-options)
                       #:pid-file #$pid-file))

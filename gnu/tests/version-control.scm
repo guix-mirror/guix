@@ -92,7 +92,7 @@
   ;; Operating system under test.
   (let ((base-os
          (simple-operating-system
-          (dhcp-client-service)
+          (service dhcp-client-service-type)
           (service cgit-service-type
                    (cgit-configuration
                     (nginx %cgit-configuration-nginx)))
@@ -237,7 +237,7 @@ HTTP-PORT."
 
 (define %git-http-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service fcgiwrap-service-type)
    (service nginx-service-type %git-nginx-configuration)
    %test-repository-service))
@@ -328,7 +328,7 @@ HTTP-PORT."
 
 (define %gitolite-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service openssh-service-type)
    (service gitolite-service-type
             (gitolite-configuration

@@ -181,7 +181,7 @@ fi
 alias ls='ls -p --color=auto'
 alias ll='ls -l'
 alias grep='grep --color=auto'\n"))
-        (zlogin    (plain-file "zlogin" "\
+        (zprofile    (plain-file "zprofile" "\
 # Honor system-wide environment variables
 source /etc/profile\n"))
         (guile-wm  (computed-file "guile-wm" copy-guile-wm))
@@ -197,7 +197,10 @@ set debug-file-directory ~/.guix-profile/lib/debug
 set auto-load safe-path /gnu/store/*/lib\n")))
     `((".bash_profile" ,profile)
       (".bashrc" ,bashrc)
-      (".zlogin" ,zlogin)
+      ;; Zsh sources ~/.zprofile before ~/.zshrc, and it sources ~/.zlogin
+      ;; after ~/.zshrc.  To avoid interfering with any customizations a user
+      ;; may have made in their ~/.zshrc, put this in .zprofile, not .zlogin.
+      (".zprofile" ,zprofile)
       (".nanorc" ,(plain-file "nanorc" "\
 # Include all the syntax highlighting modules.
 include /run/current-system/profile/share/nano/*.nanorc\n"))

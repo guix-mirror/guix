@@ -398,28 +398,30 @@ access the common Google services, and has full asynchronous support.")
 (define-public libgxps
   (package
     (name "libgxps")
-    (version "0.2.5")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches (search-patches "libgxps-CVE-2017-11590.patch"))
               (sha256
                (base32
-                "184r06s8g20cfigg7m169n42jjsc9wmzzlycr4g1fxxhr72r8x9y"))))
-    (build-system gnu-build-system)
+                "1bhgrpb6ndlp11qwr95g9piklmjcsca7bi04f8gy9ziipm1i6as1"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("cairo" ,cairo)
-       ("glib" ,glib)
-       ("libarchive" ,libarchive)
-       ("libjpeg" ,libjpeg)
+     `(("gtk+" ,gtk+)
+       ("libjpeg" ,libjpeg-turbo)
        ("lcms" ,lcms)
        ("libtiff" ,libtiff)
        ("nettle" ,nettle)))
+    (propagated-inputs
+     ;; In Requires of libgxps.pc.
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("libarchive" ,libarchive)))
     (home-page "https://wiki.gnome.org/Projects/libgxps")
     (synopsis "GObject-based library for handling and rendering XPS documents")
     (description
@@ -7225,6 +7227,71 @@ into audio files that a personal computer or digital audio player can play.
 It supports ripping to any audio codec supported by a GStreamer plugin, such as
 mp3, Ogg Vorbis and FLAC")
     (license license:gpl2+)))
+
+(define-public soundconverter
+  (package
+    (name "soundconverter")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/soundconverter/trunk/"
+                           version "/+download/"
+                           "soundconverter-" version ".tar.xz"))
+
+       (sha256
+        (base32
+         "1wrxf5py54xplrf97qp24pzbis0cvax5c6k0c7vr3z3ry8r7gd7c"))
+       (patches
+        (search-patches
+         "soundconverter-remove-gconf-dependency.patch"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           (guix build glib-or-gtk-build-system)
+                           ,@%gnu-build-system-modules)
+
+       #:modules ((guix build glib-or-gtk-build-system)
+                  (guix build utils)
+                  ((guix build gnu-build-system) #:prefix gnu:)
+                  ((guix build python-build-system) #:prefix python:))
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-POTFILES.in
+           (lambda _
+             (substitute* "po/POTFILES.in"
+               ;; This file doesn't exist, so without removing it, the 'check
+               ;; phase fails for the po directory
+               (("soundconverter/gconfstore\\.py") ""))))
+         (add-after 'install 'wrap-soundconverter-for-python
+           (assoc-ref python:%standard-phases 'wrap))
+         (add-after 'install 'wrap-soundconverter
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                   (gst-plugin-path   (getenv "GST_PLUGIN_SYSTEM_PATH")))
+               (wrap-program (string-append out "/bin/soundconverter")
+                 `("GI_TYPELIB_PATH"        ":" prefix (,gi-typelib-path))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (home-page "http://soundconverter.org/")
+    (synopsis "Convert between audio formats with a graphical interface")
+    (description
+     "SoundConverter supports converting between many audio formats including
+Opus, Ogg Vorbis, FLAC and more.  It supports parallel conversion, and
+configurable file renaming. ")
+    (license license:gpl3)))
 
 (define-public workrave
   (let ((commit "v1_10_21"))

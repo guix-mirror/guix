@@ -886,7 +886,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libgdata-glib-duplicate-tests.patch	\
   %D%/packages/patches/libgnome-encoding.patch			\
   %D%/packages/patches/libgnomeui-utf8.patch			\
-  %D%/packages/patches/libgxps-CVE-2017-11590.patch		\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
@@ -1150,6 +1149,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-login.patch				\
   %D%/packages/patches/snappy-add-O2-flag-in-CmakeLists.txt.patch	\
   %D%/packages/patches/sooperlooper-build-with-wx-30.patch 	\
+  %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
   %D%/packages/patches/soundtouch-CVE-2018-14044-14045.patch 	\
   %D%/packages/patches/soundtouch-CVE-2018-1000223.patch 	\
   %D%/packages/patches/steghide-fixes.patch			\

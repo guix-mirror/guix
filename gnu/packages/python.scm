@@ -10131,14 +10131,14 @@ functionality in the command line.")
 (define-public python-glances
   (package
   (name "python-glances")
-  (version "2.7.1")
+  (version "3.0.2")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "Glances" version))
       (sha256
         (base32
-          "11jbq40g8alsbirnd4kiagznqg270247i0m8qhi48ldf2i5xppxg"))))
+          "09fxysfp1n16csqvzvawy74qm6a94nvwjf3vcf5gkqp4i6k4vjjy"))))
   (build-system python-build-system)
   (propagated-inputs
    `(("python-psutil" ,python-psutil)))

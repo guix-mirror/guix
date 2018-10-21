@@ -81,7 +81,7 @@ baz > 13.37")
    (dummy-package "foo"
                   (source (dummy-origin
                            (uri
-                            "https://pypi.io/packages/source/p/psutil/psutil-4.3.0.tar.gz"))))))
+                            "https://pypi.org/packages/source/p/psutil/psutil-4.3.0.tar.gz"))))))
 
 (test-equal "guix-package->pypi-name, new URL style"
   "certbot"
