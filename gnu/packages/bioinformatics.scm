@@ -2110,7 +2110,7 @@ with Python.")
 (define-public deeptools
   (package
     (name "deeptools")
-    (version "3.1.2")
+    (version "3.1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2119,7 +2119,7 @@ with Python.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06fdpp6cg3xiwryxjhixvfysl4z0ps1crjgia587qa9ikqpsa7fd"))))
+                "1vggnf52g6q2vifdl4cyi7s2fnfqq0ky2zrkj5zv2qfzsc3p3siw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
