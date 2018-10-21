@@ -2481,17 +2481,16 @@ ChIP-Seq, and analysis of metagenomic data.")
 (define-public express-beta-diversity
   (package
    (name "express-beta-diversity")
-   (version "1.0.7")
+   (version "1.0.8")
    (source (origin
-             (method url-fetch)
-             (uri
-              (string-append
-               "https://github.com/dparks1134/ExpressBetaDiversity/archive/v"
-               version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/dparks1134/ExpressBetaDiversity.git")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1djvdlmqvjf6h0zq7w36y8cl5cli6rgj86x65znl48agnwmzxfxr"))))
+               "0s0yzg5c21349rh7x4w9266jsvnp7j1hp9cf8sk32hz8nvrj745x"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases
@@ -2499,17 +2498,13 @@ ChIP-Seq, and analysis of metagenomic data.")
         (delete 'configure)
         (add-before 'build 'enter-source (lambda _ (chdir "source") #t))
         (replace 'check
-                 (lambda _ (zero? (system* "../bin/ExpressBetaDiversity"
-                                           "-u"))))
-        (add-after 'check 'exit-source (lambda _ (chdir "..") #t))
+          (lambda _ (invoke "../bin/ExpressBetaDiversity" "-u") #t))
         (replace 'install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((bin (string-append (assoc-ref outputs "out")
-                                             "/bin")))
-                     (mkdir-p bin)
-                     (install-file "scripts/convertToEBD.py" bin)
-                     (install-file "bin/ExpressBetaDiversity" bin)
-                     #t))))))
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+              (install-file "../scripts/convertToEBD.py" bin)
+              (install-file "../bin/ExpressBetaDiversity" bin)
+              #t))))))
    (inputs
     `(("python" ,python-2)))
    (home-page "http://kiwi.cs.dal.ca/Software/ExpressBetaDiversity")
