@@ -1382,7 +1382,7 @@ gapped, local, and paired-end alignment modes.")
        ("python" ,python-2)
        ("perl" ,perl)
        ("zlib" ,zlib)
-       ("seqan" ,seqan)))
+       ("seqan" ,seqan-1)))
     (home-page "http://ccb.jhu.edu/software/tophat/index.shtml")
     (synopsis "Spliced read mapper for RNA-Seq data")
     (description
@@ -5733,6 +5733,51 @@ writing files into the .sra format.")
 (define-public seqan
   (package
     (name "seqan")
+    (version "2.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/seqan/seqan/releases/"
+                                  "download/seqan-v" version
+                                  "/seqan-library-" version ".tar.xz"))
+              (sha256
+               (base32
+                "19a1rlxx03qy1i1iriicly68w64yjxbv24g9gdywnfmq998v35yx"))))
+    ;; The documentation is 7.8MB and the includes are 3.6MB heavy, so it
+    ;; makes sense to split the outputs.
+    (outputs '("out" "doc"))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((tar (assoc-ref %build-inputs "tar"))
+               (xz  (assoc-ref %build-inputs "xz"))
+               (out (assoc-ref %outputs "out"))
+               (doc (assoc-ref %outputs "doc")))
+           (setenv "PATH" (string-append tar "/bin:" xz "/bin"))
+           (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
+           (chdir (string-append "seqan-library-" ,version))
+           (copy-recursively "include" (string-append out "/include"))
+           (copy-recursively "share"  (string-append doc "/share"))
+           #t))))
+    (native-inputs
+     `(("source" ,source)
+       ("tar" ,tar)
+       ("xz" ,xz)))
+    (home-page "http://www.seqan.de")
+    (synopsis "Library for nucleotide sequence analysis")
+    (description
+     "SeqAn is a C++ library of efficient algorithms and data structures for
+the analysis of sequences with the focus on biological data.  It contains
+algorithms and data structures for string representation and their
+manipulation, online and indexed string search, efficient I/O of
+bioinformatics file formats, sequence alignment, and more.")
+    (license license:bsd-3)))
+
+(define-public seqan-1
+  (package (inherit seqan)
+    (name "seqan")
     (version "1.4.2")
     (source (origin
               (method url-fetch)
@@ -5763,16 +5808,7 @@ writing files into the .sra format.")
     (native-inputs
      `(("source" ,source)
        ("tar" ,tar)
-       ("bzip2" ,bzip2)))
-    (home-page "http://www.seqan.de")
-    (synopsis "Library for nucleotide sequence analysis")
-    (description
-     "SeqAn is a C++ library of efficient algorithms and data structures for
-the analysis of sequences with the focus on biological data.  It contains
-algorithms and data structures for string representation and their
-manipulation, online and indexed string search, efficient I/O of
-bioinformatics file formats, sequence alignment, and more.")
-    (license license:bsd-3)))
+       ("bzip2" ,bzip2)))))
 
 (define-public seqmagick
   (package
