@@ -1894,31 +1894,18 @@ time.")
 (define-public crossmap
   (package
     (name "crossmap")
-    (version "0.2.1")
+    (version "0.2.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/crossmap/CrossMap-"
-                                  version ".tar.gz"))
+              (uri (pypi-uri "CrossMap" version))
               (sha256
                (base32
-                "07y179f63d7qnzdvkqcziwk9bs3k4zhp81q392fp1hwszjdvy22f"))
-              ;; This patch has been sent upstream already and is available
-              ;; for download from Sourceforge, but it has not been merged.
-              (patches (search-patches "crossmap-allow-system-pysam.patch"))
-              (modules '((guix build utils)))
-              (snippet '(begin
-                          ;; remove bundled copy of pysam
-                          (delete-file-recursively "lib/pysam")
-                          #t))))
+                "1byhclrqnqpvc1rqkfh4jwj6yhn0x9y7jk47i0qcjlhk0pjkw92p"))))
     (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-env
-           (lambda _ (setenv "CROSSMAP_USE_SYSTEM_PYSAM" "1") #t)))))
+    (arguments `(#:python ,python-2))
     (inputs
-     `(("python-numpy" ,python2-numpy)
+     `(("python-bx-python" ,python2-bx-python)
+       ("python-numpy" ,python2-numpy)
        ("python-pysam" ,python2-pysam)
        ("zlib" ,zlib)))
     (native-inputs
