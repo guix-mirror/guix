@@ -3742,75 +3742,48 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
 (define-public khmer
   (package
     (name "khmer")
-    (version "2.0")
+    (version "2.1.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "khmer" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dib-lab/khmer.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wb05shqh77v00256qlm68vbbx3kl76fyzihszbz5nhanl4ni33a"))
-       (patches (search-patches "khmer-use-libraries.patch"))))
+         "02x38d9jw2r58y8dmnj4hffy9wxv1yc1jwbvdbhby9dxndv94r9m"))
+       (patches (search-patches "khmer-use-libraries.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled libraries.  We do not replace the bundled seqan
+           ;; as it is a modified subset of the old version 1.4.1.
+           ;;
+           ;; We do not replace the bundled MurmurHash as the canonical
+           ;; repository for this code 'SMHasher' is unsuitable for providing
+           ;; a library.  See
+           ;; https://lists.gnu.org/archive/html/guix-devel/2016-06/msg00977.html
+           (delete-file-recursively "third-party/zlib")
+           (delete-file-recursively "third-party/bzip2")
+           #t))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'set-paths
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Delete bundled libraries.
-             (delete-file-recursively "third-party/zlib")
-             (delete-file-recursively "third-party/bzip2")
-             ;; Replace bundled seqan.
-             (let* ((seqan-all "third-party/seqan")
-                    (seqan-include (string-append
-                                    seqan-all "/core/include")))
-               (delete-file-recursively seqan-all)
-               (copy-recursively (string-append (assoc-ref inputs "seqan")
-                                                "/include/seqan")
-                          (string-append seqan-include "/seqan")))
-             ;; We do not replace the bundled MurmurHash as the canonical
-             ;; repository for this code 'SMHasher' is unsuitable for
-             ;; providing a library.  See
-             ;; https://lists.gnu.org/archive/html/guix-devel/2016-06/msg00977.html
-             #t))
          (add-after 'unpack 'set-cc
-           (lambda _
-             (setenv "CC" "gcc")
-             #t))
-         ;; It is simpler to test after installation.
-         (delete 'check)
-         (add-after 'install 'post-install-check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "PATH"
-                       (string-append
-                        (getenv "PATH")
-                        ":"
-                        (assoc-ref outputs "out")
-                        "/bin"))
-               (setenv "PYTHONPATH"
-                       (string-append
-                        (getenv "PYTHONPATH")
-                        ":"
-                        out
-                        "/lib/python"
-                        (string-take (string-take-right
-                                      (assoc-ref inputs "python") 5) 3)
-                        "/site-packages"))
-               (with-directory-excursion "build"
-                 (zero? (system* "nosetests" "khmer" "--attr"
-                                 "!known_failing")))))))))
+           (lambda _ (setenv "CC" "gcc") #t))
+         ;; FIXME: This fails with "permission denied".
+         (delete 'reset-gzip-timestamps))))
     (native-inputs
-     `(("seqan" ,seqan)
-       ("python-nose" ,python-nose)))
+     `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (inputs
      `(("zlib" ,zlib)
        ("bzip2" ,bzip2)
        ("python-screed" ,python-screed)
-       ("python-bz2file" ,python-bz2file)
-       ;; Tests fail when gcc-5 is used for compilation.  Use gcc-4.9 at least
-       ;; until the next version of khmer (likely 2.1) is released.
-       ("gcc" ,gcc-4.9)))
+       ("python-bz2file" ,python-bz2file)))
     (home-page "https://khmer.readthedocs.org/")
     (synopsis "K-mer counting, filtering and graph traversal library")
     (description "The khmer software is a set of command-line tools for
