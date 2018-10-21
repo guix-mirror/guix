@@ -1945,19 +1945,20 @@ files.  The code was previously part of the cutadapt tool.")
 (define-public cutadapt
   (package
     (name "cutadapt")
-    (version "1.16")
+    (version "1.18")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/marcelm/cutadapt.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "09pr02067jiks19nc0aby4xp70hhgvb554i2y1c04rv1m401w7q8"))))
+                "08bbfwyc0kvcd95jf2s95xiv9s3cbsxm39ydl0qck3fw3cviwxpg"))))
     (build-system python-build-system)
     (inputs
-     `(("python-xopen" ,python-xopen)))
+     `(("python-dnaio" ,python-dnaio)
+       ("python-xopen" ,python-xopen)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)))
