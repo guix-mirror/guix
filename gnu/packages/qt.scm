@@ -433,50 +433,50 @@ system, and the core design of Django is reused in Grantlee.")
               (substitute* "src/corelib/global/global.pri"
                 (("/bin/ls") (which "ls")))
 
-              (zero? (system*
-                      "./configure"
-                      "-verbose"
-                      "-prefix" out
-                      "-nomake" "examples demos"
-                      ;; Note: Don't pass '-docdir' since 'qmake' and
-                      ;; libQtCore would record its value, thereby defeating
-                      ;; the whole point of having a separate output.
-                      "-datadir" (string-append out "/share/qt-" ,version
-                                                "/data")
-                      "-importdir" (string-append out "/lib/qt-4"
-                                                  "/imports")
-                      "-plugindir" (string-append out "/lib/qt-4"
-                                                  "/plugins")
-                      "-translationdir" (string-append out "/share/qt-" ,version
-                                                       "/translations")
-                      "-demosdir"    (string-append out "/share/qt-" ,version
-                                                    "/demos")
-                      "-examplesdir" (string-append out "/share/qt-" ,version
-                                                    "/examples")
-                      "-opensource"
-                      "-confirm-license"
-                      ;; explicitly link with dbus instead of dlopening it
-                      "-dbus-linked"
-                      ;; Skip the webkit module; it fails to build on armhf
-                      ;; and, apart from that, may pose security risks.
-                      "-no-webkit"
-                      ;; don't use the precompiled headers
-                      "-no-pch"
-                      ;; drop special machine instructions not supported
-                      ;; on all instances of the target
-                      ,@(if (string-prefix? "x86_64"
-                                            (or (%current-target-system)
-                                                (%current-system)))
-                            '()
-                            '("-no-mmx"
-                              "-no-3dnow"
-                              "-no-sse"
-                              "-no-sse2"))
-                      "-no-sse3"
-                      "-no-ssse3"
-                      "-no-sse4.1"
-                      "-no-sse4.2"
-                      "-no-avx")))))
+              (invoke
+                "./configure"
+                "-verbose"
+                "-prefix" out
+                "-nomake" "examples demos"
+                ;; Note: Don't pass '-docdir' since 'qmake' and
+                ;; libQtCore would record its value, thereby defeating
+                ;; the whole point of having a separate output.
+                "-datadir" (string-append out "/share/qt-" ,version
+                                          "/data")
+                "-importdir" (string-append out "/lib/qt-4"
+                                            "/imports")
+                "-plugindir" (string-append out "/lib/qt-4"
+                                            "/plugins")
+                "-translationdir" (string-append out "/share/qt-" ,version
+                                                 "/translations")
+                "-demosdir"    (string-append out "/share/qt-" ,version
+                                              "/demos")
+                "-examplesdir" (string-append out "/share/qt-" ,version
+                                              "/examples")
+                "-opensource"
+                "-confirm-license"
+                ;; explicitly link with dbus instead of dlopening it
+                "-dbus-linked"
+                ;; Skip the webkit module; it fails to build on armhf
+                ;; and, apart from that, may pose security risks.
+                "-no-webkit"
+                ;; don't use the precompiled headers
+                "-no-pch"
+                ;; drop special machine instructions not supported
+                ;; on all instances of the target
+                ,@(if (string-prefix? "x86_64"
+                                      (or (%current-target-system)
+                                          (%current-system)))
+                      '()
+                      '("-no-mmx"
+                        "-no-3dnow"
+                        "-no-sse"
+                        "-no-sse2"))
+                "-no-sse3"
+                "-no-ssse3"
+                "-no-sse4.1"
+                "-no-sse4.2"
+                "-no-avx"))))
          (add-after
           'install 'move-doc
           (lambda* (#:key outputs #:allow-other-keys)
