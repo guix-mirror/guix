@@ -5602,25 +5602,38 @@ complexity samples.")
 (define-public python-screed
   (package
     (name "python-screed")
-    (version "0.9")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "screed" version))
        (sha256
         (base32
-         "18czszp9fkx3j6jr7y5kp6dfialscgddk05mw1zkhh2zhn0jd8i0"))))
+         "148vcb7w2wr6a4w6vs2bsxanbqibxfk490zbcbg4m61s8669zdjx"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     '(#:phases
        (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append (getenv "PYTHONPATH") ":."))
-             (zero? (system* "nosetests" "--attr" "!known_failing")))))))
+         ;; Tests must be run after installation, as the "screed" command does
+         ;; not exist right after building.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "PYTHONPATH"
+                       (string-append out "/lib/python"
+                                      (string-take (string-take-right
+                                                    (assoc-ref inputs "python")
+                                                    5) 3)
+                                      "/site-packages:"
+                                      (getenv "PYTHONPATH")))
+               (setenv "PATH" (string-append out "/bin:" (getenv "PATH"))))
+             (invoke "python" "setup.py" "test")
+             #t)))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (inputs
      `(("python-bz2file" ,python-bz2file)))
     (home-page "https://github.com/dib-lab/screed/")
