@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -2273,6 +2273,44 @@ space-stripped macros.")
      "This package defines a command @code{\\captionof} for putting a caption
 to something that's not a float.")
     (license license:lppl)))
+
+(define-public texlive-latex-doi
+  (package
+    (name "texlive-latex-doi")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/doi"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0378rdmrgr2lzbfi4qqy4dfpj5im20diyd8z8b9m4mlg05r7wgnb"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/doi")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/doi")
+    (synopsis "Create correct hyperlinks for DOI numbers")
+    (description
+     "You can hyperlink DOI numbers to doi.org.  However, some publishers have
+elected to use nasty characters in their DOI numbering scheme (@code{<},
+@code{>}, @code{_} and @code{;} have all been spotted).  This will either
+upset LaTeX, or your PDF reader.  This package contains a single user-level
+command @code{\\doi{}}, which takes a DOI number, and creates a correct
+hyperlink to the target of the DOI.")
+    ;; Any version of the LPPL.
+    (license license:lppl1.3+)))
 
 (define-public texlive-latex-etoolbox
   (package
