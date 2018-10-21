@@ -2063,7 +2063,21 @@ trees (phylogenies) and characters.")
     (license license:bsd-3)))
 
 (define-public python2-dendropy
-  (package-with-python2 python-dendropy))
+  (let ((base (package-with-python2 python-dendropy)))
+    (package
+      (inherit base)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'remove-failing-test
+             (lambda _
+               ;; This test fails when the full test suite is run, as documented
+               ;; at https://github.com/jeetsukumaran/DendroPy/issues/74
+               (substitute* "tests/test_dataio_nexml_reader_tree_list.py"
+                 (("test_collection_comments_and_annotations")
+                  "do_not_test_collection_comments_and_annotations"))
+               #t)))
+         ,@(package-arguments base))))))
 
 (define-public python-py2bit
   (package
