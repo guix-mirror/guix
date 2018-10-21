@@ -1,0 +1,14 @@
+This test incorrectly expects the libpurple search path to initially
+contain exactly one element.  Remove this incorrect assertion.
+
+--- telegram-purple-1.3.1-checkout/test/loadtest.c	2018-10-27 16:25:06.258459600 +0200
++++ telegram-purple-1.3.1-checkout/test/loadtest.c	2018-10-27 16:25:11.830434770 +0200
+@@ -156,7 +156,7 @@ static void tdf_inject_plugin (void) {
+   printf ("Injecting our module into purple_plugins_* ...\n");
+   purple_plugins_init ();
+   GList *search_paths = purple_plugins_get_search_paths ();
+-  assert (!search_paths->prev && !search_paths->next && search_paths->data);
++  assert (!search_paths->prev && search_paths->data);
+   GList *new_paths = g_list_append (search_paths, g_strdup ("bin/"));
+   assert (new_paths == search_paths);
+   // Load "my" path before the default.
