@@ -64,9 +64,11 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages vulkan)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (srfi srfi-1))
 
 (define-public grantlee
   (package
@@ -224,6 +226,7 @@ system, and the core design of Django is reused in Grantlee.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)
        ("ruby" ,ruby)
+       ("vulkan-headers" ,vulkan-headers)
        ("which" ,(@ (gnu packages base) which))))
     (arguments
      `(#:parallel-build? #f ; Triggers race condition in qtbase module on Hydra.
@@ -401,10 +404,16 @@ system, and the core design of Django is reused in Grantlee.")
               ;; Remove webkit module, which is not built.
               '(begin (delete-file-recursively "src/3rdparty/webkit")
                       #t))))
-    (inputs `(,@(alist-delete "harfbuzz"
-                              (alist-delete "libjpeg" (package-inputs qt)))
-              ("libjepg" ,libjpeg-8)
-              ("libsm" ,libsm)))
+    (inputs
+     `(,@(fold alist-delete
+               (package-inputs qt)
+               '("harfbuzz" "libjpeg"))
+       ("libjpeg" ,libjpeg-8)
+       ("libsm" ,libsm)))
+    (native-inputs
+     `(,@(fold alist-delete
+               (package-native-inputs qt)
+               '("vulkan-headers"))))
 
     ;; Note: there are 37 MiB of examples and a '-exampledir' configure flags,
     ;; but we can't make them a separate output because "out" and "examples"
@@ -560,6 +569,7 @@ system, and the core design of Django is reused in Grantlee.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)
+       ("vulkan-headers" ,vulkan-headers)
        ("ruby" ,ruby)))
     (arguments
      `(#:phases
@@ -1283,7 +1293,8 @@ positioning and geolocation plugins.")))
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
     (native-inputs
      `(("perl" ,perl)
-       ("qtdeclarative" ,qtdeclarative)))
+       ("qtdeclarative" ,qtdeclarative)
+       ("vulkan-headers" ,vulkan-headers)))
     (inputs
      `(("mesa" ,mesa)
        ("qtbase" ,qtbase)))
