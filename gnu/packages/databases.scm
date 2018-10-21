@@ -1211,6 +1211,18 @@ is in the public domain.")
        ((#:configure-flags flags)
         `(cons "--enable-fts5" ,flags))))))
 
+;; This is used by Qt.
+(define-public sqlite-with-column-metadata
+  (package (inherit sqlite)
+    (name "sqlite-with-column-metadata")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sqlite)
+       ((#:configure-flags flags)
+        `(list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
+                              "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
+                              "-DSQLITE_ENABLE_DBSTAT_VTAB "
+                              "-DSQLITE_ENABLE_COLUMN_METADATA")))))))
+
 (define-public tdb
   (package
     (name "tdb")

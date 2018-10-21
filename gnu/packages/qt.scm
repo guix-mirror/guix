@@ -135,7 +135,7 @@ system, and the core design of Django is reused in Grantlee.")
                   (lambda (dir)
                     (delete-file-recursively (string-append "qtbase/src/3rdparty/" dir)))
                   (list "double-conversion" "freetype" "harfbuzz-ng"
-                        "libpng" "libjpeg" "pcre2" "xcb"
+                        "libpng" "libjpeg" "pcre2" "sqlite" "xcb"
                         "xkbcommon" "zlib"))
                 (for-each
                   (lambda (dir)
@@ -206,7 +206,7 @@ system, and the core design of Django is reused in Grantlee.")
        ("postgresql" ,postgresql)
        ("pulseaudio" ,pulseaudio)
        ("pcre2" ,pcre2)
-       ;("sqlite" ,sqlite)
+       ("sqlite" ,sqlite-with-column-metadata)
        ("udev" ,eudev)
        ("unixodbc" ,unixodbc)
        ("wayland" ,wayland)
@@ -273,7 +273,7 @@ system, and the core design of Django is reused in Grantlee.")
                        "-no-compile-examples"
                        ;; Most "-system-..." are automatic, but some use
                        ;; the bundled copy by default.
-                       ;"-system-sqlite"
+                       "-system-sqlite"
                        "-system-harfbuzz"
                        "-system-pcre"
                        ;; explicitly link with openssl instead of dlopening it
@@ -503,7 +503,7 @@ system, and the core design of Django is reused in Grantlee.")
                   (lambda (dir)
                     (delete-file-recursively (string-append "src/3rdparty/" dir)))
                   (list "double-conversion" "freetype" "harfbuzz-ng"
-                        "libpng" "libjpeg" "pcre2" "xcb"
+                        "libpng" "libjpeg" "pcre2" "sqlite" "xcb"
                         "xkbcommon" "zlib"))
                 #t))))
     (build-system gnu-build-system)
@@ -545,7 +545,7 @@ system, and the core design of Django is reused in Grantlee.")
        ("pcre2" ,pcre2)
        ("postgresql" ,postgresql)
        ("pulseaudio" ,pulseaudio)
-       ;("sqlite" ,sqlite)
+       ("sqlite" ,sqlite-with-column-metadata)
        ("unixodbc" ,unixodbc)
        ("xcb-util" ,xcb-util)
        ("xcb-util-image" ,xcb-util-image)
@@ -616,10 +616,7 @@ system, and the core design of Django is reused in Grantlee.")
                  "-no-compile-examples"
                  ;; Most "-system-..." are automatic, but some use
                  ;; the bundled copy by default.
-                 ;; System sqlite fails on 5.10+
-                 ;;.obj/qsql_sqlite.o: In function `QSQLiteResultPrivate::initColumns(bool)':
-                 ;;qsql_sqlite.cpp:(.text+0x190c): undefined reference to `sqlite3_column_table_name16'
-                 ;"-system-sqlite"
+                 "-system-sqlite"
                  "-system-harfbuzz"
                  "-system-pcre"
                  ;; explicitly link with openssl instead of dlopening it
