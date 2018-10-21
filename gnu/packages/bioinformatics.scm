@@ -2053,15 +2053,15 @@ accessing bigWig files.")
     (version "4.4.0")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Source from GitHub so that tests are included.
-       (uri
-        (string-append "https://github.com/jeetsukumaran/DendroPy/archive/v"
-                       version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+             (url "https://github.com/jeetsukumaran/DendroPy.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0v2fccny5xjaah546bsch1mw4kh61qq5frz2ibllxs9mp6ih9bsn"))))
+         "097hfyv2kaf4x92i4rjx0paw2cncxap48qivv8zxng4z7nhid0x9"))))
     (build-system python-build-system)
     (home-page "http://packages.python.org/DendroPy/")
     (synopsis "Library for phylogenetics and phylogenetic computing")
