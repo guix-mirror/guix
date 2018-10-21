@@ -317,6 +317,11 @@ generator library for C++.")
                 (string-append (assoc-ref inputs "tzdata")
                                "/share/zoneinfo")))
 
+             ;; Don't phone home to check for updates.¬
+             (substitute* "system/addon-manifest.xml"¬
+               (("<addon optional=\\\"true\\\">service.xbmc.versioncheck</addon>")
+                ""))
+
              ;; Let's disable some tests that are known not to work here.
              ;; Doing this later while in the cmake "../build" directory
              ;; is trickier.
