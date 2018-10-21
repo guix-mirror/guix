@@ -1477,31 +1477,27 @@ well as many of the command line options.")
 (define-public python2-bx-python
   (package
     (name "python2-bx-python")
-    (version "0.7.3")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "bx-python" version))
               (sha256
                (base32
-                "15z2w3bvnc0n4qmb9bd6d8ylc2h2nj883x2w9iixf4x3vki9b22i"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "setup.py"
-                    ;; remove dependency on outdated "distribute" module
-                    (("^from distribute_setup import use_setuptools") "")
-                    (("^use_setuptools\\(\\)") ""))
-                  #t))))
+                "11kksg2rbzihpmcid823xvg42xi88m7sz58rzk29abybkxy0rszs"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;tests fail because test data are not included
        #:python ,python-2))
-    (inputs
+    (propagated-inputs
      `(("python-numpy" ,python2-numpy)
-       ("zlib" ,zlib)))
+       ("python-six" ,python2-six)))
+    (inputs
+     `(("zlib" ,zlib)))
     (native-inputs
-     `(("python-nose" ,python2-nose)))
-    (home-page "http://bitbucket.org/james_taylor/bx-python/")
+     `(("python-lzo" ,python2-lzo)
+       ("python-nose" ,python2-nose)
+       ("python-cython" ,python2-cython)))
+    (home-page "https://github.com/bxlab/bx-python")
     (synopsis "Tools for manipulating biological data")
     (description
      "bx-python provides tools for manipulating biological data, particularly
