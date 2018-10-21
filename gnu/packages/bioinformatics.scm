@@ -1474,9 +1474,9 @@ the original BWA alignment program and shares the genome index structure as
 well as many of the command line options.")
     (license license:gpl3+)))
 
-(define-public python2-bx-python
+(define-public python-bx-python
   (package
-    (name "python2-bx-python")
+    (name "python-bx-python")
     (version "0.8.2")
     (source (origin
               (method url-fetch)
@@ -1485,24 +1485,26 @@ well as many of the command line options.")
                (base32
                 "11kksg2rbzihpmcid823xvg42xi88m7sz58rzk29abybkxy0rszs"))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f ;tests fail because test data are not included
-       #:python ,python-2))
+    ;; Tests fail because test data are not included
+    (arguments '(#:tests? #f))
     (propagated-inputs
-     `(("python-numpy" ,python2-numpy)
-       ("python-six" ,python2-six)))
+     `(("python-numpy" ,python-numpy)
+       ("python-six" ,python-six)))
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs
-     `(("python-lzo" ,python2-lzo)
-       ("python-nose" ,python2-nose)
-       ("python-cython" ,python2-cython)))
+     `(("python-lzo" ,python-lzo)
+       ("python-nose" ,python-nose)
+       ("python-cython" ,python-cython)))
     (home-page "https://github.com/bxlab/bx-python")
     (synopsis "Tools for manipulating biological data")
     (description
      "bx-python provides tools for manipulating biological data, particularly
 multiple sequence alignments.")
     (license license:expat)))
+
+(define-public python2-bx-python
+  (package-with-python2 python-bx-python))
 
 (define-public python-pysam
   (package
