@@ -4846,3 +4846,42 @@ these items with a simple syntax.")
 The data can be but need not be numerical in nature.  It can be, for example,
 formatted text.")
     (license license:lppl1.3)))
+
+(define-public texlive-latex-verbatimbox
+  (package
+    (name "texlive-latex-verbatimbox")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/verbatimbox"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0qh1cgvfs463zsi2pjg490gj0mkjfdpfc381j10cbb5la304psna"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/verbatimbox")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (propagated-inputs
+     `(("texlive-latex-readarray" ,texlive-latex-readarray)))
+    (home-page "https://www.ctan.org/pkg/verbatimbox")
+    (synopsis "Deposit verbatim text in a box")
+    (description
+     "The package provides a @code{verbbox} environment to place its contents
+into a globally available box, or into a box specified by the user.  The
+global box may then be used in a variety of situations (for example, providing
+a replica of the @code{boxedverbatim} environment itself).  A valuable use is
+in places where the standard @code{verbatim} environment (which is based on a
+@code{trivlist}) may not appear.")
+    (license license:lppl1.3+)))
