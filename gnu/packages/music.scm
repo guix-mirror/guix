@@ -718,6 +718,7 @@ audio and video).")
     (build-system scons-build-system)
     (arguments
      `(#:scons-flags (list (string-append "PREFIX=" %output))
+       #:scons ,scons-python2
        #:tests? #f)) ;no "check" target
     (inputs
      `(("boost" ,boost)
@@ -1726,7 +1727,7 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.47-1")
+    (version "0.49-0")
     (source (origin
               (method url-fetch)
               (uri
@@ -1734,16 +1735,20 @@ export.")
                               version ".src.tar.gz"))
               (sha256
                (base32
-                "0k5s949kqd7yw97h3m8z81bjz32bis9m4ih8df1z0ymipnafca67"))))
+                "18rzqbpgnnvyslap7k0ly87aw1bbxkb0rk5agpr423ibs9slxq6j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
+       #:configure-flags
+       (list
+        "--enable-jack"
+        (string-append "--with-wish=" (string-append
+                                       (assoc-ref %build-inputs "tk")
+                                       "/bin/wish8.6")))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-wish-path
+         (add-before 'configure 'fix-with-path
            (lambda _
-             (substitute* "src/s_inter.c"
-               (("  wish ") (string-append "  " (which "wish8.6") " ")))
              (substitute* "tcl/pd-gui.tcl"
                (("exec wish ") (string-append "exec " (which "wish8.6") " ")))
              #t))
@@ -1771,6 +1776,42 @@ integrate wearable technology, motor systems, lighting rigs, and other
 equipment.  Pd is suitable for learning basic multimedia processing and visual
 programming methods as well as for realizing complex systems for large-scale
 projects.")
+    (license license:bsd-3)))
+
+(define-public libpd
+  (package
+    (name "libpd")
+    (version "0.11.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/libpd/libpd.git")
+                    (commit version)
+                    (recursive? #t)))   ; for the 'pure-data' submodule
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1bcg1d9iyf9n37hwwphmih0c8rd1xcqykil5z1cax6xfs76552nk"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "make" "install"
+                       (string-append "prefix=" out)
+                       ;; XXX: Fix the last 2 lines of 'install' target.
+                       "LIBPD_IMPLIB=NO"
+                       "LIBPD_DEF=NO")))))))
+    (home-page "http://libpd.cc/")
+    (synopsis "Pure Data as an embeddable audio synthesis library")
+    (description
+     "Libpd provides Pure Data as an embeddable audio synthesis library.  Its
+main purpose is to liberate raw audio rendering from audio and MIDI drivers.")
     (license license:bsd-3)))
 
 (define-public portmidi
@@ -1996,7 +2037,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.5.8.2")
+    (version "1.5.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -2004,7 +2045,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "1kg7d6mnzdwzsqhrf7pmrf1hzgfpbpm5lv8xkaz32wiv391qrnxc"))))
+                "1nqwxwq6814m860zrh33r85vdyi2bgkvjg5372h3ngcdmxnb7wr0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -2424,6 +2465,47 @@ personalized online radio pandora.com.  It has configurable keys for playing
 and managing stations, can be controlled remotely via fifo, and can run
 event-based scripts for scrobbling, notifications, etc.")
     (license license:expat)))
+
+(define-public picard
+  (package
+    (name "picard")
+    (version "2.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://musicbrainz.osuosl.org/pub/musicbrainz/"
+                    "picard/picard-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ds3ylpqn717fnzcjrfn05v5xram01bj6n3hwn9igmkd1jgf8vhc"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "picard/const/__init__.py"
+               (("pyfpcalc")
+                (string-append
+                 "pyfpcalc', '"
+                 (assoc-ref inputs "chromaprint") "/bin/fpcalc")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "python" "setup.py" "install"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "--root=/"))))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (inputs
+     `(("chromaprint" ,chromaprint)
+       ("python-pyqt" ,python-pyqt)
+       ("python-mutagen" ,python-mutagen)))
+    (home-page "https://picard.musicbrainz.org/")
+    (synopsis "Graphical music tagging application")
+    (description
+     "MusicBrainz Picard is a music tagging application, supporting multiple
+formats, looking up tracks through metadata and audio fingerprints.")
+    (license license:gpl2+)))
 
 (define-public python-mutagen
   (package
@@ -3486,7 +3568,7 @@ are a C compiler and glib.  Full API documentation and examples are included.")
        ("fltk" ,fltk)
        ("libogg" ,libogg)
        ("libsamplerate" ,libsamplerate)
-       ("fluidsynth" ,fluidsynth)
+       ("fluidsynth" ,fluidsynth-1)         ;XXX: try using 2.x when updating
        ("libvorbis" ,libvorbis)
        ("alsa-lib" ,alsa-lib)
        ("portaudio" ,portaudio)

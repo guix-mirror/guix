@@ -21,6 +21,7 @@
 (define-module (guix scripts environment)
   #:use-module (guix ui)
   #:use-module (guix store)
+  #:use-module (guix status)
   #:use-module (guix grafts)
   #:use-module (guix derivations)
   #:use-module (guix packages)
@@ -173,6 +174,9 @@ COMMAND or an interactive shell in that environment.\n"))
     (substitutes? . #t)
     (build-hook? . #t)
     (graft? . #t)
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
     (verbosity . 0)))
 
 (define (tag-package-arg opts arg)
@@ -661,59 +665,60 @@ message if any test fails."
         (leave (G_ "'--user' cannot be used without '--container'~%")))
 
       (with-store store
-        (set-build-options-from-command-line store opts)
+        (with-status-report print-build-event
+          (set-build-options-from-command-line store opts)
 
-        ;; Use the bootstrap Guile when requested.
-        (parameterize ((%graft? (assoc-ref opts 'graft?))
-                       (%guile-for-build
-                        (package-derivation
-                         store
-                         (if bootstrap?
-                             %bootstrap-guile
-                             (canonical-package guile-2.2)))))
-          (run-with-store store
-            ;; Containers need a Bourne shell at /bin/sh.
-            (mlet* %store-monad ((bash       (environment-bash container?
-                                                               bootstrap?
-                                                               system))
-                                 (prof-drv   (manifest->derivation
-                                              manifest system bootstrap?))
-                                 (profile -> (derivation->output-path prof-drv))
-                                 (gc-root -> (assoc-ref opts 'gc-root)))
+          ;; Use the bootstrap Guile when requested.
+          (parameterize ((%graft? (assoc-ref opts 'graft?))
+                         (%guile-for-build
+                          (package-derivation
+                           store
+                           (if bootstrap?
+                               %bootstrap-guile
+                               (canonical-package guile-2.2)))))
+            (run-with-store store
+              ;; Containers need a Bourne shell at /bin/sh.
+              (mlet* %store-monad ((bash       (environment-bash container?
+                                                                 bootstrap?
+                                                                 system))
+                                   (prof-drv   (manifest->derivation
+                                                manifest system bootstrap?))
+                                   (profile -> (derivation->output-path prof-drv))
+                                   (gc-root -> (assoc-ref opts 'gc-root)))
 
-              ;; First build the inputs.  This is necessary even for
-              ;; --search-paths.  Additionally, we might need to build bash for
-              ;; a container.
-              (mbegin %store-monad
-                (build-environment (if (derivation? bash)
-                                       (list prof-drv bash)
-                                       (list prof-drv))
-                                   opts)
-                (mwhen gc-root
-                  (register-gc-root profile gc-root))
+                ;; First build the inputs.  This is necessary even for
+                ;; --search-paths.  Additionally, we might need to build bash for
+                ;; a container.
+                (mbegin %store-monad
+                  (build-environment (if (derivation? bash)
+                                         (list prof-drv bash)
+                                         (list prof-drv))
+                                     opts)
+                  (mwhen gc-root
+                    (register-gc-root profile gc-root))
 
-                (cond
-                 ((assoc-ref opts 'dry-run?)
-                  (return #t))
-                 ((assoc-ref opts 'search-paths)
-                  (show-search-paths profile manifest #:pure? pure?)
-                  (return #t))
-                 (container?
-                  (let ((bash-binary
-                         (if bootstrap?
-                             bash
-                             (string-append (derivation->output-path bash)
-                                            "/bin/sh"))))
-                    (launch-environment/container #:command command
-                                                  #:bash bash-binary
-                                                  #:user user
-                                                  #:user-mappings mappings
-                                                  #:profile profile
-                                                  #:manifest manifest
-                                                  #:link-profile? link-prof?
-                                                  #:network? network?)))
-                 (else
-                  (return
-                   (exit/status
-                    (launch-environment/fork command profile manifest
-                                             #:pure? pure?)))))))))))))
+                  (cond
+                   ((assoc-ref opts 'dry-run?)
+                    (return #t))
+                   ((assoc-ref opts 'search-paths)
+                    (show-search-paths profile manifest #:pure? pure?)
+                    (return #t))
+                   (container?
+                    (let ((bash-binary
+                           (if bootstrap?
+                               bash
+                               (string-append (derivation->output-path bash)
+                                              "/bin/sh"))))
+                      (launch-environment/container #:command command
+                                                    #:bash bash-binary
+                                                    #:user user
+                                                    #:user-mappings mappings
+                                                    #:profile profile
+                                                    #:manifest manifest
+                                                    #:link-profile? link-prof?
+                                                    #:network? network?)))
+                   (else
+                    (return
+                     (exit/status
+                      (launch-environment/fork command profile manifest
+                                               #:pure? pure?))))))))))))))

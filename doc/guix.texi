@@ -33,7 +33,7 @@ Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017, 2018 Clément Lassieur@*
 Copyright @copyright{} 2017 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
-Copyright @copyright{} 2017 Carlo Zancanaro@*
+Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
@@ -147,6 +147,7 @@ Package Management
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 * Channels::                    Customizing the package collection.
+* Inferiors::                   Interacting with another revision of Guix.
 * Invoking guix describe::      Display information about your Guix revision.
 * Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
@@ -1700,6 +1701,7 @@ guix package -i emacs-guix
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 * Channels::                    Customizing the package collection.
+* Inferiors::                   Interacting with another revision of Guix.
 * Invoking guix describe::      Display information about your Guix revision.
 * Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
@@ -2830,7 +2832,7 @@ generation---i.e., the previous Guix---and so on:
 $ guix package -p ~/.config/guix/current --roll-back
 switched from generation 3 to 2
 $ guix package -p ~/.config/guix/current --delete-generations=1
-deleting /home/charlie/.config/guix/current-1-link
+deleting /var/guix/profiles/per-user/charlie/current-guix-1-link
 @end example
 
 The @command{guix pull} command is usually invoked with no arguments,
@@ -3054,6 +3056,135 @@ package it defines.
 This gives you super powers, allowing you to track the provenance of binary
 artifacts with very fine grain, and to reproduce software environments at
 will---some sort of ``meta reproducibility'' capabilities, if you will.
+@xref{Inferiors}, for another way to take advantage of these super powers.
+
+@node Inferiors
+@section Inferiors
+
+@c TODO: Remove this once we're more confident about API stability.
+@quotation Note
+The functionality described here is a ``technology preview'' as of version
+@value{VERSION}.  As such, the interface is subject to change.
+@end quotation
+
+@cindex inferiors
+@cindex composition of Guix revisions
+Sometimes you might need to mix packages from the revision of Guix you're
+currently running with packages available in a different revision of Guix.
+Guix @dfn{inferiors} allow you to achieve that by composing different Guix
+revisions in arbitrary ways.
+
+@cindex inferior packages
+Technically, an ``inferior'' is essentially a separate Guix process connected
+to your main Guix process through a REPL (@pxref{Invoking guix repl}).  The
+@code{(guix inferior)} module allows you to create inferiors and to
+communicate with them.  It also provides a high-level interface to browse and
+manipulate the packages that an inferior provides---@dfn{inferior packages}.
+
+When combined with channels (@pxref{Channels}), inferiors provide a simple way
+to interact with a separate revision of Guix.  For example, let's assume you
+want to install in your profile the current @code{guile} package, along with
+the @code{guile-json} as it existed in an older revision of Guix---perhaps
+because the newer @code{guile-json} has an incompatible API and you want to
+run your code against the old API@.  To do that, you could write a manifest for
+use by @code{guix package --manifest} (@pxref{Invoking guix package}); in that
+manifest, you would create an inferior for that old Guix revision you care
+about, and you would look up the @code{guile-json} package in the inferior:
+
+@lisp
+(use-modules (guix inferior) (guix channels)
+             (srfi srfi-1))   ;for 'first'
+
+(define channels
+  ;; This is the old revision from which we want to
+  ;; extract guile-json.
+  (list (channel
+         (name 'guix)
+         (url "https://git.savannah.gnu.org/git/guix.git")
+         (commit
+          "65956ad3526ba09e1f7a40722c96c6ef7c0936fe"))))
+
+(define inferior
+  ;; An inferior representing the above revision.
+  (inferior-for-channels channels))
+
+;; Now create a manifest with the current "guile" package
+;; and the old "guile-json" package.
+(packages->manifest
+ (list (first (lookup-inferior-packages inferior "guile-json"))
+       (specification->package "guile")))
+@end lisp
+
+On its first run, @command{guix package --manifest} might have to build the
+channel you specified before it can create the inferior; subsequent runs will
+be much faster because the Guix revision will be cached.
+
+The @code{(guix inferior)} module provides the following procedures to open an
+inferior:
+
+@deffn {Scheme Procedure} inferior-for-channels @var{channels} @
+   [#:cache-directory] [#:ttl]
+Return an inferior for @var{channels}, a list of channels.  Use the cache at
+@var{cache-directory}, where entries can be reclaimed after @var{ttl} seconds.
+This procedure opens a new connection to the build daemon.
+
+As a side effect, this procedure may build or substitute binaries for
+@var{channels}, which can take time.
+@end deffn
+
+@deffn {Scheme Procedure} open-inferior @var{directory} @
+  [#:command "bin/guix"]
+Open the inferior Guix in @var{directory}, running
+@code{@var{directory}/@var{command} repl} or equivalent.  Return @code{#f} if
+the inferior could not be launched.
+@end deffn
+
+@cindex inferior packages
+The procedures listed below allow you to obtain and manipulate inferior
+packages.
+
+@deffn {Scheme Procedure} inferior-packages @var{inferior}
+Return the list of packages known to @var{inferior}.
+@end deffn
+
+@deffn {Scheme Procedure} lookup-inferior-packages @var{inferior} @var{name} @
+   [@var{version}]
+Return the sorted list of inferior packages matching @var{name} in
+@var{inferior}, with highest version numbers first.  If @var{version} is true,
+return only packages with a version number prefixed by @var{version}.
+@end deffn
+
+@deffn {Scheme Procedure} inferior-package? @var{obj}
+Return true if @var{obj} is an inferior package.
+@end deffn
+
+@deffn {Scheme Procedure} inferior-package-name @var{package}
+@deffnx {Scheme Procedure} inferior-package-version @var{package}
+@deffnx {Scheme Procedure} inferior-package-synopsis @var{package}
+@deffnx {Scheme Procedure} inferior-package-description @var{package}
+@deffnx {Scheme Procedure} inferior-package-home-page @var{package}
+@deffnx {Scheme Procedure} inferior-package-location @var{package}
+@deffnx {Scheme Procedure} inferior-package-inputs @var{package}
+@deffnx {Scheme Procedure} inferior-package-native-inputs @var{package}
+@deffnx {Scheme Procedure} inferior-package-propagated-inputs @var{package}
+@deffnx {Scheme Procedure} inferior-package-transitive-propagated-inputs @var{package}
+@deffnx {Scheme Procedure} inferior-package-native-search-paths @var{package}
+@deffnx {Scheme Procedure} inferior-package-transitive-native-search-paths @var{package}
+@deffnx {Scheme Procedure} inferior-package-search-paths @var{package}
+These procedures are the counterpart of package record accessors
+(@pxref{package Reference}).  Most of them work by querying the inferior
+@var{package} comes from, so the inferior must still be live when you call
+these procedures.
+@end deffn
+
+Inferior packages can be used transparently like any other package or
+file-like object in G-expressions (@pxref{G-Expressions}).  They are also
+transparently handled by the @code{packages->manifest} procedure, which is
+commonly use in manifests (@pxref{Invoking guix package, the
+@option{--manifest} option of @command{guix package}}).  Thus you can insert
+an inferior package pretty much anywhere you would insert a regular package:
+in manifests, in the @code{packages} field of your @code{operating-system}
+declaration, and so on.
 
 @node Invoking guix describe
 @section Invoking @command{guix describe}
@@ -6235,9 +6366,8 @@ retrieved using the @option{--log-file} option.
 
 @item --file=@var{file}
 @itemx -f @var{file}
-
-Build the package or derivation that the code within @var{file}
-evaluates to.
+Build the package, derivation, or other file-like object that the code within
+@var{file} evaluates to (@pxref{G-Expressions, file-like objects}).
 
 As an example, @var{file} might contain a package definition like this
 (@pxref{Defining Packages}):
@@ -10872,6 +11002,12 @@ Return a service that runs a syslog daemon according to @var{config}.
 information on the configuration file syntax.
 @end deffn
 
+@defvr {Scheme Variable} guix-service-type
+This is the type of the service that runs the build daemon,
+@command{guix-daemon} (@pxref{Invoking guix-daemon}).  Its value must be a
+@code{guix-configuration} record as described below.
+@end defvr
+
 @anchor{guix-configuration-type}
 @deftp {Data Type} guix-configuration
 This data type represents the configuration of the Guix build daemon.
@@ -10931,11 +11067,6 @@ A directory path where the @command{guix-daemon} will perform builds.
 
 @end table
 @end deftp
-
-@deffn {Scheme Procedure} guix-service @var{config}
-Return a service that runs the Guix build daemon according to
-@var{config}.
-@end deffn
 
 @deffn {Scheme Procedure} udev-service [#:udev @var{eudev} #:rules @code{'()}]
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
@@ -11417,10 +11548,11 @@ The @code{(gnu services networking)} module provides services to configure
 the network interface.
 
 @cindex DHCP, networking service
-@deffn {Scheme Procedure} dhcp-client-service [#:dhcp @var{isc-dhcp}]
-Return a service that runs @var{dhcp}, a Dynamic Host Configuration
-Protocol (DHCP) client, on all the non-loopback network interfaces.
-@end deffn
+@defvr {Scheme Variable} dhcp-client-service-type
+This is the type of services that run @var{dhcp}, a Dynamic Host Configuration
+Protocol (DHCP) client, on all the non-loopback network interfaces.  Its value
+is the DHCP client package to use, @code{isc-dhcp} by default.
+@end defvr
 
 @deffn {Scheme Procedure} dhcpd-service-type
 This type defines a service that runs a DHCP daemon.  To create a
@@ -11485,6 +11617,14 @@ This procedure can be called several times, one for each network
 interface of interest.  Behind the scenes what it does is extend
 @code{static-networking-service-type} with additional network interfaces
 to handle.
+
+For example:
+
+@example
+(static-networking-service "eno1" "192.168.1.82"
+                           #:gateway "192.168.1.2"
+                           #:name-servers '("192.168.1.2"))
+@end example
 @end deffn
 
 @cindex wicd
@@ -11601,18 +11741,35 @@ When true, enable connman's vpn plugin.
 @defvr {Scheme Variable} wpa-supplicant-service-type
 This is the service type to run @url{https://w1.fi/wpa_supplicant/,WPA
 supplicant}, an authentication daemon required to authenticate against
-encrypted WiFi or ethernet networks.  It is configured to listen for
-requests on D-Bus.
-
-The value of this service is the @code{wpa-supplicant} package to use.
-Thus, it can be instantiated like this:
-
-@lisp
-(use-modules (gnu services networking))
-
-(service wpa-supplicant-service-type)
-@end lisp
+encrypted WiFi or ethernet networks.
 @end defvr
+
+@deftp {Data Type} wpa-supplicant-configuration
+Data type representing the configuration of WPA Supplicant.
+
+It takes the following parameters:
+
+@table @asis
+@item @code{wpa-supplicant} (default: @code{wpa-supplicant})
+The WPA Supplicant package to use.
+
+@item @code{dbus?} (default: @code{#t})
+Whether to listen for requests on D-Bus.
+
+@item @code{pid-file} (default: @code{"/var/run/wpa_supplicant.pid"})
+Where to store the PID file.
+
+@item @code{interface} (default: @code{#f})
+If this is set, it must specify the name of a network interface that
+WPA supplicant will control.
+
+@item @code{config-file} (default: @code{#f})
+Optional configuration file to use.
+
+@item @code{extra-options} (default: @code{'()})
+List of additional command-line arguments to pass to the daemon.
+@end table
+@end deftp
 
 @cindex iptables
 @defvr {Scheme Variable} iptables-service-type
@@ -11662,20 +11819,37 @@ objects}).
 @end table
 @end deftp
 
-@cindex NTP
+@cindex NTP (Network Time Protocol), service
 @cindex real time clock
-@deffn {Scheme Procedure} ntp-service [#:ntp @var{ntp}] @
-  [#:servers @var{%ntp-servers}] @
-  [#:allow-large-adjustment? #f]
-Return a service that runs the daemon from @var{ntp}, the
-@uref{http://www.ntp.org, Network Time Protocol package}.  The daemon will
-keep the system clock synchronized with that of @var{servers}.
-@var{allow-large-adjustment?} determines whether @command{ntpd} is allowed to
-make an initial adjustment of more than 1,000 seconds.
-@end deffn
+@defvr {Scheme Variable} ntp-service-type
+This is the type of the service running the the @uref{http://www.ntp.org,
+Network Time Protocol (NTP)} daemon, @command{ntpd}.  The daemon will keep the
+system clock synchronized with that of the specified NTP servers.
+
+The value of this service is an @code{ntpd-configuration} object, as described
+below.
+@end defvr
+
+@deftp {Data Type} ntp-configuration
+This is the data type for the NTP service configuration.
+
+@table @asis
+@item @code{servers} (default: @code{%ntp-servers})
+This is the list of servers (host names) with which @command{ntpd} will be
+synchronized.
+
+@item @code{allow-large-adjustment?} (default: @code{#f})
+This determines whether @command{ntpd} is allowed to make an initial
+adjustment of more than 1,000 seconds.
+
+@item @code{ntp} (default: @code{ntp})
+The NTP package to use.
+@end table
+@end deftp
 
 @defvr {Scheme Variable} %ntp-servers
-List of host names used as the default NTP servers.
+List of host names used as the default NTP servers.  These are servers of the
+@uref{https://www.ntppool.org/en/, NTP Pool Project}.
 @end defvr
 
 @cindex OpenNTPD
@@ -16759,6 +16933,86 @@ body of a named location block cannot contain location blocks.
 @end table
 @end deftp
 
+@subsubheading Varnish Cache
+@cindex Varnish
+Varnish is a fast cache server that sits in between web applications
+and end users.  It proxies requests from clients and caches the
+accessed URLs such that multiple requests for the same resource only
+creates one request to the back-end.
+
+@defvr {Scheme Variable} varnish-service-type
+Service type for the Varnish daemon.
+@end defvr
+
+@deftp {Data Type} varnish-configuration
+Data type representing the @code{varnish} service configuration.
+This type has the following parameters:
+
+@table @asis
+@item @code{package} (default: @code{varnish})
+The Varnish package to use.
+
+@item @code{name} (default: @code{"default"})
+A name for this Varnish instance.  Varnish will create a directory in
+@file{/var/varnish/} with this name and keep temporary files there.  If
+the name starts with a forward slash, it is interpreted as an absolute
+directory name.
+
+Pass the @code{-n} argument to other Varnish programs to connect to the
+named instance, e.g. @command{varnishncsa -n default}.
+
+@item @code{backend} (default: @code{"localhost:8080"})
+The backend to use.  This option has no effect if @code{vcl} is set.
+
+@item @code{vcl} (default: #f)
+The @dfn{VCL} (Varnish Configuration Language) program to run.  If this
+is @code{#f}, Varnish will proxy @code{backend} using the default
+configuration.  Otherwise this must be a file-like object with valid
+VCL syntax.
+
+@c Varnish does not support HTTPS, so keep this URL to avoid confusion.
+For example, to mirror @url{http://www.gnu.org,www.gnu.org} with VCL you
+can do something along these lines:
+
+@example
+(define %gnu-mirror
+  (plain-file
+   "gnu.vcl"
+   "vcl 4.1;
+backend gnu @{ .host = "www.gnu.org"; @}"))
+
+(operating-system
+  ...
+  (services (cons (service varnish-service-type
+                           (varnish-configuration
+                            (listen '(":80"))
+                            (vcl %gnu-mirror)))
+                  %base-services)))
+@end example
+
+The configuration of an already running Varnish instance can be inspected
+and changed using the @command{varnishadm} program.
+
+Consult the @url{https://varnish-cache.org/docs/,Varnish User Guide} and
+@url{https://book.varnish-software.com/4.0/,Varnish Book} for
+comprehensive documentation on Varnish and its configuration language.
+
+@item @code{listen} (default: @code{'("localhost:80")})
+List of addresses Varnish will listen on.
+
+@item @code{storage} (default: @code{'("malloc,128m")})
+List of storage backends that will be available in VCL.
+
+@item @code{parameters} (default: @code{'()})
+List of run-time parameters in the form @code{'(("parameter" . "value"))}.
+
+@item @code{extra-options} (default: @code{'()})
+Additional arguments to pass to the @command{varnishd} process.
+
+@end table
+@end deftp
+
+@subsubheading FastCGI
 @cindex fastcgi
 @cindex fcgiwrap
 FastCGI is an interface between the front-end and the back-end of a web
@@ -16934,7 +17188,7 @@ A helper function to quickly add php to an @code{nginx-server-configuration}.
 
 A simple services setup for nginx with php can look like this:
 @example
-(services (cons* (dhcp-client-service)
+(services (cons* (service dhcp-client-service-type)
                  (service php-fpm-service-type)
                  (service nginx-service-type
                           (nginx-server-configuration
@@ -20819,6 +21073,100 @@ could instantiate a cgit service like this:
           (cgitrc "")))
 @end example
 
+@subsubheading Gitolite Service
+
+@cindex Gitolite service
+@cindex Git, hosting
+@uref{http://gitolite.com/gitolite/, Gitolite} is a tool for hosting Git
+repositories on a central server.
+
+Gitolite can handle multiple repositories and users, and supports flexible
+configuration of the permissions for the users on the repositories.
+
+The following example will configure Gitolite using the default @code{git}
+user, and the provided SSH public key.
+
+@example
+(service gitolite-service-type
+         (gitolite-configuration
+           (admin-pubkey (plain-file
+                           "yourname.pub"
+                           "ssh-rsa AAAA... guix@@example.com"))))
+@end example
+
+Gitolite is configured through a special admin repository which you can clone,
+for example, if you setup Gitolite on @code{example.com}, you would run the
+following command to clone the admin repository.
+
+@example
+git clone git@@example.com:gitolite-admin
+@end example
+
+When the Gitolite service is activated, the provided @code{admin-pubkey} will
+be inserted in to the @file{keydir} directory in the gitolite-admin
+repository.  If this results in a change in the repository, it will be
+committed using the message ``gitolite setup by GNU Guix''.
+
+@deftp {Data Type} gitolite-configuration
+Data type representing the configuration for @code{gitolite-service-type}.
+
+@table @asis
+@item @code{package} (default: @var{gitolite})
+Gitolite package to use.
+
+@item @code{user} (default: @var{git})
+User to use for Gitolite.  This will be user that you use when accessing
+Gitolite over SSH.
+
+@item @code{group} (default: @var{git})
+Group to use for Gitolite.
+
+@item @code{home-directory} (default: @var{"/var/lib/gitolite"})
+Directory in which to store the Gitolite configuration and repositories.
+
+@item @code{rc-file} (default: @var{(gitolite-rc-file)})
+A ``file-like'' object (@pxref{G-Expressions, file-like objects}),
+representing the configuration for Gitolite.
+
+@item @code{admin-pubkey} (default: @var{#f})
+A ``file-like'' object (@pxref{G-Expressions, file-like objects}) used to
+setup Gitolite.  This will be inserted in to the @file{keydir} directory
+within the gitolite-admin repository.
+
+To specify the SSH key as a string, use the @code{plain-file} function.
+
+@example
+(plain-file "yourname.pub" "ssh-rsa AAAA... guix@@example.com")
+@end example
+
+@end table
+@end deftp
+
+@deftp {Data Type} gitolite-rc-file
+Data type representing the Gitolite RC file.
+
+@table @asis
+@item @code{umask} (default: @code{#o0077})
+This controls the permissions Gitolite sets on the repositories and their
+contents.
+
+A value like @code{#o0027} will give read access to the group used by Gitolite
+(by default: @code{git}). This is necessary when using Gitolite with software
+like cgit or gitweb.
+
+@item @code{git-config-keys} (default: @code{""})
+Gitolite allows you to set git config values using the "config" keyword. This
+setting allows control over the config keys to accept.
+
+@item @code{roles} (default: @code{'(("READERS" . 1) ("WRITERS" . ))})
+Set the role names allowed to be used by users running the perms command.
+
+@item @code{enable} (default: @code{'("help" "desc" "info" "perms" "writable" "ssh-authkeys" "git-config" "daemon" "gitweb")})
+This setting controls the commands and features to enable within Gitolite.
+
+@end table
+@end deftp
+
 
 @node Game Services
 @subsubsection Game Services
@@ -21711,9 +22059,9 @@ systems already running GuixSD.}.
 This effects all the configuration specified in @var{file}: user
 accounts, system services, global package list, setuid programs, etc.
 The command starts system services specified in @var{file} that are not
-currently running; if a service is currently running, it does not
-attempt to upgrade it since this would not be possible without stopping it
-first.
+currently running; if a service is currently running this command will
+arrange for it to be upgraded the next time it is stopped (eg. by
+@code{herd stop X} or @code{herd restart X}).
 
 This command creates a new generation whose number is one greater than
 the current generation (as reported by @command{guix system

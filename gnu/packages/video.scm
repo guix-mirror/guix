@@ -29,6 +29,8 @@
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
+;;; Copyright © 2018 Gábor Boskovit <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -390,7 +392,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "2.8")
+    (version "2.9")
     (source
       (origin
         (method url-fetch)
@@ -398,9 +400,8 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "0qx8mavwdzdpkkby7n29i9av7zsnklavacwfz537mf62q2pzjnbf"))
-        (patches (search-patches "x265-fix-ppc64le-build.patch"
-                                 "x265-arm-asm-primitives.patch"))
+          "090hp4216isis8q5gb7bwzia8rfyzni54z21jnwm97x3hiy6ibpb"))
+        (patches (search-patches "x265-detect512-all-arches.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
                     (delete-file-recursively "source/compat/getopt")
@@ -408,12 +409,8 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
-       ;; Currently the source code doesn't check for aarch64.
-       ,@(if (any (cute string-prefix? <> (or (%current-system)
-                                              (%current-target-system)))
-                  '("armhf" "aarch64"))
-           '(#:configure-flags '("-DENABLE_PIC=TRUE"))
-           '())
+       ;; Ensure position independent code for everyone.
+       #:configure-flags '("-DENABLE_PIC=TRUE")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'prepare-build
@@ -1121,7 +1118,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.29.0")
+    (version "0.29.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1129,7 +1126,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "06bk8836brzik1qmq8kycwg5n35r438sd2176k6msjg5rrwghakp"))
+                "08x63hlpj6s8xixmdbx6raff5p5mih7cnk0bcql9f3wrs5hx9ygr"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -1242,7 +1239,8 @@ access to mpv's powerful playback capabilities.")
               (sha256
                (base32
                 "0vvh89hvp8qg9an9vcmwb7d9k3nixhxaz6zi65qdjnd0i56kkcz6"))
-              (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
+              (patches (search-patches "libvpx-use-after-free-in-postproc.patch"
+                                       "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-shared"
@@ -1270,7 +1268,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.09.08")
+    (version "2018.10.05")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1278,7 +1276,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0vwc4faqdddrb3nm4fzmkr60n5rc2zwyy8jwrrjad60kcp8isf05"))))
+                "1iq02kwxdgh07bf0w0fvbsjbdshs4kja35gy8m70ji9cj10l1mbw"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1862,41 +1860,36 @@ and custom quantization matrices.")
     (license license:gpl2+)))
 
 (define-public streamlink
-  ;; Release tarball doesn't contain ‘tests/resources/dash/’ directory.
-  (let ((commit "2dca7930a938f60b48d8e23260963ea7c49d979f"))
-    (package
-      (name "streamlink")
-      (version (git-version "0.13.0" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/streamlink/streamlink.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0vq19aspshim63aj8yl2p64ykrbk2mwwlawdx427b3j2djlc5qhw"))))
-      (build-system python-build-system)
-      (home-page "https://github.com/streamlink/streamlink")
-      (native-inputs
-       `(("python-freezegun" ,python-freezegun)
-         ("python-pytest" ,python-pytest)
-         ("python-mock" ,python-mock)
-         ("python-requests-mock" ,python-requests-mock)))
-      (propagated-inputs
-       `(("python-pysocks" ,python-pysocks)
-         ("python-websocket-client" ,python-websocket-client)
-         ("python-iso3166" ,python-iso3166)
-         ("python-iso639" ,python-iso639)
-         ("python-isodate", python-isodate)
-         ("python-pycryptodome" ,python-pycryptodome)
-         ("python-requests" ,python-requests)
-         ("python-urllib3" ,python-urllib3)))
-      (synopsis "Extract streams from various services")
-      (description "Streamlink is command-line utility that extracts streams
+  (package
+    (name "streamlink")
+    (version "0.14.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "streamlink" version))
+        (sha256
+         (base32
+          "0l2145fd60i76afjisfxd48cwhwyir07i7s3bnimdq5db2kzkix8"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/streamlink/streamlink")
+    (native-inputs
+     `(("python-freezegun" ,python-freezegun)
+       ("python-pytest" ,python-pytest)
+       ("python-mock" ,python-mock)
+       ("python-requests-mock" ,python-requests-mock)))
+    (propagated-inputs
+     `(("python-pysocks" ,python-pysocks)
+       ("python-websocket-client" ,python-websocket-client)
+       ("python-iso3166" ,python-iso3166)
+       ("python-iso639" ,python-iso639)
+       ("python-isodate", python-isodate)
+       ("python-pycryptodome" ,python-pycryptodome)
+       ("python-requests" ,python-requests)
+       ("python-urllib3" ,python-urllib3)))
+    (synopsis "Extract streams from various services")
+    (description "Streamlink is command-line utility that extracts streams
 from sites like Twitch.tv and pipes them into a video player of choice.")
-      (license license:bsd-2))))
+    (license license:bsd-2)))
 
 (define-public livestreamer
   (deprecated-package "livestreamer" streamlink))
@@ -1941,7 +1934,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "6.4.1")
+    (version "6.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mltframework/mlt/"
@@ -1949,7 +1942,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "10m3ry0b2pvqx3bk34qh5dq337nn8pkc2gzfyhsj4nv9abskln47"))
+                "1zzdj1g3g24q6v8hd0v34lv0pkh37a13fhjpl44h1ffi00mz3577"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; As of glibc 2.26, <xlocale.h> no longer is.
@@ -1959,7 +1952,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
-       #:make-flags '("CC=gcc")
+       #:make-flags '("CC=gcc" "CXX=g++ -std=gnu++11")
        #:configure-flags
        (list "--enable-gpl3"
              "--enable-gpl")
@@ -1978,11 +1971,16 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
      `(("alsa-lib" ,alsa-lib)
        ("ffmpeg" ,ffmpeg-3.4)
        ("fftw" ,fftw)
+       ("frei0r-plugins" ,frei0r-plugins)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gtk+" ,gtk+-2)
        ("libxml2" ,libxml2)
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("libsamplerate" ,libsamplerate)
        ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
        ("sdl" ,sdl)
        ("sox" ,sox)))
     (native-inputs

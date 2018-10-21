@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -101,8 +102,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.15.0")
-        (commit "3d43017026f9995ad128915db8ca5eafe061bf75")
-        (revision 3))
+        (commit "f9a8fce10f2d99efec7cb1dd0f6c5f0df9d1b2df")
+        (revision 6))
     (package
       (name "guix")
 
@@ -118,7 +119,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "167rzz2h33xmmchkplwzfq94s5jwdn5nabsq2lb84s54ps0sm89m"))
+                  "1733d5id0h44rrkyj9xw4fcqr1wawcfi8igpgk5wsn1iq4qqwv5f"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -232,13 +233,13 @@
                                         (map (cut string-append <>
                                                   "/share/guile/site/"
                                                   effective)
-                                             deps)
+                                             (delete #f deps))
                                         ":"))
                                (gopath (string-join
                                         (map (cut string-append <>
                                                   "/lib/guile/" effective
                                                   "/site-ccache")
-                                             deps)
+                                             (delete #f deps))
                                         ":")))
 
                           (wrap-program (string-append out "/bin/guix")
@@ -345,12 +346,14 @@ the Nix package manager.")
                        "install-nodist_pkglibexecSCRIPTS")
 
                ;; We need to tell 'guix-daemon' which 'guix' command to use.
-               ;; Here we use a questionable hack where we hard-code
-               ;; "~root/.config", which could be wrong (XXX).
+               ;; Here we use a questionable hack where we hard-code root's
+               ;; current guix, which could be wrong (XXX).  Note that scripts
+               ;; like 'guix perform-download' do not run as root so we assume
+               ;; that they have access to /var/guix/profiles/per-user/root.
                (let ((out (assoc-ref outputs "out")))
                  (substitute* (find-files (string-append out "/libexec"))
                    (("exec \".*/bin/guix\"")
-                    "exec ~root/.config/guix/current/bin/guix"))
+                    "exec /var/guix/profiles/per-user/root/current-guix/bin/guix"))
                  #t)))
            (delete 'wrap-program)))))))
 
@@ -363,9 +366,28 @@ the Nix package manager.")
        ,@(alist-delete "guile" (package-inputs guix))))
     (propagated-inputs
      `(("gnutls" ,gnutls/guile-2.0)
+       ("guile-gcrypt" ,guile2.0-gcrypt)
        ("guile-json" ,guile2.0-json)
+       ("guile-sqlite3" ,guile2.0-sqlite3)
        ("guile-ssh" ,guile2.0-ssh)
        ("guile-git" ,guile2.0-git)))))
+
+(define-public guix-minimal
+  ;; A version of Guix which is built with the minimal set of dependencies, as
+  ;; outlined in the README "Requirements" section.  Intended as a CI job, so
+  ;; marked as hidden.
+  (let ((guix guile2.0-guix))
+    (hidden-package
+     (package
+       (inherit guix)
+       (name "guix-minimal")
+       (inputs
+        `(("guile" ,guile-2.0.13)
+          ,@(alist-delete "guile" (package-inputs guix))))
+       (propagated-inputs
+        (fold alist-delete
+              (package-propagated-inputs guix)
+              '("guile-json" "guile-ssh")))))))
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical
@@ -493,7 +515,7 @@ symlinks to the files in a common directory such as /usr/local.")
 (define-public rpm
   (package
     (name "rpm")
-    (version "4.13.0.2")
+    (version "4.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.rpm.org/releases/rpm-"
@@ -501,40 +523,20 @@ symlinks to the files in a common directory such as /usr/local.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1521y4ghjns449kzpwkjn9cksh686383xnfx0linzlalqc3jqgig"))))
+                "0armd7dqr8bl0isx8l4xlylm7dikasmxhhcbz336fkp2x30w5jw0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-external-db"   ;use the system's bdb
                            "--enable-python"
                            "--without-lua")
        #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'set-nspr-search-path
+                  (add-before 'configure 'set-nss-library-path
                     (lambda* (#:key inputs #:allow-other-keys)
-                      ;; nspr.pc contains the right -I flag pointing to
-                      ;; 'include/nspr', but unfortunately 'configure' doesn't
-                      ;; use 'pkg-config'.  Thus, augment CPATH.
-                      ;; Likewise for NSS.
-                      (let ((nspr (assoc-ref inputs "nspr"))
-                            (nss  (assoc-ref inputs "nss")))
-                        (setenv "CPATH"
-                                (string-append (getenv "C_INCLUDE_PATH") ":"
-                                               nspr "/include/nspr:"
-                                               nss "/include/nss"))
+                      (let ((nss (assoc-ref inputs "nss")))
                         (setenv "LIBRARY_PATH"
                                 (string-append (getenv "LIBRARY_PATH") ":"
                                                nss "/lib/nss"))
-                        #t)))
-                  (add-after 'install 'fix-rpm-symlinks
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; 'make install' gets these symlinks wrong.  Fix them.
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin")))
-                        (with-directory-excursion bin
-                          (for-each (lambda (file)
-                                      (delete-file file)
-                                      (symlink "rpm" file))
-                                    '("rpmquery" "rpmverify"))
-                          #t)))))))
+                        #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -550,7 +552,7 @@ symlinks to the files in a common directory such as /usr/local.")
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)
        ("cpio" ,cpio)))
-    (home-page "http://www.rpm.org/")
+    (home-page "http://rpm.org/")
     (synopsis "The RPM Package Manager")
     (description
      "The RPM Package Manager (RPM) is a command-line driven package
@@ -566,13 +568,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "100")
+    (version "102")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0sh7g26i5ndpa8l7xq6rnijbi3jz5izjn0b98zcnm6wpgghszw48"))))
+                "0v2z98xx7n4viw12yq83flpb9ir5ahy1gn44pic0i3dam18xhcm6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

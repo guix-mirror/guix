@@ -397,7 +397,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.1.6")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -405,7 +405,7 @@ support.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "194ciw8688mikndvxivzb8ql5vm405pkwnn4srzm7ymwfc4xygb0"))))
+                "13dlf5kzvhhjkhy19118x3diakmraz4m9kxrsdam8dms6xivb6lp"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -1080,7 +1080,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.0.4")
+    (version "3.0.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1089,7 +1089,7 @@ games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0i4ssfb6igga9zwvsmahrnasx9cyqrsd6mlmssjgc482fy9q2kz4"))
+                "0g64h0x8dlv6aa9ggfcidk2mknkfl5li7z1phcav8aqp9srj8avf"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1256,17 +1256,24 @@ a 2D editor view.")
 (define-public guile-chickadee
   (package
     (name "guile-chickadee")
-    (version "0.2.0")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/chickadee/"
                                   "chickadee-" version ".tar.gz"))
               (sha256
                (base32
-                "10qx0ha5gsayybd186r1my7vc7rf5fbzp9jvmc4xg9a8wz8rqhah"))))
+                "0jl223dybsj5gvs7z4q60gnafj1b7kgi5mx0kj58m5knrp8qwg5h"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-godir
+           (lambda _
+             ;; Install compiled '.go' files into the site directory.
+             (substitute* "Makefile.in"
+               (("/ccache") "/site-ccache")))))))
     (propagated-inputs
      `(("guile-opengl" ,guile-opengl)
        ("guile-sdl2" ,guile-sdl2)))

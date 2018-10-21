@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -268,13 +269,23 @@ Libraries with some extra bells and whistles.")
          (add-before 'configure 'set-system-actions
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((xkeyboard (assoc-ref inputs "xkeyboard-config"))
-                   (utils     (assoc-ref inputs "util-linux")))
+                   (setxkbmap (assoc-ref inputs "setxkbmap"))
+                   (utils     (assoc-ref inputs "util-linux"))
+                   (libc      (assoc-ref inputs "libc")))
                ;; We need to patch the path to 'base.lst' to be able
                ;; to switch the keyboard layout in E.
-               (substitute* "src/modules/xkbswitch/e_mod_parse.c"
+               (substitute* (list "src/modules/xkbswitch/e_mod_parse.c"
+                                  "src/modules/wizard/page_011.c")
                  (("/usr/share/X11/xkb/rules/xorg.lst")
                   (string-append xkeyboard
                                  "/share/X11/xkb/rules/base.lst")))
+               (substitute* "src/bin/e_xkb.c"
+                 (("\"setxkbmap \"")
+                  (string-append "\"" setxkbmap "/bin/setxkbmap \"")))
+               (substitute* (list "src/bin/e_intl.c"
+                                  "src/modules/conf_intl/e_int_config_intl.c"
+                                  "src/modules/wizard/page_010.c")
+                 (("locale -a") (string-append libc "/bin/locale -a")))
                (substitute* "src/modules/everything/evry_plug_apps.c"
                  (("/usr/bin/") ""))
                (substitute* "configure"
@@ -298,6 +309,7 @@ Libraries with some extra bells and whistles.")
        ("libxcb" ,libxcb)
        ("libxext" ,libxext)
        ("linux-pam" ,linux-pam)
+       ("setxkbmap" ,setxkbmap)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xkeyboard-config" ,xkeyboard-config)))
     (home-page "https://www.enlightenment.org/about-enlightenment")
@@ -452,19 +464,22 @@ and in creating applications based on the Enlightenment Foundation Library suite
     (home-page "http://smhouston.us/ephoto/")
     (synopsis "EFL image viewer/editor/manipulator/slideshow creator")
     (description "Ephoto is an image viewer and editor written using the
-@dfn{Enlightenment Foundation Libraries} (EFL).  It focuses on simplicity and ease
-of use, while taking advantage of the speed and small footprint the EFL provide.
+@dfn{Enlightenment Foundation Libraries} (EFL).  It focuses on simplicity and
+ease of use, while taking advantage of the speed and small footprint the EFL
+provide.
 
 Ephoto’s features include:
 @enumerate
-@item Browsing the filesystem and displaying images in an easy to use grid view.
+@item Browsing the file system and displaying images in an easy-to-use grid view.
 @item Browsing images in a single image view format.
 @item Viewing images in a slideshow.
 @item Editing your image with features such as cropping, auto enhance,
 blurring, sharpening, brightness/contrast/gamma adjustments, hue/saturation/value
 adjustments, and color level adjustment.
-@item Applying artistic filters to your image such as black and white and old photo.
-@item Drag And Drop along with file operations to easy maintain your photo directories.
+@item Applying artistic filters to your image such as black and white and old
+photo.
+@item Drag And Drop along with file operations to easily maintain your photo
+directories.
 @end enumerate\n")
     (license (list
                license:bsd-2 ; Ephoto's thumbnailing code

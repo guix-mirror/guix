@@ -49,7 +49,7 @@
 (define-public wxwidgets
   (package
     (name "wxwidgets")
-    (version "3.0.3")
+    (version "3.0.4")
     (source
      (origin
        (method url-fetch)
@@ -57,7 +57,7 @@
                            "releases/download/v" version
                            "/wxWidgets-" version ".tar.bz2"))
        (sha256
-        (base32 "0yrhp5cs2g33cpbdwdzicmm5m4mfnlvxwv031x9266zc90zh7j08"))))
+        (base32 "1w7pgfqjab7n84lc4aarydl3g55d1hdgl2ilwml766r6inc7y5cn"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("glu" ,glu)

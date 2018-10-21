@@ -50,9 +50,11 @@
             %default-substitute-urls
 
             nix-server?
+            nix-server-version
             nix-server-major-version
             nix-server-minor-version
             nix-server-socket
+            current-store-protocol-version        ;for internal use
 
             &nix-error nix-error?
             &nix-connection-error nix-connection-error?
@@ -150,9 +152,10 @@
             store-path-package-name
             store-path-hash-part
             direct-store-path
+            derivation-log-file
             log-file))
 
-(define %protocol-version #x161)
+(define %protocol-version #x163)
 
 (define %worker-magic-1 #x6e697863)               ; "nixc"
 (define %worker-magic-2 #x6478696f)               ; "dxio"
@@ -161,6 +164,8 @@
   (logand magic #xff00))
 (define (protocol-minor magic)
   (logand magic #x00ff))
+(define (protocol-version major minor)
+  (logior major minor))
 
 (define-syntax define-enumerate-type
   (syntax-rules ()
@@ -540,6 +545,11 @@ connection.  Use with care."
                       (make-hash-table 100)
                       (make-hash-table 100))))
 
+(define (nix-server-version store)
+  "Return the protocol version of STORE as an integer."
+  (protocol-version (nix-server-major-version store)
+                    (nix-server-minor-version store)))
+
 (define (write-buffered-output server)
   "Flush SERVER's output port."
   (force-output (nix-server-output-port server))
@@ -556,9 +566,19 @@ automatically close the store when the dynamic extent of EXP is left."
     (dynamic-wind
       (const #f)
       (lambda ()
-        exp ...)
+        (parameterize ((current-store-protocol-version
+                        (nix-server-version store)))
+         exp) ...)
       (lambda ()
         (false-if-exception (close-connection store))))))
+
+(define current-store-protocol-version
+  ;; Protocol version of the store currently used.  XXX: This is a hack to
+  ;; communicate the protocol version to the build output port.  It's a hack
+  ;; because it could be inaccurrate, for instance if there's code that
+  ;; manipulates several store connections at once; it works well for the
+  ;; purposes of (guix status) though.
+  (make-parameter #f))
 
 (define current-build-output-port
   ;; The port where build output is sent.
@@ -682,6 +702,22 @@ encoding conversion errors."
                             (build-verbosity 0)
                             (log-type 0)
                             (print-build-trace #t)
+
+                            ;; When true, provide machine-readable "build
+                            ;; traces" for use by (guix status).  Old clients
+                            ;; are unable to make sense, which is why it's
+                            ;; disabled by default.
+                            print-extended-build-trace?
+
+                            ;; When true, the daemon prefixes builder output
+                            ;; with "@ build-log" traces so we can
+                            ;; distinguish it from daemon output, and we can
+                            ;; distinguish each builder's output
+                            ;; (PRINT-BUILD-TRACE must be true as well.)  The
+                            ;; latter is particularly useful when
+                            ;; MAX-BUILD-JOBS > 1.
+                            multiplexed-build-output?
+
                             build-cores
                             (use-substitutes? #t)
 
@@ -725,7 +761,16 @@ encoding conversion errors."
     (when (>= (nix-server-minor-version server) 10)
       (send (boolean use-substitutes?)))
     (when (>= (nix-server-minor-version server) 12)
-      (let ((pairs `(,@(if timeout
+      (let ((pairs `(;; This option is honored by 'guix substitute' et al.
+                     ,@(if print-build-trace
+                           `(("print-extended-build-trace"
+                              . ,(if print-extended-build-trace? "1" "0")))
+                           '())
+                     ,@(if multiplexed-build-output?
+                           `(("multiplexed-build-output"
+                              . ,(if multiplexed-build-output? "true" "false")))
+                           '())
+                     ,@(if timeout
                            `(("build-timeout" . ,(number->string timeout)))
                            '())
                      ,@(if max-silent-time
@@ -1064,13 +1109,15 @@ an arbitrary directory layout in the store without creating a derivation."
 outputs, and return when the worker is done building them.  Elements of THINGS
 that are not derivations can only be substituted and not built locally.
 Return #t on success."
-      (if (>= (nix-server-minor-version store) 15)
-          (build store things mode)
-          (if (= mode (build-mode normal))
-              (build/old store things)
-              (raise (condition (&nix-protocol-error
-                                 (message "unsupported build mode")
-                                 (status  1)))))))))
+      (parameterize ((current-store-protocol-version
+                      (nix-server-version store)))
+        (if (>= (nix-server-minor-version store) 15)
+            (build store things mode)
+            (if (= mode (build-mode normal))
+                (build/old store things)
+                (raise (condition (&nix-protocol-error
+                                   (message "unsupported build mode")
+                                   (status  1))))))))))
 
 (define-operation (add-temp-root (store-path path))
   "Make PATH a temporary root for the duration of the current session.
@@ -1673,21 +1720,26 @@ syntactically valid store path."
                 (and (string-every %nix-base32-charset hash)
                      hash))))))
 
+(define (derivation-log-file drv)
+  "Return the build log file for DRV, a derivation file name, or #f if it
+could not be found."
+  (let* ((base    (basename drv))
+         (log     (string-append (dirname %state-directory) ; XXX
+                                 "/log/guix/drvs/"
+                                 (string-take base 2) "/"
+                                 (string-drop base 2)))
+         (log.gz  (string-append log ".gz"))
+         (log.bz2 (string-append log ".bz2")))
+    (cond ((file-exists? log.gz) log.gz)
+          ((file-exists? log.bz2) log.bz2)
+          ((file-exists? log) log)
+          (else #f))))
+
 (define (log-file store file)
   "Return the build log file for FILE, or #f if none could be found.  FILE
 must be an absolute store file name, or a derivation file name."
   (cond ((derivation-path? file)
-         (let* ((base    (basename file))
-                (log     (string-append (dirname %state-directory) ; XXX
-                                        "/log/guix/drvs/"
-                                        (string-take base 2) "/"
-                                        (string-drop base 2)))
-                (log.gz  (string-append log ".gz"))
-                (log.bz2 (string-append log ".bz2")))
-           (cond ((file-exists? log.gz) log.gz)
-                 ((file-exists? log.bz2) log.bz2)
-                 ((file-exists? log) log)
-                 (else #f))))
+         (derivation-log-file file))
         (else
          (match (valid-derivers store file)
            ((derivers ...)

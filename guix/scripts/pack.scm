@@ -25,6 +25,7 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix store)
+  #:use-module (guix status)
   #:use-module (guix grafts)
   #:use-module (guix monads)
   #:use-module (guix modules)
@@ -197,8 +198,11 @@ added to the pack."
             (with-directory-excursion %root
               (exit
                (zero? (apply system* "tar"
-                             "-I"
-                             (string-join '#+(compressor-command compressor))
+                             #+@(if (compressor-command compressor)
+                                    #~("-I"
+                                       (string-join
+                                        '#+(compressor-command compressor)))
+                                    #~())
                              "--format=gnu"
 
                              ;; Avoid non-determinism in the archive.  Use
@@ -538,6 +542,9 @@ please email '~a'~%")
     (substitutes? . #t)
     (build-hook? . #t)
     (graft? . #t)
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
     (verbosity . 0)
     (symlinks . ())
     (compressor . ,(first %compressors))))
@@ -684,72 +691,73 @@ Create a bundle of PACKAGE.\n"))
 
   (with-error-handling
     (with-store store
-      ;; Set the build options before we do anything else.
-      (set-build-options-from-command-line store opts)
+      (with-status-report print-build-event
+        ;; Set the build options before we do anything else.
+        (set-build-options-from-command-line store opts)
 
-      (parameterize ((%graft? (assoc-ref opts 'graft?))
-                     (%guile-for-build (package-derivation
-                                        store
-                                        (if (assoc-ref opts 'bootstrap?)
-                                            %bootstrap-guile
-                                            (canonical-package guile-2.2))
-                                        (assoc-ref opts 'system)
-                                        #:graft? (assoc-ref opts 'graft?))))
-        (let* ((dry-run?    (assoc-ref opts 'dry-run?))
-               (relocatable? (assoc-ref opts 'relocatable?))
-               (manifest    (let ((manifest (manifest-from-args store opts)))
-                              ;; Note: We cannot honor '--bootstrap' here because
-                              ;; 'glibc-bootstrap' lacks 'libc.a'.
-                              (if relocatable?
-                                  (map-manifest-entries wrapped-package manifest)
-                                  manifest)))
-               (pack-format (assoc-ref opts 'format))
-               (name        (string-append (symbol->string pack-format)
-                                           "-pack"))
-               (target      (assoc-ref opts 'target))
-               (bootstrap?  (assoc-ref opts 'bootstrap?))
-               (compressor  (if bootstrap?
-                                bootstrap-xz
-                                (assoc-ref opts 'compressor)))
-               (archiver    (if (equal? pack-format 'squashfs)
-                                squashfs-tools-next
-                                (if bootstrap?
-                                    %bootstrap-coreutils&co
-                                    tar)))
-               (symlinks    (assoc-ref opts 'symlinks))
-               (build-image (match (assq-ref %formats pack-format)
-                              ((? procedure? proc) proc)
-                              (#f
-                               (leave (G_ "~a: unknown pack format~%")
-                                      pack-format))))
-               (localstatedir? (assoc-ref opts 'localstatedir?)))
-          (run-with-store store
-            (mlet* %store-monad ((profile (profile-derivation
-                                           manifest
-                                           #:relative-symlinks? relocatable?
-                                           #:hooks (if bootstrap?
-                                                       '()
-                                                       %default-profile-hooks)
-                                           #:locales? (not bootstrap?)
-                                           #:target target))
-                                 (drv (build-image name profile
-                                                   #:target
-                                                   target
-                                                   #:compressor
-                                                   compressor
-                                                   #:symlinks
-                                                   symlinks
-                                                   #:localstatedir?
-                                                   localstatedir?
-                                                   #:archiver
-                                                   archiver)))
-              (mbegin %store-monad
-                (show-what-to-build* (list drv)
-                                     #:use-substitutes?
-                                     (assoc-ref opts 'substitutes?)
-                                     #:dry-run? dry-run?)
-                (munless dry-run?
-                  (built-derivations (list drv))
-                  (return (format #t "~a~%"
-                                  (derivation->output-path drv))))))
-            #:system (assoc-ref opts 'system)))))))
+        (parameterize ((%graft? (assoc-ref opts 'graft?))
+                       (%guile-for-build (package-derivation
+                                          store
+                                          (if (assoc-ref opts 'bootstrap?)
+                                              %bootstrap-guile
+                                              (canonical-package guile-2.2))
+                                          (assoc-ref opts 'system)
+                                          #:graft? (assoc-ref opts 'graft?))))
+          (let* ((dry-run?    (assoc-ref opts 'dry-run?))
+                 (relocatable? (assoc-ref opts 'relocatable?))
+                 (manifest    (let ((manifest (manifest-from-args store opts)))
+                                ;; Note: We cannot honor '--bootstrap' here because
+                                ;; 'glibc-bootstrap' lacks 'libc.a'.
+                                (if relocatable?
+                                    (map-manifest-entries wrapped-package manifest)
+                                    manifest)))
+                 (pack-format (assoc-ref opts 'format))
+                 (name        (string-append (symbol->string pack-format)
+                                             "-pack"))
+                 (target      (assoc-ref opts 'target))
+                 (bootstrap?  (assoc-ref opts 'bootstrap?))
+                 (compressor  (if bootstrap?
+                                  bootstrap-xz
+                                  (assoc-ref opts 'compressor)))
+                 (archiver    (if (equal? pack-format 'squashfs)
+                                  squashfs-tools-next
+                                  (if bootstrap?
+                                      %bootstrap-coreutils&co
+                                      tar)))
+                 (symlinks    (assoc-ref opts 'symlinks))
+                 (build-image (match (assq-ref %formats pack-format)
+                                ((? procedure? proc) proc)
+                                (#f
+                                 (leave (G_ "~a: unknown pack format~%")
+                                        pack-format))))
+                 (localstatedir? (assoc-ref opts 'localstatedir?)))
+            (run-with-store store
+              (mlet* %store-monad ((profile (profile-derivation
+                                             manifest
+                                             #:relative-symlinks? relocatable?
+                                             #:hooks (if bootstrap?
+                                                         '()
+                                                         %default-profile-hooks)
+                                             #:locales? (not bootstrap?)
+                                             #:target target))
+                                   (drv (build-image name profile
+                                                     #:target
+                                                     target
+                                                     #:compressor
+                                                     compressor
+                                                     #:symlinks
+                                                     symlinks
+                                                     #:localstatedir?
+                                                     localstatedir?
+                                                     #:archiver
+                                                     archiver)))
+                (mbegin %store-monad
+                  (show-what-to-build* (list drv)
+                                       #:use-substitutes?
+                                       (assoc-ref opts 'substitutes?)
+                                       #:dry-run? dry-run?)
+                  (munless dry-run?
+                    (built-derivations (list drv))
+                    (return (format #t "~a~%"
+                                    (derivation->output-path drv))))))
+              #:system (assoc-ref opts 'system))))))))

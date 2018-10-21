@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
@@ -26,6 +26,7 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,6 +127,85 @@ Callback Hell.
 asynchronous DNS resolutions with a synchronous looking interface by
 using @url{https://github.com/saghul/pycares,pycares}.")
     (license license:expat)))
+
+(define-public python-falcon
+  (package
+    (name "python-falcon")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "falcon" version))
+       (sha256
+        (base32
+         "1i0vmqsk24z4biirqhpvas9h28wy7nmpy3jvnb6rz2imq04zd09r"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-mimeparse" ,python-mimeparse)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-cython" ,python-cython) ;for faster binaries
+       ("python-pytest" ,python-pytest)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-testtools" ,python-testtools)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-msgpack" ,python-msgpack)))
+    (home-page "https://falconframework.org")
+    (synopsis
+     "Web framework for building APIs and application backends")
+    (description
+     "Falcon is a web API framework for building microservices, application
+backends and higher-level frameworks.  Among its features are:
+@itemize
+@item Optimized and extensible code base
+@item Routing via URI templates and REST-inspired resource
+classes
+@item Access to headers and bodies through request and response
+classes
+@item Request processing via middleware components and hooks
+@item Idiomatic HTTP error responses
+@item Straightforward exception handling
+@item Unit testing support through WSGI helpers and mocks
+@item Compatible with both CPython and PyPy
+@item Cython support for better performance when used with CPython
+@end itemize")
+    (license license:asl2.0)))
+
+(define-public python2-falcon
+  (package-with-python2 python-falcon))
+
+(define-public python-falcon-cors
+  (package
+    (name "python-falcon-cors")
+    (version "1.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "falcon-cors" version))
+       (sha256
+        (base32
+         "12pym7hwsbd8b0c1azn95nas8gm3f1qpr6lpyx0958xm65ffr20p"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-falcon" ,python-falcon)))
+    (home-page
+     "https://github.com/lwcolton/falcon-cors")
+    (synopsis "Falcon @dfn{cross-origin resource sharing} (CORS) library")
+    (description "This middleware provides @dfn{cross-origin resource
+sharing} (CORS) support for Falcon.  It allows applying a specially crafted
+CORS object to the incoming requests, enabling the ability to serve resources
+over a different origin than that of the web application.")
+    (license license:asl2.0)))
+
+(define-public python2-falcon-cors
+  (package-with-python2 python-falcon-cors))
 
 (define-public python-furl
   (package
@@ -1351,14 +1431,14 @@ Amazon Web Services (AWS) API.")
 (define-public python-wsgiproxy2
   (package
     (name "python-wsgiproxy2")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WSGIProxy2" version ".tar.gz"))
        (sha256
         (base32
-         "16532rjc94h3w74x52jfckf3yzsp8h6z34522jk4xgjy82hpnd7r"))))
+         "19d9dva282vfjs784i0zkxp078lxfz4h3f621z30ij9wbf5rba6a"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-webtest" ,python-webtest)))
@@ -1591,6 +1671,29 @@ library.")
 
 (define-public python2-responses
   (package-with-python2 python-responses))
+
+(define-public python-grequests
+  (package
+    (name "python-grequests")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "grequests" version))
+       (sha256
+        (base32
+         "1j9icncllbkv7x5719b20mx670c6q1jrdx1sakskkarvx3pc8h8g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-gevent" ,python-gevent)
+       ("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/kennethreitz/grequests")
+    (synopsis "Python library for asynchronous HTTP requests")
+    (description "GRequests is a Python library that allows you to use
+@code{Requests} with @code{Gevent} to make asynchronous HTTP Requests easily")
+    (license license:bsd-2)))
 
 (define-public python-geventhttpclient
   (package
@@ -2030,21 +2133,36 @@ It comes with safe defaults and easily configurable options.")
 (define-public python-flask-login
   (package
     (name "python-flask-login")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/maxcountryman/flask-login/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/maxcountryman/flask-login.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1pdqp7a2gyb7k06xda004x0fi2w66s6kn2i0ndkqndmg12d83f9w"))))
+        (base32 "1rj0qwyxapxnp84fi4lhmvh3d91fdiwz7hibw77x3d5i72knqaa9"))))
     (arguments
-     ;; Tests fail PEP8 compliance. See:
-     ;; https://github.com/maxcountryman/flask-login/issues/340
-     `(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'avoid-yanc
+           ;; Work around '.nosetests-real: error: no such option: --with-yanc'.
+           (lambda _
+             (setenv "NOCOLOR" "set")
+             #t)))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)))
+    (native-inputs
+     ;; For tests.
+     `(("python-blinker" ,python-blinker)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-pep8" ,python-pep8)
+       ("python-pyflakes" ,python-pyflakes)
+       ("python-semantic-version" ,python-semantic-version)
+       ("python-werkzeug" ,python-werkzeug)))
     (home-page "https://github.com/maxcountryman/flask-login")
     (synopsis "User session management for Flask")
     (description
@@ -2626,3 +2744,79 @@ for URL parsing and changing.")
 
 (define-public python2-google-api-client
   (package-with-python2 python-google-api-client))
+
+(define-public python-hawkauthlib
+  (package
+    (name "python-hawkauthlib")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hawkauthlib" version))
+       (sha256
+        (base32
+         "03ai47s4h8nfnrf25shbfvkm1b9n1ccd4nmmj280sg1fayi69zgg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-webob" ,python-webob)))
+    (home-page "https://github.com/mozilla-services/hawkauthlib")
+    (synopsis "Hawk Access Authentication protocol")
+    (description
+     "This is a low-level Python library for implementing Hawk Access Authentication,
+a simple HTTP request-signing scheme.")
+    (license license:mpl2.0)))
+
+(define-public python-pybrowserid
+  (package
+    (name "python-pybrowserid")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyBrowserID" version))
+       (sha256
+        (base32
+         "1qvi79kfb8x9kxkm5lw2mp42hm82cpps1xknmsb5ghkwx1lpc8kc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
+    (home-page "https://github.com/mozilla/PyBrowserID")
+    (synopsis "Python library for the BrowserID protocol")
+    (description
+     "This is a Python client library for the BrowserID protocol that
+underlies Mozilla Persona.")
+    (license license:mpl2.0)))
+
+(define-public python-pyfxa
+  (package
+    (name "python-pyfxa")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyFxA" version))
+       (sha256
+        (base32
+         "0axl16fyrz2r88gnw4b12mk7dpkqscv8c4wsc1y5hicl7bsbc4fm"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; 17 tests require network access
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-hawkauthlib" ,python-hawkauthlib)
+       ("python-pybrowserid" ,python-pybrowserid)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-grequests" ,python-grequests)
+       ("python-mock" ,python-mock)
+       ("python-responses" ,python-responses)
+       ("python-unittest2" ,python-unittest2)))
+    (home-page "https://github.com/mozilla/PyFxA")
+    (synopsis "Firefox Accounts client library for Python")
+    (description
+     "This is a Python library for interacting with the Firefox Accounts
+ecosystem.")
+    (license license:mpl2.0)))

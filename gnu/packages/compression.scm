@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -584,7 +584,23 @@ decompressors when faced with corrupted input.")
       (patches (search-patches "sharutils-CVE-2018-1000097.patch"))
       (sha256
        (base32
-        "16isapn8f39lnffc3dp4dan05b7x6mnc76v6q5nn8ysxvvvwy19b"))))
+        "16isapn8f39lnffc3dp4dan05b7x6mnc76v6q5nn8ysxvvvwy19b"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Adjust the bundled gnulib to work with glibc 2.28.  See e.g.
+                 ;; "m4-gnulib-libio.patch".  This is a phase rather than patch
+                 ;; or snippet to work around <https://bugs.gnu.org/32347>.
+                 (substitute* (find-files "lib" "\\.c$")
+                   (("#if defined _IO_ftrylockfile")
+                    "#if defined _IO_EOF_SEEN"))
+                 (substitute* "lib/stdio-impl.h"
+                   (("^/\\* BSD stdio derived implementations")
+                    (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
+                                   "# define _IO_IN_BACKUP 0x100\n"
+                                   "#endif\n\n"
+                                   "/* BSD stdio derived implementations")))
+                 #t))))
     (build-system gnu-build-system)
     (inputs
      `(("which" ,which)))
@@ -875,8 +891,16 @@ the LZ4 frame format.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-                  (lambda _
-                    (chdir "squashfs-tools"))))))
+           (lambda _
+             (chdir "squashfs-tools")
+             #t))
+         (add-after 'unpack 'fix-glibc-compatability
+           (lambda _
+             (substitute* '("squashfs-tools/mksquashfs.c"
+                            "squashfs-tools/unsquashfs.c")
+               (("<sys/sysinfo.h>")
+                "<sys/sysinfo.h>\n#include <sys/sysmacros.h>"))
+             #t)))))
     (inputs
      `(("lz4" ,lz4)
        ("lzo" ,lzo)
@@ -1728,19 +1752,14 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.3.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/facebook/zstd/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1sifbq18p0hc978g0pq8fymrlpzz1fcxqkbxfqk44z6v9jg5bqfn"))
-              ;; Fix a regression that causes the tests to fail.  Both patches
-              ;; have been merged upstream and will be part of the next release.
-              (patches (search-patches "zstd-fix-stdin-list-without-tty.patch"
-                                       "zstd-fix-stdin-list-test.patch"))))
+    (version "1.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/facebook/zstd/releases/download/"
+                           "v" version "/zstd-" version ".tar.gz"))
+       (sha256
+        (base32 "1525b31jmbiczjj1n58nckdzky4cdnbwcsil3zgy4cx03v0a0cp8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

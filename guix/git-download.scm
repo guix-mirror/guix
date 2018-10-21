@@ -156,22 +156,23 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
 The result is similar to that of the 'git ls-files' command, except that it
 also includes directories, not just regular files.  The returned file names
 are relative to DIRECTORY, which is not necessarily the root of the checkout."
-  (let* ((directory  (canonicalize-path directory))
+  (let* (;; 'repository-working-directory' always returns a trailing "/",
+         ;; so add one here to ease the comparisons below.
+         (directory  (string-append (canonicalize-path directory) "/"))
          (dot-git    (repository-discover directory))
-         (top        (dirname dot-git))
          (repository (repository-open dot-git))
+         ;; XXX: This procedure is mistakenly private in Guile-Git 0.1.0.
+         (workdir    ((@@ (git repository) repository-working-directory)
+                      repository))
          (head       (repository-head repository))
          (oid        (reference-target head))
          (commit     (commit-lookup repository oid))
          (tree       (commit-tree commit))
          (files      (tree-list tree)))
     (repository-close! repository)
-    (if (string=? top directory)
+    (if (string=? workdir directory)
         files
-        (let ((relative (string-append
-                         (string-drop directory
-                                      (+ 1 (string-length top)))
-                         "/")))
+        (let ((relative (string-drop directory (string-length workdir))))
           (filter-map (lambda (file)
                         (and (string-prefix? relative file)
                              (string-drop file (string-length relative))))

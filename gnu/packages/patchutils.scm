@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -31,11 +31,13 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages less)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml))
 
 (define-public patchutils
@@ -92,7 +94,7 @@ listing the files modified by a patch.")
 (define-public quilt
   (package
     (name "quilt")
-    (version "0.61")
+    (version "0.65")
     (source
      (origin
       (method url-fetch)
@@ -100,12 +102,18 @@ listing the files modified by a patch.")
                           name "-" version ".tar.gz"))
       (sha256
        (base32
-        "1hwz58djkq9cv46sjwxbp2v5m8yjr41kd0nm1zm1xm6418khmv0y"))))
+        "06b816m2gz9jfif7k9v2hrm7fz76zjg5pavf7hd3ifybwn4cgjzn"))
+      (patches (search-patches "quilt-test-fix-regex.patch"
+                               "quilt-compat-getopt-fix-second-separator.patch"
+                               "quilt-compat-getopt-fix-option-with-nondigit-param.patch"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gnu-gettext)))
     (inputs `(("perl" ,perl)
               ("less" ,less)
               ("file" ,file)
-              ("ed" ,ed)))
+              ("ed" ,ed)
+              ("diffstat" ,diffstat)))
     (arguments
      '(#:parallel-tests? #f
        #:phases
@@ -116,8 +124,6 @@ listing the files modified by a patch.")
                  '("test/run"
                    "test/edit.test") 
                (("/bin/sh") (which "sh")))
-             ;; TODO: Run the mail tests once the mail feature can be supported.
-             (delete-file "test/mail.test")
              #t))
          (add-after 'install 'wrap-program
            ;; quilt's configure checks for the absolute path to the utilities it
@@ -128,6 +134,7 @@ listing the files modified by a patch.")
                     (coreutils (assoc-ref inputs "coreutils"))
                     (diffutils (assoc-ref inputs "diffutils"))
                     (findutils (assoc-ref inputs "findutils"))
+                    (diffstat  (assoc-ref inputs "diffstat"))
                     (less      (assoc-ref inputs "less"))
                     (file      (assoc-ref inputs "file"))
                     (ed        (assoc-ref inputs "ed"))
@@ -139,7 +146,8 @@ listing the files modified by a patch.")
                    ,(map (lambda (dir)
                            (string-append dir "/bin"))
                          (list coreutils diffutils findutils
-                               less file ed sed bash grep)))))
+                               less file ed sed bash grep
+                               diffstat)))))
              #t)))))
     (home-page "https://savannah.nongnu.org/projects/quilt/")
     (synopsis "Script for managing patches to software")

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright @ 2018 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,6 +77,10 @@
                   (guix build utils)
                   (srfi srfi-1))
        #:tests? #f ; Tests are run by the all.bash script.
+       ,@(if (string-prefix? "aarch64-linux" (or (%current-system)
+                                                 (%current-target-system)))
+             '(#:system "armhf-linux")
+             '())
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -212,7 +217,7 @@ programming language designed primarily for systems programming.  Go is a
 compiled, statically typed language in the tradition of C and C++, but adds
 garbage collection, various safety features, and concurrent programming features
 in the style of communicating sequential processes (@dfn{CSP}).")
-    (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
+    (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux"))
     (license license:bsd-3)))
 
 (define-public go-1.9
@@ -271,6 +276,15 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                    (("\"-lgcc_s\", ")
                     (string-append
                      "\"-Wl,-rpath=" gcclib "\", \"-lgcc_s\", ")))
+
+                 ;; XXX Commit 65fa2b615b72c1fa61a7 in the Go repo.  We do this
+                 ;; without a patch because ((guix packages) patch-and-repack)
+                 ;; resets file mtimes, and parts of Go's test suite rely on
+                 ;; those timestamps.
+                 ;; <https://github.com/golang/go/issues/26369>
+                 (substitute* "cmd/internal/objfile/elf.go"
+                   (("PT_LOAD")
+                     "PT_LOAD && p.Flags&elf.PF_X != 0"))
 
                  ;; Disable failing tests: these tests attempt to access
                  ;; commands or network resources which are neither available
@@ -385,11 +399,11 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        ,@(package-native-inputs go-1.4)))
     (supported-systems %supported-systems)))
 
-(define-public go-1.10
+(define-public go-1.11
   (package
     (inherit go-1.9)
     (name "go")
-    (version "1.10.4")
+    (version "1.11.1")
     (source
      (origin
        (method url-fetch)
@@ -397,7 +411,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "10ap5pan71y2hdwzv4cg8wx4sy8fkcz5520rm1ldjg25xmjlkr3g"))))
+         "05qivf2f59pv4bfrmdr4m0xvswkmvvl9c5a2h5dy45g2k8b8r3sm"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.9)
        ((#:phases phases)
@@ -412,17 +426,30 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                        (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
                       (output (assoc-ref outputs "out")))
 
-                 ;; Removing net/ tests, which fail when attempting to access
-                 ;; network resources not present in the build container.
                  (for-each delete-file
+                           ;; Removing net/ tests, which fail when attempting to access
+                           ;; network resources not present in the build container.
                            '("net/listen_test.go"
                              "net/parse_test.go"
-                             "net/cgo_unix_test.go"))
+                             "net/cgo_unix_test.go"
+                             ;; A side effect of these test scripts is testing
+                             ;; cgo. Attempts at using cgo flags and
+                             ;; directives with these scripts as specified
+                             ;; here (https://golang.org/cmd/cgo/) have not
+                             ;; worked. The tests continue to state that they
+                             ;; can not find crt1.o despite being present.
+                             "cmd/go/testdata/script/list_compiled_imports.txt"
+                             "cmd/go/testdata/script/mod_case_cgo.txt"
+                             ;; https://github.com/golang/go/issues/24884
+                             "os/user/user_test.go"))
 
                  (substitute* "os/os_test.go"
                    (("/usr/bin") (getcwd))
                    (("/bin/pwd") (which "pwd"))
                    (("/bin/sh") (which "sh")))
+
+                 (substitute* "cmd/vendor/golang.org/x/sys/unix/syscall_unix_test.go"
+                   (("/usr/bin") "/tmp"))
 
                  ;; Add libgcc to runpath
                  (substitute* "cmd/link/internal/ld/lib.go"
@@ -494,10 +521,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                ;; Tell the build system where to find the bootstrap Go.
                (let ((go  (assoc-ref inputs "go")))
                  (setenv "GOROOT_BOOTSTRAP" go)
-                 (setenv "GOGC" "400")
-                 ;; Go 1.10 tries to write to $HOME in a test
-                 (setenv "HOME" "/tmp")
-                 #t)))))))))
+                 (setenv "GOGC" "400"))))))))))
 
 (define-public go go-1.9)
 

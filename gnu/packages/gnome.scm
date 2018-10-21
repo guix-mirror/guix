@@ -115,6 +115,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages selinux)
@@ -396,28 +398,30 @@ access the common Google services, and has full asynchronous support.")
 (define-public libgxps
   (package
     (name "libgxps")
-    (version "0.2.5")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches (search-patches "libgxps-CVE-2017-11590.patch"))
               (sha256
                (base32
-                "184r06s8g20cfigg7m169n42jjsc9wmzzlycr4g1fxxhr72r8x9y"))))
-    (build-system gnu-build-system)
+                "1bhgrpb6ndlp11qwr95g9piklmjcsca7bi04f8gy9ziipm1i6as1"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("cairo" ,cairo)
-       ("glib" ,glib)
-       ("libarchive" ,libarchive)
-       ("libjpeg" ,libjpeg)
+     `(("gtk+" ,gtk+)
+       ("libjpeg" ,libjpeg-turbo)
        ("lcms" ,lcms)
        ("libtiff" ,libtiff)
        ("nettle" ,nettle)))
+    (propagated-inputs
+     ;; In Requires of libgxps.pc.
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("libarchive" ,libarchive)))
     (home-page "https://wiki.gnome.org/Projects/libgxps")
     (synopsis "GObject-based library for handling and rendering XPS documents")
     (description
@@ -4094,35 +4098,27 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.15")
+    (version "0.9.38")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/gnumdk/eolie/"
-                                  "releases/download/" version
-                                  "/eolie-" version ".tar.xz"))
+              (uri (string-append "https://gitlab.gnome.org/World/eolie/"
+                                  "uploads/9814c06a1bc83ea09c3da8719a9ed11b/"
+                                  "eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "0glydxp1xh85gfidk1l9miqn6qxdbvvk5s3iy0pjlv8nrs3263jd"))))
-    (build-system glib-or-gtk-build-system)
+                "10vrh91rapgfmqwc6jkcybpmlvn4q0y8bnklw3rddzigf9kvqsff"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:phases
+     `(#:glib-or-gtk? #t
+       #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "meson" "build"
-                             "--prefix" (assoc-ref outputs "out")))))
-         (replace 'check
-           (lambda _ (zero? (system* "ninja" "-C" "build" "test"))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "ninja" "-C" "build" "install"))))
          (add-after 'wrap 'wrap-more
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
                     ;; These libraries must be on LD_LIBRARY_PATH.
                     (libs '("gtkspell3" "webkitgtk" "libsoup" "libsecret"
                             "atk" "gtk+" "gsettings-desktop-schemas"
+                            "gcc:lib" ; needed b/c webkitgtk is built with gcc-7
                             "gobject-introspection"))
                     (path (string-join
                            (map (lambda (lib)
@@ -4135,12 +4131,12 @@ work and the interface is well tested.")
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))
              #t)))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gcc:lib" ,gcc-7 "lib") ; needed because webkitgtk is built with gcc-7
+       ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
-       ("meson" ,meson-for-build)
-       ("ninja" ,ninja)
        ("python" ,python)
+       ("glib:bin" ,glib "bin")
        ("gtk+" ,gtk+ "bin")))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -4150,12 +4146,14 @@ work and the interface is well tested.")
        ("atk" ,atk)    ; propagated by gtk+, but we need it in LD_LIBRARY_PATH
        ("python" ,python-wrapper)
        ("python-dateutil" ,python-dateutil)
+       ("python-pyfxa" ,python-pyfxa)
        ("python-pygobject" ,python-pygobject)
        ("python-pycairo" ,python-pycairo)
+       ("python-pycrypto" ,python-pycrypto)
        ("libsecret" ,libsecret)
        ("gtkspell3" ,gtkspell3)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-2.22)))
     (home-page "https://wiki.gnome.org/Apps/Eolie")
     (synopsis "Web browser for GNOME")
     (description
@@ -4193,6 +4191,7 @@ a secret password store, an adblocker, and a modern UI.")
      `(("dconf" ,dconf)))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("gcc" ,gcc-7)  ; needed because webkitgtk-2.22 is compiled with gcc-7
        ("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
        ("intltool" ,intltool)
@@ -4213,7 +4212,7 @@ a secret password store, an adblocker, and a modern UI.")
        ("libxslt" ,libxslt)
        ("nettle" ,nettle) ; for hogweed
        ("sqlite" ,sqlite)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-2.22)))
     (home-page "https://wiki.gnome.org/Apps/Web")
     (synopsis "GNOME web browser")
     (description
@@ -6936,7 +6935,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
 (define-public gspell
   (package
     (name "gspell")
-    (version "1.4.2")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6944,7 +6943,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1683vyyfq3q0ph665jj6id8hnlyid4qxzmqiwpv97gmz8zksg6x5"))
+                "1rdv873ixhwr15jwgc2z6k6y0hj353fqnwsy7zkh0c30qwiiv6l1"))
               (patches (search-patches "gspell-dash-test.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -6978,7 +6977,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
        ("aspell-dict-en" ,aspell-dict-en)
        ("xorg-server" ,xorg-server)))
     (propagated-inputs
-     `(("enchant" ,enchant)))           ; enchant.pc is required by gspell-1.pc
+     `(("enchant" ,enchant)))            ;enchant.pc is required by gspell-1.pc
     (home-page "https://wiki.gnome.org/Projects/gspell")
     (synopsis "GNOME's alternative spell checker")
     (description
@@ -7229,8 +7228,73 @@ It supports ripping to any audio codec supported by a GStreamer plugin, such as
 mp3, Ogg Vorbis and FLAC")
     (license license:gpl2+)))
 
+(define-public soundconverter
+  (package
+    (name "soundconverter")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/soundconverter/trunk/"
+                           version "/+download/"
+                           "soundconverter-" version ".tar.xz"))
+
+       (sha256
+        (base32
+         "1wrxf5py54xplrf97qp24pzbis0cvax5c6k0c7vr3z3ry8r7gd7c"))
+       (patches
+        (search-patches
+         "soundconverter-remove-gconf-dependency.patch"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           (guix build glib-or-gtk-build-system)
+                           ,@%gnu-build-system-modules)
+
+       #:modules ((guix build glib-or-gtk-build-system)
+                  (guix build utils)
+                  ((guix build gnu-build-system) #:prefix gnu:)
+                  ((guix build python-build-system) #:prefix python:))
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-POTFILES.in
+           (lambda _
+             (substitute* "po/POTFILES.in"
+               ;; This file doesn't exist, so without removing it, the 'check
+               ;; phase fails for the po directory
+               (("soundconverter/gconfstore\\.py") ""))))
+         (add-after 'install 'wrap-soundconverter-for-python
+           (assoc-ref python:%standard-phases 'wrap))
+         (add-after 'install 'wrap-soundconverter
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                   (gst-plugin-path   (getenv "GST_PLUGIN_SYSTEM_PATH")))
+               (wrap-program (string-append out "/bin/soundconverter")
+                 `("GI_TYPELIB_PATH"        ":" prefix (,gi-typelib-path))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (home-page "http://soundconverter.org/")
+    (synopsis "Convert between audio formats with a graphical interface")
+    (description
+     "SoundConverter supports converting between many audio formats including
+Opus, Ogg Vorbis, FLAC and more.  It supports parallel conversion, and
+configurable file renaming. ")
+    (license license:gpl3)))
+
 (define-public workrave
-  (let ((commit "v1_10_20"))
+  (let ((commit "v1_10_21"))
     (package
       (name "workrave")
       (version (string-map (match-lambda
@@ -7242,18 +7306,11 @@ mp3, Ogg Vorbis and FLAC")
                 (uri (git-reference
                       (url "https://github.com/rcaelers/workrave.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "099a87zkrkmsgfz9isrfm89dh545x52891jh6qxmn19h6wwsi941"))))
+                  "150qca8c552fakjlzkgarsxgp87l1xcwn19svqsa9d0cygqxjgia"))))
       (build-system glib-or-gtk-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'autogen
-             (lambda _
-               (invoke "sh" "autogen.sh")
-               #t)))))
       (propagated-inputs `(("glib" ,glib)
                            ("gtk+" ,gtk+)
                            ("gdk-pixbuf" ,gdk-pixbuf)

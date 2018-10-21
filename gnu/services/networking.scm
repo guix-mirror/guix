@@ -1,11 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -53,6 +53,7 @@
                static-networking-service-type)
   #:export (%facebook-host-aliases
             dhcp-client-service
+            dhcp-client-service-type
 
             dhcpd-service-type
             dhcpd-configuration
@@ -101,6 +102,16 @@
             modem-manager-configuration
             modem-manager-configuration?
             modem-manager-service-type
+
+            <wpa-supplicant-configuration>
+            wpa-supplicant-configuration
+            wpa-supplicant-configuration?
+            wpa-supplicant-configuration-wpa-supplicant
+            wpa-supplicant-configuration-pid-file
+            wpa-supplicant-configuration-dbus?
+            wpa-supplicant-configuration-interface
+            wpa-supplicant-configuration-config-file
+            wpa-supplicant-configuration-extra-options
             wpa-supplicant-service-type
 
             openvswitch-service-type
@@ -191,22 +202,11 @@ fe80::1%lo0 apps.facebook.com\n")
                              (cons* #$dhclient "-nw"
                                     "-pf" #$pid-file ifaces))))
                    (and (zero? (cdr (waitpid pid)))
-                        (let loop ()
-                          (catch 'system-error
-                            (lambda ()
-                              (call-with-input-file #$pid-file read))
-                            (lambda args
-                              ;; 'dhclient' returned before PID-FILE was created,
-                              ;; so try again.
-                              (let ((errno (system-error-errno args)))
-                                (if (= ENOENT errno)
-                                    (begin
-                                      (sleep 1)
-                                      (loop))
-                                    (apply throw args))))))))))
-      (stop #~(make-kill-destructor))))))
+                        (read-pid-file #$pid-file)))))
+      (stop #~(make-kill-destructor))))
+   isc-dhcp))
 
-(define* (dhcp-client-service #:key (dhcp isc-dhcp))
+(define* (dhcp-client-service #:key (dhcp isc-dhcp)) ;deprecated
   "Return a service that runs @var{dhcp}, a Dynamic Host Configuration
 Protocol (DHCP) client, on all the non-loopback network interfaces."
   (service dhcp-client-service-type dhcp))
@@ -297,7 +297,8 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
   ntp-configuration?
   (ntp      ntp-configuration-ntp
             (default ntp))
-  (servers  ntp-configuration-servers)
+  (servers  ntp-configuration-servers
+            (default %ntp-servers))
   (allow-large-adjustment? ntp-allow-large-adjustment?
                            (default #f)))
 
@@ -370,9 +371,10 @@ restrict -6 ::1\n"))
                 (description
                  "Run the @command{ntpd}, the Network Time Protocol (NTP)
 daemon of the @uref{http://www.ntp.org, Network Time Foundation}.  The daemon
-will keep the system clock synchronized with that of the given servers.")))
+will keep the system clock synchronized with that of the given servers.")
+                (default-value (ntp-configuration))))
 
-(define* (ntp-service #:key (ntp ntp)
+(define* (ntp-service #:key (ntp ntp)             ;deprecated
                       (servers %ntp-servers)
                       allow-large-adjustment?)
   "Return a service that runs the daemon from @var{ntp}, the
@@ -1031,28 +1033,62 @@ networking."))))
 ;;; WPA supplicant
 ;;;
 
+(define-record-type* <wpa-supplicant-configuration>
+  wpa-supplicant-configuration make-wpa-supplicant-configuration
+  wpa-supplicant-configuration?
+  (wpa-supplicant     wpa-supplicant-configuration-wpa-supplicant ;<package>
+                      (default wpa-supplicant))
+  (pid-file           wpa-supplicant-configuration-pid-file       ;string
+                      (default "/var/run/wpa_supplicant.pid"))
+  (dbus?              wpa-supplicant-configuration-dbus?          ;Boolean
+                      (default #t))
+  (interface          wpa-supplicant-configuration-interface      ;#f | string
+                      (default #f))
+  (config-file        wpa-supplicant-configuration-config-file    ;#f | <file-like>
+                      (default #f))
+  (extra-options      wpa-supplicant-configuration-extra-options  ;list of strings
+                      (default '())))
 
-(define (wpa-supplicant-shepherd-service wpa-supplicant)
-  "Return a shepherd service for wpa_supplicant"
-  (list (shepherd-service
-         (documentation "Run WPA supplicant with dbus interface")
-         (provision '(wpa-supplicant))
-         (requirement '(user-processes dbus-system loopback))
-         (start #~(make-forkexec-constructor
-                   (list (string-append #$wpa-supplicant
-                                        "/sbin/wpa_supplicant")
-                         "-u" "-B" "-P/var/run/wpa_supplicant.pid")
-                   #:pid-file "/var/run/wpa_supplicant.pid"))
-         (stop #~(make-kill-destructor)))))
+(define wpa-supplicant-shepherd-service
+  (match-lambda
+    (($ <wpa-supplicant-configuration> wpa-supplicant pid-file dbus? interface
+                                       config-file extra-options)
+     (list (shepherd-service
+            (documentation "Run the WPA supplicant daemon")
+            (provision '(wpa-supplicant))
+            (requirement '(user-processes dbus-system loopback))
+            (start #~(make-forkexec-constructor
+                      (list (string-append #$wpa-supplicant
+                                           "/sbin/wpa_supplicant")
+                            (string-append "-P" #$pid-file)
+                            "-B"        ;run in background
+                            #$@(if dbus?
+                                   #~("-u")
+                                   #~())
+                            #$@(if interface
+                                   #~((string-append "-i" #$interface))
+                                   #~())
+                            #$@(if config-file
+                                   #~((string-append "-c" #$config-file))
+                                   #~())
+                            #$@extra-options)
+                      #:pid-file #$pid-file))
+            (stop #~(make-kill-destructor)))))))
 
 (define wpa-supplicant-service-type
-  (service-type (name 'wpa-supplicant)
-                (extensions
-                 (list (service-extension shepherd-root-service-type
-                                          wpa-supplicant-shepherd-service)
-                       (service-extension dbus-root-service-type list)
-                       (service-extension profile-service-type list)))
-                (default-value wpa-supplicant)))
+  (let ((config->package
+         (match-lambda
+           (($ <wpa-supplicant-configuration> wpa-supplicant)
+            (list wpa-supplicant)))))
+    (service-type (name 'wpa-supplicant)
+                  (extensions
+                   (list (service-extension shepherd-root-service-type
+                                            wpa-supplicant-shepherd-service)
+                         (service-extension dbus-root-service-type config->package)
+                         (service-extension profile-service-type config->package)))
+                  (description "Run the WPA Supplicant daemon, a service that
+implements authentication, key negotiation and more for wireless networks.")
+                  (default-value (wpa-supplicant-configuration)))))
 
 
 ;;;

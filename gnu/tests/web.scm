@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix store)
   #:export (%test-httpd
             %test-nginx
+            %test-varnish
             %test-php-fpm
             %test-hpcguix-web
             %test-tailon))
@@ -123,7 +125,7 @@ HTTP-PORT."
 
 (define %httpd-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service httpd-service-type
             (httpd-configuration
              (config
@@ -152,7 +154,7 @@ HTTP-PORT."
 (define %nginx-os
   ;; Operating system under test.
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service nginx-service-type
             (nginx-configuration
              (log-directory "/var/log/nginx")
@@ -166,6 +168,46 @@ HTTP-PORT."
    (description "Connect to a running NGINX server.")
    (value (run-webserver-test name %nginx-os
                               #:log-file "/var/log/nginx/access.log"))))
+
+
+;;;
+;;; Varnish
+;;;
+
+(define %varnish-vcl
+  (mixed-text-file
+   "varnish-test.vcl"
+   "vcl 4.0;
+backend dummy { .host = \"127.1.1.1\"; }
+sub vcl_recv { return(synth(200, \"OK\")); }
+sub vcl_synth {
+  synthetic(\"" %index.html-contents "\");
+  set resp.http.Content-Type = \"text/plain\";
+  return(deliver);
+}"))
+
+(define %varnish-os
+  (simple-operating-system
+   (service dhcp-client-service-type)
+   ;; Pretend to be a web server that serves %index.html-contents.
+   (service varnish-service-type
+            (varnish-configuration
+             (name "/tmp/server")
+             ;; Use a small VSL buffer to fit in the test VM.
+             (parameters '(("vsl_space" . "4M")))
+             (vcl %varnish-vcl)))
+   ;; Proxy the "server" using the builtin configuration.
+   (service varnish-service-type
+            (varnish-configuration
+             (parameters '(("vsl_space" . "4M")))
+             (backend "localhost:80")
+             (listen '(":8080"))))))
+
+(define %test-varnish
+  (system-test
+   (name "varnish")
+   (description "Test the Varnish Cache server.")
+   (value (run-webserver-test "varnish-default" %varnish-os))))
 
 
 ;;;
@@ -195,7 +237,7 @@ echo(\"Computed by php:\".((string)(2+3)));
 (define %php-fpm-os
   ;; Operating system under test.
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service php-fpm-service-type)
    (service nginx-service-type
             (nginx-configuration
@@ -350,7 +392,7 @@ HTTP-PORT, along with php-fpm."
 
 (define %hpcguix-web-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service hpcguix-web-service-type
             (hpcguix-web-configuration
              (specs %hpcguix-web-specs)))))
@@ -365,7 +407,7 @@ HTTP-PORT, along with php-fpm."
 (define %tailon-os
   ;; Operating system under test.
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service tailon-service-type
             (tailon-configuration
              (config-file

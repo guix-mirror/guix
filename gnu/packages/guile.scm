@@ -19,6 +19,7 @@
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -224,6 +225,20 @@ without requiring the source code to be rewritten.")
    (home-page "https://www.gnu.org/software/guile/")
    (license license:lgpl3+)))
 
+(define-public guile-2.0.13
+  ;; For testing a "minimal" Guix
+  (hidden-package
+   (package (inherit guile-2.0)
+     (name "guile")
+     (version "2.0.13")
+     (source (origin
+               (method url-fetch)
+               (uri (string-append "mirror://gnu/guile/guile-" version
+                                   ".tar.xz"))
+               (sha256
+                (base32
+                 "12yqkr974y91ylgw6jnmci2v90i90s7h9vxa4zk0sai8vjnz4i1p")))))))
+
 (define-public guile-2.2
   (package (inherit guile-2.0)
     (name "guile")
@@ -286,7 +301,30 @@ without requiring the source code to be rewritten.")
                                                 ;  when heavily loaded)
 
 (define-public guile-next
-  (deprecated-package "guile-next" guile-2.2))
+  ;; This is the upcoming Guile 3.0, with JIT support.
+  (let ((commit "6f3357b0df64c4be17e72079864c09a542f1c779")
+        (revision "1"))
+    (package
+      (inherit guile-2.2)
+      (name "guile-next")
+      (version "2.9.1")
+      (source (origin
+                (inherit (package-source guile-2.2))
+                (uri (string-append "https://alpha.gnu.org/gnu/guile/guile-"
+                                    version ".tar.xz"))
+                (sha256
+                 (base32
+                  "0iba93yqn6mvgid0rfsrg4amym36pg9m8cqdplxsy222blrj9gh1"))))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "GUILE_LOAD_PATH")
+              (files '("share/guile/site/3.0")))
+             (search-path-specification
+              (variable "GUILE_LOAD_COMPILED_PATH")
+              (files '("lib/guile/3.0/site-ccache"
+                       "share/guile/site/3.0")))))
+      (properties '((ftp-server . "alpha.gnu.org")
+                    (upstream-name . "guile"))))))
 
 (define (make-guile-readline guile)
   (package
@@ -1097,6 +1135,9 @@ Guile's foreign function interface.")
      "This package provides Guile bindings to the SQLite database system.")
     (license license:gpl3+)))
 
+(define-public guile2.0-sqlite3
+  (package-for-guile-2.0 guile-sqlite3))
+
 (define-public haunt
   (package
     (name "haunt")
@@ -1115,13 +1156,15 @@ Guile's foreign function interface.")
        #:tests? #f ; test suite is non-deterministic :(
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'wrap-haunt
-                    (lambda* (#:key outputs #:allow-other-keys)
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; Wrap the 'haunt' command to refer to the right
                       ;; modules.
                       (let* ((out  (assoc-ref outputs "out"))
                              (bin  (string-append out "/bin"))
                              (site (string-append
-                                    out "/share/guile/site")))
+                                    out "/share/guile/site"))
+                             (deps (list (assoc-ref inputs "guile-reader")
+                                         (assoc-ref inputs "guile-commonmark"))))
                         (match (scandir site)
                           (("." ".." version)
                            (let ((modules (string-append site "/" version))
@@ -1130,9 +1173,19 @@ Guile's foreign function interface.")
                                                     "/site-ccache")))
                              (wrap-program (string-append bin "/haunt")
                                `("GUILE_LOAD_PATH" ":" prefix
-                                 (,modules))
+                                 (,modules
+                                  ,@(map (lambda (dep)
+                                           (string-append dep
+                                                          "/share/guile/site/"
+                                                          version))
+                                         deps)))
                                `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                                 (,compiled-modules)))
+                                 (,compiled-modules
+                                  ,@(map (lambda (dep)
+                                           (string-append dep "/lib/guile/"
+                                                          version
+                                                          "/site-ccache"))
+                                         deps))))
                              #t)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1565,7 +1618,7 @@ you send to a FIFO file.")
 (define-public guile-commonmark
   (package
     (name "guile-commonmark")
-    (version "0.1")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OrangeShark/" name
@@ -1573,24 +1626,12 @@ you send to a FIFO file.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12cb5fqvvgc87f5xp0ih5az305wnjia89l5jba83d0r2p8bfy0b0"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Use the real effective version of Guile in directory names
-               ;; instead of a hard-coded "/2.0".
-               '(begin
-                  (substitute* "configure"
-                    (("ac_subst_vars='")
-                     "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
-                  (substitute* "Makefile.in"
-                    (("moddir =.*")
-                     "moddir = $(datadir)/guile/site/@GUILE_EFFECTIVE_VERSION@\n")
-                    (("godir =.*")
-                     "godir = $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
-                  #t))))
+                "0kzclwkfijj8xka3g9kfj53y67c34ndfy84swdbw3j7y962ndxq6"))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (synopsis "CommonMark parser for Guile")
     (description
      "guile-commonmark is a library for parsing CommonMark, a fully specified

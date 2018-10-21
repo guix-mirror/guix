@@ -409,7 +409,7 @@ desktops.")
 (define-public qbittorrent
   (package
     (name "qbittorrent")
-    (version "4.0.4")
+    (version "4.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -418,7 +418,7 @@ desktops.")
               (file-name (string-append name "-release-" version ".tar.gz"))
               (sha256
                (base32
-                "145r4lv7rqdhrm5znn3ndxsfdf579n46zvj7c53c422am8ir5xhp"))))
+                "00zrpnwanq9f7maky2z4wnzw08xy902s77scm2gcvxxxankr4j92"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -434,7 +434,7 @@ desktops.")
      `(("boost" ,boost)
        ("libtorrent-rasterbar" ,libtorrent-rasterbar)
        ("openssl" ,openssl)
-       ("python" ,python)
+       ("python" ,python-wrapper)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))

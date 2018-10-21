@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
+;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -232,6 +233,46 @@ commands would.")
 from scratch.  i3 is primarily targeted at advanced users and
 developers.")
     (license license:bsd-3)))
+
+(define-public i3blocks
+  (let ((commit "37f23805ff886639163fbef8aedba71c8071eff8")
+        (revision "1"))
+    (package
+      (name "i3blocks")
+      (version (string-append "1.4-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/vivien/i3blocks.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "15rnrcajzyrmhlz1a21qqsjlj3dkib70806dlb386fliylc2kisb"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
+         #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'autogen
+                      (lambda _ (invoke "sh" "autogen.sh")))
+                    (add-after 'install 'install-doc
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (let* ((out (assoc-ref outputs "out"))
+                               (man1 (string-append out "/share/man/man1")))
+                          (install-file "docs/i3blocks.1" man1)
+                          #t))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/vivien/i3blocks")
+      (synopsis "Minimalist scheduler for status bar scripts")
+      (description "i3blocks executes your command lines and generates a
+status line from their output.  The generated line is meant to be displayed by
+the i3 window manager through its i3bar component, as an alternative to
+i3status.")
+      (license license:gpl3+))))
 
 (define-public perl-anyevent-i3
   (package
@@ -455,7 +496,7 @@ desktop environment.")
 (define-public xmonad
   (package
     (name "xmonad")
-    (version "0.14")
+    (version "0.14.2")
     (synopsis "Tiling window manager")
     (source (origin
               (method url-fetch)
@@ -463,11 +504,10 @@ desktop environment.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lq3k0ap7jxrrswpd954mqa6h8diccbif5srcgbmr39y6y8x0mm4"))))
+                "0gqyivpw8z1x73p1l1fpyq1wc013a1c07r6xn1a82liijs91b949"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
-       ("ghc-mtl"                   ,ghc-mtl)
        ("ghc-quickcheck"            ,ghc-quickcheck)
        ("ghc-semigroups"            ,ghc-semigroups)
        ("ghc-setlocale"             ,ghc-setlocale)
@@ -505,14 +545,14 @@ tiled on several screens.")
 (define-public xmobar
   (package
     (name "xmobar")
-    (version "0.27")
+    (version "0.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmobar/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0agx490q6sbmv3vfq33ys8dsrgwizj3bmha4i1pkxz5wp5q8cx3l"))))
+                "1xh87asg8y35srvp7d3gyyy4bkxsw122liihxgzgm8pqv2z3h4zd"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
@@ -560,11 +600,11 @@ Haskell, no knowledge of the language is required to install and use it.")
          "1660w3xhbfrlq8b8s1rviq2mcn1vyqpypli4023gqxwry52brk6y"))))
     (build-system haskell-build-system)
     (propagated-inputs
-     `(("ghc-mtl" ,ghc-mtl)
-       ("ghc-old-time" ,ghc-old-time)
+     `(("ghc-old-time" ,ghc-old-time)
        ("ghc-random" ,ghc-random)
        ("ghc-utf8-string" ,ghc-utf8-string)
        ("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-semigroups", ghc-semigroups)
        ("ghc-x11" ,ghc-x11)
        ("ghc-x11-xft" ,ghc-x11-xft)
        ("xmonad" ,xmonad)))

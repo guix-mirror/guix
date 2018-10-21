@@ -142,12 +142,14 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public python-2.7
   (package
     (name "python2")
     (version "2.7.15")
+    (replacement python-2/fixed)
     (source
      (origin
       (method url-fetch)
@@ -314,6 +316,16 @@ data types.")
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
 
+(define python-2/fixed
+  (package
+    (inherit python-2)
+    (source (origin
+              (inherit (package-source python-2))
+              (patches (append
+                        (origin-patches (package-source python-2))
+                        (search-patches "python2-CVE-2018-14647.patch"
+                                        "python2-CVE-2018-1000802.patch")))))))
+
 (define-public python2-called-python
   ;; Both 2.x and 3.x used to be called "python".  In commit
   ;; a7714d42de2c3082f3609d1e63c83d703fb39cf9 (March 2018), we renamed the
@@ -327,6 +339,7 @@ data types.")
   (package (inherit python-2)
     (name "python")
     (version "3.7.0")
+    (replacement python-3/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -398,6 +411,14 @@ data types.")
 ;; Current 3.x version.
 (define-public python-3 python-3.7)
 
+(define python-3/fixed
+  (package
+    (inherit python-3)
+    (source (origin
+              (inherit (package-source python-3))
+              (patches (append (origin-patches (package-source python-3))
+                               (search-patches "python-CVE-2018-14647.patch")))))))
+
 ;; Current major version.
 (define-public python python-3)
 
@@ -405,7 +426,7 @@ data types.")
 ;; Python (Tk -> libxcb -> Python.)
 
 (define-public python2-minimal
-  (package (inherit python-2)
+  (package/inherit python-2
     (name "python2-minimal")
     (outputs '("out"))
 
@@ -416,7 +437,7 @@ data types.")
               ("zlib" ,zlib)))))
 
 (define-public python-minimal
-  (package (inherit python)
+  (package/inherit python
     (name "python-minimal")
     (outputs '("out"))
 
@@ -428,8 +449,7 @@ data types.")
               ("zlib" ,zlib)))))
 
 (define-public python-debug
-  (package
-    (inherit python)
+  (package/inherit python
     (name "python-debug")
     (outputs '("out" "debug"))
     (build-system gnu-build-system)
@@ -448,7 +468,7 @@ for more information.")))
 (define* (wrap-python3 python
                        #:optional
                        (name (string-append (package-name python) "-wrapper")))
-  (package (inherit python)
+  (package/inherit python
     (name name)
     (source #f)
     (build-system trivial-build-system)
@@ -715,8 +735,8 @@ and verifies that it matches the intended target hostname.")
             (setenv "PYTHONPATH"
                     (string-append (getcwd) ":"
                                    (getenv "PYTHONPATH")))
-            (and (zero? (system* "./runexamples.sh"))
-                 (zero? (system* "nosetests" "-v"))))))))
+            (invoke "./runexamples.sh")
+            (invoke "nosetests" "-v"))))))
    (home-page "https://github.com/fhs/python-hdf4")
    (synopsis "Python interface to the NCSA HDF4 library")
    (description
@@ -854,6 +874,34 @@ API for locking files.")
 
 (define-public python2-lockfile
   (package-with-python2 python-lockfile))
+
+(define-public python-semantic-version
+  (package
+    (name "python-semantic-version")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "semantic_version" version))
+       (sha256
+        (base32
+         "1h2l9xyg1zzsda6kjcmfcgycbvrafwci283vcr1v5sbk01l2hhra"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ; PyPI tarball lacks tests
+    (home-page "https://github.com/rbarrois/python-semanticversion")
+    (synopsis "Semantic versioning module for Python")
+    (description
+     "The @code{semantic_version} class is a small library for handling
+@uref{https://semver.org/, semantic versioning} (@dfn{SemVer}) in Python.
+
+It can compare versions, generate a new version that represents a bump in one of
+the version levels, and check whether any given string is a proper semantic
+version identifier.")
+    (license license:bsd-3)))
+
+(define-public python2-semantic-version
+  (package-with-python2 python-semantic-version))
 
 (define-public python-setuptools
   (package
@@ -1624,7 +1672,7 @@ software.")
 (define-public python-mimeparse
   (package
     (name "python-mimeparse")
-    (version "0.1.4")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
@@ -1633,10 +1681,14 @@ software.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1hyxg09kaj02ri0rmwjqi86wk4nd1akvv7n0dx77azz76wga4s9w"))))
+         "0y2g6cl660bpz11srgqyvvm8gmywpgyx8g0xfvbiyr0af0yv1r3n"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; no setup.py test command
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "./mimeparse_test.py"))))))
     (home-page
      "https://github.com/dbtsai/python-mimeparse")
     (synopsis "Python library for parsing MIME types")
@@ -3263,16 +3315,13 @@ library, libgit2 implements Git plumbing.")
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
-    (version "2.2.0")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/pyparsing/pyparsing"
-                           "/pyparsing-" version
-                           "/pyparsing-" version ".tar.gz"))
+       (uri (pypi-uri "pyparsing" version))
        (sha256
-        (base32
-         "016b9gh606aa44sq92jslm89bg874ia0yyiyb643fa6dgbsbqch8"))))
+        (base32 "06dgd0iilvf8m0ssmfpcbh8l6jf0zkp8adbb84llksg17crfx4zl"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -3295,7 +3344,7 @@ library, libgit2 implements Git plumbing.")
                 (list "docs" "htmldoc" "examples")
                 (list doc html-doc examples))
                #t))))))
-    (home-page "http://pyparsing.wikispaces.com")
+    (home-page "https://github.com/pyparsing/pyparsing")
     (synopsis "Python parsing class library")
     (description
      "The pyparsing module is an alternative approach to creating and
@@ -4239,15 +4288,14 @@ PNG, PostScript, PDF, and SVG file output.")
 (define-public python-decorator
   (package
     (name "python-decorator")
-    (version "4.2.1")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "decorator" version))
        (sha256
-        (base32 "03iaf116rm3w8b4agb8hzf6z9331mrvi4khfxq35zkx17sgxsikx"))))
+        (base32 "0308djallnh00v112y5b7nadl657ysmkp6vc8xn51d6yzc9zm7n3"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; no test target
     (home-page "https://pypi.python.org/pypi/decorator/")
     (synopsis "Python module to simplify usage of decorators")
     (description
@@ -4422,7 +4470,7 @@ displayed.")
              ;; Why does it not work? Delete for now.
              (delete-file "tests/test_socket.py")
              #t))
-         (replace 'check (lambda _ (zero? (system* "nosetests" "-v")))))))
+         (replace 'check (lambda _ (invoke "nosetests" "-v"))))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)
@@ -5099,21 +5147,21 @@ interfaces in an easy and portable manner.")
 (define-public python-networkx
   (package
     (name "python-networkx")
-    (version "2.1")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "networkx" version ".zip"))
        (sha256
-        (base32 "1ccb8mfz4m821k9y0cigkbq42q2sbb4dj5fbjshp0awp32j2q9v4"))))
+        (base32 "12swxb15299v9vqjsq4z8rgh5sdhvpx497xwnhpnb0gynrx6zra5"))))
     (build-system python-build-system)
-    ;; python-decorator is needed at runtime
+    ;; python-decorator is needed at runtime.
     (propagated-inputs
      `(("python-decorator" ,python-decorator)))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("unzip" ,unzip)))
-    (home-page "http://networkx.github.io/")
+    (home-page "https://networkx.github.io/")
     (synopsis "Python module for creating and manipulating graphs and networks")
     (description
       "NetworkX is a Python package for the creation, manipulation, and study
@@ -7229,9 +7277,7 @@ config files.")
     (version "0.12.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.io/packages/source/C/ConfigArgParse/"
-                    "ConfigArgParse-" version ".tar.gz"))
+              (uri (pypi-uri "ConfigArgParse" version))
               (sha256
                (base32
                 "0fgkiqh6r3rbkdq3k8c48m85g52k96686rw3a6jg4lcncrkpvk98"))))
@@ -7450,13 +7496,13 @@ minimal and fast API targeting the following uses:
 (define-public python-icalendar
   (package
     (name "python-icalendar")
-    (version "4.0.1")
+    (version "4.0.3")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "icalendar" version))
              (sha256
               (base32
-               "139y79y6ijl39m5bj771r43vpah9s4ly7d1k76la6hrx7l144ak8"))))
+               "0mk3dk1dxkcm46jy48v27j2w2349iv4sbimqj1yb5js43mx49hh7"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -8760,23 +8806,10 @@ LDFLAGS and parse the output to build extensions with setup.py.")
 files.  It contains a drop-in replacement for the I/O interface in the
 standard library's @code{bz2} module, including features from the latest
 development version of CPython that are not available in older releases.")
-    (license license:asl2.0)
-    (properties `((python2-variant . ,(delay python2-bz2file))))))
+    (license license:asl2.0)))
 
 (define-public python2-bz2file
-  (let ((base (package-with-python2
-               (strip-python2-variant python-bz2file))))
-    (package
-      (inherit base)
-      (arguments
-       `(#:python ,python-2
-         #:phases
-         (modify-phases %standard-phases
-           ;; 'python setup.py test' does not work as of 0.98.
-           ;; There is only the one test file, so we run it directly.
-           (replace 'check
-                    (lambda _ (zero? (system* "python"
-                                              "test_bz2file.py"))))))))))
+  (package-with-python2 python-bz2file))
 
 (define-public python-future
   (package
@@ -10098,14 +10131,14 @@ functionality in the command line.")
 (define-public python-glances
   (package
   (name "python-glances")
-  (version "2.7.1")
+  (version "3.0.2")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "Glances" version))
       (sha256
         (base32
-          "11jbq40g8alsbirnd4kiagznqg270247i0m8qhi48ldf2i5xppxg"))))
+          "09fxysfp1n16csqvzvawy74qm6a94nvwjf3vcf5gkqp4i6k4vjjy"))))
   (build-system python-build-system)
   (propagated-inputs
    `(("python-psutil" ,python-psutil)))
@@ -10367,7 +10400,7 @@ theme for the Sphinx documentation system.  It's the default theme of Sphinx.")
              (setenv "CC" "gcc")
              ;; No need to extend PYTHONPATH to find the built package, since
              ;; the Makefile will build anyway
-             (zero? (system* "make" "check")))))))
+             (invoke "make" "check"))))))
   (native-inputs
    `(("procps" ,procps))) ; required for tests
   (home-page
@@ -11325,7 +11358,7 @@ editors.")
 (define-public python2-backports-functools-lru-cache
   (package
     (name "python2-backports-functools-lru-cache")
-    (version "1.3")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
@@ -11333,7 +11366,7 @@ editors.")
        (uri (pypi-uri "backports.functools_lru_cache" version))
        (sha256
         (base32
-         "158ysf2hb0q4p4695abfiym9x1ywg0dgh8a3apd7gqaaxjy22jj4"))))
+         "06jgv8gib4fhky0p5cmxdghvsgjyzcdgk48k8pxb1ccf11znk64x"))))
     (build-system python-build-system)
     (native-inputs
      `(("python2-setuptools-scm" ,python2-setuptools-scm)))
@@ -12117,14 +12150,14 @@ address is valid and really exists.")
 (define-public python-marshmallow
   (package
     (name "python-marshmallow")
-    (version "3.0.0b3")
+    (version "3.0.0b14")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "marshmallow" version))
       (sha256
        (base32
-        "07mcrij1yvk85lvgx44wwr9pc80xryghvlgayb057g1cazcypysd"))))
+        "1digk3f5cfk7wmlka65mc7bzsd96pbsgcsvp6pimd5b4ff9zb5p3"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -12391,15 +12424,24 @@ library.")
 (define-public python-rencode
   (package
    (name "python-rencode")
-   (version "1.0.3")
+   (version "1.0.5")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "rencode" version))
      (sha256
       (base32
-       "08if5yax1xn5yfp8p3765ccjmfcv9di7i4m5jckgnwvdsgznwkbj"))))
+       "0mzwdq1is7kyyr32i5k4iz6g5xxdvmiyc132jnc60p9m6lnwjrpv"))))
    (build-system python-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-before 'check 'delete-bogus-test
+          ;; This test requires /home/aresch/Downloads, which is not provided by
+          ;; the build environment.
+          (lambda _
+            (delete-file "rencode/t.py")
+            #t)))))
    (native-inputs `(("pkg-config" ,pkg-config)
                     ("python-cython" ,python-cython)))
    (home-page "https://github.com/aresch/rencode")
@@ -13517,6 +13559,20 @@ file system events on Linux.")
         (base32
          "17h3na0rdh8xq30w4b9pizgkdxmm51896bxw600x84jflg9vaxn4"))))
     (build-system python-build-system)
+    (arguments
+     `(,@(if (any (cute string-prefix? <> (or (%current-system)
+                                              (%current-target-system)))
+                  '("armhf" "i686"))
+        '(#:phases
+          (modify-phases %standard-phases
+          ;; This is required for 32-bit hardware.
+          ;; TODO: Try to remove this when upgrading.
+          (add-after 'unpack 'patch-test
+            (lambda _
+              (substitute* "more_itertools/tests/test_more.py"
+                (("10 \\*\\* 10") "9 ** 9"))
+              #t))))
+        '())))
     (propagated-inputs
      `(("python-six" ,python-six-bootstrap)))
     (home-page "https://github.com/erikrose/more-itertools")

@@ -879,7 +879,8 @@ subprocess and see the output as well as any file modifications.")
        (uri (pypi-uri "testtools" version))
        (sha256
         (base32
-         "0n8519lk8aaa91vymz842831181wf7fss98hyllhygi3z1nfq9sq"))))
+         "0n8519lk8aaa91vymz842831181wf7fss98hyllhygi3z1nfq9sq"))
+       (patches (search-patches "python-testtools.patch"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f))
     (propagated-inputs
@@ -1920,14 +1921,14 @@ create data based on random numbers and yet remain repeatable.")
 (define-public python-nose-timer
   (package
     (name "python-nose-timer")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "nose-timer" version))
         (sha256
           (base32
-            "0ywg223p528014z5s0vzck74r4xyw3kvcp2casfnc85dkvir1zj7"))))
+            "0hfz5aqnhf493i9kyb6prm4zm8vx7wmfsyg3nvsnh24lzh2kwx44"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-nose" ,python-nose)

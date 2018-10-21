@@ -45,6 +45,7 @@
    (eval . (put 'manifest-pattern 'scheme-indent-function 0))
    (eval . (put 'substitute-keyword-arguments 'scheme-indent-function 1))
    (eval . (put 'with-store 'scheme-indent-function 1))
+   (eval . (put 'with-external-store 'scheme-indent-function 1))
    (eval . (put 'with-error-handling 'scheme-indent-function 0))
    (eval . (put 'with-mutex 'scheme-indent-function 1))
    (eval . (put 'with-atomic-file-output 'scheme-indent-function 1))
@@ -59,6 +60,7 @@
    (eval . (put 'emacs-substitute-variables 'scheme-indent-function 1))
    (eval . (put 'with-derivation-narinfo 'scheme-indent-function 1))
    (eval . (put 'with-derivation-substitute 'scheme-indent-function 2))
+   (eval . (put 'with-status-report 'scheme-indent-function 1))
 
    (eval . (put 'mlambda 'scheme-indent-function 1))
    (eval . (put 'mlambdaq 'scheme-indent-function 1))

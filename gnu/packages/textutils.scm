@@ -84,7 +84,7 @@ to DOS format and vice versa.")
 (define-public recode
   (package
     (name "recode")
-    (version "3.7")
+    (version "3.7.1")
     (source
      (origin
        (method url-fetch)
@@ -92,7 +92,7 @@ to DOS format and vice versa.")
                            "download/v" version "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0r4yhf7i7zp2nl2apyzz7r3i2in12n385hmr8zcfr18ly0ly530q"))
+         "0215hfj0rhlh0grg91qfx75pp6z09bpv8211qdxqihniw7y9a4fs"))
        (modules '((guix build utils)))
        (snippet '(begin
                    (delete-file "tests/Recode.c")
@@ -735,7 +735,8 @@ measuring and checking the width of strings, with support east asian text.")
                                  unzip
                                  "/bin/unzip',")))
                ;; Makefile is wrong.
-               (chmod config #o644)))))))
+               (chmod config #o644)
+               #t))))))
     (synopsis "Recover text from @file{.docx} files, with good formatting")
     (description
      "@command{docx2txt} is a Perl based command line utility to convert

@@ -157,7 +157,10 @@ these lines:
    ;; @dots{}
    (initrd-modules (append (list~{ ~s~})
                            %base-initrd-modules)))
-@end example\n")
+@end example
+
+If you think this diagnostic is inaccurate, use the @option{--skip-checks}
+option of @command{guix system}.\n")
                                missing)))
                 (&error-location
                  (location (source-properties->location location)))))))))

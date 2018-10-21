@@ -39,7 +39,7 @@ empty-password logins.
 When SFTP? is true, run an SFTP server test."
   (define os
     (marionette-operating-system
-     (simple-operating-system (dhcp-client-service) ssh-service)
+     (simple-operating-system (service dhcp-client-service-type) ssh-service)
      #:imported-modules '((gnu services herd)
                           (guix combinators))))
   (define vm

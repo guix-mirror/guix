@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix licenses)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages boost)
@@ -37,6 +38,7 @@
              (uri (string-append "mirror://sourceforge/" name "/" name "/"
                                  name "-" version "/"
                                  name "-" version ".tar.gz"))
+             (patches (search-patches "swig-guile-gc.patch"))
              (sha256
               (base32
                "0kf99ygrjs5616gsqhz1l7bib3a12izmxi7g48bwblbymr3z9ybw"))))

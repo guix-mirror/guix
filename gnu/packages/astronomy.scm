@@ -68,7 +68,7 @@ in FITS files.")
 (define-public wcslib
   (package
     (name "wcslib")
-    (version "5.18")
+    (version "5.20")
     (source
      (origin
        (method url-fetch)
@@ -76,7 +76,7 @@ in FITS files.")
              "ftp://ftp.atnf.csiro.au/pub/software/wcslib/" name "-" version
              ".tar.bz2"))
        (sha256
-        (base32 "16jh568k99c9p0y3qzcgps2rii933x9wlay7q1xm0lr59zqzp4xn"))))
+        (base32 "1c8g9kv4dxrnawnqi4spi2p10s2xs7x75pdfxhbqxgcc97dkgh0b"))))
     (inputs
      `(("cfitsio" ,cfitsio)))
     (build-system gnu-build-system)
@@ -89,8 +89,7 @@ in FITS files.")
                (("/bin/sh") "sh"))
              #t))
          (delete 'install-license-files)) ; installed by ‘make install’
-       ;; Both the build and tests fail randomly when run in parallel.
-       #:parallel-build? #f
+       ;; Parallel execution of the test suite is not supported.
        #:parallel-tests? #f))
     (home-page "https://www.atnf.csiro.au/people/mcalabre/WCS")
     (synopsis "Library which implements the FITS WCS standard")

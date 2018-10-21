@@ -13,6 +13,8 @@
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -291,12 +293,14 @@ engineers, musicians, soundtrack editors and composers.")
     (version "2.2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/audacity/audacity/archive"
-                           "/Audacity-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/audacity/audacity.git")
+             (commit (string-append "Audacity-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "18q7i77ynihx7xp45lz2lv0k0wrh6736pcrivlpwrxjgbvyqx7km"))
+         "10maxmjxbmjybj7n4m7a9bbm7g8xxw8f8vbsf7c9ih5j2gr15ihs"))
        (patches (search-patches "audacity-build-with-system-portaudio.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -321,7 +325,7 @@ engineers, musicians, soundtrack editors and composers.")
               ;; "sbsms"
               ))
            #t))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)
        ("gtk+" ,gtk+)
@@ -410,21 +414,12 @@ engineers, musicians, soundtrack editors and composers.")
                (("../lib-src/portmidi/porttime/porttime.h") "porttime.h"))
              (substitute* "src/prefs/MidiIOPrefs.cpp"
                (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h"))
-             #t))
-         (add-after 'install 'wrap-program
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/audacity")
-               ;; For GtkFileChooserDialog.
-               `("GSETTINGS_SCHEMA_DIR" =
-                 (,(string-append (assoc-ref inputs "gtk+")
-                                  "/share/glib-2.0/schemas"))))
              #t)))
        ;; The test suite is not "well exercised" according to the developers,
        ;; and fails with various errors.  See
        ;; <http://sourceforge.net/p/audacity/mailman/message/33524292/>.
        #:tests? #f))
-    (home-page "http://audacity.sourceforge.net/")
+    (home-page "https://www.audacityteam.org/")
     (synopsis "Software for recording and editing sounds")
     (description
      "Audacity is a multi-track audio editor designed for recording, playing
@@ -453,7 +448,14 @@ tools.")
              "CXXFLAGS=-std=gnu++11"
              "CFLAGS=-std=gnu++11"
              (string-append "prefix=" %output)
-             (string-append "pkgdatadir=" %output "/share/azr3-jack"))))
+             (string-append "pkgdatadir=" %output "/share/azr3-jack"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'fix-timestamp
+           (lambda _
+             (let ((early-1980 315619200)) ; 1980-01-02 UTC
+               (utime "azr3.1" early-1980 early-1980))
+             #t)))))
     (inputs
      `(("gtkmm" ,gtkmm-2)
        ("lvtk" ,lvtk)
@@ -650,7 +652,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.09.1")
+    (version "6.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -659,7 +661,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xqpqws4jsv7fyawcjzwaw544qbfh29xq164kdf30a9v1n3yklp4"))))
+                "072pk5h9w0vhw0ncc9dn90haw1yv18v04iwwjn8nsp6930w7dvxd"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -674,7 +676,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
      `(("bison" ,bison)
        ("flex" ,flex)
        ("zlib" ,zlib)))
-    (home-page "http://csound.github.io/")
+    (home-page "https://csound.com/")
     (synopsis "Sound and music computing system")
     (description
      "Csound is a user-programmable and user-extensible sound processing
@@ -1040,7 +1042,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "1.1.11")
+    (version "2.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1049,7 +1051,7 @@ follower.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0n75jq3xgq46hfmjkaaxz3gic77shs4fzajq40c8gk043i84xbdh"))))
+                "1mqyym5qkh8xd1rqj3yhfxbw5dxjcrljb6nkfqzvcarlv4h6rjn7"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -1080,6 +1082,22 @@ specifications.  FluidSynth reads and handles MIDI events from the MIDI input
 device.  It is the software analogue of a MIDI synthesizer.  FluidSynth can
 also play midifiles using a Soundfont.")
     (license license:lgpl2.1+)))
+
+;; gzdoom@3.3.0 and lmms@1.1.3 requires this version.  Remove once no longer
+;; needed.
+(define-public fluidsynth-1
+  (package
+    (inherit fluidsynth)
+    (version "1.1.11")
+    (source (origin
+              (inherit (package-source fluidsynth))
+              (uri (git-reference
+                    (url "https://github.com/FluidSynth/fluidsynth")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "fluidsynth" version))
+              (sha256
+               (base32
+                "0n75jq3xgq46hfmjkaaxz3gic77shs4fzajq40c8gk043i84xbdh"))))))
 
 (define-public faad2
   (package
@@ -1911,15 +1929,15 @@ lv2-c++-tools.")
 (define-public openal
   (package
     (name "openal")
-    (version "1.19.0")
+    (version "1.19.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://kcat.strangesoft.net/openal-releases/openal-soft-"
+                    "http://openal-soft.org/openal-releases/openal-soft-"
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1mhf5bsb58s1xk6hvxl7ly7rd4rpl9z8h07xl1q94brywykg7bgi"))))
+                "1sdjhkz2gd6lbnwphi1b6aw3br4wv2lik5vnqh6mxfc8a7zqfbsw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f  ; no check target
@@ -1952,7 +1970,7 @@ emitters are among the features handled by the API.  More advanced effects,
 including air absorption, occlusion, and environmental reverb, are available
 through the EFX extension.  It also facilitates streaming audio, multi-channel
 buffers, and audio capture.")
-    (home-page "http://kcat.strangesoft.net/openal.html")
+    (home-page "http://openal-soft.org/")
     (license license:lgpl2.0+)))
 
 (define-public freealut
@@ -2015,14 +2033,14 @@ and ALSA.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.5.3")
+    (version "0.5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "0x08af8m5l8qy9av3dlldsg58ny9nc69h1s4i6hqkvj24jwy6fw1"))))
+                "0qr71nb93gkz5q53nfcl5g168z173wc6s8w1yjs3rfn3m4hg0bcq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target
@@ -2244,7 +2262,7 @@ aimed at audio/musical applications.")
        ("vamp" ,vamp)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://breakfastquay.com/rubberband/")
+    (home-page "https://breakfastquay.com/rubberband/")
     (synopsis "Audio time-stretching and pitch-shifting library")
     (description
      "Rubber Band is a library and utility program that permits changing the
@@ -2760,7 +2778,7 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
@@ -2768,7 +2786,7 @@ interface.")
                            "/qsynth-" version ".tar.gz"))
        (sha256
         (base32
-         "1rfkaxq1pyc4hv3l0i6wicianbcbm1wp53kh9i5d4jsljgisd1dv"))))
+         "1jghczmmva7cyavg1q0j8nr3hmjpzzglzi5ckg92ax4ji8gpks9c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" phase
@@ -3089,7 +3107,7 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.4.12")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
@@ -3097,7 +3115,7 @@ with support for HD extensions.")
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
         (base32
-         "0n9skdap1vnl6w52fx0gsrjlk7w3xgdwi62ycyf96h29rx059z6a"))))
+         "0vd7320k7s2zcn2vganclxbr1vav18ghld27rcwskvcc3dm8prii"))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))

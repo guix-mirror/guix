@@ -173,14 +173,14 @@ and provides a \"top-like\" mode (monitoring).")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://alpha.gnu.org/gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1lgmsbxn8i8xdasxzkdp2cml75n128pplw6icvmspl6s0n9xmw8n"))))
+                "1wmciqml9yplnx1s4ynn00giqyk06rbrcsgvpjj2df47sawk2jp8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -613,7 +613,7 @@ connection alive.")
          (bind-minor-version "11")
          (bind-patch-version "4")
          (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "1")      ; for patch release, e.g. "6"
+         (bind-release-version "2")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -730,7 +730,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "08zyy13b8ydfbg26b3y6mw299qs89ba90gymraqqjsgjicydrq5h"))))
+                      "04fq17zksd2b3w6w6padps5n7b6s2lasxpksbhl4378h56vgfnm8"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -869,7 +869,7 @@ over ssh connections.")
 (define-public rename
   (package
     (name "rename")
-    (version "0.35")
+    (version "1.00")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -877,8 +877,24 @@ over ssh connections.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "052iqmn7ya3w1nadpiyavmr3rx566r0lbflx94y8b5wx9q5c16rq"))))
+                "03yhf8nmqsb0zyliv501fdvwlp589jqfn44yqkrflmpzrbik3zxl"))))
     (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'find-itself
+           ;; Fix run-time 'Can't locate File/Rename.pm in @INC' failure.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (with-directory-excursion bin
+                 (for-each
+                  (lambda (program)
+                    (wrap-program program
+                      `("PERL5LIB" ":" prefix
+                        (,(string-append out "/lib/perl5/site_perl")))))
+                  (find-files "." ".*")))
+               #t))))))
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-pod" ,perl-test-pod)
@@ -1178,9 +1194,6 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out"))
                             (qt '("qtbase" "qtsvg")))
-                        (substitute* "wpa_gui.desktop"
-                          (("Exec=wpa_gui")
-                           (string-append "Exec=" out "/bin/wpa_gui")))
                         (install-file "wpa_gui" (string-append out "/bin"))
                         (install-file "wpa_gui.desktop"
                                       (string-append out "/share/applications"))

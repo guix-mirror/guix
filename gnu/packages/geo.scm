@@ -24,8 +24,10 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages geo)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system r)
@@ -37,6 +39,8 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages glib)
@@ -44,6 +48,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -57,7 +62,7 @@
 (define-public geos
   (package
     (name "geos")
-    (version "3.6.2")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.osgeo.org/geos/geos-"
@@ -65,7 +70,7 @@
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0ak5szby29l9l0vy43dm5z2g92xzdky20q1gc1kah1fnhkgi6nh4"))))
+                "1mrz778m6bd1x9k6sha5kld43kalhq79h2lynlx2jx7xjakl3gsg"))))
     (build-system gnu-build-system)
     (arguments `(#:phases
                  (modify-phases %standard-phases
@@ -760,3 +765,224 @@ location queries to be run in SQL.")
                license:bsd-3 ; files only say "BSD"
                ;; doc
                license:cc-by-sa3.0))))
+
+(define-public tegola
+  (package
+    (name "tegola")
+    (version "0.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                     "https://github.com/go-spatial/tegola/archive/v"
+                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "09vnzxfn0r70kmd776kcdfqxhzdj11syxa0b27z4ci1k367v7viw"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/go-spatial/tegola/cmd/tegola"
+       #:unpack-path "github.com/go-spatial"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-version
+           (lambda _
+             (with-directory-excursion
+               (string-append "src/github.com/go-spatial/tegola-" ,version)
+               (substitute* '("cmd/tegola/cmd/root.go"
+                              "cmd/tegola_lambda/main.go")
+                 (("version not set") ,version)))
+             #t))
+         (add-before 'build 'rename-import
+           (lambda _
+             (rename-file (string-append "src/github.com/go-spatial/tegola-" ,version)
+                          "src/github.com/go-spatial/tegola")
+             #t)))))
+    (home-page "http://tegola.io")
+    (synopsis "Vector tile server for maps")
+    (description "Tegola is a free vector tile server written in Go.  Tegola
+takes geospatial data and slices it into vector tiles that can be efficiently
+delivered to any client.")
+    (license (list
+               license:expat
+               ;; Some packages in vendor have other licenses
+               license:asl2.0
+               license:bsd-2
+               license:bsd-3
+               license:wtfpl2))))
+
+(define-public imposm3
+  (package
+    (name "imposm3")
+    (version "0.6.0-alpha.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/omniscale/imposm3/archive/v"
+                            version ".tar.gz"))
+    (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "06f0kwmv52yd5m9jlckqxqmkf0cnqy3hamakrvg9lspplyqrds80"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/omniscale/imposm3/cmd/imposm"
+       #:unpack-path "github.com/omniscale"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'rename-import
+           (lambda _
+             (rename-file (string-append "src/github.com/omniscale/imposm3-" ,version)
+                          "src/github.com/omniscale/imposm3")
+             #t))
+         (add-before 'build 'set-version
+           (lambda _
+             (substitute* "src/github.com/omniscale/imposm3/version.go"
+               (("0.0.0-dev") ,version))
+             #t)))))
+    (inputs
+     `(("geos" ,geos)
+       ("leveldb" ,leveldb)))
+    (home-page "https://imposm.org/")
+    (synopsis "OpenStreetMap importer for PostGIS")
+    (description "Imposm is an importer for OpenStreetMap data.  It reads PBF
+files and imports the data into PostgreSQL/PostGIS databases.  It is designed
+to create databases that are optimized for rendering/tile/map-services.")
+    (license (list
+               license:asl2.0
+               ;; Some dependencies in vendor have different licenses
+               license:expat
+               license:bsd-2
+               license:bsd-3))))
+
+(define-public protozero
+  (package
+    (name "protozero")
+    (version "1.6.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/mapbox/protozero/archive/v"
+                            version ".tar.gz"))
+    (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1xaj4phz1r7xn0vgdfvfkz8b0bizgb6mavjky1zqcvdmbwgwgly5"))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/mapbox/protozero")
+    (synopsis "Minimalistic protocol buffer decoder and encoder in C++")
+    (description "Protozero is a minimalistic protocol buffer decored and
+encoder in C++.  The developer using protozero has to manually translate the
+@file{.proto} description into code.")
+    (license (list
+               license:asl2.0; for folly
+               license:bsd-2))))
+
+(define-public libosmium
+  (package
+    (name "libosmium")
+    (version "2.14.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/osmcode/libosmium/archive/v"
+                version ".tar.gz"))
+    (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0d9b46qiw7zkw1h9lygjdwqxnbhm3c7v8kydzw9f9f778cyagc94"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("boost" ,boost)
+       ("expat" ,expat)
+       ("gdal" ,gdal)
+       ("geos" ,geos)
+       ("proj.4" ,proj.4)
+       ("protozero" ,protozero)
+       ("sparsehash" ,sparsehash)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("doxygen" ,doxygen)))
+    (home-page "https://osmcode.org/libosmium/")
+    (synopsis "C++ library for working with OpenStreetMap data")
+    (description "Libosmium is a fast and flexible C++ library for working with
+OpenStreetMap data.")
+    (license license:boost1.0)))
+
+(define-public osm2pgsql
+  (package
+    (name "osm2pgsql")
+    (version "0.96.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/openstreetmap/osm2pgsql/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08y7776r4l9v9177a4q6cfdri0lpirky96m6g699hwl7v1vhw0mn"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "contrib/protozero")
+                  (delete-file-recursively "contrib/libosmium")
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f; tests fail because we need to setup a database
+       #:configure-flags
+       (list (string-append "-DOSMIUM_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "libosmium")
+                            "/include")
+             (string-append "-DPROTOZERO_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "protozero")
+                            "/include"))))
+    (inputs
+     `(("boost" ,boost)
+       ("expat" ,expat)
+       ("libosmium" ,libosmium)
+       ("lua" ,lua)
+       ("postgresql" ,postgresql)
+       ("proj.4" ,proj.4)
+       ("protozero" ,protozero)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("python-2" ,python-2)
+       ("python2-psycopg2" ,python2-psycopg2)))
+    (home-page "https://github.com/openstreetmap/osm2pgsql")
+    (synopsis "OSM data importer to postgresql")
+    (description "Osm2pgsql is a tool for loading OpenStreetMap data into a
+PostgreSQL / PostGIS database suitable for applications like rendering into a
+map, geocoding with Nominatim, or general analysis.")
+    (license license:gpl2+)))
+
+(define-public tippecanoe
+  (package
+    (name "tippecanoe")
+    (version "1.31.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mapbox/tippecanoe/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1057na1dkgjaryr7jr15lqkxpam111d3l5zdpdkqzzzpxmdjxqcf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases (delete 'configure))
+       #:test-target "test"
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (inputs
+     `(("perl" ,perl)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/mapbox/tippecanoe")
+    (synopsis "Vector tile server for maps")
+    (description "Tippecanoe creates scale-independent view of data, so that
+the texture and density of features is visible at every zoom level, instead of
+dropping features at lower levels.")
+    (license license:bsd-2)))

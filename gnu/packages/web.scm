@@ -124,14 +124,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.34")
+    (version "2.4.35")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1w1q2smdgf6ln0x741lk5pv5r0gzrxj2iza1vslhifzy65bcjlzs"))))
+               "0mlvwsm7hmpc7db6lfc2nx3v4cll3qljjxhjhgsw6aniskywc1r6"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -1862,15 +1862,15 @@ MIME type directly to the browser, without being processed through Catalyst.")
 (define-public perl-catalyst-runtime
   (package
     (name "perl-catalyst-runtime")
-    (version "5.90118")
+    (version "5.90119")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Catalyst-Runtime-" version ".tar.gz"))
        (sha256
         (base32
-         "0cws3szx3vvh0372qdx8fypgv6qphcc3v81rbq30sl1ghby7ksd3"))))
+         "1iw7x9rqk3sz2hm1bw01blz5vwm7zlljdf4xj3r8vz54f1yggzqr"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)))
@@ -5019,12 +5019,14 @@ deployments.")
                                "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-/bin/sh
+         (add-after 'unpack 'use-absolute-file-names
            (lambda _
              (substitute* '("bin/varnishtest/vtc_varnish.c"
                             "bin/varnishtest/vtc_process.c"
                             "bin/varnishd/mgt/mgt_vcc.c")
                (("/bin/sh") (which "sh")))
+             (substitute* "bin/varnishd/mgt/mgt_shmem.c"
+               (("rm -rf") (string-append (which "rm") " -rf")))
              #t))
          (add-before 'install 'patch-Makefile
            (lambda _
@@ -5171,7 +5173,7 @@ functions of Tidy.")
 (define-public hiawatha
   (package
     (name "hiawatha")
-    (version "10.7")
+    (version "10.8.3")
     (source
      (origin
        (method url-fetch)
@@ -5179,28 +5181,34 @@ functions of Tidy.")
                            "hiawatha-" version ".tar.gz"))
        (modules '((guix build utils)))
        (snippet '(begin
-                   ;; We use our packaged mbedtls, so delete the included copy.
-                   (delete-file-recursively "mbedtls")
+                   ;; We use packaged libraries, so delete the bundled copies.
+                   (for-each delete-file-recursively
+                             (list "nghttp2" "mbedtls"))
                    #t))
        (sha256
         (base32
-         "0x2zfc8kc6c7rl4gwymwmg13w1c60biv6c6c9fvzpnl59bc9jgin"))))
+         "0w7047pwijhsbvvv1qjynp7gvn0nil56w82f7ax0gabrg7ddzk6s"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; No tests included
+     `(#:tests? #f                      ; no tests included
        #:configure-flags (list (string-append "-DUSE_SYSTEM_MBEDTLS=on")
+                               (string-append "-DENABLE_HTTP2=on")
+                               (string-append "-DUSE_SYSTEM_NGHTTP2=on")
                                (string-append "-DENABLE_TOMAHAWK=on")
+                               (string-append "-DLOG_DIR=/var/log/hiawatha")
+                               (string-append "-DPID_DIR=/run")
                                (string-append "-DWEBROOT_DIR="
                                               (assoc-ref %outputs "out")
-                                              "/share/hiawatha/html"))
+                                              "/share/hiawatha/html")
+                               (string-append "-DWORK_DIR=/var/lib/hiawatha"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'remove-empty-dirs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
-               ;; The directories in "var" are empty, remove them.
-               (delete-file-recursively (string-append out "/var"))
-               #t)))
+         (add-after 'unpack 'install-no-empty-directories
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("install\\(DIRECTORY DESTINATION" match)
+                (string-append "#" match)))
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure 'hiawatha' finds 'mbedtls'.
@@ -5210,11 +5218,12 @@ functions of Tidy.")
                (wrap-program (string-append sbin "/hiawatha")
                  `("PATH" ":" prefix (,mbed)))))))))
     (inputs
-     ;; TODO: package "hiawatha-monitor", an optional dependency of "hiawatha"
-     `(("mbedtls-apache" ,mbedtls-apache) ;Hiawatha includes this version.
-       ("zlib" ,zlib)
-       ("libxslt" ,libxslt)
-       ("libxml2" ,libxml2)))
+     ;; TODO: package "hiawatha-monitor", an optional dependency of "hiawatha".
+     `(("libxslt" ,libxslt)
+       ("libxml2" ,libxml2)
+       ("mbedtls-apache" ,mbedtls-for-hiawatha)
+       ("nghttp2" ,nghttp2 "lib")
+       ("zlib" ,zlib)))
     (home-page "https://www.hiawatha-webserver.org")
     (synopsis "Webserver with focus on security")
     (description

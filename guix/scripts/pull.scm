@@ -20,6 +20,7 @@
 (define-module (guix scripts pull)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix status)
   #:use-module (guix scripts)
   #:use-module (guix store)
   #:use-module (guix config)
@@ -61,6 +62,9 @@
   `((system . ,(%current-system))
     (substitutes? . #t)
     (build-hook? . #t)
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
     (graft? . #t)
     (verbosity . 0)))
 
@@ -180,9 +184,25 @@ Download and deploy the latest version of Guix.\n"))
 
 (define (honor-x509-certificates store)
   "Use the right X.509 certificates for Git checkouts over HTTPS."
-  (let ((file      (getenv "SSL_CERT_FILE"))
+  ;; On distros such as CentOS 7, /etc/ssl/certs contains only a couple of
+  ;; files (instead of all the certificates) among which "ca-bundle.crt".  On
+  ;; other distros /etc/ssl/certs usually contains the whole set of
+  ;; certificates along with "ca-certificates.crt".  Try to choose the right
+  ;; one.
+  (let ((file      (letrec-syntax ((choose
+                                    (syntax-rules ()
+                                      ((_ file rest ...)
+                                       (let ((f file))
+                                         (if (and f (file-exists? f))
+                                             f
+                                             (choose rest ...))))
+                                      ((_)
+                                       #f))))
+                     (choose (getenv "SSL_CERT_FILE")
+                             "/etc/ssl/certs/ca-certificates.crt"
+                             "/etc/ssl/certs/ca-bundle.crt")))
         (directory (or (getenv "SSL_CERT_DIR") "/etc/ssl/certs")))
-    (if (or (and file (file-exists? file))
+    (if (or file
             (and=> (stat directory #f)
                    (lambda (st)
                      (> (stat:nlink st) 2))))
@@ -205,6 +225,60 @@ Download and deploy the latest version of Guix.\n"))
       body ...)
     (lambda (key err)
       (report-git-error err))))
+
+
+;;;
+;;; Profile.
+;;;
+
+(define %current-profile
+  ;; The "real" profile under /var/guix.
+  (string-append %profile-directory "/current-guix"))
+
+(define %user-profile-directory
+  ;; The user-friendly name of %CURRENT-PROFILE.
+  (string-append (config-directory #:ensure? #f) "/current"))
+
+(define (migrate-generations profile directory)
+  "Migrate the generations of PROFILE to DIRECTORY."
+  (format (current-error-port)
+          (G_ "Migrating profile generations to '~a'...~%")
+          %profile-directory)
+  (let ((current (generation-number profile)))
+    (for-each (lambda (generation)
+                (let ((source (generation-file-name profile generation))
+                      (target (string-append directory "/current-guix-"
+                                             (number->string generation)
+                                             "-link")))
+                  ;; Note: Don't use 'rename-file' as SOURCE and TARGET might
+                  ;; live on different file systems.
+                  (symlink (readlink source) target)
+                  (delete-file source)))
+              (profile-generations profile))
+    (symlink (string-append "current-guix-"
+                            (number->string current) "-link")
+             (string-append directory "/current-guix"))))
+
+(define (ensure-default-profile)
+  (ensure-profile-directory)
+
+  ;; In 0.15.0+ we'd create ~/.config/guix/current-[0-9]*-link symlinks.  Move
+  ;; them to %PROFILE-DIRECTORY.
+  (unless (string=? %profile-directory
+                    (dirname (canonicalize-profile %user-profile-directory)))
+    (migrate-generations %user-profile-directory %profile-directory))
+
+  ;; Make sure ~/.config/guix/current points to /var/guix/profiles/….
+  (let ((link %user-profile-directory))
+    (unless (equal? (false-if-exception (readlink link))
+                    %current-profile)
+      (catch 'system-error
+        (lambda ()
+          (false-if-exception (delete-file link))
+          (symlink %current-profile link))
+        (lambda args
+          (leave (G_ "while creating symlink '~a': ~a~%")
+                 link (strerror (system-error-errno args))))))))
 
 
 ;;;
@@ -322,11 +396,8 @@ and ALIST2 differ, display HEADING upfront."
   (display-new/upgraded-packages (package-alist gen1)
                                  (package-alist gen2)))
 
-(define (process-query opts)
-  "Process any query specified by OPTS."
-  (define profile
-    (string-append (config-directory) "/current"))
-
+(define (process-query opts profile)
+  "Process any query on PROFILE specified by OPTS."
   (match (assoc-ref opts 'query)
     (('list-generations pattern)
      (define (list-generations profile numbers)
@@ -422,45 +493,45 @@ Use '~/.config/guix/channels.scm' instead."))
                                           (list %default-options)))
             (cache    (string-append (cache-directory) "/pull"))
             (channels (channel-list opts))
-            (profile  (or (assoc-ref opts 'profile)
-                          (string-append (config-directory) "/current"))))
-
+            (profile  (or (assoc-ref opts 'profile) %current-profile)))
+       (ensure-default-profile)
        (cond ((assoc-ref opts 'query)
-              (process-query opts))
+              (process-query opts profile))
              ((assoc-ref opts 'dry-run?)
               #t)                                 ;XXX: not very useful
              (else
               (with-store store
-                (parameterize ((%graft? (assoc-ref opts 'graft?))
-                               (%repository-cache-directory cache))
-                  (set-build-options-from-command-line store opts)
-                  (honor-x509-certificates store)
+                (with-status-report print-build-event
+                  (parameterize ((%graft? (assoc-ref opts 'graft?))
+                                 (%repository-cache-directory cache))
+                    (set-build-options-from-command-line store opts)
+                    (honor-x509-certificates store)
 
-                  (let ((instances (latest-channel-instances store channels)))
-                    (format (current-error-port)
-                            (N_ "Building from this channel:~%"
-                                "Building from these channels:~%"
-                                (length instances)))
-                    (for-each (lambda (instance)
-                                (let ((channel
-                                       (channel-instance-channel instance)))
-                                  (format (current-error-port)
-                                          "  ~10a~a\t~a~%"
-                                          (channel-name channel)
-                                          (channel-url channel)
-                                          (string-take
-                                           (channel-instance-commit instance)
-                                           7))))
-                              instances)
-                    (parameterize ((%guile-for-build
-                                    (package-derivation
-                                     store
-                                     (if (assoc-ref opts 'bootstrap?)
-                                         %bootstrap-guile
-                                         (canonical-package guile-2.2)))))
-                      (run-with-store store
-                        (build-and-install instances profile
-                                           #:verbose?
-                                           (assoc-ref opts 'verbose?)))))))))))))
+                    (let ((instances (latest-channel-instances store channels)))
+                      (format (current-error-port)
+                              (N_ "Building from this channel:~%"
+                                  "Building from these channels:~%"
+                                  (length instances)))
+                      (for-each (lambda (instance)
+                                  (let ((channel
+                                         (channel-instance-channel instance)))
+                                    (format (current-error-port)
+                                            "  ~10a~a\t~a~%"
+                                            (channel-name channel)
+                                            (channel-url channel)
+                                            (string-take
+                                             (channel-instance-commit instance)
+                                             7))))
+                                instances)
+                      (parameterize ((%guile-for-build
+                                      (package-derivation
+                                       store
+                                       (if (assoc-ref opts 'bootstrap?)
+                                           %bootstrap-guile
+                                           (canonical-package guile-2.2)))))
+                        (run-with-store store
+                          (build-and-install instances profile
+                                             #:verbose?
+                                             (assoc-ref opts 'verbose?))))))))))))))
 
 ;;; pull.scm ends here

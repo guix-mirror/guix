@@ -32,7 +32,7 @@
 
 (define %libvirt-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (dbus-service)
    (polkit-service)
    (service libvirt-service-type)))

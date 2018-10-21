@@ -1210,7 +1210,7 @@ ExtraLight, Light, Book, Medium, Semibold, Bold & ExtraBold")
 (define-public font-culmus
   (package
     (name "font-culmus")
-    (version "0.132")
+    (version "0.133")
     (source
      (origin
        (method url-fetch)
@@ -1219,7 +1219,7 @@ ExtraLight, Light, Book, Medium, Semibold, Bold & ExtraBold")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1djxalm26r7bcq33ckmfa15xfs6pmqzvcl64d5lqa1dl01bl4j4z"))))
+         "02akysgsqhi15cck54xcacm16q5raf4l7shgb8fnj7xr3c1pbfyp"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
@@ -1301,4 +1301,54 @@ Kannada, Malayalam, Manipuri, Oriya, Punjabi, Tamil and Telugu scripts.")
     (description
      "Inria Sans and Inria Serif are the two members of a type family designed
 for Inria, a public research institute in computer science and mathematics.")
+    (license license:silofl1.1)))
+
+(define-public font-sil-gentium
+  (package
+    (name "font-sil-gentium")
+    (version "5.000")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://software.sil.org/downloads/r/gentium/GentiumPlus-"
+                    version ".zip"))
+              (sha256
+               (base32
+                "0m7189870hha217n1vgpmf89mwggrxkh679ffi1lxpnjggqi2n9k"))))
+    ;; Note: The zip file provides TTF files only, but the developer release,
+    ;; which contains additional files, has a 'SOURCES.txt' file that says
+    ;; that "the primary source files for the fonts are the fonts themselves".
+    ;; Thus it looks like the TTF can be considered source.
+    (build-system font-build-system)
+    (synopsis "Serif font for the Cyrillic, Greek, and Latin alphabets")
+    (description
+     "Gentium is a typeface family designed to enable the diverse ethnic
+groups around the world who use the Latin, Cyrillic and Greek scripts to
+produce readable, high-quality publications.  The font comes with regular and
+italics shapes.  This package provides only TrueType files (TTF).")
+    (home-page "https://software.sil.org/gentium/")
+    (license license:silofl1.1)))
+
+(define-public font-sil-charis
+  (package
+    (name "font-sil-charis")
+    (version "5.000")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://software.sil.org/downloads/r/charis/CharisSIL-"
+                    version ".zip"))
+              (sha256
+               (base32
+                "1zcvw37f1a7gkml3yfm6hxh93844llm7xj4w52600qq3ndrm8gjy"))))
+    ;; As for Gentium (see above), the TTF files are considered source.
+    (build-system font-build-system)
+    (synopsis "Serif font for the Cyrillic and Latin alphabets")
+    (description
+     "Charis SIL is a Unicode-based font family that supports the wide range
+of languages that use the Latin and Cyrillic scripts.  It is specially
+designed to make long texts pleasant and easy to read, even in less than ideal
+reproduction and display environments.  This package provides only TrueType
+files (TTF).")
+    (home-page "https://software.sil.org/charis/")
     (license license:silofl1.1)))

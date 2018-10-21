@@ -406,7 +406,7 @@ visual effects work for film.")
 (define-public openscenegraph
   (package
     (name "openscenegraph")
-    (version "3.6.2")
+    (version "3.6.3")
     (source
      (origin
        (method git-fetch)
@@ -415,8 +415,8 @@ visual effects work for film.")
              (commit (string-append "OpenSceneGraph-" version))))
        (sha256
         (base32
-         "03jk6lclyd4biniaw04w7j0z1spkm69f1c19i37b8v9x3zv1p1id"))
-       (file-name (string-append name "-" version "-checkout"))))
+         "0h32z15sa8sbq276j0iib0n707m8bs4p5ji9z2ah411446paad9q"))
+       (file-name (git-file-name name version))))
     (properties
      `((upstream-name . "OpenSceneGraph")))
     (build-system cmake-build-system)
@@ -437,8 +437,6 @@ visual effects work for film.")
        ("jasper" ,jasper)
        ("librsvg" ,librsvg)
        ("libxrandr" ,libxrandr)
-       ("pth" ,pth)
-       ("qtbase" ,qtbase)
        ("ffmpeg" ,ffmpeg)
        ("mesa" ,mesa)))
     (synopsis "High performance real-time graphics toolkit")
@@ -707,20 +705,20 @@ and understanding different BRDFs (and other component functions).")
        (list (string-append "--x-includes=" (assoc-ref %build-inputs "libx11")
                             "/include")
              (string-append "--x-libraries=" (assoc-ref %build-inputs "libx11")
-                            "/lib"))
+                            "/lib")
+             "--disable-examples")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
+         (replace 'bootstrap
            (lambda _
              ;; let's call configure from configure phase and not now
              (substitute* "autogen.sh" (("./configure") "# ./configure"))
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("libtool" ,libtool)
        ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("bash" ,bash)))
+       ("automake" ,automake)))
     (inputs
      `(("libx11" ,libx11)
        ("freetype" ,freetype)

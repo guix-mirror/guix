@@ -1,8 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Mark Meyer <mark@ofosos.org>
+;;; Copyright © 2017, 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
 (define-module (gnu packages kde)
   #:use-module (guix build-system cmake)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -47,7 +49,86 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages xorg))
+
+(define-public kdenlive
+  (let ((version "18.08.1"))
+    (package
+      (name "kdenlive")
+      (version version)
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "git://anongit.kde.org/kdenlive.git")
+               (commit (string-append "v" version))))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0ifnaclsz7w08mc485i3j1kkcpd1m8q5qamckrfwc375ac13xf4g"))))
+      (build-system cmake-build-system)
+      (native-inputs
+       `(("extra-cmake-modules" ,extra-cmake-modules)
+         ("qttools" ,qttools)))
+      (propagated-inputs
+       `(("mlt" ,mlt)))
+      (inputs
+       `(("shared-mime-info" ,shared-mime-info)
+         ("frei0r-plugins" ,frei0r-plugins)
+         ("qtbase" ,qtbase)
+         ("qtscript" ,qtscript)
+         ("qtsvg" ,qtsvg)
+         ("kparts" ,kparts)
+         ("knotifications" ,knotifications)
+         ("karchive" ,karchive)
+         ("kdbusaddons" ,kdbusaddons)
+         ("kcrash" ,kcrash)
+         ("kguiaddons" ,kguiaddons)
+         ("knewstuff" ,knewstuff)
+         ("knotifyconfig" ,knotifyconfig)
+         ("kfilemetadata" ,kfilemetadata)
+         ("kdoctools" ,kdoctools)
+         ("kdeclarative", kdeclarative)
+         ("qtdeclarative", qtdeclarative)
+         ("qtquickcontrols", qtquickcontrols)
+         ("kiconthemes", kiconthemes)
+         ("qtgraphicaleffects" ,qtgraphicaleffects)
+         ("kplotting", kplotting)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-executable
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (qtquickcontrols (assoc-ref inputs "qtquickcontrols"))
+                      (qtbase (assoc-ref inputs "qtbase"))
+                      (qtdeclarative (assoc-ref inputs "qtdeclarative"))
+                      (frei0r (assoc-ref inputs "frei0r-plugins"))
+                      (qml "/lib/qt5/qml"))
+                 (wrap-program (string-append out "/bin/kdenlive")
+                   `("QT_PLUGIN_PATH" ":" prefix
+                     ,(map (lambda (label)
+                             (string-append (assoc-ref inputs label)
+                                            "/lib/qt5/plugins/"))
+                           '("qtbase", "qtsvg")))
+                   `("FREI0R_PATH" ":" =
+                     (,(string-append frei0r "/lib/frei0r-1/")))
+                   `("QT_QPA_PLATFORM_PLUGIN_PATH" ":" =
+                     (,(string-append qtbase "/lib/qt5/plugins/platforms")))
+                   `("QML2_IMPORT_PATH" ":" prefix
+                     (,(string-append qtquickcontrols qml)
+                      ,(string-append qtdeclarative qml)))))
+               #t)))))
+      (home-page "https://kdenlive.org")
+      (synopsis "Non-linear video editor")
+      (description "Kdenlive is an acronym for KDE Non-Linear Video Editor.
+
+Non-linear video editing is much more powerful than beginner's (linear)
+editors, hence it requires a bit more organization before starting.  However,
+it is not reserved to specialists and can be used for small personal
+projects.")
+      (license license:gpl2+))))
 
 (define-public kdevelop
   (package
@@ -236,7 +317,7 @@ plugins, as well as code to create plugins, or complete applications.")
 (define-public krita
   (package
     (name "krita")
-    (version "4.1.1")
+    (version "4.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -245,7 +326,7 @@ plugins, as well as code to create plugins, or complete applications.")
                     "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1qz9bjvnwa5gc2b0063i2p72jq6y1b6kgqdj39599acp7ws11asw"))))
+                "1by8p8ifdp03f05bhg8ygdd1j036anfpjjnzbx63l2fbmy9k6q10"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f

@@ -131,6 +131,7 @@ MODULES =					\
   guix/svn-download.scm				\
   guix/i18n.scm					\
   guix/ui.scm					\
+  guix/status.scm				\
   guix/build/android-ndk-build-system.scm	\
   guix/build/ant-build-system.scm		\
   guix/build/download.scm			\
@@ -340,6 +341,7 @@ SCM_TESTS =					\
   tests/glob.scm				\
   tests/grafts.scm				\
   tests/ui.scm					\
+  tests/status.scm				\
   tests/records.scm				\
   tests/upstream.scm				\
   tests/combinators.scm				\

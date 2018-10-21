@@ -399,8 +399,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.18.8")
-(define %linux-libre-hash "163awpba1yd0x33xzj5dczimk4y96xc28syc4w2ad0qafgapng8l")
+(define %linux-libre-version "4.18.15")
+(define %linux-libre-hash "0v6xs85qn1iy2dj3m6s3cfnhbwb1mjy21d9lagjni8dg3jic26hf")
 
 (define %linux-libre-4.18-patches
   (list %boot-logo-patch
@@ -430,8 +430,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.18-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.70")
-(define %linux-libre-4.14-hash "138v51m6k57wnvlf9c22dad0w819mfb8f95i6w99mlg69qpwdvag")
+(define %linux-libre-4.14-version "4.14.77")
+(define %linux-libre-4.14-hash "18y81rga2lhsk7bjckglxz52pvnzf103ar0z2zj611g37wyf83r5")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -440,14 +440,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.127"
-                    "0q7h5gnl3ikic0pvwrxp78pz56yvijhz6s84gb92xywi1v3dd8mh"
+  (make-linux-libre "4.9.134"
+                    "0f5qif27k0mhc57d98arbfkq7zlvg0ra2gz6g5fasblyjz3j7w7h"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.156"
-                    "13j4jb4hifh3fah2ysy2425fakwqqdh2z23lf4i0frxa1xl974h2"
+  (make-linux-libre "4.4.161"
+                    "1q6bsndpjgw72mybhl5l8vrxs4mimg6821bjgi1pjkxbc7nd921b"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -962,6 +962,8 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
              (substitute* "strace.c"
                (("/bin/sh") (which "sh")))
              #t)))
+       ;; Don't fail if the architecture doesn't support different personalities.
+       #:configure-flags '("--enable-mpers=check")
        ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32459>.
        #:parallel-tests? #f))           ; undeterministic failures
     (native-inputs `(("perl" ,perl)))
@@ -2667,14 +2669,14 @@ isolation or root privileges.")
 (define-public hdparm
   (package
     (name "hdparm")
-    (version "9.55")
+    (version "9.56")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" name "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ivdvrzimaayiq03by8mcq0mhmdljndj06h012zkdpw34irnpixm"))))
+                "1np42qyhb503khvacnjcl3hb1dqly68gj0a1xip3j5qhbxlyvybg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
@@ -3626,14 +3628,14 @@ The following service daemons are also provided:
 (define-public perftest
   (package
     (name "perftest")
-    (version "4.2-0.8")
+    (version "4.4-0.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/linux-rdma/perftest/releases/download/V"
-                           version "/perftest-" version ".g0e24e67.tar.gz"))
+       (uri (string-append "https://github.com/linux-rdma/perftest/releases/download/v"
+                           version "/perftest-" version ".g0927198.tar.gz"))
        (sha256
-        (base32 "1r3pxn7cx3grb8myb4q1b0pk447pc06cifd0v7ym13xw00372dlx"))))
+        (base32 "11ix4h0rrmqqyi84y55a9xnkvwsmwq0sywr46hvxzm4rqz4ma8vq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -3668,15 +3670,16 @@ The collection contains a set of bandwidth and latency benchmark such as:
 (define-public rng-tools
   (package
     (name "rng-tools")
-    (version "6.4")
+    (home-page "https://github.com/nhorman/rng-tools")
+    (version "6.6")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/nhorman/rng-tools/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "005krksl8iz37l5p1nx8apl1yg7q78yrsb6inby31d2g5ck8nnwa"))))
+                "0c32sxfvngdjzfmxn5ngc5yxwi8ij3yl216nhzyz9r31qi3m14v7"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
@@ -3691,7 +3694,6 @@ The collection contains a set of bandwidth and latency benchmark such as:
     (description
      "Monitor a hardware random number generator, and supply entropy
 from that to the system kernel's @file{/dev/random} machinery.")
-    (home-page "https://sourceforge.net/projects/gkernel")
     ;; The source package is offered under the GPL2+, but the files
     ;; 'rngd_rdrand.c' and 'rdrand_asm.S' are only available under the GPL2.
     (license (list license:gpl2 license:gpl2+))))
@@ -3737,15 +3739,16 @@ such as frequency and voltage scaling.")
 (define-public haveged
   (package
     (name "haveged")
-    (version "1.9.2")
+    (version "1.9.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://www.issihosts.com/haveged/haveged-"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jirka-h/haveged.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0w5ypz6451msckivjriwyw8djydlwffam7x23xh626s2vzdrlzgp"))))
+        (base32 "1hrwzjd4byq4fdrg8svww3d8x449k80jxxrjy9v6jvzhfv19rvxr"))))
     (build-system gnu-build-system)
     (home-page "http://www.issihosts.com/haveged")
     (synopsis "Entropy source for the Linux random number generator")
@@ -3754,11 +3757,16 @@ such as frequency and voltage scaling.")
 Linux's @file{/dev/random} and @file{/dev/urandom} devices.  The kernel's
 standard mechanisms for filling the entropy pool may not be sufficient for
 systems with high needs or limited user interaction, such as headless servers.
+
 @command{haveged} runs as a privileged daemon, harvesting randomness from the
 indirect effects of hardware events on hidden processor state using the HArdware
-Volatile Entropy Gathering and Expansion (HAVEGE) algorithm.  It tunes itself to
-its environment and provides the same built-in test suite for the output stream
-as used on certified hardware security devices.")
+Volatile Entropy Gathering and Expansion (@dfn{HAVEGE}) algorithm.  It tunes
+itself to its environment and provides the same built-in test suite for the
+output stream as used on certified hardware security devices.
+
+The quality of the randomness produced by this algorithm has not been proven.
+It is recommended to run it together with another entropy source like rngd, and
+not as a replacement for it.")
     (license (list (license:non-copyleft "file://nist/mconf.h")
                    (license:non-copyleft "file://nist/packtest.c")
                    license:public-domain        ; nist/dfft.c
@@ -4248,12 +4256,14 @@ Light is the successor of lightscript.")
                (setenv "TLP_SHCPL"
                        (string-append out "/share/bash-completion/completions"))
                (setenv "TLP_MAN" (string-append out "/share/man"))
-               (setenv "TLP_META" (string-append out "/share/metainfo")))))
+               (setenv "TLP_META" (string-append out "/share/metainfo"))
+               #t)))
          (delete 'check)                ; no tests
          (add-before 'install 'fix-installation
            (lambda _
              ;; Stop the Makefile from trying to create system directories.
-             (substitute* "Makefile" (("\\[ -f \\$\\(_CONF\\) \\]") "#"))))
+             (substitute* "Makefile" (("\\[ -f \\$\\(_CONF\\) \\]") "#"))
+             #t))
          (replace 'install
            (lambda _
              (invoke "make" "install-tlp" "install-man")
@@ -4287,7 +4297,8 @@ Light is the successor of lightscript.")
                                                        "pciutils"
                                                        "rfkill"
                                                        "wireless-tools"))))))
-                         bin-files)))))))
+                         bin-files)
+               #t))))))
     (home-page "http://linrunner.de/en/tlp/tlp.html")
     (synopsis "Power management tool for Linux")
     (description "TLP is a power management tool for Linux.  It comes with
@@ -4827,19 +4838,20 @@ interface to this kernel feature.")
 (define-public mbpfan
   (package
     (name "mbpfan")
-    (version "2.0.2")
+    (version "2.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dgraziotin/mbpfan/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dgraziotin/mbpfan.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wifsws9icki95hhfh4zw1hmk07ddmkcz9mg5a9jr7q2kkrk01cx"))))
+         "1gysq778rkl6dvvj9a1swxcl15wvz0bng5bn4nwq118cl8p8pask"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; tests ask to be run as root
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
                             "CC=gcc"))
@@ -4850,7 +4862,7 @@ interface to this kernel feature.")
              (substitute* "Makefile"
                (("/usr") ""))
              #t))
-         (delete 'configure)))) ; There's no configure phase.
+         (delete 'configure))))         ; there's no configure phase
     (home-page "https://github.com/dgraziotin/mbpfan")
     (synopsis "Control fan speed on Macbooks")
     (description

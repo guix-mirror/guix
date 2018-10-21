@@ -105,7 +105,7 @@ complexity.")))
 (define-public s6
   (package
    (name "s6")
-   (version "2.7.2.0")
+   (version "2.7.2.1")
    (source
     (origin
      (method url-fetch)
@@ -113,7 +113,7 @@ complexity.")))
                          version ".tar.gz"))
      (sha256
       (base32
-       "02canrzmhr66gi16ldyylk378jlmyfl73vn72ayr12h2wyxgqm5g"))))
+       "0vyl4wr2l4mp9ams0dyg224qxhl8ksxsv2shs6606lhhp9g1rb6b"))))
    (build-system gnu-build-system)
    (inputs `(("skalibs" ,skalibs)
              ("execline" ,execline)))

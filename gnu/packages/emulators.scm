@@ -1055,15 +1055,16 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.4")
+    (version "1.7.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/libretro/RetroArch/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libretro/RetroArch.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0h6y2hpjg4b470jvn9ghwp0k3a527sbb6xhia17frlm9w9v5028w"))))
+        (base32 "1jfpgl34jjxn3dvxd1kd564swkw7v98hnn562v998b7vllz3dxdm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1184,7 +1185,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.201")
+    (version "0.202")
     (source
      (origin
        (method git-fetch)
@@ -1194,7 +1195,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "00whiig4ld3d4fkl34q48vlf28ygvvp5g7fp0rb5n31ymhl4kajk"))
+         "1v9gm124p65nbj678gfkcvwphp9qc15ky2p12ca6g3rllma94di5"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.

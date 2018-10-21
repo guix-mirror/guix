@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,22 +93,22 @@
       (arguments
        '(#:phases
          (modify-phases %standard-phases
-           (delete 'configure) ; no configure script
+           (delete 'configure)          ; no configure script
            ;; There's no build system here, so we have to do it ourselves.
            (replace 'build
              (lambda _
-               (and (zero? (system* "g++" "-c" "guid.cpp" "-o" "guid.o"
-                                    "-std=c++11" "-DGUID_LIBUUID"))
-                    (zero? (system* "ar" "rvs" "libcrossguid.a" "guid.o")))))
+               (invoke "g++" "-c" "guid.cpp" "-o" "guid.o"
+                       "-std=c++11" "-DGUID_LIBUUID")
+               (invoke "ar" "rvs" "libcrossguid.a" "guid.o")))
            (replace 'check
              (lambda _
-               (and (zero? (system* "g++" "-c" "test.cpp" "-o" "test.o"
-                                    "-std=c++11"))
-                    (zero? (system* "g++" "-c" "testmain.cpp" "-o" "testmain.o"
-                                    "-std=c++11"))
-                    (zero? (system* "g++" "test.o" "guid.o" "testmain.o"
-                                    "-o" "test" "-luuid"))
-                    (zero? (system* (string-append (getcwd) "/test"))))))
+               (invoke "g++" "-c" "test.cpp" "-o" "test.o"
+                       "-std=c++11")
+               (invoke "g++" "-c" "testmain.cpp" "-o" "testmain.o"
+                       "-std=c++11")
+               (invoke "g++" "test.o" "guid.o" "testmain.o"
+                       "-o" "test" "-luuid")
+               (invoke (string-append (getcwd) "/test"))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
@@ -294,7 +295,7 @@ generator library for C++.")
                            "lib/cpluff")))
                (every (lambda (third-party)
                         (with-directory-excursion third-party
-                          (zero? (system* "autoreconf" "-vif"))))
+                          (invoke "autoreconf" "-vif")))
                       dirs))))
          (add-after 'bootstrap-bundled-software 'patch-stuff
            (lambda* (#:key inputs #:allow-other-keys)
@@ -316,6 +317,11 @@ generator library for C++.")
                 (string-append (assoc-ref inputs "tzdata")
                                "/share/zoneinfo")))
 
+             ;; Don't phone home to check for updates.¬
+             (substitute* "system/addon-manifest.xml"¬
+               (("<addon optional=\\\"true\\\">service.xbmc.versioncheck</addon>")
+                ""))
+
              ;; Let's disable some tests that are known not to work here.
              ;; Doing this later while in the cmake "../build" directory
              ;; is trickier.
@@ -335,7 +341,7 @@ generator library for C++.")
              #t))
          (add-before 'check 'build-kodi-test
            (lambda _
-             (zero? (system* "make" "kodi-test")))))))
+             (invoke "make" "kodi-test"))))))
     ;; TODO: Add dependencies for:
     ;; - nfs
     ;; - cec

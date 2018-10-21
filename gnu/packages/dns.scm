@@ -104,7 +104,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.12.2-P1")
+    (version "9.12.2-P2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -112,7 +112,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "192ld6w8f4n46hvdmmzzrfkd28apf4dwmbpbi3j2q1d2p315ajww"))))
+                "0gk9vwqlbdmn10m21f2awvmiccfbadvcwi8zsgm91awbx4k7h0l7"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -288,6 +288,77 @@ asynchronous fashion.")
                    license:bsd-3
                    (license:non-copyleft "file://LICENSE") ; includes.h
                    license:openssl))))
+
+(define-public nsd
+  (package
+    (name "nsd")
+    (version "4.1.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.nlnetlabs.nl/downloads/nsd/nsd-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0zyzjd3wmq258jiry62ci1z23qfd0rc5ggnpmybc60xvpddgynwg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-pie"             ; fully benefit from ASLR
+             "--enable-ratelimit"
+             "--enable-recvmmsg"
+             "--enable-relro-now"       ; protect GOT and .dtor areas
+             "--disable-radix-tree"
+             (string-append "--with-libevent="
+                            (assoc-ref %build-inputs "libevent"))
+             (string-append "--with-ssl="
+                            (assoc-ref %build-inputs "openssl"))
+             "--with-configdir=/etc"
+             "--with-nsd_conf_file=/etc/nsd/nsd.conf"
+             "--with-logfile=/var/log/nsd.log"
+             "--with-pidfile=/var/db/nsd/nsd.pid"
+             "--with-dbfile=/var/db/nsd/nsd.db"
+             "--with-zonesdir=/etc/nsd"
+             "--with-xfrdfile=/var/db/nsd/xfrd.state"
+             "--with-zonelistfile=/var/db/nsd/zone.list")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-installation-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               ;; The ‘make install’ target tries to create the parent
+               ;; directories of run-time things like ‘pidfile’ above, and
+               ;; useless empty directories like 'configdir'.  Remove such
+               ;; '$(INSTALL)' lines and install the example configuration file
+               ;; in an appropriate location.
+               (substitute* "Makefile.in"
+                 ((".*INSTALL.*\\$\\((config|pid|xfr|db)dir" command)
+                  (string-append "#" command))
+                 (("\\$\\(nsdconfigfile\\)\\.sample" file-name)
+                  (string-append doc "/examples/" file-name)))
+               #t))))
+       #:tests? #f))                    ; no tests
+    (inputs
+     `(("libevent" ,libevent)
+       ("openssl" ,openssl)))
+    (home-page "https://www.nlnetlabs.nl/projects/nsd/about/")
+    (synopsis "Authoritative DNS name server")
+    (description "@dfn{NSD}, short for Name Server Daemon, is an authoritative
+name server for the Domain Name System (@dfn{DNS}).  It aims to be a fast and
+RFC-compliant nameserver.
+
+NSD uses zone information compiled via @command{zonec} into a binary database
+file (@file{nsd.db}).  This allows fast startup of the name service daemon and
+allows syntax-structural errors in zone files to be flagged at compile time,
+before being made available to NSD service itself.  However, most traditional
+BIND-style zone files can be directly imported into NSD without modification.
+
+The collection of programs and processes that make up NSD are designed so that
+the daemon itself runs as a non-privileged user and can be easily configured to
+run in a @code{chroot} jail, thus making any security flaws in NSD less likely
+to result in system-wide compromise.")
+    (license (list license:bsd-3))))
 
 (define-public unbound
   (package

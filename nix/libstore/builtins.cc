@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -46,6 +46,9 @@ static void builtinDownload(const Derivation &drv,
        'strip-store-file-name' (used for instance to determine the URL of
        content-addressed mirrors) works correctly.  */
     setenv("NIX_STORE", settings.nixStore.c_str(), 1);
+
+    /* Tell it about options such as "print-extended-build-trace".  */
+    setenv("_NIX_OPTIONS", settings.pack().c_str(), 1);
 
     /* XXX: Hack our way to use the 'download' script from 'LIBEXECDIR/guix'
        or just 'LIBEXECDIR', depending on whether we're running uninstalled or

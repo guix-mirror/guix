@@ -239,6 +239,50 @@ triangulations.")
     (license (license:non-copyleft "file://COPYING.txt"
                                    "See COPYING in the distribution."))))
 
+(define-public python-cvxopt
+  (package
+    (name "python-cvxopt")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cvxopt/cvxopt.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05mnjil9palaa48xafdfh4f5pr4z7aqjr995rwl08qfyxs8y0crf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CVXOPT_BLAS_LIB" "openblas")
+             (setenv "CVXOPT_BUILD_FFTW" "1")
+             (setenv "CVXOPT_BUILD_GLPK" "1")
+             (setenv "CVXOPT_BUILD_GSL" "1")
+             #t)))))
+    (inputs
+     `(("fftw" ,fftw)
+       ("glpk" ,glpk)
+       ("gsl" ,gsl)
+       ("lapack" ,lapack)
+       ("openblas" ,openblas)
+       ("suitesparse" ,suitesparse)))
+    (home-page "https://www.cvxopt.org")
+    (synopsis "Python library for convex optimization")
+    (description
+     "CVXOPT is a package for convex optimization based on the Python
+programming language.  Its main purpose is to make the development of software
+for convex optimization applications straightforward by building on Python’s
+extensive standard library and on the strengths of Python as a high-level
+programming language.")
+    (license license:gpl3+)))
+
+(define-public python2-cvxopt
+  (package-with-python2 python-cvxopt))
+
 (define-public units
   (package
    (name "units")
@@ -814,8 +858,11 @@ incompatible with HDF5.")
                 (mkdir-p flib)
                 (mkdir-p finc)
                 (mkdir-p fex)
-                (rename-file (string-append bin "/h5fc")
-                             (string-append fbin "/h5fc"))
+                ;; Note: When built with --enable-parallel, the 'h5fc' file
+                ;; doesn't exist, hence this condition.
+                (when (file-exists? (string-append bin "/h5fc"))
+                  (rename-file (string-append bin "/h5fc")
+                               (string-append fbin "/h5fc")))
                 (for-each (lambda (file)
                             (rename-file file
                                          (string-append flib "/" (basename file))))
@@ -1034,10 +1081,13 @@ Swath).")
      `(("mpi" ,openmpi)
        ,@(package-inputs hdf5)))
     (arguments
-     (substitute-keyword-arguments `(#:configure-flags '("--enable-parallel")
-                                     ,@(package-arguments hdf5))
+     (substitute-keyword-arguments (package-arguments hdf5)
+       ((#:configure-flags flags)
+        ``("--enable-parallel" ,@(delete "--enable-cxx" ,flags)))
        ((#:phases phases)
         `(modify-phases ,phases
+           (add-after 'build 'mpi-setup
+             ,%openmpi-setup)
            (add-before 'check 'patch-tests
              (lambda _
                ;; OpenMPI's mpirun will exit with non-zero status if it
@@ -1396,6 +1446,13 @@ can solve two kinds of problems:
        ("less" ,less)
        ("ghostscript" ,ghostscript)
        ("gnuplot" ,gnuplot)))
+    ;; Octave code uses this variable to detect directories holding multiple CA
+    ;; certificates to verify peers with.  This is required for the networking
+    ;; functions that require encryption to work properly.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CURLOPT_CAPATH")
+            (files '("etc/ssl/certs")))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-shell="
@@ -1689,13 +1746,21 @@ scientific applications modeled by partial differential equations.")
   (package (inherit petsc)
     (name "petsc-openmpi")
     (inputs
-     `(("openmpi" ,openmpi)
-       ("hdf5" ,hdf5-parallel-openmpi)
+     `(("hdf5" ,hdf5-parallel-openmpi)
+       ("metis" ,metis)
+       ("mumps" ,mumps-openmpi)
+       ("openmpi" ,openmpi)
+       ("scalapack" ,scalapack)
+       ("scotch" ,pt-scotch)
        ,@(package-inputs petsc)))
     (arguments
      (substitute-keyword-arguments (package-arguments petsc)
        ((#:configure-flags cf)
         ``("--with-mpiexec=mpirun"
+           "--with-metis=1"
+           "--with-mumps=1"
+           "--with-scalapack=1"
+           "--with-ptscotch=1"
            ,(string-append "--with-mpi-dir="
                            (assoc-ref %build-inputs "openmpi"))
            ,(string-append "--with-hdf5-include="
@@ -1705,9 +1770,9 @@ scientific applications modeled by partial differential equations.")
            ,@(delete "--with-mpi=0" ,cf)))
        ((#:phases phases)
         `(modify-phases ,phases
-           (add-before 'check 'mpi-setup
+           (add-before 'configure 'mpi-setup
              ,%openmpi-setup)))))
-    (synopsis "Library to solve PDEs (with MPI support)")))
+    (synopsis "Library to solve PDEs (with MUMPS and MPI support)")))
 
 (define-public petsc-complex-openmpi
   (package (inherit petsc-complex)
@@ -1723,7 +1788,6 @@ scientific applications modeled by partial differential equations.")
                            (assoc-ref %build-inputs "openmpi"))
            ,@(delete "--with-mpi=0" ,cf)))))
     (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
-
 
 (define-public python-kiwisolver
   (package
@@ -2595,7 +2659,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.41.0")
+    (version "5.42.0")
     (source
      (origin
        (method url-fetch)
@@ -2603,7 +2667,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0x0n81z0s4pl8nwpf7ivlsbvsdphm9w42250g7qdkizl0132by6s"))
+         "0d5pdihvcbwb7r4i4qs5qqgsz46hxlq33qj8is053llrgn9ylpyn"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs

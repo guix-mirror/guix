@@ -148,14 +148,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.12.0")
+    (version "1.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1901wxh9k8kz3krfmvacf8xa8r4idfyisw8d80a2ql0bxiw2pb0m"))))
+                "14l6bvgq76ls63qc9c448r435q9xiig0rv8ilx6rnjvlgg64h32p"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=false")))
@@ -349,7 +349,7 @@ of a the system to know what users are logged in, and where.")
 (define-public packagekit
   (package
     (name "packagekit")
-    (version "1.1.10")
+    (version "1.1.11")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -358,7 +358,7 @@ of a the system to know what users are logged in, and where.")
                    "PackageKit-" version ".tar.xz"))
              (sha256
               (base32
-               "1msfmb22cm4s3l6vsbr86b8s0v897sy6gcga3qg87z7640a0di2b"))))
+               "0fi6wn54y03zh5sn92nmmxkh4cd8yn44cyk0l8phw60ivfwmkh1q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f

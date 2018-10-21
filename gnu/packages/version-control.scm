@@ -8,7 +8,7 @@
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -146,14 +146,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.19.0")
+   (version "2.19.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1x1y5z3awabmfg7hk6zb331jxngad4nal4507v96bnf0izsyy3qq"))))
+              "1dfv43lmdnxz42504jc89sihbv1d4d6kgqcz3c5ji140kfm5cl1l"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -166,7 +166,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1jvxiqvp9q4is3np063ny7rnmk5hm36d34bhi3cgv89njqdh8laf"))))))
+            "1vn6pi9yvw7rnb9dvi1yjrvv39fqd1m9mwbaffqwizs3gaf91br7"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -427,7 +427,7 @@ everything from small to very large projects with speed and efficiency.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.26.6")
+    (version "0.26.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -435,7 +435,7 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0qjn1v5q282v8jih8rqjdqxr5v4n4manr0c8i3nnrf6sxd3xssbn"))
+                "1vy4dnbvhcq3pw8n8zz6clnsv2xnkrichl8k96w3lb6yyk0lln35"))
               (patches (search-patches "libgit2-mtime-0.patch"))
 
               ;; Remove bundled software.
@@ -712,13 +712,13 @@ default) of the repository.")
 (define-public python-gitdb
   (package
     (name "python-gitdb")
-    (version "2.0.3")
+    (version "2.0.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "gitdb2" version))
               (sha256
                (base32
-                "02azg62mr99b7cllyjrly77np3vw32y8nrxpa2xjapiyaga2j3mn"))))
+                "0i608q9c47rdsmyac1cn6s0hzwwj7cb957y8fc9wacc5lnw8ak5v"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -733,7 +733,7 @@ default) of the repository.")
                                                   "file" (number->string filecount))
                             (lambda (port)
                               (format port "~a" filecount))))
-                        (and
+                        (begin
                          (invoke "git" "init")
                          (invoke "git" "config" "user.name" "Total Git")
                          (invoke "git" "config" "user.email" "git@localhost")
@@ -1031,12 +1031,48 @@ also walk each side of a merge and test those changes individually.")
                           ((" perl -")
                            (string-append " " perl " -")))
 
+                        (substitute* (find-files "src/triggers" ".*")
+                          ((" sed ")
+                           (string-append " " (which "sed") " ")))
+
+                        (substitute*
+                            '("src/triggers/post-compile/update-gitweb-access-list"
+                              "src/triggers/post-compile/ssh-authkeys-split"
+                              "src/triggers/upstream")
+                          ((" grep ")
+                           (string-append " " (which "grep") " ")))
+
                         ;; Avoid references to the store in authorized_keys.
                         ;; This works because gitolite-shell is in the PATH.
                         (substitute* "src/triggers/post-compile/ssh-authkeys"
                           (("\\$glshell \\$user")
                            "gitolite-shell $user"))
                         #t)))
+                  (add-before 'install 'patch-source
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Gitolite uses cat to test the readability of the
+                      ;; pubkey
+                      (substitute* "src/lib/Gitolite/Setup.pm"
+                        (("\"cat ")
+                         (string-append "\"" (which "cat") " "))
+                        (("\"ssh-keygen")
+                         (string-append "\"" (which "ssh-keygen"))))
+
+                      (substitute* '("src/lib/Gitolite/Hooks/PostUpdate.pm"
+                                     "src/lib/Gitolite/Hooks/Update.pm")
+                        (("/usr/bin/perl")
+                         (string-append (assoc-ref inputs "perl")
+                                        "/bin/perl")))
+
+                      (substitute* "src/lib/Gitolite/Common.pm"
+                        (("\"ssh-keygen")
+                         (string-append "\"" (which "ssh-keygen")))
+                        (("\"logger\"")
+                         (string-append "\""
+                                        (assoc-ref inputs "inetutils")
+                                        "/bin/logger\"")))
+
+                      #t))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((output (assoc-ref outputs "out"))
@@ -1050,9 +1086,24 @@ also walk each side of a merge and test those changes individually.")
                                     (symlink (string-append sharedir "/" script)
                                              (string-append bindir "/" script)))
                                   '("gitolite" "gitolite-shell"))
+                        #t)))
+                  (add-after 'install 'wrap-scripts
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (coreutils (assoc-ref inputs "coreutils"))
+                            (findutils (assoc-ref inputs "findutils"))
+                            (git (assoc-ref inputs "git")))
+                        (wrap-program (string-append out "/bin/gitolite")
+                          `("PATH" ":" prefix
+                            ,(map (lambda (dir)
+                                    (string-append dir "/bin"))
+                                  (list out coreutils findutils git))))
                         #t))))))
     (inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("coreutils" ,coreutils)
+       ("findutils" ,findutils)
+       ("inetutils" ,inetutils)))
     ;; git and openssh are propagated because trying to patch the source via
     ;; regexp matching is too brittle and prone to false positives.
     (propagated-inputs
@@ -1068,14 +1119,14 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "4.4.1")
+    (version "4.6.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "0ik2ypzxjr6vpcghxvn39a73gw52629n7vwak04gnbycsq95aalg"))))
+               "1bv6wgcdx8glihjjfg22khhc52mclsn4kwfqvzbzlg0b42h4xl0w"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require
@@ -1844,7 +1895,6 @@ be served with a HTTP file server of your choice.")
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-html" ,ghc-html)
        ("ghc-mmap" ,ghc-mmap)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-old-time" ,ghc-old-time)
        ("ghc-parsec" ,ghc-parsec)
        ("ghc-random" ,ghc-random)
@@ -2053,7 +2103,7 @@ directory full of HOWTOs.")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "6.20180807")
+    (version "6.20180926")
     (source
      (origin
        (method url-fetch)
@@ -2061,7 +2111,7 @@ directory full of HOWTOs.")
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
         (base32
-         "1wkqh1y58m0z1mf2j33qhndpxcjwv8mbv384kdk17vn0lp9zas1s"))))
+         "1251rj8h63y30sfqk0zh670yhz14p256y59n3590pg015pf3575d"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
@@ -2137,7 +2187,6 @@ directory full of HOWTOs.")
        ("ghc-memory" ,ghc-memory)
        ("ghc-monad-control" ,ghc-monad-control)
        ("ghc-monad-logger" ,ghc-monad-logger)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-network" ,ghc-network)
        ("ghc-old-locale" ,ghc-old-locale)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)

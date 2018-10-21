@@ -923,7 +923,23 @@ organized in a hash table or B+ tree.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0cdwa4094x3yx7vn98xykvnlp9rngvd58d19vs3vh5hrvggccg93"))))
+                "0cdwa4094x3yx7vn98xykvnlp9rngvd58d19vs3vh5hrvggccg93"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Adjust the bundled gnulib to work with glibc 2.28.  See e.g.
+                  ;; "m4-gnulib-libio.patch".  This is a phase rather than patch
+                  ;; or snippet to work around <https://bugs.gnu.org/32347>.
+                  (substitute* (find-files "lib" "\\.c$")
+                    (("#if defined _IO_ftrylockfile")
+                     "#if defined _IO_EOF_SEEN"))
+                  (substitute* "lib/stdio-impl.h"
+                    (("^/\\* BSD stdio derived implementations")
+                     (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
+                                    "# define _IO_IN_BACKUP 0x100\n"
+                                    "#endif\n\n"
+                                    "/* BSD stdio derived implementations")))
+                  #t))))
     (build-system gnu-build-system)
 
     ;; Running tests in parallel leads to test failures and crashes in
@@ -1457,15 +1473,15 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-mysql
   (package
     (name "perl-dbd-mysql")
-    (version "4.047")
+    (version "4.048")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/C/CA/CAPTTOFU/"
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MICHIELB/"
                            "DBD-mysql-" version ".tar.gz"))
        (sha256
         (base32
-         "0idizgr0hr7sj92fbdlb3gv6cva15jkpaq28wrdw4j4p7awx2mls"))))
+         "1zqmch6c9gq06z90mkmk1skajk2kaggriw19ym5w04l7wv5gydqp"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -1767,19 +1783,32 @@ trees (LSM), for sustained throughput under random insert workloads.")
     ;; configure.ac: WiredTiger requires a 64-bit build.
     (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))))
 
+(define-public wiredtiger-3
+  (package
+    (inherit wiredtiger)
+    (name "wiredtiger")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://source.wiredtiger.com/releases/wiredtiger-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "014awypv579ascg4jbx4pndj2wld337m79yyzrzyr7hxrff139jx"))))))
+
 (define-public guile-wiredtiger
   (package
     (name "guile-wiredtiger")
-    (version "0.6.3")
+    (version "0.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://framagit.org/a-guile-mind/guile-wiredtiger.git")
-                    (commit "070ed68139d99c279f058a6c293f00292d35dbd7")))
+                    (commit "340ad4bc2ff4dcc6216a2f5c6f9172ca320ac66b")))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "14rna97wsylajzxfif95wnblq85csgcfc666gh5dl0ssgd7x8llh"))))
+                "15j36bvxxzil7qpwlmh1rffqpva3ynvrcpqhhqbj2c9208ayz595"))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-tests? #f  ;; tests can't be run in parallel, yet.
@@ -1787,21 +1816,19 @@ trees (LSM), for sustained throughput under random insert workloads.")
        (list (string-append "--with-libwiredtiger-prefix="
                             (assoc-ref %build-inputs "wiredtiger")))
        #:make-flags '("GUILE_AUTO_COMPILE=0")))
-    ;; TODO: Remove microkanren.scm when we have a separate package
-    ;; for it.
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("wiredtiger" ,wiredtiger)
+     `(("wiredtiger" ,wiredtiger-3)
        ("guile" ,guile-2.2)))
     (propagated-inputs
-     `(("guile-lib" ,guile-lib)))                 ;for (htmlprag)
+     `(("guile-bytestructures" ,guile-bytestructures)))
     (synopsis "WiredTiger bindings for GNU Guile")
     (description
      "This package provides Guile bindings to the WiredTiger ``NoSQL''
-database.  Various higher level database abstractions.")
+database.")
     (home-page "https://framagit.org/a-guile-mind/guile-wiredtiger")
     (license license:gpl3+)))
 
@@ -2416,13 +2443,13 @@ SQLAlchemy Database Toolkit for Python.")
 (define-public python-pickleshare
   (package
     (name "python-pickleshare")
-    (version "0.7.4")
+    (version "0.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pickleshare" version))
        (sha256
-        (base32 "0yvk14dzxk7g6qpr7iw23vzqbsr0dh4ij4xynkhnzpfz4xr2bac4"))))
+        (base32 "1jmghg3c53yp1i8cm6pcrm280ayi8621rwyav9fac7awjr3kss47"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -2669,12 +2696,14 @@ parsing code in hiredis.  It primarily speeds up parsing of multi bulk replies."
      `(#:tests? #f))
     (home-page "https://github.com/jamesls/fakeredis")
     (synopsis "Fake implementation of redis API for testing purposes")
-    (description "Fakeredis is a pure python implementation of the redis-py
-python client that simulates talking to a redis server.  This was created for a
-single purpose: to write unittests.  Setting up redis is not hard, but many time
- you want to write unittests that do not talk to an external server (such as
-redis).  This module now allows tests to simply use this module as a reasonable
-substitute for redis.")
+    (description
+     "Fakeredis is a pure-Python implementation of the redis-py Python client
+that simulates talking to a redis server.  It was created for a single purpose:
+to write unit tests.
+
+Setting up redis is not hard, but one often wants to write unit tests that don't
+talk to an external server such as redis.  This module can be used as a
+reasonable substitute.")
     (license license:bsd-3)))
 
 (define-public python2-fakeredis

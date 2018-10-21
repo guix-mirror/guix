@@ -181,9 +181,73 @@ more advanced player there are new game modes and a wide variety of physics
 settings to tweak as well.")
     (license license:gpl2+)))
 
+(define-public bastet
+  (package
+    (name "bastet")
+    (version "0.43.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fph/bastet.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "09kamxapm9jw9przpsgjfg33n9k94bccv65w95dakj0br33a75wn"))
+       (patches
+        (search-patches "bastet-change-source-of-unordered_set.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CXXFLAGS=-I"
+                            (assoc-ref %build-inputs "boost") "/include"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (replace 'check
+           ;; The 'Test' target builds the tests, but doesn't actually run them.
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "Test" make-flags)
+             (setenv "HOME" ".")
+             (invoke "./Test")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (share   (string-append out "/share"))
+                    (hicolor (string-append share "/icons/hicolor")))
+               (install-file "bastet"
+                             (string-append out "/bin"))
+
+               (install-file "bastet.desktop"
+                             (string-append share "/applications"))
+               (install-file "bastet.svg"
+                             (string-append hicolor "/scalable/apps"))
+
+               (install-file "bastet.appdata.xml"
+                             (string-append share "/appdata"))
+
+               (install-file "bastet.6"
+                             (string-append out "/share/man/man6"))
+               #t))))))
+    (native-inputs
+     `(("hicolor-icon-theme" ,hicolor-icon-theme)))
+    (inputs
+     `(("boost" ,boost)
+       ("ncurses" ,ncurses)))
+    (home-page "http://fph.altervista.org/prog/bastet.html")
+    (synopsis "Antagonistic Tetris-style falling brick game for text terminals")
+    (description
+     "Bastet (short for Bastard Tetris) is a simple ncurses-based falling brick
+game.  Unlike normal Tetris, Bastet does not choose the next brick at random.
+Instead, it uses a special algorithm to choose the worst brick possible.
+
+Playing bastet can be a painful experience, especially if you usually make
+canyons and wait for the long I-shaped block to clear four rows at a time.")
+    (license license:gpl3+)))
+
 (define-public cataclysm-dda
-  (let ((commit "ad3b0c3d521292d119f97a83390e7acfe9e9e7f7")
-        (revision "1"))
+  (let ((commit "0b2c194e5c6a06f4fbf14a0ec1260e0f3cf2567c")
+        (revision "2"))
     (package
       (name "cataclysm-dda")
       ;; This denotes the version released after the 0.C release.
@@ -196,7 +260,7 @@ settings to tweak as well.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1kdgbl8zqd53f5yilm2c9nyq3w6585yxl5jvgxy65dlpzxcqqj7y"))
+                  "1yzsn0y2g27bvbxjvivjyjhkmf2w5na1qqw5qfkswcfqqwym2y33"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -363,6 +427,59 @@ be paired with a compatible game engine (such as @code{prboom-plus}) to be
 played.  Freedoom complements the Doom engine with free levels, artwork, sound
 effects and music to make a completely free game.")
    (license license:bsd-3)))
+
+(define-public freedroidrpg
+  (package
+    (name "freedroidrpg")
+    (version "0.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://ftp.osuosl.org/pub/freedroid/"
+                           "freedroidRPG-" (version-major+minor version) "/"
+                           "freedroidRPG-" version ".tar.gz"))
+       (sha256
+        (base32 "0n4kn38ncmcy3lrxmq8fjry6c1z50z4q1zcqfig0j4jb0dsz2va2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "CFLAGS="
+                       "-I" (assoc-ref %build-inputs "sdl-gfx") "/include/SDL "
+                       "-I" (assoc-ref %build-inputs "sdl-image") "/include/SDL "
+                       "-I" (assoc-ref %build-inputs "sdl-mixer") "/include/SDL")
+        "--enable-opengl")
+       ;; FIXME: the test suite fails with the following error output:
+       ;;   4586 Segmentation fault      env SDL_VIDEODRIVER=dummy \
+       ;;   SDL_AUDIODRIVER=dummy ./src/freedroidRPG -nb text
+       #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glu" ,glu)
+       ("libjpeg" ,libjpeg)
+       ("libogg" ,libogg)
+       ("libpng" ,libpng)
+       ("libvorbis" ,libvorbis)
+       ("mesa" ,mesa)
+       ("python" ,python-wrapper)
+       ("sdl" ,sdl)
+       ("sdl-gfx" ,sdl-gfx)
+       ("sdl-image" ,sdl-image)
+       ("sdl-mixer" ,sdl-mixer)
+       ("zlib" ,zlib)))
+    (home-page "http://www.freedroid.org/")
+    (synopsis "Isometric role-playing game against killer robots")
+    (description
+     "Freedroid RPG is an @dfn{RPG} (Role-Playing Game) with isometric graphics.
+The game tells the story of a world destroyed by a conflict between robots and
+their human masters.  To restore peace to humankind, the player must complete
+numerous quests while fighting off rebelling robots---either by taking control
+of them, or by simply blasting them to pieces with melee and ranged weapons in
+real-time combat.")
+    (license (list license:expat        ; lua/
+                   license:gpl3         ; src/gen_savestruct.py
+                   license:gpl2+))))    ; the rest
 
 (define-public golly
   (package
@@ -883,7 +1000,7 @@ Every puzzle has a complete solution, although there may be more than one.")
 (define-public retux
   (package
     (name "retux")
-    (version "1.3.5")
+    (version "1.3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/retux/"
@@ -891,7 +1008,7 @@ Every puzzle has a complete solution, although there may be more than one.")
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "1pcrh3z16fl412r3k7xccrgika19ahb1xh90jihgl8yy7zza2i6p"))))
+                "01bidh4zisjp3nc436x0g85v60dvwb3ig37i7y01sa71j8fm4fmb"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -2020,7 +2137,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.4")
+    (version "1.14.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -2029,7 +2146,7 @@ falling, themeable graphics and sounds, and replays.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1hw1ap8xxpdwyx1sf8fm1g75p6724y3hwb4kpvyqbsq7bwfwsb9i"))))
+                "1kgpj2f22nnx4mwd1zis3s5ny2983aasgqsmz7wnqaq7n6a7ac85"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
@@ -2122,28 +2239,36 @@ on the screen and keyboard to display letters.")
 (define-public raincat
   (package
     (name "raincat")
-    (version "1.1.1.3")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "http://hackage.haskell.org/package/Raincat/Raincat-"
-             version
-             ".tar.gz"))
+       (uri (string-append "http://hackage.haskell.org/package/Raincat/"
+                           "Raincat-" version ".tar.gz"))
        (sha256
         (base32
-         "1aalh68h6799mv4vyg30zpskl5jkn6x2j1jza7p4lrflyifxzar8"))))
+         "10y9zi22m6hf13c9h8zd9vg7mljpwbw0r3djb6r80bna701fdf6c"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/raincat")
+                 `("LD_LIBRARY_PATH" ":" =
+                   (,(string-append (assoc-ref inputs "freeglut")
+                                    "/lib"))))
+               #t))))))
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-random" ,ghc-random)
        ("ghc-glut" ,ghc-glut)
        ("freeglut" ,freeglut)
        ("ghc-opengl" ,ghc-opengl)
-       ("ghc-sdl" ,ghc-sdl)
-       ("ghc-sdl-image" ,ghc-sdl-image)
-       ("ghc-sdl-mixer" ,ghc-sdl-mixer)))
+       ("ghc-sdl2" ,ghc-sdl2)
+       ("ghc-sdl2-image" ,ghc-sdl2-image)
+       ("ghc-sdl2-mixer" ,ghc-sdl2-mixer)))
     (home-page "http://www.bysusanlin.com/raincat/")
     (synopsis "Puzzle game with a cat in lead role")
     (description "Project Raincat is a game developed by Carnegie Mellon
@@ -3533,7 +3658,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.4j")
+    (version "10.4t")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3544,11 +3669,12 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "0909p4xvbi1c2jc5rdgrf8b1c60fmsaapabsi6yyglh5znkf0k27"))))
+                "0phqhmnzmc16a23qb4fkil0flzb86kibdckf1r35nc3l0k4193nn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
-       #:make-flags '("CXXFLAGS=-std=c++11")
+       #:make-flags '("HYPERROGUE_USE_GLEW=1"
+                      "HYPERROGUE_USE_PNG=1")
        #:phases
        (modify-phases %standard-phases
          (add-after 'set-paths 'set-sdl-paths
@@ -3571,12 +3697,16 @@ throwing people around in pseudo-randomly generated buildings.")
                   (string-append dejavu-dir "/" dejavu-font)))
                (substitute* music-file
                  (("\\*/")
-                  (string-append share-dir "/sounds/"))))
-             ;; Fix Makefile.
-             (substitute* "Makefile"
-               (("g\\+\\+ langen.cpp")
-                "g++ langen.cpp ${CXXFLAGS}")
-               (("savepng.c") "savepng.cpp"))
+                  (string-append share-dir "/sounds/")))
+               (substitute* "sound.cpp"
+                 (("musicfile = \"\"")
+                  (string-append "musicfile = \""
+                                 share-dir "/" music-file "\"")))
+               ;; Disable build machine CPU optimizations and warnings treated
+               ;; as errors.
+               (substitute* "Makefile"
+                 (("-march=native") "")
+                 (("-Werror") "")))
              #t))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3584,7 +3714,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     (bin (string-append out "/bin"))
                     (share-dir (string-append out "/share/hyperrogue")))
                (mkdir-p bin)
-               (copy-file "hyper" (string-append bin "/hyperrogue"))
+               (install-file "hyperrogue" bin)
                (install-file "hyperrogue-music.txt" share-dir))
              #t))
          (add-after 'install 'install-data
@@ -3616,7 +3746,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "0w61iv2rn93hi0q3hxyyyf9xcr8vi9zd7fjvpz5adpgf94jm3zsc"))))
+             "1xd9v8zzgi8m5ar8g4gy1xx5zqwidz3gn1knz0lwib3kbxx4drpg"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -4272,7 +4402,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.21.0")
+    (version "0.22.1")
     (source
      (origin
        (method url-fetch)
@@ -4286,7 +4416,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                             version "-nodeps.tar.xz")))
        (sha256
         (base32
-         "0mmnkch8s9l7dh136yjvcyjr0vmyzv7z370rlcyir91qz6gg82n1"))
+         "1qc90wwbxvjzqq66n8kfr0a2ny7sfvv2n84si67jiv2887d0ws6k"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -5225,7 +5355,7 @@ You can save humanity and get programming skills!")
     (build-system cmake-build-system)
     (inputs `(("bzip2" ,bzip2)
               ("fluid-3" ,fluid-3)
-              ("fluidsynth" ,fluidsynth)
+              ("fluidsynth" ,fluidsynth-1)      ;XXX: try using 2.x when updating
               ("gtk+3" ,gtk+)
               ("libgme" ,libgme)
               ("libjpeg" ,libjpeg)

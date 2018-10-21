@@ -501,7 +501,7 @@ a container or that of a \"bare metal\" system."
                    ;; Add the firmware service, unless we are building for a
                    ;; container.
                    (if container?
-                       '()
+                       (list %containerized-shepherd-service)
                        (list %linux-bare-metal-service
                              (service firmware-service-type
                                       (operating-system-firmware os))))))))

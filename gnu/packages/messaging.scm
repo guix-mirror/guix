@@ -249,14 +249,14 @@ access to servers running the Discord protocol.")
 (define-public hexchat
   (package
     (name "hexchat")
-    (version "2.14.1")
+    (version "2.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "18h3l34zmazjlfx3irg7k7swppa62ad9ffbl0j3ry8p2xfyf8cmh"))))
+                "064nq151nzsljv97dmkifyl162d2738vbgvm1phx7yv04pjvk4kp"))))
     (build-system meson-build-system)
     (native-inputs `(("gettext" ,gettext-minimal)
                      ("perl" ,perl)
@@ -295,7 +295,7 @@ window shows the list of currently connected networks and their channels, the
 current conversation and the list of users.  It uses colors to differentiate
 between users and to highlight messages.  It checks spelling using available
 dictionaries.  HexChat can be extended with multiple addons.")
-    (home-page "http://hexchat.net/")
+    (home-page "https://hexchat.net/")
     (license license:gpl2+)))
 
 (define-public ngircd
@@ -873,7 +873,7 @@ protocols.")
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.2.7")
+    (version "0.2.8")
     (source
      (origin
        (method url-fetch)
@@ -882,7 +882,7 @@ protocols.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1lcw979zakyb5kzy8yfk87js3bzfz3k2jxidda6ga6ljdnqdpxmy"))))
+         "0qlkimlvbd24nlj7w9b5rpz1r807magqxmfylc1mlxsqhmfi5zj7"))))
     (arguments
      `(#:tests? #f)) ; FIXME: Testsuite seems to stay stuck on test 3. Disable
                      ; for now.
@@ -1135,7 +1135,7 @@ with several different talk daemons at the same time.")
 (define-public gloox
   (package
     (name "gloox")
-    (version "1.0.17")
+    (version "1.0.21")
     (source
      (origin
        (method url-fetch)
@@ -1143,7 +1143,7 @@ with several different talk daemons at the same time.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "09c01jr5nrm7f1ly42wg0pqqscmp48pv8y2fjx1vwbavjxdq59ri"))))
+         "1k57qgif1yii515m6jaqaibkdysfab6394bpawd2l67321f1a4rw"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)
@@ -1385,7 +1385,7 @@ protocol allows.")
 (define-public mcabber
   (package
     (name "mcabber")
-    (version "1.0.5")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
@@ -1393,7 +1393,7 @@ protocol allows.")
                            name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "0ixdzk5b3s31a4bdfqgqrsiq7vbgdzhqr49p9pz9cq9bgn0h1wm0"))))
+         "1ggh865p1rf10ffsnf4g6qv9i8bls36dxdb1nzs5r9vdqci2rz04"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list "--enable-otr"
@@ -1472,15 +1472,16 @@ is also scriptable and extensible via Guile.")
 (define-public libmesode
   (package
     (name "libmesode")
-    (version "0.9.1")
+    (version "0.9.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/boothj5/libmesode/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/boothj5/libmesode.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0iaj56fkd5bjvqpvq3324ni895rmbj1akbfqipjydnghfwaym4z6"))))
+                "06f5nfaypvxrbsinxa1k2vrxrs7kqmg38g4wwwk5d63hpn1pj8ak"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)

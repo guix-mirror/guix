@@ -39,7 +39,7 @@
 (define %inetd-os
   ;; Operating system with 2 inetd services.
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service inetd-service-type
             (inetd-configuration
              (entries (list
@@ -463,7 +463,7 @@ COMMIT
   (define os
     (marionette-operating-system
      (simple-operating-system
-      (dhcp-client-service)
+      (service dhcp-client-service-type)
       (service inetd-service-type
                (inetd-configuration
                 (entries (list

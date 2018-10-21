@@ -55,7 +55,7 @@
     (services (cons*
                (service rpcbind-service-type
                         (rpcbind-configuration))
-               (dhcp-client-service)
+               (service dhcp-client-service-type)
                %base-services))))
 
 (define (run-nfs-test name socket)

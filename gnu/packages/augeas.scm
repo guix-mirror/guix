@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -32,24 +32,14 @@
 (define-public augeas
   (package
     (name "augeas")
-    (version "1.10.1")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.augeas.net/augeas-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0k9nssn7lk58cl5zv3c8kv2zx9cm2yks3sj7q4fd6qdjz9m2bnsj"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; The gnulib test-lock test is prone to writer starvation
-                  ;; with our glibc@2.25, which prefers readers, so disable it.
-                  ;; The gnulib commit b20e8afb0b2 should fix this once
-                  ;; incorporated here.
-                  (substitute* "gnulib/tests/Makefile.in"
-                    (("test-lock\\$\\(EXEEXT\\) ") ""))
-                  #t))))
+                "1c507qj6dfn2dnsl27w94zs9r45xrgm07y8bqba9ry2s0psfhg1r"))))
     (build-system gnu-build-system)
     ;; Marked as "required" in augeas.pc
     (propagated-inputs

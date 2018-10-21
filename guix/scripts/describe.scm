@@ -158,4 +158,4 @@ in the format specified by FMT."
         (#f
          (display-checkout-info format))
         (profile
-         (display-profile-info profile format))))))
+         (display-profile-info (canonicalize-profile profile) format))))))

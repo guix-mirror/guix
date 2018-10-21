@@ -1948,27 +1948,43 @@ designs.")
                      license:asl2.0
                      license:cpl1.0)))))
 
-(define-public javacc
+(define-public javacc-4
   (package
     (name "javacc")
-    (version "7.0.3")
+    (version "4.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/javacc/javacc/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append "javacc-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/javacc/javacc.git")
+                    (commit "release_41")))
+              (file-name (string-append "javacc-" version "-checkout"))
               (sha256
                (base32
-                "111xc9mnmc5a6qz6x3xbhqc07y1lg2b996ggzw0hrblg42zya9xf"))))
+                "07ysav7j8r1c6h8qxrgqk6lwdp74ly0ad1935lragxml0qqc3ka0"))
+              (modules '((guix build utils)))
+              ;; delete bundled jars
+              (snippet '(begin (delete-file-recursively "lib") #t))))
     (build-system ant-build-system)
+    ;; Tests fail with
+    ;; /tmp/guix-build-javacc-4.1.drv-0/source/test/javacodeLA/build.xml:60:
+    ;; JAVACODE failed
     (arguments
-     `(#:test-target "test"
+     `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-bundled-libs
+         ;; Delete tests to avoid build failure (we don't run them anyway).
+         (add-after 'unpack 'delete-tests
            (lambda _
-             (delete-file-recursively "lib") #t))
-         (replace 'install (install-jars "target")))))
+             (for-each delete-file
+                       '("src/org/javacc/JavaCCTestCase.java"
+                         "src/org/javacc/parser/ExpansionTest.java"
+                         "src/org/javacc/parser/OptionsTest.java"
+                         "src/org/javacc/jjtree/JJTreeOptionsTest.java"))
+             (for-each delete-file-recursively
+                       '("src/org/javacc/parser/test"
+                         "src/org/javacc/jjdoc/test"))
+             #t))
+         (replace 'install (install-jars "bin/lib")))))
     (home-page "https://javacc.org/")
     (synopsis "Java parser generator")
     (description "Java Compiler Compiler (JavaCC) is the most popular parser
@@ -1980,29 +1996,34 @@ as tree building (via a tool called JJTree included with JavaCC), actions,
 debugging, etc.")
     (license license:bsd-3)))
 
-(define-public javacc-4
-  (package (inherit javacc)
-    (version "4.1")
+(define-public javacc
+  (package
+    (inherit javacc-4)
+    (version "7.0.3")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/javacc/javacc.git")
-                    (commit "release_41")))
-              (file-name (string-append "javacc-" version "-checkout"))
+              (method url-fetch)
+              (uri (string-append "https://github.com/javacc/javacc/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append "javacc-" version ".tar.gz"))
               (sha256
                (base32
-                "07ysav7j8r1c6h8qxrgqk6lwdp74ly0ad1935lragxml0qqc3ka0"))))
-    ;; Tests fail with
-    ;; /tmp/guix-build-javacc-4.1.drv-0/source/test/javacodeLA/build.xml:60:
-    ;; JAVACODE failed
+                "111xc9mnmc5a6qz6x3xbhqc07y1lg2b996ggzw0hrblg42zya9xf"))
+              (modules '((guix build utils)))
+              ;; delete bundled jars
+              (snippet '(begin (for-each delete-file-recursively
+                                         '("bootstrap" "lib"))
+                               #t))))
     (arguments
-     `(#:tests? #f
+     `(#:make-flags ; bootstrap from javacc-4
+       (list (string-append "-Dbootstrap-jar="
+                            (assoc-ref %build-inputs "javacc")
+                            "/share/java/javacc.jar"))
+       #:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-bundled-libs
-           (lambda _
-             (delete-file-recursively "lib") #t))
-         (replace 'install (install-jars "bin/lib")))))))
+         (replace 'install (install-jars "target")))))
+    (native-inputs
+     `(("javacc" ,javacc-4)))))
 
 ;; This is the last 3.x release of ECJ
 (define-public java-ecj-3
@@ -4287,6 +4308,85 @@ setter and getter method.")
     (description "Commons-IO contains utility classes, stream implementations,
 file filters and endian classes.")
     (license license:asl2.0)))
+
+(define-public java-commons-exec-1.1
+  (package
+    (name "java-commons-exec")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/commons/exec/source/"
+                           "commons-exec-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "025dk8xgj10lxwwwqp0hng2rn7fr4vcirxzydqzx9k4dim667alk"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "-Dmaven.junit.jar="
+                            (assoc-ref %build-inputs "java-junit")
+                            "/share/java/junit.jar"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'delete-network-tests
+           (lambda _
+             (delete-file "src/test/java/org/apache/commons/exec/DefaultExecutorTest.java")
+             (substitute* "src/test/java/org/apache/commons/exec/TestRunner.java"
+              (("suite\\.addTestSuite\\(DefaultExecutorTest\\.class\\);") ""))
+             #t))
+         ;; The "build" phase automatically tests.
+         (delete 'check)
+         (replace 'install (install-jars "target")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://commons.apache.org/proper/commons-exec/")
+    (synopsis "Common program execution related classes")
+    (description "Commons-Exec simplifies executing external processes.")
+    (license license:asl2.0)))
+
+(define-public java-commons-exec
+  (package
+    (inherit java-commons-exec-1.1)
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/commons/exec/source/"
+                           "commons-exec-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "17yb4h6f8l49c5iyyvda4z2nmw0bxrx857nrwmsr7mmpb7x441yv"))))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "-Dmaven.junit.jar="
+                            (assoc-ref %build-inputs "java-junit")
+                            "/share/java/junit.jar")
+             "-Dmaven.compiler.source=1.7"
+             "-Dmaven.compiler.target=1.7")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'delete-network-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; This test hangs indefinitely.
+             (delete-file "src/test/java/org/apache/commons/exec/issues/Exec60Test.java")
+             (substitute* "src/test/java/org/apache/commons/exec/issues/Exec41Test.java"
+              (("ping -c 10 127.0.0.1") "sleep 10"))
+             (substitute* "src/test/java/org/apache/commons/exec/issues/Exec49Test.java"
+              (("/bin/ls") "ls"))
+             (call-with-output-file "src/test/scripts/ping.sh"
+               (lambda (port)
+                 (format port "#!~a/bin/sh\nsleep $1\n"
+                              (assoc-ref inputs "bash"))))
+             #t))
+         ;; The "build" phase automatically tests.
+         (delete 'check)
+         (replace 'install (install-jars "target")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))))
 
 (define-public java-commons-lang
   (package
@@ -7585,6 +7685,55 @@ configuration.")
     (description "This package is the jaxb annotations module for jackson.")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
 
+(define-public java-fasterxml-jackson-modules-base-mrbean
+  (package
+    (name "java-fasterxml-jackson-modules-base-mrbean")
+    (version "2.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-modules-base/archive/"
+                                  "jackson-modules-base-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1wws95xi8sppp6b0k2vvjdjyynl20r1a4dwrhai08lzlria6blp5"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-modules-base-mrbean.jar"
+       #:source-dir "mrbean/src/main/java"
+       #:test-dir "mrbean/src/test"
+       #:test-exclude
+       ;; Base class for tests
+       (list "**/BaseTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out (string-append "mrbean/src/main/java/com/fasterxml/"
+                                        "jackson/module/mrbean/PackageVersion.java"))
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.module.mrbean")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.module.mrbean")
+                 (("@projectartifactid@") "jackson-module-mrbean")))
+             #t)))))
+    (inputs
+     `(("java-asm" ,java-asm)
+       ("java-fasterxml-jackson-annotations"
+        ,java-fasterxml-jackson-annotations)
+       ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)
+       ("java-fasterxml-jackson-databind" ,java-fasterxml-jackson-databind)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/FasterXML/jackson-modules-base")
+    (synopsis "POJO type materialization for Java")
+    (description "This package implements POJO type materialization.
+Databinders can construct implementation classes for Java interfaces as part
+of deserialization.")
+    (license license:asl2.0)))
+
 (define-public java-snakeyaml
   (package
     (name "java-snakeyaml")
@@ -9504,6 +9653,39 @@ enable normalization checking as described in section 2.13 of this
 specification.  It also handles namespaces according to the XML Namespaces 1.1
 Candidate Recommendation, and will correctly serialize XML 1.1 documents if
 the DOM level 3 load/save API's are in use.")
+    (license license:asl2.0)))
+
+(define-public java-jakarta-regexp
+  (package
+    (name "java-jakarta-regexp")
+    (version "1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://archive.apache.org/dist/jakarta/regexp/jakarta-regexp-"
+              version ".tar.gz"))
+        (sha256
+         (base32
+          "0zg9rmyif48dck0cv6ynpxv23mmcsx265am1fnnxss7brgw0ms3r"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+          (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (out-share (string-append out "/share/java")))
+                (mkdir-p out-share)
+                (for-each (lambda (name)
+                            (install-file name out-share))
+                          (find-files "build" "^jakarta-regexp-.*\\.jar$"))
+                #t))))))
+    (home-page "https://attic.apache.org/projects/jakarta-regexp.html")
+    (synopsis "Regular expression parser generator for Java.")
+    (description "@code{jakarta-regexp} is an old regular expression parser
+generator for Java.")
     (license license:asl2.0)))
 
 (define-public java-jline
