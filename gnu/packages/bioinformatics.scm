@@ -2607,38 +2607,39 @@ results.  The FASTX-Toolkit tools perform some of these preprocessing tasks.")
 (define-public flexbar
   (package
     (name "flexbar")
-    (version "2.5")
+    (version "3.4.0")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "mirror://sourceforge/flexbar/"
-                              version "/flexbar_v" version "_src.tgz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/seqan/flexbar.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "13jaykc3y1x8y5nn9j8ljnb79s5y51kyxz46hdmvvjj6qhyympmf"))))
+                "1pq9sxvdnldl14libk234m72dqhwgzs3acgl943wchwdqlcsi5r2"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags (list
-                          (string-append "-DFLEXBAR_BINARY_DIR="
-                                         (assoc-ref %outputs "out")
-                                         "/bin/"))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "PATH" (string-append
-                             (assoc-ref outputs "out") "/bin:"
-                             (getenv "PATH")))
-             (chdir "../flexbar_v2.5_src/test")
-             (zero? (system* "bash" "flexbar_validate.sh"))))
-         (delete 'install))))
+             (setenv "PATH" (string-append (getcwd) ":" (getenv "PATH")))
+             (with-directory-excursion "../source/test"
+               (invoke "bash" "flexbar_test.sh"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (string-append (assoc-ref outputs "out")))
+                    (bin (string-append out "/bin/")))
+               (install-file "flexbar" bin))
+             #t)))))
     (inputs
      `(("tbb" ,tbb)
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("seqan" ,seqan)))
-    (home-page "http://flexbar.sourceforge.net")
+    (home-page "https://github.com/seqan/flexbar")
     (synopsis "Barcode and adapter removal tool for sequencing platforms")
     (description
      "Flexbar preprocesses high-throughput nucleotide sequencing data
@@ -2647,7 +2648,7 @@ Moreover, trimming and filtering features are provided.  Flexbar increases
 read mapping rates and improves genome and transcriptome assemblies.  It
 supports next-generation sequencing data in fasta/q and csfasta/q format from
 Illumina, Roche 454, and the SOLiD platform.")
-    (license license:gpl3)))
+    (license license:bsd-3)))
 
 (define-public fraggenescan
   (package
