@@ -115,23 +115,25 @@ or false to signal an error."
      `(#:guile ,%bootstrap-guile
        #:modules ((guix build utils))
        #:builder
-       (let ((out     (assoc-ref %outputs "out"))
-             (tar     (assoc-ref %build-inputs "tar"))
-             (xz      (assoc-ref %build-inputs "xz"))
-             (tarball (assoc-ref %build-inputs "tarball")))
+       (begin
          (use-modules (guix build utils))
 
-         (mkdir out)
-         (copy-file tarball "binaries.tar.xz")
-         (invoke xz "-d" "binaries.tar.xz")
-         (let ((builddir (getcwd)))
-           (with-directory-excursion out
-             (invoke tar "xvf"
-                     (string-append builddir "/binaries.tar"))
-             ,@(if snippet (list snippet) '())
-             (or (not ,program-to-test)
-                 (invoke (string-append "bin/" ,program-to-test)
-                         "--version")))))))
+         (let ((out     (assoc-ref %outputs "out"))
+              (tar     (assoc-ref %build-inputs "tar"))
+              (xz      (assoc-ref %build-inputs "xz"))
+              (tarball (assoc-ref %build-inputs "tarball")))
+
+          (mkdir out)
+          (copy-file tarball "binaries.tar.xz")
+          (invoke xz "-d" "binaries.tar.xz")
+          (let ((builddir (getcwd)))
+            (with-directory-excursion out
+              (invoke tar "xvf"
+                      (string-append builddir "/binaries.tar"))
+              ,@(if snippet (list snippet) '())
+              (or (not ,program-to-test)
+                  (invoke (string-append "bin/" ,program-to-test)
+                          "--version"))))))))
     (inputs
      `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
        ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
@@ -460,28 +462,30 @@ $out/bin/guile --version~%"
      `(#:guile ,%bootstrap-guile
        #:modules ((guix build utils))
        #:builder
-       (let ((out     (assoc-ref %outputs "out"))
-             (tar     (assoc-ref %build-inputs "tar"))
-             (xz      (assoc-ref %build-inputs "xz"))
-             (tarball (assoc-ref %build-inputs "tarball")))
+       (begin
          (use-modules (guix build utils))
 
-         (mkdir out)
-         (copy-file tarball "binaries.tar.xz")
-         (invoke xz "-d" "binaries.tar.xz")
-         (let ((builddir (getcwd)))
-           (with-directory-excursion out
-             (invoke tar "xvf"
-                     (string-append builddir
-                                    "/binaries.tar"))
-             (chmod "lib" #o755)
+         (let ((out     (assoc-ref %outputs "out"))
+              (tar     (assoc-ref %build-inputs "tar"))
+              (xz      (assoc-ref %build-inputs "xz"))
+              (tarball (assoc-ref %build-inputs "tarball")))
 
-             ;; Patch libc.so so it refers to the right path.
-             (substitute* "lib/libc.so"
-               (("/[^ ]+/lib/(libc|ld)" _ prefix)
-                (string-append out "/lib/" prefix)))
+          (mkdir out)
+          (copy-file tarball "binaries.tar.xz")
+          (invoke xz "-d" "binaries.tar.xz")
+          (let ((builddir (getcwd)))
+            (with-directory-excursion out
+              (invoke tar "xvf"
+                      (string-append builddir
+                                     "/binaries.tar"))
+              (chmod "lib" #o755)
 
-             #t)))))
+              ;; Patch libc.so so it refers to the right path.
+              (substitute* "lib/libc.so"
+                (("/[^ ]+/lib/(libc|ld)" _ prefix)
+                 (string-append out "/lib/" prefix)))
+
+              #t))))))
     (inputs
      `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
        ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
@@ -531,39 +535,41 @@ $out/bin/guile --version~%"
      `(#:guile ,%bootstrap-guile
        #:modules ((guix build utils))
        #:builder
-       (let ((out     (assoc-ref %outputs "out"))
-             (tar     (assoc-ref %build-inputs "tar"))
-             (xz      (assoc-ref %build-inputs "xz"))
-             (bash    (assoc-ref %build-inputs "bash"))
-             (libc    (assoc-ref %build-inputs "libc"))
-             (tarball (assoc-ref %build-inputs "tarball")))
+       (begin
          (use-modules (guix build utils)
                       (ice-9 popen))
 
-         (mkdir out)
-         (copy-file tarball "binaries.tar.xz")
-         (invoke xz "-d" "binaries.tar.xz")
-         (let ((builddir (getcwd))
-               (bindir   (string-append out "/bin")))
-           (with-directory-excursion out
-             (invoke tar "xvf"
-                     (string-append builddir "/binaries.tar")))
+         (let ((out     (assoc-ref %outputs "out"))
+               (tar     (assoc-ref %build-inputs "tar"))
+               (xz      (assoc-ref %build-inputs "xz"))
+               (bash    (assoc-ref %build-inputs "bash"))
+               (libc    (assoc-ref %build-inputs "libc"))
+               (tarball (assoc-ref %build-inputs "tarball")))
 
-           (with-directory-excursion bindir
-             (chmod "." #o755)
-             (rename-file "gcc" ".gcc-wrapped")
-             (call-with-output-file "gcc"
-               (lambda (p)
-                 (format p "#!~a
+           (mkdir out)
+           (copy-file tarball "binaries.tar.xz")
+           (invoke xz "-d" "binaries.tar.xz")
+           (let ((builddir (getcwd))
+                 (bindir   (string-append out "/bin")))
+             (with-directory-excursion out
+               (invoke tar "xvf"
+                       (string-append builddir "/binaries.tar")))
+
+             (with-directory-excursion bindir
+               (chmod "." #o755)
+               (rename-file "gcc" ".gcc-wrapped")
+               (call-with-output-file "gcc"
+                 (lambda (p)
+                   (format p "#!~a
 exec ~a/bin/.gcc-wrapped -B~a/lib \
      -Wl,-rpath -Wl,~a/lib \
      -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
-                         bash
-                         out libc libc libc
-                         ,(glibc-dynamic-linker))))
+                           bash
+                           out libc libc libc
+                           ,(glibc-dynamic-linker))))
 
-             (chmod "gcc" #o555)
-             #t)))))
+               (chmod "gcc" #o555)
+               #t))))))
     (inputs
      `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
        ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
@@ -571,33 +577,33 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
        ("libc" ,%bootstrap-glibc)
        ("tarball" ,(bootstrap-origin
                     (origin
-                     (method url-fetch)
-                     (uri (map (cut string-append <> "/" (%current-system)
-                                    (match (%current-system)
-                                      ("armhf-linux"
-                                       "/20150101/gcc-4.8.4.tar.xz")
-                                      ("aarch64-linux"
-                                       "/20170217/gcc-5.4.0.tar.xz")
-                                      (_
-                                       "/20131110/gcc-4.8.2.tar.xz")))
-                               %bootstrap-base-urls))
-                     (sha256
-                      (match (%current-system)
-                        ("x86_64-linux"
-                         (base32
-                          "17ga4m6195n4fnbzdkmik834znkhs53nkypp6557pl1ps7dgqbls"))
-                        ("i686-linux"
-                         (base32
-                          "150c1arrf2k8vfy6dpxh59vcgs4p1bgiz2av5m19dynpks7rjnyw"))
-                        ("armhf-linux"
-                         (base32
-                          "0ghz825yzp43fxw53kd6afm8nkz16f7dxi9xi40bfwc8x3nbbr8v"))
-                        ("aarch64-linux"
-                         (base32
-                          "1ar3vdzyqbfm0z36kmvazvfswxhcihlacl2dzdjgiq25cqnq9ih1"))
-                        ("mips64el-linux"
-                         (base32
-                          "1m5miqkyng45l745n0sfafdpjkqv9225xf44jqkygwsipj2cv9ks")))))))))
+                      (method url-fetch)
+                      (uri (map (cut string-append <> "/" (%current-system)
+                                     (match (%current-system)
+                                       ("armhf-linux"
+                                        "/20150101/gcc-4.8.4.tar.xz")
+                                       ("aarch64-linux"
+                                        "/20170217/gcc-5.4.0.tar.xz")
+                                       (_
+                                        "/20131110/gcc-4.8.2.tar.xz")))
+                                %bootstrap-base-urls))
+                      (sha256
+                       (match (%current-system)
+                         ("x86_64-linux"
+                          (base32
+                           "17ga4m6195n4fnbzdkmik834znkhs53nkypp6557pl1ps7dgqbls"))
+                         ("i686-linux"
+                          (base32
+                           "150c1arrf2k8vfy6dpxh59vcgs4p1bgiz2av5m19dynpks7rjnyw"))
+                         ("armhf-linux"
+                          (base32
+                           "0ghz825yzp43fxw53kd6afm8nkz16f7dxi9xi40bfwc8x3nbbr8v"))
+                         ("aarch64-linux"
+                          (base32
+                           "1ar3vdzyqbfm0z36kmvazvfswxhcihlacl2dzdjgiq25cqnq9ih1"))
+                         ("mips64el-linux"
+                          (base32
+                           "1m5miqkyng45l745n0sfafdpjkqv9225xf44jqkygwsipj2cv9ks")))))))))
     (native-search-paths
      (list (search-path-specification
             (variable "CPATH")
