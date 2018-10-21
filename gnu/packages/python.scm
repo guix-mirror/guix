@@ -55,6 +55,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -14504,3 +14505,28 @@ extend common interfaces like NumPy, Pandas, or Python iterators to
 larger-than-memory or distributed environments.  These parallel collections
 run on top of the dynamic task schedulers. ")
     (license license:bsd-3)))
+
+(define-public python-ilinkedlist
+  (package
+    (name "python-ilinkedlist")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ilinkedlist" version))
+       (sha256
+        (base32
+         "063c2gm4jkgkv0nsg7mrc8y0w82ms98l4xchmbrvr68cscglhk69"))))
+    (build-system python-build-system)
+    (native-inputs `(("python-pytest" ,python-pytest)))
+    (inputs `(("python" ,python)))
+    (home-page "https://github.com/luther9/ilinkedlist-py")
+    (synopsis "Immutable linked list library")
+    (description
+     "This is a implementation of immutable linked lists for Python.  It
+contains @code{nil} (the empty linked list) and a @code{Pair} class for nodes.
+Since a linked list is treated as immutable, it is hashable, and its length
+can be retrieved in constant time.  Some of the terminology is inspired by
+LISP.  It is possible to create an improper list by creating a @code{Pair}
+with a non-list @code{cdr}.")
+    (license license:gpl3+)))
