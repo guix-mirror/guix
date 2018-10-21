@@ -249,51 +249,51 @@ system, and the core design of Django is reused in Grantlee.")
                  (("/bin/ls") (which "ls")))
                ;; do not pass "--enable-fast-install", which makes the
                ;; configure process fail
-               (zero? (system*
-                       "./configure"
-                       "-verbose"
-                       "-prefix" out
-                       "-docdir" (string-append out "/share/doc/qt5")
-                       "-headerdir" (string-append out "/include/qt5")
-                       "-archdatadir" (string-append out "/lib/qt5")
-                       "-datadir" (string-append out "/share/qt5")
-                       "-examplesdir" (string-append
-                                        examples "/share/doc/qt5/examples") ; 151MiB
-                       "-opensource"
-                       "-confirm-license"
+               (invoke
+                 "./configure"
+                 "-verbose"
+                 "-prefix" out
+                 "-docdir" (string-append out "/share/doc/qt5")
+                 "-headerdir" (string-append out "/include/qt5")
+                 "-archdatadir" (string-append out "/lib/qt5")
+                 "-datadir" (string-append out "/share/qt5")
+                 "-examplesdir" (string-append
+                                  examples "/share/doc/qt5/examples") ; 151MiB
+                 "-opensource"
+                 "-confirm-license"
 
-                       ;; These features require higher versions of Linux than the
-                       ;; minimum version of the glibc.  See
-                       ;; src/corelib/global/minimum-linux_p.h.  By disabling these
-                       ;; features Qt5 applications can be used on the oldest
-                       ;; kernels that the glibc supports, including the RHEL6
-                       ;; (2.6.32) and RHEL7 (3.10) kernels.
-                       "-no-feature-getentropy"  ; requires Linux 3.17
-                       "-no-feature-renameat2"   ; requires Linux 3.16
+                 ;; These features require higher versions of Linux than the
+                 ;; minimum version of the glibc.  See
+                 ;; src/corelib/global/minimum-linux_p.h.  By disabling these
+                 ;; features Qt5 applications can be used on the oldest
+                 ;; kernels that the glibc supports, including the RHEL6
+                 ;; (2.6.32) and RHEL7 (3.10) kernels.
+                 "-no-feature-getentropy"  ; requires Linux 3.17
+                 "-no-feature-renameat2"   ; requires Linux 3.16
 
-                       ;; Do not build examples; for the time being, we
-                       ;; prefer to save the space and build time.
-                       "-no-compile-examples"
-                       ;; Most "-system-..." are automatic, but some use
-                       ;; the bundled copy by default.
-                       "-system-sqlite"
-                       "-system-harfbuzz"
-                       "-system-pcre"
-                       ;; explicitly link with openssl instead of dlopening it
-                       "-openssl-linked"
-                       ;; explicitly link with dbus instead of dlopening it
-                       "-dbus-linked"
-                       ;; don't use the precompiled headers
-                       "-no-pch"
-                       ;; drop special machine instructions not supported
-                       ;; on all instances of the target
-                       ,@(if (string-prefix? "x86_64"
-                                             (or (%current-target-system)
-                                                 (%current-system)))
-                             '()
-                             '("-no-sse2"))
-                       "-no-mips_dsp"
-                       "-no-mips_dspr2")))))
+                 ;; Do not build examples; for the time being, we
+                 ;; prefer to save the space and build time.
+                 "-no-compile-examples"
+                 ;; Most "-system-..." are automatic, but some use
+                 ;; the bundled copy by default.
+                 "-system-sqlite"
+                 "-system-harfbuzz"
+                 "-system-pcre"
+                 ;; explicitly link with openssl instead of dlopening it
+                 "-openssl-linked"
+                 ;; explicitly link with dbus instead of dlopening it
+                 "-dbus-linked"
+                 ;; don't use the precompiled headers
+                 "-no-pch"
+                 ;; drop special machine instructions not supported
+                 ;; on all instances of the target
+                 ,@(if (string-prefix? "x86_64"
+                                       (or (%current-target-system)
+                                           (%current-system)))
+                       '()
+                       '("-no-sse2"))
+                 "-no-mips_dsp"
+                 "-no-mips_dspr2"))))
            (add-after 'install 'patch-mkspecs
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
