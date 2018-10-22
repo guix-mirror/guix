@@ -14551,3 +14551,29 @@ are not supported.")
 
 (define-public python2-readlike
   (package-with-python2 python-readlike))
+
+(define-public python-reparser
+  (package
+    (name "python-reparser")
+    (version "1.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ReParser" version))
+       (sha256
+        (base32 "0nniqb69xr0fv7ydlmrr877wyyjb61nlayka7xr08vlxl9caz776"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/xmikos/reparser")
+    (synopsis "Simple lexer/parser for inline markup based on regular expressions")
+    (description
+     "This Python library provides a simple lexer/parser for inline markup based
+on regular expressions.")
+    (license license:expat)))
+
+(define-public python2-reparser
+  (let ((reparser (package-with-python2
+                   (strip-python2-variant python-reparser))))
+    (package (inherit reparser)
+             (propagated-inputs
+              `(("python2-enum34" ,python2-enum34)
+                ,@(package-propagated-inputs reparser))))))
