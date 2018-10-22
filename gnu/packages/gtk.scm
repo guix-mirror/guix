@@ -304,6 +304,7 @@ functions which were removed.")
                      (string-append "-Wl,-rpath="
                                     (assoc-ref outputs "out") "/lib"))
              #t)))
+       #:python ,python-2 ;XXX: The bundled waf fails with Python 3.7.0.
        #:tests? #f)) ; no check target
     (inputs
      `(("gtk" ,gtk+-2)
