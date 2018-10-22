@@ -6046,7 +6046,7 @@ Python.")
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-pyyaml" ,python-pyyaml)))
-    (home-page "https://pythonhosted.org/Markdown/")
+    (home-page "https://python-markdown.github.io/")
     (synopsis "Python implementation of Markdown")
     (description
      "This package provides a Python implementation of John Gruber's
