@@ -11933,14 +11933,14 @@ Supported metrics are:
 (define-public python-sure
   (package
     (name "python-sure")
-    (version "1.4.6")
+    (version "1.4.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sure" version))
        (sha256
         (base32
-         "1iyqsy2d6radi88g1qf0lziy5b39h5cpb3g5jiqyb4xi46ig3x1z"))))
+         "1and0drq8w9iplsic22n2h7hkpyq03a1mbqk4sgcdqhqzdqm539w"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-mock" ,python-mock)
