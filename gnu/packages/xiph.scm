@@ -61,7 +61,7 @@
    (version "1.3.3")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://downloads.xiph.org/releases/ogg/libogg-"
+            (uri (string-append "https://downloads.xiph.org/releases/ogg/libogg-"
                                 version ".tar.xz"))
             (sha256
              (base32
@@ -84,7 +84,7 @@ periodic timestamps for seeking.")
    (version "1.3.6")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://downloads.xiph.org/releases/vorbis/"
+            (uri (string-append "https://downloads.xiph.org/releases/vorbis/"
                                 "libvorbis-" version ".tar.xz"))
             (sha256
              (base32
@@ -110,7 +110,7 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
     (version "1.1.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://downloads.xiph.org/releases/theora/"
+             (uri (string-append "https://downloads.xiph.org/releases/theora/"
                                  "libtheora-" version ".tar.xz"))
              (sha256
               (base32
@@ -135,7 +135,7 @@ compressed video format.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://downloads.xiph.org/releases/speex/speex-"
+      (uri (string-append "https://downloads.xiph.org/releases/speex/speex-"
                           version ".tar.gz"))
       (sha256
        (base32
@@ -163,7 +163,7 @@ stereo encoding, and voice activity detection.")
     (version "1.2rc3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://downloads.xiph.org/releases/speex/"
+              (uri (string-append "https://downloads.xiph.org/releases/speex/"
                                   "speexdsp-" version ".tar.gz"))
               (sha256
                (base32
@@ -189,7 +189,7 @@ work from the @code{speex} codec.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://downloads.xiph.org/releases/ao/libao-"
+      (uri (string-append "https://downloads.xiph.org/releases/ao/libao-"
                           version ".tar.gz"))
       (sha256
        (base32
@@ -238,7 +238,7 @@ It currently supports:
    (version "1.3.2")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://downloads.xiph.org/releases/flac/flac-"
+            (uri (string-append "https://downloads.xiph.org/releases/flac/flac-"
                                 version ".tar.xz"))
             (sha256
              (base32
@@ -262,7 +262,7 @@ meaning that audio is compressed in FLAC without any loss in quality.")
    (version "0.4.1")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://downloads.xiph.org/releases/kate/"
+            (uri (string-append "https://downloads.xiph.org/releases/kate/"
                                 "libkate-" version ".tar.gz"))
             (sha256
              (base32
@@ -298,7 +298,7 @@ Kate stream.")
    (version "1.4.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://downloads.xiph.org/releases/vorbis/"
+            (uri (string-append "https://downloads.xiph.org/releases/vorbis/"
                                 "vorbis-tools-" version ".tar.gz"))
             (sha256
              (base32
@@ -359,7 +359,7 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://downloads.xiph.org/releases/opus/opus-tools-"
+                    "https://downloads.xiph.org/releases/opus/opus-tools-"
                     version ".tar.gz"))
               (sha256
                (base32
@@ -395,7 +395,7 @@ decoding .opus files.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://downloads.xiph.org/releases/opus/opusfile-" version
+                    "https://downloads.xiph.org/releases/opus/opusfile-" version
                     ".tar.gz"))
               (sha256
                (base32
@@ -445,7 +445,7 @@ encoding Opus files and streams.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://downloads.xiph.org/releases/icecast/icecast-"
+                    "https://downloads.xiph.org/releases/icecast/icecast-"
                     version ".tar.gz"))
               (sha256
                (base32
@@ -477,7 +477,7 @@ things in between.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://downloads.xiph.org/releases/libshout/"
+                    "https://downloads.xiph.org/releases/libshout/"
                     name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -490,7 +490,7 @@ things in between.")
      `(("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
        ("speex"     ,speex)))
-    (home-page "http://www.icecast.org/")
+    (home-page "https://icecast.org/")
     (synopsis "Audio streaming library for icecast encoders")
     (description
      "Libshout is a library for communicating with and sending data to an
