@@ -913,3 +913,29 @@ can be analyzed regarding their minimal, maximal and average distances between
 barcodes.  Finally, reads that start with a (possibly mutated) barcode can be
 demultiplexed, i.e. assigned to their original reference barcode.")
     (license license:gpl2)))
+
+(define-public r-ruvseq
+  (package
+    (name "r-ruvseq")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "RUVSeq" version))
+       (sha256
+        (base32
+         "16i5sm5af761k4zvspfi8jknsgln48bn538hxqqmlaq7wvlfxqxj"))))
+    (properties `((upstream-name . "RUVSeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-edaseq" ,r-edaseq)
+       ("r-edger" ,r-edger)
+       ("r-mass" ,r-mass)))
+    (home-page "https://github.com/drisso/RUVSeq")
+    (synopsis "Remove unwanted variation from RNA-Seq data")
+    (description
+     "This package implements methods to @dfn{remove unwanted variation} (RUV)
+of Risso et al. (2014) for the normalization of RNA-Seq read counts between
+samples.")
+    (license license:artistic2.0)))
