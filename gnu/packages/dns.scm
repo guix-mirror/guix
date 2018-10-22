@@ -363,7 +363,7 @@ to result in system-wide compromise.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
@@ -371,7 +371,7 @@ to result in system-wide compromise.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0gxqc4ynd2g1a5dwaazqh9n8injh49a7dz0l9bbxqgv47dnrvxvq"))))
+         "0p9w6spar5dfi7fplxjcq4394wldabaws0ns30cqq6sxqfwv6qn3"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
