@@ -71,8 +71,14 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://git.libssh.org/projects/libssh.git")
-                    (commit (string-append "libssh-" version))))
+                     ;; git.libssh.org does not support the fast "smart" HTTP
+                     ;; Git protocol. The "dumb" HTTP Git protocol is extremely
+                     ;; slow, and does not support shallow clones, so we use the
+                     ;; plain Git protocol despite its flaws. This offers an
+                     ;; incredible speedup and reduces the size of the the
+                     ;; source by more than half.
+                     (url "git://git.libssh.org/projects/libssh.git")
+                     (commit (string-append "libssh-" version))))
               (patches (search-patches "libssh-hostname-parser-bug.patch"))
               (sha256
                (base32
