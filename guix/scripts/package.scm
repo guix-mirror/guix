@@ -164,7 +164,9 @@ do not treat collisions in MANIFEST as an error."
                               count)
                        count)
                (display-search-paths entries (list profile)
-                                     #:kind 'prefix))))))))
+                                     #:kind 'prefix)))
+
+        (warn-about-disk-space profile))))))
 
 
 ;;;
