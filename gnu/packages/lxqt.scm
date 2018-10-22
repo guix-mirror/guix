@@ -29,10 +29,13 @@
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages compton)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -1157,4 +1160,55 @@ QTermWidget.")
     (synopsis "Crossplatform tool for fast making screenshots")
     (description "ScreenGrab is a program for fast creating screenshots, and
 easily publishing them on internet image hosting services.")
+    (license license:lgpl2.1+)))
+
+
+;; The LXQt Desktop Environment
+
+(define-public lxqt
+  (package
+    (name "lxqt")
+    (version (package-version lxqt-session))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments '(#:builder (begin (mkdir %output) #t)))
+    (propagated-inputs
+     `(;; XDG
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("xdg-user-dirs" ,xdg-user-dirs)
+       ("xdg-utils" ,xdg-utils)
+       ;; Base
+       ;; TODO: qtsvg is needed for lxqt apps to display icons. Maybe it
+       ;; should be added to their propagated-inputs?
+       ("qtsvg" ,qtsvg)
+       ;; Core
+       ("lxqt-about" ,lxqt-about)
+       ("lxqt-admin" ,lxqt-admin)
+       ("lxqt-config" ,lxqt-config)
+       ("lxqt-notificationd" ,lxqt-notificationd)
+       ("lxqt-openssh-askpass" ,lxqt-openssh-askpass)
+       ("lxqt-panel" ,lxqt-panel)
+       ("lxqt-policykit" ,lxqt-policykit)
+       ("lxqt-powermanagement" ,lxqt-powermanagement)
+       ("lxqt-qtplugin" ,lxqt-qtplugin)
+       ("lxqt-runner" ,lxqt-runner)
+       ("lxqt-session" ,lxqt-session)
+       ("lxqt-sudo" ,lxqt-sudo)
+       ("lxqt-themes" ,lxqt-themes)
+       ("pcmanfm-qt" ,pcmanfm-qt)
+       ;; Extra
+       ("compton" ,compton)
+       ("compton-conf" ,compton-conf)
+       ("font-dejavu" ,font-dejavu)
+       ("lximage-qt" ,lximage-qt)
+       ("obconf-qt" ,obconf-qt)
+       ("openbox" ,openbox)
+       ("oxygen-icons" ,oxygen-icons)
+       ("pavucontrol-qt" ,pavucontrol-qt)
+       ("qps" ,qps)
+       ("qterminal" ,qtermwidget)))
+    (synopsis "The Lightweight Qt Desktop Environment")
+    (description "LXQt is a lightweight Qt desktop environment.")
+    (home-page "https://lxde.org")
     (license license:lgpl2.1+)))
