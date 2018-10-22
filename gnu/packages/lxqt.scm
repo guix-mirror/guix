@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,30 +32,40 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages qt))
+  #:use-module (gnu packages polkit)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages xorg))
 
 (define-public libqtxdg
   (package
     (name "libqtxdg")
-    (version "1.2.0")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
-       (uri
-         (string-append "https://github.com/lxde/libqtxdg/releases/"
-                        "download/" version "/" name "-" version ".tar.xz"))
+       (uri (string-append
+             "https://github.com/lxqt/" name "/releases/download/"
+             version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "1ncqs0lcll5nx69hxfg33m3jfkryjqrjhr2kdci0b8pyaqdv1jc8"))))
+        (base32 "0lq548pa69hfvnbj2ypba5ygm8n6v6g7bqqm8p5g538l1l3394cl"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; test fails with message "Exception"
-       #:configure-flags '("-DBUILD_TESTS=ON")))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(#:configure-flags
+       `("-DBUILD_TESTS=ON"
+         ,(string-append "-DQTXDGX_ICONENGINEPLUGIN_INSTALL_PATH="
+                         %output "/lib/qt5/plugins/iconengines"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Run the tests offscreen.
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
     (propagated-inputs
-     `(("qtbase" ,qtbase))) ; according to Qt5Xdg.pc
-    (home-page "https://github.com/lxde/libqtxdg")
+     ;; required by Qt5XdgIconLoader.pc
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://github.com/lxqt/libqtxdg")
     (synopsis "Qt implementation of freedesktop.org xdg specifications")
     (description "Libqtxdg implements the freedesktop.org xdg specifications
 in Qt.")
@@ -63,29 +74,40 @@ in Qt.")
 (define-public liblxqt
   (package
     (name "liblxqt")
-    (version "0.9.0")
+    (version "0.13.0")
     (source
      (origin
        (method url-fetch)
-       (uri
-         (string-append "https://github.com/lxde/" name
-                        "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append
+             "https://github.com/lxqt/" name "/releases/download/"
+             version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "0mbl3qc0yfgfsndqrw8vg8k5irsy0pg2wrad8nwv0aphphd4n7rg"))
-       (patches (search-patches "liblxqt-include.patch"))))
+        (base32 "0fba0nq5b9fvvmklcikcd4nwhzlp5d6k1q1f80r34kncdzfvj7dl"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+     `(#:tests? #f                      ; no tests
+       #:configure-flags
+       ;; TODO: prefetch translations files from 'lxqt-l10n'.
+       '("-DPULL_TRANSLATIONS=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("DESTINATION \"\\$\\{POLKITQT-1_POLICY_FILES_INSTALL_DIR\\}")
+                "DESTINATION \"${CMAKE_INSTALL_PREFIX}/share/polkit-1/actions"))
+             #t)))))
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
        ("libqtxdg" ,libqtxdg)
-       ("qtbase" ,qtbase)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("polkit-qt" ,polkit-qt)
+       ("qtsvg" ,qtsvg)
        ("qttools" ,qttools)
        ("qtx11extras" ,qtx11extras)))
-    (home-page "http://lxqt.org/")
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)))
+    (home-page "https://lxqt.org/")
     (synopsis "Core utility library for all LXQt components")
     (description "liblxqt provides the basic libraries shared by the
 components of the LXQt desktop environment.")

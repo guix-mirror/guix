@@ -94,7 +94,7 @@ communication, encryption, decryption, signatures, etc.")
 (define-public libmd
   (package
     (name "libmd")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
             (method url-fetch)
             (uri
@@ -105,7 +105,7 @@ communication, encryption, decryption, signatures, etc.")
                              version ".tar.xz")))
             (sha256
              (base32
-              "1iv45npzv0gncjgcpx5m081861zdqxw667ysghqb8721yrlyl6pj"))))
+              "0waclg2d5qin3r26gy5jvy4584ik60njc8pqbzwk0lzq3j9ynkp1"))))
     (build-system gnu-build-system)
     (synopsis "Message Digest functions from BSD systems")
     (description

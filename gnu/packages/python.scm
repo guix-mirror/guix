@@ -55,6 +55,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5904,14 +5905,14 @@ plugins that intend to support Flake8 2.x and 3.x simultaneously.")
 (define-public python-mistune
   (package
     (name "python-mistune")
-    (version "0.8.3")
+    (version "0.8.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mistune" version))
        (sha256
         (base32
-         "06b662p6kf46wh2jsabaqhaq4bz1srh2zxkrnx4yg96azlxw645w"))))
+         "0vkmsh0x480rni51lhyvigfdf06b9247z868pk3bal1wnnfl58sr"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
@@ -5928,25 +5929,19 @@ Python.")
 (define-public python-markdown
   (package
     (name "python-markdown")
-    (version "2.6.11")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Markdown" version))
        (sha256
         (base32
-         "108g80ryzykh8bj0i7jfp71510wrcixdi771lf2asyghgyf8cmm8"))))
+         "0z6v8649sr434d5r5zmrhydka7v7f9yas4bwcgkcs0650jdhybnh"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-                  (lambda _
-                    (zero? (system* "python" "run-tests.py")))))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-pyyaml" ,python-pyyaml)))
-    (home-page "https://pythonhosted.org/Markdown/")
+    (home-page "https://python-markdown.github.io/")
     (synopsis "Python implementation of Markdown")
     (description
      "This package provides a Python implementation of John Gruber's
@@ -9462,13 +9457,13 @@ docstring and colored output.")
 (define-public python-lazy-object-proxy
   (package
     (name "python-lazy-object-proxy")
-    (version "1.2.2")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "lazy-object-proxy" version))
               (sha256
                (base32
-                "0s22aqqkdscyh8sjspyyax7qa1aiz8p4midrnyf39717fhfczm6x"))))
+                "0yha7q9bhw857fwaby785d63mffhngl9npwzlk9i0pwlkwvbx4gb"))))
     (build-system python-build-system)
     (home-page "https://github.com/ionelmc/python-lazy-object-proxy")
     (synopsis "Lazy object proxy for python")
@@ -9950,13 +9945,13 @@ reasoning, wrappers for natural language processing libraries.")
 (define-public python-pymongo
   (package
     (name "python-pymongo")
-    (version "3.3.0")
+    (version "3.7.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pymongo" version))
               (sha256
                (base32
-                "07mra6w86wjqy4lx5fvimidjhhfzd562gfjn8grsnbv2q8pk0i9x"))))
+                "0zis4707r9hdg5qgkhp3wss9camr9h56ixyfc8n9dxwlnnly4x4c"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-certifi" ,python-certifi)))
@@ -11849,14 +11844,14 @@ Supported metrics are:
 (define-public python-sure
   (package
     (name "python-sure")
-    (version "1.4.6")
+    (version "1.4.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sure" version))
        (sha256
         (base32
-         "1iyqsy2d6radi88g1qf0lziy5b39h5cpb3g5jiqyb4xi46ig3x1z"))))
+         "1and0drq8w9iplsic22n2h7hkpyq03a1mbqk4sgcdqhqzdqm539w"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-mock" ,python-mock)
@@ -14429,3 +14424,28 @@ extend common interfaces like NumPy, Pandas, or Python iterators to
 larger-than-memory or distributed environments.  These parallel collections
 run on top of the dynamic task schedulers. ")
     (license license:bsd-3)))
+
+(define-public python-ilinkedlist
+  (package
+    (name "python-ilinkedlist")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ilinkedlist" version))
+       (sha256
+        (base32
+         "063c2gm4jkgkv0nsg7mrc8y0w82ms98l4xchmbrvr68cscglhk69"))))
+    (build-system python-build-system)
+    (native-inputs `(("python-pytest" ,python-pytest)))
+    (inputs `(("python" ,python)))
+    (home-page "https://github.com/luther9/ilinkedlist-py")
+    (synopsis "Immutable linked list library")
+    (description
+     "This is a implementation of immutable linked lists for Python.  It
+contains @code{nil} (the empty linked list) and a @code{Pair} class for nodes.
+Since a linked list is treated as immutable, it is hashable, and its length
+can be retrieved in constant time.  Some of the terminology is inspired by
+LISP.  It is possible to create an improper list by creating a @code{Pair}
+with a non-list @code{cdr}.")
+    (license license:gpl3+)))

@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
-;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2016, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
@@ -653,6 +653,33 @@ which are the libraries that provide basic support for using the Github and
 Gitlab APIs from Emacs packages.  It abstracts access to API resources using
 only a handful of functions that are not resource-specific.")
     (license license:gpl3+)))
+
+(define-public emacs-scribble-mode
+  (let ((commit "34e9e5edb921813b6483e0fefa848efb6ee4b314")
+        (version "0.0")
+        (revision 0))
+    (package
+      (name "emacs-scribble-mode")
+      (version (if (zero? revision)
+                   version
+                   (string-append version "-"
+                                  (number->string revision)
+                                  "." (string-take commit 7))))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacs-pe/scribble-mode.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0598byqpz2q6yi2q4dwd77jj9z3n99z34d3an51s9m2za0nh1qvp"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/emacs-pe/scribble-mode")
+      (synopsis "Emacs mode for editing the Scribble documentation syntax.")
+      (description
+       "This package provides basic syntax highlighting and editing support
+for editing Racket's Scribble documentation syntax in Emacs.")
+      (license license:gpl3+))))
 
 (define-public emacs-haskell-mode
   (package
@@ -12386,3 +12413,23 @@ have special meaning.  It is also handy for aligning text across long vertical
 distances.  Multi-column characters, such as @kbd{TAB} are treated
 correctly.")
     (license license:gpl2+)))
+
+(define-public emacs-slime-repl-ansi-color
+  (let ((commit "ad03263f5d4de473bc173b64a6fc3dc1106393d7"))
+    (package
+      (name "emacs-slime-repl-ansi-color")
+      (version (git-version "0.0.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/deadtrickster/slime-repl-ansi-color")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0bpg7gxz310x7bnlg324c507sxc5gxwwz6h64h6kdq141r73vbi4"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/deadtrickster/slime-repl-ansi-color")
+      (synopsis "Color ANSI codes in the REPL of SLIME")
+      (description "Color ANSI codes in the REPL of SLIME")
+      (license license:gpl2+))))

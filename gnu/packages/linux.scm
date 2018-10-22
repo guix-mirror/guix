@@ -30,6 +30,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
+;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -399,8 +400,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.18.15")
-(define %linux-libre-hash "0v6xs85qn1iy2dj3m6s3cfnhbwb1mjy21d9lagjni8dg3jic26hf")
+(define %linux-libre-version "4.18.16")
+(define %linux-libre-hash "15apfgswp2lrwjpi3vwnanlkdw3q6rkvwrbgrb71rjsy9gazlz62")
 
 (define %linux-libre-4.18-patches
   (list %boot-logo-patch
@@ -430,8 +431,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.18-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.77")
-(define %linux-libre-4.14-hash "18y81rga2lhsk7bjckglxz52pvnzf103ar0z2zj611g37wyf83r5")
+(define %linux-libre-4.14-version "4.14.78")
+(define %linux-libre-4.14-hash "07dhhw6zdnqn2dznpmkniz58hfkdx89yx7csm9vbx45blnyhjw5z")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -440,14 +441,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.134"
-                    "0f5qif27k0mhc57d98arbfkq7zlvg0ra2gz6g5fasblyjz3j7w7h"
+  (make-linux-libre "4.9.135"
+                    "07v5s6hl08ls2z9xdkbqq1s210mqayfchqbckhp8hlaw089ap71f"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.161"
-                    "1q6bsndpjgw72mybhl5l8vrxs4mimg6821bjgi1pjkxbc7nd921b"
+  (make-linux-libre "4.4.162"
+                    "1anb2k9i03369lvbwlw24vimxvk8zpcql4ryz0ydvf3pxv8lirm2"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -4167,30 +4168,21 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.1.2")
+    (version "1.2")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/haikarainen/light")
-                    (commit version)))
+              (method url-fetch)
+              (uri (string-append
+                     "https://github.com/haikarainen/light/archive/v"
+                     version ".tar.gz"))
               (sha256
                (base32
-                "0c934gxav9cgdf94li6dp0rfqmpday9d33vdn9xb2mfp4war9n4w"))))
+                "1gfvsw7gh5pis733l7j54vzp272pvjyzbg8a0pvapfmg0s7mip97"))
+              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (add-after 'unpack 'patch-makefile
-           (lambda _
-             (substitute* "Makefile" (("chown") "#"))
-             #t)))))
     (native-inputs
-     `(("help2man" ,help2man)))
-    (home-page "https://haikarainen.github.io/light")
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (home-page "https://haikarainen.github.io/light/")
     (synopsis "GNU/Linux application to control backlights")
     (description
      "Light is a program to send commands to screen backlight controllers

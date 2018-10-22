@@ -1332,7 +1332,7 @@ gapped, local, and paired-end alignment modes.")
 (define-public tophat
   (package
     (name "tophat")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1340,13 +1340,12 @@ gapped, local, and paired-end alignment modes.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "168zlzykq622zbgkh90a90f1bdgsxkscq2zxzbj8brq80hbjpyp7"))
-              (patches (search-patches "tophat-build-with-later-seqan.patch"))
+                "19add02kv2xhd6ihd779dr7x35ggym3jqr0m5c4315i1yfb0p11p"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Remove bundled SeqAn and samtools
-                  (delete-file-recursively "src/SeqAn-1.3")
+                  (delete-file-recursively "src/SeqAn-1.4.2")
                   (delete-file-recursively "src/samtools-0.1.18")
                   #t))))
     (build-system gnu-build-system)
@@ -1383,7 +1382,7 @@ gapped, local, and paired-end alignment modes.")
        ("python" ,python-2)
        ("perl" ,perl)
        ("zlib" ,zlib)
-       ("seqan" ,seqan)))
+       ("seqan" ,seqan-1)))
     (home-page "http://ccb.jhu.edu/software/tophat/index.shtml")
     (synopsis "Spliced read mapper for RNA-Seq data")
     (description
@@ -1450,13 +1449,14 @@ and more accurate.  BWA-MEM also has better performance than BWA-backtrack for
     (name "bwa-pssm")
     (version "0.5.11")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/pkerpedjiev/bwa-pssm/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pkerpedjiev/bwa-pssm.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "02p7mpbs4mlxmn84g2x4ghak638vbj4lqix2ipx5g84pz9bhdavg"))))
+                "076c4q0cdqz8jgylb067y9zmvxglppnzi3qiscn0xiypgc6lgb5r"))))
     (build-system gnu-build-system)
     (inputs
      `(("gdsl" ,gdsl)
@@ -1474,39 +1474,37 @@ the original BWA alignment program and shares the genome index structure as
 well as many of the command line options.")
     (license license:gpl3+)))
 
-(define-public python2-bx-python
+(define-public python-bx-python
   (package
-    (name "python2-bx-python")
-    (version "0.7.3")
+    (name "python-bx-python")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "bx-python" version))
               (sha256
                (base32
-                "15z2w3bvnc0n4qmb9bd6d8ylc2h2nj883x2w9iixf4x3vki9b22i"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "setup.py"
-                    ;; remove dependency on outdated "distribute" module
-                    (("^from distribute_setup import use_setuptools") "")
-                    (("^use_setuptools\\(\\)") ""))
-                  #t))))
+                "11kksg2rbzihpmcid823xvg42xi88m7sz58rzk29abybkxy0rszs"))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f ;tests fail because test data are not included
-       #:python ,python-2))
+    ;; Tests fail because test data are not included
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-six" ,python-six)))
     (inputs
-     `(("python-numpy" ,python2-numpy)
-       ("zlib" ,zlib)))
+     `(("zlib" ,zlib)))
     (native-inputs
-     `(("python-nose" ,python2-nose)))
-    (home-page "http://bitbucket.org/james_taylor/bx-python/")
+     `(("python-lzo" ,python-lzo)
+       ("python-nose" ,python-nose)
+       ("python-cython" ,python-cython)))
+    (home-page "https://github.com/bxlab/bx-python")
     (synopsis "Tools for manipulating biological data")
     (description
      "bx-python provides tools for manipulating biological data, particularly
 multiple sequence alignments.")
     (license license:expat)))
+
+(define-public python2-bx-python
+  (package-with-python2 python-bx-python))
 
 (define-public python-pysam
   (package
@@ -1597,19 +1595,19 @@ also includes an interface for tabix.")
 (define-public python-twobitreader
   (package
     (name "python-twobitreader")
-    (version "3.1.4")
+    (version "3.1.6")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "twobitreader" version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/benjschiller/twobitreader")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q8wnj2kga9nz1lwc4w7qv52smfm536hp6mc8w6s53lhyj0mpi22"))))
+                "1qbxvv1h58cismbk1anpjrkpghsaiy64a11ir3lhy6qch6xf8n62"))))
     (build-system python-build-system)
-    (arguments
-     '(;; Tests are not distributed in the PyPi release.
-       ;; TODO Try building from the Git repo or asking the upstream maintainer
-       ;; to distribute the tests on PyPi.
-       #:tests? #f))
+    ;; Tests are not included
+    (arguments '(#:tests? #f))
     (native-inputs
      `(("python-sphinx" ,python-sphinx)))
     (home-page "https://github.com/benjschiller/twobitreader")
@@ -1896,31 +1894,18 @@ time.")
 (define-public crossmap
   (package
     (name "crossmap")
-    (version "0.2.1")
+    (version "0.2.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/crossmap/CrossMap-"
-                                  version ".tar.gz"))
+              (uri (pypi-uri "CrossMap" version))
               (sha256
                (base32
-                "07y179f63d7qnzdvkqcziwk9bs3k4zhp81q392fp1hwszjdvy22f"))
-              ;; This patch has been sent upstream already and is available
-              ;; for download from Sourceforge, but it has not been merged.
-              (patches (search-patches "crossmap-allow-system-pysam.patch"))
-              (modules '((guix build utils)))
-              (snippet '(begin
-                          ;; remove bundled copy of pysam
-                          (delete-file-recursively "lib/pysam")
-                          #t))))
+                "1byhclrqnqpvc1rqkfh4jwj6yhn0x9y7jk47i0qcjlhk0pjkw92p"))))
     (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-env
-           (lambda _ (setenv "CROSSMAP_USE_SYSTEM_PYSAM" "1") #t)))))
+    (arguments `(#:python ,python-2))
     (inputs
-     `(("python-numpy" ,python2-numpy)
+     `(("python-bx-python" ,python2-bx-python)
+       ("python-numpy" ,python2-numpy)
        ("python-pysam" ,python2-pysam)
        ("zlib" ,zlib)))
     (native-inputs
@@ -1934,22 +1919,46 @@ files between different genome assemblies.  It supports most commonly used
 file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
     (license license:gpl2+)))
 
+(define-public python-dnaio
+  (package
+    (name "python-dnaio")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dnaio" version))
+       (sha256
+        (base32
+         "0f16m7hdlm0fz1n7y5asy0v9ghyrq17ni1p9iybq22ddzyd49r27"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
+       ("python-xopen" ,python-xopen)))
+    (home-page "https://github.com/marcelm/dnaio/")
+    (synopsis "Read FASTA and FASTQ files efficiently")
+    (description
+     "dnaio is a Python library for fast parsing of FASTQ and also FASTA
+files.  The code was previously part of the cutadapt tool.")
+    (license license:expat)))
+
 (define-public cutadapt
   (package
     (name "cutadapt")
-    (version "1.16")
+    (version "1.18")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/marcelm/cutadapt.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "09pr02067jiks19nc0aby4xp70hhgvb554i2y1c04rv1m401w7q8"))))
+                "08bbfwyc0kvcd95jf2s95xiv9s3cbsxm39ydl0qck3fw3cviwxpg"))))
     (build-system python-build-system)
     (inputs
-     `(("python-xopen" ,python-xopen)))
+     `(("python-dnaio" ,python-dnaio)
+       ("python-xopen" ,python-xopen)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)))
@@ -2044,15 +2053,15 @@ accessing bigWig files.")
     (version "4.4.0")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Source from GitHub so that tests are included.
-       (uri
-        (string-append "https://github.com/jeetsukumaran/DendroPy/archive/v"
-                       version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+             (url "https://github.com/jeetsukumaran/DendroPy.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0v2fccny5xjaah546bsch1mw4kh61qq5frz2ibllxs9mp6ih9bsn"))))
+         "097hfyv2kaf4x92i4rjx0paw2cncxap48qivv8zxng4z7nhid0x9"))))
     (build-system python-build-system)
     (home-page "http://packages.python.org/DendroPy/")
     (synopsis "Library for phylogenetics and phylogenetic computing")
@@ -2082,14 +2091,14 @@ trees (phylogenies) and characters.")
 (define-public python-py2bit
   (package
     (name "python-py2bit")
-    (version "0.2.1")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py2bit" version))
        (sha256
         (base32
-         "1cdf4qlmgwsh1f4k0wdv2sr8x9qn4366p0k3614vbd0fpqiarxrl"))))
+         "1vw2nvw1yrl7ikkqsqs1pg239yr5nspvd969r1x9arms1k25a1a5"))))
     (build-system python-build-system)
     (home-page "https://github.com/dpryan79/py2bit")
     (synopsis "Access 2bit files using lib2bit")
@@ -2101,7 +2110,7 @@ with Python.")
 (define-public deeptools
   (package
     (name "deeptools")
-    (version "3.1.2")
+    (version "3.1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2110,7 +2119,7 @@ with Python.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06fdpp6cg3xiwryxjhixvfysl4z0ps1crjgia587qa9ikqpsa7fd"))))
+                "1vggnf52g6q2vifdl4cyi7s2fnfqq0ky2zrkj5zv2qfzsc3p3siw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2146,42 +2155,42 @@ identify enrichments with functional annotations of the genome.")
 (define-public delly
   (package
     (name "delly")
-    (version "0.7.7")
+    (version "0.7.9")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/tobiasrausch/delly/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dellytools/delly.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
-               (base32 "0dkwy3pyxmi6dhh1lpsr3698ri5sslw9qz67hfys0bz8dgrqwabj"))
-              (patches (search-patches "delly-use-system-libraries.patch"))))
+               (base32 "034jqsxswy9gqdh2zkgc1js99qkv75ks4xvzgmh0284sraagv61z"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "src/htslib")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests to run.
-       #:make-flags '("PARALLEL=1") ; Allow parallel execution at run-time.
+       #:make-flags
+       (list "PARALLEL=1"  ; Allow parallel execution at run-time.
+             (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure) ; There is no configure phase.
-         (replace 'install
-           (lambda _
-             (let ((bin (string-append (assoc-ref %outputs "out") "/bin"))
-                   (templates (string-append (assoc-ref %outputs "out")
+         (add-after 'install 'install-templates
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((templates (string-append (assoc-ref outputs "out")
                                              "/share/delly/templates")))
-               (mkdir-p bin)
                (mkdir-p templates)
                (copy-recursively "excludeTemplates" templates)
-               (install-file "src/cov" bin)
-               (install-file "src/delly" bin)
-               (install-file "src/dpe" bin)))))))
-    (native-inputs
-     `(("python" ,python-2)))
+               #t))))))
     (inputs
      `(("boost" ,boost)
        ("htslib" ,htslib)
        ("zlib" ,zlib)
        ("bzip2" ,bzip2)))
-    (home-page "https://github.com/tobiasrausch/delly")
+    (home-page "https://github.com/dellytools/delly")
     (synopsis "Integrated structural variant prediction method")
     (description "Delly is an integrated structural variant prediction method
 that can discover and genotype deletions, tandem duplications, inversions and
@@ -2195,14 +2204,14 @@ accurately delineate genomic rearrangements throughout the genome.")
     (name "diamond")
     (version "0.9.22")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/bbuchfink/diamond/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bbuchfink/diamond.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0adp87r9ak63frdrdmrdfhsn6g0jnnyq1lr2wibvqbxcl37iir9m"))))
+                "0bky78v79g3wmdpsd706cscckgw1v09fg8vdd0z8z0d5b97aj9zl"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -2230,13 +2239,14 @@ data and settings.")
     (version "1.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/maaskola/discrover/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/maaskola/discrover.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0rah9ja4m0rl5mldd6vag9rwrivw1zrqxssfq8qx64m7961fp68k"))))
+         "173fwi2vb6a5kp406hm3jj6j7v4whww796f2qcygp4rpvamh307y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -2264,106 +2274,102 @@ of nucleic acid binding proteins.")
     (license license:gpl3+)))
 
 (define-public eigensoft
-  (let ((revision "1")
-        (commit "b14d1e202e21e532536ff8004f0419cd5e259dc7"))
-    (package
-      (name "eigensoft")
-      (version (string-append "6.1.2-"
-                              revision "."
-                              (string-take commit 9)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/DReichLab/EIG.git")
-               (commit commit)))
-         (file-name (string-append "eigensoft-" commit "-checkout"))
-         (sha256
-          (base32
-           "0f5m6k2j5c16xc3xbywcs989xyc26ncy1zfzp9j9n55n9r4xcaiq"))
-         (modules '((guix build utils)))
-         ;; Remove pre-built binaries.
-         (snippet '(begin
-                     (delete-file-recursively "bin")
-                     (mkdir "bin")
-                     #t))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f                    ; There are no tests.
-         #:make-flags '("CC=gcc")
-         #:phases
-         (modify-phases %standard-phases
-           ;; There is no configure phase, but the Makefile is in a
-           ;; sub-directory.
-           (replace 'configure
-             (lambda _
-               (chdir "src")
-               ;; The link flags are incomplete.
-               (substitute* "Makefile"
-                 (("-lgsl") "-lgsl -lm -llapack -llapacke -lpthread"))
-               #t))
-           ;; The provided install target only copies executables to
-           ;; the "bin" directory in the build root.
-           (add-after 'install 'actually-install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin  (string-append out "/bin")))
-                 (for-each (lambda (file)
-                             (install-file file bin))
-                           (find-files "../bin" ".*"))
-                 #t))))))
-      (inputs
-       `(("gsl" ,gsl)
-         ("lapack" ,lapack)
-         ("openblas" ,openblas)
-         ("perl" ,perl)
-         ("gfortran" ,gfortran "lib")))
-      (home-page "https://github.com/DReichLab/EIG")
-      (synopsis "Tools for population genetics")
-      (description "The EIGENSOFT package provides tools for population
+  (package
+    (name "eigensoft")
+    (version "7.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DReichLab/EIG.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1c141fqvhnzibmnf22sv23vbmzm20kjjyrib44cfh75wyndp2d9k"))
+       (modules '((guix build utils)))
+       ;; Remove pre-built binaries.
+       (snippet '(begin
+                   (delete-file-recursively "bin")
+                   (mkdir "bin")
+                   #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                    ; There are no tests.
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         ;; There is no configure phase, but the Makefile is in a
+         ;; sub-directory.
+         (replace 'configure
+           (lambda _ (chdir "src") #t))
+         ;; The provided install target only copies executables to
+         ;; the "bin" directory in the build root.
+         (add-after 'install 'actually-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin")))
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         (find-files "../bin" ".*"))
+               #t))))))
+    (inputs
+     `(("gsl" ,gsl)
+       ("lapack" ,lapack)
+       ("openblas" ,openblas)
+       ("perl" ,perl)
+       ("gfortran" ,gfortran "lib")))
+    (home-page "https://github.com/DReichLab/EIG")
+    (synopsis "Tools for population genetics")
+    (description "The EIGENSOFT package provides tools for population
 genetics and stratification correction.  EIGENSOFT implements methods commonly
 used in population genetics analyses such as PCA, computation of Tracy-Widom
 statistics, and finding related individuals in structured populations.  It
 comes with a built-in plotting script and supports multiple file formats and
 quantitative phenotypes.")
-      ;; The license of the eigensoft tools is Expat, but since it's
-      ;; linking with the GNU Scientific Library (GSL) the effective
-      ;; license is the GPL.
-      (license license:gpl3+))))
+    ;; The license of the eigensoft tools is Expat, but since it's
+    ;; linking with the GNU Scientific Library (GSL) the effective
+    ;; license is the GPL.
+    (license license:gpl3+)))
 
 (define-public edirect
   (package
     (name "edirect")
-    (version "4.10")
+    (version "10.2.20181018")
     (source (origin
               (method url-fetch)
-              (uri (string-append "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/"
-                                  "versions/2016-05-03/edirect.tar.gz"))
+              (uri (string-append "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect"
+                                  "/versions/" version
+                                  "/edirect-" version ".tar.gz"))
               (sha256
                (base32
-                "15zsprak5yh8c1yrz4r1knmb5s8qcmdid4xdhkh3lqcv64l60hli"))))
+                "091f4aigzpbqih6h82nq566gkp3y07i72yqndmqskfgar1vwgci7"))))
     (build-system perl-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'build)
+         (delete 'check)                ; simple check after install
          (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((target (string-append (assoc-ref outputs "out")
-                                                 "/bin")))
-                      (mkdir-p target)
-                      (install-file "edirect.pl" target)
-                      #t)))
-         (add-after
-          'install 'wrap-program
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            ;; Make sure 'edirect.pl' finds all perl inputs at runtime.
-            (let* ((out (assoc-ref outputs "out"))
-                   (path (getenv "PERL5LIB")))
-              (wrap-program (string-append out "/bin/edirect.pl")
-                `("PERL5LIB" ":" prefix (,path)))))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "edirect.pl"
+                           (string-append (assoc-ref outputs "out") "/bin"))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure 'edirect.pl' finds all perl inputs at runtime.
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (getenv "PERL5LIB")))
+               (wrap-program (string-append out "/bin/edirect.pl")
+                 `("PERL5LIB" ":" prefix (,path))))
+             #t))
+         (add-after 'wrap-program 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke (string-append (assoc-ref outputs "out")
+                                    "/bin/edirect.pl")
+                     "-filter" "-help")
+             #t)))))
     (inputs
      `(("perl-html-parser" ,perl-html-parser)
        ("perl-encode-locale" ,perl-encode-locale)
@@ -2379,6 +2385,7 @@ quantitative phenotypes.")
        ("perl-net-http" ,perl-net-http)
        ("perl-uri" ,perl-uri)
        ("perl-www-robotrules" ,perl-www-robotrules)
+       ("perl-xml-simple" ,perl-xml-simple)
        ("perl" ,perl)))
     (home-page "http://www.ncbi.nlm.nih.gov/books/NBK179288/")
     (synopsis "Tools for accessing the NCBI's set of databases")
@@ -2474,17 +2481,16 @@ ChIP-Seq, and analysis of metagenomic data.")
 (define-public express-beta-diversity
   (package
    (name "express-beta-diversity")
-   (version "1.0.7")
+   (version "1.0.8")
    (source (origin
-             (method url-fetch)
-             (uri
-              (string-append
-               "https://github.com/dparks1134/ExpressBetaDiversity/archive/v"
-               version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/dparks1134/ExpressBetaDiversity.git")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1djvdlmqvjf6h0zq7w36y8cl5cli6rgj86x65znl48agnwmzxfxr"))))
+               "0s0yzg5c21349rh7x4w9266jsvnp7j1hp9cf8sk32hz8nvrj745x"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases
@@ -2492,17 +2498,13 @@ ChIP-Seq, and analysis of metagenomic data.")
         (delete 'configure)
         (add-before 'build 'enter-source (lambda _ (chdir "source") #t))
         (replace 'check
-                 (lambda _ (zero? (system* "../bin/ExpressBetaDiversity"
-                                           "-u"))))
-        (add-after 'check 'exit-source (lambda _ (chdir "..") #t))
+          (lambda _ (invoke "../bin/ExpressBetaDiversity" "-u") #t))
         (replace 'install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((bin (string-append (assoc-ref outputs "out")
-                                             "/bin")))
-                     (mkdir-p bin)
-                     (install-file "scripts/convertToEBD.py" bin)
-                     (install-file "bin/ExpressBetaDiversity" bin)
-                     #t))))))
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+              (install-file "../scripts/convertToEBD.py" bin)
+              (install-file "../bin/ExpressBetaDiversity" bin)
+              #t))))))
    (inputs
     `(("python" ,python-2)))
    (home-page "http://kiwi.cs.dal.ca/Software/ExpressBetaDiversity")
@@ -2535,31 +2537,30 @@ similarity of community members.")
         (delete 'configure)
         (replace 'build
           (lambda* (#:key source #:allow-other-keys)
-            (and (zero? (system* "gcc"
-                                 "-O3"
-                                 "-finline-functions"
-                                 "-funroll-loops"
-                                 "-Wall"
-                                 "-o"
-                                 "FastTree"
-                                 source
-                                 "-lm"))
-                 (zero? (system* "gcc"
-                                 "-DOPENMP"
-                                 "-fopenmp"
-                                 "-O3"
-                                 "-finline-functions"
-                                 "-funroll-loops"
-                                 "-Wall"
-                                 "-o"
-                                 "FastTreeMP"
-                                 source
-                                 "-lm")))))
+            (invoke "gcc"
+                    "-O3"
+                    "-finline-functions"
+                    "-funroll-loops"
+                    "-Wall"
+                    "-o"
+                    "FastTree"
+                    source
+                    "-lm")
+            (invoke "gcc"
+                    "-DOPENMP"
+                    "-fopenmp"
+                    "-O3"
+                    "-finline-functions"
+                    "-funroll-loops"
+                    "-Wall"
+                    "-o"
+                    "FastTreeMP"
+                    source
+                    "-lm")
+            #t))
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
-            (let ((bin (string-append (assoc-ref outputs "out")
-                                      "/bin")))
-              (mkdir-p bin)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
               (install-file "FastTree" bin)
               (install-file "FastTreeMP" bin)
               #t))))))
@@ -2606,38 +2607,39 @@ results.  The FASTX-Toolkit tools perform some of these preprocessing tasks.")
 (define-public flexbar
   (package
     (name "flexbar")
-    (version "2.5")
+    (version "3.4.0")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "mirror://sourceforge/flexbar/"
-                              version "/flexbar_v" version "_src.tgz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/seqan/flexbar.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "13jaykc3y1x8y5nn9j8ljnb79s5y51kyxz46hdmvvjj6qhyympmf"))))
+                "1pq9sxvdnldl14libk234m72dqhwgzs3acgl943wchwdqlcsi5r2"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags (list
-                          (string-append "-DFLEXBAR_BINARY_DIR="
-                                         (assoc-ref %outputs "out")
-                                         "/bin/"))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "PATH" (string-append
-                             (assoc-ref outputs "out") "/bin:"
-                             (getenv "PATH")))
-             (chdir "../flexbar_v2.5_src/test")
-             (zero? (system* "bash" "flexbar_validate.sh"))))
-         (delete 'install))))
+             (setenv "PATH" (string-append (getcwd) ":" (getenv "PATH")))
+             (with-directory-excursion "../source/test"
+               (invoke "bash" "flexbar_test.sh"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (string-append (assoc-ref outputs "out")))
+                    (bin (string-append out "/bin/")))
+               (install-file "flexbar" bin))
+             #t)))))
     (inputs
      `(("tbb" ,tbb)
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("seqan" ,seqan)))
-    (home-page "http://flexbar.sourceforge.net")
+    (home-page "https://github.com/seqan/flexbar")
     (synopsis "Barcode and adapter removal tool for sequencing platforms")
     (description
      "Flexbar preprocesses high-throughput nucleotide sequencing data
@@ -2646,7 +2648,7 @@ Moreover, trimming and filtering features are provided.  Flexbar increases
 read mapping rates and improves genome and transcriptome assemblies.  It
 supports next-generation sequencing data in fasta/q and csfasta/q format from
 Illumina, Roche 454, and the SOLiD platform.")
-    (license license:gpl3)))
+    (license license:bsd-3)))
 
 (define-public fraggenescan
   (package
@@ -3741,75 +3743,48 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
 (define-public khmer
   (package
     (name "khmer")
-    (version "2.0")
+    (version "2.1.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "khmer" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dib-lab/khmer.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wb05shqh77v00256qlm68vbbx3kl76fyzihszbz5nhanl4ni33a"))
-       (patches (search-patches "khmer-use-libraries.patch"))))
+         "02x38d9jw2r58y8dmnj4hffy9wxv1yc1jwbvdbhby9dxndv94r9m"))
+       (patches (search-patches "khmer-use-libraries.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled libraries.  We do not replace the bundled seqan
+           ;; as it is a modified subset of the old version 1.4.1.
+           ;;
+           ;; We do not replace the bundled MurmurHash as the canonical
+           ;; repository for this code 'SMHasher' is unsuitable for providing
+           ;; a library.  See
+           ;; https://lists.gnu.org/archive/html/guix-devel/2016-06/msg00977.html
+           (delete-file-recursively "third-party/zlib")
+           (delete-file-recursively "third-party/bzip2")
+           #t))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'set-paths
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Delete bundled libraries.
-             (delete-file-recursively "third-party/zlib")
-             (delete-file-recursively "third-party/bzip2")
-             ;; Replace bundled seqan.
-             (let* ((seqan-all "third-party/seqan")
-                    (seqan-include (string-append
-                                    seqan-all "/core/include")))
-               (delete-file-recursively seqan-all)
-               (copy-recursively (string-append (assoc-ref inputs "seqan")
-                                                "/include/seqan")
-                          (string-append seqan-include "/seqan")))
-             ;; We do not replace the bundled MurmurHash as the canonical
-             ;; repository for this code 'SMHasher' is unsuitable for
-             ;; providing a library.  See
-             ;; https://lists.gnu.org/archive/html/guix-devel/2016-06/msg00977.html
-             #t))
          (add-after 'unpack 'set-cc
-           (lambda _
-             (setenv "CC" "gcc")
-             #t))
-         ;; It is simpler to test after installation.
-         (delete 'check)
-         (add-after 'install 'post-install-check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "PATH"
-                       (string-append
-                        (getenv "PATH")
-                        ":"
-                        (assoc-ref outputs "out")
-                        "/bin"))
-               (setenv "PYTHONPATH"
-                       (string-append
-                        (getenv "PYTHONPATH")
-                        ":"
-                        out
-                        "/lib/python"
-                        (string-take (string-take-right
-                                      (assoc-ref inputs "python") 5) 3)
-                        "/site-packages"))
-               (with-directory-excursion "build"
-                 (zero? (system* "nosetests" "khmer" "--attr"
-                                 "!known_failing")))))))))
+           (lambda _ (setenv "CC" "gcc") #t))
+         ;; FIXME: This fails with "permission denied".
+         (delete 'reset-gzip-timestamps))))
     (native-inputs
-     `(("seqan" ,seqan)
-       ("python-nose" ,python-nose)))
+     `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (inputs
      `(("zlib" ,zlib)
        ("bzip2" ,bzip2)
        ("python-screed" ,python-screed)
-       ("python-bz2file" ,python-bz2file)
-       ;; Tests fail when gcc-5 is used for compilation.  Use gcc-4.9 at least
-       ;; until the next version of khmer (likely 2.1) is released.
-       ("gcc" ,gcc-4.9)))
+       ("python-bz2file" ,python-bz2file)))
     (home-page "https://khmer.readthedocs.org/")
     (synopsis "K-mer counting, filtering and graph traversal library")
     (description "The khmer software is a set of command-line tools for
@@ -5601,25 +5576,38 @@ complexity samples.")
 (define-public python-screed
   (package
     (name "python-screed")
-    (version "0.9")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "screed" version))
        (sha256
         (base32
-         "18czszp9fkx3j6jr7y5kp6dfialscgddk05mw1zkhh2zhn0jd8i0"))))
+         "148vcb7w2wr6a4w6vs2bsxanbqibxfk490zbcbg4m61s8669zdjx"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     '(#:phases
        (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (setenv "PYTHONPATH"
-                     (string-append (getenv "PYTHONPATH") ":."))
-             (zero? (system* "nosetests" "--attr" "!known_failing")))))))
+         ;; Tests must be run after installation, as the "screed" command does
+         ;; not exist right after building.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "PYTHONPATH"
+                       (string-append out "/lib/python"
+                                      (string-take (string-take-right
+                                                    (assoc-ref inputs "python")
+                                                    5) 3)
+                                      "/site-packages:"
+                                      (getenv "PYTHONPATH")))
+               (setenv "PATH" (string-append out "/bin:" (getenv "PATH"))))
+             (invoke "python" "setup.py" "test")
+             #t)))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (inputs
      `(("python-bz2file" ,python-bz2file)))
     (home-page "https://github.com/dib-lab/screed/")
@@ -5746,6 +5734,51 @@ writing files into the .sra format.")
 (define-public seqan
   (package
     (name "seqan")
+    (version "2.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/seqan/seqan/releases/"
+                                  "download/seqan-v" version
+                                  "/seqan-library-" version ".tar.xz"))
+              (sha256
+               (base32
+                "19a1rlxx03qy1i1iriicly68w64yjxbv24g9gdywnfmq998v35yx"))))
+    ;; The documentation is 7.8MB and the includes are 3.6MB heavy, so it
+    ;; makes sense to split the outputs.
+    (outputs '("out" "doc"))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((tar (assoc-ref %build-inputs "tar"))
+               (xz  (assoc-ref %build-inputs "xz"))
+               (out (assoc-ref %outputs "out"))
+               (doc (assoc-ref %outputs "doc")))
+           (setenv "PATH" (string-append tar "/bin:" xz "/bin"))
+           (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
+           (chdir (string-append "seqan-library-" ,version))
+           (copy-recursively "include" (string-append out "/include"))
+           (copy-recursively "share"  (string-append doc "/share"))
+           #t))))
+    (native-inputs
+     `(("source" ,source)
+       ("tar" ,tar)
+       ("xz" ,xz)))
+    (home-page "http://www.seqan.de")
+    (synopsis "Library for nucleotide sequence analysis")
+    (description
+     "SeqAn is a C++ library of efficient algorithms and data structures for
+the analysis of sequences with the focus on biological data.  It contains
+algorithms and data structures for string representation and their
+manipulation, online and indexed string search, efficient I/O of
+bioinformatics file formats, sequence alignment, and more.")
+    (license license:bsd-3)))
+
+(define-public seqan-1
+  (package (inherit seqan)
+    (name "seqan")
     (version "1.4.2")
     (source (origin
               (method url-fetch)
@@ -5776,16 +5809,7 @@ writing files into the .sra format.")
     (native-inputs
      `(("source" ,source)
        ("tar" ,tar)
-       ("bzip2" ,bzip2)))
-    (home-page "http://www.seqan.de")
-    (synopsis "Library for nucleotide sequence analysis")
-    (description
-     "SeqAn is a C++ library of efficient algorithms and data structures for
-the analysis of sequences with the focus on biological data.  It contains
-algorithms and data structures for string representation and their
-manipulation, online and indexed string search, efficient I/O of
-bioinformatics file formats, sequence alignment, and more.")
-    (license license:bsd-3)))
+       ("bzip2" ,bzip2)))))
 
 (define-public seqmagick
   (package

@@ -635,7 +635,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/cracklib-fix-buffer-overflow.patch	\
   %D%/packages/patches/crawl-upgrade-saves.patch		\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
-  %D%/packages/patches/crossmap-allow-system-pysam.patch	\
   %D%/packages/patches/clucene-contribs-lib.patch               \
   %D%/packages/patches/cube-nocheck.patch			\
   %D%/packages/patches/cursynth-wave-rand.patch			\
@@ -644,7 +643,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/datamash-arm-tests.patch			\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
-  %D%/packages/patches/delly-use-system-libraries.patch		\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/diffutils-getopt.patch			\
@@ -890,7 +888,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
-  %D%/packages/patches/liblxqt-include.patch			\
   %D%/packages/patches/libmad-armv7-thumb-pt1.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
   %D%/packages/patches/libmad-frame-length.patch		\
@@ -1180,7 +1177,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/tk-find-library.patch			\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
-  %D%/packages/patches/tophat-build-with-later-seqan.patch	\
   %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-include-qregexpvalidator.patch	\

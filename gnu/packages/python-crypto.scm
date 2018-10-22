@@ -850,16 +850,15 @@ in userspace)
 (define-public python-m2crypto
   (package
     (name "python-m2crypto")
-    (version "0.29.0")
+    (version "0.30.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "M2Crypto" version))
        (sha256
-        (base32 "1h16gpilrnlzc0iyj1mnd1iqh8wchzjsxjqw9n344glimg2s5zm0"))))
+        (base32 "1iizrpkn4c2n70nvcjqlmnk6fz3vddkrjmwavz1zlsnwv8f7bcm1"))))
     (build-system python-build-system)
     (inputs `(("openssl" ,openssl)))
-    (propagated-inputs `(("python-typing" ,python-typing)))
     (home-page "https://gitlab.com/m2crypto/m2crypto")
     (synopsis "Python crypto and TLS toolkit")
     (description "@code{M2Crypto} is a complete Python wrapper for OpenSSL
@@ -869,10 +868,15 @@ extensions to Python's httplib, urllib, and xmlrpclib; unforgeable HMAC'ing
 AuthCookies for web session management; FTP/TLS client and server; S/MIME;
 M2Crypto can also be used to provide TLS for Twisted.  Smartcards supported
 through the Engine interface.")
+    (properties `((python2-variant . ,(delay python2-m2crypto))))
     (license license:expat)))
 
 (define-public python2-m2crypto
-  (package-with-python2 python-m2crypto))
+  (let ((m2crypto (package-with-python2
+                   (strip-python2-variant python-m2crypto))))
+    (package (inherit m2crypto)
+             (propagated-inputs
+              `(("python2-typing" ,python2-typing))))))
 
 (define-public python-pylibscrypt
   (package

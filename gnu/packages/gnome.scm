@@ -4098,15 +4098,15 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.38")
+    (version "0.9.45")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.gnome.org/World/eolie/"
-                                  "uploads/9814c06a1bc83ea09c3da8719a9ed11b/"
+                                  "uploads/020f3f686e2b938731752a1d9f5bfa7e/"
                                   "eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "10vrh91rapgfmqwc6jkcybpmlvn4q0y8bnklw3rddzigf9kvqsff"))))
+                "0371p7g13r0b7zjc48fdcil43ddwpmyvkd2a4vv6ifsqmny6kl42"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
