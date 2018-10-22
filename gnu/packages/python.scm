@@ -14524,3 +14524,30 @@ can be retrieved in constant time.  Some of the terminology is inspired by
 LISP.  It is possible to create an improper list by creating a @code{Pair}
 with a non-list @code{cdr}.")
     (license license:gpl3+)))
+
+(define-public python-readlike
+  (package
+    (name "python-readlike")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "readlike" version))
+       (sha256
+        (base32 "027w8fvi50ksl57q0a7kb5zvmq8jxaawnviib1jdqw0p3igvm1j4"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/jangler/readlike")
+    (synopsis "GNU Readline-like line editing module")
+    (description
+     "This Python module provides line editing functions similar to the default
+Emacs-style ones of GNU Readline.  Unlike the Python standard library's
+@code{readline} package, this one allows access to those capabilties in settings
+outside of a standard command-line interface.  It is especially well-suited to
+interfacing with Urwid, due to a shared syntax for describing key inputs.
+
+Currently, all stateless Readline commands are implemented.  Yanking and history
+are not supported.")
+    (license license:expat)))
+
+(define-public python2-readlike
+  (package-with-python2 python-readlike))
