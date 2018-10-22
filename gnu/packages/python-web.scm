@@ -60,6 +60,7 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-1))
@@ -254,6 +255,43 @@ other HTTP libraries.")
 
 (define-public python2-httplib2
   (package-with-python2 python-httplib2))
+
+(define-public python-mechanicalsoup
+  (package
+    (name "python-mechanicalsoup")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "MechanicalSoup" version))
+       (sha256
+        (base32 "0k59wwk75q7nz6i6gynvzhagy02ql0bv7py3qqcwgjw7607yq4i7"))))
+    (build-system python-build-system)
+    (arguments
+     ;; TODO: Enable tests when python-flake8@3.5 hits master.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-lxml" ,python-lxml)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    ;; (native-inputs
+    ;;  ;; For tests.
+    ;;  `(("python-pytest-flake8" ,python-pytest-flake8)
+    ;;    ("python-pytest-httpbin" ,python-pytest-httpbin)
+    ;;    ("python-pytest-mock" ,python-pytest-mock)
+    ;;    ("python-pytest-runner" ,python-pytest-runner)
+    ;;    ("python-requests-mock" ,python-requests-mock)))
+    (home-page "https://mechanicalsoup.readthedocs.io/")
+    (synopsis "Python library for automating website interaction")
+    (description
+     "MechanicalSoup is a Python library for automating interaction with
+websites.  It automatically stores and sends cookies, follows redirects, and can
+follow links and submit forms.  It doesn’t do JavaScript.")
+    (license license:expat)))
+
+(define-public python2-mechanicalsoup
+  (package-with-python2 python-mechanicalsoup))
 
 (define-public python-sockjs-tornado
   (package
