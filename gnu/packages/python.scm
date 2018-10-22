@@ -6028,21 +6028,15 @@ Python.")
 (define-public python-markdown
   (package
     (name "python-markdown")
-    (version "2.6.11")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Markdown" version))
        (sha256
         (base32
-         "108g80ryzykh8bj0i7jfp71510wrcixdi771lf2asyghgyf8cmm8"))))
+         "0z6v8649sr434d5r5zmrhydka7v7f9yas4bwcgkcs0650jdhybnh"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-                  (lambda _
-                    (zero? (system* "python" "run-tests.py")))))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-pyyaml" ,python-pyyaml)))
