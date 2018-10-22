@@ -5203,6 +5203,14 @@ of the structure, dynamics, and functions of complex networks.")
         (base32
          "08r0if7dry2q7p34gf7ffyrlnf4bdvnprxgydlfxgfnvq8f3f4bs"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'cythonize
+                    (lambda _
+                      ;; Regenerate Cython classes to solve ABI issues with Python
+                      ;; 3.7.0.  See <https://github.com/pytries/datrie/issues/52>.
+                      (invoke "cython" "src/datrie.pyx" "src/cdatrie.pxd"
+                              "src/stdio_ext.pxd" "-a"))))))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-hypothesis" ,python-hypothesis)
