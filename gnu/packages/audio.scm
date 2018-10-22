@@ -2360,6 +2360,7 @@ the Turtle syntax.")
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
+       #:python ,python-2 ;XXX: The bundled waf does not work with Python 3.7.0.
        #:configure-flags
        '("CXXFLAGS=-std=gnu++11")))
     (inputs
