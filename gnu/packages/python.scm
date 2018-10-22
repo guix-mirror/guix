@@ -10060,13 +10060,13 @@ reasoning, wrappers for natural language processing libraries.")
 (define-public python-pymongo
   (package
     (name "python-pymongo")
-    (version "3.3.0")
+    (version "3.7.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pymongo" version))
               (sha256
                (base32
-                "07mra6w86wjqy4lx5fvimidjhhfzd562gfjn8grsnbv2q8pk0i9x"))))
+                "0zis4707r9hdg5qgkhp3wss9camr9h56ixyfc8n9dxwlnnly4x4c"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-certifi" ,python-certifi)))
