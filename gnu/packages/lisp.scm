@@ -2663,7 +2663,6 @@ pattern-matching-like, but a char-by-char procedural parser.")
        "This package exports the following function to parse floating-point
 values from a string in Common Lisp.")
       (home-page "https://github.com/soemraws/parse-float")
-      ;; TODO: Missing license?
       (license license:public-domain))))
 
 (define-public cl-parse-float
