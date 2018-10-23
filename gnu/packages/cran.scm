@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Charlie Ritter <chewzeirta@posteo.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018 Laura Lazzati <laura.lazzati.15@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6256,3 +6257,23 @@ a header row or not.  The dataset should contain only one independent variable
 (x) and one dependent variable (y) and can contain a weight for each
 observation.")
     (license license:gpl2)))
+
+(define-public r-aspi
+  (package
+    (name "r-aspi")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "aspi" version))
+       (sha256
+        (base32 "0rhvxw243vvdv3hxa6pi343gcjc2cbxq1jzqirl9k1l4i3897l87"))))
+    (build-system r-build-system)
+    (home-page
+     "https://cran.r-project.org/web/packages/aspi/")
+    (synopsis
+     "Analysis of symmetry of parasitic infections")
+    (description
+     "This package provides tools for the analysis and visualization of bilateral
+      asymmetry in parasitic infections.")
+    (license license:gpl3+)))
