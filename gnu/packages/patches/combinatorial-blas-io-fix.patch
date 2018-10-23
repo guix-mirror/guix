@@ -1,0 +1,14 @@
+IO not appropriate in the context of a sorting routine, and in any case the
+proper headers are not included, so gcc emits an undefined symbol error.
+Remove the "printf" statement.
+
+--- CombBLAS_beta_16_2/usort/include/usort/seqUtils.tcc
++++ CombBLAS_beta_16_2/usort/include/usort/seqUtils.tcc
+@@ -142,7 +142,6 @@
+       }
+         if ( (a[nmax]==a[nmin]) && (ctr==0) )
+         {
+-          printf("All the numbers are identical, the list is sorted\n");
+           return;
+         }
+ 

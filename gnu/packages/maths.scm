@@ -48,6 +48,7 @@
 
 (define-module (gnu packages maths)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 match)
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -4215,3 +4216,53 @@ easily be incorporated into existing simulation codes.")
            (add-before 'check 'mpi-setup
 	     ,%openmpi-setup)))))
     (synopsis "SUNDIALS with OpenMPI support")))
+
+(define-public combinatorial-blas
+  (package
+    (name "combinatorial-blas")
+    (version "1.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://eecs.berkeley.edu/~aydin/CombBLAS_FILES/"
+                           "CombBLAS_beta_"
+                           (match (string-split version #\.)
+                            ((major minor patch)
+                             (string-append major minor "_" patch))) ;e.g. "16_2"
+                           ".tgz"))
+       (sha256
+        (base32
+         "1a9wbgdqyy1whhfc0yl0yqkax3amnqa6iihhq48d063gc0jwfd9a"))
+       (patches (search-patches "combinatorial-blas-awpm.patch"
+                                "combinatorial-blas-io-fix.patch"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("mpi" ,openmpi)
+       ("test-data" ,(origin
+                       (method url-fetch)
+                       (uri (string-append "https://people.eecs.berkeley.edu/~aydin/"
+                                           "CombBLAS_FILES/testdata_combblas1.6.1.tgz"))
+                       (sha256
+                        (base32
+                         "01y2781cy3fww7znmidrp85mf8zx0c905w5vzvk1mgrmhhynim87"))))))
+    (arguments
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES"
+                           "-DCMAKE_CXX_FLAGS=-DUSE_FUNNEL")
+       #:parallel-tests? #f             ;tests use 'mpiexec -n4'
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup)
+         (add-before 'check 'test-setup
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "OMP_NUM_THREADS" "2")
+             (invoke "tar" "xf" (assoc-ref inputs "test-data")))))))
+    (home-page "https://people.eecs.berkeley.edu/~aydin/CombBLAS/html/")
+    (synopsis "Linear algebra primitives for graph analytics")
+    (description "The Combinatorial BLAS (CombBLAS) is an extensible
+distributed-memory parallel graph library offering a small but powerful set of
+linear algebra primitives specifically targeting graph analytics.")
+    (license (list
+              license:gpl2+             ;include/psort/(funnel|sort)*.h
+              license:x11               ;usort and psort
+              license:bsd-3))))         ;CombBLAS and MersenneTwister.h

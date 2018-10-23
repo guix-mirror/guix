@@ -692,6 +692,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/clucene-pkgconfig.patch			\
   %D%/packages/patches/clx-remove-demo.patch			\
   %D%/packages/patches/coda-use-system-libs.patch		\
+  %D%/packages/patches/combinatorial-blas-awpm.patch		\
+  %D%/packages/patches/combinatorial-blas-io-fix.patch		\
   %D%/packages/patches/cool-retro-term-dont-check-uninit-member.patch	\
   %D%/packages/patches/cool-retro-term-fix-array-size.patch	\
   %D%/packages/patches/cool-retro-term-memory-leak-1.patch	\
