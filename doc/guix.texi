@@ -23931,7 +23931,7 @@ to use that term for what we do now.}.
 The Reduced Binary Seed bootstrap removes the most critical tools---from a
 trust perspective---from the bootstrap binaries: GCC, Binutils and the GNU C
 Library are replaced by: @code{mescc-tools-seed} (a tiny assembler and linker)
-@code{bootstrap-mes} (a small Scheme Interpreter and a C compiler writen in
+@code{bootstrap-mes} (a small Scheme Interpreter and a C compiler written in
 Scheme and the Mes C Library, built for TinyCC and for GCC).  Using these new
 binary seeds and a new set of
 @c
