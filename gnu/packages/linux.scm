@@ -406,10 +406,10 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.18.16")
-(define %linux-libre-hash "15apfgswp2lrwjpi3vwnanlkdw3q6rkvwrbgrb71rjsy9gazlz62")
+(define %linux-libre-version "4.19")
+(define %linux-libre-hash "1j4lizjygy7hb7sq2kxqkpcs4nhxgmi48cpng97b0sm9b46plvfh")
 
-(define %linux-libre-4.18-patches
+(define %linux-libre-4.19-patches
   (list %boot-logo-patch
         (origin
           (method url-fetch)
@@ -420,21 +420,13 @@ It has been modified to remove all non-free binary blobs.")
                 "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
           (file-name "linux-libre-4.18-arm-export-__sync_icache_dcache.patch")
           (sha256
-           (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))
-        (origin
-          (method url-fetch)
-          (uri (string-append
-                "https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git"
-                "/patch/?id=c5157101e7793b42a56e07368c7f4cb73fb58008"))
-          (file-name "linux-libre-4.18-arm64-export-__sync_icache_dcache.patch")
-          (sha256
-           (base32 "0q13arsi8al3l3yq6d76z4h8n45wlpkjyxlrgn1sqbx5xjksycyz")))))
+           (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))))
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     %linux-compatible-systems
-                    #:patches %linux-libre-4.18-patches
+                    #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
 (define %linux-libre-4.14-version "4.14.78")
@@ -462,7 +454,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-4.18-patches
+                    #:patches %linux-libre-4.19-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
@@ -477,7 +469,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-4.18-patches
+                    #:patches %linux-libre-4.19-patches
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
 
