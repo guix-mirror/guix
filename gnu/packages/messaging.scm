@@ -71,8 +71,10 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tcl)
@@ -1718,5 +1720,47 @@ implementation.  Quaternion and libqmatriclient together form the
 QMatrixClient project.")
     (license (list license:gpl3+ ; all source code
                    license:lgpl3+)))) ; icons/breeze
+
+(define-public hangups
+  (package
+    (name "hangups")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hangups" version))
+       (sha256
+        (base32 "0mvpfd5dc3zgcvwfidcd2qyn59xl5biv728mxifw0ls5rzkc9chs"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'relax-dependencies
+           ;; Relax overly strict package version specifications.
+           (lambda _
+             (substitute* "setup.py"
+               (("==") ">="))
+             #t)))))
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-appdirs" ,python-appdirs)
+       ("python-async-timeout" ,python-async-timeout)
+       ("python-configargparse" ,python-configargparse)
+       ("python-mechanicalsoup" ,python-mechanicalsoup)
+       ("python-protobuf" ,python-protobuf)
+       ("python-readlike" ,python-readlike)
+       ("python-reparser" ,python-reparser)
+       ("python-requests" ,python-requests)
+       ("python-urwid" ,python-urwid)))
+    (home-page "https://hangups.readthedocs.io/")
+    (synopsis "Instant messaging client for Google Hangouts")
+    (description
+     "Hangups is an instant messaging client for Google Hangouts.  It includes
+both a Python library and a reference client with a text-based user interface.
+
+Hangups is implements a reverse-engineered version of Hangouts' proprietary,
+non-interoperable protocol, which allows it to support features like group
+messaging that aren’t available to clients that connect over XMPP.")
+    (license license:expat)))
 
 ;;; messaging.scm ends here
