@@ -2186,7 +2186,7 @@ time Web content can be enhanced with native controls.")
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))
-    (home-page "https://github.com/frankosterfeld/qtkeychain")
+    (home-page "https://filcuc.github.io/DOtherSide/index.html")
     (synopsis "C language library for creating bindings for the Qt QML language")
     (description
      "DOtherSide is a C language library for creating bindings for the
