@@ -503,10 +503,9 @@ applications.")
                #t))
            (replace 'build
              (lambda _
-               (zero? (apply system*
-                             `("scons"
+               (apply invoke `("scons"
                                ,@common-options
-                               "mongod" "mongo" "mongos")))))
+                               "mongod" "mongo" "mongos"))))
            (replace 'check
              (lambda* (#:key tests? inputs #:allow-other-keys)
                (setenv "TZDIR"
