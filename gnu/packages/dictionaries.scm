@@ -222,7 +222,7 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
         (base32
          "11byjs3ggdhia5f4vyfqfvbbczsfqimll98h98g7hlsrm7vrifb0"))))
     (build-system python-build-system)
-    (home-page "https://www.dicollecte.org")
+    (home-page "https://grammalecte.net")
     (synopsis  "French spelling and grammar checker")
     (description "Grammalecte is a grammar checker dedicated to the French
 language, derived from Lightproof.
