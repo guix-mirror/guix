@@ -2966,3 +2966,42 @@ required by Go's standard Hash interface.")
       (synopsis "Type for protocol strings in Golang")
       (description "Just a type for protocol strings.  Nothing more.")
       (license license:expat))))
+
+(define-public go-github-com-libp2p-go-libp2p-metrics
+  (let ((commit "a10ff6e75dae3c868023867e8caa534a04bdc624")
+        (revision "0"))
+    (package
+      (name "go-github-com-libp2p-go-libp2p-metrics")
+      (version (git-version "2.1.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/libp2p/go-libp2p-metrics.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "05wy0cq4h6yg9bzgapcvm2criwriicbswx80ma82gyn4a9fdrk8m"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/libp2p/go-libp2p-metrics"))
+      (native-inputs
+       `(("go-github-com-libp2p-go-flow-metrics" ,go-github-com-libp2p-go-flow-metrics)
+         ("go-github-com-libp2p-go-libp2p-peer" ,go-github-com-libp2p-go-libp2p-peer)
+         ("go-github-com-libp2p-go-libp2p-protocol" ,go-github-com-libp2p-go-libp2p-protocol)
+         ("go-github-com-libp2p-go-libp2p-crypto" ,go-github-com-libp2p-go-libp2p-crypto)
+         ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
+         ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
+         ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
+         ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
+         ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
+         ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
+         ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
+         ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
+         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+      (home-page "https://github.com/libp2p/go-libp2p-metrics")
+      (synopsis "Connection wrapper for go-libp2p that provides bandwidth metrics")
+      (description "A connection wrapper for @command{go-libp2p} that provides bandwidth
+statistics for wrapped connections.")
+      (license license:expat))))
