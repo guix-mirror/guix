@@ -315,7 +315,7 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
     (version "1.0.35")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://tinc-vpn.org/packages/"
+              (uri (string-append "https://tinc-vpn.org/packages/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -328,7 +328,7 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
     (inputs `(("zlib" ,zlib)
               ("lzo" ,lzo)
               ("openssl" ,openssl)))
-    (home-page "http://tinc-vpn.org")
+    (home-page "https://tinc-vpn.org")
     (synopsis "Virtual Private Network (VPN) daemon")
     (description
      "Tinc is a VPN that uses tunnelling and encryption to create a secure
