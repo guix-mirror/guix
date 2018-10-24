@@ -1026,6 +1026,19 @@ hash algorithm.")))
     (description "This package provides a Go implementation of the BLAKE2s
 hash algorithm.")))
 
+(define-public go-golang-org-x-crypto-sha3
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-sha3")
+    (arguments
+     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
+       ((#:import-path _)
+        "golang.org/x/crypto/sha3")))
+    (synopsis "SHA-3 in Go")
+    (description "This package provides a Go implementation of the SHA-3
+fixed-output-length hash functions and the SHAKE variable-output-length hash
+functions defined by FIPS-202.")))
+
 ;; Go searches for library modules by looking in the GOPATH environment
 ;; variable.  This variable is a list of paths.  However, Go does not
 ;; keep searching on GOPATH if it tries and fails to import a module.
