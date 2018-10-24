@@ -225,6 +225,26 @@ that implements both the msgpack and msgpack-rpc specifications.")
     (home-page "https://github.com/libmpack/libmpack-lua")
     (synopsis "Lua bindings for the libmpack binary serialization library")))
 
+(define-public lua5.1-libmpack
+  (package (inherit lua-libmpack)
+    (name "lua5.1-libmpack")
+    (arguments
+     (substitute-keyword-arguments (package-arguments lua-libmpack)
+       ((#:make-flags flags)
+        `(let* ((lua-version ,(package-version lua-5.1))
+                (lua-major+minor ,(version-major+minor (package-version lua-5.1))))
+           (list "CC=gcc"
+                 "USE_SYSTEM_LUA=yes"
+                 (string-append "MPACK_LUA_VERSION=" lua-version)
+                 (string-append "MPACK_LUA_VERSION_NOPATCH=" lua-major+minor)
+                 (string-append "PREFIX="
+                                (assoc-ref %outputs "out"))
+                 (string-append "LUA_CMOD_INSTALLDIR="
+                                (assoc-ref %outputs "out")
+                                "/lib/lua/" lua-major+minor))))))
+    (inputs
+     `(("lua" ,lua-5.1)))))
+
 (define-public lua5.2-libmpack
   (package (inherit lua-libmpack)
     (name "lua5.2-libmpack")
