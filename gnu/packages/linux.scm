@@ -1222,7 +1222,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.18.0")
+    (version "4.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1230,7 +1230,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0ida5njr9nacg6ym3rjvl3cc9czw0hn4akhzbqf8f4zmjl6cgrm9"))))
+                "114rlb3bvrf7q6yr03mn1rj6gl7mrg0psvm2dx0qb2kxyjhmrv6r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
