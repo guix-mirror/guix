@@ -3149,3 +3149,35 @@ as conversion to and from @command{net.Addr}.")
       (synopsis "Tar utilities extracted from go-ipfs codebase")
       (description "Tar utilities extracted from @command{go-ipfs} codebase.")
       (license license:expat))))
+
+(define-public go-github-com-cheekybits-is
+  (let ((commit "68e9c0620927fb5427fda3708222d0edee89eae9")
+        (revision "0"))
+    (package
+      (name "go-github-com-cheekybits-is")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cheekybits/is.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1mkbyzhwq3rby832ikq00nxv3jnckxsm3949wkxd8ya9js2jmg4d"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/cheekybits/is"))
+      (home-page "https://github.com/cheekybits/is")
+      (synopsis "Mini testing helper for Go")
+      (description "A mini testing helper for Go.
+
+@itemize
+@item It has a simple interface (@command{is.OK} and @command{is.Equal}).
+@item It plugs into existing Go toolchain (uses @command{testing.T}).
+@item It's obvious for newcomers.
+@item It also gives you @command{is.Panic} and @command{is.PanicWith} helpers
+- because testing panics is ugly.
+@end itemize\n")
+      (license license:expat))))
