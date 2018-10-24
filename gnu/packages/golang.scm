@@ -3310,3 +3310,27 @@ fast and distributable command line applications in an expressive way.")
       (description "A simple log library, for when you don't really care to
 have super fancy logs.")
       (license license:expat))))
+
+(define-public go-github-com-kr-fs
+  (let ((commit "1455def202f6e05b95cc7bfc7e8ae67ae5141eba")
+        (revision "0"))
+    (package
+      (name "go-github-com-kr-fs")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kr/fs.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "11zg176x9hr9q7fsk95r6q0wf214gg4czy02slax4x56n79g6a7q"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/kr/fs"))
+      (home-page "https://github.com/kr/fs")
+      (synopsis "Filesystem-related functions for Go")
+      (description "Package fs provides filesystem-related functions.")
+      (license license:bsd-3))))
