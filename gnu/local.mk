@@ -234,6 +234,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/imagemagick.scm			\
   %D%/packages/inklingreader.scm		\
   %D%/packages/inkscape.scm			\
+  %D%/packages/ipfs.scm			\
   %D%/packages/irc.scm  			\
   %D%/packages/iso-codes.scm			\
   %D%/packages/java.scm				\
