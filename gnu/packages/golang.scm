@@ -2815,3 +2815,35 @@ encoding and 8 times faster decoding.")
       (description "Package @command{keccak} implements the Keccak (SHA-3)
 hash algorithm.  See http://keccak.noekeon.org.")
       (license license:expat))))
+
+(define-public go-github-com-minio-blake2b-simd
+  (let ((commit "3f5f724cb5b182a5c278d6d3d55b40e7f8c2efb4")
+        (revision "0"))
+    (package
+      (name "go-github-com-minio-blake2b-simd")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/minio/blake2b-simd.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0b6jbnj62c0gmmfd4zdmh8xbg01p80f13yygir9xprqkzk6fikmd"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/minio/blake2b-simd"))
+      (home-page "https://github.com/minio/blake2b-simd")
+      (synopsis "Fast hashing in pure Go of BLAKE2b with SIMD instructions")
+      (description "This package was initially based on the pure go BLAKE2b
+implementation of Dmitry Chestnykh and merged with the (cgo dependent) AVX
+optimized BLAKE2 implementation (which in turn is based on the official
+implementation.  It does so by using Go's Assembler for amd64 architectures
+with a golang only fallback for other architectures.
+
+In addition to AVX there is also support for AVX2 as well as SSE.  Best
+performance is obtained with AVX2 which gives roughly a 4X performance
+increase approaching hashing speeds of 1GB/sec on a single core.")
+      (license license:asl2.0))))
