@@ -2424,25 +2424,25 @@ implemented in ANSI C, and MPI for communications.")
 (define-public scotch
   (package
     (name "scotch")
-    (version "6.0.5a")
+    (version "6.0.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://gforge.inria.fr/frs/download.php/"
                           "latestfile/298/scotch_" version ".tar.gz"))
       (sha256
-       (base32 "0vsmgjz8qv80di3ljmc7hbdsizxxxwy2b9rgd2fl1mdc6dgbj8av"))
-      (patches (search-patches "scotch-test-threading.patch"
-                               "scotch-build-parallelism.patch"
-                               "scotch-graph-induce-type-64.patch"
-                               "scotch-graph-diam-64.patch"))))
+       (base32 "1ky4k9r6jvajhqaqnnx6h8fkmds2yxgp70dpr1qzwcyhi2nhqvv8"))
+      (patches (search-patches "scotch-build-parallelism.patch"
+                               "scotch-integer-declarations.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
        ("flex" ,flex)
        ("bison" ,bison)))
+    (outputs '("out" "metis"))
     (arguments
-     `(#:phases
+     `(#:make-flags (list (string-append "prefix=" %output))
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'chdir-to-src
@@ -2477,7 +2477,7 @@ YACC = bison -pscotchyy -y -b y
                         '("COMMON_FILE_COMPRESS_GZ"
                           "COMMON_PTHREAD"
                           "COMMON_RANDOM_FIXED_SEED"
-                          "INTSIZE64"             ;use 'long' instead of 'int'
+                          "INTSIZE64"             ;use 'int64_t'
                           ;; Prevents symbolc clashes with libesmumps
                           "SCOTCH_RENAME"
                           ;; XXX: Causes invalid frees in superlu-dist tests
@@ -2490,22 +2490,21 @@ YACC = bison -pscotchyy -y -b y
             (invoke "make"
                     (format #f "-j~a" (parallel-job-count))
                     "esmumps")))
-         (replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (mkdir out)
-              (invoke "make"
-                      (string-append "prefix=" out)
-                      "install")
-              ;; esmumps files are not installed with the above
-              (for-each (lambda (f)
-                          (copy-file f (string-append out "/include/" f)))
-                        (find-files "../include" ".*esmumps.h$"))
-              (for-each (lambda (f)
-                          (copy-file f (string-append out "/lib/" f)))
-                        (find-files "../lib" "^lib.*esmumps.*"))
-              #t))))))
+         (add-before 'install 'make-install-dirs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir (assoc-ref outputs "out"))))
+         (add-after 'install 'install-metis
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "metis")))
+               (mkdir out)
+               ;; metis files are not installed with 'make install'
+               (for-each (lambda (f)
+                           (install-file f (string-append out "/include")))
+                         (find-files "../include/" ".*metis\\.h"))
+               (for-each (lambda (f)
+                           (install-file f (string-append out "/lib")))
+                         (find-files "../lib/" ".*metis\\..*"))
+               #t))))))
     (home-page "http://www.labri.fr/perso/pelegrin/scotch/")
     (synopsis "Programs and libraries for graph algorithms")
     (description "SCOTCH is a set of programs and libraries which implement
