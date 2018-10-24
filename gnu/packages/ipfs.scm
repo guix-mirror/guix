@@ -152,3 +152,11 @@ that are shared between @command{go-ipfs/commands} and its rewrite
 distributed, content addressed filesystem IPFS.  It aims to be flexible,
 powerful and simple.")
       (license license:expat))))
+
+(define-public go-github-com-whyrusleeping-gx-util
+  (package
+    (inherit gx)
+    (name "go-github-com-whyrusleeping-gx-util")
+    (arguments
+     '(#:unpack-path "github.com/whyrusleeping/gx"
+       #:import-path "github.com/whyrusleeping/gx/gxutil"))))
