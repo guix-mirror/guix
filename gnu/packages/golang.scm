@@ -3124,3 +3124,28 @@ common functions in stdlib's @command{net} package.  This means wrappers of
 standard net symbols like @command{net.Dial} and @command{net.Listen}, as well
 as conversion to and from @command{net.Addr}.")
       (license license:expat))))
+
+(define-public go-github-com-whyrusleeping-tar-utils
+  (let ((commit "8c6c8ba81d5c71fd69c0f48dbde4b2fb422b6dfc")
+        (revision "0"))
+    (package
+      (name "go-github-com-whyrusleeping-tar-utils")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/whyrusleeping/tar-utils.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "14jjdw3yics0k467xsyk388684wdpi0bbx8nqj0y4pqxa0s0in6s"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path
+         "github.com/whyrusleeping/tar-utils"))
+      (home-page "https://github.com/whyrusleeping/tar-utils")
+      (synopsis "Tar utilities extracted from go-ipfs codebase")
+      (description "Tar utilities extracted from @command{go-ipfs} codebase.")
+      (license license:expat))))
