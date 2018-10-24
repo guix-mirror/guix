@@ -3086,3 +3086,41 @@ does the following:
 @item Encapsulate well.
 @end itemize\n")
       (license license:expat))))
+
+(define-public go-github-com-multiformats-go-multiaddr-net
+  (let ((commit "1cb9a0e8a6de3c8a10f6cee60d01d793603c4f7e")
+        (revision "0"))
+    (package
+      (name "go-github-com-multiformats-go-multiaddr-net")
+      (version (git-version "1.6.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/multiformats/go-multiaddr-net.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1ypgi47xdz3bh8lh7f8cmk7w3ql9g4izx5l3kzdg9gda1xn5zxq3"))))
+      (build-system go-build-system)
+      (arguments
+       (quote (#:import-path "github.com/multiformats/go-multiaddr-net"
+               ;; TODO: Tests fail because they try to access the network.
+               #:tests? #f)))
+      (native-inputs
+       `(("go-github-com-multiformats-go-multiaddr" ,go-github-com-multiformats-go-multiaddr)
+         ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
+         ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
+         ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
+         ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
+         ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
+         ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
+         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+      (home-page "https://github.com/multiformats/go-multiaddr-net")
+      (synopsis "Multiaddress net tools")
+      (description "This package provides Multiaddr specific versions of
+common functions in stdlib's @command{net} package.  This means wrappers of
+standard net symbols like @command{net.Dial} and @command{net.Listen}, as well
+as conversion to and from @command{net.Addr}.")
+      (license license:expat))))
