@@ -586,14 +586,13 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:tests? #f ;No tests included
+     `(#:tests? #f                      ; no tests included
        #:make-flags (list "CC=gcc" "HAVE_LIBBSD=1"
-                          (string-append "DESTDIR="
-                                         (assoc-ref %outputs "out"))
-                          "PREFIX=")
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ;No configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://github.com/dimkr/loksh")
     (synopsis "Korn Shell from OpenBSD")
     (description
