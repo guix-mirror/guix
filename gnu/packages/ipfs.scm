@@ -50,3 +50,51 @@
 that are shared between @command{go-ipfs/commands} and its rewrite
 @command{go-ipfs-cmds}.")
       (license license:expat))))
+
+(define-public go-github-com-ipfs-go-ipfs-api
+  (let ((commit
+          "dafc2a13a4389ac1a6c2786e34ab70a4f26d3a3f")
+        (revision "0"))
+    (package
+      (name "go-github-com-ipfs-go-ipfs-api")
+      (version (git-version "1.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ipfs/go-ipfs-api.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "06kibnwb037sqynk99j07wm8alvxwx3bari9gdax4jv93396kycj"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/ipfs/go-ipfs-api"
+         ;; TODO: Tests fail, might need network access.
+         #:tests? #f))
+      (native-inputs
+       `(("go-github-com-ipfs-go-ipfs-cmdkit-files" ,go-github-com-ipfs-go-ipfs-cmdkit-files)
+         ("go-github-com-libp2p-go-libp2p-metrics" ,go-github-com-libp2p-go-libp2p-metrics)
+         ("go-github-com-libp2p-go-flow-metrics" ,go-github-com-libp2p-go-flow-metrics)
+         ("go-github-com-libp2p-go-libp2p-peer" ,go-github-com-libp2p-go-libp2p-peer)
+         ("go-github-com-libp2p-go-libp2p-protocol" ,go-github-com-libp2p-go-libp2p-protocol)
+         ("go-github-com-libp2p-go-libp2p-crypto" ,go-github-com-libp2p-go-libp2p-crypto)
+         ("go-github-com-mitchellh-go-homedir" ,go-github-com-mitchellh-go-homedir)
+         ("go-github-com-multiformats-go-multiaddr" ,go-github-com-multiformats-go-multiaddr)
+         ("go-github-com-multiformats-go-multiaddr-net" ,go-github-com-multiformats-go-multiaddr-net)
+         ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
+         ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
+         ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
+         ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
+         ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
+         ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
+         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))
+         ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
+         ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
+         ("go-github-com-whyrusleeping-tar-utils" ,go-github-com-whyrusleeping-tar-utils)
+         ("go-github-com-cheekybits-is" ,go-github-com-cheekybits-is)))
+      (home-page "https://github.com/ipfs/go-ipfs-api")
+      (synopsis "Unofficial Go interface to IPFS's HTTP API")
+      (description "An unofficial Go interface to IPFS's HTTP API")
+      (license license:expat))))
