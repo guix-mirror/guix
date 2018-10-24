@@ -572,13 +572,13 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
     (version "6.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dimkr/loksh/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dimkr/loksh.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0i1b60g1p19s5cnzz0nmjzjnxywm9szzyp1rcwfcx3gmzvrwr2sc"))))
+        (base32 "0hx57y73g807x321wpa6sr0vvw6igwhaq88rrdryjjbw6p4k0vcc"))))
     (build-system gnu-build-system)
     (inputs
      `(("libbsd" ,libbsd)))
