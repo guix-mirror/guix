@@ -1014,6 +1014,18 @@ signature algorithm.")))
     (description "This package provides a Go implementation of the RIPEMD-160
 hash algorithm.")))
 
+(define-public go-golang-org-x-crypto-blake2s
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-blake2s")
+    (arguments
+     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
+       ((#:import-path _)
+        "golang.org/x/crypto/blake2s")))
+    (synopsis "BLAKE2s in Go")
+    (description "This package provides a Go implementation of the BLAKE2s
+hash algorithm.")))
+
 ;; Go searches for library modules by looking in the GOPATH environment
 ;; variable.  This variable is a list of paths.  However, Go does not
 ;; keep searching on GOPATH if it tries and fails to import a module.
