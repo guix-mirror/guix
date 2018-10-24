@@ -3208,3 +3208,29 @@ as conversion to and from @command{net.Addr}.")
       (synopsis "Gitignore parser for Go")
       (description "A @command{.gitignore} parser for Go.")
       (license license:expat))))
+
+(define-public go-github-com-urfave-cli
+  (let ((commit "934abfb2f102315b5794e15ebc7949e4ca253920")
+        (revision "0"))
+    (package
+      (name "go-github-com-urfave-cli")
+      (version (git-version "1.19.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/urfave/cli.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0c5r8pgj3k48dfcwj8lw3cxkwkl8vh0fhvz5snfdwd0bcxdqx1yq"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/urfave/cli"))
+      (home-page "https://github.com/urfave/cli")
+      (synopsis "Simple, fast, and fun package for building command line apps in Go")
+      (description "@command{cli} is a simple, fast, and fun package for
+building command line apps in Go.  The goal is to enable developers to write
+fast and distributable command line applications in an expressive way.")
+      (license license:expat))))
