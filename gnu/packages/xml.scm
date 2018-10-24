@@ -960,7 +960,7 @@ Libxml2).")
 (define-public minixml
   (package
     (name "minixml")
-    (version "2.11")
+    (version "2.12")
     (source (origin
               (method url-fetch/tarbomb)
               (uri (string-append "https://github.com/michaelrsweet/mxml/"
@@ -968,10 +968,13 @@ Libxml2).")
                                   "/mxml-" version ".tar.gz"))
               (sha256
                (base32
-                "13xsw8vvkxd10vca42ccdyl9rs64lcvhbfz57aknpl3xcfn8mxma"))))
+                "1z8nqxa4pqdic8wpixkkgg1m2pak9wjikjjxnk3j5i0d29dbgmmg"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-permissions
            ;; FIXME: url-fetch/tarbomb resets all permissions to 555/444.
