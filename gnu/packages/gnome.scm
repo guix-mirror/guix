@@ -33,6 +33,7 @@
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -127,6 +128,7 @@
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages rust)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages selinux)
@@ -1300,7 +1302,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.20")
+    (version "2.44.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1308,11 +1310,22 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ay9himvw1l1swcf3h1312d2iqzfl65kpbfgiyfykgvq7cydvx6g"))))
+                "1h3qnqhr0l7pd2bxg69ki6ckl4srdwgr471dpp4jq9i4784hp0v6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:make-flags '("CC=gcc")
+       #:phases
        (modify-phases %standard-phases
+         ;; Don't patch anything in vendor/ to avoid having to recompute
+         ;; checksums for the bundled Cargo "crates".  TODO: Unbundle those.
+         (delete 'patch-source-shebangs)
+         (delete 'patch-generated-file-shebangs)
+         (delete 'patch-usr-bin-file)
+         (add-before 'configure 'patch-all-the-things
+           (lambda _
+             (for-each patch-shebang '("tap-driver.sh" "tap-test"))
+             (patch-/usr/bin/file "configure")
+             #t))
          (add-before 'configure 'pre-configure
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "gdk-pixbuf-loader/Makefile.in"
@@ -1326,22 +1339,32 @@ dealing with different structured file formats.")
                (("gdk_pixbuf_cache_file = .*$")
                 "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n"))
              #t))
-         (add-after 'unpack 'remove-failing-tests
+         (add-before 'check 'remove-failing-tests
            (lambda _
              (with-directory-excursion "tests/fixtures/reftests"
                (for-each delete-file
-                         '(;; This test fails on i686:
+                         '(;; The images produced by these tests differ slightly
+                           ;; from their reference counterparts due to differences
+                           ;; in the build environment (missing fonts, etc).  See
+                           ;; <tests/README.md> for details.
+                           ;; These fail on x86_64.
+                           "svg1.1/coords-viewattr-02-b.svg"
+                           "svg1.1/filters-composite-04-f.svg"
+                           "svg1.1/filters-image-01-b.svg"
+                           "svg1.1/filters-conv-02-f.svg"
+                           "svg1.1/filters-conv-04-f.svg"
+                           ;; This test fails on i686:
                            "svg1.1/masking-path-04-b.svg"
-                           "svg1.1/masking-path-04-b-ref.png"
                            ;; This test fails on armhf:
                            "svg1.1/masking-mask-01-b.svg"
-                           "svg1.1/masking-mask-01-b-ref.png"
                            ;; This test fails on aarch64:
-                           "bugs/777834-empty-text-children.svg"
-                           "bugs/777834-empty-text-children-ref.png")))
+                           "bugs/777834-empty-text-children.svg")))
              #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ;; This is the minimum supported Rust version in Librsvg 2.44.
+       ("rust" ,rust-1.27)
+       ("cargo" ,rust-1.27 "cargo")
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
     (inputs
