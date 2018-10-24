@@ -2658,3 +2658,41 @@ style).
 provides a default implementation of a subsystem-aware leveled logger
 implementing the same interface.")
       (license license:isc))))
+
+(define-public go-github-com-btcsuite-btcd-btcec
+  (let ((commit "67e573d211ace594f1366b4ce9d39726c4b19bd0")
+        (revision "0"))
+    (package
+      (name "go-github-com-btcsuite-btcd-btcec")
+      (version (git-version "0.12.0-beta" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/btcsuite/btcd.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "04s92gsy71w1jirlr5lkk9y6r5cparbas7nmf6ywbp7kq7fn8ajn"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:unpack-path "github.com/btcsuite/btcd"
+         #:import-path "github.com/btcsuite/btcd/btcec"))
+      (native-inputs
+       `(("go-github-com-davecgh-go-spew" ,go-github-com-davecgh-go-spew)))
+      (home-page "https://github.com/btcsuite/btcd")
+      (synopsis "Elliptic curve cryptography to work with Bitcoin")
+      (description "Package @command{btcec} implements elliptic curve
+cryptography needed for working with Bitcoin (secp256k1 only for now).  It is
+designed so that it may be used with the standard crypto/ecdsa packages
+provided with Go.  A comprehensive suite of test is provided to ensure proper
+functionality.  Package @command{btcec} was originally based on work from
+ThePiachu which is licensed under the same terms as Go, but it has
+signficantly diverged since then.  The @command{btcsuite} developers original
+is licensed under the liberal ISC license.
+
+Although this package was primarily written for btcd, it has intentionally
+been designed so it can be used as a standalone package for any projects
+needing to use secp256k1 elliptic curve cryptography.")
+      (license license:isc))))
