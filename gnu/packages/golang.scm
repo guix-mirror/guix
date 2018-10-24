@@ -2632,3 +2632,29 @@ includes offsets, byte values in hex, and ASCII output (only when using Dump
 style).
 @end itemize\n")
       (license license:isc))))
+
+(define-public go-github-com-btcsuite-btclog
+  (let ((commit "84c8d2346e9fc8c7b947e243b9c24e6df9fd206a")
+        (revision "0"))
+    (package
+      (name "go-github-com-btcsuite-btclog")
+      (version (git-version "0.0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/btcsuite/btclog.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "02dl46wcnfpg9sqvg0ipipkpnd7lrf4fnvb9zy56jqa7mfcwc7wk"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/btcsuite/btclog"))
+      (home-page "https://github.com/btcsuite/btclog")
+      (synopsis "Subsystem aware logger for Go")
+      (description "Package @command{btclog} defines a logger interface and
+provides a default implementation of a subsystem-aware leveled logger
+implementing the same interface.")
+      (license license:isc))))
