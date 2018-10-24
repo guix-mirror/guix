@@ -2789,3 +2789,29 @@ Architecture Processors\" by J. Guilford et al.")
 trivial @command{big.Int} encoding benchmark results in 6 times faster
 encoding and 8 times faster decoding.")
       (license license:expat))))
+
+(define-public go-github-com-gxed-hashland-keccakpg
+  (let ((commit "d9f6b97f8db22dd1e090fd0bbbe98f09cc7dd0a8")
+        (revision "0"))
+    (package
+      (name "go-github-com-gxed-hashland-keccakpg")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gxed/hashland.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1q23y4lacsz46k9gmgfw4iwwydw36j2601rbidmmswl94grpc386"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:unpack-path "github.com/gxed/hashland"
+         #:import-path "github.com/gxed/hashland/keccakpg"))
+      (home-page "https://github.com/gxed/hashland")
+      (synopsis "Implements the Keccak (SHA-3) hash algorithm in Go")
+      (description "Package @command{keccak} implements the Keccak (SHA-3)
+hash algorithm.  See http://keccak.noekeon.org.")
+      (license license:expat))))
