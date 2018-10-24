@@ -3005,3 +3005,42 @@ required by Go's standard Hash interface.")
       (description "A connection wrapper for @command{go-libp2p} that provides bandwidth
 statistics for wrapped connections.")
       (license license:expat))))
+
+(define-public go-github-com-mitchellh-go-homedir
+  (let ((commit "ae18d6b8b3205b561c79e8e5f69bff09736185f4")
+        (revision "0"))
+    (package
+      (name "go-github-com-mitchellh-go-homedir")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mitchellh/go-homedir.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0f0z0aa4wivk4z1y503dmnw0k0g0g403dly8i4q263gfshs82sbq"))))
+      (build-system go-build-system)
+      (arguments
+       (quote (#:import-path "github.com/mitchellh/go-homedir"
+               ;; TODO: Tests fail because it tries to access home.
+               #:tests? #f)))
+      (home-page "https://github.com/mitchellh/go-homedir")
+      (synopsis "Go library for detecting and expanding the user's home directory without cgo")
+      (description "This is a Go library for detecting the user's home
+directory without the use of @command{cgo}, so the library can be used in
+cross-compilation environments.
+
+Usage is simple, just call homedir.Dir() to get the home directory for a user,
+and homedir.Expand() to expand the @command{~} in a path to the home
+directory.
+
+Why not just use @command{os/user}?  The built-in @command{os/user} package
+requires cgo on Darwin systems.  This means that any Go code that uses that
+package cannot cross compile.  But 99% of the time the use for
+@command{os/user} is just to retrieve the home directory, which we can do for
+the current user without cgo.  This library does that, enabling
+cross-compilation.")
+      (license license:expat))))
