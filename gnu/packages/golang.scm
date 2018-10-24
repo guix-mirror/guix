@@ -3260,3 +3260,28 @@ fast and distributable command line applications in an expressive way.")
       (description "A library to query JSON objects marshalled into
 @command{map[string]interface{}}.")
       (license license:expat))))
+
+(define-public go-github-com-whyrusleeping-progmeter
+  (let ((commit "f3e57218a75b913eff88d49a52c1debf9684ea04")
+        (revision "0"))
+    (package
+      (name "go-github-com-whyrusleeping-progmeter")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/whyrusleeping/progmeter.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0xs8rz6yhpvj9512c5v3b8dwr2kivywnyyfxzdfbr6fy1xc8zskb"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path
+         "github.com/whyrusleeping/progmeter"))
+      (home-page "https://github.com/whyrusleeping/progmeter")
+      (synopsis "Progress meter for Go")
+      (description "Progress meter for Go.")
+      (license license:expat))))
