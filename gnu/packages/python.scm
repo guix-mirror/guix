@@ -5826,7 +5826,9 @@ complexity of Python source code.")
 (define-public python2-pyflakes-0.8.1
   (package-with-python2 python-pyflakes-0.8.1))
 
-(define-public python-flake8
+;; This package is used by hypothesis which has thousands of dependent packages.
+;; FIXME: Consolidate this with "python-flake8" below in the next rebuild cycle.
+(define-public python-flake8-3.5
   (package
     (name "python-flake8")
     (version "3.5.0")
@@ -5872,16 +5874,44 @@ PEP8_PLUGIN('break_before_binary_operator'),"))
       "The modular source code checker: pep8, pyflakes and co")
     (description
       "Flake8 is a wrapper around PyFlakes, pep8 and python-mccabe.")
-    (properties `((python2-variant . ,(delay python2-flake8))))
+    (properties `((python2-variant . ,(delay python2-flake8-3.5))))
     (license license:expat)))
 
-(define-public python2-flake8
-  (let ((base (package-with-python2 (strip-python2-variant python-flake8))))
+(define-public python2-flake8-3.5
+  (let ((base (package-with-python2 (strip-python2-variant python-flake8-3.5))))
     (package (inherit base)
       (propagated-inputs
        `(("python2-configparser" ,python2-configparser)
          ("python2-enum34" ,python2-enum34)
           ,@(package-propagated-inputs base))))))
+
+;; Version 3.5.0 has compatibility issues with Pyflakes 2.0, so we need
+;; this newer version.  Keep it as a separate variable for now to avoid
+;; rebuilding "python-hypothesis"; this should be removed in the next
+;; rebuild cycle.
+(define-public python-flake8
+  (package
+    (inherit python-flake8-3.5)
+    (version "3.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "flake8" version))
+              (sha256
+               (base32
+                "0w0nprx22rbvrrkbfx9v5jc5gskbm08g219l7r8wai8zfswgadba"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-flake8-3.5)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'delete-broken-test)
+           (delete 'fix-problem-with-pycodestyle)))))
+    (properties `((python2-variant . ,(delay python2-flake8))))))
+
+(define-public python2-flake8
+  (let ((base (package-with-python2 (strip-python2-variant python-flake8))))
+    (package (inherit base)
+             (propagated-inputs
+              (package-propagated-inputs python2-flake8-3.5)))))
 
 ;; python-hacking requires flake8 <2.6.0.
 (define-public python-flake8-2.5

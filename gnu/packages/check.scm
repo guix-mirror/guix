@@ -1425,7 +1425,8 @@ normally the case.")
                 "1rshs1japfmwgar98yrkq4hg4z2q76hlnq7w2n3lfbjnscn1jd9b"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-flake8" ,python-flake8)
+     `(;; FIXME: Change to python-flake8 in the next rebuild cycle.
+       ("python-flake8" ,python-flake8-3.5)
        ("python-pytest" ,python-pytest-bootstrap)))
     (propagated-inputs
      `(("python-attrs" ,python-attrs-bootstrap)
