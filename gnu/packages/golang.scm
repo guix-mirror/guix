@@ -990,6 +990,18 @@ Tiny Encryption Algorithm (XTEA) block cipher.")
       (home-page "https://go.googlesource.com/crypto/")
       (license license:bsd-3))))
 
+(define-public go-golang-org-x-crypto-ed25519
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-ed25519")
+    (arguments
+     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
+       ((#:import-path _)
+        "golang.org/x/crypto/ed25519")))
+    (synopsis "ED25519 in Go")
+    (description "This package provides a Go implementation of the ED25519
+signature algorithm.")))
+
 ;; Go searches for library modules by looking in the GOPATH environment
 ;; variable.  This variable is a list of paths.  However, Go does not
 ;; keep searching on GOPATH if it tries and fails to import a module.
