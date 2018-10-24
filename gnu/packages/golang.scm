@@ -3234,3 +3234,29 @@ as conversion to and from @command{net.Addr}.")
 building command line apps in Go.  The goal is to enable developers to write
 fast and distributable command line applications in an expressive way.")
       (license license:expat))))
+
+(define-public go-github-com-whyrusleeping-json-filter
+  (let ((commit "ff25329a9528f01c5175414f16cc0a6a162a5b8b")
+        (revision "0"))
+    (package
+      (name "go-github-com-whyrusleeping-json-filter")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/whyrusleeping/json-filter.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0cai0drvx4c8j686l908vpcsz3mw3vxi3ziz94b0f3c5ylpj07j7"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path
+         "github.com/whyrusleeping/json-filter"))
+      (home-page "https://github.com/whyrusleeping/json-filter")
+      (synopsis "Library to query JSON objects marshalled into map[string]interface")
+      (description "A library to query JSON objects marshalled into
+@command{map[string]interface{}}.")
+      (license license:expat))))
