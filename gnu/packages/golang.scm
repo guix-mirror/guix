@@ -1051,7 +1051,11 @@ functions defined by FIPS-202.")))
                                                     go-golang-org-x-crypto-pbkdf2
                                                     go-golang-org-x-crypto-twofish
                                                     go-golang-org-x-crypto-cast5
-                                                    go-golang-org-x-crypto-salsa20)))
+                                                    go-golang-org-x-crypto-salsa20
+                                                    go-golang-org-x-crypto-ed25519
+                                                    go-golang-org-x-crypto-ripemd160
+                                                    go-golang-org-x-crypto-blake2s
+                                                    go-golang-org-x-crypto-sha3)))
   (package
     (name "go-golang-org-x-crypto")
     (version (package-version go-golang-org-x-crypto-bcrypt))
