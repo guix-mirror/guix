@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
@@ -34,6 +34,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -58,6 +59,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -1007,4 +1009,42 @@ PDF.  Indeed @command{pdfposter} was inspired by @command{poster}.")
 Support some GNU grep options as file name output, page number output,
 optional case insensitivity, count occurrences, color highlights and search in
 multiple files.")
+    (license license:gpl2+)))
+
+(define-public pdfpc
+  (package
+    (name "pdfpc")
+    (version "4.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pdfpc/pdfpc.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1rmsrpf5vlqhnyyrhq8apndny88ld2qvfjx6258653pqbimv7mx5"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))          ; no test target
+    (inputs
+     `(("cairo" ,cairo)
+       ("gtk+" ,gtk+)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("libgee" ,libgee)
+       ("poppler" ,poppler)
+       ("pango" ,pango)
+       ("vala" ,vala)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://pdfpc.github.io/")
+    (synopsis "Presenter console with multi-monitor support for PDF files")
+    (description
+     "pdfpc is a presentation viewer application which uses multi-monitor
+output to provide meta information to the speaker during the presentation.  It
+is able to show a normal presentation window on one screen, while showing a
+more sophisticated overview on the other one providing information like a
+picture of the next slide, as well as the left over time till the end of the
+presentation.  The input files processed by pdfpc are PDF documents.")
     (license license:gpl2+)))
