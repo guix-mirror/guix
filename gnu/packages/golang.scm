@@ -1002,6 +1002,18 @@ Tiny Encryption Algorithm (XTEA) block cipher.")
     (description "This package provides a Go implementation of the ED25519
 signature algorithm.")))
 
+(define-public go-golang-org-x-crypto-ripemd160
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-ripemd160")
+    (arguments
+     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
+       ((#:import-path _)
+        "golang.org/x/crypto/ripemd160")))
+    (synopsis "RIPEMD-160 in Go")
+    (description "This package provides a Go implementation of the RIPEMD-160
+hash algorithm.")))
+
 ;; Go searches for library modules by looking in the GOPATH environment
 ;; variable.  This variable is a list of paths.  However, Go does not
 ;; keep searching on GOPATH if it tries and fails to import a module.
