@@ -3181,3 +3181,30 @@ as conversion to and from @command{net.Addr}.")
 - because testing panics is ugly.
 @end itemize\n")
       (license license:expat))))
+
+(define-public go-github-com-sabhiram-go-gitignore
+  (let ((commit "d3107576ba9425fc1c85f4b3569c4631b805a02e")
+        (revision "0"))
+    (package
+      (name "go-github-com-sabhiram-go-gitignore")
+      (version (git-version "1.0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sabhiram/go-gitignore.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1rdwyxgcsiwgmlqnc3k6h300mzlvjc3j21np4yh1h476wc8dvl0l"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path
+         "github.com/sabhiram/go-gitignore"))
+      (native-inputs
+       `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+      (home-page "https://github.com/sabhiram/go-gitignore")
+      (synopsis "Gitignore parser for Go")
+      (description "A @command{.gitignore} parser for Go.")
+      (license license:expat))))
