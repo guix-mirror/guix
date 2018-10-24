@@ -2941,3 +2941,28 @@ required by Go's standard Hash interface.")
       (synopsis "PKI based identities for use in go-libp2p")
       (description "PKI based identities for use in @command{go-libp2p}.")
       (license license:expat))))
+
+(define-public go-github-com-libp2p-go-libp2p-protocol
+  (let ((commit "b29f3d97e3a2fb8b29c5d04290e6cb5c5018004b")
+        (revision "0"))
+    (package
+      (name "go-github-com-libp2p-go-libp2p-protocol")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/libp2p/go-libp2p-protocol.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1xgjfnx9zcqglg9li29wdqywsp8hz22wx6phns9zscni2jsfidld"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path
+         "github.com/libp2p/go-libp2p-protocol"))
+      (home-page "https://github.com/libp2p/go-libp2p-protocol")
+      (synopsis "Type for protocol strings in Golang")
+      (description "Just a type for protocol strings.  Nothing more.")
+      (license license:expat))))
