@@ -6277,3 +6277,25 @@ observation.")
      "This package provides tools for the analysis and visualization of bilateral
       asymmetry in parasitic infections.")
     (license license:gpl3+)))
+
+(define-public r-sandwich
+  (package
+    (name "r-sandwich")
+    (version "2.5-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sandwich" version))
+       (sha256
+        (base32
+         "168kq5kk34xbhfsxsanard9zriyp6cw0s09ralzb57kk42pl9hbc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-zoo" ,r-zoo)))
+    (home-page "https://cran.r-project.org/web/packages/sandwich/")
+    (synopsis "Robust Covariance Matrix Estimators")
+    (description
+     "This package provides model-robust standard error estimators for
+cross-sectional, time series, clustered, panel, and longitudinal data.")
+    ;; Either version of the license.
+    (license (list license:gpl2 license:gpl3))))
