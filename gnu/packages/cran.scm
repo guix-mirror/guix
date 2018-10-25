@@ -6350,3 +6350,30 @@ mixed effects, and survival models.  The package includes demos reproducing
 analyzes presented in the book \"Multiple Comparisons Using R\" (Bretz,
 Hothorn, Westfall, 2010, CRC Press).")
     (license license:gpl2)))
+
+(define-public r-emmeans
+  (package
+    (name "r-emmeans")
+    (version "1.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "emmeans" version))
+       (sha256
+        (base32
+         "01g6albv9whpdsj4j7c3q02pwdlkscjl5d2l8z96qafw7n9gml6g"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-estimability" ,r-estimability)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-plyr" ,r-plyr)
+       ("r-xtable" ,r-xtable)))
+    (home-page "https://github.com/rvlenth/emmeans")
+    (synopsis "Estimated marginal means, aka least-squares means")
+    (description
+     "This package provides tools to obtain @dfn{estimated marginal
+means} (EMMs) for many linear, generalized linear, and mixed models.  It can
+be used to compute contrasts or linear functions of EMMs, trends, and
+comparisons of slopes.")
+    ;; Either version of the license.
+    (license (list license:gpl2 license:gpl3))))
