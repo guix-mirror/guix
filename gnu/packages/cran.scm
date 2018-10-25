@@ -6600,3 +6600,50 @@ are also supported.  The two main functions are @code{ggpredict()} and
 @code{ggeffect()}.  There is a generic @code{plot()} method to plot the
 results using @code{ggplot2}.")
     (license license:gpl3)))
+
+(define-public r-sjplot
+  (package
+    (name "r-sjplot")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sjPlot" version))
+       (sha256
+        (base32
+         "13qvw2s3r96qfi8kfsn76m050ccnmckl31a9qv94xws8da99v2fk"))))
+    (properties `((upstream-name . "sjPlot")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-broom" ,r-broom)
+       ("r-dplyr" ,r-dplyr)
+       ("r-forcats" ,r-forcats)
+       ("r-ggeffects" ,r-ggeffects)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-glmmtmb" ,r-glmmtmb)
+       ("r-knitr" ,r-knitr)
+       ("r-lme4" ,r-lme4)
+       ("r-magrittr" ,r-magrittr)
+       ("r-mass" ,r-mass)
+       ("r-modelr" ,r-modelr)
+       ("r-nlme" ,r-nlme)
+       ("r-psych" ,r-psych)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-scales" ,r-scales)
+       ("r-sjlabelled" ,r-sjlabelled)
+       ("r-sjmisc" ,r-sjmisc)
+       ("r-sjstats" ,r-sjstats)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://strengejacke.github.io/sjPlot/")
+    (synopsis "Data visualization for statistics in social science")
+    (description
+     "This package represents a collection of plotting and table output
+functions for data visualization.  Results of various statistical
+analyses (that are commonly used in social sciences) can be visualized using
+this package, including simple and cross tabulated frequencies, histograms,
+box plots, (generalized) linear models, mixed effects models, principal
+component analysis and correlation matrices, cluster analyses, scatter plots,
+stacked scales, effects plots of regression models (including interaction
+terms) and much more.  This package supports labelled data.")
+    (license license:gpl3)))
