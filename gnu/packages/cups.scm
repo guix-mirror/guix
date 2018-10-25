@@ -412,7 +412,7 @@ device-specific programs to convert and print many types of files.")
                     (("boolean") "bool"))
                   #t))))
     (build-system gnu-build-system)
-    (home-page "http://hplipopensource.com/")
+    (home-page "https://developers.hp.com/hp-linux-imaging-and-printing")
     (synopsis "HP printer drivers")
     (description
      "Hewlett-Packard printer drivers and PostScript Printer Descriptions
