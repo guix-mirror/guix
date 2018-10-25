@@ -6322,3 +6322,31 @@ cross-sectional, time series, clustered, panel, and longitudinal data.")
      "This package contains supporting data sets that are used in other
 packages maintained by Torsten Hothorn.")
     (license license:gpl3)))
+
+(define-public r-multcomp
+  (package
+    (name "r-multcomp")
+    (version "1.4-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "multcomp" version))
+       (sha256
+        (base32
+         "0fm78g4zjc6ank316qfw977864shmy890znn4fahwc8jjdhpc252"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-codetools" ,r-codetools)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-sandwich" ,r-sandwich)
+       ("r-survival" ,r-survival)
+       ("r-th-data" ,r-th-data)))
+    (home-page "https://cran.r-project.org/web/packages/multcomp/")
+    (synopsis "Simultaneous inference in general parametric models")
+    (description
+     "Simultaneous tests and confidence intervals for general linear
+hypotheses in parametric models, including linear, generalized linear, linear
+mixed effects, and survival models.  The package includes demos reproducing
+analyzes presented in the book \"Multiple Comparisons Using R\" (Bretz,
+Hothorn, Westfall, 2010, CRC Press).")
+    (license license:gpl2)))
