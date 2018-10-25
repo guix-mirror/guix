@@ -6377,3 +6377,24 @@ be used to compute contrasts or linear functions of EMMs, trends, and
 comparisons of slopes.")
     ;; Either version of the license.
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-pwr
+  (package
+    (name "r-pwr")
+    (version "1.2-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pwr" version))
+       (sha256
+        (base32
+         "0r5g781lr677vp3zyhgmi7r68c87l8gd05l1s3ffnxgn5wf043sm"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/heliosdrm/pwr")
+    (synopsis "Basic functions for power analysis")
+    (description
+     "This package provides power analysis functions along the lines of
+Cohen (1988).")
+    (license license:gpl3+)))
