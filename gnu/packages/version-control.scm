@@ -166,7 +166,11 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1vn6pi9yvw7rnb9dvi1yjrvv39fqd1m9mwbaffqwizs3gaf91br7"))))))
+            "1vn6pi9yvw7rnb9dvi1yjrvv39fqd1m9mwbaffqwizs3gaf91br7"))))
+      ;; For subtree documentation.
+      ("asciidoc" ,asciidoc)
+      ("docbook-xsl" ,docbook-xsl)
+      ("xmlto" ,xmlto)))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -198,6 +202,7 @@ as well as the classic centralized workflow.")
               "send-email"                        ; for git-send-email
               "svn"                               ; git-svn
               "credential-netrc"                  ; git-credential-netrc
+              "subtree"                           ; git-subtree
               "gui"))                             ; gitk, git gui
    (arguments
     `(#:make-flags `("V=1"                        ;more verbose compilation
@@ -255,6 +260,26 @@ as well as the classic centralized workflow.")
           (lambda _
             ;; Add the "PM.stamp" to avoid "no rule to make target".
             (call-with-output-file "perl/PM.stamp" (const #t))
+            #t))
+        (add-after 'build 'build-subtree
+          (lambda* (#:key inputs #:allow-other-keys)
+            (with-directory-excursion "contrib/subtree"
+              (substitute* "Makefile"
+                ;; Apparently `xmlto' does not bother to looks up the stylesheets
+                ;; specified in the XML, unlike the above substitution.  Instead it
+                ;; uses a hard-coded URL.  Work around it here, but if this is
+                ;; common perhaps we should hardcode this path in xmlto itself.
+                (("\\$\\(XMLTO\\) -m \\$\\(MANPAGE_XSL\\) man")
+                 (string-append "$(XMLTO) -x "
+                                (string-append (assoc-ref inputs "docbook-xsl")
+                                               "/xml/xsl/docbook-xsl-"
+                                               ,(package-version docbook-xsl))
+                                "/manpages/docbook.xsl -m $(MANPAGE_XSL) man")))
+              (invoke "make")
+              (invoke "make" "install")
+              (invoke "make" "install-doc")
+              (substitute* "git-subtree"
+                (("/bin/sh") (which "sh"))))
             #t))
         (add-before 'check 'patch-tests
           (lambda _
@@ -316,6 +341,14 @@ as well as the classic centralized workflow.")
               (wrap-program (string-append netrc "/bin/git-credential-netrc")
                 `("PERL5LIB" ":" prefix
                   (,(string-append (assoc-ref outputs "out") "/share/perl5"))))
+              #t)))
+        (add-after 'install 'install-subtree
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((subtree (assoc-ref outputs "subtree")))
+              (install-file "contrib/subtree/git-subtree"
+                            (string-append subtree "/bin"))
+              (install-file "contrib/subtree/git-subtree.1"
+                            (string-append subtree "/share/man/man1"))
               #t)))
         (add-after 'install 'split
           (lambda* (#:key inputs outputs #:allow-other-keys)
