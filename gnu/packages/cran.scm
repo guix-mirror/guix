@@ -6561,3 +6561,42 @@ Gaussian on the scale of the linear predictor and are integrated out using the
 Laplace approximation.  Gradients are calculated using automatic
 differentiation.")
     (license license:agpl3+)))
+
+(define-public r-ggeffects
+  (package
+    (name "r-ggeffects")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggeffects" version))
+       (sha256
+        (base32
+         "00l02g7yssqxmcmbrzk2wsj3i9ywd0xsy0rmbfh57q1qi76a1wq1"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-crayon" ,r-crayon)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lme4" ,r-lme4)
+       ("r-magrittr" ,r-magrittr)
+       ("r-mass" ,r-mass)
+       ("r-prediction" ,r-prediction)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-scales" ,r-scales)
+       ("r-sjlabelled" ,r-sjlabelled)
+       ("r-sjmisc" ,r-sjmisc)
+       ("r-sjstats" ,r-sjstats)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/strengejacke/ggeffects")
+    (synopsis "Create tidy data frames of marginal effects for ggplot")
+    (description
+     "This package provides tools to compute marginal effects from statistical
+models and return the result as tidy data frames.  These data frames are ready
+to use with the @code{ggplot2} package.  Marginal effects can be calculated
+for many different models.  Interaction terms, splines and polynomial terms
+are also supported.  The two main functions are @code{ggpredict()} and
+@code{ggeffect()}.  There is a generic @code{plot()} method to plot the
+results using @code{ggplot2}.")
+    (license license:gpl3)))
