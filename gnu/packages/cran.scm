@@ -6299,3 +6299,26 @@ observation.")
 cross-sectional, time series, clustered, panel, and longitudinal data.")
     ;; Either version of the license.
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-th-data
+  (package
+    (name "r-th-data")
+    (version "1.0-9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TH.data" version))
+       (sha256
+        (base32
+         "03xfvww0krw0fn76qmmvrj7dx4shin57qafwhkrggfg25hbqlcfq"))))
+    (properties `((upstream-name . "TH.data")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/TH.data/")
+    (synopsis "Shared data sets")
+    (description
+     "This package contains supporting data sets that are used in other
+packages maintained by Torsten Hothorn.")
+    (license license:gpl3)))
