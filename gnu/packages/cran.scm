@@ -4775,14 +4775,14 @@ other add-on packages.")
 (define-public r-sjlabelled
   (package
     (name "r-sjlabelled")
-    (version "1.0.13")
+    (version "1.0.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjlabelled" version))
        (sha256
         (base32
-         "0xizj7mrhnbn8kwjgm076si9w68a7lgrx4vj1sbqmv9jx055h8wv"))))
+         "0ayfzhm9bwjfaarq5z0gvn9kapjwj3532azgin97nr5fnjdhvgaw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
