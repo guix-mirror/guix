@@ -440,7 +440,7 @@ clone.")
 (define-public sfml
   (package
     (name "sfml")
-    (version "2.5.0")
+    (version "2.5.1")
     (source (origin
               (method git-fetch)
               ;; Do not fetch the archives from
@@ -452,7 +452,7 @@ clone.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1cmg7xgk2shi94h47w0p9g0wh4g00sgwlq0nwc1n6d6qy9wfrx1k"))
+                "0abr8ri2ssfy9ylpgjrr43m6rhrjy03wbj9bn509zqymifvq5pay"))
               (modules '((guix build utils)))
               (snippet
                '(begin
