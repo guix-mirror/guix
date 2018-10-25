@@ -6529,3 +6529,35 @@ most functions lies on summary statistics or fit measures for regression
 models, including generalized linear models, mixed effects models and Bayesian
 models.")
     (license license:gpl3)))
+
+(define-public r-glmmtmb
+  (package
+    (name "r-glmmtmb")
+    (version "0.2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "glmmTMB" version))
+       (sha256
+        (base32
+         "1clpkjlmsjmn3m1z5jqv8cgw6bvpqsy4nx6k947r0jya017ny5y5"))))
+    (properties `((upstream-name . "glmmTMB")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lme4" ,r-lme4)
+       ("r-matrix" ,r-matrix)
+       ("r-nlme" ,r-nlme)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-tmb" ,r-tmb)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/glmmTMB")
+    (synopsis "Generalized linear mixed models")
+    (description
+     "Fit linear and generalized linear mixed models with various extensions,
+including zero-inflation.  The models are fitted using maximum likelihood
+estimation via the Template Model Builder.  Random effects are assumed to be
+Gaussian on the scale of the linear predictor and are integrated out using the
+Laplace approximation.  Gradients are calculated using automatic
+differentiation.")
+    (license license:agpl3+)))
