@@ -65,7 +65,7 @@
 (define-public dnsmasq
   (package
     (name "dnsmasq")
-    (version "2.79")
+    (version "2.80")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -73,7 +73,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "07w6cw706yyahwvbvslhkrbjf2ynv567cgy9pal8bz8lrbsp9bbq"))))
+                "1fv3g8vikj3sn37x1j6qsywn09w1jipvlv34j3q5qrljbrwa5ayd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
