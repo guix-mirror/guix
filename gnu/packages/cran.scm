@@ -6455,3 +6455,31 @@ convenient functionality for users, but also a common set of functions that
 can be easily used by developers working on a variety of R packages for
 Bayesian modeling.")
     (license license:gpl3+)))
+
+(define-public r-tmb
+  (package
+    (name "r-tmb")
+    (version "1.7.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TMB" version))
+       (sha256
+        (base32
+         "0bpc504nz8xfwr8ack52dj4hpjcykn6zyf8n228z32dw9d5n96dl"))))
+    (properties `((upstream-name . "TMB")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-rcppeigen" ,r-rcppeigen)))
+    (home-page "http://tmb-project.org")
+    (synopsis "Template model builder: a general random effect tool")
+    (description
+     "With this tool, a user should be able to quickly implement complex
+random effect models through simple C++ templates.  The package combines
+@code{CppAD} (C++ automatic differentiation), @code{Eigen} (templated
+matrix-vector library) and @code{CHOLMOD} (sparse matrix routines available
+from R) to obtain an efficient implementation of the applied Laplace
+approximation with exact derivatives.  Key features are: Automatic sparseness
+detection, parallelism through BLAS and parallel user templates.")
+    (license license:gpl2)))
