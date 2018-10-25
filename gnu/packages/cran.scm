@@ -36,6 +36,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
@@ -6423,3 +6424,34 @@ Cohen (1988).")
 independence problem including two-sample, K-sample (non-parametric ANOVA),
 correlation, censored, ordered and multivariate problems.")
     (license license:gpl2)))
+
+(define-public r-bayesplot
+  (package
+    (name "r-bayesplot")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bayesplot" version))
+       (sha256
+        (base32
+         "0in9cq2ybpa7njrwqx4l6nc8i01cjswsvzwlyiw465pi74aapr57"))))
+    (build-system r-build-system)
+    (inputs
+     `(("pandoc" ,ghc-pandoc)
+       ("pandoc-citeproc" ,ghc-pandoc-citeproc)))
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggridges" ,r-ggridges)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rlang" ,r-rlang)))
+    (home-page "http://mc-stan.org/bayesplot")
+    (synopsis "Plotting for Bayesian models")
+    (description
+     "This package provides plotting functions for posterior analysis, model
+checking, and MCMC diagnostics.  The package is designed not only to provide
+convenient functionality for users, but also a common set of functions that
+can be easily used by developers working on a variety of R packages for
+Bayesian modeling.")
+    (license license:gpl3+)))
