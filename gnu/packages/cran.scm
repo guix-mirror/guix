@@ -6398,3 +6398,28 @@ comparisons of slopes.")
      "This package provides power analysis functions along the lines of
 Cohen (1988).")
     (license license:gpl3+)))
+
+(define-public r-coin
+  (package
+    (name "r-coin")
+    (version "1.2-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "coin" version))
+       (sha256
+        (base32
+         "1fq58793bymzig1syjg2lvn6hsxfwkhh00jfrchh3c0y7rfhc66m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-modeltools" ,r-modeltools)
+       ("r-multcomp" ,r-multcomp)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-survival" ,r-survival)))
+    (home-page "http://coin.r-forge.r-project.org")
+    (synopsis "Conditional inference procedures in a permutation test framework")
+    (description
+     "This package provides conditional inference procedures for the general
+independence problem including two-sample, K-sample (non-parametric ANOVA),
+correlation, censored, ordered and multivariate problems.")
+    (license license:gpl2)))
