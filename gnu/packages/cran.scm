@@ -6483,3 +6483,49 @@ from R) to obtain an efficient implementation of the applied Laplace
 approximation with exact derivatives.  Key features are: Automatic sparseness
 detection, parallelism through BLAS and parallel user templates.")
     (license license:gpl2)))
+
+(define-public r-sjstats
+  (package
+    (name "r-sjstats")
+    (version "0.17.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sjstats" version))
+       (sha256
+        (base32
+         "0s9b0xr8gmcm0kh48jkwk8ns0lqknd8kpys4f7czf0xwzmcx2n1z"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bayesplot" ,r-bayesplot)
+       ("r-broom" ,r-broom)
+       ("r-coin" ,r-coin)
+       ("r-crayon" ,r-crayon)
+       ("r-dplyr" ,r-dplyr)
+       ("r-emmeans" ,r-emmeans)
+       ("r-glmmtmb" ,r-glmmtmb)
+       ("r-lme4" ,r-lme4)
+       ("r-magrittr" ,r-magrittr)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-modelr" ,r-modelr)
+       ("r-nlme" ,r-nlme)
+       ("r-purrr" ,r-purrr)
+       ("r-pwr" ,r-pwr)
+       ("r-rlang" ,r-rlang)
+       ("r-sjlabelled" ,r-sjlabelled)
+       ("r-sjmisc" ,r-sjmisc)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/strengejacke/sjstats")
+    (synopsis "Functions for common statistical computations")
+    (description
+     "This package provides a collection of convenient functions for common
+statistical computations, which are not directly provided by R's @code{base}
+or @code{stats} packages.  This package aims at providing, first, shortcuts
+for statistical measures, which otherwise could only be calculated with
+additional effort.  Second, these shortcut functions are generic, and can be
+applied not only to vectors, but also to other objects as well.  The focus of
+most functions lies on summary statistics or fit measures for regression
+models, including generalized linear models, mixed effects models and Bayesian
+models.")
+    (license license:gpl3)))
