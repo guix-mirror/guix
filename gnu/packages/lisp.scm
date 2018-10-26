@@ -2403,7 +2403,7 @@ testcases are organized into hierarchical testsuites each of which can have
 its own fixture.  When run, a testcase can succeed, fail, or error.  LIFT
 supports randomized testing, benchmarking, profiling, and reporting.")
       (home-page "https://github.com/gwkkwg/lift")
-      (license license:x11-style))))
+      (license license:expat))))
 
 (define-public cl-lift
   (sbcl-package->cl-source-package sbcl-lift))
