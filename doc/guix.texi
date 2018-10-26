@@ -194,6 +194,7 @@ Utilities
 * Invoking guix copy::          Copying to and from a remote store.
 * Invoking guix container::     Process isolation.
 * Invoking guix weather::       Assessing substitute availability.
+* Invoking guix processes::     Listing client processes.
 
 Invoking @command{guix build}
 
@@ -1238,6 +1239,12 @@ it would otherwise not hit.
 The build directory is automatically deleted upon completion, unless the
 build failed and the client specified @option{--keep-failed}
 (@pxref{Invoking guix build, @option{--keep-failed}}).
+
+The daemon listens for connections and spawns one sub-process for each session
+started by a client (one of the @command{guix} sub-commands.)  The
+@command{guix processes} command allows you to get an overview of the activity
+on your system by viewing each of the active sessions and clients.
+@xref{Invoking guix processes}, for more information.
 
 The following command-line options are supported:
 
@@ -6052,6 +6059,7 @@ the Scheme programming interface of Guix in a convenient way.
 * Invoking guix copy::          Copying to and from a remote store.
 * Invoking guix container::     Process isolation.
 * Invoking guix weather::       Assessing substitute availability.
+* Invoking guix processes::     Listing client processes.
 @end menu
 
 @node Invoking guix build
@@ -8752,6 +8760,61 @@ with the @code{-m} option of @command{guix package} (@pxref{Invoking
 guix package}).
 @end table
 
+@node Invoking guix processes
+@section Invoking @command{guix processes}
+
+The @command{guix processes} command can be useful to developers and system
+administrators, especially on multi-user machines and on build farms: it lists
+the current sessions (connections to the daemon), as well as information about
+the processes involved@footnote{Remote sessions, when @command{guix-daemon} is
+started with @option{--listen} specifying a TCP endpoint, are @emph{not}
+listed.}.  Here's an example of the information it returns:
+
+@example
+$ sudo guix processes
+SessionPID: 19002
+ClientPID: 19090
+ClientCommand: guix environment --ad-hoc python
+
+SessionPID: 19402
+ClientPID: 19367
+ClientCommand: guix publish -u guix-publish -p 3000 -C 9 @dots{}
+
+SessionPID: 19444
+ClientPID: 19419
+ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
+LockHeld: /gnu/store/@dots{}-perl-ipc-cmd-0.96.lock
+LockHeld: /gnu/store/@dots{}-python-six-bootstrap-1.11.0.lock
+LockHeld: /gnu/store/@dots{}-libjpeg-turbo-2.0.0.lock
+ChildProcess: 20495: guix offload x86_64-linux 7200 1 28800
+ChildProcess: 27733: guix offload x86_64-linux 7200 1 28800
+ChildProcess: 27793: guix offload x86_64-linux 7200 1 28800
+@end example
+
+In this example we see that @command{guix-daemon} has three clients:
+@command{guix environment}, @command{guix publish}, and the Cuirass continuous
+integration tool; their process identifier (PID) is given by the
+@code{ClientPID} field.  The @code{SessionPID} field gives the PID of the
+@command{guix-daemon} sub-process of this particular session.
+
+The @code{LockHeld} fields show which store items are currently locked by this
+session, which corresponds to store items being built or substituted (the
+@code{LockHeld} field is not displayed when @command{guix processes} is not
+running as root.)  Last, by looking at the @code{ChildProcess} field, we
+understand that these three builds are being offloaded (@pxref{Daemon Offload
+Setup}).
+
+The output is in Recutils format so we can use the handy @command{recsel}
+command to select sessions of interest (@pxref{Selection Expressions,,,
+recutils, GNU recutils manual}).  As an example, the command shows the command
+line and PID of the client that triggered the build of a Perl package:
+
+@example
+$ sudo guix processes | \
+    recsel -p ClientPID,ClientCommand -e 'LockHeld ~ "perl"'
+ClientPID: 19419
+ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
+@end example
 
 @c *********************************************************************
 @node GNU Distribution

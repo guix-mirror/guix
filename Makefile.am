@@ -201,6 +201,7 @@ MODULES =					\
   guix/scripts/hash.scm				\
   guix/scripts/pack.scm				\
   guix/scripts/pull.scm				\
+  guix/scripts/processes.scm			\
   guix/scripts/substitute.scm			\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
@@ -343,6 +344,7 @@ SCM_TESTS =					\
   tests/ui.scm					\
   tests/status.scm				\
   tests/records.scm				\
+  tests/processes.scm				\
   tests/upstream.scm				\
   tests/combinators.scm				\
   tests/discovery.scm				\
