@@ -117,10 +117,6 @@ with a properly initialized store database.
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
-  (define libgcrypt
-    (module-ref (resolve-interface '(gnu packages gnupg))
-                'libgcrypt))
-
   (define schema
     (and localstatedir?
          (local-file (search-path %load-path
