@@ -455,7 +455,7 @@ to generate and parse.  The two primary functions are @code{cbor.loads} and
                             (assoc-ref %outputs "out") "/lib"))))
     (home-page "https://google.github.io/flatbuffers/")
     (synopsis "Memory-efficient serialization library")
-    (description "FlatBuffers is a cross platform serialization library for C++,
+    (description "FlatBuffers is a cross-platform serialization library for C++,
 C#, C, Go, Java, JavaScript, PHP, and Python.  It was originally created for
 game development and other performance-critical applications.")
     (license license:asl2.0)))
