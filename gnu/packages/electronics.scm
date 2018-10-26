@@ -123,7 +123,7 @@ as simple logic analyzer and/or oscilloscope hardware.")
 (define-public libsigrok
   (package
     (name "libsigrok")
-    (version "0.5.0")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -131,19 +131,17 @@ as simple logic analyzer and/or oscilloscope hardware.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "197kr5ip98lxn7rv10zs35d1w0j7265s0xvckx0mq2l8kdvqd32c"))))
+                "171b553dir5gn6w4f7n37waqk62nq2kf1jykx4ifjacdz5xdw3z4"))))
     (outputs '("out" "doc"))
     (arguments
-     `(#:tests? #f ; tests need usb access
+     `(#:tests? #f                      ; tests need USB access
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'change-udev-group
            (lambda _
-             (let ((file "contrib/z60_libsigrok.rules"))
-               (substitute* file
-                 (("plugdev") "dialout"))
-               (rename-file file "contrib/60-libsigrok.rules")
-               #t)))
+             (substitute* (find-files "contrib" "\\.rules$")
+               (("plugdev") "dialout"))
+             #t))
          (add-after 'build 'build-doc
            (lambda _
              (invoke "doxygen")))
@@ -155,11 +153,12 @@ as simple logic analyzer and/or oscilloscope hardware.")
              #t))
          (add-after 'install-doc 'install-udev-rules
            (lambda* (#:key outputs #:allow-other-keys)
-             (install-file "contrib/60-libsigrok.rules"
-                           (string-append
-                            (assoc-ref outputs "out")
-                            "/lib/udev/rules.d/"))
-             #t))
+             (let* ((out   (assoc-ref outputs "out"))
+                    (rules (string-append out "/lib/udev/rules.d/")))
+               (for-each (lambda (file)
+                           (install-file file rules))
+                         (find-files "contrib" "\\.rules$"))
+               #t)))
          (add-after 'install-udev-rules 'install-fw
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((fx2lafw (assoc-ref inputs "sigrok-firmware-fx2lafw"))
@@ -167,7 +166,6 @@ as simple logic analyzer and/or oscilloscope hardware.")
                     (dir-suffix "/share/sigrok-firmware/")
                     (input-dir (string-append fx2lafw dir-suffix))
                     (output-dir (string-append out dir-suffix)))
-               (mkdir-p output-dir)
                (for-each
                 (lambda (file)
                   (install-file file output-dir))
