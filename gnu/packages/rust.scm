@@ -706,13 +706,6 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    ;; This test wants to update the crate index.
                    (("fn no_index_update") "#[ignore]\nfn no_index_update"))
                  #t))
-             ;; FIXME: Re-enable this test if it's indeed supposed to work.
-             ;; See <https://github.com/rust-lang/rust/issues/54178>.
-             (add-after 'configure 'disable-nil-enum-test
-               (lambda _
-                 (substitute* "src/test/debuginfo/nil-enum.rs"
-                   (("ignore-lldb") "ignore-gdb"))
-                 #t))
              (replace 'patch-aarch64-test
                (lambda _
                  (substitute* "src/librustc_metadata/dynamic_lib.rs"
