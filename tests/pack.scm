@@ -55,7 +55,7 @@
 ;; quite inexpensively; see <https://bugs.gnu.org/32184>.
 
 (with-external-store store
-  (unless store (tests-skip 1))
+  (unless store (test-skip 1))
   (test-assertm "self-contained-tarball" store
     (mlet* %store-monad
         ((profile (profile-derivation (packages->manifest
