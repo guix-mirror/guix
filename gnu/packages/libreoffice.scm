@@ -731,6 +731,9 @@ Works word processor file format.")
       (sha256 (base32
                "08mg5kmkjrmqrd8j5rkzw9vdqlvibhb1ynp6bmfxnzq5rcq1l197"))))
    (build-system gnu-build-system)
+   (arguments
+    ;; A harmless 'sign-compare' error pops up on i686 so disable '-Werror'.
+    '(#:configure-flags '("--disable-werror")))
    (inputs
     `(("boost" ,boost)
       ("icu4c" ,icu4c)
