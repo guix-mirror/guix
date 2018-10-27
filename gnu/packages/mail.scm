@@ -184,7 +184,13 @@
 
              #t)))
        ;; TODO: Add `--with-sql'.
-       #:configure-flags '("--sysconfdir=/etc")
+       #:configure-flags (list "--sysconfdir=/etc"
+
+                               ;; Add "/2.2" to the installation directory.
+                               (string-append "--with-guile-site-dir="
+                                              (assoc-ref %outputs "out")
+                                              "/share/guile/site/2.2"))
+
        #:parallel-tests? #f))
     (native-inputs
      `(("perl" ,perl)))                           ;for 'gylwrap'
