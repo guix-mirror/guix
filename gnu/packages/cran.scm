@@ -6185,6 +6185,29 @@ estimation problem.")
     ;; The CRAN page only says GPL-3.
     (license license:gpl3+)))
 
+(define-public r-abundant
+  (package
+    (name "r-abundant")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abundant" version))
+       (sha256
+        (base32 "1m76qdmqvwpgm0sihazi2dna7cgsz9rljal18vgffb5wamwmg9k7"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-quic" ,r-quic)))
+    (home-page "https://cran.r-project.org/web/packages/abundant/")
+    (synopsis "Abundant regression and high-dimensional principal fitted components")
+    (description
+     "This package provides tools to fit and predict with the high-dimensional
+principal fitted components model.  This model is described by Cook, Forzani,
+and Rothman (2012) @url{doi:10.1214/11-AOS962}.")
+    ;; The DESCRIPTION file states GPL-2, but since it directly depends on a
+    ;; GPLv3+ package (QUIC) this likely means GPLv2+.
+    (license license:gpl2+)))
+
 (define-public r-ac3net
   (package
     (name "r-ac3net")
