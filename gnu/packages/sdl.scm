@@ -486,7 +486,7 @@ sound and device input (keyboards, joysticks, mice, etc.).")
 (define-public guile-sdl2
   (package
     (name "guile-sdl2")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -494,7 +494,7 @@ sound and device input (keyboards, joysticks, mice, etc.).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0iq6fw213qw292fxhrsg40al7hqyqyh4qpgl0x9rh08y949h2w97"))))
+                "0bw7x2lx90k4banc5k7yfkn3as93y25gr1xdr225ll7lmij21k64"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")
