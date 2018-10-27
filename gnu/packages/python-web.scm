@@ -2168,6 +2168,25 @@ It comes with safe defaults and easily configurable options.")
 (define-public python2-flask-htmlmin
   (package-with-python2 python-flask-htmlmin))
 
+(define-public python-jsmin
+  (package
+    (name "python-jsmin")
+    (version "2.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jsmin" version))
+       (sha256
+        (base32
+         "0fsmqbjvpxvff0984x7c0y8xmf49ax9mncz48b9xjx8wrnr9kpxn"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/tikitu/jsmin/")
+    (synopsis "Python JavaScript minifier")
+    (description
+     "@code{jsmin} is a JavaScript minifier, usable from both Python code and
+on the command line.")
+    (license license:expat)))
+
 (define-public python-flask-login
   (package
     (name "python-flask-login")
