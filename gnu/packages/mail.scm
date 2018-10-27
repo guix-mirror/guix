@@ -6,7 +6,7 @@
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
@@ -2621,3 +2621,29 @@ within the message, and allows you to choose one or more URLs to send to your
 Web browser.  Alternatively, it send a list of all URLs to stdout.  It is a
 replacement for the @code{urlview} program.")
     (license gpl2)))
+
+(define-public tnef
+  (package
+    (name "tnef")
+    (version "1.4.17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/verdammelt/tnef.git")
+             (commit version)))
+       (sha256
+        (base32
+         "0cq2xh5wd74qn6k2nnw5rayxgqhjl3jbzf4zlc4babcwxrv32ldh"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (arguments `(#:parallel-tests? #f)) ;tests are side-effect'y
+    (home-page "https://github.com/verdammelt/tnef")
+    (synopsis "Unpack @code{application/ms-tnef} attachments")
+    (description
+     "TNEF is a tar-like program that unpacks MIME attachments of type
+@code{application/ms-tnef}.")
+    (license gpl2+)))
