@@ -48,27 +48,17 @@
 (define-public gvpe
   (package
     (name "gvpe")
-    (version "3.0")
+    (version "3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gvpe/gvpe-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1v61mj25iyd91z0ir7cmradkkcm1ffbk52c96v293ibsvjs2s2hf"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Remove the outdated bundled copy of glibc's getopt, which
-                  ;; provides a 'getopt' declaration that conflicts with that
-                  ;; of glibc 2.26.
-                  (substitute* "lib/Makefile.in"
-                    (("getopt1?\\.(c|h|\\$\\(OBJEXT\\))") ""))
-                  (for-each delete-file
-                            '("lib/getopt.h" "lib/getopt.c"))
-                  #t))))
+                "1cz8n75ksl0l908zc5l3rnfm1hv7130s2w8710799fr5sxrdbszi"))))
     (build-system gnu-build-system)
     (home-page "http://software.schmorp.de/pkg/gvpe.html")
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("openssl" ,openssl)
               ("zlib" ,zlib)))
     (synopsis "Secure VPN among multiple nodes over an untrusted network")
