@@ -3697,7 +3697,7 @@ library.")
 (define-public perl-www-mechanize
   (package
     (name "perl-www-mechanize")
-    (version "1.88")
+    (version "1.89")
     (source
      (origin
        (method url-fetch)
@@ -3705,7 +3705,7 @@ library.")
                            "WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
-         "0yd8a1zsfpbv5wr79x3iqmik9gvcd10iam9dfrdan4dri9vpxn9n"))))
+         "1mxx362vqiniw8vi6k3j7v9b1s7012irhfcblcz1p6jz9cjqi7mh"))))
     (build-system perl-build-system)
     (native-inputs                      ;only for tests
      `(("perl-cgi" ,perl-cgi)
