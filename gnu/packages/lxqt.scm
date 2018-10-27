@@ -903,7 +903,7 @@ components to build desktop file managers which belongs to LXDE.")
     (synopsis "File manager and desktop icon manager")
     (description "PCManFM-Qt is the Qt port of PCManFM, the file manager of
 LXDE.")
-    (license license:lgpl2.1+)))
+    (license license:gpl2+)))
 
 
 ;; Extra
@@ -977,7 +977,7 @@ manager Compton.")
     (synopsis "The image viewer and screenshot tool for lxqt")
     (description "LXImage-Qt is the Qt port of LXImage, a simple and fast
 image viewer.")
-    (license license:lgpl2.1+)))
+    (license license:gpl2+)))
 
 (define-public obconf-qt
   (package
@@ -1048,7 +1048,7 @@ window manager OpenBox.")
     (synopsis "Pulseaudio mixer in Qt")
     (description "@code{pavucontrol-qt} is the Qt port of volume control
 @code{pavucontrol} of sound server @code{PulseAudio}.")
-    (license license:lgpl2.1+)))
+    (license license:gpl2+)))
 
 (define-public qps
   (package
@@ -1101,7 +1101,7 @@ processes currently in existence, much like code{top} or code{ps}.")
     (home-page "https://lxqt.org/")
     (synopsis "The terminal widget for QTerminal")
     (description "QTermWidget is a terminal emulator widget for Qt 5.")
-    (license license:lgpl2.1+)))
+    (license license:gpl2+)))
 
 (define-public qterminal
   (package
@@ -1131,7 +1131,7 @@ processes currently in existence, much like code{top} or code{ps}.")
     (synopsis "Lightweight Qt-based terminal emulator")
     (description "QTerminal is a lightweight Qt terminal emulator based on
 QTermWidget.")
-    (license license:lgpl2.1+)))
+    (license license:gpl2+)))
 
 (define-public screengrab
   (package
@@ -1160,7 +1160,7 @@ QTermWidget.")
     (synopsis "Crossplatform tool for fast making screenshots")
     (description "ScreenGrab is a program for fast creating screenshots, and
 easily publishing them on internet image hosting services.")
-    (license license:lgpl2.1+)))
+    (license license:gpl2+)))
 
 
 ;; The LXQt Desktop Environment
@@ -1211,4 +1211,4 @@ easily publishing them on internet image hosting services.")
     (synopsis "The Lightweight Qt Desktop Environment")
     (description "LXQt is a lightweight Qt desktop environment.")
     (home-page "https://lxde.org")
-    (license license:lgpl2.1+)))
+    (license license:gpl2+)))
