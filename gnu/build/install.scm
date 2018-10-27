@@ -18,7 +18,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu build install)
-  #:use-module (guix store database)
   #:use-module (guix build utils)
   #:use-module (guix build store-copy)
   #:use-module (srfi srfi-26)
@@ -140,23 +139,6 @@ includes /etc, /var, /run, /bin/sh, etc., and all the symlinks to SYSTEM."
                 (delete-file generation-1)
                 (try))
               (apply throw args)))))))
-
-(define* (register-closure prefix closure
-                           #:key
-                           (deduplicate? #t) (reset-timestamps? #t)
-                           (schema (sql-schema)))
-  "Register CLOSURE in PREFIX, where PREFIX is the directory name of the
-target store and CLOSURE is the name of a file containing a reference graph as
-produced by #:references-graphs..  As a side effect, if RESET-TIMESTAMPS? is
-true, reset timestamps on store files and, if DEDUPLICATE? is true,
-deduplicates files common to CLOSURE and the rest of PREFIX."
-  (let ((items (call-with-input-file closure read-reference-graph)))
-    (register-items items
-                    #:prefix prefix
-                    #:deduplicate? deduplicate?
-                    #:reset-timestamps? reset-timestamps?
-                    #:registration-time %epoch
-                    #:schema schema)))
 
 (define* (populate-single-profile-directory directory
                                             #:key profile closure
