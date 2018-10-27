@@ -1521,3 +1521,37 @@ the X11 clipboard")
 the numlock key in X11.  It can be called from the user's initialization files
 to automatically turn it on on login.")
     (license license:expat)))
+
+(define-public xrandr-invert-colors
+  (package
+    (name "xrandr-invert-colors")
+    (version "0.01")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/zoltanp/xrandr-invert-colors.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1br3x9vr6xm4ika06n8cfxx1b3wdchdqvyzjl4y1chmivrml8x9h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc")
+       #:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin")))
+               (install-file "xrandr-invert-colors.bin" bin)
+               #t))))))
+    (inputs
+     `(("libxrandr" ,libxrandr)))
+    (home-page "https://github.com/zoltanp/xrandr-invert-colors")
+    (synopsis "Invert display colors")
+    (description "This package provides a small utility for inverting the
+colors on all monitors attached to an XRandR-capable X11 display server.")
+    (license license:gpl3+)))
