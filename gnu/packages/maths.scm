@@ -286,13 +286,13 @@ programming language.")
 (define-public units
   (package
    (name "units")
-   (version "2.17")
+   (version "2.18")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/units/units-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1n2xzpnxfn475zkd8rzs5gg58xszjbr4bdbgvk6hryzimvwwj0qz"))))
+                     "0y26kj349i048y4z3xrk90bvciw2j6ds3rka7r7yn3183hirr5b4"))))
    (build-system gnu-build-system)
    (inputs
     `(("readline" ,readline)
