@@ -103,6 +103,47 @@ found."
                       (package-transitive-propagated-inputs package)))
               (list guile-gcrypt guile-sqlite3)))
 
+(define (store-database items)
+  "Return a directory containing a store database where all of ITEMS and their
+dependencies are registered."
+  (define schema
+    (local-file (search-path %load-path
+                             "guix/store/schema.sql")))
+
+
+  (define labels
+    (map (lambda (n)
+           (string-append "closure" (number->string n)))
+         (iota (length items))))
+
+  (define build
+    (with-extensions gcrypt-sqlite3&co
+      ;; XXX: Adding (gnu build install) just to work around
+      ;; <https://bugs.gnu.org/15602>: that way, (guix build store-copy) is
+      ;; copied last and the 'store-info-XXX' macros are correctly expanded.
+      (with-imported-modules (source-module-closure
+                              '((guix build store-copy)
+                                (guix store database)
+                                (gnu build install)))
+        #~(begin
+            (use-modules (guix store database)
+                         (guix build store-copy)
+                         (srfi srfi-1))
+
+            (define (read-closure closure)
+              (call-with-input-file closure read-reference-graph))
+
+            (let ((items (append-map read-closure '#$labels)))
+              (register-items items
+                              #:state-directory #$output
+                              #:deduplicate? #f
+                              #:reset-timestamps? #f
+                              #:registration-time %epoch
+                              #:schema #$schema))))))
+
+  (computed-file "store-database" build
+                 #:options `(#:references-graphs ,(zip labels items))))
+
 (define* (self-contained-tarball name profile
                                  #:key target
                                  deduplicate?
@@ -117,10 +158,10 @@ with a properly initialized store database.
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
-  (define schema
+  (define database
     (and localstatedir?
-         (local-file (search-path %load-path
-                                  "guix/store/schema.sql"))))
+         (file-append (store-database (list profile))
+                      "/db/db.sqlite")))
 
   (define build
     (with-imported-modules `(((guix config) => ,(make-config.scm))
@@ -181,9 +222,7 @@ added to the pack."
             (populate-single-profile-directory %root
                                                #:profile #$profile
                                                #:closure "profile"
-                                               #:deduplicate? #f
-                                               #:register? #$localstatedir?
-                                               #:schema #$schema)
+                                               #:database #+database)
 
             ;; Create SYMLINKS.
             (for-each (cut evaluate-populate-directive <> %root)
@@ -240,7 +279,6 @@ added to the pack."
 
 (define* (squashfs-image name profile
                          #:key target
-                         deduplicate?
                          (compressor (first %compressors))
                          localstatedir?
                          (symlinks '())
@@ -252,74 +290,70 @@ points for virtual file systems (like procfs), and optional symlinks.
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
   (define build
-    (with-imported-modules `(((guix config) => ,(make-config.scm))
-                             ,@(source-module-closure
-                                '((guix build utils)
-                                  (guix build store-copy)
-                                  (gnu build install))
-                                #:select? not-config?))
-      (with-extensions gcrypt-sqlite3&co
-        #~(begin
-            (use-modules (guix build utils)
-                         (gnu build install)
-                         (guix build store-copy)
-                         (srfi srfi-1)
-                         (srfi srfi-26)
-                         (ice-9 match))
+    (with-imported-modules (source-module-closure
+                            '((guix build utils)
+                              (guix build store-copy))
+                            #:select? not-config?)
+      #~(begin
+          (use-modules (guix build utils)
+                       (guix build store-copy)
+                       (srfi srfi-1)
+                       (srfi srfi-26)
+                       (ice-9 match))
 
-            (setenv "PATH" (string-append #$archiver "/bin"))
+          (setenv "PATH" (string-append #$archiver "/bin"))
 
-            ;; We need an empty file in order to have a valid file argument when
-            ;; we reparent the root file system.  Read on for why that's
-            ;; necessary.
-            (with-output-to-file ".empty" (lambda () (display "")))
+          ;; We need an empty file in order to have a valid file argument when
+          ;; we reparent the root file system.  Read on for why that's
+          ;; necessary.
+          (with-output-to-file ".empty" (lambda () (display "")))
 
-            ;; Create the squashfs image in several steps.
-            ;; Add all store items.  Unfortunately mksquashfs throws away all
-            ;; ancestor directories and only keeps the basename.  We fix this
-            ;; in the following invocations of mksquashfs.
-            (apply invoke "mksquashfs"
-                   `(,@(map store-info-item
-                            (call-with-input-file "profile"
-                              read-reference-graph))
-                     ,#$output
+          ;; Create the squashfs image in several steps.
+          ;; Add all store items.  Unfortunately mksquashfs throws away all
+          ;; ancestor directories and only keeps the basename.  We fix this
+          ;; in the following invocations of mksquashfs.
+          (apply invoke "mksquashfs"
+                 `(,@(map store-info-item
+                          (call-with-input-file "profile"
+                            read-reference-graph))
+                   ,#$output
 
-                     ;; Do not perform duplicate checking because we
-                     ;; don't have any dupes.
-                     "-no-duplicates"
-                     "-comp"
-                     ,#+(compressor-name compressor)))
+                   ;; Do not perform duplicate checking because we
+                   ;; don't have any dupes.
+                   "-no-duplicates"
+                   "-comp"
+                   ,#+(compressor-name compressor)))
 
-            ;; Here we reparent the store items.  For each sub-directory of
-            ;; the store prefix we need one invocation of "mksquashfs".
-            (for-each (lambda (dir)
-                        (apply invoke "mksquashfs"
-                               `(".empty"
-                                 ,#$output
-                                 "-root-becomes" ,dir)))
-                      (reverse (string-tokenize (%store-directory)
-                                                (char-set-complement (char-set #\/)))))
+          ;; Here we reparent the store items.  For each sub-directory of
+          ;; the store prefix we need one invocation of "mksquashfs".
+          (for-each (lambda (dir)
+                      (apply invoke "mksquashfs"
+                             `(".empty"
+                               ,#$output
+                               "-root-becomes" ,dir)))
+                    (reverse (string-tokenize (%store-directory)
+                                              (char-set-complement (char-set #\/)))))
 
-            ;; Add symlinks and mount points.
-            (apply invoke "mksquashfs"
-                   `(".empty"
-                     ,#$output
-                     ;; Create SYMLINKS via pseudo file definitions.
-                     ,@(append-map
-                        (match-lambda
-                          ((source '-> target)
-                           (list "-p"
-                                 (string-join
-                                  ;; name s mode uid gid symlink
-                                  (list source
-                                        "s" "777" "0" "0"
-                                        (string-append #$profile "/" target))))))
-                        '#$symlinks)
+          ;; Add symlinks and mount points.
+          (apply invoke "mksquashfs"
+                 `(".empty"
+                   ,#$output
+                   ;; Create SYMLINKS via pseudo file definitions.
+                   ,@(append-map
+                      (match-lambda
+                        ((source '-> target)
+                         (list "-p"
+                               (string-join
+                                ;; name s mode uid gid symlink
+                                (list source
+                                      "s" "777" "0" "0"
+                                      (string-append #$profile "/" target))))))
+                      '#$symlinks)
 
-                     ;; Create empty mount points.
-                     "-p" "/proc d 555 0 0"
-                     "-p" "/sys d 555 0 0"
-                     "-p" "/dev d 555 0 0"))))))
+                   ;; Create empty mount points.
+                   "-p" "/proc d 555 0 0"
+                   "-p" "/sys d 555 0 0"
+                   "-p" "/dev d 555 0 0")))))
 
   (gexp->derivation (string-append name
                                    (compressor-extension compressor)
