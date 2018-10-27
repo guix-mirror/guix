@@ -952,6 +952,10 @@ Libxml2).")
   (package
     (inherit xmlsec)
     (name "xmlsec-nss")
+    (native-inputs
+     ;; For tests.
+     `(("nss:bin" ,nss "bin")           ; for certutil
+       ,@(package-native-inputs xmlsec)))
     (inputs
      `(("nss" ,nss)
        ("libltdl" ,libltdl)))
