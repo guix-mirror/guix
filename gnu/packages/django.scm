@@ -338,6 +338,47 @@ merging, minifying and compiling CSS and Javascript files.")
 (define-public python2-django-assets
   (package-with-python2 python-django-assets))
 
+(define-public python-django-jinja
+  (package
+    (name "python-django-jinja")
+    (version "2.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/niwinz/django-jinja/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bzrb4m6wx9ph5cpvz7wpvg5k6ksvj0dnxlg0nhhqskhvp46brs1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pytz" ,python-pytz)
+       ("python-django-pipeline" ,python-django-pipeline)))
+    (arguments
+     '(;; TODO Tests currently fail due to issues with the configuration for
+       ;; django-pipeline
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (or
+              (not tests?)
+              (with-directory-excursion "testing"
+                (invoke "python" "runtests.py"))))))))
+    (home-page
+     "https://niwinz.github.io/django-jinja/latest/")
+    (synopsis "Simple jinja2 templating backend for Django")
+    (description
+     "This package provides a templating backend for Django, using Jinja2.  It
+provides certain advantages over the builtin Jinja2 backend in Django, for
+example, explicit calls to callables from templates and better performance.")
+    (license license:bsd-3)))
+
 (define-public python-django-jsonfield
   (package
     (name "python-django-jsonfield")
