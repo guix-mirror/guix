@@ -6162,6 +6162,29 @@ representing one simulated time step.  Various mutation events are possible at
 each time step, contributing to a diverse final repertoire.")
     (license license:gpl2)))
 
+(define-public r-quic
+  (package
+    (name "r-quic")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "QUIC" version))
+       (sha256
+        (base32 "021bp9xbaih60qmss015ycblbv6d1dvb1z89y93zpqqnc2qhpv3c"))))
+    (properties `((upstream-name . "QUIC")))
+    (build-system r-build-system)
+    (home-page "https://www.cs.utexas.edu/users/sustik/QUIC/")
+    (synopsis "Regularized sparse inverse covariance matrix estimation")
+    (description
+     "This package implements the regularized Gaussian maximum likelihood
+estimation of the inverse of a covariance matrix.  It uses Newton's method and
+coordinate descent to solve the regularized inverse covariance matrix
+estimation problem.")
+    ;; The project home page states that the release is under GPLv3 or later.
+    ;; The CRAN page only says GPL-3.
+    (license license:gpl3+)))
+
 (define-public r-ac3net
   (package
     (name "r-ac3net")
