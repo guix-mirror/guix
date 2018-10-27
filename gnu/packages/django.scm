@@ -265,6 +265,41 @@ account authentication.")
 (define-public python2-django-allauth
   (package-with-python2 python-django-allauth))
 
+(define-public python-django-debug-toolbar
+  (package
+    (name "python-django-debug-toolbar")
+    (version "1.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/jazzband/django-debug-toolbar/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rww056hyzks8spbgf4h7kf6ybxlc5p08a2b6gn1nqrrzs4yx9sy"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-sqlparse" ,python-sqlparse)
+       ("python-django" ,python-django)))
+    (native-inputs
+     `(("python-django-jinja" ,python-django-jinja)
+       ("python-html5lib" ,python-html5lib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "make" "test"))))))
+    (home-page
+     "https://github.com/jazzband/django-debug-toolbar")
+    (synopsis "Toolbar to help with developing Django applications")
+    (description
+     "A configurable set of panels that display information about the current
+request and response as a toolbar on the rendered page.")
+    (license license:bsd-3)))
+
 (define-public python-django-gravatar2
   (package
     (name "python-django-gravatar2")
