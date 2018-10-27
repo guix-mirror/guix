@@ -126,24 +126,14 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.4")
+    (version "3.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
-                                 version ".tar.bz2"))
+                                 version ".tar.xz"))
              (sha256
               (base32
-               "1dn71p85wlyisnwsb485sk3q5v393k3dizsa9fmimskdwjwgk3ch"))
-             (patches
-              (search-patches "mailutils-uninitialized-memory.patch"))
-             (snippet
-              ;; For a rebuild of the Flex/Bison byproducts touched by the
-              ;; patch above.
-              '(begin
-                 (for-each delete-file
-                           '("mh/mh_alias_lex.c"
-                             "libmailutils/cfg/parser.c"))
-                 #t))))
+               "1wx275w38fwni2abc8g7g3irbk332vr34byxd72zqfdiznsqgims"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -197,16 +187,12 @@
        #:configure-flags '("--sysconfdir=/etc")
        #:parallel-tests? #f))
     (native-inputs
-     ;; Note: Bison and Flex needed due to
-     ;; 'mailutils-uninitialized-memory.patch'.
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("perl" ,perl)))                           ;for 'gylwrap'
+     `(("perl" ,perl)))                           ;for 'gylwrap'
     (inputs
      `(("dejagnu" ,dejagnu)
        ("m4" ,m4)
        ("texinfo" ,texinfo)
-       ("guile" ,guile-2.0)
+       ("guile" ,guile-2.2)
        ("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
        ("readline" ,readline)
