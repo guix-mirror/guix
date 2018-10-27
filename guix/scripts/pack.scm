@@ -38,7 +38,7 @@
   #:use-module ((guix self) #:select (make-config.scm))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
-  #:use-module (gnu packages compression)
+  #:use-module ((gnu packages compression) #:hide (zip))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages base)
   #:autoload   (gnu packages package-management) (guix)
