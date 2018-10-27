@@ -134,7 +134,7 @@ environment variables of the current shell.")
 (define-public fzy
   (package
     (name "fzy")
-    (version "0.9")
+    (version "1.0")
     (source
      (origin
        (method git-fetch)
@@ -144,7 +144,7 @@ environment variables of the current shell.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1f1sh88ivdgnqaqha5ircfd9vb0xmss976qns022n0ddb91k5ka6"))))
+         "1gkzdvj73f71388jvym47075l9zw61v6l8wdv2lnc0mns6dxig0k"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
