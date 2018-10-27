@@ -199,6 +199,7 @@
        ("m4" ,m4)
        ("texinfo" ,texinfo)
        ("guile" ,guile-2.2)
+       ("gsasl" ,gsasl)
        ("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
        ("readline" ,readline)
