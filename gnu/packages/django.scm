@@ -518,6 +518,46 @@ project.")
 (define-public python2-django-overextends
   (package-with-python2 python-django-overextends))
 
+(define-public python-django-pipeline
+  (package
+    (name "python-django-pipeline")
+    (version "1.6.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-pipeline" version))
+       (sha256
+        (base32
+         "1a207y71r7za033ira0qmh2yrgp5rq0l04gw2fg9b8jri7sslrzg"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "tests/tests/test_compiler.py"
+               (("\\/usr\\/bin\\/env")
+                (which "env")))))
+         (replace 'check
+           (lambda*(#:key tests? #:allow-other-keys)
+             (or
+              (not tests?)
+              (begin
+                (setenv "DJANGO_SETTINGS_MODULE" "tests.settings")
+                (invoke "django-admin" "test" "tests"))))))))
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-slimit" ,python-slimit)
+       ("python-jsmin" ,python-jsmin)))
+    (home-page
+     "https://github.com/jazzband/django-pipeline")
+    (synopsis "Asset packaging library for Django")
+    (description
+     "Pipeline is an asset packaging library for Django, providing both CSS
+and JavaScript concatenation and compression, built-in JavaScript template
+support, and optional data-URI image and font embedding.")
+    (license license:expat)))
+
 (define-public python-django-redis
   (package
     (name "python-django-redis")
