@@ -763,6 +763,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-versioned-locpath.patch		\
   %D%/packages/patches/glibc-2.27-git-fixes.patch		\
   %D%/packages/patches/glibc-2.28-git-fixes.patch		\
+  %D%/packages/patches/glibc-supported-locales.patch     	\
   %D%/packages/patches/glusterfs-use-PATH-instead-of-hardcodes.patch		\
   %D%/packages/patches/glog-gcc-5-demangling.patch		\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
