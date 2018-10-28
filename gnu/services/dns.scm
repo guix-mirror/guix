@@ -763,9 +763,9 @@ manually.")
         (use-modules (guix build utils)
                      (ice-9 rdelim))
         (let ((ddclient-user
-               #$(passwd:uid (getpw (ddclient-configuration-user config))))
+               (passwd:uid (getpw #$(ddclient-configuration-user config))))
               (ddclient-group
-               #$(passwd:gid (getpw (ddclient-configuration-group config))))
+               (passwd:gid (getpw #$(ddclient-configuration-group config))))
               (ddclient-secret-file
                #$(ddclient-configuration-secret-file config)))
           ;; 'ddclient' complains about ddclient.conf file permissions, which
