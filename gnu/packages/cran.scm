@@ -6736,3 +6736,26 @@ back to file after modifications.")
     (description
      "This package provides a minimal R client to access the GitHub API.")
     (license license:expat)))
+
+(define-public r-fs
+  (package
+    (name "r-fs")
+    (version "1.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fs" version))
+       (sha256
+        (base32
+         "0kqqaqqml8x3r1mdld40iwns0ylj2f52qsdh1vcn39f7w7c2ka8j"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://fs.r-lib.org")
+    (synopsis "Cross-platform file system operations based on libuv")
+    (description
+     "This package provides a cross-platform interface to file system
+operations, built on top of the libuv C library.")
+    (license license:gpl3)))
