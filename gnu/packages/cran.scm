@@ -6693,3 +6693,24 @@ component analysis and correlation matrices, cluster analyses, scatter plots,
 stacked scales, effects plots of regression models (including interaction
 terms) and much more.  This package supports labelled data.")
     (license license:gpl3)))
+
+(define-public r-ini
+  (package
+    (name "r-ini")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ini" version))
+       (sha256
+        (base32
+         "04yqij344dwm0xqgara8xia42mlmij3i8711qbb5534w05a1l6bv"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/dvdscripter/ini")
+    (synopsis "Read and write configuration files")
+    (description
+     "This package provides tools to parse simple @code{.ini} configuration
+files to an structured list.  Users can manipulate this resulting list with
+@code{lapply()} functions.  This same structured list can be used to write
+back to file after modifications.")
+    (license license:gpl3)))
