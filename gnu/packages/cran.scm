@@ -6779,3 +6779,38 @@ operations, built on top of the libuv C library.")
 when building command line applications.  They fall back to alternatives on
 terminals that do not support Unicode.")
     (license license:expat)))
+
+(define-public r-usethis
+  (package
+    (name "r-usethis")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "usethis" version))
+       (sha256
+        (base32
+         "1gadckx3sxz9gxvpkprj9x7zcgg2nz5m4q0vi76ya9li1v03rwwn"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-clipr" ,r-clipr)
+       ("r-clisymbols" ,r-clisymbols)
+       ("r-crayon" ,r-crayon)
+       ("r-curl" ,r-curl)
+       ("r-desc" ,r-desc)
+       ("r-fs" ,r-fs)
+       ("r-gh" ,r-gh)
+       ("r-git2r" ,r-git2r)
+       ("r-glue" ,r-glue)
+       ("r-rlang" ,r-rlang)
+       ("r-rprojroot" ,r-rprojroot)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-whisker" ,r-whisker)))
+    (home-page "https://github.com/r-lib/usethis")
+    (synopsis "Automate R package and project setup")
+    (description
+     "This package helps you to automate R package and project setup tasks
+that are otherwise performed manually.  This includes setting up unit testing,
+test coverage, continuous integration, Git, GitHub integration, licenses,
+Rcpp, RStudio projects, and more.")
+    (license license:gpl3)))
