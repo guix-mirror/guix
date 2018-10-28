@@ -6837,3 +6837,24 @@ Rcpp, RStudio projects, and more.")
 current R session.  It is similar to @code{utils::sessionInfo()}, but includes
 more information about packages, and where they were installed from.")
     (license license:gpl2)))
+
+(define-public r-remotes
+  (package
+    (name "r-remotes")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "remotes" version))
+       (sha256
+        (base32
+         "1xkzlciv68jyf4j8hads0i47nxbgsy1kv7258c6zzyq66z0amhss"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/r-lib/remotes#readme")
+    (synopsis "R package installation from remote repositories")
+    (description
+     "Download and install R packages stored in GitHub, BitBucket, or plain
+subversion or git repositories.  This package is a lightweight replacement of
+the @code{install_*} functions in the @code{devtools} package.  Indeed most of
+the code was copied over from @code{devtools}.")
+    (license license:gpl2+)))
