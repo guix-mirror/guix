@@ -7013,3 +7013,24 @@ problems under linear equality/inequality constraints.  Functions for solving
 quadratic programming problems are also available, which transform such
 problems into least squares ones first.")
     (license license:gpl2+)))
+
+(define-public r-npsurv
+  (package
+    (name "r-npsurv")
+    (version "0.4-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "npsurv" version))
+       (sha256
+        (base32
+         "1wq4c9yfha5azjhrn40iiqkshmvh611sa90jp3lh82n4bl9zfk20"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lsei" ,r-lsei)))
+    (home-page "https://www.stat.auckland.ac.nz/~yongwang")
+    (synopsis "Nonparametric survival analysis")
+    (description
+     "This package contains functions for non-parametric survival analysis of
+exact and interval-censored observations.")
+    (license license:gpl2+)))
