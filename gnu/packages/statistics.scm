@@ -3634,14 +3634,14 @@ the 'lite' version of the more complete @code{viridis} package.")
 (define-public r-tidyselect
   (package
     (name "r-tidyselect")
-    (version "0.2.4")
+    (version "0.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyselect" version))
        (sha256
         (base32
-         "1592dbzawhd1hpsp9919l4sifyiaaj6xr7lnhsbwa6jwmmb0xcsw"))))
+         "0x3cp36byhfjajikr1lwffjm85ayw3bcs7d7kb0cydgs61ifiqjw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-glue" ,r-glue)
