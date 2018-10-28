@@ -6759,3 +6759,23 @@ back to file after modifications.")
      "This package provides a cross-platform interface to file system
 operations, built on top of the libuv C library.")
     (license license:gpl3)))
+
+(define-public r-clisymbols
+  (package
+    (name "r-clisymbols")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "clisymbols" version))
+       (sha256
+        (base32
+         "1q7gi2zmykhzas9v8fdnbpdq7pzdcpbhim1yxvd2062l777g4j86"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/gaborcsardi/clisymbols")
+    (synopsis "Unicode symbols at the R prompt")
+    (description
+     "This package provides a small subset of Unicode symbols, that are useful
+when building command line applications.  They fall back to alternatives on
+terminals that do not support Unicode.")
+    (license license:expat)))
