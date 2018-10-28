@@ -1310,13 +1310,13 @@ supported via Andre Simon's highlight package.")
 (define-public r-mime
   (package
     (name "r-mime")
-    (version "0.5")
+    (version "0.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "mime" version))
               (sha256
                (base32
-                "0i91m3ivaja1k33jwcvz16pfjypkci27awm8glil7sxhmwaj3izw"))))
+                "00f4gw4sg1kn03s67gficxgb7a7fb6pwhlvrxrml05q1mc2vcxa7"))))
     (build-system r-build-system)
     (home-page "https://github.com/yihui/mime")
     (synopsis "R package to map filenames to MIME types")
