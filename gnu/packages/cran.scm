@@ -6910,3 +6910,27 @@ directories or URLs with their associated programs.")
      "Run @code{R CMD check} from R programmatically, and capture the results
 of the individual checks.")
     (license license:expat)))
+
+(define-public r-rapportools
+  (package
+    (name "r-rapportools")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rapportools" version))
+       (sha256
+        (base32
+         "1sgv4sc737i12arh5dc3263kjsz3dzg06qihfmrqyax94mv2d01b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-pander" ,r-pander)
+       ("r-plyr" ,r-plyr)
+       ("r-reshape" ,r-reshape)))
+    (home-page "https://cran.r-project.org/web/packages/rapportools/")
+    (synopsis "Miscellaneous helper functions with sane defaults for reporting")
+    (description
+     "This package provides helper functions that act as wrappers to more
+advanced statistical methods with the advantage of having sane defaults for
+quick reporting.")
+    (license license:agpl3+)))
