@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2040,6 +2041,8 @@ This service is not part of @var{%base-services}."
                            (default (file-append shadow "/bin/login")))
   (login-arguments         kmscon-configuration-login-arguments
                            (default '("-p")))
+  (auto-login              kmscon-configuration-auto-login
+                           (default #f))
   (hardware-acceleration?  kmscon-configuration-hardware-acceleration?
                            (default #f))) ; #t causes failure
 
@@ -2051,6 +2054,7 @@ This service is not part of @var{%base-services}."
            (virtual-terminal (kmscon-configuration-virtual-terminal config))
            (login-program (kmscon-configuration-login-program config))
            (login-arguments (kmscon-configuration-login-arguments config))
+           (auto-login (kmscon-configuration-auto-login config))
            (hardware-acceleration? (kmscon-configuration-hardware-acceleration? config)))
 
        (define kmscon-command
@@ -2059,7 +2063,11 @@ This service is not part of @var{%base-services}."
             "--vt" #$virtual-terminal
             "--no-switchvt" ;Prevent a switch to the virtual terminal.
             #$@(if hardware-acceleration? '("--hwaccel") '())
-            "--" #$login-program #$@login-arguments))
+            "--login" "--"
+            #$login-program #$@login-arguments
+            #$@(if auto-login
+                   #~(#$auto-login)
+                   #~())))
 
        (shepherd-service
         (documentation "kmscon virtual terminal")

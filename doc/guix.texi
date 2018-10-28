@@ -31,7 +31,7 @@ Copyright @copyright{} 2016, 2017, 2018 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017, 2018 Clément Lassieur@*
-Copyright @copyright{} 2017 Mathieu Othacehe@*
+Copyright @copyright{} 2017, 2018 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
@@ -10938,6 +10938,10 @@ A gexp denoting the name of the log-in program. The default log-in program is
 
 @item @code{login-arguments} (default: @code{'("-p")})
 A list of arguments to pass to @command{login}.
+
+@item @code{auto-login} (default: @code{#f})
+When passed a login name, as a string, the specified user will be logged
+in automatically without prompting for their login name or password.
 
 @item @code{hardware-acceleration?} (default: #f)
 Whether to use hardware acceleration.
