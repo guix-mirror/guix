@@ -6858,3 +6858,24 @@ subversion or git repositories.  This package is a lightweight replacement of
 the @code{install_*} functions in the @code{devtools} package.  Indeed most of
 the code was copied over from @code{devtools}.")
     (license license:gpl2+)))
+
+(define-public r-xopen
+  (package
+    (name "r-xopen")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xopen" version))
+       (sha256
+        (base32
+         "1vrvgdika1d63dwygynbv2wmd87ll8dji5dy89hj576n8hw601z2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-processx" ,r-processx)))
+    (home-page "https://github.com/r-lib/xopen#readme")
+    (synopsis "Open system files, URLs, anything")
+    (description
+     "This package provides a cross-platform solution to open files,
+directories or URLs with their associated programs.")
+    (license license:expat)))
