@@ -6879,3 +6879,34 @@ the code was copied over from @code{devtools}.")
      "This package provides a cross-platform solution to open files,
 directories or URLs with their associated programs.")
     (license license:expat)))
+
+(define-public r-rcmdcheck
+  (package
+    (name "r-rcmdcheck")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rcmdcheck" version))
+       (sha256
+        (base32
+         "13liz9lmx9xgc0f7pjiz3sp8ygvazx2zslbiwz3p9fimfsx1yfsg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-callr" ,r-callr)
+       ("r-cli" ,r-cli)
+       ("r-crayon" ,r-crayon)
+       ("r-desc" ,r-desc)
+       ("r-digest" ,r-digest)
+       ("r-pkgbuild" ,r-pkgbuild)
+       ("r-prettyunits" ,r-prettyunits)
+       ("r-r6" ,r-r6)
+       ("r-rprojroot" ,r-rprojroot)
+       ("r-withr" ,r-withr)
+       ("r-xopen" ,r-xopen)))
+    (home-page "https://github.com/r-Lib/rcmdcheck#readme")
+    (synopsis "Run R CMD check from R and capture results")
+    (description
+     "Run @code{R CMD check} from R programmatically, and capture the results
+of the individual checks.")
+    (license license:expat)))
