@@ -2057,6 +2057,7 @@ This service is not part of @var{%base-services}."
          #~(list
             #$(file-append kmscon "/bin/kmscon") "--login"
             "--vt" #$virtual-terminal
+            "--no-switchvt" ;Prevent a switch to the virtual terminal.
             #$@(if hardware-acceleration? '("--hwaccel") '())
             "--" #$login-program #$@login-arguments))
 
