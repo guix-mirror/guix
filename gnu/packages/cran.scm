@@ -6990,3 +6990,26 @@ tables available in a variety of formats (plain ASCII, Markdown and HTML).  A
 good point-of-entry for exploring data, both for experienced and new R
 users.")
     (license license:gpl2)))
+
+(define-public r-lsei
+  (package
+    (name "r-lsei")
+    (version "1.2-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lsei" version))
+       (sha256
+        (base32
+         "1xl06fb3is744pxlh42wx5hn1h0ab1k31wnmsmh0524kxzcyp0a7"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://www.stat.auckland.ac.nz/~yongwang")
+    (synopsis "Solve regression problems under equality/inequality constraints")
+    (description
+     "It contains functions that solve least squares linear regression
+problems under linear equality/inequality constraints.  Functions for solving
+quadratic programming problems are also available, which transform such
+problems into least squares ones first.")
+    (license license:gpl2+)))
