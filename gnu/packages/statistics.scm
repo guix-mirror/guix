@@ -1617,13 +1617,13 @@ and printing capabilities than traditional data frames.")
 (define-public r-dplyr
   (package
     (name "r-dplyr")
-    (version "0.7.6")
+    (version "0.7.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "dplyr" version))
               (sha256
                (base32
-                "0c43h13s5mr0fklikbbm89gs6z5n66rkjzdv6w3w6kl5af5wr2fl"))))
+                "196lwck3i3m25jnn1f1nrda9svnjqqi89s0is79gbrphamddnlq5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
