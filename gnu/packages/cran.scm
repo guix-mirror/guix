@@ -6934,3 +6934,29 @@ of the individual checks.")
 advanced statistical methods with the advantage of having sane defaults for
 quick reporting.")
     (license license:agpl3+)))
+
+(define-public r-pander
+  (package
+    (name "r-pander")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pander" version))
+       (sha256
+        (base32
+         "0gd7rqkpbraznip8jmri9lqa8ajg1sryyplhd6m633wg91whiipi"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://rapporter.github.io/pander")
+    (synopsis "Render R objects into Pandoc's markdown")
+    (description
+     "The main aim of the pander R package is to provide a minimal and easy
+tool for rendering R objects into Pandoc's markdown.  The package is also
+capable of exporting/converting complex Pandoc documents (reports) in various
+ways.")
+    ;; This package is licensed under either the AGPLv3+ or the very rarely
+    ;; used OSL 3.0.
+    (license license:agpl3+)))
