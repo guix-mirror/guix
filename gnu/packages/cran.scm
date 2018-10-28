@@ -6960,3 +6960,33 @@ ways.")
     ;; This package is licensed under either the AGPLv3+ or the very rarely
     ;; used OSL 3.0.
     (license license:agpl3+)))
+
+(define-public r-summarytools
+  (package
+    (name "r-summarytools")
+    (version "0.8.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "summarytools" version))
+       (sha256
+        (base32
+         "0z836m6ib9bznwcawn6xf8gck05ydxwi3bx4jbrbyqql4kci8zwb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-lubridate" ,r-lubridate)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-pander" ,r-pander)
+       ("r-pryr" ,r-pryr)
+       ("r-rapportools" ,r-rapportools)
+       ("r-rcurl" ,r-rcurl)))
+    (home-page "https://github.com/dcomtois/summarytools")
+    (synopsis "Tools to quickly and neatly summarize data")
+    (description
+     "This package provides tools for data frame summaries, cross-tabulations,
+weight-enabled frequency tables and common univariate statistics in concise
+tables available in a variety of formats (plain ASCII, Markdown and HTML).  A
+good point-of-entry for exploring data, both for experienced and new R
+users.")
+    (license license:gpl2)))
