@@ -6714,3 +6714,25 @@ files to an structured list.  Users can manipulate this resulting list with
 @code{lapply()} functions.  This same structured list can be used to write
 back to file after modifications.")
     (license license:gpl3)))
+
+(define-public r-gh
+  (package
+    (name "r-gh")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gh" version))
+       (sha256
+        (base32
+         "1llinfajb0g7006jd2w1hpskxpmkjhnqarcjb71r1qvsccb2ph7k"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httr" ,r-httr)
+       ("r-ini" ,r-ini)
+       ("r-jsonlite" ,r-jsonlite)))
+    (home-page "https://github.com/r-lib/gh#readme")
+    (synopsis "Access the GitHub API via R")
+    (description
+     "This package provides a minimal R client to access the GitHub API.")
+    (license license:expat)))
