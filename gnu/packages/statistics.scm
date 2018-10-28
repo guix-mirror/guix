@@ -1059,13 +1059,13 @@ legends.")
 (define-public r-ggplot2
   (package
     (name "r-ggplot2")
-    (version "3.0.0")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggplot2" version))
        (sha256
-        (base32 "0kb977hizsvk3b1k3zr717q78bpmbabhl8cj9a3w717nkq1zas67"))))
+        (base32 "1msy36r21nlmnpyaw2m9k0ykmnd19b9il01b65w457pfw75prrs9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
