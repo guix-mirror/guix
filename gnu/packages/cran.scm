@@ -6814,3 +6814,26 @@ that are otherwise performed manually.  This includes setting up unit testing,
 test coverage, continuous integration, Git, GitHub integration, licenses,
 Rcpp, RStudio projects, and more.")
     (license license:gpl3)))
+
+(define-public r-sessioninfo
+  (package
+    (name "r-sessioninfo")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sessioninfo" version))
+       (sha256
+        (base32
+         "01c0m8yzadpwd825hky6as0f8ka4xyz7zfy0ih2iy7qqw11w6qn5"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cli" ,r-cli)
+       ("r-withr" ,r-withr)))
+    (home-page "https://github.com/r-lib/sessioninfo#readme")
+    (synopsis "R session information")
+    (description
+     "This package provides tools to query and print information about the
+current R session.  It is similar to @code{utils::sessionInfo()}, but includes
+more information about packages, and where they were installed from.")
+    (license license:gpl2)))
