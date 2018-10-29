@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,21 +25,27 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages anthy)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages iso-codes)
+  #:use-module (gnu packages logging)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages xorg))
 
 (define-public ibus
@@ -279,3 +286,33 @@ applications allow text input via IBus, installing this package will enable
 Japanese language input in most graphical applications.")
     (home-page "https://github.com/fujiwarat/ibus-anthy")
     (license gpl2+)))
+
+(define-public librime
+  (package
+    (name "librime")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rime/" name
+                           "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qh0hy8bvj17bnzaxk0bmv4gsnbsd6jx8csr84936xmhkrysdday"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("glog" ,glog)
+       ("leveldb" ,leveldb)
+       ("marisa" ,marisa)
+       ("opencc" ,opencc)
+       ("yaml-cpp" ,yaml-cpp)))
+    (home-page "https://rime.im/")
+    (synopsis "The core library of Rime Input Method Engine")
+    (description "@dfn{librime} is the core library of Rime Input Method
+Engine, which is a lightweight, extensible input method engine supporting
+various input schemas including glyph-based input methods, romanization-based
+input methods as well as those for Chinese dialects.  It has the ability to
+compose phrases and sentences intelligently and provide very accurate
+traditional Chinese output.")
+    (license bsd-3)))
