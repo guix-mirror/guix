@@ -15,6 +15,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -756,3 +757,26 @@ indentation.
 @end itemize\n")
     (home-page "http://docx2txt.sourceforge.net")
     (license license:gpl3+)))
+
+(define-public opencc
+  (package
+    (name "opencc")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/BYVoid/OpenCC"
+                           "/archive/ver." version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01870gbkf711msirf3206k0ajaabypjhnx3fny5wikw0ladn9q8w"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("python" ,python-wrapper)))
+    (home-page "https://github.com/BYVoid/OpenCC")
+    (synopsis "Convert between Traditional Chinese and Simplified Chinese")
+    (description "Open Chinese Convert (OpenCC) converts between Traditional
+Chinese and Simplified Chinese, supporting character-level conversion,
+phrase-level conversion, variant conversion, and regional idioms among
+Mainland China, Taiwan, and Hong-Kong.")
+    (license license:asl2.0)))
