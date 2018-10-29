@@ -34,6 +34,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages freedesktop)
@@ -593,3 +594,61 @@ traditional Chinese output.")
     (description "@dfn{rime-data} provides the schema data of Rime Input
 Method Engine.")
     (license lgpl3+)))
+
+(define-public ibus-rime
+  (package
+    (name "ibus-rime")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rime/" name
+                           "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0mfbz0vwky7n4wvxrwabnn1i9n9adnql0dd1rx57w1anaslr5amj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Define RIME_DATA_DIR. It's required but not used by the code.
+             (substitute* "Makefile"
+               (("cmake")
+                (string-append "cmake -DRIME_DATA_DIR="
+                               (assoc-ref inputs "rime-data")
+                               "/share/rime-data")))
+             ;; rime_config.h defines the actual data directory.
+             (substitute* "rime_config.h"
+               (("^#define IBUS_RIME_INSTALL_PREFIX .*$")
+                (string-append "#define IBUS_RIME_INSTALL_PREFIX \""
+                               (assoc-ref outputs "out")
+                               "\"\n"))
+               (("^#define IBUS_RIME_SHARED_DATA_DIR .*$")
+                (string-append "#define IBUS_RIME_SHARED_DATA_DIR \""
+                               (assoc-ref inputs "rime-data")
+                               "/share/rime-data\"\n")))
+             #t))
+         (delete 'configure))))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("ibus" ,ibus)
+       ("libnotify" ,libnotify)
+       ("librime" ,librime)
+       ("rime-data" ,rime-data)))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://rime.im/")
+    (synopsis "Rime Input Method Engine for IBus")
+    (description "@dfn{ibus-rime} provides the Rime input method engine for
+IBus.  Rime is a lightweight, extensible input method engine supporting
+various input schemas including glyph-based input methods, romanization-based
+input methods as well as those for Chinese dialects.  It has the ability to
+compose phrases and sentences intelligently and provide very accurate
+traditional Chinese output.")
+    (license gpl3+)))
