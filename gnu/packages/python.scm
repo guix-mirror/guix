@@ -14433,14 +14433,14 @@ This Python package wraps the Blosc library.")
 (define-public python-partd
   (package
     (name "python-partd")
-    (version "0.3.8")
+    (version "0.3.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "partd" version))
        (sha256
         (base32
-         "03s0i5qfgkx6y24bmfgyd5hnsjznkbbfafwb2khf7k9790f1yab7"))))
+         "0sz6rwlnl4fqq220pyz863cnv0gjdxl4m7lscl71ishl5z0xkmhz"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-blosc" ,python-blosc)
