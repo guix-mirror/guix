@@ -2550,14 +2550,14 @@ plots in @code{ggplot2}.")
 (define-public r-cli
   (package
     (name "r-cli")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cli" version))
        (sha256
         (base32
-         "07as3dr7vwx02p3qgzlmxz1dlrd3x3lysrzp222ip9jcjpydp8wg"))))
+         "1r2yih4c0bdmbx0qrarlf0m1p5z30sri755zmdazsq2pw76zp07g"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
