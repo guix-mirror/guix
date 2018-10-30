@@ -7083,3 +7083,33 @@ series expansion (Dunn and Smyth, 2005; <doi10.1007/s11222-005-4070-y>) and
 the Fourier inversion (Dunn and Smyth, 2008; <doi:10.1007/s11222-007-9039-6>),
 and related methods.")
     (license license:gpl2+)))
+
+(define-public r-rcppgsl
+  (package
+    (name "r-rcppgsl")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppGSL" version))
+       (sha256
+        (base32
+         "16pdapq31729db53agnb48jkvdm97167n3bigy5zazc3q3isis1m"))))
+    (properties `((upstream-name . "RcppGSL")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("gsl" ,gsl)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://cran.r-project.org/web/packages/RcppGSL/")
+    (synopsis "Rcpp integration for GSL vectors and matrices")
+    (description
+     "The GNU Scientific Library (or GSL) is a collection of numerical
+routines for scientific computing.  It is particularly useful for C and C++
+programs as it provides a standard C interface to a wide range of mathematical
+routines.  There are over 1000 functions in total with an extensive test
+suite.  The RcppGSL package provides an easy-to-use interface between GSL data
+structures and R using concepts from Rcpp which is itself a package that eases
+the interfaces between R and C++.")
+    (license license:gpl2+)))
