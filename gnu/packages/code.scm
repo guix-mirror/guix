@@ -211,16 +211,16 @@ COCOMO model or user-provided parameters.")
 (define-public cloc
   (package
     (name "cloc")
-    (version "1.78")
+    (version "1.80")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/AlDanial/cloc/releases/download/" version
+             "https://github.com/AlDanial/cloc/releases/download/v" version
              "/cloc-" version ".tar.gz"))
        (sha256
         (base32
-         "1j9lwy9xf43kpv1csqdxzch6y1hnsv881ddqd357f8v58dhr4s68"))))
+         "0rqxnaskg5b736asyzfda1113zvpkajyqjf49vl9wgzf1r9m6bq8"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)
@@ -231,8 +231,8 @@ COCOMO model or user-provided parameters.")
        ("perl-regexp-common" ,perl-regexp-common)))
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (delete 'build)
+                  (delete 'configure)   ; nothing to configure
+                  (delete 'build)       ; nothing to build
                   (replace 'install
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out")))
