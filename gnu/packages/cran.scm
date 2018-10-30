@@ -7039,3 +7039,25 @@ problems into least squares ones first.")
      "This package contains functions for non-parametric survival analysis of
 exact and interval-censored observations.")
     (license license:gpl2+)))
+
+(define-public r-clusteval
+  (package
+    (name "r-clusteval")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "clusteval" version))
+       (sha256
+        (base32
+         "1ld0bdl4fy8dsfzm3k7a37cyxc6pfc9qs31x4pxd3z5rslghz7rj"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mvtnorm" ,r-mvtnorm)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/clusteval/")
+    (synopsis "Evaluation of clustering algorithms")
+    (description
+     "This R package provides a suite of tools to evaluate clustering
+algorithms, clusterings, and individual clusters.")
+    (license license:expat)))
