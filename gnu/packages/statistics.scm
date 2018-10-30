@@ -5089,17 +5089,19 @@ expected shortfall risk are also included.")
 (define-public r-nloptr
   (package
     (name "r-nloptr")
-    (version "1.0.4")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "nloptr" version))
        (sha256
         (base32
-         "1sz1xj3785x4vsm4nd6in298bk32hs2jk5nsxma7ivxi7jcmn8l4"))))
+         "15yz60kljxwnhm2m3gryjzxl3ynhkhd5jiwc179b1hz6rlzf71hz"))))
     (build-system r-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("r-knitr" ,r-knitr) ; for building vignettes
+       ("pkg-config" ,pkg-config)
+       ("gfortran" ,gfortran)))
     (inputs
      `(("nlopt" ,nlopt)))
     (home-page "https://cran.r-project.org/web/packages/nloptr")
