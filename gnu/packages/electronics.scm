@@ -226,7 +226,7 @@ format support.")
 (define-public pulseview
   (package
     (name "pulseview")
-    (version "0.4.0")
+    (version "0.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -234,9 +234,20 @@ format support.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1f8f2342d5yam98mmcb8f9g2vslcwv486bmi4x45pxn68l82ky3q"))))
+                "0bvgmkgz37n2bi9niskpl05hf7rsj1lj972fbrgnlz25s4ywxrwy"))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DCMAKE_CXX_FLAGS=-fext-numeric-literals")))
+     `(#:configure-flags '("-DENABLE_TESTS=y")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'remove-empty-doc-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion (string-append out "/share")
+                 ;; Use RMDIR to never risk silently deleting files.
+                 (rmdir "doc/pulseview")
+                 (rmdir "doc"))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -247,7 +258,6 @@ format support.")
        ("libsigrokdecode" ,libsigrokdecode)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
-    (build-system cmake-build-system)
     (home-page "https://www.sigrok.org/wiki/PulseView")
     (synopsis "Qt based logic analyzer, oscilloscope and MSO GUI for sigrok")
     (description "PulseView is a Qt based logic analyzer, oscilloscope and MSO GUI
