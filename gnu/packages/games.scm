@@ -3658,18 +3658,18 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.4t")
+    (version "10.4x")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.roguetemple.com/z/hyper/"
+                    "https://www.roguetemple.com/z/hyper/"
                     name (string-join (string-split version #\.) "")
                     "-src.tgz"))
               (sha256
                (base32
-                "0phqhmnzmc16a23qb4fkil0flzb86kibdckf1r35nc3l0k4193nn"))))
+                "0khk7xqdw4aiw1wnf1xrhmd7fklnzmpdavd7ix4mkm510dr5wklm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3741,12 +3741,12 @@ throwing people around in pseudo-randomly generated buildings.")
            (method url-fetch)
            (uri
             (string-append
-             "http://www.roguetemple.com/z/hyper/" name
+             "https://www.roguetemple.com/z/hyper/" name
              (string-join (string-split version #\.) "")
              "-win.zip"))
            (sha256
             (base32
-             "1xd9v8zzgi8m5ar8g4gy1xx5zqwidz3gn1knz0lwib3kbxx4drpg"))))
+             "1dv3kdv1n5imh3n9900b55rf0wwbjj7243lhsbk7lcjqsqxia39q"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -3756,7 +3756,7 @@ throwing people around in pseudo-randomly generated buildings.")
                                       sdl-gfx
                                       sdl-mixer
                                       sdl-ttf)))))
-    (home-page "http://www.roguetemple.com/z/hyper/")
+    (home-page "https://www.roguetemple.com/z/hyper/")
     (synopsis "Non-euclidean graphical rogue-like game")
     (description
      "HyperRogue is a game in which the player collects treasures and fights
