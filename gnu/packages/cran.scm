@@ -7163,3 +7163,32 @@ analysing multivariate abundance data in community ecology.")
      "This package provides convenience functions for analyzing factorial
 experiments using ANOVA or mixed models.")
     (license license:gpl2+)))
+
+(define-public r-lmertest
+  (package
+    (name "r-lmertest")
+    (version "3.0-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lmerTest" version))
+       (sha256
+        (base32
+         "0pia69sc8bn37mkiprdf91iilziqb865f94k6x6c26i33fg7rq4m"))))
+    (properties `((upstream-name . "lmerTest")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-lme4" ,r-lme4)
+       ("r-mass" ,r-mass)
+       ("r-numderiv" ,r-numderiv)))
+    (home-page "https://github.com/runehaubo/lmerTestR")
+    (synopsis "Tests in linear mixed effects models")
+    (description
+     "This package provides p-values in type I, II or III anova and summary
+tables for @code{lmer} model fits via Satterthwaite's degrees of freedom
+method.  A Kenward-Roger method is also available via the @code{pbkrtest}
+package.  Model selection methods include step, drop1 and anova-like tables
+for random effects (ranova).  Methods for Least-Square means (LS-means) and
+tests of linear contrasts of fixed effects are also available.")
+    (license license:gpl2+)))
