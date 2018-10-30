@@ -425,8 +425,14 @@ external server.")
                 "0pkv26jxwgv5ax0ylfmi4h96h79hj4gvr95218ns8wngnmgr1ny6"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (delete 'configure))  ; no configure
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)  ; no configure
+         (add-after 'install 'install-shared-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "build/release/libmujs.so"
+                             (string-append out "/lib"))))))
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out"))
                           (string-append "CC=gcc"))
        #:tests? #f))                    ; no tests
