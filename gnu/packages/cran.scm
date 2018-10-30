@@ -7113,3 +7113,28 @@ suite.  The RcppGSL package provides an easy-to-use interface between GSL data
 structures and R using concepts from Rcpp which is itself a package that eases
 the interfaces between R and C++.")
     (license license:gpl2+)))
+
+(define-public r-mvabund
+  (package
+    (name "r-mvabund")
+    (version "3.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mvabund" version))
+       (sha256
+        (base32
+         "1z8bj9zbc8h7w1xki9sc2p2rq6lv8gbcmiy9819z54d7lx1i9cnj"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppgsl" ,r-rcppgsl)
+       ("r-statmod" ,r-statmod)
+       ("r-tweedie" ,r-tweedie)))
+    (home-page "https://cran.r-project.org/web/packages/mvabund/")
+    (synopsis "Statistical methods for analysing multivariate abundance data")
+    (description
+     "This package provides a set of tools for displaying, modeling and
+analysing multivariate abundance data in community ecology.")
+    (license license:lgpl2.1+)))
