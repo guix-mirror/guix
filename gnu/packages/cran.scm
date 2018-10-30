@@ -3299,14 +3299,14 @@ sample Robust Rank-Order Distributional Test.")
 (define-public r-expm
   (package
     (name "r-expm")
-    (version "0.999-2")
+    (version "0.999-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "expm" version))
        (sha256
         (base32
-         "1mihl67kvv1xv0figp25jkmwfn4iwkcx15cng2348y8gm6zybw9q"))))
+         "04k4a6g071jkjc0d30ncmf713dj16brcs9m6pj43hnycc1caq6si"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-matrix" ,r-matrix)))
     (native-inputs `(("gfortran" ,gfortran)))
