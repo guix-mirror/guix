@@ -107,7 +107,7 @@ single file can be mounted.")
 (define-public disorderfs
   (package
     (name "disorderfs")
-    (version "0.5.4")
+    (version "0.5.5")
     (source
      (origin
        (method git-fetch)
@@ -117,7 +117,7 @@ single file can be mounted.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1mw4ix9h17ikki8p2rxdvzp87rcm1c7by5lvfn5gxlxr7hlj9f8g"))))
+         "18c32qcdzbxrzg7srnqnw1ls9yqqxyk9b996yxr6w2znw6x6n8v4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -126,7 +126,7 @@ single file can be mounted.")
        ("attr" ,attr)))
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (delete 'configure))
+                  (delete 'configure))  ; no configure script
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "PREFIX=" out)))
        #:test-target "test"
