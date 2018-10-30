@@ -34,7 +34,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://calcurse.org/files/calcurse-"
+      (uri (string-append "https://calcurse.org/files/calcurse-"
                           version ".tar.gz"))
       (sha256
        (base32
@@ -57,7 +57,7 @@
                       (setenv "TZDIR"   ;for test/ical-007.sh
                               (string-append (assoc-ref inputs "tzdata")
                                              "/share/zoneinfo")))))))
-    (home-page "http://www.calcurse.org")
+    (home-page "https://www.calcurse.org")
     (synopsis "Text-based calendar and scheduling")
     (description
      "Calcurse is a text-based calendar and scheduling application.  It helps
