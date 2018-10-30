@@ -651,7 +651,11 @@ listing the table of contents and hyperlinks.
 The library ships with a rudimentary X11 viewer, and a set of command
 line tools for batch rendering @command{pdfdraw}, rewriting files
 @command{pdfclean}, and examining the file structure @command{pdfshow}.")
-    (license license:agpl3+)))
+    (license (list license:agpl3+
+                   license:bsd-3 ; resources/cmaps
+                   license:x11 ; thirdparty/lcms2
+                   license:silofl1.1 ; resources/fonts/{han,noto,sil,urw}
+                   license:asl2.0)))) ; resources/fonts/droid
 
 (define-public qpdf
   (package
