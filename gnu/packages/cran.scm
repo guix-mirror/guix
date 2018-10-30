@@ -7192,3 +7192,36 @@ package.  Model selection methods include step, drop1 and anova-like tables
 for random effects (ranova).  Methods for Least-Square means (LS-means) and
 tests of linear contrasts of fixed effects are also available.")
     (license license:gpl2+)))
+
+(define-public r-r2glmm
+  (package
+    (name "r-r2glmm")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "r2glmm" version))
+       (sha256
+        (base32
+         "0iim92blpa59vgz97c2pi05yhbjjmaffdbkbmk5kplfb2vmazgiy"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-afex" ,r-afex)
+       ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-lmertest" ,r-lmertest)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-mgcv" ,r-mgcv)
+       ("r-pbkrtest" ,r-pbkrtest)))
+    (home-page "https://github.com/bcjaeger/r2glmm")
+    (synopsis "Compute R squared for mixed (multilevel) models")
+    (description
+     "This package computes model and semi partial R squared with confidence
+limits for the linear and generalized linear mixed model (LMM and GLMM).  The
+R squared measure from L. J. Edwards et al. (2008) is extended to the GLMM
+using @dfn{penalized quasi-likelihood} (PQL) estimation (see Jaeger et
+al. (2016)).")
+    (license license:gpl2)))
