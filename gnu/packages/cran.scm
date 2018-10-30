@@ -4671,14 +4671,14 @@ functions.")
 (define-public r-rdpack
   (package
     (name "r-rdpack")
-    (version "0.9-0")
+    (version "0.10-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rdpack" version))
        (sha256
         (base32
-         "067w0w6kza0hkzcnx58danl83yfvl9yjacr47mnid2bg856gdd1b"))))
+         "0bbjnw88h54v40hzim00i8yd3p4rk9i84zfdmgcbnylscwvsf0av"))))
     (properties `((upstream-name . "Rdpack")))
     (build-system r-build-system)
     (propagated-inputs
