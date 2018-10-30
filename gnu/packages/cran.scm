@@ -5860,13 +5860,13 @@ detection.")
 (define-public r-abps
   (package
     (name "r-abps")
-    (version "0.2")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ABPS" version))
        (sha256
-        (base32 "1k3f5i34f4w2khkszb4qhwwcpiy7gsfh82vjr6rypwg6rx5rjclq"))))
+        (base32 "0n3f66nmfi5v94il1mxy026mi84w01ph2aljk60vn3mrz8kwf2ll"))))
     (properties `((upstream-name . "ABPS")))
     (build-system r-build-system)
     (propagated-inputs `(("r-kernlab" ,r-kernlab)))
