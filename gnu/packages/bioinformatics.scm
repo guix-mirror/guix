@@ -7338,7 +7338,7 @@ possible.")
 (define-public r-genomeinfodbdata
   (package
     (name "r-genomeinfodbdata")
-    (version "0.99.1")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -7348,7 +7348,7 @@ possible.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0hipipvyvrh75n68hsjg35sxbcfzrghzxv547vnkk2f8ya99g01r"))))
+                "0k1hsjx6n2i1sf14hyrgdhxqxm5mxk0bgnivhiax944whcicmzbf"))))
     (properties
      `((upstream-name . "GenomeInfoDbData")))
     (build-system r-build-system)
