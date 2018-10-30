@@ -566,13 +566,13 @@ you to rapidly iterate while developing a package.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "0.12.18")
+    (version "0.12.19")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "006kpg2ph109rh1l13lqk26pp4as4fvl5661vrcczjygacgd1v7w"))))
+        (base32 "10mmiaawv9iwglc6z4y51mdpsfb1sivqmwr6xnfqkllcnpabdbk3"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
