@@ -1648,7 +1648,7 @@ notifications, and Python scripting support.")
 (define-public libqmatrixclient
   (package
     (name "libqmatrixclient")
-    (version "0.3.0.2")
+    (version "0.4.0")
     (source
      (origin
        (method git-fetch)
@@ -1658,7 +1658,7 @@ notifications, and Python scripting support.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03pxmr4wa818fgqddkr2fkwz6pda538x3ic9yq7c40x98zqf55w5"))))
+         "1llzqjagvp91kcg26q5c4qw9aaz7wna3rh6k06rc3baivrjqf3cn"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)))
