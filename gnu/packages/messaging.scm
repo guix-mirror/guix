@@ -1676,7 +1676,7 @@ QMatrixClient project.")
 (define-public quaternion
   (package
     (name "quaternion")
-    (version "0.0.9.2")
+    (version "0.0.9.3")
     (source
      (origin
        (method git-fetch)
@@ -1686,31 +1686,31 @@ QMatrixClient project.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zrr4khbbdf5ziq65gi0cb1yb1d0y5rv18wld22w1x96f7fkmrib"))))
+         "1hr9zqf301rg583n9jv256vzj7y57d8qgayk7c723bfknf1s6hh3"))))
     (build-system cmake-build-system)
     (inputs
      `(("libqmatrixclient" ,libqmatrixclient)
        ("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("qtsvg" ,qtsvg)
+       ("qttools" ,qttools)))
     (arguments
      `(#:tests? #f ; No tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-libqmatrixclient-dynamic-linking
-           ;; Upstream recommends statically linking with
-           ;; libqmatrixclient. Patch the source so that we can dynamically
-           ;; link instead. In a future release, when upstream moves to
-           ;; dynamic linking, remove this phase.
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("^add_subdirectory\\(lib\\)" all)
-                (string-append "#" all)))
-             (for-each
-              (lambda (file)
-                (substitute* file
-                  (("#include \"lib/([^\"]*)\"" all header)
-                   (string-append "#include <" header ">"))))
-              (find-files "client" "\\.(cpp|h)$"))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/quaternion")
+               `("QT_PLUGIN_PATH" ":" prefix
+                 (,(string-append (assoc-ref inputs "qtsvg")
+                                  "/lib/qt5/plugins")))
+               `("QML2_IMPORT_PATH" ":" prefix
+                 ,(map (lambda (label)
+                         (string-append (assoc-ref inputs label)
+                                        "/lib/qt5/qml"))
+                       '("qtdeclarative" "qtquickcontrols"))))
              #t)))))
     (home-page "https://matrix.org/docs/projects/client/quaternion.html")
     (synopsis "Graphical client for the Matrix instant messaging protocol")
