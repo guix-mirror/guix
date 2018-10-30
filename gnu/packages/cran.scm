@@ -4240,14 +4240,14 @@ quizzes to create self-paced tutorials for learning about R and R packages.")
 (define-public r-analytics
   (package
     (name "r-analytics")
-    (version "2.0")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "analytics" version))
        (sha256
         (base32
-         "1jkdjqc3fnvvsgi6x9ncf36rxzq0a55cmgkcv92mfmpcramg2lk6"))))
+         "0js3c8lwj3knccb55nq03cbjlf4w390p9aid2mi5x80l3ayd9in1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-car" ,r-car)
@@ -4260,7 +4260,8 @@ quizzes to create self-paced tutorials for learning about R and R packages.")
        ("r-robust" ,r-robust)
        ("r-trend" ,r-trend)
        ("r-tsa" ,r-tsa)
-       ("r-urca" ,r-urca)))
+       ("r-urca" ,r-urca)
+       ("r-vim" ,r-vim)))
     (home-page "https://cran.r-project.org/web/packages/analytics/")
     (synopsis "Collection of data analysis tools")
     (description
