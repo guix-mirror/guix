@@ -1628,14 +1628,14 @@ calendar objects.")
 (define-public r-magic
   (package
     (name "r-magic")
-    (version "1.5-8")
+    (version "1.5-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "magic" version))
        (sha256
         (base32
-         "083cgpp3v03li0h8597b3g21pd9lkbmn9pyssblnhc800mpc52vz"))))
+         "0snmdh6vk0p6ar1swsihisinxrx7l8371dri5lk0z24ysgr5w7gs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)))
