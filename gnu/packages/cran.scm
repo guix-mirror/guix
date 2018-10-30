@@ -5222,14 +5222,14 @@ containing one or more SNPs that evolved under directional selection.")
 (define-public r-proc
   (package
     (name "r-proc")
-    (version "1.12.1")
+    (version "1.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pROC" version))
        (sha256
         (base32
-         "05ad69a6fxy9k903cw3h4q59ch2jv6qfg9yjdbw3cgiiazcafrlj"))))
+         "0ain17clympkx09ym7gydylcd93096dxzqx1qzci310yq2l7fknm"))))
     (properties `((upstream-name . "pROC")))
     (build-system r-build-system)
     (propagated-inputs
