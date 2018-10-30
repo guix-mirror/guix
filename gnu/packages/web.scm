@@ -5607,13 +5607,13 @@ responsive, and powerful applications with minimal effort.")
 (define-public r-shinydashboard
   (package
     (name "r-shinydashboard")
-    (version "0.7.0")
+    (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "shinydashboard" version))
               (sha256
                (base32
-                "10yqcqqcxgfqwkmscqwvvgr710im583qsqnsqkfpisjvkqp10yqb"))))
+                "0khac8b27q3swdw07kl609hm0fjfjsjv591b388q99mqqr2rk92i"))))
     (build-system r-build-system)
     ;; The directory inst/AdminLTE/ contains a minified JavaScript file.
     ;; Regenerate it from the included sources.
@@ -5633,6 +5633,7 @@ responsive, and powerful applications with minimal effort.")
                      (dump-port minified port))))))))))
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
+       ("r-promises" ,r-promises)
        ("r-shiny" ,r-shiny)))
     (native-inputs
      `(("uglify-js" ,uglify-js)))
