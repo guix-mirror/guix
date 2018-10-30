@@ -166,19 +166,19 @@ package is a port of the Python package @code{cssselect}.")
 (define-public r-reprex
   (package
     (name "r-reprex")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reprex" version))
        (sha256
         (base32
-         "1l44pxjiz3g0jkk3v6rg5jps3llihfiah0qyv40s0bxvxa6gm8v9"))))
+         "1ws5gds453xgfili87r35rz1wn2i7jbqissq98csbiddpkgls8sx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
        ("r-clipr" ,r-clipr)
-       ("r-knitr" ,r-knitr)
+       ("r-fs" ,r-fs)
        ("r-rlang" ,r-rlang)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-whisker" ,r-whisker)
