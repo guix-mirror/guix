@@ -202,7 +202,7 @@ format support.")
 (define-public sigrok-cli
   (package
     (name "sigrok-cli")
-    (version "0.7.0")
+    (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -210,7 +210,7 @@ format support.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "072ylscp0ppgii1k5j07hhv7dfmni4vyhxnsvxmgqgfyq9ldjsan"))))
+                "15vpn1psriadcbl6v9swwgws7dva85ld03yv6g1mgm27kx11697m"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
