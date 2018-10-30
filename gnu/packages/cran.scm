@@ -7061,3 +7061,25 @@ exact and interval-censored observations.")
      "This R package provides a suite of tools to evaluate clustering
 algorithms, clusterings, and individual clusters.")
     (license license:expat)))
+
+(define-public r-tweedie
+  (package
+    (name "r-tweedie")
+    (version "2.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tweedie" version))
+       (sha256
+        (base32
+         "10fv998qjxsyx0h94fi0xbh6xbf24nwgh254n9zfnmix9vk2cqls"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/tweedie/")
+    (synopsis "Evaluation of Tweedie exponential family models")
+    (description
+     "Maximum likelihood computations for Tweedie families, including the
+series expansion (Dunn and Smyth, 2005; <doi10.1007/s11222-005-4070-y>) and
+the Fourier inversion (Dunn and Smyth, 2008; <doi:10.1007/s11222-007-9039-6>),
+and related methods.")
+    (license license:gpl2+)))
