@@ -596,7 +596,7 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.13.0")
+    (version "1.14.0")
     (source
       (origin
         (method url-fetch)
@@ -604,9 +604,17 @@ extracting content or merging files.")
                             name "-" version "-source.tar.xz"))
         (sha256
          (base32
-          "0129k92bav692l6lyw10ryldx7h2f9khjpgnp3f3n4fdsph9hrkl"))
+          "1psnz02w5p7wc1s1ma7vvjmkjfy641xvsh9ykaqzkk84dflnjgk0"))
         (modules '((guix build utils)))
-        (snippet '(begin (delete-file-recursively "thirdparty") #t))))
+        (snippet
+         ;; We keep lcms2 since it is different than our lcms.
+         '(begin
+            (for-each
+              (lambda (dir)
+                (delete-file-recursively (string-append "thirdparty/" dir)))
+              '("curl" "freeglut" "freetype" "harfbuzz" "jbig2dec"
+                "libjpeg" "mujs" "openjpeg" "zlib"))
+                #t))))
     (build-system gnu-build-system)
     (inputs
       `(("curl" ,curl)
@@ -627,6 +635,8 @@ extracting content or merging files.")
       '(#:tests? #f ; no check target
         #:make-flags (list "CC=gcc"
                            "XCFLAGS=-fpic"
+                           "USE_SYSTEM_LIBS=yes"
+                           "USE_SYSTEM_MUJS=yes"
                            (string-append "prefix=" (assoc-ref %outputs "out")))
         #:phases (modify-phases %standard-phases
                   (delete 'configure))))
