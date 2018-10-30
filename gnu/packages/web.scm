@@ -5645,6 +5645,35 @@ application framework for R, making it easy to create attractive dashboards.")
     ;; later.
     (license l:gpl2+)))
 
+(define-public r-shinyfiles
+  (package
+    (name "r-shinyfiles")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinyFiles" version))
+       (sha256
+        (base32
+         "1cbg09l7w2zbgxb4qjm9p873p0lzrihlzsk5xxi3cpxdckn6zsrm"))))
+    (properties `((upstream-name . "shinyFiles")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fs" ,r-fs)
+       ("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-shiny" ,r-shiny)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/thomasp85/shinyFiles")
+    (synopsis "Server-side file system viewer for Shiny")
+    (description
+     "This package provides functionality for client-side navigation of the
+server side file system in shiny apps.  In case the app is running locally
+this gives the user direct access to the file system without the need to
+\"download\" files to a temporary location.  Both file and folder selection as
+well as file saving is available.")
+    (license l:gpl2+)))
+
 (define-public r-crosstalk
   (package
     (name "r-crosstalk")
