@@ -2965,14 +2965,14 @@ generation, and 2D/3D network visualization.")
 (define-public r-ttr
   (package
     (name "r-ttr")
-    (version "0.23-3")
+    (version "0.23-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "TTR" version))
        (sha256
         (base32
-         "07r62ngyzjl4aszdxnr3n6bnbcgcap32yhd430jsilicg8n06di1"))))
+         "18mzyv6cmxmqyqsfwlx2b2k055887mfgc2jgj8xkn8c6m56n05zb"))))
     (properties `((upstream-name . "TTR")))
     (build-system r-build-system)
     (propagated-inputs
