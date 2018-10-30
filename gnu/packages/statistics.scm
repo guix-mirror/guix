@@ -2366,22 +2366,29 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "1.13.6")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "1d9n49djydywfyp9w3njgxs5lag4ac7719wmxy1lkgcmn3l9sx5r"))))
+                "1nyspqicn9zd1rgq3k07b3179i8w5ys6jbd65g9q8qczrb7z3x8f"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-digest" ,r-digest)
+     `(("r-callr" ,r-callr)
+       ("r-cli" ,r-cli)
+       ("r-digest" ,r-digest)
        ("r-git2r" ,r-git2r)
        ("r-httr" ,r-httr)
        ("r-jsonlite" ,r-jsonlite)
        ("r-memoise" ,r-memoise)
+       ("r-pkgbuild" ,r-pkgbuild)
+       ("r-pkgload" ,r-pkgload)
+       ("r-rcmdcheck" ,r-rcmdcheck)
+       ("r-remotes" ,r-remotes)
        ("r-rstudioapi" ,r-rstudioapi)
-       ("r-whisker" ,r-whisker)
+       ("r-sessioninfo" ,r-sessioninfo)
+       ("r-usethis" ,r-usethis)
        ("r-withr" ,r-withr)))
     (home-page "https://github.com/hadley/devtools")
     (synopsis "Tools to make developing R packages easier")
