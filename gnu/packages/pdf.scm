@@ -415,17 +415,15 @@ using the DjVuLibre library.")
 (define-public zathura-pdf-mupdf
   (package
     (name "zathura-pdf-mupdf")
-    (version "0.3.3")
+    (version "0.3.4")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://pwmt.org/projects/zathura-pdf-mupdf"
                               "/download/zathura-pdf-mupdf-" version ".tar.xz"))
-              (patches
-               (search-patches "zathura-pdf-mupdf-link-to-jpeg-libraries.patch"))
               (sha256
                (base32
-                "1zbdqimav4wfgimpy3nfzl10qj7vyv23rdy2z5z7z93jwbp2rc2j"))))
+                "166d5nz47ixzwj4pixsd5fd9qvjf5v34cdqi3p72vr23pswk2hyn"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("jbig2dec" ,jbig2dec)
