@@ -2110,16 +2110,14 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "2.1.5")
+    (version "2.1.8")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "18cv7c2gvagbmggfbsy2xk9bpn47izd0qrmqnc3q7afvj6pr6nf9"))))
+        (base32 "0m8ladhrfyxwybblkcdgg4xv1mk5kibmwarpj2k0c2y34zzcix4z"))))
     (build-system r-build-system)
-    (propagated-inputs
-     `(("r-quadprog" ,r-quadprog)))
-    (home-page "https://cran.r-project.org/web/packages/pracma")
+    (home-page "https://cran.r-project.org/web/packages/pracma/")
     (synopsis "Practical numerical math functions")
     (description "This package provides functions for numerical analysis and
 linear algebra, numerical optimization, differential equations, plus some
