@@ -7138,3 +7138,28 @@ the interfaces between R and C++.")
      "This package provides a set of tools for displaying, modeling and
 analysing multivariate abundance data in community ecology.")
     (license license:lgpl2.1+)))
+
+(define-public r-afex
+  (package
+    (name "r-afex")
+    (version "0.22-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "afex" version))
+       (sha256
+        (base32
+         "065wbxljl77zqvc2c4gpfpfyc6mbnnrf24q399q9bxmrz3sapj8n"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-car" ,r-car)
+       ("r-lme4" ,r-lme4)
+       ("r-lmertest" ,r-lmertest)
+       ("r-pbkrtest" ,r-pbkrtest)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "https://afex.singmann.science/")
+    (synopsis "Analysis of factorial experiments")
+    (description
+     "This package provides convenience functions for analyzing factorial
+experiments using ANOVA or mixed models.")
+    (license license:gpl2+)))
