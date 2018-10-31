@@ -1730,7 +1730,7 @@ modification time.")
 (define-public myrepos
   (package
     (name "myrepos")
-    (version "1.20171231")
+    (version "1.20180726")
     (source
      (origin
        (method git-fetch)
@@ -1739,8 +1739,7 @@ modification time.")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "10q7lpx152xnkk701fscn4dq99q9znnmv3bc2482khhjg7z8rps0"))
-       (patches (search-patches "myrepos-CVE-2018-7032.patch"))))
+        (base32 "0jphw61plm8cgklja6hs639xhdvxgvjwbr6jpvjwpp7hc5gmhms5"))))
     (build-system gnu-build-system)
     (inputs
      `(("perl" ,perl)))
