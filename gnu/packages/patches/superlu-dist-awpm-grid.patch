@@ -1,0 +1,36 @@
+Create the CombBLAS::SpParMat with the MPI_Comm from the input 'gridinfo_t'.
+This prevents a warning/error from CombBLAS about using MPI_COMM_WORLD.
+
+--- a/SRC/AWPM_CombBLAS.hpp
++++ b/SRC/AWPM_CombBLAS.hpp
+@@ -52,7 +52,7 @@
+     {
+         printf("AWPM only supports square process grid. Retuning without a permutation.\n");
+     }
+-    combblas::SpParMat < int_t, double, combblas::SpDCCols<int_t,double> > Adcsc;
++    combblas::SpParMat < int_t, double, combblas::SpDCCols<int_t,double> > Adcsc(grid->comm);
+     std::vector< std::vector < std::tuple<int_t,int_t,double> > > data(procs);
+     
+     /* ------------------------------------------------------------
+@@ -100,11 +100,10 @@
+     combblas::AWPM(Adcsc, mateRow2Col, mateCol2Row,true);
+     
+     // now gather the matching vector
+-    MPI_Comm World = mateRow2Col.getcommgrid()->GetWorld();
+     int * rdispls = new int[procs];
+     int sendcnt = mateRow2Col.LocArrSize();
+     int * recvcnt = new int[procs];
+-    MPI_Allgather(&sendcnt, 1, MPI_INT, recvcnt, 1, MPI_INT, World);
++    MPI_Allgather(&sendcnt, 1, MPI_INT, recvcnt, 1, MPI_INT, grid->comm);
+     rdispls[0] = 0;
+     for(int i=0; i<procs-1; ++i)
+     {
+@@ -112,7 +111,7 @@
+     }
+     int_t *senddata = (int_t *)mateRow2Col.GetLocArr();
+     
+-    MPI_Allgatherv(senddata, sendcnt, combblas::MPIType<int_t>(), ScalePermstruct->perm_r, recvcnt, rdispls, combblas::MPIType<int_t>(), World);
++    MPI_Allgatherv(senddata, sendcnt, combblas::MPIType<int_t>(), ScalePermstruct->perm_r, recvcnt, rdispls, combblas::MPIType<int_t>(), grid->comm);
+     
+     delete[] rdispls;
+     delete[] recvcnt;

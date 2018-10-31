@@ -2298,20 +2298,18 @@ also provides threshold-based ILU factorization preconditioners.")
 (define-public superlu-dist
   (package
     (name "superlu-dist")
-    (version "5.3.0")
+    (version "6.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
                            "superlu_dist_" version ".tar.gz"))
        (sha256
-        (base32 "0ja5ihqivkda1wd58y4lmzvmwssm9g91f70c5q0fzwhng6580h6y"))
+        (base32 "0pqgcgh1yxhfzs99fas3mggajzd5wca3nbyp878rziy74gfk03dl"))
        (modules '((guix build utils)))
        (snippet
         ;; Replace the non-free implementation of MC64 with a stub
         '(begin
-           (use-modules (ice-9 regex)
-                        (ice-9 rdelim))
            (call-with-output-file "SRC/mc64ad_dist.c"
              (lambda (port)
                (display "
@@ -2327,92 +2325,57 @@ void mc64ad_dist (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
   abort ();
 }\n" port)))
            (substitute* "SRC/util.c"    ;adjust default algorithm
-             (("RowPerm[[:blank:]]*=[[:blank:]]*LargeDiag")
-              "RowPerm = NOROWPERM"))
+             (("RowPerm[[:blank:]]*=[[:blank:]]*LargeDiag_MC64;")
+              ;; TODO: set to "LargeDiag_AWPM" once combinatorial-blas has
+              ;; general (i.e. non-square) processor-grid support.
+              "RowPerm = NOROWPERM;"))
            #t))
-       (patches (search-patches "superlu-dist-scotchmetis.patch"))))
-    (build-system gnu-build-system)
+       (patches (search-patches "superlu-dist-scotchmetis.patch"
+                                "superlu-dist-awpm-grid.patch"))))
+    (build-system cmake-build-system)
     (native-inputs
      `(("tcsh" ,tcsh)))
     (inputs
-     `(("gfortran" ,gfortran)))
+     `(("gfortran" ,gfortran)
+       ("blas" ,openblas)
+       ("lapack" ,lapack)
+       ("combblas" ,combinatorial-blas)))
     (propagated-inputs
-     `(("openmpi" ,openmpi)             ;headers include MPI heades
-       ("lapack" ,lapack)               ;required to link with output library
-       ("pt-scotch" ,pt-scotch)))       ;same
+     `(("mpi" ,openmpi)                 ;headers include MPI heades
+       ("parmetis" ,pt-scotch32 "metis")
+       ("pt-scotch" ,pt-scotch32)))
     (arguments
-     `(#:parallel-build? #f             ;race conditions using ar
+     `(#:parallel-tests? #f             ;tests use MPI and OpenMP
+       #:configure-flags (list "-DBUILD_SHARED_LIBS:BOOL=YES"
+                               "-DTPL_ENABLE_COMBBLASLIB=YES"
+                               "-DTPL_BLAS_LIBRARIES=-lopenblas"
+                               "-DTPL_LAPACK_LIBRARIES=-llapack"
+                               (string-append "-DTPL_PARMETIS_LIBRARIES="
+                                              (string-join
+                                               '("ptscotchparmetis" "ptscotch" "ptscotcherr"
+                                                 "scotchmetis" "scotch" "scotcherr")
+                                               ";"))
+                               (string-append "-DTPL_PARMETIS_INCLUDE_DIRS="
+                                              (assoc-ref %build-inputs "parmetis")
+                                              "/include")
+                               "-DTPL_ENABLE_COMBBLASLIB=ON"
+                               (string-append "-DTPL_COMBBLAS_INCLUDE_DIRS="
+                                              (assoc-ref %build-inputs "combblas")
+                                              "/include/CombBLAS;"
+                                              (assoc-ref %build-inputs "combblas")
+                                              "/include/BipartiteMatchings")
+                               "-DTPL_COMBBLAS_LIBRARIES=CombBLAS")
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (call-with-output-file "make.inc"
-               (lambda (port)
-                 (format port "
-PLAT        =
-DSuperLUroot = ~a
-DSUPERLULIB  = ~a/lib/libsuperlu_dist.a
-BLASDEF     = -DUSE_VENDOR_BLAS
-BLASLIB     = -L~a/lib -lblas
-PARMETISLIB = -L~a/lib \
-              -lptscotchparmetis -lptscotch -lptscotcherr -lptscotcherrexit \
-              -lscotch -lscotcherr -lscotcherrexit
-METISLIB    = -L~:*~a/lib \
-              -lscotchmetis -lscotch -lscotcherr -lscotcherrexit
-LIBS        = $(DSUPERLULIB) $(PARMETISLIB) $(METISLIB) $(BLASLIB)
-ARCH        = ar
-ARCHFLAGS   = cr
-RANLIB      = ranlib
-CC          = mpicc
-PIC         = -fPIC
-CFLAGS      = -O3 -g -DPRNTlevel=0 $(PIC)
-NOOPTS      = -O0 -g $(PIC)
-FORTRAN     = mpifort
-FFLAGS      = -O2 -g $(PIC)
-LOADER      = $(CC)
-CDEFS       = -DAdd_"
-                         (getcwd)
-                         (assoc-ref outputs "out")
-                         (assoc-ref inputs "lapack")
-                         (assoc-ref inputs "pt-scotch"))))
-             #t))
-         (add-after 'unpack 'remove-broken-symlinks
+         (add-before 'configure 'set-c++-standard
            (lambda _
-             (for-each delete-file
-                       (find-files "MAKE_INC" "\\.#make\\..*"))
-             #t))
-         (add-before 'build 'create-install-directories
-           (lambda* (#:key outputs #:allow-other-keys)
-             (for-each
-              (lambda (dir)
-                (mkdir-p (string-append (assoc-ref outputs "out")
-                                        "/" dir)))
-              '("lib" "include"))
-             #t))
+             (substitute* "CMakeLists.txt"
+               ;; AWPM headers require C++14
+               (("CMAKE_CXX_STANDARD 11") "CMAKE_CXX_STANDARD 14"))))
 	 (add-before 'check 'mpi-setup
 	   ,%openmpi-setup)
-         (replace 'check
-           (lambda _
-             (with-directory-excursion "EXAMPLE"
-               (invoke "mpirun" "-n" "2"
-                       "./pddrive" "-r" "1" "-c" "2" "g20.rua")
-               (invoke "mpirun" "-n" "2"
-                       "./pzdrive" "-r" "1" "-c" "2" "cg20.cua"))
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Library is placed in lib during the build phase.  Copy over
-             ;; headers to include.
-             (let* ((out    (assoc-ref outputs "out"))
-                    (incdir (string-append out "/include")))
-               (for-each (lambda (file)
-                           (let ((base (basename file)))
-                             (format #t "installing `~a' to `~a'~%"
-                                     base incdir)
-                             (copy-file file
-                                        (string-append incdir "/" base))))
-                         (find-files "SRC" ".*\\.h$")))
-             #t)))))
+         (add-before 'check 'omp-setup
+           (lambda _ (setenv "OMP_NUM_THREADS" "1") #t)))))
     (home-page (package-home-page superlu))
     (synopsis "Parallel supernodal direct solver")
     (description
