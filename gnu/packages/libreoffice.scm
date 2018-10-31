@@ -1096,6 +1096,8 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
         (list
           "--enable-release-build"
           "--enable-verbose"
+          ;; Avoid using all cpu cores by default
+          (format #f "--with-parallelism=~d" (parallel-job-count))
           "--disable-fetch-external" ; disable downloads
           "--with-system-libs" ; enable all --with-system-* flags
           (string-append "--with-boost-libdir="
