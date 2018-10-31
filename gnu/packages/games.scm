@@ -572,7 +572,7 @@ automata.  The following features are available:
 (define-public meandmyshadow
   (package
     (name "meandmyshadow")
-    (version "0.4.1")
+    (version "0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/meandmyshadow/"
@@ -580,37 +580,23 @@ automata.  The following features are available:
                                   "-src.tar.gz"))
               (sha256
                (base32
-                "0wl5dc75qy001s6043cx0vr2l5y2qfv1cldqnwill9sfygqj9p95"))))
+                "1b6qf83vdfv8jwn2jq9ywmda2qn2f5914i7mwfy04m17wx593m3m"))
+              (patches (search-patches
+                        ;; This will not be needed in the next release.
+                        "meandmyshadow-define-paths-earlier.patch"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f ; there are no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-sdl'paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "cmake/Modules/FindSDL_gfx.cmake"
-               (("/usr/local/include/SDL")
-                (string-append (assoc-ref inputs "sdl")
-                               "/include/SDL")))
-             ;; Because SDL provides lib/libX11.so.6 we need to explicitly
-             ;; link with libX11, even though we're using the GL backend.
-             (substitute* "CMakeLists.txt"
-               (("\\$\\{X11_LIBRARIES\\}") "-lX11"))
-             #t)))))
+     `(#:tests? #f))                    ; there are no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("sdl" ,(sdl-union (list sdl
-                                sdl-image
-                                sdl-gfx
-                                sdl-mixer
-                                sdl-ttf)))
-       ("libx11" ,libx11) ; needed by sdl's libX11
+     `(("curl" ,curl)
        ("libarchive" ,libarchive)
-       ("openssl" ,openssl)
-       ("mesa" ,mesa)
-       ("glu" ,glu)
-       ("curl" ,curl)))
+       ("lua" ,lua)
+       ("sdl" ,(sdl-union (list sdl2
+                                sdl2-image
+                                sdl2-mixer
+                                sdl2-ttf)))))
     (home-page "http://meandmyshadow.sourceforge.net/")
     (synopsis "Puzzle/platform game")
     (description "Me and My Shadow is a puzzle/platform game in which you try
