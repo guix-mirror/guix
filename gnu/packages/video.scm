@@ -2927,6 +2927,7 @@ It counts more than 100 plugins.")
     (native-inputs
      `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libjpeg" ,libjpeg)
