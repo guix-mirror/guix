@@ -96,6 +96,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnunet)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
@@ -2911,7 +2912,7 @@ It counts more than 100 plugins.")
 (define-public motion
   (package
     (name "motion")
-    (version "4.1.1")
+    (version "4.2")
     (home-page "https://motion-project.github.io/")
     (source (origin
               (method url-fetch)
@@ -2920,7 +2921,7 @@ It counts more than 100 plugins.")
                     "release-" version ".tar.gz"))
               (sha256
                (base32
-                "1qm4i8zrqafl60sv2frhixvkd0wh0r5jfcrj5i6gha7yplsvjx10"))
+                "1ad2zlz941lvb818g1nzlpcpbxgv0h05q164hafa805yqm7m1y3f"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -2930,6 +2931,7 @@ It counts more than 100 plugins.")
     (inputs
      `(("libjpeg" ,libjpeg)
        ("ffmpeg" ,ffmpeg-3.4)
+       ("libmicrohttpd" ,libmicrohttpd)
        ("sqlite" ,sqlite)))
     (arguments
      '(#:phases (modify-phases %standard-phases
