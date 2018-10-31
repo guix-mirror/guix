@@ -597,7 +597,7 @@ automata.  The following features are available:
                                 sdl2-image
                                 sdl2-mixer
                                 sdl2-ttf)))))
-    (home-page "http://meandmyshadow.sourceforge.net/")
+    (home-page "https://acmepjz.github.io/meandmyshadow/")
     (synopsis "Puzzle/platform game")
     (description "Me and My Shadow is a puzzle/platform game in which you try
 to reach the exit by solving puzzles.  Spikes, moving blocks, fragile blocks
