@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2017 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -102,7 +102,7 @@ joystick, and graphics hardware.")
 (define-public sdl2
   (package (inherit sdl)
     (name "sdl2")
-    (version "2.0.8")
+    (version "2.0.9")
     (source (origin
              (method url-fetch)
              (uri
@@ -110,7 +110,7 @@ joystick, and graphics hardware.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "1v4js1gkr75hzbxzhwzzif0sf9g07234sd23x1vdaqc661bprizd"))))
+               "1c94ndagzkdfqaa838yqg589p1nnqln8mv0hpwfhrkbfczf8cl95"))))
     (arguments
      (substitute-keyword-arguments (package-arguments sdl)
        ((#:configure-flags flags)
