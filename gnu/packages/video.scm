@@ -2915,14 +2915,14 @@ It counts more than 100 plugins.")
     (version "4.2")
     (home-page "https://motion-project.github.io/")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Motion-Project/motion/archive/"
-                    "release-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Motion-Project/motion.git")
+                    (commit (string-append "release-" version))))
               (sha256
                (base32
-                "1ad2zlz941lvb818g1nzlpcpbxgv0h05q164hafa805yqm7m1y3f"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0c0q6dl4v561m5y8bp0c0h4p3s52fjgcdnsrrf5ygdi288d3rfxv"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf-wrapper)
