@@ -3659,7 +3659,11 @@ after buffer changes.")
                            version ".tar"))
        (sha256
         (base32
-         "108wgxg7fb4byaiasgvbxv2hq7b00biq9f0mh9hy6vw4160y5w24"))))
+         "108wgxg7fb4byaiasgvbxv2hq7b00biq9f0mh9hy6vw4160y5w24"))
+       (patches
+        ;; Patch awaiting inclusion upstream (see:
+        ;; https://github.com/realgud/realgud/pull/226).
+        (search-patches "emacs-realgud-fix-configure-ac.patch"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
