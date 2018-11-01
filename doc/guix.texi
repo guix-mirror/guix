@@ -1230,12 +1230,9 @@ etc.  This helps achieve reproducible builds (@pxref{Features}).
 
 When the daemon performs a build on behalf of the user, it creates a
 build directory under @file{/tmp} or under the directory specified by
-its @code{TMPDIR} environment variable; this directory is shared with
-the container for the duration of the build.  Be aware that using a
-directory other than @file{/tmp} can affect build results---for example,
-with a longer directory name, a build process that uses Unix-domain
-sockets might hit the name length limitation for @code{sun_path}, which
-it would otherwise not hit.
+its @code{TMPDIR} environment variable.  This directory is shared with
+the container for the duration of the build, though within the container,
+the build tree is always called @file{/tmp/guix-build-@var{name}.drv-0}.
 
 The build directory is automatically deleted upon completion, unless the
 build failed and the client specified @option{--keep-failed}
