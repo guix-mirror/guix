@@ -196,7 +196,7 @@
          ("bluez" ,bluez)
          ("curl" ,curl)
          ("eudev" ,eudev)
-         ("ffmpeg" ,ffmpeg-3.4)
+         ("ffmpeg" ,ffmpeg)
          ("font-wqy-microhei" ,font-wqy-microhei)
          ("freetype" ,freetype)
          ("glew" ,glew)
