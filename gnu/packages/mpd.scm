@@ -165,7 +165,7 @@ protocol.")
 (define-public mpd-mpc
   (package
     (name "mpd-mpc")
-    (version "0.30")
+    (version "0.31")
     (source (origin
               (method url-fetch)
               (uri
@@ -174,10 +174,12 @@ protocol.")
                               "/mpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1kkzhrypkp0v6xv4d6db415pd0h6jqki29kfpsnfkvrhhh55pz35"))))
+                "0b9bsn4sl26xc6wdcms51x9yxznkxkppaycn8gnv4rd1m21kwdv2"))))
     (build-system meson-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)))
     (synopsis "Music Player Daemon client")
     (description "MPC is a minimalist command line interface to MPD, the music
 player daemon.")
