@@ -441,7 +441,7 @@ encoding Opus files and streams.")
 (define-public icecast
   (package
     (name "icecast")
-    (version "2.4.3")
+    (version "2.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -449,7 +449,7 @@ encoding Opus files and streams.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "14n5vm2xnyn8y7kl46lnnlgv6v5fjykhc57ffdsh0qaxfs6a8p68"))))
+                "0i2d9rhav0x6js2qhjf5iy6j2a7f0d11ail0lfv40hb1kygrgda9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
