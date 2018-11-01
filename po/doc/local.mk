@@ -18,6 +18,7 @@
 
 EXTRA_DIST = \
   %D%/guix-manual.pot \
+  %D%/guix-manual.de.po \
   %D%/guix-manual.fr.po
 
 POT_OPTIONS = --package-name "guix" --package-version "$(VERSION)" \
