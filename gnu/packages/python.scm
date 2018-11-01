@@ -12824,15 +12824,17 @@ embeddable JavaScript engine.")
 (define-public python-jsonrpclib-pelix
   (package
     (name "python-jsonrpclib-pelix")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jsonrpclib-pelix" version))
        (sha256
         (base32
-         "1qs95vxplxwspbrqy8bvc195s58iy43qkf75yrjfql2sim8b25sl"))))
+         "0f83z5zi7w32vprhk1dyc94ir1bh4hdd57bjdbwkq9ykng8qilhl"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no tests in PyPI tarball
     (home-page "https://github.com/tcalmant/jsonrpclib/")
     (synopsis "JSON-RPC 2.0 client library for Python")
     (description
