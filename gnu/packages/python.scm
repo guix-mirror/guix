@@ -2867,14 +2867,14 @@ interested parties to subscribe to events, or \"signals\".")
 (define-public pelican
   (package
     (name "pelican")
-    (version "3.6.3")
+    (version "3.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pelican" version))
        (sha256
         (base32
-         "1hn94rb4q3zmcq16in055xikal4dba5hfx3zznq7warllcgc9f8k"))))
+         "12spygavv9b6xpb5pgp7f0p3z0mms60nx6zrpx1yfkj68zz4flra"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-feedgenerator" ,python-feedgenerator)
@@ -2887,7 +2887,7 @@ interested parties to subscribe to events, or \"signals\".")
        ("python-six" ,python-six)
        ("python-dateutil" ,python-dateutil)
        ("python-markdown" ,python-markdown)))
-    (home-page "http://getpelican.com/")
+    (home-page "https://getpelican.com/")
     (arguments
      `(;; XXX Requires a lot more packages to do unit tests :P
        #:tests? #f
