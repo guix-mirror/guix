@@ -190,6 +190,9 @@
              "--enable-unicode=ucs4"
              (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
+       ;; With no -j argument tests use all available cpus, so provide one.
+       #:make-flags
+       (list (format #f "EXTRATESTOPTS=-j~d" (parallel-job-count)))
 
         #:modules ((ice-9 ftw) (ice-9 match)
                    (guix build utils) (guix build gnu-build-system))
