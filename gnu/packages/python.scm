@@ -31,7 +31,7 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -12368,14 +12368,14 @@ validating Swagger API specifications.")
 (define-public python-apache-libcloud
   (package
     (name "python-apache-libcloud")
-    (version "2.0.0")
+    (version "2.3.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "apache-libcloud" version))
         (sha256
           (base32
-            "1a71z02ckcxld72k4qgmdnkjan52c4wczncs3p2mp5yafh7dsan7"))))
+            "15xg79ad4g2xrk081ylvj41k5hmg9hl1xvbmb5hd0fqn08wfwbhf"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -12404,6 +12404,11 @@ class ShellOutSSHClientTests")
                (("'.xf0.x90.x8d.x88'") "b'\\xF0\\x90\\x8D\\x88'")
                (("'.xF0', '.x90', '.x8D', '.x88'")
                 "b'\\xF0', b'\\x90', b'\\x8D', b'\\x88'"))
+             #t))
+         (add-before 'check 'copy-secret
+           (lambda _
+             (copy-file "libcloud/test/secrets.py-dist"
+                        "libcloud/test/secrets.py")
              #t)))))
     (inputs
      `(("openssh" ,openssh)))
@@ -12413,6 +12418,8 @@ class ShellOutSSHClientTests")
     (native-inputs
      `(("python-lockfile" ,python-lockfile)
        ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
        ("python-requests-mock" ,python-requests-mock)))
     (home-page "https://libcloud.apache.org/")
     (synopsis "Unified Cloud API")
