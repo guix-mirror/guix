@@ -69,88 +69,6 @@
     ("mips64el-linux" "mips64el-unknown-linux-gnuabi64")
     (_                (nix-system->gnu-triplet system))))
 
-(define rust-bootstrap
-  (package
-    (name "rust-bootstrap")
-    (version "1.22.1")
-    (source #f)
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("patchelf" ,patchelf)))
-    (inputs
-     `(("gcc" ,(canonical-package gcc))
-       ("gcc:lib" ,(canonical-package gcc) "lib")
-       ("zlib" ,zlib)
-       ("source"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://static.rust-lang.org/dist/"
-                 "rust-" version "-" (nix-system->gnu-triplet-for-rust)
-                 ".tar.gz"))
-           (sha256
-            (base32
-             (match (nix-system->gnu-triplet-for-rust)
-               ("i686-unknown-linux-gnu"
-                "15zqbx86nm13d5vq2gm69b7av4vg479f74b5by64hs3bcwwm08pr")
-               ("x86_64-unknown-linux-gnu"
-                "1yll78x6b3abnvgjf2b66gvp6mmcb9y9jdiqcwhmgc0z0i0fix4c")
-               ("armv7-unknown-linux-gnueabihf"
-                "138a8l528kzp5wyk1mgjaxs304ac5ms8vlpq0ggjaznm6bn2j7a5")
-               ("aarch64-unknown-linux-gnu"
-                "0z6m9m1rx4d96nvybbfmpscq4dv616m615ijy16d5wh2vx0p4na8")
-               ("mips64el-unknown-linux-gnuabi64"
-                "07k4pcv7jvfa48cscdj8752lby7m7xdl88v3a6na1vs675lhgja2")
-               (_ ""))))))))
-    (outputs '("out" "cargo"))
-    (arguments
-     `(#:tests? #f
-       #:strip-binaries? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'build)
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (cargo-out (assoc-ref outputs "cargo"))
-                    (gcc:lib (assoc-ref inputs "gcc:lib"))
-                    (libc (assoc-ref inputs "libc"))
-                    (zlib (assoc-ref inputs "zlib"))
-                    (ld-so (string-append libc ,(glibc-dynamic-linker)))
-                    (rpath (string-append out "/lib:" zlib "/lib:"
-                                          libc "/lib:" gcc:lib "/lib"))
-                    (cargo-rpath (string-append cargo-out "/lib:" libc "/lib:"
-                                                gcc:lib "/lib"))
-                    (rustc (string-append out "/bin/rustc"))
-                    (rustdoc (string-append out "/bin/rustdoc"))
-                    (cargo (string-append cargo-out "/bin/cargo"))
-                    (gcc (assoc-ref inputs "gcc")))
-               ;; Install rustc/rustdoc.
-               (invoke "bash" "install.sh"
-                        (string-append "--prefix=" out)
-                        (string-append "--components=rustc,"
-                                       "rust-std-"
-                                       ,(nix-system->gnu-triplet-for-rust)))
-               ;; Install cargo.
-               (invoke "bash" "install.sh"
-                        (string-append "--prefix=" cargo-out)
-                        (string-append "--components=cargo"))
-               (for-each (lambda (file)
-                           (invoke "patchelf" "--set-rpath" rpath file))
-                         (cons* rustc rustdoc (find-files out "\\.so$")))
-               (invoke "patchelf" "--set-rpath" cargo-rpath cargo)
-               (for-each (lambda (file)
-                           (invoke "patchelf" "--set-interpreter" ld-so file))
-                         (list rustc rustdoc cargo))
-               #t))))))
-    (home-page "https://www.rust-lang.org")
-    (synopsis "Prebuilt rust compiler and cargo package manager")
-    (description "This package provides a pre-built @command{rustc} compiler
-and a pre-built @command{cargo} package manager, which can
-in turn be used to build the final Rust.")
-    (license license:asl2.0)))
-
 
 (define* (rust-source version hash #:key (patches '()))
   (origin
@@ -637,35 +555,42 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    #t))))))))))
 
 (define-public rust-1.21
-  (rust-bootstrapped-package rust-1.20 "1.21.0"
-                             "1yj8lnxybjrybp00fqhxw8fpr641dh8wcn9mk44xjnsb4i1c21qp"))
+  (let ((base-rust (rust-bootstrapped-package rust-1.20 "1.21.0"
+                    "1yj8lnxybjrybp00fqhxw8fpr641dh8wcn9mk44xjnsb4i1c21qp")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'configure 'remove-ar
+               (lambda* (#:key inputs #:allow-other-keys)
+                 ;; Remove because toml complains about "unknown field".
+                 (substitute* "config.toml"
+                  (("^ar =.*") "\n"))
+                 #t)))))))))
 
 (define-public rust-1.22
   (rust-bootstrapped-package rust-1.21 "1.22.1"
                              "1lrzzp0nh7s61wgfs2h6ilaqi6iq89f1pd1yaf65l87bssyl4ylb"))
 
 (define-public rust-1.23
-  (package
-    (inherit rust-1.20)
-    (name "rust")
-    (version "1.23.0")
-    (source (rust-source version "14fb8vhjzsxlbi6yrn1r6fl5dlbdd1m92dn5zj5gmzfwf4w9ar3l"))
-    ;; Use rust-bootstrap@1.22 package to build rust 1.23
-    (native-inputs
-     (alist-replace "cargo-bootstrap" (list rust-bootstrap "cargo")
-                    (alist-replace "rustc-bootstrap" (list rust-bootstrap)
-                                   (package-native-inputs rust-1.20))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments rust-1.20)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (delete 'configure-archiver)
-           (add-after 'unpack 'dont-build-native
-             (lambda _
-               ;; XXX: Revisit this when we use gcc 6.
-               (substitute* "src/binaryen/CMakeLists.txt"
-                 (("ADD_COMPILE_FLAG\\(\\\"-march=native\\\"\\)") ""))
-               #t))))))))
+  (let ((base-rust (rust-bootstrapped-package rust-1.22 "1.23.0"
+                    "14fb8vhjzsxlbi6yrn1r6fl5dlbdd1m92dn5zj5gmzfwf4w9ar3l")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'configure-archiver)
+             (delete 'remove-ar)
+             (add-after 'unpack 'dont-build-native
+               (lambda _
+                 ;; XXX: Revisit this when we use gcc 6.
+                 (substitute* "src/binaryen/CMakeLists.txt"
+                  (("ADD_COMPILE_FLAG\\(\\\"-march=native\\\"\\)") ""))
+                 #t)))))))))
 
 (define-public rust-1.24
   (let ((base-rust

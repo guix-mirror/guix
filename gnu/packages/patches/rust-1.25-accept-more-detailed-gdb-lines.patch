@@ -1,5 +1,6 @@
 GDB responds with some overly detailed lines - which makes the tests fail.
 Patch rust to accept those instead.
+See <https://github.com/rust-lang/rust/issues/54178>.
 diff -ur orig/rustc-1.25.0-src/src/test/debuginfo/generic-enum-with-different-disr-sizes.rs rustc-1.25.0-src/src/test/debuginfo/generic-enum-with-different-disr-sizes.rs
 --- orig/rustc-1.25.0-src/src/test/debuginfo/generic-enum-with-different-disr-sizes.rs	2018-09-13 10:24:33.775565159 +0200
 +++ rustc-1.25.0-src/src/test/debuginfo/generic-enum-with-different-disr-sizes.rs	2018-09-13 10:25:56.322513658 +0200
