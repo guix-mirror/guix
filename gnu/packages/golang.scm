@@ -510,12 +510,23 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  (substitute* (find-files "cmd" "\\.go")
                    (("/lib(64)?/ld-linux.*\\.so\\.[0-9]") loader))
                  #t)))
+           ;; Prevent installation of the build cache, which contains store
+           ;; references to most of the tools used to build Go and would
+           ;; unnecessarily increase the size of Go's closure if it was
+           ;; installed.
+           ;; TODO This should be moved into the 'install' phase when Go 1.9 is
+           ;; removed.
+           (add-before 'install 'delete-extraneous-files
+             (lambda _
+               (delete-file-recursively "../pkg/obj")
+               #t))
            (replace 'set-bootstrap-variables
              (lambda* (#:key outputs inputs #:allow-other-keys)
                ;; Tell the build system where to find the bootstrap Go.
                (let ((go  (assoc-ref inputs "go")))
                  (setenv "GOROOT_BOOTSTRAP" go)
-                 (setenv "GOGC" "400"))))))))))
+                 (setenv "GOGC" "400")
+                 #t)))))))))
 
 (define-public go go-1.9)
 
