@@ -2382,19 +2382,17 @@ new fiends in addition to old friends like @command{aif} and
          (sha256
           (base32
            "127v5avpz1i4m0lkaxqrq8hrl69rdazqaxf6s8awf0nd7wj2g4dp"))
-         (file-name (git-file-name "lift" version))))
+         (file-name (git-file-name "lift" version))
+         (modules '((guix build utils)))
+         (snippet
+          ;; Don't keep the bundled website
+          `(begin
+             (delete-file-recursively "website")
+             #t))))
       (build-system asdf-build-system/sbcl)
       (arguments
        ;; The tests require a debugger, but we run with the debugger disabled.
-       '(#:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           ;; Do this to ensure the 'reset-gzip-timestamps phase works.
-           (add-after 'unpack 'make-gzips-writeable
-             (lambda _
-               (for-each (lambda (file)
-                           (chmod file #o755))
-                         (find-files "." "\\.gz$")))))))
+       '(#:tests? #f))
       (synopsis "LIsp Framework for Testing")
       (description
        "The LIsp Framework for Testing (LIFT) is a unit and system test tool for LISP.
