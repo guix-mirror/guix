@@ -3625,7 +3625,7 @@ for application developers.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.26.1")
+    (version "3.26.2")
     (source
      (origin
        (method url-fetch)
@@ -3634,7 +3634,7 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "10n302fdp3lhkzbij5sbzmsnln738029xil6cnng2d4dxv4n1099"))
+         "1llyisls3pzf5bwkpxyfyxc2d3gpa09n5pjy7qsjdqrp3ya4k36g"))
        (patches (search-patches "totem-meson-easy-codec.patch"))))
     (build-system meson-build-system)
     (native-inputs
