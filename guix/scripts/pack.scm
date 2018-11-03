@@ -52,6 +52,8 @@
   #:export (compressor?
             lookup-compressor
             self-contained-tarball
+            docker-image
+
             guix-pack))
 
 ;; Type of a compression tool.
@@ -360,7 +362,6 @@ added to the pack."
 
 (define* (docker-image name profile
                        #:key target
-                       deduplicate?
                        (compressor (first %compressors))
                        localstatedir?
                        (symlinks '())
@@ -370,6 +371,11 @@ image is a tarball conforming to the Docker Image Specification, compressed
 with COMPRESSOR.  It can be passed to 'docker load'.  If TARGET is true, it
 must a be a GNU triplet and it is used to derive the architecture metadata in
 the image."
+  (define database
+    (and localstatedir?
+         (file-append (store-database (list profile))
+                      "/db/db.sqlite")))
+
   (define defmod 'define-module)                  ;trick Geiser
 
   (define build
@@ -388,6 +394,7 @@ the image."
                                      (call-with-input-file "profile"
                                        read-reference-graph))
                                 #$profile
+                                #:database #+database
                                 #:system (or #$target (utsname:machine (uname)))
                                 #:symlinks '#$symlinks
                                 #:compressor '#$(compressor-command compressor)

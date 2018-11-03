@@ -22,6 +22,7 @@
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix profiles)
+  #:use-module (guix packages)
   #:use-module (guix monads)
   #:use-module (guix grafts)
   #:use-module (guix tests)
@@ -37,8 +38,9 @@
 
 (define-syntax-rule (test-assertm name store exp)
   (test-assert name
-    (run-with-store store exp
-                    #:guile-for-build (%guile-for-build))))
+    (let ((guile (package-derivation store %bootstrap-guile)))
+      (run-with-store store exp
+                      #:guile-for-build guile))))
 
 (define %gzip-compressor
   ;; Compressor that uses the bootstrap 'gzip'.
@@ -78,6 +80,53 @@
                                                     "/bin/guile")
                                      (readlink "bin/Guile"))))))))
     (built-derivations (list check))))
+
+;; The following test needs guile-sqlite3, libgcrypt, etc. as a consequence of
+;; commit c45477d2a1a651485feede20fe0f3d15aec48b39 and related changes.  Thus,
+;; run it on the user's store, if it's available, on the grounds that these
+;; dependencies may be already there, or we can get substitutes or build them
+;; quite inexpensively; see <https://bugs.gnu.org/32184>.
+
+(with-external-store store
+  (unless store (test-skip 1))
+  (test-assertm "docker-image + localstatedir" store
+    (mlet* %store-monad
+        ((guile   (set-guile-for-build (default-guile)))
+         (profile (profile-derivation (packages->manifest
+                                       (list %bootstrap-guile))
+                                      #:hooks '()
+                                      #:locales? #f))
+         (tarball (docker-image "docker-pack" profile
+                                #:symlinks '(("/bin/Guile" -> "bin/guile"))
+                                #:localstatedir? #t))
+         (check   (gexp->derivation
+                   "check-tarball"
+                   (with-imported-modules '((guix build utils))
+                     #~(begin
+                         (use-modules (guix build utils)
+                                      (ice-9 match))
+
+                         (define bin
+                           (string-append "." #$profile "/bin"))
+
+                         (setenv "PATH" (string-append #$%tar-bootstrap "/bin"))
+                         (mkdir "base")
+                         (with-directory-excursion "base"
+                           (invoke "tar" "xvf" #$tarball))
+
+                         (match (find-files "base" "layer.tar")
+                           ((layer)
+                            (invoke "tar" "xvf" layer)))
+
+                         (when
+                          (and (file-exists? (string-append bin "/guile"))
+                               (file-exists? "var/guix/db/db.sqlite")
+                               (string=? (string-append #$%bootstrap-guile "/bin")
+                                         (pk 'binlink (readlink bin)))
+                               (string=? (string-append #$profile "/bin/guile")
+                                         (pk 'guilelink (readlink "bin/Guile"))))
+                          (mkdir #$output)))))))
+      (built-derivations (list check)))))
 
 (test-end)
 
