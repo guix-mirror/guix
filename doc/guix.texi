@@ -16169,10 +16169,10 @@ before switching over to opus audio codec.
 How deep channels can be nested at maximum.
 
 @item @code{channelname-regex} (default: @code{#f})
-A string in from of a Qt regular expression that channel names must conform to.
+A string in form of a Qt regular expression that channel names must conform to.
 
 @item @code{username-regex} (default: @code{#f})
-A string in from of a Qt regular expression that user names must conform to.
+A string in form of a Qt regular expression that user names must conform to.
 
 @item @code{text-message-length} (default: @code{5000})
 Maximum size in bytes that a user can send in one text chat message.
@@ -16184,7 +16184,7 @@ Maximum size in bytes that a user can send in one image message.
 If it is set to @code{#t} clients that use weak password authentification
 will not be accepted. Users must have completed the certificate wizard to join.
 
-@item @code{remember-channel?} (defualt @code{#f})
+@item @code{remember-channel?} (default: @code{#f})
 Should murmur remember the last channel each user was in when they disconnected
 and put them into the remembered channel when they rejoin.
 
@@ -16209,7 +16209,7 @@ Murmur also stores logs in the database, which are accessible via RPC.
 The default is 31 days of months, but you can set this setting to 0 to keep logs forever,
 or -1 to disable logging to the database.
 
-@item @code{obfuscate-ips?} (default @code{#t})
+@item @code{obfuscate-ips?} (default: @code{#t})
 Should logged ips be obfuscated to protect the privacy of users.
 
 @item @code{ssl-cert} (default: @code{#f})
