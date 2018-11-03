@@ -13957,7 +13957,7 @@ Users need to be in the @code{lp} group to access the D-Bus service.
 @cindex PulseAudio, sound support
 
 The @code{(gnu services sound)} module provides a service to configure the
-Advanced Linux Sound Architecture (ALSA) system, which making PulseAudio the
+Advanced Linux Sound Architecture (ALSA) system, which makes PulseAudio the
 preferred ALSA output driver.
 
 @deffn {Scheme Variable} alsa-service-type
