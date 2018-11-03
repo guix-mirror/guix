@@ -26,6 +26,7 @@
             evaluate-populate-directive
             populate-root-file-system
             register-closure
+            install-database-and-gc-roots
             populate-single-profile-directory))
 
 ;;; Commentary:
@@ -140,6 +141,35 @@ includes /etc, /var, /run, /bin/sh, etc., and all the symlinks to SYSTEM."
                 (try))
               (apply throw args)))))))
 
+(define %root-profile
+  "/var/guix/profiles/per-user/root")
+
+(define* (install-database-and-gc-roots root database profile
+                                        #:key (profile-name "guix-profile"))
+  "Install DATABASE, the store database, under directory ROOT.  Create
+PROFILE-NAME and have it link to PROFILE, a store item."
+  (define (scope file)
+    (string-append root "/" file))
+
+  (define (mkdir-p* dir)
+    (mkdir-p (scope dir)))
+
+  (define (symlink* old new)
+    (symlink old (scope new)))
+
+  (install-file database (scope "/var/guix/db/"))
+  (chmod (scope "/var/guix/db/db.sqlite") #o644)
+  (mkdir-p* "/var/guix/profiles")
+  (mkdir-p* "/var/guix/gcroots")
+  (symlink* "/var/guix/profiles" "/var/guix/gcroots/profiles")
+
+  ;; Make root's profile, which makes it a GC root.
+  (mkdir-p* %root-profile)
+  (symlink* profile
+            (string-append %root-profile "/" profile-name "-1-link"))
+  (symlink* (string-append profile-name "-1-link")
+            (string-append %root-profile "/" profile-name)))
+
 (define* (populate-single-profile-directory directory
                                             #:key profile closure
                                             (profile-name "guix-profile")
@@ -158,9 +188,6 @@ This is used to create the self-contained tarballs with 'guix pack'."
   (define (scope file)
     (string-append directory "/" file))
 
-  (define %root-profile
-    "/var/guix/profiles/per-user/root")
-
   (define (mkdir-p* dir)
     (mkdir-p (scope dir)))
 
@@ -171,19 +198,8 @@ This is used to create the self-contained tarballs with 'guix pack'."
   (populate-store (list closure) directory)
 
   (when database
-    (install-file database (scope "/var/guix/db/"))
-    (chmod (scope "/var/guix/db/db.sqlite") #o644)
-    (mkdir-p* "/var/guix/profiles")
-    (mkdir-p* "/var/guix/gcroots")
-    (symlink* "/var/guix/profiles"
-              "/var/guix/gcroots/profiles"))
-
-  ;; Make root's profile, which makes it a GC root.
-  (mkdir-p* %root-profile)
-  (symlink* profile
-            (string-append %root-profile "/" profile-name "-1-link"))
-  (symlink* (string-append profile-name "-1-link")
-            (string-append %root-profile "/" profile-name))
+    (install-database-and-gc-roots directory database profile
+                                   #:profile-name profile-name))
 
   (match profile-name
     ("guix-profile"
