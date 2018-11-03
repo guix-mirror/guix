@@ -956,14 +956,14 @@ provides an optional IDE-like error list.")
 (define-public emacs-emms
   (package
     (name "emacs-emms")
-    (version "5.0")
+    (version "5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "08f9lj77jlk96grqgjsv63s2i8ywvp4wvnmgmhnslwyx2lsdxza3"))
+                "149ddczyx6x10zn4mn8g0rll1rwf4yciv8x6j0qdnlbwszblx2x6"))
               (modules '((guix build utils)))
               (snippet
                '(begin
