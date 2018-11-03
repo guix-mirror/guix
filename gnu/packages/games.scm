@@ -5539,7 +5539,8 @@ quotation from a collection of quotes.")
                      Comment=Xonotic glx~@
                      Exec=~a/bin/xonotic-glx~@
                      TryExec=~@*~a/bin/xonotic-glx~@
-                     Icon=~@
+                     Icon=xonotic~@
+                     Categories=Game~@
                      Type=Application~%"
                            output)))
                (with-output-to-file
@@ -5551,7 +5552,8 @@ quotation from a collection of quotes.")
                      Comment=Xonotic sdl~@
                      Exec=~a/bin/xonotic-sdl~@
                      TryExec=~@*~a/bin/xonotic-sdl~@
-                     Icon=~@
+                     Icon=xonotic~@
+                     Categories=Game~@
                      Type=Application~%"
                            output)))
                (with-output-to-file
@@ -5563,7 +5565,8 @@ quotation from a collection of quotes.")
                      Comment=Xonotic~@
                      Exec=~a/bin/xonotic-glx~@
                      TryExec=~@*~a/bin/xonotic~@
-                     Icon=~@
+                     Icon=xonotic~@
+                     Categories=Game~@
                      Type=Application~%"
                            output)))
                #t)))
