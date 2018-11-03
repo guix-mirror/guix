@@ -16611,7 +16611,7 @@ the nginx web server, and also a fastcgi wrapper daemon.
 @deffn {Scheme Variable} httpd-service-type
 Service type for the @uref{https://httpd.apache.org/,Apache HTTP} server
 (@dfn{httpd}).  The value for this service type is a
-@code{https-configuration} record.
+@code{httpd-configuration} record.
 
 A simple example configuration is given below.
 
