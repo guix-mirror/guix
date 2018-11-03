@@ -40,6 +40,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
+;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3847,6 +3848,31 @@ minibuffer, the snippet contents are temporarily expanded in the buffer.  To
 use it, call @code{M-x ivy-yasnippet} (but make sure you have enabled
 @code{yas-minor-mode} first).")
       (license license:gpl3+))))
+
+(define-public emacs-ivy-rich
+  (package
+    (name "emacs-ivy-rich")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Yevgnen/ivy-rich/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14r3mx5rkd4wz0ls5pv5w6c7la3z9iy93d3jfind3xyg4kywy95c"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ivy" ,emacs-ivy)))
+    (home-page "https://github.com/Yevgnen/ivy-rich")
+    (synopsis "More friendly interface for @code{ivy}")
+    (description
+     "This package extends @code{ivy} by showing more information in the
+minibuffer for each candidate.  It adds columns showing buffer modes, file
+sizes, docstrings, etc.  If @code{emacs-all-the-icons} is installed, it can
+show icons as well.")
+    (license license:gpl3+)))
 
 (define-public emacs-avy
   (package
