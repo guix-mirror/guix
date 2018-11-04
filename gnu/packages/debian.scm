@@ -116,7 +116,7 @@ contains the archive keys used for that.")
 (define-public debootstrap
   (package
     (name "debootstrap")
-    (version "1.0.106")
+    (version "1.0.109")
     (source
       (origin
         (method git-fetch)
@@ -126,7 +126,7 @@ contains the archive keys used for that.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1fm5bgllcwgwizrqi4sn8p4fpbzhbzgwprrfppfq9hqdzbmlfmnv"))))
+          "0bjqlyg605lnsjcn3wjplc6jl75nx7c6miyac2qsahi484rylg5g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
