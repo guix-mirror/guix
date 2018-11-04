@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
@@ -110,7 +110,7 @@ a focus on simplicity and productivity.")
 (define-public ruby-2.3
   (package
     (inherit ruby)
-    (version "2.3.7")
+    (version "2.3.8")
     (source
      (origin
        (method url-fetch)
@@ -119,7 +119,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "1nwfaifq5624p1ml56qq5dy5w38z37x22r0qgrbgbzrzklmqy7y6"))
+         "1zhxbjff08pvbnxvn58krns6q0p6g4977q6ykfn823gxhifn63wi"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
