@@ -68,18 +68,42 @@
                                         #:archiver %tar-bootstrap))
        (check   (gexp->derivation
                  "check-tarball"
-                 #~(let ((bin (string-append "." #$profile "/bin")))
-                     (setenv "PATH"
-                             (string-append #$%tar-bootstrap "/bin"))
-                     (system* "tar" "xvf" #$tarball)
-                     (mkdir #$output)
-                     (exit
-                      (and (file-exists? (string-append bin "/guile"))
-                           (string=? (string-append #$%bootstrap-guile "/bin")
-                                     (readlink bin))
-                           (string=? (string-append ".." #$profile
-                                                    "/bin/guile")
-                                     (readlink "bin/Guile"))))))))
+                 (with-imported-modules '((guix build utils))
+                   #~(begin
+                       (use-modules (guix build utils)
+                                    (srfi srfi-1))
+
+                       (define store
+                         ;; The unpacked store.
+                         (string-append "." (%store-directory) "/"))
+
+                       (define (canonical? file)
+                         ;; Return #t if FILE is read-only and its mtime is 1.
+                         (let ((st (lstat file)))
+                           (or (not (string-prefix? store file))
+                               (eq? 'symlink (stat:type st))
+                               (and (= 1 (stat:mtime st))
+                                    (zero? (logand #o222
+                                                   (stat:mode st)))))))
+
+                       (define bin
+                         (string-append "." #$profile "/bin"))
+
+                       (setenv "PATH"
+                               (string-append #$%tar-bootstrap "/bin"))
+                       (system* "tar" "xvf" #$tarball)
+                       (mkdir #$output)
+                       (exit
+                        (and (file-exists? (string-append bin "/guile"))
+                             (file-exists? store)
+                             (every canonical?
+                                    (find-files "." (const #t)
+                                                #:directories? #t))
+                             (string=? (string-append #$%bootstrap-guile "/bin")
+                                       (readlink bin))
+                             (string=? (string-append ".." #$profile
+                                                      "/bin/guile")
+                                       (readlink "bin/Guile")))))))))
     (built-derivations (list check))))
 
 ;; The following test needs guile-sqlite3, libgcrypt, etc. as a consequence of

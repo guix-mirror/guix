@@ -49,7 +49,7 @@ the_pack="`guix pack --bootstrap -S /opt/gnu/bin=bin guile-bootstrap`"
 # exists because /opt/gnu/bin may be an absolute symlink to a store item that
 # has been GC'd.
 test_directory="`mktemp -d`"
-trap 'rm -rf "$test_directory"' EXIT
+trap 'chmod -Rf +w "$test_directory"; rm -rf "$test_directory"' EXIT
 cd "$test_directory"
 tar -xf "$the_pack"
 test -L opt/gnu/bin
