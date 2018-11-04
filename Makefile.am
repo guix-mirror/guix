@@ -406,6 +406,7 @@ SH_TESTS =					\
   tests/guix-gc.sh				\
   tests/guix-hash.sh				\
   tests/guix-pack.sh				\
+  tests/guix-pack-relocatable.sh		\
   tests/guix-package.sh				\
   tests/guix-package-net.sh			\
   tests/guix-system.sh				\
