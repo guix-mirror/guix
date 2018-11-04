@@ -33,15 +33,17 @@
 (define-public debian-archive-keyring
   (package
     (name "debian-archive-keyring")
-    (version "2017.7")
+    (version "2018.1")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "mirror://debian/pool/main/d/" name "/"
-                            name "_" version ".tar.xz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://salsa.debian.org/release-team/debian-archive-keyring.git")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "1pdwgipfi0y4svhxlw8arhq792f1g3vlmw4raphizy7sa65vd4ca"))))
+          "136vr5dj7w0dz563qdghsndcfcqm2m8d4j1dyiq9dzx5vd0rcpcw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "verify-results"
