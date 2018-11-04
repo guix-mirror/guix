@@ -53,6 +53,7 @@
             lookup-compressor
             self-contained-tarball
             docker-image
+            squashfs-image
 
             guix-pack))
 
@@ -288,17 +289,26 @@ points for virtual file systems (like procfs), and optional symlinks.
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
+  (define database
+    (and localstatedir?
+         (file-append (store-database (list profile))
+                      "/db/db.sqlite")))
+
   (define build
     (with-imported-modules (source-module-closure
                             '((guix build utils)
-                              (guix build store-copy))
+                              (guix build store-copy)
+                              (gnu build install))
                             #:select? not-config?)
       #~(begin
           (use-modules (guix build utils)
                        (guix build store-copy)
+                       (gnu build install)
                        (srfi srfi-1)
                        (srfi srfi-26)
                        (ice-9 match))
+
+          (define database #+database)
 
           (setenv "PATH" (string-append #$archiver "/bin"))
 
@@ -352,7 +362,12 @@ added to the pack."
                    ;; Create empty mount points.
                    "-p" "/proc d 555 0 0"
                    "-p" "/sys d 555 0 0"
-                   "-p" "/dev d 555 0 0")))))
+                   "-p" "/dev d 555 0 0"))
+
+          (when database
+            ;; Initialize /var/guix.
+            (install-database-and-gc-roots "var-etc" database #$profile)
+            (invoke "mksquashfs" "var-etc" #$output)))))
 
   (gexp->derivation (string-append name
                                    (compressor-extension compressor)

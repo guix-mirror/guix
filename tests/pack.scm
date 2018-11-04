@@ -28,6 +28,7 @@
   #:use-module (guix tests)
   #:use-module (guix gexp)
   #:use-module (gnu packages bootstrap)
+  #:use-module ((gnu packages compression) #:select (squashfs-tools-next))
   #:use-module (srfi srfi-64))
 
 (define %store
@@ -126,6 +127,41 @@
                                (string=? (string-append #$profile "/bin/guile")
                                          (pk 'guilelink (readlink "bin/Guile"))))
                           (mkdir #$output)))))))
+      (built-derivations (list check))))
+
+  (unless store (test-skip 1))
+  (test-assertm "squashfs-image + localstatedir" store
+    (mlet* %store-monad
+        ((guile   (set-guile-for-build (default-guile)))
+         (profile (profile-derivation (packages->manifest
+                                       (list %bootstrap-guile))
+                                      #:hooks '()
+                                      #:locales? #f))
+         (image   (squashfs-image "squashfs-pack" profile
+                                  #:symlinks '(("/bin" -> "bin"))
+                                  #:localstatedir? #t))
+         (check   (gexp->derivation
+                   "check-tarball"
+                   (with-imported-modules '((guix build utils))
+                     #~(begin
+                         (use-modules (guix build utils)
+                                      (ice-9 match))
+
+                         (define bin
+                           (string-append "." #$profile "/bin"))
+
+                         (setenv "PATH"
+                                 (string-append #$squashfs-tools-next "/bin"))
+                         (invoke "unsquashfs" #$image)
+                         (with-directory-excursion "squashfs-root"
+                           (when (and (file-exists? (string-append bin
+                                                                   "/guile"))
+                                      (file-exists? "var/guix/db/db.sqlite")
+                                      (string=? (string-append #$%bootstrap-guile "/bin")
+                                                (pk 'binlink (readlink bin)))
+                                      (string=? (string-append #$profile "/bin")
+                                                (pk 'guilelink (readlink "bin"))))
+                             (mkdir #$output))))))))
       (built-derivations (list check)))))
 
 (test-end)
