@@ -90,6 +90,29 @@
 
 (with-external-store store
   (unless store (test-skip 1))
+  (test-assertm "self-contained-tarball + localstatedir" store
+    (mlet* %store-monad
+        ((guile   (set-guile-for-build (default-guile)))
+         (profile (profile-derivation (packages->manifest
+                                       (list %bootstrap-guile))
+                                      #:hooks '()
+                                      #:locales? #f))
+         (tarball (self-contained-tarball "tar-pack" profile
+                                          #:localstatedir? #t))
+         (check   (gexp->derivation
+                   "check-tarball"
+                   #~(let ((bin (string-append "." #$profile "/bin")))
+                       (setenv "PATH"
+                               (string-append #$%tar-bootstrap "/bin"))
+                       (system* "tar" "xvf" #$tarball)
+                       (mkdir #$output)
+                       (exit
+                        (and (file-exists? "var/guix/db/db.sqlite")
+                             (string=? (string-append #$%bootstrap-guile "/bin")
+                                       (readlink bin))))))))
+      (built-derivations (list check))))
+
+  (unless store (test-skip 1))
   (test-assertm "docker-image + localstatedir" store
     (mlet* %store-monad
         ((guile   (set-guile-for-build (default-guile)))
