@@ -1572,31 +1572,6 @@ Features include:
 optimized for performance yet simple to use.")
       (license license:expat))))
 
-(define-public go-github-com-urfave-cli
-  (let ((commit "cfb38830724cc34fedffe9a2a29fb54fa9169cd1")
-        (revision "0"))
-    (package
-      (name "go-github-com-urfave-cli")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/urfave/cli.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0y6f4sbzkiiwrxbl15biivj8c7qwxnvm3zl2dd3mw4wzg4x10ygj"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/urfave/cli"))
-      (home-page "https://github.com/urfave/cli")
-      (synopsis "Library for building command-line interfaces in Go")
-      (description "This package provides a library for building command-line
-interfaces in Go.")
-      (license license:expat))))
-
 (define-public go-github-com-blang-semver
   (let ((commit "60ec3488bfea7cca02b021d106d9911120d25fe9")
         (revision "0"))
