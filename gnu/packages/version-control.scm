@@ -1741,12 +1741,32 @@ modification time.")
        (sha256
         (base32 "0jphw61plm8cgklja6hs639xhdvxgvjwbr6jpvjwpp7hc5gmhms5"))))
     (build-system gnu-build-system)
-    (inputs
-     `(("perl" ,perl)))
     (arguments
      '(#:test-target "test"
-       #:phases (modify-phases %standard-phases (delete 'configure))
-       #:make-flags (list (string-append "PREFIX=" %output))))
+       #:make-flags (list (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'install 'wrap-webcheckout
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/webcheckout")
+                 `("PERL5LIB" ":" prefix
+                   ,(map (lambda (i) (string-append (assoc-ref inputs i)
+                                                    "/lib/perl5/site_perl"))
+                         '("perl-encode-locale" "perl-http-date"
+                           "perl-http-message" "perl-html-parser" "perl-libwww"
+                           "perl-uri" "perl-try-tiny"))))
+               #t))))))
+    (inputs
+     `(("perl" ,perl)
+       ("perl-encode-locale" ,perl-encode-locale)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-http-date" ,perl-http-date)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-uri" ,perl-uri)))
     (home-page "https://myrepos.branchable.com/")
     (synopsis "Multiple repository management tool")
     (description
