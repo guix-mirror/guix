@@ -3746,7 +3746,7 @@ which can read a large number of file formats.")
                       "b182c6b9e1d09e601bac0b703cc5f8b159ebbc3a.patch"))
                 (sha256
                  (base32
-                  "17j45vyyr071ka3nckj2gycgyyv1j08fyrxw89jfdq2442nzrsiy")))))
+                  "06n87xgf927djmv1vshal84nqx7g8nwgljza3g2vydhy7g2n1csq")))))
             (sha256
              (base32
               "0hzcns8gf5yb0rm4ss8jd8qzarcaplp5cylk6plwilsqfvxj4xn2"))))
