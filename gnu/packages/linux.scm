@@ -400,10 +400,10 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.18.16")
-(define %linux-libre-hash "15apfgswp2lrwjpi3vwnanlkdw3q6rkvwrbgrb71rjsy9gazlz62")
+(define %linux-libre-version "4.19.1")
+(define %linux-libre-hash "12mrrgg2ih4jiylpy45q5nsd8afj3nya0klr543s0mcga88v9527")
 
-(define %linux-libre-4.18-patches
+(define %linux-libre-4.19-patches
   (list %boot-logo-patch
         (origin
           (method url-fetch)
@@ -414,25 +414,17 @@ It has been modified to remove all non-free binary blobs.")
                 "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
           (file-name "linux-libre-4.18-arm-export-__sync_icache_dcache.patch")
           (sha256
-           (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))
-        (origin
-          (method url-fetch)
-          (uri (string-append
-                "https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git"
-                "/patch/?id=c5157101e7793b42a56e07368c7f4cb73fb58008"))
-          (file-name "linux-libre-4.18-arm64-export-__sync_icache_dcache.patch")
-          (sha256
-           (base32 "0q13arsi8al3l3yq6d76z4h8n45wlpkjyxlrgn1sqbx5xjksycyz")))))
+           (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))))
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     %linux-compatible-systems
-                    #:patches %linux-libre-4.18-patches
+                    #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.78")
-(define %linux-libre-4.14-hash "07dhhw6zdnqn2dznpmkniz58hfkdx89yx7csm9vbx45blnyhjw5z")
+(define %linux-libre-4.14-version "4.14.79")
+(define %linux-libre-4.14-hash "000rd4h2yk6k68wjg37v53hqnqw1mgwhdxbcvy8iywy8za9r12c8")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -456,7 +448,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-4.18-patches
+                    #:patches %linux-libre-4.19-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
@@ -471,7 +463,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-4.18-patches
+                    #:patches %linux-libre-4.19-patches
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
 
@@ -945,7 +937,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.24")
+    (version "4.25")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
@@ -953,7 +945,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "0d061cdzk6a1822ds4wpqxg10ny27mi4i9zjmnsbz8nz3vy5jkhz"))))
+               "00f7zagfh3np5gwi0z7hi7zjd7s5nixcaq7z78n87dvhakkgi1fn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1231,7 +1223,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.18.0")
+    (version "4.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1239,7 +1231,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0ida5njr9nacg6ym3rjvl3cc9czw0hn4akhzbqf8f4zmjl6cgrm9"))))
+                "114rlb3bvrf7q6yr03mn1rj6gl7mrg0psvm2dx0qb2kxyjhmrv6r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite

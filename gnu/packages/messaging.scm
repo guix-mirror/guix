@@ -32,71 +32,72 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages messaging)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix utils)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix git-download)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix build-system glib-or-gtk)
-  #:use-module (guix build-system meson)
-  #:use-module (guix build-system python)
-  #:use-module (guix build-system perl)
-  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages aidc)
   #:use-module (gnu packages aspell)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages enchant)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages gtk)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages libcanberra)
-  #:use-module (gnu packages man)
-  #:use-module (gnu packages networking)
-  #:use-module (gnu packages libidn)
-  #:use-module (gnu packages lua)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages less)
+  #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libidn)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages man)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages photo)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages tcl)
-  #:use-module (gnu packages compression)
-  #:use-module (gnu packages check)
-  #:use-module (gnu packages admin)
-  #:use-module (gnu packages linux)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages icu4c)
-  #:use-module (gnu packages qt)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
-  #:use-module (gnu packages audio)
-  #:use-module (gnu packages bison)
-  #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages bash)
-  #:use-module (gnu packages guile)
-  #:use-module (gnu packages less)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages photo)
-  #:use-module (gnu packages texinfo))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
+  #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
+  #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 (define-public libotr
   (package
@@ -1647,7 +1648,7 @@ notifications, and Python scripting support.")
 (define-public libqmatrixclient
   (package
     (name "libqmatrixclient")
-    (version "0.3.0.2")
+    (version "0.4.0")
     (source
      (origin
        (method git-fetch)
@@ -1657,7 +1658,7 @@ notifications, and Python scripting support.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03pxmr4wa818fgqddkr2fkwz6pda538x3ic9yq7c40x98zqf55w5"))))
+         "1llzqjagvp91kcg26q5c4qw9aaz7wna3rh6k06rc3baivrjqf3cn"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)))
@@ -1675,7 +1676,7 @@ QMatrixClient project.")
 (define-public quaternion
   (package
     (name "quaternion")
-    (version "0.0.9.2")
+    (version "0.0.9.3")
     (source
      (origin
        (method git-fetch)
@@ -1685,31 +1686,31 @@ QMatrixClient project.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zrr4khbbdf5ziq65gi0cb1yb1d0y5rv18wld22w1x96f7fkmrib"))))
+         "1hr9zqf301rg583n9jv256vzj7y57d8qgayk7c723bfknf1s6hh3"))))
     (build-system cmake-build-system)
     (inputs
      `(("libqmatrixclient" ,libqmatrixclient)
        ("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("qtsvg" ,qtsvg)
+       ("qttools" ,qttools)))
     (arguments
      `(#:tests? #f ; No tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-libqmatrixclient-dynamic-linking
-           ;; Upstream recommends statically linking with
-           ;; libqmatrixclient. Patch the source so that we can dynamically
-           ;; link instead. In a future release, when upstream moves to
-           ;; dynamic linking, remove this phase.
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("^add_subdirectory\\(lib\\)" all)
-                (string-append "#" all)))
-             (for-each
-              (lambda (file)
-                (substitute* file
-                  (("#include \"lib/([^\"]*)\"" all header)
-                   (string-append "#include <" header ">"))))
-              (find-files "client" "\\.(cpp|h)$"))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/quaternion")
+               `("QT_PLUGIN_PATH" ":" prefix
+                 (,(string-append (assoc-ref inputs "qtsvg")
+                                  "/lib/qt5/plugins")))
+               `("QML2_IMPORT_PATH" ":" prefix
+                 ,(map (lambda (label)
+                         (string-append (assoc-ref inputs label)
+                                        "/lib/qt5/qml"))
+                       '("qtdeclarative" "qtquickcontrols"))))
              #t)))))
     (home-page "https://matrix.org/docs/projects/client/quaternion.html")
     (synopsis "Graphical client for the Matrix instant messaging protocol")
@@ -1719,5 +1720,129 @@ implementation.  Quaternion and libqmatriclient together form the
 QMatrixClient project.")
     (license (list license:gpl3+ ; all source code
                    license:lgpl3+)))) ; icons/breeze
+
+(define-public hangups
+  (package
+    (name "hangups")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hangups" version))
+       (sha256
+        (base32 "0mvpfd5dc3zgcvwfidcd2qyn59xl5biv728mxifw0ls5rzkc9chs"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'relax-dependencies
+           ;; Relax overly strict package version specifications.
+           (lambda _
+             (substitute* "setup.py"
+               (("==") ">="))
+             #t)))))
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)
+       ("python-appdirs" ,python-appdirs)
+       ("python-async-timeout" ,python-async-timeout)
+       ("python-configargparse" ,python-configargparse)
+       ("python-mechanicalsoup" ,python-mechanicalsoup)
+       ("python-protobuf" ,python-protobuf)
+       ("python-readlike" ,python-readlike)
+       ("python-reparser" ,python-reparser)
+       ("python-requests" ,python-requests)
+       ("python-urwid" ,python-urwid)))
+    (home-page "https://hangups.readthedocs.io/")
+    (synopsis "Instant messaging client for Google Hangouts")
+    (description
+     "Hangups is an instant messaging client for Google Hangouts.  It includes
+both a Python library and a reference client with a text-based user interface.
+
+Hangups is implements a reverse-engineered version of Hangouts' proprietary,
+non-interoperable protocol, which allows it to support features like group
+messaging that aren’t available to clients that connect over XMPP.")
+    (license license:expat)))
+
+(define-public telegram-purple
+  (package
+    (name "telegram-purple")
+    (version "1.3.1")
+    (home-page "https://github.com/majn/telegram-purple")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))
+                    (recursive? #t)))
+              (sha256
+               (base32
+                "0p93jpjpx7hszwffzgixw04zkrpsiyzz4za3gfr4j07krc4771fp"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "Makefile.in"
+                    ;; By default these two directories point to Pidgin's own
+                    ;; prefix.
+                    (("^PLUGIN_DIR_PURPLE=.*")
+                     (string-append
+                      "exec_prefix := @exec_prefix@\n"
+                      "PLUGIN_DIR_PURPLE := @libdir@/purple-2\n"))
+                    (("^DATA_ROOT_DIR_PURPLE=.*")
+                     "DATA_ROOT_DIR_PURPLE := @datarootdir@\n")
+
+                    ;; Honor sysconfdir instead of trying to write to /etc.
+                    (("DESTDIR\\)/etc/telegram-purple")
+                     "DESTDIR)@sysconfdir@/telegram-purple"))
+                  #t))
+              (patches (search-patches "telegram-purple-adjust-test.patch"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("pidgin" ,pidgin)
+       ("libgcrypt" ,libgcrypt)
+       ("libwebp" ,libwebp)
+       ("glib" ,glib)
+       ("gettext" ,gnu-gettext)
+       ("gtk+" ,gtk+-2)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; We're using release tag for repository checkout - let's prepare
+         ;; header defining GIT_COMMIT manually instead of running git to
+         ;; identify version which is being compiled. Git repository
+         ;; is removed anyway and only source code is kept.
+         (add-after 'unpack 'prepare-commit.h
+           (lambda _
+             (with-output-to-file "./commit.h"
+               (lambda ()
+                 (display
+                  (string-append "//generated by guix, use version instead of "
+                                 "commit\n"
+                                 "#ifndef GIT_COMMIT\n"
+                                 "#  define GIT_COMMIT \"v"
+                                 ,version "\"\n"
+                                 "#endif\n"))))
+             #t))
+         (add-before 'configure 'set-SHELL-variables
+           ;; Set these environment variables so that 'tgl/configure' uses the
+           ;; right shell and not /bin/sh.
+           (lambda _
+             (let ((bash (which "bash")))
+               (setenv "SHELL" bash)
+               (setenv "CONFIG_SHELL" bash)
+               #t))))))
+    (synopsis "Telegram messaging support for Pidgin")
+    (description
+     "Telegram-purple is a plugin for Libpurple, the communication library
+used by the Pidgin instant messaging client, that adds support for the
+Telegram messenger.")
+
+    ;; Code under tgl/ (the Telegram library) is LGPLv2.1+, but the plugin
+    ;; itself is GPLv2+.
+    (license license:gpl2+)))
 
 ;;; messaging.scm ends here

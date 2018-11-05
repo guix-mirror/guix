@@ -1161,7 +1161,8 @@ resulting from command-line parsing."
                              #:target target
                              #:bootloader-target bootloader-target
                              #:gc-root (assoc-ref opts 'gc-root)))))
-        #:system system))))
+        #:system system))
+    (warn-about-disk-space)))
 
 (define (resolve-subcommand name)
   (let ((module (resolve-interface

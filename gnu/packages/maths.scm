@@ -286,13 +286,13 @@ programming language.")
 (define-public units
   (package
    (name "units")
-   (version "2.17")
+   (version "2.18")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/units/units-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1n2xzpnxfn475zkd8rzs5gg58xszjbr4bdbgvk6hryzimvwwj0qz"))))
+                     "0y26kj349i048y4z3xrk90bvciw2j6ds3rka7r7yn3183hirr5b4"))))
    (build-system gnu-build-system)
    (inputs
     `(("readline" ,readline)
@@ -2110,16 +2110,14 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "2.1.5")
+    (version "2.1.8")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "18cv7c2gvagbmggfbsy2xk9bpn47izd0qrmqnc3q7afvj6pr6nf9"))))
+        (base32 "0m8ladhrfyxwybblkcdgg4xv1mk5kibmwarpj2k0c2y34zzcix4z"))))
     (build-system r-build-system)
-    (propagated-inputs
-     `(("r-quadprog" ,r-quadprog)))
-    (home-page "https://cran.r-project.org/web/packages/pracma")
+    (home-page "https://cran.r-project.org/web/packages/pracma/")
     (synopsis "Practical numerical math functions")
     (description "This package provides functions for numerical analysis and
 linear algebra, numerical optimization, differential equations, plus some
@@ -3294,7 +3292,7 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.9.2")
+    (version "0.9.9.3")
     (source
      (origin
        (method url-fetch)
@@ -3302,7 +3300,7 @@ Failure to do so will result in a library with poor performance.")
                            version  "/glm-" version ".zip"))
        (sha256
         (base32
-         "1m2gws1d7l6h4mdn0ap74pfnm3vva3kk8rybdqd5x4lksd1mk6r0"))))
+         "0yqk5r3qh60d4r2iab5q7wq0fryn8p3pz6s28y1i7amqj1aqavj9"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))

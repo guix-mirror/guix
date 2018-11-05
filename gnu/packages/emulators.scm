@@ -117,8 +117,8 @@
 
 ;; Building from recent Git because the official 5.0 release no longer builds.
 (define-public dolphin-emu
-  (let ((commit "5f0d825f40b8aabe13eaef32d44ab667ff8e8c28")
-        (revision "3"))
+  (let ((commit "22ddd11573fd8d3e43a879804e7a64e50928435d")
+        (revision "4"))
     (package
       (name "dolphin-emu")
       (version (git-version "5.0" revision commit))
@@ -144,7 +144,7 @@
              #t))
          (sha256
           (base32
-           "0dh7mih16aif9ynbgcsn7n10f89g8d232i86xqfp2rijsdggcmzl"))))
+           "01l6r8spaslqc73m3y7hfb2jx5a4848vdkman6x6w2arpb8bywzl"))))
       (build-system cmake-build-system)
       (arguments
        '(#:tests? #f
@@ -153,7 +153,8 @@
            (add-before 'configure 'fixgcc7
              (lambda _
                (unsetenv "C_INCLUDE_PATH")
-               (unsetenv "CPLUS_INCLUDE_PATH")))
+               (unsetenv "CPLUS_INCLUDE_PATH")
+               #t))
            (add-before 'configure 'generate-fonts&hardcore-libvulkan-path
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((fontfile
@@ -195,7 +196,7 @@
          ("bluez" ,bluez)
          ("curl" ,curl)
          ("eudev" ,eudev)
-         ("ffmpeg" ,ffmpeg-3.4)
+         ("ffmpeg" ,ffmpeg)
          ("font-wqy-microhei" ,font-wqy-microhei)
          ("freetype" ,freetype)
          ("glew" ,glew)
@@ -1185,7 +1186,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.202")
+    (version "0.203")
     (source
      (origin
        (method git-fetch)
@@ -1195,7 +1196,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1v9gm124p65nbj678gfkcvwphp9qc15ky2p12ca6g3rllma94di5"))
+         "19ccqc00024fbjyk0k5d9xljhwq7wsrp7phwm2jmn0h77mgdj844"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.

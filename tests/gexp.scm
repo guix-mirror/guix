@@ -680,6 +680,22 @@
    #~(foo #$@(list (with-imported-modules '((foo)) #~+)
                    (with-imported-modules '((bar)) #~-)))))
 
+(test-assert "gexp-modules deletes duplicates"   ;<https://bugs.gnu.org/32966>
+  (let ((make-file (lambda ()
+                     ;; Use 'eval' to make sure we get an object that's not
+                     ;; 'eq?' nor 'equal?' due to the closures it embeds.
+                     (eval '(scheme-file "bar.scm" #~(define-module (bar)))
+                           (current-module)))))
+    (define result
+      ((@@ (guix gexp) gexp-modules)
+       (with-imported-modules `(((bar) => ,(make-file))
+                                ((bar) => ,(make-file))
+                                (foo) (foo))
+         #~+)))
+
+    (match result
+      (((('bar) '=> (? scheme-file?)) ('foo)) #t))))
+
 (test-equal "gexp-modules and literal Scheme object"
   '()
   (gexp-modules #t))

@@ -740,6 +740,9 @@ Works word processor file format.")
       (sha256 (base32
                "08mg5kmkjrmqrd8j5rkzw9vdqlvibhb1ynp6bmfxnzq5rcq1l197"))))
    (build-system gnu-build-system)
+   (arguments
+    ;; A harmless 'sign-compare' error pops up on i686 so disable '-Werror'.
+    '(#:configure-flags '("--disable-werror")))
    (inputs
     `(("boost" ,boost)
       ("icu4c" ,icu4c)
@@ -1102,6 +1105,8 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
         (list
           "--enable-release-build"
           "--enable-verbose"
+          ;; Avoid using all cpu cores by default
+          (format #f "--with-parallelism=~d" (parallel-job-count))
           "--disable-fetch-external" ; disable downloads
           "--with-system-libs" ; enable all --with-system-* flags
           (string-append "--with-boost-libdir="

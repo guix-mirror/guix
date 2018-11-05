@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Charlie Ritter <chewzeirta@posteo.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018 Laura Lazzati <laura.lazzati.15@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
@@ -164,19 +166,19 @@ package is a port of the Python package @code{cssselect}.")
 (define-public r-reprex
   (package
     (name "r-reprex")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reprex" version))
        (sha256
         (base32
-         "1l44pxjiz3g0jkk3v6rg5jps3llihfiah0qyv40s0bxvxa6gm8v9"))))
+         "1ws5gds453xgfili87r35rz1wn2i7jbqissq98csbiddpkgls8sx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
        ("r-clipr" ,r-clipr)
-       ("r-knitr" ,r-knitr)
+       ("r-fs" ,r-fs)
        ("r-rlang" ,r-rlang)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-whisker" ,r-whisker)
@@ -318,14 +320,14 @@ component analysis (with robust methods, and parallelized functions).")
 (define-public r-ape
   (package
     (name "r-ape")
-    (version "5.1")
+    (version "5.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ape" version))
        (sha256
         (base32
-         "0vm2065993wf4hdqarxqykhfz9aaj0rrb98alhkq4qw1d2kdrmdp"))))
+         "05b4yka5cirdgxd4d7iiaqvr428pk3j6n9q6dvg5j38kdj2h5sr7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
@@ -490,13 +492,13 @@ print, summary, plot, update, etc.
 (define-public r-ps
   (package
     (name "r-ps")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ps" version))
        (sha256
-        (base32 "1zm9qkyvy1fvcjvmgw51iqw8x1xzkpy7rx7xnchwfj0xpzal0ljx"))))
+        (base32 "0ai8igdkysmks1ihbp3h3s552da2hskxqwrvp4cx7vwn91x9f3wd"))))
     (build-system r-build-system)
     (home-page "http://ps.r-lib.org")
     (synopsis "List, query, and manipulate system processes")
@@ -508,19 +510,21 @@ processes.  Most of its code is based on the @code{psutil} Python package.")
 (define-public r-pkgbuild
   (package
     (name "r-pkgbuild")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgbuild" version))
        (sha256
         (base32
-         "10iz8057mixl9j73pq2cbp4ib6dadfsgi3fcsjjm7l3wwb9issd9"))))
+         "1i1rrax7x7r2bplig5cfc50lx85jc4n9a3qmvbdviaj22wr2lghs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
+       ("r-cli" ,r-cli)
        ("r-crayon" ,r-crayon)
        ("r-desc" ,r-desc)
+       ("r-prettyunits" ,r-prettyunits)
        ("r-r6" ,r-r6)
        ("r-rprojroot" ,r-rprojroot)
        ("r-withr" ,r-withr)))
@@ -535,14 +539,14 @@ is configured appropriately so R can use them.")
 (define-public r-pkgload
   (package
     (name "r-pkgload")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgload" version))
        (sha256
         (base32
-         "1rjj229nq9fsl4ki4m75ybsavjgpqqhsr1zjzapwicsrxv6212px"))))
+         "0mm0avvan528zbrcrxigl5fkd7za01fb0qhlqrqvm3ar0115cqa8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-desc" ,r-desc)
@@ -562,13 +566,13 @@ you to rapidly iterate while developing a package.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "0.12.18")
+    (version "0.12.19")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "006kpg2ph109rh1l13lqk26pp4as4fvl5661vrcczjygacgd1v7w"))))
+        (base32 "10mmiaawv9iwglc6z4y51mdpsfb1sivqmwr6xnfqkllcnpabdbk3"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
@@ -788,14 +792,14 @@ rows, dropping names) to see if the modified versions are identical.")
 (define-public r-dendextend
   (package
     (name "r-dendextend")
-    (version "1.8.0")
+    (version "1.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dendextend" version))
        (sha256
         (base32
-         "1virn3c232xwcq3d0hhkgjh5gpzl01s39iwii5gxcm9mnsxjzdrh"))))
+         "1jiani6zwfajky2vafvay2hq158nh99rdrk3j00lycspds9v35fd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-fpc" ,r-fpc)
@@ -887,14 +891,14 @@ in main memory.")
 (define-public r-ffbase
   (package
     (name "r-ffbase")
-    (version "0.12.3")
+    (version "0.12.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ffbase" version))
        (sha256
         (base32
-         "1nz97bndxxkzp8rq6va8ff5ky9vkaib1jybm6j852awwb3n9had5"))))
+         "1h5x6rbb1nrpzf4ywkizn8ij0bz3mlz46byh46ylxhicg1ribi24"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bit" ,r-bit)
@@ -932,14 +936,14 @@ quantities.")
 (define-public r-reshape
   (package
     (name "r-reshape")
-    (version "0.8.7")
+    (version "0.8.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reshape" version))
        (sha256
         (base32
-         "14ir3w4bb3bsz8jsak27nj7kpn227pdgr9653gjq5wc93rywi9ig"))))
+         "0s6i0sqxg1vldxs6miv8mi0zydxbqzgpmzfiwkj8y7jix3yrfmad"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-plyr" ,r-plyr)
@@ -1346,17 +1350,18 @@ functions from LINPACK.")
 (define-public r-fitdistrplus
   (package
     (name "r-fitdistrplus")
-    (version "1.0-9")
+    (version "1.0-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fitdistrplus" version))
        (sha256
         (base32
-         "18x9454g598d54763k3hvi33iszifk7sxvhd1zg5r8z1vpixx3z6"))))
+         "12hckg3y5j3zh9q1gwxkc27q813p2r42iqp7wdfiq6nj55jrh6w6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)
+       ("r-npsurv" ,r-npsurv)
        ("r-survival" ,r-survival)))
     (home-page "http://riskassessment.r-forge.r-project.org")
     (synopsis "Fitting a parametric distribution from data")
@@ -1624,14 +1629,14 @@ calendar objects.")
 (define-public r-magic
   (package
     (name "r-magic")
-    (version "1.5-8")
+    (version "1.5-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "magic" version))
        (sha256
         (base32
-         "083cgpp3v03li0h8597b3g21pd9lkbmn9pyssblnhc800mpc52vz"))))
+         "0snmdh6vk0p6ar1swsihisinxrx7l8371dri5lk0z24ysgr5w7gs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)))
@@ -2224,14 +2229,14 @@ acceptance regions, log-ratio plots and Q-Q plots.")
 (define-public r-sm
   (package
     (name "r-sm")
-    (version "2.2-5.5")
+    (version "2.2-5.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sm" version))
        (sha256
         (base32
-         "1rw2mxygxsmk8mn4wag1ppjgzk0rlvh6zd8q02qrhjrn9jhi5qj3"))))
+         "0c4whcx879gb4lwvqnzxl5n9xgpcqh2c54ip9ami3mwfprzcv45q"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
     (home-page "http://www.stats.gla.ac.uk/~adrian/sm/")
@@ -2314,14 +2319,14 @@ training models for classification or ranking.")
 (define-public r-xts
   (package
     (name "r-xts")
-    (version "0.11-0")
+    (version "0.11-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xts" version))
        (sha256
         (base32
-         "1v50yn4bsjzdyk7r90isn6dxmpkapillrhpx3gqsshd180vwzqk9"))))
+         "17d3g14xkxa1a5z5gd3gk1xjqfkjg1ik3i12q0arina8frql3jhd"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-zoo" ,r-zoo)))
     (home-page "https://github.com/joshuaulrich/xts")
@@ -2499,14 +2504,14 @@ plotting.  a three dimensional point cloud.")
 (define-public r-ggridges
   (package
     (name "r-ggridges")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggridges" version))
        (sha256
         (base32
-         "1znvsbl3px8dddpjgdrygnpz4s685wizi0jnjvx2hrz58i0chjqj"))))
+         "0dhwcpy785ac2ny5bjp284595nnybi3554wd0yffsli0vzf7ry01"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
@@ -2546,14 +2551,14 @@ plots in @code{ggplot2}.")
 (define-public r-cli
   (package
     (name "r-cli")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cli" version))
        (sha256
         (base32
-         "07as3dr7vwx02p3qgzlmxz1dlrd3x3lysrzp222ip9jcjpydp8wg"))))
+         "1r2yih4c0bdmbx0qrarlf0m1p5z30sri755zmdazsq2pw76zp07g"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -2701,20 +2706,19 @@ of merit, ordering functions, and enhanced versions of @code{pairs} and
 (define-public r-webshot
   (package
     (name "r-webshot")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "webshot" version))
        (sha256
         (base32
-         "07r71zzmggp4jf92x4ws4wg6v1x98vaj01lsar85bnb30n5vx8gh"))))
+         "08sb1xi376pfy1vwilk2d68zljsg9yiv04n2dkqz383gdhh0sxdr"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-jsonlite" ,r-jsonlite)
-       ("r-magrittr" ,r-magrittr)
-       ("r-processx" ,r-processx)
-       ("r-withr" ,r-withr)))
+     `(("r-callr" ,r-callr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)))
     (home-page "https://github.com/wch/webshot/")
     (synopsis "Take screenshots of web pages")
     (description
@@ -2761,14 +2765,14 @@ iVAT).")
 (define-public r-xfun
   (package
     (name "r-xfun")
-    (version "0.3")
+    (version "0.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xfun" version))
        (sha256
         (base32
-         "1r11dd49ngmjgbjdv28a9c1jp8cg1l50x0acbsamzz576p8i2wl9"))))
+         "0991ywgc2dsraba91kkj37akhfzhzn02cnz7c88hhdis9kag3pwv"))))
     (build-system r-build-system)
     (home-page "https://github.com/yihui/xfun")
     (synopsis "Miscellaneous functions")
@@ -2845,14 +2849,14 @@ terminals.")
 (define-public r-tinytex
   (package
     (name "r-tinytex")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tinytex" version))
        (sha256
         (base32
-         "1bgpr5i5399jf9n6pg2mm4aamisbhppg082ad0wv1j4g0rlxf1gy"))))
+         "08w5hyq3ysh631d5whgcfv1bb007cdc0bjhb83vwmhazs6rgvyjy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-xfun" ,r-xfun)))
@@ -2960,14 +2964,14 @@ generation, and 2D/3D network visualization.")
 (define-public r-ttr
   (package
     (name "r-ttr")
-    (version "0.23-3")
+    (version "0.23-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "TTR" version))
        (sha256
         (base32
-         "07r62ngyzjl4aszdxnr3n6bnbcgcap32yhd430jsilicg8n06di1"))))
+         "18mzyv6cmxmqyqsfwlx2b2k055887mfgc2jgj8xkn8c6m56n05zb"))))
     (properties `((upstream-name . "TTR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3168,14 +3172,14 @@ Cryer and Kung-Sik Chan.")
 (define-public r-extradistr
   (package
     (name "r-extradistr")
-    (version "1.8.9")
+    (version "1.8.10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "extraDistr" version))
        (sha256
         (base32
-         "1fg8vjpal33y51iqzglk1yvy46d7js0l0wfbdy698lq8a06hq19p"))))
+         "00lvqp5bb3iak5myiz4rqm887bkq9sdh7aybmz84mmfni6q01m28"))))
     (properties `((upstream-name . "extraDistr")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3238,14 +3242,14 @@ applied econometric analysis.")
 (define-public r-cubature
   (package
     (name "r-cubature")
-    (version "1.4")
+    (version "1.4-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cubature" version))
        (sha256
         (base32
-         "1hd23b8v2kpqp5gr0va8p2q7j8w9rik6ks7zrr4b8mb2mwrakk74"))))
+         "10jl5l3xnigiq95829ssq69xbim97k851187dghc30awszcx4clh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
@@ -3294,14 +3298,14 @@ sample Robust Rank-Order Distributional Test.")
 (define-public r-expm
   (package
     (name "r-expm")
-    (version "0.999-2")
+    (version "0.999-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "expm" version))
        (sha256
         (base32
-         "1mihl67kvv1xv0figp25jkmwfn4iwkcx15cng2348y8gm6zybw9q"))))
+         "04k4a6g071jkjc0d30ncmf713dj16brcs9m6pj43hnycc1caq6si"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-matrix" ,r-matrix)))
     (native-inputs `(("gfortran" ,gfortran)))
@@ -3359,14 +3363,14 @@ creation and manipulation of WAVE audio files.")
 (define-public r-np
   (package
     (name "r-np")
-    (version "0.60-8")
+    (version "0.60-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "np" version))
        (sha256
         (base32
-         "17h67a510wh83800ri6g02wvznrlhigxni8shyijz1iaxcpk8k4j"))))
+         "1z4jcpx8bbgwslv42wrphfd1qfq965qjn0kmfxm5f6hbbycahcgy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
@@ -3498,14 +3502,14 @@ files.")
 (define-public r-shinyace
   (package
     (name "r-shinyace")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "shinyAce" version))
        (sha256
         (base32
-         "1hqgszbiv99dibhwr21v21ll4s2hjn3ccqdicsm0z3gk77bh8iyb"))))
+         "1fbk5i6w6cpam8s3acf4bgdp8hajn4digjjix3i6i4q3p2rvn6zx"))))
     (properties `((upstream-name . "shinyAce")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3521,14 +3525,14 @@ environment within Shiny.")
 (define-public r-radiant-data
   (package
     (name "r-radiant-data")
-    (version "0.9.5")
+    (version "0.9.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "radiant.data" version))
        (sha256
         (base32
-         "0mbxfqn79nphii4hb6kxl2wc0w0ra16y378rp2yw9a9926zdb7mb"))
+         "1f98ahki0kyb27gl55a859zb0lsvk9gddd9f54y767xfs6h89cgk"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3562,7 +3566,9 @@ environment within Shiny.")
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-scales" ,r-scales)
        ("r-shiny" ,r-shiny)
+       ("r-shinyfiles" ,r-shinyfiles)
        ("r-shinyace" ,r-shinyace)
+       ("r-summarytools" ,r-summarytools)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
        ("r-writexl" ,r-writexl)))
@@ -4057,14 +4063,14 @@ simple method for converting between file types.")
 (define-public r-maptools
   (package
     (name "r-maptools")
-    (version "0.9-3")
+    (version "0.9-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "maptools" version))
        (sha256
         (base32
-         "0hxbv01im9zk1qrwgigpc510w6x0kzdzip4gx2jzfqmmwr8m17r8"))))
+         "1753kgyc4kmbb5h6knz5wgvvvj8v77kzm8lz0kwz05m5k3spa24k"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreign" ,r-foreign)
@@ -4085,14 +4091,14 @@ exchanging spatial objects with other R packages.")
 (define-public r-later
   (package
     (name "r-later")
-    (version "0.7.4")
+    (version "0.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "later" version))
        (sha256
         (base32
-         "125zc499gj702x2bch95lsfzk2qb4dzv3604x9afym2i3ylrmm64"))))
+         "0xhwn37makzm85zb6w5acc7svzibxcnz69rks0kxw22vapkxwz1i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
@@ -4234,14 +4240,14 @@ quizzes to create self-paced tutorials for learning about R and R packages.")
 (define-public r-analytics
   (package
     (name "r-analytics")
-    (version "2.0")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "analytics" version))
        (sha256
         (base32
-         "1jkdjqc3fnvvsgi6x9ncf36rxzq0a55cmgkcv92mfmpcramg2lk6"))))
+         "0js3c8lwj3knccb55nq03cbjlf4w390p9aid2mi5x80l3ayd9in1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-car" ,r-car)
@@ -4254,7 +4260,8 @@ quizzes to create self-paced tutorials for learning about R and R packages.")
        ("r-robust" ,r-robust)
        ("r-trend" ,r-trend)
        ("r-tsa" ,r-tsa)
-       ("r-urca" ,r-urca)))
+       ("r-urca" ,r-urca)
+       ("r-vim" ,r-vim)))
     (home-page "https://cran.r-project.org/web/packages/analytics/")
     (synopsis "Collection of data analysis tools")
     (description
@@ -4534,14 +4541,14 @@ steps and provides ggplot2-based elegant data visualization.")
 (define-public r-fansi
   (package
     (name "r-fansi")
-    (version "0.3.0")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fansi" version))
        (sha256
         (base32
-         "135qj7bcc3mwn0vg55hiiadf66lx6zaxvkicfmfw9x0zr7ah2r6x"))))
+         "02f2rx7v7wz6w97m2slwky2i5y8f9iafycmkyr3siy3z3k8fj171"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr))) ; for vignettes
@@ -4576,14 +4583,14 @@ results to the user.")
 (define-public r-hdf5r
   (package
     (name "r-hdf5r")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hdf5r" version))
        (sha256
         (base32
-         "1s6p4cj909kc635fh5xpl87bqlcdj3dn3r1wk5g40abimk2b0pva"))))
+         "0h222q80li8rs3cv4c5lvv3g91ygd51w43ay6fwyk9q9d315vwrj"))))
     (build-system r-build-system)
     (inputs
      `(("hdf5" ,hdf5)
@@ -4666,14 +4673,14 @@ functions.")
 (define-public r-rdpack
   (package
     (name "r-rdpack")
-    (version "0.9-0")
+    (version "0.10-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rdpack" version))
        (sha256
         (base32
-         "067w0w6kza0hkzcnx58danl83yfvl9yjacr47mnid2bg856gdd1b"))))
+         "0bbjnw88h54v40hzim00i8yd3p4rk9i84zfdmgcbnylscwvsf0av"))))
     (properties `((upstream-name . "Rdpack")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4774,14 +4781,14 @@ other add-on packages.")
 (define-public r-sjlabelled
   (package
     (name "r-sjlabelled")
-    (version "1.0.13")
+    (version "1.0.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjlabelled" version))
        (sha256
         (base32
-         "0xizj7mrhnbn8kwjgm076si9w68a7lgrx4vj1sbqmv9jx055h8wv"))))
+         "0ayfzhm9bwjfaarq5z0gvn9kapjwj3532azgin97nr5fnjdhvgaw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
@@ -4807,14 +4814,14 @@ vice versa), or to deal with multiple declared missing values.")
 (define-public r-sjmisc
   (package
     (name "r-sjmisc")
-    (version "2.7.4")
+    (version "2.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjmisc" version))
        (sha256
         (base32
-         "11cy09k1d2y5wwqvafqxr01hzk4x68ji2pqlwj7fnpw27i3ap4q4"))))
+         "05fjqfr2rfk11065zqkzb9mbqd6mgdkw9jdhq3by425a7f8m2dcg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
@@ -5217,14 +5224,14 @@ containing one or more SNPs that evolved under directional selection.")
 (define-public r-proc
   (package
     (name "r-proc")
-    (version "1.12.1")
+    (version "1.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pROC" version))
        (sha256
         (base32
-         "05ad69a6fxy9k903cw3h4q59ch2jv6qfg9yjdbw3cgiiazcafrlj"))))
+         "0ain17clympkx09ym7gydylcd93096dxzqx1qzci310yq2l7fknm"))))
     (properties `((upstream-name . "pROC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5855,13 +5862,13 @@ detection.")
 (define-public r-abps
   (package
     (name "r-abps")
-    (version "0.2")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ABPS" version))
        (sha256
-        (base32 "1k3f5i34f4w2khkszb4qhwwcpiy7gsfh82vjr6rypwg6rx5rjclq"))))
+        (base32 "0n3f66nmfi5v94il1mxy026mi84w01ph2aljk60vn3mrz8kwf2ll"))))
     (properties `((upstream-name . "ABPS")))
     (build-system r-build-system)
     (propagated-inputs `(("r-kernlab" ,r-kernlab)))
@@ -6160,6 +6167,52 @@ representing one simulated time step.  Various mutation events are possible at
 each time step, contributing to a diverse final repertoire.")
     (license license:gpl2)))
 
+(define-public r-quic
+  (package
+    (name "r-quic")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "QUIC" version))
+       (sha256
+        (base32 "021bp9xbaih60qmss015ycblbv6d1dvb1z89y93zpqqnc2qhpv3c"))))
+    (properties `((upstream-name . "QUIC")))
+    (build-system r-build-system)
+    (home-page "https://www.cs.utexas.edu/users/sustik/QUIC/")
+    (synopsis "Regularized sparse inverse covariance matrix estimation")
+    (description
+     "This package implements the regularized Gaussian maximum likelihood
+estimation of the inverse of a covariance matrix.  It uses Newton's method and
+coordinate descent to solve the regularized inverse covariance matrix
+estimation problem.")
+    ;; The project home page states that the release is under GPLv3 or later.
+    ;; The CRAN page only says GPL-3.
+    (license license:gpl3+)))
+
+(define-public r-abundant
+  (package
+    (name "r-abundant")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abundant" version))
+       (sha256
+        (base32 "1m76qdmqvwpgm0sihazi2dna7cgsz9rljal18vgffb5wamwmg9k7"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-quic" ,r-quic)))
+    (home-page "https://cran.r-project.org/web/packages/abundant/")
+    (synopsis "Abundant regression and high-dimensional principal fitted components")
+    (description
+     "This package provides tools to fit and predict with the high-dimensional
+principal fitted components model.  This model is described by Cook, Forzani,
+and Rothman (2012) @url{doi:10.1214/11-AOS962}.")
+    ;; The DESCRIPTION file states GPL-2, but since it directly depends on a
+    ;; GPLv3+ package (QUIC) this likely means GPLv2+.
+    (license license:gpl2+)))
+
 (define-public r-ac3net
   (package
     (name "r-ac3net")
@@ -6255,4 +6308,920 @@ indicates by TRUE/FALSE (false by default) if the source @acronym{CSV} file has
 a header row or not.  The dataset should contain only one independent variable
 (x) and one dependent variable (y) and can contain a weight for each
 observation.")
+    (license license:gpl2)))
+
+(define-public r-aspi
+  (package
+    (name "r-aspi")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "aspi" version))
+       (sha256
+        (base32 "0rhvxw243vvdv3hxa6pi343gcjc2cbxq1jzqirl9k1l4i3897l87"))))
+    (build-system r-build-system)
+    (home-page
+     "https://cran.r-project.org/web/packages/aspi/")
+    (synopsis
+     "Analysis of symmetry of parasitic infections")
+    (description
+     "This package provides tools for the analysis and visualization of bilateral
+      asymmetry in parasitic infections.")
+    (license license:gpl3+)))
+
+(define-public r-sandwich
+  (package
+    (name "r-sandwich")
+    (version "2.5-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sandwich" version))
+       (sha256
+        (base32
+         "168kq5kk34xbhfsxsanard9zriyp6cw0s09ralzb57kk42pl9hbc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-zoo" ,r-zoo)))
+    (home-page "https://cran.r-project.org/web/packages/sandwich/")
+    (synopsis "Robust Covariance Matrix Estimators")
+    (description
+     "This package provides model-robust standard error estimators for
+cross-sectional, time series, clustered, panel, and longitudinal data.")
+    ;; Either version of the license.
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-th-data
+  (package
+    (name "r-th-data")
+    (version "1.0-9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TH.data" version))
+       (sha256
+        (base32
+         "03xfvww0krw0fn76qmmvrj7dx4shin57qafwhkrggfg25hbqlcfq"))))
+    (properties `((upstream-name . "TH.data")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/TH.data/")
+    (synopsis "Shared data sets")
+    (description
+     "This package contains supporting data sets that are used in other
+packages maintained by Torsten Hothorn.")
+    (license license:gpl3)))
+
+(define-public r-multcomp
+  (package
+    (name "r-multcomp")
+    (version "1.4-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "multcomp" version))
+       (sha256
+        (base32
+         "0fm78g4zjc6ank316qfw977864shmy890znn4fahwc8jjdhpc252"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-codetools" ,r-codetools)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-sandwich" ,r-sandwich)
+       ("r-survival" ,r-survival)
+       ("r-th-data" ,r-th-data)))
+    (home-page "https://cran.r-project.org/web/packages/multcomp/")
+    (synopsis "Simultaneous inference in general parametric models")
+    (description
+     "Simultaneous tests and confidence intervals for general linear
+hypotheses in parametric models, including linear, generalized linear, linear
+mixed effects, and survival models.  The package includes demos reproducing
+analyzes presented in the book \"Multiple Comparisons Using R\" (Bretz,
+Hothorn, Westfall, 2010, CRC Press).")
+    (license license:gpl2)))
+
+(define-public r-emmeans
+  (package
+    (name "r-emmeans")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "emmeans" version))
+       (sha256
+        (base32
+         "0kdyy4qp332c4yyvp1cnh48h6ks6ffir5rjcv0py0vm3m8c3hh61"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-estimability" ,r-estimability)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-plyr" ,r-plyr)
+       ("r-xtable" ,r-xtable)))
+    (home-page "https://github.com/rvlenth/emmeans")
+    (synopsis "Estimated marginal means, aka least-squares means")
+    (description
+     "This package provides tools to obtain @dfn{estimated marginal
+means} (EMMs) for many linear, generalized linear, and mixed models.  It can
+be used to compute contrasts or linear functions of EMMs, trends, and
+comparisons of slopes.")
+    ;; Either version of the license.
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public r-pwr
+  (package
+    (name "r-pwr")
+    (version "1.2-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pwr" version))
+       (sha256
+        (base32
+         "0r5g781lr677vp3zyhgmi7r68c87l8gd05l1s3ffnxgn5wf043sm"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/heliosdrm/pwr")
+    (synopsis "Basic functions for power analysis")
+    (description
+     "This package provides power analysis functions along the lines of
+Cohen (1988).")
+    (license license:gpl3+)))
+
+(define-public r-coin
+  (package
+    (name "r-coin")
+    (version "1.2-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "coin" version))
+       (sha256
+        (base32
+         "1fq58793bymzig1syjg2lvn6hsxfwkhh00jfrchh3c0y7rfhc66m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-modeltools" ,r-modeltools)
+       ("r-multcomp" ,r-multcomp)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-survival" ,r-survival)))
+    (home-page "http://coin.r-forge.r-project.org")
+    (synopsis "Conditional inference procedures in a permutation test framework")
+    (description
+     "This package provides conditional inference procedures for the general
+independence problem including two-sample, K-sample (non-parametric ANOVA),
+correlation, censored, ordered and multivariate problems.")
+    (license license:gpl2)))
+
+(define-public r-bayesplot
+  (package
+    (name "r-bayesplot")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bayesplot" version))
+       (sha256
+        (base32
+         "0in9cq2ybpa7njrwqx4l6nc8i01cjswsvzwlyiw465pi74aapr57"))))
+    (build-system r-build-system)
+    (inputs
+     `(("pandoc" ,ghc-pandoc)
+       ("pandoc-citeproc" ,ghc-pandoc-citeproc)))
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggridges" ,r-ggridges)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rlang" ,r-rlang)))
+    (home-page "http://mc-stan.org/bayesplot")
+    (synopsis "Plotting for Bayesian models")
+    (description
+     "This package provides plotting functions for posterior analysis, model
+checking, and MCMC diagnostics.  The package is designed not only to provide
+convenient functionality for users, but also a common set of functions that
+can be easily used by developers working on a variety of R packages for
+Bayesian modeling.")
+    (license license:gpl3+)))
+
+(define-public r-tmb
+  (package
+    (name "r-tmb")
+    (version "1.7.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TMB" version))
+       (sha256
+        (base32
+         "0bpc504nz8xfwr8ack52dj4hpjcykn6zyf8n228z32dw9d5n96dl"))))
+    (properties `((upstream-name . "TMB")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-rcppeigen" ,r-rcppeigen)))
+    (home-page "http://tmb-project.org")
+    (synopsis "Template model builder: a general random effect tool")
+    (description
+     "With this tool, a user should be able to quickly implement complex
+random effect models through simple C++ templates.  The package combines
+@code{CppAD} (C++ automatic differentiation), @code{Eigen} (templated
+matrix-vector library) and @code{CHOLMOD} (sparse matrix routines available
+from R) to obtain an efficient implementation of the applied Laplace
+approximation with exact derivatives.  Key features are: Automatic sparseness
+detection, parallelism through BLAS and parallel user templates.")
+    (license license:gpl2)))
+
+(define-public r-sjstats
+  (package
+    (name "r-sjstats")
+    (version "0.17.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sjstats" version))
+       (sha256
+        (base32
+         "0s9b0xr8gmcm0kh48jkwk8ns0lqknd8kpys4f7czf0xwzmcx2n1z"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bayesplot" ,r-bayesplot)
+       ("r-broom" ,r-broom)
+       ("r-coin" ,r-coin)
+       ("r-crayon" ,r-crayon)
+       ("r-dplyr" ,r-dplyr)
+       ("r-emmeans" ,r-emmeans)
+       ("r-glmmtmb" ,r-glmmtmb)
+       ("r-lme4" ,r-lme4)
+       ("r-magrittr" ,r-magrittr)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-modelr" ,r-modelr)
+       ("r-nlme" ,r-nlme)
+       ("r-purrr" ,r-purrr)
+       ("r-pwr" ,r-pwr)
+       ("r-rlang" ,r-rlang)
+       ("r-sjlabelled" ,r-sjlabelled)
+       ("r-sjmisc" ,r-sjmisc)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/strengejacke/sjstats")
+    (synopsis "Functions for common statistical computations")
+    (description
+     "This package provides a collection of convenient functions for common
+statistical computations, which are not directly provided by R's @code{base}
+or @code{stats} packages.  This package aims at providing, first, shortcuts
+for statistical measures, which otherwise could only be calculated with
+additional effort.  Second, these shortcut functions are generic, and can be
+applied not only to vectors, but also to other objects as well.  The focus of
+most functions lies on summary statistics or fit measures for regression
+models, including generalized linear models, mixed effects models and Bayesian
+models.")
+    (license license:gpl3)))
+
+(define-public r-glmmtmb
+  (package
+    (name "r-glmmtmb")
+    (version "0.2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "glmmTMB" version))
+       (sha256
+        (base32
+         "1clpkjlmsjmn3m1z5jqv8cgw6bvpqsy4nx6k947r0jya017ny5y5"))))
+    (properties `((upstream-name . "glmmTMB")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lme4" ,r-lme4)
+       ("r-matrix" ,r-matrix)
+       ("r-nlme" ,r-nlme)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-tmb" ,r-tmb)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/glmmTMB")
+    (synopsis "Generalized linear mixed models")
+    (description
+     "Fit linear and generalized linear mixed models with various extensions,
+including zero-inflation.  The models are fitted using maximum likelihood
+estimation via the Template Model Builder.  Random effects are assumed to be
+Gaussian on the scale of the linear predictor and are integrated out using the
+Laplace approximation.  Gradients are calculated using automatic
+differentiation.")
+    (license license:agpl3+)))
+
+(define-public r-ggeffects
+  (package
+    (name "r-ggeffects")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggeffects" version))
+       (sha256
+        (base32
+         "00l02g7yssqxmcmbrzk2wsj3i9ywd0xsy0rmbfh57q1qi76a1wq1"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-crayon" ,r-crayon)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-lme4" ,r-lme4)
+       ("r-magrittr" ,r-magrittr)
+       ("r-mass" ,r-mass)
+       ("r-prediction" ,r-prediction)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-scales" ,r-scales)
+       ("r-sjlabelled" ,r-sjlabelled)
+       ("r-sjmisc" ,r-sjmisc)
+       ("r-sjstats" ,r-sjstats)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/strengejacke/ggeffects")
+    (synopsis "Create tidy data frames of marginal effects for ggplot")
+    (description
+     "This package provides tools to compute marginal effects from statistical
+models and return the result as tidy data frames.  These data frames are ready
+to use with the @code{ggplot2} package.  Marginal effects can be calculated
+for many different models.  Interaction terms, splines and polynomial terms
+are also supported.  The two main functions are @code{ggpredict()} and
+@code{ggeffect()}.  There is a generic @code{plot()} method to plot the
+results using @code{ggplot2}.")
+    (license license:gpl3)))
+
+(define-public r-sjplot
+  (package
+    (name "r-sjplot")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sjPlot" version))
+       (sha256
+        (base32
+         "13qvw2s3r96qfi8kfsn76m050ccnmckl31a9qv94xws8da99v2fk"))))
+    (properties `((upstream-name . "sjPlot")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-broom" ,r-broom)
+       ("r-dplyr" ,r-dplyr)
+       ("r-forcats" ,r-forcats)
+       ("r-ggeffects" ,r-ggeffects)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-glmmtmb" ,r-glmmtmb)
+       ("r-knitr" ,r-knitr)
+       ("r-lme4" ,r-lme4)
+       ("r-magrittr" ,r-magrittr)
+       ("r-mass" ,r-mass)
+       ("r-modelr" ,r-modelr)
+       ("r-nlme" ,r-nlme)
+       ("r-psych" ,r-psych)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-scales" ,r-scales)
+       ("r-sjlabelled" ,r-sjlabelled)
+       ("r-sjmisc" ,r-sjmisc)
+       ("r-sjstats" ,r-sjstats)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://strengejacke.github.io/sjPlot/")
+    (synopsis "Data visualization for statistics in social science")
+    (description
+     "This package represents a collection of plotting and table output
+functions for data visualization.  Results of various statistical
+analyses (that are commonly used in social sciences) can be visualized using
+this package, including simple and cross tabulated frequencies, histograms,
+box plots, (generalized) linear models, mixed effects models, principal
+component analysis and correlation matrices, cluster analyses, scatter plots,
+stacked scales, effects plots of regression models (including interaction
+terms) and much more.  This package supports labelled data.")
+    (license license:gpl3)))
+
+(define-public r-ini
+  (package
+    (name "r-ini")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ini" version))
+       (sha256
+        (base32
+         "04yqij344dwm0xqgara8xia42mlmij3i8711qbb5534w05a1l6bv"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/dvdscripter/ini")
+    (synopsis "Read and write configuration files")
+    (description
+     "This package provides tools to parse simple @code{.ini} configuration
+files to an structured list.  Users can manipulate this resulting list with
+@code{lapply()} functions.  This same structured list can be used to write
+back to file after modifications.")
+    (license license:gpl3)))
+
+(define-public r-gh
+  (package
+    (name "r-gh")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gh" version))
+       (sha256
+        (base32
+         "1llinfajb0g7006jd2w1hpskxpmkjhnqarcjb71r1qvsccb2ph7k"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httr" ,r-httr)
+       ("r-ini" ,r-ini)
+       ("r-jsonlite" ,r-jsonlite)))
+    (home-page "https://github.com/r-lib/gh#readme")
+    (synopsis "Access the GitHub API via R")
+    (description
+     "This package provides a minimal R client to access the GitHub API.")
+    (license license:expat)))
+
+(define-public r-fs
+  (package
+    (name "r-fs")
+    (version "1.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fs" version))
+       (sha256
+        (base32
+         "0kqqaqqml8x3r1mdld40iwns0ylj2f52qsdh1vcn39f7w7c2ka8j"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://fs.r-lib.org")
+    (synopsis "Cross-platform file system operations based on libuv")
+    (description
+     "This package provides a cross-platform interface to file system
+operations, built on top of the libuv C library.")
+    (license license:gpl3)))
+
+(define-public r-clisymbols
+  (package
+    (name "r-clisymbols")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "clisymbols" version))
+       (sha256
+        (base32
+         "1q7gi2zmykhzas9v8fdnbpdq7pzdcpbhim1yxvd2062l777g4j86"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/gaborcsardi/clisymbols")
+    (synopsis "Unicode symbols at the R prompt")
+    (description
+     "This package provides a small subset of Unicode symbols, that are useful
+when building command line applications.  They fall back to alternatives on
+terminals that do not support Unicode.")
+    (license license:expat)))
+
+(define-public r-usethis
+  (package
+    (name "r-usethis")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "usethis" version))
+       (sha256
+        (base32
+         "1gadckx3sxz9gxvpkprj9x7zcgg2nz5m4q0vi76ya9li1v03rwwn"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-clipr" ,r-clipr)
+       ("r-clisymbols" ,r-clisymbols)
+       ("r-crayon" ,r-crayon)
+       ("r-curl" ,r-curl)
+       ("r-desc" ,r-desc)
+       ("r-fs" ,r-fs)
+       ("r-gh" ,r-gh)
+       ("r-git2r" ,r-git2r)
+       ("r-glue" ,r-glue)
+       ("r-rlang" ,r-rlang)
+       ("r-rprojroot" ,r-rprojroot)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-whisker" ,r-whisker)))
+    (home-page "https://github.com/r-lib/usethis")
+    (synopsis "Automate R package and project setup")
+    (description
+     "This package helps you to automate R package and project setup tasks
+that are otherwise performed manually.  This includes setting up unit testing,
+test coverage, continuous integration, Git, GitHub integration, licenses,
+Rcpp, RStudio projects, and more.")
+    (license license:gpl3)))
+
+(define-public r-sessioninfo
+  (package
+    (name "r-sessioninfo")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sessioninfo" version))
+       (sha256
+        (base32
+         "01c0m8yzadpwd825hky6as0f8ka4xyz7zfy0ih2iy7qqw11w6qn5"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cli" ,r-cli)
+       ("r-withr" ,r-withr)))
+    (home-page "https://github.com/r-lib/sessioninfo#readme")
+    (synopsis "R session information")
+    (description
+     "This package provides tools to query and print information about the
+current R session.  It is similar to @code{utils::sessionInfo()}, but includes
+more information about packages, and where they were installed from.")
+    (license license:gpl2)))
+
+(define-public r-remotes
+  (package
+    (name "r-remotes")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "remotes" version))
+       (sha256
+        (base32
+         "1xkzlciv68jyf4j8hads0i47nxbgsy1kv7258c6zzyq66z0amhss"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/r-lib/remotes#readme")
+    (synopsis "R package installation from remote repositories")
+    (description
+     "Download and install R packages stored in GitHub, BitBucket, or plain
+subversion or git repositories.  This package is a lightweight replacement of
+the @code{install_*} functions in the @code{devtools} package.  Indeed most of
+the code was copied over from @code{devtools}.")
+    (license license:gpl2+)))
+
+(define-public r-xopen
+  (package
+    (name "r-xopen")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xopen" version))
+       (sha256
+        (base32
+         "1vrvgdika1d63dwygynbv2wmd87ll8dji5dy89hj576n8hw601z2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-processx" ,r-processx)))
+    (home-page "https://github.com/r-lib/xopen#readme")
+    (synopsis "Open system files, URLs, anything")
+    (description
+     "This package provides a cross-platform solution to open files,
+directories or URLs with their associated programs.")
+    (license license:expat)))
+
+(define-public r-rcmdcheck
+  (package
+    (name "r-rcmdcheck")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rcmdcheck" version))
+       (sha256
+        (base32
+         "13liz9lmx9xgc0f7pjiz3sp8ygvazx2zslbiwz3p9fimfsx1yfsg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-callr" ,r-callr)
+       ("r-cli" ,r-cli)
+       ("r-crayon" ,r-crayon)
+       ("r-desc" ,r-desc)
+       ("r-digest" ,r-digest)
+       ("r-pkgbuild" ,r-pkgbuild)
+       ("r-prettyunits" ,r-prettyunits)
+       ("r-r6" ,r-r6)
+       ("r-rprojroot" ,r-rprojroot)
+       ("r-withr" ,r-withr)
+       ("r-xopen" ,r-xopen)))
+    (home-page "https://github.com/r-Lib/rcmdcheck#readme")
+    (synopsis "Run R CMD check from R and capture results")
+    (description
+     "Run @code{R CMD check} from R programmatically, and capture the results
+of the individual checks.")
+    (license license:expat)))
+
+(define-public r-rapportools
+  (package
+    (name "r-rapportools")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rapportools" version))
+       (sha256
+        (base32
+         "1sgv4sc737i12arh5dc3263kjsz3dzg06qihfmrqyax94mv2d01b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-pander" ,r-pander)
+       ("r-plyr" ,r-plyr)
+       ("r-reshape" ,r-reshape)))
+    (home-page "https://cran.r-project.org/web/packages/rapportools/")
+    (synopsis "Miscellaneous helper functions with sane defaults for reporting")
+    (description
+     "This package provides helper functions that act as wrappers to more
+advanced statistical methods with the advantage of having sane defaults for
+quick reporting.")
+    (license license:agpl3+)))
+
+(define-public r-pander
+  (package
+    (name "r-pander")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pander" version))
+       (sha256
+        (base32
+         "0gd7rqkpbraznip8jmri9lqa8ajg1sryyplhd6m633wg91whiipi"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://rapporter.github.io/pander")
+    (synopsis "Render R objects into Pandoc's markdown")
+    (description
+     "The main aim of the pander R package is to provide a minimal and easy
+tool for rendering R objects into Pandoc's markdown.  The package is also
+capable of exporting/converting complex Pandoc documents (reports) in various
+ways.")
+    ;; This package is licensed under either the AGPLv3+ or the very rarely
+    ;; used OSL 3.0.
+    (license license:agpl3+)))
+
+(define-public r-summarytools
+  (package
+    (name "r-summarytools")
+    (version "0.8.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "summarytools" version))
+       (sha256
+        (base32
+         "0z836m6ib9bznwcawn6xf8gck05ydxwi3bx4jbrbyqql4kci8zwb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-lubridate" ,r-lubridate)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-pander" ,r-pander)
+       ("r-pryr" ,r-pryr)
+       ("r-rapportools" ,r-rapportools)
+       ("r-rcurl" ,r-rcurl)))
+    (home-page "https://github.com/dcomtois/summarytools")
+    (synopsis "Tools to quickly and neatly summarize data")
+    (description
+     "This package provides tools for data frame summaries, cross-tabulations,
+weight-enabled frequency tables and common univariate statistics in concise
+tables available in a variety of formats (plain ASCII, Markdown and HTML).  A
+good point-of-entry for exploring data, both for experienced and new R
+users.")
+    (license license:gpl2)))
+
+(define-public r-lsei
+  (package
+    (name "r-lsei")
+    (version "1.2-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lsei" version))
+       (sha256
+        (base32
+         "1xl06fb3is744pxlh42wx5hn1h0ab1k31wnmsmh0524kxzcyp0a7"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://www.stat.auckland.ac.nz/~yongwang")
+    (synopsis "Solve regression problems under equality/inequality constraints")
+    (description
+     "It contains functions that solve least squares linear regression
+problems under linear equality/inequality constraints.  Functions for solving
+quadratic programming problems are also available, which transform such
+problems into least squares ones first.")
+    (license license:gpl2+)))
+
+(define-public r-npsurv
+  (package
+    (name "r-npsurv")
+    (version "0.4-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "npsurv" version))
+       (sha256
+        (base32
+         "1wq4c9yfha5azjhrn40iiqkshmvh611sa90jp3lh82n4bl9zfk20"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lsei" ,r-lsei)))
+    (home-page "https://www.stat.auckland.ac.nz/~yongwang")
+    (synopsis "Nonparametric survival analysis")
+    (description
+     "This package contains functions for non-parametric survival analysis of
+exact and interval-censored observations.")
+    (license license:gpl2+)))
+
+(define-public r-clusteval
+  (package
+    (name "r-clusteval")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "clusteval" version))
+       (sha256
+        (base32
+         "1ld0bdl4fy8dsfzm3k7a37cyxc6pfc9qs31x4pxd3z5rslghz7rj"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mvtnorm" ,r-mvtnorm)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/clusteval/")
+    (synopsis "Evaluation of clustering algorithms")
+    (description
+     "This R package provides a suite of tools to evaluate clustering
+algorithms, clusterings, and individual clusters.")
+    (license license:expat)))
+
+(define-public r-tweedie
+  (package
+    (name "r-tweedie")
+    (version "2.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tweedie" version))
+       (sha256
+        (base32
+         "10fv998qjxsyx0h94fi0xbh6xbf24nwgh254n9zfnmix9vk2cqls"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/tweedie/")
+    (synopsis "Evaluation of Tweedie exponential family models")
+    (description
+     "Maximum likelihood computations for Tweedie families, including the
+series expansion (Dunn and Smyth, 2005; <doi10.1007/s11222-005-4070-y>) and
+the Fourier inversion (Dunn and Smyth, 2008; <doi:10.1007/s11222-007-9039-6>),
+and related methods.")
+    (license license:gpl2+)))
+
+(define-public r-rcppgsl
+  (package
+    (name "r-rcppgsl")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppGSL" version))
+       (sha256
+        (base32
+         "16pdapq31729db53agnb48jkvdm97167n3bigy5zazc3q3isis1m"))))
+    (properties `((upstream-name . "RcppGSL")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("gsl" ,gsl)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://cran.r-project.org/web/packages/RcppGSL/")
+    (synopsis "Rcpp integration for GSL vectors and matrices")
+    (description
+     "The GNU Scientific Library (or GSL) is a collection of numerical
+routines for scientific computing.  It is particularly useful for C and C++
+programs as it provides a standard C interface to a wide range of mathematical
+routines.  There are over 1000 functions in total with an extensive test
+suite.  The RcppGSL package provides an easy-to-use interface between GSL data
+structures and R using concepts from Rcpp which is itself a package that eases
+the interfaces between R and C++.")
+    (license license:gpl2+)))
+
+(define-public r-mvabund
+  (package
+    (name "r-mvabund")
+    (version "3.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mvabund" version))
+       (sha256
+        (base32
+         "1z8bj9zbc8h7w1xki9sc2p2rq6lv8gbcmiy9819z54d7lx1i9cnj"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppgsl" ,r-rcppgsl)
+       ("r-statmod" ,r-statmod)
+       ("r-tweedie" ,r-tweedie)))
+    (home-page "https://cran.r-project.org/web/packages/mvabund/")
+    (synopsis "Statistical methods for analysing multivariate abundance data")
+    (description
+     "This package provides a set of tools for displaying, modeling and
+analysing multivariate abundance data in community ecology.")
+    (license license:lgpl2.1+)))
+
+(define-public r-afex
+  (package
+    (name "r-afex")
+    (version "0.22-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "afex" version))
+       (sha256
+        (base32
+         "065wbxljl77zqvc2c4gpfpfyc6mbnnrf24q399q9bxmrz3sapj8n"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-car" ,r-car)
+       ("r-lme4" ,r-lme4)
+       ("r-lmertest" ,r-lmertest)
+       ("r-pbkrtest" ,r-pbkrtest)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "https://afex.singmann.science/")
+    (synopsis "Analysis of factorial experiments")
+    (description
+     "This package provides convenience functions for analyzing factorial
+experiments using ANOVA or mixed models.")
+    (license license:gpl2+)))
+
+(define-public r-lmertest
+  (package
+    (name "r-lmertest")
+    (version "3.0-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lmerTest" version))
+       (sha256
+        (base32
+         "0pia69sc8bn37mkiprdf91iilziqb865f94k6x6c26i33fg7rq4m"))))
+    (properties `((upstream-name . "lmerTest")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-lme4" ,r-lme4)
+       ("r-mass" ,r-mass)
+       ("r-numderiv" ,r-numderiv)))
+    (home-page "https://github.com/runehaubo/lmerTestR")
+    (synopsis "Tests in linear mixed effects models")
+    (description
+     "This package provides p-values in type I, II or III anova and summary
+tables for @code{lmer} model fits via Satterthwaite's degrees of freedom
+method.  A Kenward-Roger method is also available via the @code{pbkrtest}
+package.  Model selection methods include step, drop1 and anova-like tables
+for random effects (ranova).  Methods for Least-Square means (LS-means) and
+tests of linear contrasts of fixed effects are also available.")
+    (license license:gpl2+)))
+
+(define-public r-r2glmm
+  (package
+    (name "r-r2glmm")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "r2glmm" version))
+       (sha256
+        (base32
+         "0iim92blpa59vgz97c2pi05yhbjjmaffdbkbmk5kplfb2vmazgiy"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-afex" ,r-afex)
+       ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-lmertest" ,r-lmertest)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-mgcv" ,r-mgcv)
+       ("r-pbkrtest" ,r-pbkrtest)))
+    (home-page "https://github.com/bcjaeger/r2glmm")
+    (synopsis "Compute R squared for mixed (multilevel) models")
+    (description
+     "This package computes model and semi partial R squared with confidence
+limits for the linear and generalized linear mixed model (LMM and GLMM).  The
+R squared measure from L. J. Edwards et al. (2008) is extended to the GLMM
+using @dfn{penalized quasi-likelihood} (PQL) estimation (see Jaeger et
+al. (2016)).")
     (license license:gpl2)))

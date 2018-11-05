@@ -46,15 +46,14 @@
 (define-public xapian
   (package
     (name "xapian")
-    (version "1.4.7")
+    (version "1.4.9")
     ;; Note: When updating Xapian, remember to update xapian-bindings below.
     (source (origin
               (method url-fetch)
               (uri (string-append "https://oligarchy.co.uk/xapian/" version
                                   "/xapian-core-" version ".tar.xz"))
-              (patches (search-patches "xapian-revert-5489fb2f8.patch"))
               (sha256
-               (base32 "1lxmlds3v5s1gng9nk1rvmln1zcksrw5ds509y0glylwch5qmw0k"))))
+               (base32 "1k7m7m9jld96k16ansfw2w3c354pvd8ibhnrb6dw012g06fw7sfd"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)
               ("util-linux" ,util-linux)))
@@ -92,7 +91,7 @@ rich set of boolean query operators.")
                                   "/xapian-bindings-" version ".tar.xz"))
               (sha256
                (base32
-                "0sjf9ck3a6p7xnd84w09l6s0xn2g03k9a9417f4mjnywfq9pa6a5"))))
+                "0ll3z3418r7bzxs4kyini2cbci5xl8i5scl3wyx88s2v4ak56bcz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-python3")

@@ -160,6 +160,7 @@ deduplicates files common to CLOSURE and the rest of PREFIX."
 
 (define* (populate-single-profile-directory directory
                                             #:key profile closure
+                                            (profile-name "guix-profile")
                                             deduplicate?
                                             register? schema)
   "Populate DIRECTORY with a store containing PROFILE, whose closure is given
@@ -168,6 +169,9 @@ is initialized to contain a single profile under /root pointing to PROFILE.
 When REGISTER? is true, initialize DIRECTORY/var/guix/db to reflect the
 contents of the store; DEDUPLICATE? determines whether to deduplicate files in
 the store.
+
+PROFILE-NAME is the name of the profile being created under
+/var/guix/profiles, typically either \"guix-profile\" or \"current-guix\".
 
 This is used to create the self-contained tarballs with 'guix pack'."
   (define (scope file)
@@ -198,12 +202,20 @@ This is used to create the self-contained tarballs with 'guix pack'."
   ;; Make root's profile, which makes it a GC root.
   (mkdir-p* %root-profile)
   (symlink* profile
-            (string-append %root-profile "/guix-profile-1-link"))
-  (symlink* "guix-profile-1-link"
-            (string-append %root-profile "/guix-profile"))
+            (string-append %root-profile "/" profile-name "-1-link"))
+  (symlink* (string-append profile-name "-1-link")
+            (string-append %root-profile "/" profile-name))
 
-  (mkdir-p* "/root")
-  (symlink* (string-append %root-profile "/guix-profile")
-            "/root/.guix-profile"))
+  (match profile-name
+    ("guix-profile"
+     (mkdir-p* "/root")
+     (symlink* (string-append %root-profile "/guix-profile")
+               "/root/.guix-profile"))
+    ("current-guix"
+     (mkdir-p* "/root/.config/guix")
+     (symlink* (string-append %root-profile "/current-guix")
+               "/root/.config/guix/current"))
+    (_
+     #t)))
 
 ;;; install.scm ends here

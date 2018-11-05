@@ -382,14 +382,14 @@ device-specific programs to convert and print many types of files.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.18.6")
+    (version "3.18.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "0zbv6cp9n3xypf2fg4j6fpz8zkvl0z08lyc1vq1gd04ln1l3xkqf"))
+                "0g3q5mm2crjyc1z4z6gv4lam6sc5d3diz704djrnpqadk4q3h290"))
               (modules '((guix build utils)))
               (snippet
                ;; Fix type mismatch.
@@ -398,7 +398,7 @@ device-specific programs to convert and print many types of files.")
                     (("boolean") "bool"))
                   #t))))
     (build-system gnu-build-system)
-    (home-page "http://hplipopensource.com/")
+    (home-page "https://developers.hp.com/hp-linux-imaging-and-printing")
     (synopsis "HP printer drivers")
     (description
      "Hewlett-Packard printer drivers and PostScript Printer Descriptions
@@ -414,6 +414,8 @@ device-specific programs to convert and print many types of files.")
        `("--disable-network-build"
          ,(string-append "--prefix=" (assoc-ref %outputs "out"))
          ,(string-append "--sysconfdir=" (assoc-ref %outputs "out") "/etc")
+         ,(string-append "LDFLAGS=-Wl,-rpath="
+                         (assoc-ref %outputs "out") "/lib")
          ;; Disable until mime.types merging works (FIXME).
          "--disable-fax-build"
          "--enable-hpcups-install"

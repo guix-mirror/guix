@@ -36,6 +36,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages image)
@@ -478,6 +479,45 @@ used in KDE development tools Kompare and KDevelop.")
     ;; GPL, some files are also licensed under LGPL or BSD, see COPYING in the
     ;; source archive
     (license (list license:gpl2+ license:lgpl2.0+ license:bsd-3))))
+
+(define-public libkscreen
+  (package
+    (name "libkscreen")
+    (version "5.13.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/plasma/" version "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32 "04719va15i66qn1xqx318v6risxhp8bfcnhxh9mqm5h9qx5c6c4k"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ;; For testing.
+       ("dbus" ,dbus)))
+    (inputs
+     `(("kwayland" ,kwayland)
+       ("libxrandr" ,libxrandr)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (arguments
+     '(#:tests? #f         ; FIXME: 55% tests passed, 5 tests failed out of 11
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; For the missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             ;; Run the tests offscreen.
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Solid/Projects/ScreenManagement")
+    (synopsis "KDE's screen management software")
+    (description "KScreen is the new screen management software for KDE Plasma
+Workspaces which tries to be as magic and automatic as possible for users with
+basic needs and easy to configure for those who want special setups.")
+    (license license:gpl2+)))
 
 (define-public libksysguard
   (package

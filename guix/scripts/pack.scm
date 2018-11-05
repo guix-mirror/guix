@@ -38,7 +38,7 @@
   #:use-module ((guix self) #:select (make-config.scm))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
-  #:use-module (gnu packages compression)
+  #:use-module ((gnu packages compression) #:hide (zip))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages base)
   #:autoload   (gnu packages package-management) (guix)
@@ -117,10 +117,6 @@ with a properly initialized store database.
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
-  (define libgcrypt
-    (module-ref (resolve-interface '(gnu packages gnupg))
-                'libgcrypt))
-
   (define schema
     (and localstatedir?
          (local-file (search-path %load-path

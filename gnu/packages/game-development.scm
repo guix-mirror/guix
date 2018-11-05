@@ -440,18 +440,19 @@ clone.")
 (define-public sfml
   (package
     (name "sfml")
-    (version "2.5.0")
+    (version "2.5.1")
     (source (origin
-              (method url-fetch)
+              (method git-fetch)
               ;; Do not fetch the archives from
               ;; http://mirror0.sfml-dev.org/files/ because files there seem
               ;; to be changed in place.
-              (uri (string-append "https://github.com/SFML/SFML/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (git-reference
+                    (url "https://github.com/SFML/SFML.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1x3yvhdrln5b6h4g5r4mds76gq8zsxw6icxqpwqkmxsqcq5yviab"))
+                "0abr8ri2ssfy9ylpgjrr43m6rhrjy03wbj9bn509zqymifvq5pay"))
               (modules '((guix build utils)))
               (snippet
                '(begin

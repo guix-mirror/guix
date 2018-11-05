@@ -105,5 +105,5 @@
     (description "Mono is a compiler, vm, debugger and set of libraries for
 C#, a C-style programming language from Microsoft that is very similar to
 Java.")
-    (home-page "http://mono-project.com/")
+    (home-page "https://www.mono-project.com/")
     (license license:x11)))

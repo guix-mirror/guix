@@ -28,6 +28,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
@@ -133,16 +134,17 @@ environment variables of the current shell.")
 (define-public fzy
   (package
     (name "fzy")
-    (version "0.9")
+    (version "1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/jhawthorn/fzy/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jhawthorn/fzy.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1xfgxqbkcpi2n4381kj3fq4026qs6by7xhl5gn0fgp3dh232c63j"))))
+         "1gkzdvj73f71388jvym47075l9zw61v6l8wdv2lnc0mns6dxig0k"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"

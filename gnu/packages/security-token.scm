@@ -160,7 +160,7 @@ the low-level development kit for the Yubico YubiKey authentication device.")
 (define-public pcsc-lite
   (package
     (name "pcsc-lite")
-    (version "1.8.23")
+    (version "1.8.24")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -168,7 +168,7 @@ the low-level development kit for the Yubico YubiKey authentication device.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1jc9ws5ra6v3plwraqixin0w0wfxj64drahrbkyrrwzghqjjc9ss"))))
+                "0s3mv6csbi9303vvis0hilm71xsmi6cqkbh2kiipdisydbx6865q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-usbdropdir=/var/lib/pcsc/drivers"

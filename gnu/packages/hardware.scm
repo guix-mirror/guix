@@ -22,11 +22,13 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
@@ -232,3 +234,45 @@ such as the Turbo Boost ratio and Thermal Design Power (@dfn{TDP}) limits.
 MSR addresses differ (greatly) between processors, and any such modification can
 be dangerous and may void your CPU or system board's warranty.")
     (license license:gpl2)))     ; cpuid.c is gpl2, {rd,wr}msr.c are gpl2+
+
+(define-public wavemon
+  (package
+    (name "wavemon")
+    (version "0.8.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/uoaerg/wavemon.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rqpp7rhl9rlwnihsapaiy62v33h45fm3d0ia2nhdjw7fwkwcqvs"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             ;; Makefile.in (ab)uses $(datadir) as $(docdir). Set it to Guix's
+             ;; standard --docdir since it's only used as such.
+             (string-append "datadir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version))
+       #:tests? #f))                    ; no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libcap" ,libcap)
+       ("libnl" ,libnl)
+       ("ncurses" ,ncurses)))
+    (home-page "https://github.com/uoaerg/wavemon")
+    (synopsis "Wireless network device monitor")
+    (description
+     "Wavemon is a wireless device monitor with an interactive ncurses terminal
+interface.  It can display and plot signal and noise levels in real time.  It
+also reports packet statistics, device configuration, network parameters, and
+access points and other wireless clients of your wireless network hardware.
+
+Wavemon should work (with varying levels of detail and features) with any device
+supported by the Linux kernel.")
+    ;; Source file headers still say GPL2+, but the authorial intent
+    ;; (from COPYING and the F9 'about' screen) is clearly GPL3+.
+    (license license:gpl3+)))

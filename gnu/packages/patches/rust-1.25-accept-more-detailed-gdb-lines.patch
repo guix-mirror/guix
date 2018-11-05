@@ -1,5 +1,6 @@
 GDB responds with some overly detailed lines - which makes the tests fail.
 Patch rust to accept those instead.
+See <https://github.com/rust-lang/rust/issues/54178>.
 diff -ur orig/rustc-1.25.0-src/src/test/debuginfo/generic-enum-with-different-disr-sizes.rs rustc-1.25.0-src/src/test/debuginfo/generic-enum-with-different-disr-sizes.rs
 --- orig/rustc-1.25.0-src/src/test/debuginfo/generic-enum-with-different-disr-sizes.rs	2018-09-13 10:24:33.775565159 +0200
 +++ rustc-1.25.0-src/src/test/debuginfo/generic-enum-with-different-disr-sizes.rs	2018-09-13 10:25:56.322513658 +0200
@@ -92,3 +93,19 @@ diff -ur orig/rustc-1.25.0-src/src/test/debuginfo/generic-tuple-style-enum.rs ru
  
  // gdb-command:print univariant
  // gdbg-check:$4 = {{__0 = -1}}
+--- orig/rustc-1.25.0-src/src/test/debuginfo/nil-enum.rs	2018-09-13 10:24:33.783565071 +0200
++++ rustc-1.25.0-src/src/test/debuginfo/nil-enum.rs	2018-10-26 18:19:20.404564587 +0200
+@@ -17,11 +17,11 @@
+ 
+ // gdb-command:print first
+ // gdbg-check:$1 = {<No data fields>}
+-// gdbr-check:$1 = <error reading variable>
++// gdbr-check:$1 = nil_enum::ANilEnum
+ 
+ // gdb-command:print second
+ // gdbg-check:$2 = {<No data fields>}
+-// gdbr-check:$2 = <error reading variable>
++// gdbr-check:$2 = nil_enum::AnotherNilEnum
+ 
+ #![allow(unused_variables)]
+ #![feature(omit_gdb_pretty_printer_section)]

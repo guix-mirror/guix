@@ -956,14 +956,14 @@ provides an optional IDE-like error list.")
 (define-public emacs-emms
   (package
     (name "emacs-emms")
-    (version "5.0")
+    (version "5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "08f9lj77jlk96grqgjsv63s2i8ywvp4wvnmgmhnslwyx2lsdxza3"))
+                "149ddczyx6x10zn4mn8g0rll1rwf4yciv8x6j0qdnlbwszblx2x6"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2630,14 +2630,14 @@ source code using IPython.")
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
-    (version "0.15")
+    (version "0.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                                   version ".tar"))
               (sha256
                (base32
-                "1x7jw2ldgkknyxg7x9fhnqkary691icnysmi3xw0g2fjrvllzhqw"))))
+                "0y3bq803c7820h15g66d1648skxfhlfa2v6vincj6xk5ssp44s9p"))))
     (build-system emacs-build-system)
     (arguments '(#:include '("\\.el$" "\\.wsdl$" "\\.info$")))
     (propagated-inputs
@@ -8200,7 +8200,7 @@ the format.")
 (define-public emacs-nov-el
   (package
     (name "emacs-nov-el")
-    (version "0.2.2")
+    (version "0.2.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -8209,7 +8209,7 @@ the format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "03s0qjvwk1f7y3i4wh2p5y3z4hdv00adgz8za3vphzc0q8i1kjzb"))))
+                "188h5gzn1zf443g0b7q5bpmvvpr6ds5h8aci8vxc92py56rhyrvc"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -11746,10 +11746,10 @@ file.")
   (deprecated-package "emacs-wgrep-helm" emacs-wgrep))
 
 (define-public emacs-mu4e-conversation
-  (let ((commit "223cc66e99c7665326e3d991d6d383cb0d7512bb"))
+  (let ((commit "54368a009474276247bdf39683e25ea68ae1f943"))
     (package
       (name "emacs-mu4e-conversation")
-      (version (git-version "20180722" "2" commit))
+      (version (git-version "20181105" "3" commit))
       (source
        (origin
          (method url-fetch)
@@ -11760,7 +11760,7 @@ file.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "1ivy7pihhma465hi25p1y45dyi8h52nsm2m0cvizj5sw36jw0n81"))))
+           "1zqnp1d3cxyvzsd76d5iw40lkif19k9svlbhqy6dvqiaqm0jbd15"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("mu" ,mu)))
@@ -12012,7 +12012,7 @@ was called.")
 (define-public emacs-dired-du
   (package
     (name "emacs-dired-du")
-    (version "0.5")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
@@ -12021,7 +12021,7 @@ was called.")
              version ".tar"))
        (sha256
         (base32
-         "09yj37p2fa5f81fqrzwghjkyy2ydsf4rbkfwpn2yyvzd5nd97bpl"))))
+         "1091scnrjh0a4gja4z6jxic6ghy1yryv46qk9c76pmh50cpw6766"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/dired-du.html")
     (synopsis "Dired with recursive directory sizes")
@@ -12433,3 +12433,33 @@ correctly.")
       (synopsis "Color ANSI codes in the REPL of SLIME")
       (description "Color ANSI codes in the REPL of SLIME")
       (license license:gpl2+))))
+
+(define-public emacs-helm-slime
+  (let ((commit "9980925f3e5f6ac5a30369d2a544e82006a79c76"))
+    (package
+      (name "emacs-helm-slime")
+      (version (git-version "0.0.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacs-helm/helm-slime")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0xa07gpfkzwn522x9573mq5mfxvbawdgd0m93gqj6w5a14wk8zzh"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-slime" ,emacs-slime)))
+      (home-page "https://github.com/emacs-helm/helm-slime")
+      (synopsis "Helm for SLIME, the Superior Lisp Interaction Mode for Emacs")
+      (description "Helm-SLIME defines a few new commands:
+
+@itemize
+@item helm-slime-complete: Select a symbol from the SLIME completion systems.
+@item helm-slime-list-connections: Yet another slime-list-connections with Helm.
+@item: helm-slime-apropos: Yet another slime-apropos with Helm.
+@item helm-slime-repl-history: Select an input from the SLIME REPL history and insert it.
+@end itemize\n")
+      (license license:gpl3+))))

@@ -201,6 +201,7 @@ MODULES =					\
   guix/scripts/hash.scm				\
   guix/scripts/pack.scm				\
   guix/scripts/pull.scm				\
+  guix/scripts/processes.scm			\
   guix/scripts/substitute.scm			\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
@@ -279,10 +280,10 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 # Auxiliary files for packages.
 AUX_FILES =						\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
-  gnu/packages/aux-files/linux-libre/4.18-arm.conf	\
-  gnu/packages/aux-files/linux-libre/4.18-arm64.conf	\
-  gnu/packages/aux-files/linux-libre/4.18-i686.conf	\
-  gnu/packages/aux-files/linux-libre/4.18-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/4.19-arm.conf	\
+  gnu/packages/aux-files/linux-libre/4.19-arm64.conf	\
+  gnu/packages/aux-files/linux-libre/4.19-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.19-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.14-arm.conf	\
   gnu/packages/aux-files/linux-libre/4.14-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.14-x86_64.conf	\
@@ -343,6 +344,7 @@ SCM_TESTS =					\
   tests/ui.scm					\
   tests/status.scm				\
   tests/records.scm				\
+  tests/processes.scm				\
   tests/upstream.scm				\
   tests/combinators.scm				\
   tests/discovery.scm				\

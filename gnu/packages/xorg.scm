@@ -2905,8 +2905,8 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "d7dfab62a9853b44bbcd67dac08391d8e5114c97")
-        (revision "10"))
+  (let ((commit "0932a6b37ba6d5c9e916a1cb6ab89c3205b81a0c")
+        (revision "11"))
     (package
       (name "xf86-video-intel")
       (version (git-version "2.99.917" revision commit))
@@ -2919,7 +2919,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "1vcfal4xr9q6016p28lnlyg709da6d305dysyyrj3fjp9fj48sva"))
+           "10pqxp7n53ddiypd3l1i9gkbgzdpi6rz9vksbd16biq7pbijc2xf"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
@@ -5065,7 +5065,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.2")
+    (version "1.20.3")
     (source
       (origin
         (method url-fetch)
@@ -5074,7 +5074,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "1qnf7jdygdgbgjfm5mfr691dl8d56mpssa82mvhm8bzj92yggm8f"))
+          "1ph1j8gy5cazsq05krq9kppjx5v1sl75pbdka8ibxb1cq5kf8g0v"))
         (patches
          (list
           ;; See:
@@ -5752,7 +5752,7 @@ programs that cannot use the window system directly.")
 (define-public perl-x11-xcb
   (package
     (name "perl-x11-xcb")
-    (version "0.17")
+    (version "0.18")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5760,7 +5760,7 @@ programs that cannot use the window system directly.")
                     "X11-XCB-" version ".tar.gz"))
               (sha256
                (base32
-                "12qyf98s5hbybmh0mblpz50c00i68srq73w5rw31m2dhclj8n96q"))))
+                "1cjpghw7cnackw20lbd7yzm222kz5bnrwz52f8ay24d1f4pwrnxf"))))
     (build-system perl-build-system)
     (arguments
      '(;; Disable parallel build to prevent a race condition.
@@ -5910,7 +5910,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.4")
+    (version "2.4.1")
     (source
      (origin
        (method url-fetch)
@@ -5918,7 +5918,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0blzx231sr1ri1zwzpwzf611sq9104bv3ccvnap9pbvfrc05sfwx"))))
+         "1bhk6vydsrhlngvrv5w55arqf69cr3yw84xscnnl7km2g1iswkrs"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)

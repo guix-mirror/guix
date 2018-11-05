@@ -50,6 +50,7 @@ Copyright @copyright{} 2018 Oleg Pykhalov@*
 Copyright @copyright{} 2018 Mike Gerwitz@*
 Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
 Copyright @copyright{} 2018 Gábor Boskovits@*
+Copyright @copyright{} 2018 Florian Pelz@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -101,8 +102,9 @@ package management tool written for the GNU system.
 @c how to join your own translation team and how to report issues with the
 @c translation.
 This manual is also available in French (@pxref{Top,,, guix.fr, Manuel de
-référence de GNU Guix}).  If you would like to translate it in your native
-language, consider joining the
+référence de GNU Guix}) and German (@pxref{Top,,, guix.de, Referenzhandbuch
+zu GNU Guix}).  If you would like to translate it in your native language,
+consider joining the
 @uref{https://translationproject.org/domain/guix-manual.html, Translation
 Project}.
 
@@ -193,6 +195,7 @@ Utilities
 * Invoking guix copy::          Copying to and from a remote store.
 * Invoking guix container::     Process isolation.
 * Invoking guix weather::       Assessing substitute availability.
+* Invoking guix processes::     Listing client processes.
 
 Invoking @command{guix build}
 
@@ -1227,16 +1230,19 @@ etc.  This helps achieve reproducible builds (@pxref{Features}).
 
 When the daemon performs a build on behalf of the user, it creates a
 build directory under @file{/tmp} or under the directory specified by
-its @code{TMPDIR} environment variable; this directory is shared with
-the container for the duration of the build.  Be aware that using a
-directory other than @file{/tmp} can affect build results---for example,
-with a longer directory name, a build process that uses Unix-domain
-sockets might hit the name length limitation for @code{sun_path}, which
-it would otherwise not hit.
+its @code{TMPDIR} environment variable.  This directory is shared with
+the container for the duration of the build, though within the container,
+the build tree is always called @file{/tmp/guix-build-@var{name}.drv-0}.
 
 The build directory is automatically deleted upon completion, unless the
 build failed and the client specified @option{--keep-failed}
 (@pxref{Invoking guix build, @option{--keep-failed}}).
+
+The daemon listens for connections and spawns one sub-process for each session
+started by a client (one of the @command{guix} sub-commands.)  The
+@command{guix processes} command allows you to get an overview of the activity
+on your system by viewing each of the active sessions and clients.
+@xref{Invoking guix processes}, for more information.
 
 The following command-line options are supported:
 
@@ -6051,6 +6057,7 @@ the Scheme programming interface of Guix in a convenient way.
 * Invoking guix copy::          Copying to and from a remote store.
 * Invoking guix container::     Process isolation.
 * Invoking guix weather::       Assessing substitute availability.
+* Invoking guix processes::     Listing client processes.
 @end menu
 
 @node Invoking guix build
@@ -8751,6 +8758,61 @@ with the @code{-m} option of @command{guix package} (@pxref{Invoking
 guix package}).
 @end table
 
+@node Invoking guix processes
+@section Invoking @command{guix processes}
+
+The @command{guix processes} command can be useful to developers and system
+administrators, especially on multi-user machines and on build farms: it lists
+the current sessions (connections to the daemon), as well as information about
+the processes involved@footnote{Remote sessions, when @command{guix-daemon} is
+started with @option{--listen} specifying a TCP endpoint, are @emph{not}
+listed.}.  Here's an example of the information it returns:
+
+@example
+$ sudo guix processes
+SessionPID: 19002
+ClientPID: 19090
+ClientCommand: guix environment --ad-hoc python
+
+SessionPID: 19402
+ClientPID: 19367
+ClientCommand: guix publish -u guix-publish -p 3000 -C 9 @dots{}
+
+SessionPID: 19444
+ClientPID: 19419
+ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
+LockHeld: /gnu/store/@dots{}-perl-ipc-cmd-0.96.lock
+LockHeld: /gnu/store/@dots{}-python-six-bootstrap-1.11.0.lock
+LockHeld: /gnu/store/@dots{}-libjpeg-turbo-2.0.0.lock
+ChildProcess: 20495: guix offload x86_64-linux 7200 1 28800
+ChildProcess: 27733: guix offload x86_64-linux 7200 1 28800
+ChildProcess: 27793: guix offload x86_64-linux 7200 1 28800
+@end example
+
+In this example we see that @command{guix-daemon} has three clients:
+@command{guix environment}, @command{guix publish}, and the Cuirass continuous
+integration tool; their process identifier (PID) is given by the
+@code{ClientPID} field.  The @code{SessionPID} field gives the PID of the
+@command{guix-daemon} sub-process of this particular session.
+
+The @code{LockHeld} fields show which store items are currently locked by this
+session, which corresponds to store items being built or substituted (the
+@code{LockHeld} field is not displayed when @command{guix processes} is not
+running as root.)  Last, by looking at the @code{ChildProcess} field, we
+understand that these three builds are being offloaded (@pxref{Daemon Offload
+Setup}).
+
+The output is in Recutils format so we can use the handy @command{recsel}
+command to select sessions of interest (@pxref{Selection Expressions,,,
+recutils, GNU recutils manual}).  As an example, the command shows the command
+line and PID of the client that triggered the build of a Perl package:
+
+@example
+$ sudo guix processes | \
+    recsel -p ClientPID,ClientCommand -e 'LockHeld ~ "perl"'
+ClientPID: 19419
+ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
+@end example
 
 @c *********************************************************************
 @node GNU Distribution
@@ -13895,7 +13957,7 @@ Users need to be in the @code{lp} group to access the D-Bus service.
 @cindex PulseAudio, sound support
 
 The @code{(gnu services sound)} module provides a service to configure the
-Advanced Linux Sound Architecture (ALSA) system, which making PulseAudio the
+Advanced Linux Sound Architecture (ALSA) system, which makes PulseAudio the
 preferred ALSA output driver.
 
 @deffn {Scheme Variable} alsa-service-type
@@ -16104,10 +16166,10 @@ before switching over to opus audio codec.
 How deep channels can be nested at maximum.
 
 @item @code{channelname-regex} (default: @code{#f})
-A string in from of a Qt regular expression that channel names must conform to.
+A string in form of a Qt regular expression that channel names must conform to.
 
 @item @code{username-regex} (default: @code{#f})
-A string in from of a Qt regular expression that user names must conform to.
+A string in form of a Qt regular expression that user names must conform to.
 
 @item @code{text-message-length} (default: @code{5000})
 Maximum size in bytes that a user can send in one text chat message.
@@ -16119,7 +16181,7 @@ Maximum size in bytes that a user can send in one image message.
 If it is set to @code{#t} clients that use weak password authentification
 will not be accepted. Users must have completed the certificate wizard to join.
 
-@item @code{remember-channel?} (defualt @code{#f})
+@item @code{remember-channel?} (default: @code{#f})
 Should murmur remember the last channel each user was in when they disconnected
 and put them into the remembered channel when they rejoin.
 
@@ -16144,7 +16206,7 @@ Murmur also stores logs in the database, which are accessible via RPC.
 The default is 31 days of months, but you can set this setting to 0 to keep logs forever,
 or -1 to disable logging to the database.
 
-@item @code{obfuscate-ips?} (default @code{#t})
+@item @code{obfuscate-ips?} (default: @code{#t})
 Should logged ips be obfuscated to protect the privacy of users.
 
 @item @code{ssl-cert} (default: @code{#f})
@@ -16546,7 +16608,7 @@ the nginx web server, and also a fastcgi wrapper daemon.
 @deffn {Scheme Variable} httpd-service-type
 Service type for the @uref{https://httpd.apache.org/,Apache HTTP} server
 (@dfn{httpd}).  The value for this service type is a
-@code{https-configuration} record.
+@code{httpd-configuration} record.
 
 A simple example configuration is given below.
 
@@ -16612,6 +16674,10 @@ within the store, for example @code{(file-append mod-wsgi
 @end table
 @end deffn
 
+@defvr {Scheme Variable} %default-httpd-modules
+A default list of @code{httpd-module} objects.
+@end defvr
+
 @deffn {Data Type} httpd-config-file
 This data type represents a configuration file for the httpd service.
 
@@ -16619,6 +16685,32 @@ This data type represents a configuration file for the httpd service.
 @item @code{modules} (default: @code{%default-httpd-modules})
 The modules to load. Additional modules can be added here, or loaded by
 additional configuration.
+
+For example, in order to handle requests for PHP files, you can use Apache’s
+@code{mod_proxy_fcgi} module along with @code{php-fpm-service-type}:
+
+@example
+(service httpd-service-type
+         (httpd-configuration
+          (config
+           (httpd-config-file
+            (modules (cons*
+                      (httpd-module
+                       (name "proxy_module")
+                       (file "modules/mod_proxy.so"))
+                      (httpd-module
+                       (name "proxy_fcgi_module")
+                       (file "modules/mod_proxy_fcgi.so"))
+                      %default-httpd-modules))
+            (extra-config (list "\
+<FilesMatch \\.php$>
+    SetHandler \"proxy:unix:/var/run/php-fpm.sock|fcgi://localhost/\"
+</FilesMatch>"))))))
+(service php-fpm-service-type
+         (php-fpm-configuration
+          (socket "/var/run/php-fpm.sock")
+          (socket-group "httpd")))
+@end example
 
 @item @code{server-root} (default: @code{httpd})
 The @code{ServerRoot} in the configuration file, defaults to the httpd

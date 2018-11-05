@@ -131,14 +131,14 @@ data as produced by digital cameras.")
 (define-public libgphoto2
   (package
     (name "libgphoto2")
-    (version "2.5.19")
+    (version "2.5.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/libgphoto/"
                                   version "/libgphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "0qrcc6kajbfb237paxrl904vvwl7hd8mnqvjw00j6m5qwd93wlk2"))))
+                "03wbwsb4v7yay8g5ni7pzmkbrh7qnqx977bddjpxsp9f1qag03z1"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
@@ -206,7 +206,7 @@ MTP, and much more.")
 (define-public perl-image-exiftool
   (package
     (name "perl-image-exiftool")
-    (version "11.01")
+    (version "11.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -214,7 +214,7 @@ MTP, and much more.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "175w34n73mypdpbaqj2vgqsfp59yvfrn8k7zmx4cawnp895bypvh"))))
+                "1szg1k82nz88pp5n7lg71ja7q3hh5i5f9bcbb7m482dwrmsywkp6"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases

@@ -572,7 +572,7 @@ automata.  The following features are available:
 (define-public meandmyshadow
   (package
     (name "meandmyshadow")
-    (version "0.4.1")
+    (version "0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/meandmyshadow/"
@@ -580,38 +580,24 @@ automata.  The following features are available:
                                   "-src.tar.gz"))
               (sha256
                (base32
-                "0wl5dc75qy001s6043cx0vr2l5y2qfv1cldqnwill9sfygqj9p95"))))
+                "1b6qf83vdfv8jwn2jq9ywmda2qn2f5914i7mwfy04m17wx593m3m"))
+              (patches (search-patches
+                        ;; This will not be needed in the next release.
+                        "meandmyshadow-define-paths-earlier.patch"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f ; there are no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-sdl'paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "cmake/Modules/FindSDL_gfx.cmake"
-               (("/usr/local/include/SDL")
-                (string-append (assoc-ref inputs "sdl")
-                               "/include/SDL")))
-             ;; Because SDL provides lib/libX11.so.6 we need to explicitly
-             ;; link with libX11, even though we're using the GL backend.
-             (substitute* "CMakeLists.txt"
-               (("\\$\\{X11_LIBRARIES\\}") "-lX11"))
-             #t)))))
+     `(#:tests? #f))                    ; there are no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("sdl" ,(sdl-union (list sdl
-                                sdl-image
-                                sdl-gfx
-                                sdl-mixer
-                                sdl-ttf)))
-       ("libx11" ,libx11) ; needed by sdl's libX11
+     `(("curl" ,curl)
        ("libarchive" ,libarchive)
-       ("openssl" ,openssl)
-       ("mesa" ,mesa)
-       ("glu" ,glu)
-       ("curl" ,curl)))
-    (home-page "http://meandmyshadow.sourceforge.net/")
+       ("lua" ,lua)
+       ("sdl" ,(sdl-union (list sdl2
+                                sdl2-image
+                                sdl2-mixer
+                                sdl2-ttf)))))
+    (home-page "https://acmepjz.github.io/meandmyshadow/")
     (synopsis "Puzzle/platform game")
     (description "Me and My Shadow is a puzzle/platform game in which you try
 to reach the exit by solving puzzles.  Spikes, moving blocks, fragile blocks
@@ -3658,18 +3644,18 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.4t")
+    (version "10.4x")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.roguetemple.com/z/hyper/"
+                    "https://www.roguetemple.com/z/hyper/"
                     name (string-join (string-split version #\.) "")
                     "-src.tgz"))
               (sha256
                (base32
-                "0phqhmnzmc16a23qb4fkil0flzb86kibdckf1r35nc3l0k4193nn"))))
+                "0khk7xqdw4aiw1wnf1xrhmd7fklnzmpdavd7ix4mkm510dr5wklm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3741,12 +3727,12 @@ throwing people around in pseudo-randomly generated buildings.")
            (method url-fetch)
            (uri
             (string-append
-             "http://www.roguetemple.com/z/hyper/" name
+             "https://www.roguetemple.com/z/hyper/" name
              (string-join (string-split version #\.) "")
              "-win.zip"))
            (sha256
             (base32
-             "1xd9v8zzgi8m5ar8g4gy1xx5zqwidz3gn1knz0lwib3kbxx4drpg"))))
+             "1dv3kdv1n5imh3n9900b55rf0wwbjj7243lhsbk7lcjqsqxia39q"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -3756,7 +3742,7 @@ throwing people around in pseudo-randomly generated buildings.")
                                       sdl-gfx
                                       sdl-mixer
                                       sdl-ttf)))))
-    (home-page "http://www.roguetemple.com/z/hyper/")
+    (home-page "https://www.roguetemple.com/z/hyper/")
     (synopsis "Non-euclidean graphical rogue-like game")
     (description
      "HyperRogue is a game in which the player collects treasures and fights
@@ -4018,7 +4004,7 @@ emerges from a sewer hole and pulls her below ground.")
 (define-public cdogs-sdl
   (package
     (name "cdogs-sdl")
-    (version "0.6.7")
+    (version "0.6.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4027,7 +4013,7 @@ emerges from a sewer hole and pulls her below ground.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1frafzsj3f83xkmn4llr7g728c82lcqi424ini1hv3gv5zjgpa15"))))
+                "1v0adxm4xsix6r6j9hs7vmss7pxrb37azwfazr54p1dmfz4s6rp8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -5553,7 +5539,8 @@ quotation from a collection of quotes.")
                      Comment=Xonotic glx~@
                      Exec=~a/bin/xonotic-glx~@
                      TryExec=~@*~a/bin/xonotic-glx~@
-                     Icon=~@
+                     Icon=xonotic~@
+                     Categories=Game~@
                      Type=Application~%"
                            output)))
                (with-output-to-file
@@ -5565,7 +5552,8 @@ quotation from a collection of quotes.")
                      Comment=Xonotic sdl~@
                      Exec=~a/bin/xonotic-sdl~@
                      TryExec=~@*~a/bin/xonotic-sdl~@
-                     Icon=~@
+                     Icon=xonotic~@
+                     Categories=Game~@
                      Type=Application~%"
                            output)))
                (with-output-to-file
@@ -5577,7 +5565,8 @@ quotation from a collection of quotes.")
                      Comment=Xonotic~@
                      Exec=~a/bin/xonotic-glx~@
                      TryExec=~@*~a/bin/xonotic~@
-                     Icon=~@
+                     Icon=xonotic~@
+                     Categories=Game~@
                      Type=Application~%"
                            output)))
                #t)))

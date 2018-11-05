@@ -67,6 +67,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
@@ -96,6 +97,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnunet)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
@@ -139,8 +141,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages assembly))
+  #:use-module (gnu packages xorg))
 
 (define-public aalib
   (package
@@ -613,14 +614,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.0.2")
+    (version "4.0.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "15rgzcmdccy4flajs63gkz4n3k24wkkg50r13l1r83lrxg4hqp59"))))
+               "1vg229mxcrm415cq6q1nfm891hm4x56mb5p4cqjnlqnky7ikfg15"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -789,14 +790,14 @@ audio/video codec library.")
 (define-public ffmpeg-3.4
   (package
     (inherit ffmpeg)
-    (version "3.4.4")
+    (version "3.4.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1iizgnhjbhar9y1ykqlj1czqanlv24knkfq5vvfnppv5x00pcvrq"))))))
+               "0b59qk5wpc5ksiha76jbhb859g5gxa4w0k6afh3kgvgajiivs73l"))))))
 
 (define-public ffmpeg-2.8
   (package
@@ -2911,25 +2912,27 @@ It counts more than 100 plugins.")
 (define-public motion
   (package
     (name "motion")
-    (version "4.1.1")
+    (version "4.2")
     (home-page "https://motion-project.github.io/")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Motion-Project/motion/archive/"
-                    "release-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Motion-Project/motion.git")
+                    (commit (string-append "release-" version))))
               (sha256
                (base32
-                "1qm4i8zrqafl60sv2frhixvkd0wh0r5jfcrj5i6gha7yplsvjx10"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0c0q6dl4v561m5y8bp0c0h4p3s52fjgcdnsrrf5ygdi288d3rfxv"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libjpeg" ,libjpeg)
        ("ffmpeg" ,ffmpeg-3.4)
+       ("libmicrohttpd" ,libmicrohttpd)
        ("sqlite" ,sqlite)))
     (arguments
      '(#:phases (modify-phases %standard-phases

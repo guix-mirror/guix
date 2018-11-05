@@ -2,7 +2,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -413,7 +413,7 @@ external server.")
 (define-public mujs
   (package
     (name "mujs")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -422,11 +422,17 @@ external server.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1ly0yybs66nk63517kg4dmdc7dbikhqqqf2r2kvccgzzvv6k0vs8"))))
+                "0pkv26jxwgv5ax0ylfmi4h96h79hj4gvr95218ns8wngnmgr1ny6"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (delete 'configure))  ; no configure
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)  ; no configure
+         (add-after 'install 'install-shared-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "build/release/libmujs.so"
+                             (string-append out "/lib"))))))
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out"))
                           (string-append "CC=gcc"))
        #:tests? #f))                    ; no tests

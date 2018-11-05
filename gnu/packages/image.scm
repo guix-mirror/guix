@@ -20,6 +20,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
@@ -1476,3 +1478,30 @@ Two other programs are included with Gifsicle: @command{gifview} is a
 lightweight animated-GIF viewer, and @command{gifdiff} compares two GIFs for
 identical visual appearance.")
    (license license:gpl2+)))
+
+(define-public jp2a
+  (package
+    (name "jp2a")
+    (version "1.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cslarsen/jp2a/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0nahpjvrahixcfqqrjj2k4fscc8qs4hqnmj2qgjzsjj3z6xxh2g5"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libjpeg" ,libjpeg)
+       ("curl" ,curl)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://csl.name/jp2a/")
+    (synopsis "Convert JPEG images to ASCII")
+    (description
+     "Jp2a is a small utility that converts JPEG images to ASCII.")
+    (license license:gpl2)))

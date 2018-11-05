@@ -45,6 +45,8 @@ recursively.  Return #t on success, #f otherwise."
     (if (zero? (system* git-command "fetch" "--depth" "1" "origin" commit))
         (invoke git-command "checkout" "FETCH_HEAD")
         (begin
+          (setvbuf (current-output-port) 'line)
+          (format #t "Failed to do a shallow fetch; retrying a full fetch...~%")
           (invoke git-command "fetch" "origin")
           (invoke git-command "checkout" commit)))
     (when recursive?

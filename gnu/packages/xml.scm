@@ -825,14 +825,14 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom")
 (define-public perl-xml-xpath
   (package
     (name "perl-xml-xpath")
-    (version "1.42")
+    (version "1.44")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/"
                                   "XML-XPath-" version ".tar.gz"))
               (sha256
                (base32
-                "04mm91kxav598ax7nlg81dhnvanwvg6bkf30l0cgkmga5iyccsly"))))
+                "03yxj7w5a43ibbpiqsvb3lswj2b71dydsx4rs2fw0p8n0l3i3j8w"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-path-tiny" ,perl-path-tiny)))
@@ -936,16 +936,16 @@ XSL-T processor.  It also performs any necessary post-processing.")
 (define-public xmlsec
   (package
     (name "xmlsec")
-    (version "1.2.26")
+    (version "1.2.27")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://www.aleksey.com/xmlsec/download/"
-                                 name "1-" version ".tar.gz"))
-             (sha256
-              (base32
-               "0l1dk344rn3j2vnj13daz72xd8j1msvzhg82n2il5ji0qz4pd0ld"))))
+              (method url-fetch)
+              (uri (string-append "https://www.aleksey.com/xmlsec/download/"
+                                  "xmlsec1-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1dlf263mvxj9n4lnhhjawc2hv45agrwjf8kxk7k8h9g9v2x5dmwp"))))
     (build-system gnu-build-system)
-    (propagated-inputs ; according to xmlsec1.pc
+    (propagated-inputs                  ; according to xmlsec1.pc
      `(("libxml2" ,libxml2)
        ("libxslt" ,libxslt)))
     (inputs
@@ -968,6 +968,10 @@ Libxml2).")
   (package
     (inherit xmlsec)
     (name "xmlsec-nss")
+    (native-inputs
+     ;; For tests.
+     `(("nss:bin" ,nss "bin")           ; for certutil
+       ,@(package-native-inputs xmlsec)))
     (inputs
      `(("nss" ,nss)
        ("libltdl" ,libltdl)))
@@ -976,7 +980,7 @@ Libxml2).")
 (define-public minixml
   (package
     (name "minixml")
-    (version "2.11")
+    (version "2.12")
     (source (origin
               (method url-fetch/tarbomb)
               (uri (string-append "https://github.com/michaelrsweet/mxml/"
@@ -984,10 +988,13 @@ Libxml2).")
                                   "/mxml-" version ".tar.gz"))
               (sha256
                (base32
-                "13xsw8vvkxd10vca42ccdyl9rs64lcvhbfz57aknpl3xcfn8mxma"))))
+                "1z8nqxa4pqdic8wpixkkgg1m2pak9wjikjjxnk3j5i0d29dbgmmg"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-permissions
            ;; FIXME: url-fetch/tarbomb resets all permissions to 555/444.

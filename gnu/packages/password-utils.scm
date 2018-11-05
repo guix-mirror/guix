@@ -735,15 +735,15 @@ password cracking.")
 (define-public hashcat-utils
   (package
     (name "hashcat-utils")
-    (version "1.8")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/hashcat/hashcat-utils/releases/download/v"
-                           version "/hashcat-utils-1.8.7z"))
+       (uri (string-append "https://github.com/hashcat/hashcat-utils/releases/"
+                           "download/v" version "/"
+                           "hashcat-utils-" version ".7z"))
        (sha256
-        (base32
-         "1x80rngjz7gkhwplhw1iqr0wzb6hjkrjfld2kz9kmgp5dr9nys1p"))))
+        (base32 "0kq555kb338691qd7zjmi8vhq4km3apnsl2w63zh0igwzcjx6lx1"))))
     (native-inputs
      `(("p7zip" ,p7zip)))
     (inputs
@@ -767,12 +767,16 @@ password cracking.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (string-append (assoc-ref outputs "out") "/bin")))
                (mkdir-p out)
-               (for-each (lambda (file)
-                           (copy-file file (string-append out "/" (basename file ".bin"))))
-                         (find-files "." "\\.bin$"))
-               (for-each (lambda (file)
-                           (copy-file file (string-append out "/" (basename file ".pl"))))
-                         (find-files "../bin" "\\.pl$"))
+               (for-each
+                (lambda (file)
+                  (copy-file file (string-append out "/"
+                                                 (basename file ".bin"))))
+                (find-files "." "\\.bin$"))
+               (for-each
+                (lambda (file)
+                  (copy-file file (string-append out "/"
+                                                 (basename file ".pl"))))
+                (find-files "../bin" "\\.pl$"))
                #t))))))
     (home-page "https://github.com/hashcat/hashcat-utils/")
     (synopsis "Small utilities that are useful in advanced password cracking")

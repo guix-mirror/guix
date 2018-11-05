@@ -408,6 +408,9 @@ Grammars (PEGs).")
 (define-public lua-lpeg
   (make-lua-lpeg "lua-lpeg" lua))
 
+(define-public lua5.1-lpeg
+  (make-lua-lpeg "lua5.1-lpeg" lua-5.1))
+
 (define-public lua5.2-lpeg
   (make-lua-lpeg "lua5.2-lpeg" lua-5.2))
 

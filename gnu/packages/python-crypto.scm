@@ -637,7 +637,7 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
 (define-public python-pynacl
   (package
     (name "python-pynacl")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -648,7 +648,7 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
                         #t))
        (sha256
         (base32
-         "1ada3qr83cliap6dk897vnvjkynij1kjqbwizdbgarazlyh8zlz0"))))
+         "0330wyvggm19xhmwmz9rrr97lzbv3siwfy50gmax3vvgs7nh0q8c"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

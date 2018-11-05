@@ -234,6 +234,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/imagemagick.scm			\
   %D%/packages/inklingreader.scm		\
   %D%/packages/inkscape.scm			\
+  %D%/packages/ipfs.scm			\
   %D%/packages/irc.scm  			\
   %D%/packages/iso-codes.scm			\
   %D%/packages/java.scm				\
@@ -940,7 +941,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/lvm2-static-link.patch			\
   %D%/packages/patches/lxsession-use-gapplication.patch         \
   %D%/packages/patches/lyx-2.2.3-fix-test.patch			\
-  %D%/packages/patches/mailutils-uninitialized-memory.patch	\
   %D%/packages/patches/make-glibc-compat.patch			\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mariadb-client-test-32bit.patch		\
@@ -953,6 +953,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mcrypt-CVE-2012-4409.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4426.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
+  %D%/packages/patches/meandmyshadow-define-paths-earlier.patch	\
   %D%/packages/patches/mesa-skip-disk-cache-test.patch		\
   %D%/packages/patches/meson-for-build-rpath.patch		\
   %D%/packages/patches/metabat-fix-compilation.patch		\
@@ -974,7 +975,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \
   %D%/packages/patches/mutt-store-references.patch		\
-  %D%/packages/patches/myrepos-CVE-2018-7032.patch		\
   %D%/packages/patches/m4-gnulib-libio.patch			\
   %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-date-time.patch			\
@@ -1129,6 +1129,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rust-1.25-accept-more-detailed-gdb-lines.patch \
   %D%/packages/patches/rust-bootstrap-stage0-test.patch		\
   %D%/packages/patches/rust-coresimd-doctest.patch		\
+  %D%/packages/patches/rust-mdbook-support-reproducible-builds-by-forcing-window.search.patch \
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
@@ -1167,6 +1168,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/teeworlds-use-latest-wavpack.patch	\
   %D%/packages/patches/texinfo-perl-compat.patch		\
   %D%/packages/patches/texinfo-5-perl-compat.patch		\
+  %D%/packages/patches/telegram-purple-adjust-test.patch	\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\
   %D%/packages/patches/thefuck-test-environ.patch		\
@@ -1231,7 +1233,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
   %D%/packages/patches/wxmaxima-do-not-use-old-gnuplot-parameters.patch	\
   %D%/packages/patches/x265-detect512-all-arches.patch		\
-  %D%/packages/patches/xapian-revert-5489fb2f8.patch		\
   %D%/packages/patches/xboing-CVE-2004-0149.patch		\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\
@@ -1247,7 +1248,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-fix-fd-leak.patch			\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
-  %D%/packages/patches/zathura-pdf-mupdf-link-to-jpeg-libraries.patch \
   %D%/packages/patches/zathura-plugindir-environment-variable.patch
 
 MISC_DISTRO_FILES =				\

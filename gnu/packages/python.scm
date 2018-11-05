@@ -31,7 +31,7 @@
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -2798,14 +2798,14 @@ interested parties to subscribe to events, or \"signals\".")
 (define-public pelican
   (package
     (name "pelican")
-    (version "3.6.3")
+    (version "3.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pelican" version))
        (sha256
         (base32
-         "1hn94rb4q3zmcq16in055xikal4dba5hfx3zznq7warllcgc9f8k"))))
+         "12spygavv9b6xpb5pgp7f0p3z0mms60nx6zrpx1yfkj68zz4flra"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-feedgenerator" ,python-feedgenerator)
@@ -2818,7 +2818,7 @@ interested parties to subscribe to events, or \"signals\".")
        ("python-six" ,python-six)
        ("python-dateutil" ,python-dateutil)
        ("python-markdown" ,python-markdown)))
-    (home-page "http://getpelican.com/")
+    (home-page "https://getpelican.com/")
     (arguments
      `(;; XXX Requires a lot more packages to do unit tests :P
        #:tests? #f
@@ -12374,14 +12374,14 @@ validating Swagger API specifications.")
 (define-public python-apache-libcloud
   (package
     (name "python-apache-libcloud")
-    (version "2.0.0")
+    (version "2.3.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "apache-libcloud" version))
         (sha256
           (base32
-            "1a71z02ckcxld72k4qgmdnkjan52c4wczncs3p2mp5yafh7dsan7"))))
+            "15xg79ad4g2xrk081ylvj41k5hmg9hl1xvbmb5hd0fqn08wfwbhf"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -12410,6 +12410,11 @@ class ShellOutSSHClientTests")
                (("'.xf0.x90.x8d.x88'") "b'\\xF0\\x90\\x8D\\x88'")
                (("'.xF0', '.x90', '.x8D', '.x88'")
                 "b'\\xF0', b'\\x90', b'\\x8D', b'\\x88'"))
+             #t))
+         (add-before 'check 'copy-secret
+           (lambda _
+             (copy-file "libcloud/test/secrets.py-dist"
+                        "libcloud/test/secrets.py")
              #t)))))
     (inputs
      `(("openssh" ,openssh)))
@@ -12419,6 +12424,8 @@ class ShellOutSSHClientTests")
     (native-inputs
      `(("python-lockfile" ,python-lockfile)
        ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
        ("python-requests-mock" ,python-requests-mock)))
     (home-page "https://libcloud.apache.org/")
     (synopsis "Unified Cloud API")
@@ -12830,15 +12837,17 @@ embeddable JavaScript engine.")
 (define-public python-jsonrpclib-pelix
   (package
     (name "python-jsonrpclib-pelix")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jsonrpclib-pelix" version))
        (sha256
         (base32
-         "1qs95vxplxwspbrqy8bvc195s58iy43qkf75yrjfql2sim8b25sl"))))
+         "0f83z5zi7w32vprhk1dyc94ir1bh4hdd57bjdbwkq9ykng8qilhl"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no tests in PyPI tarball
     (home-page "https://github.com/tcalmant/jsonrpclib/")
     (synopsis "JSON-RPC 2.0 client library for Python")
     (description
@@ -14453,14 +14462,14 @@ This Python package wraps the Blosc library.")
 (define-public python-partd
   (package
     (name "python-partd")
-    (version "0.3.8")
+    (version "0.3.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "partd" version))
        (sha256
         (base32
-         "03s0i5qfgkx6y24bmfgyd5hnsjznkbbfafwb2khf7k9790f1yab7"))))
+         "0sz6rwlnl4fqq220pyz863cnv0gjdxl4m7lscl71ishl5z0xkmhz"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-blosc" ,python-blosc)
@@ -14523,14 +14532,14 @@ run on top of the dynamic task schedulers. ")
 (define-public python-ilinkedlist
   (package
     (name "python-ilinkedlist")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ilinkedlist" version))
        (sha256
         (base32
-         "063c2gm4jkgkv0nsg7mrc8y0w82ms98l4xchmbrvr68cscglhk69"))))
+         "0klb846q5vs62d8f89my7wan1sji4yjj6pjhjch9dha3p8vlncd2"))))
     (build-system python-build-system)
     (native-inputs `(("python-pytest" ,python-pytest)))
     (inputs `(("python" ,python)))
@@ -14544,3 +14553,56 @@ can be retrieved in constant time.  Some of the terminology is inspired by
 LISP.  It is possible to create an improper list by creating a @code{Pair}
 with a non-list @code{cdr}.")
     (license license:gpl3+)))
+
+(define-public python-readlike
+  (package
+    (name "python-readlike")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "readlike" version))
+       (sha256
+        (base32 "027w8fvi50ksl57q0a7kb5zvmq8jxaawnviib1jdqw0p3igvm1j4"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/jangler/readlike")
+    (synopsis "GNU Readline-like line editing module")
+    (description
+     "This Python module provides line editing functions similar to the default
+Emacs-style ones of GNU Readline.  Unlike the Python standard library's
+@code{readline} package, this one allows access to those capabilties in settings
+outside of a standard command-line interface.  It is especially well-suited to
+interfacing with Urwid, due to a shared syntax for describing key inputs.
+
+Currently, all stateless Readline commands are implemented.  Yanking and history
+are not supported.")
+    (license license:expat)))
+
+(define-public python2-readlike
+  (package-with-python2 python-readlike))
+
+(define-public python-reparser
+  (package
+    (name "python-reparser")
+    (version "1.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ReParser" version))
+       (sha256
+        (base32 "0nniqb69xr0fv7ydlmrr877wyyjb61nlayka7xr08vlxl9caz776"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/xmikos/reparser")
+    (synopsis "Simple lexer/parser for inline markup based on regular expressions")
+    (description
+     "This Python library provides a simple lexer/parser for inline markup based
+on regular expressions.")
+    (license license:expat)))
+
+(define-public python2-reparser
+  (let ((reparser (package-with-python2
+                   (strip-python2-variant python-reparser))))
+    (package (inherit reparser)
+             (propagated-inputs
+              `(("python2-enum34" ,python2-enum34)
+                ,@(package-propagated-inputs reparser))))))

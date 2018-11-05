@@ -65,7 +65,7 @@
 (define-public dnsmasq
   (package
     (name "dnsmasq")
-    (version "2.79")
+    (version "2.80")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -73,7 +73,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "07w6cw706yyahwvbvslhkrbjf2ynv567cgy9pal8bz8lrbsp9bbq"))))
+                "1fv3g8vikj3sn37x1j6qsywn09w1jipvlv34j3q5qrljbrwa5ayd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -363,7 +363,7 @@ to result in system-wide compromise.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
@@ -371,7 +371,7 @@ to result in system-wide compromise.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0gxqc4ynd2g1a5dwaazqh9n8injh49a7dz0l9bbxqgv47dnrvxvq"))))
+         "0p9w6spar5dfi7fplxjcq4394wldabaws0ns30cqq6sxqfwv6qn3"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs

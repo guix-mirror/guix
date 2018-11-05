@@ -67,16 +67,22 @@
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.7.6")
+    (version "0.7.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://git.libssh.org/projects/libssh.git")
-                    (commit (string-append "libssh-" version))))
+                     ;; git.libssh.org does not support the fast "smart" HTTP
+                     ;; Git protocol. The "dumb" HTTP Git protocol is extremely
+                     ;; slow, and does not support shallow clones, so we use the
+                     ;; plain Git protocol despite its flaws. This offers an
+                     ;; incredible speedup and reduces the size of the the
+                     ;; source by more than half.
+                     (url "git://git.libssh.org/projects/libssh.git")
+                     (commit (string-append "libssh-" version))))
               (patches (search-patches "libssh-hostname-parser-bug.patch"))
               (sha256
                (base32
-                "0slwqa36mhyb6brdv2jvb9fxp7rvsv3ziv67kaxx615jxn52l5pa"))
+                "07adxvhmnaq2l7sq7sn4sjlikbm1zdicq8lavq5yfila6jbx9z1y"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))

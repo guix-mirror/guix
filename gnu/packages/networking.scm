@@ -538,7 +538,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.3.2")
+    (version "5.4.0")
     (source
      (origin
        (method url-fetch)
@@ -546,7 +546,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "0m3352d5b0ragygbqjbaimghrbx4va2rixa34j5a1g3jj6l4nwbr"))))
+         "0y73b3z1akni620s1hlrijwdrk95ca1c8csjds48vpd6z86awx9p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite

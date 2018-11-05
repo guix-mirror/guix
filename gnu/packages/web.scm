@@ -3697,7 +3697,7 @@ library.")
 (define-public perl-www-mechanize
   (package
     (name "perl-www-mechanize")
-    (version "1.88")
+    (version "1.89")
     (source
      (origin
        (method url-fetch)
@@ -3705,7 +3705,7 @@ library.")
                            "WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
-         "0yd8a1zsfpbv5wr79x3iqmik9gvcd10iam9dfrdan4dri9vpxn9n"))))
+         "1mxx362vqiniw8vi6k3j7v9b1s7012irhfcblcz1p6jz9cjqi7mh"))))
     (build-system perl-build-system)
     (native-inputs                      ;only for tests
      `(("perl-cgi" ,perl-cgi)
@@ -3874,13 +3874,13 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.10")
+    (version "0.11")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "0yz3igqsiyqnjj1ngh199zicg3spx4kbmvl0wc8i8xahk6l9g06v"))))
+                "0yj3p1risf269n25dd56lqv82dsxv6a0aq4bcc1ddn9wv7h2xdfi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
@@ -3932,13 +3932,13 @@ directory.")
 (define-public r-htmlwidgets
   (package
     (name "r-htmlwidgets")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmlwidgets" version))
               (sha256
                (base32
-                "04c4d0mfcy3dkdlbxnaccpdgxvyxfdwfmmh5djim6v9hyg0j2z8s"))))
+                "04jsdh14l2zifbjpbbh23w7bxz1wpsas0zb2gy2zwv4yqamzzr7i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -5607,13 +5607,13 @@ responsive, and powerful applications with minimal effort.")
 (define-public r-shinydashboard
   (package
     (name "r-shinydashboard")
-    (version "0.7.0")
+    (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "shinydashboard" version))
               (sha256
                (base32
-                "10yqcqqcxgfqwkmscqwvvgr710im583qsqnsqkfpisjvkqp10yqb"))))
+                "0khac8b27q3swdw07kl609hm0fjfjsjv591b388q99mqqr2rk92i"))))
     (build-system r-build-system)
     ;; The directory inst/AdminLTE/ contains a minified JavaScript file.
     ;; Regenerate it from the included sources.
@@ -5633,6 +5633,7 @@ responsive, and powerful applications with minimal effort.")
                      (dump-port minified port))))))))))
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
+       ("r-promises" ,r-promises)
        ("r-shiny" ,r-shiny)))
     (native-inputs
      `(("uglify-js" ,uglify-js)))
@@ -5643,6 +5644,35 @@ application framework for R, making it easy to create attractive dashboards.")
     ;; This package includes software that was released under the Expat
     ;; license, but the whole package is released under GPL version 2 or
     ;; later.
+    (license l:gpl2+)))
+
+(define-public r-shinyfiles
+  (package
+    (name "r-shinyfiles")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinyFiles" version))
+       (sha256
+        (base32
+         "1cbg09l7w2zbgxb4qjm9p873p0lzrihlzsk5xxi3cpxdckn6zsrm"))))
+    (properties `((upstream-name . "shinyFiles")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fs" ,r-fs)
+       ("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-shiny" ,r-shiny)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/thomasp85/shinyFiles")
+    (synopsis "Server-side file system viewer for Shiny")
+    (description
+     "This package provides functionality for client-side navigation of the
+server side file system in shiny apps.  In case the app is running locally
+this gives the user direct access to the file system without the need to
+\"download\" files to a temporary location.  Both file and folder selection as
+well as file saving is available.")
     (license l:gpl2+)))
 
 (define-public r-crosstalk

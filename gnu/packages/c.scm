@@ -178,15 +178,15 @@ compiler while still keeping it small, simple, fast and understandable.")
 (define-public libbytesize
   (package
     (name "libbytesize")
-    (version "1.3")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/storaged-project/libbytesize/releases/download/1.3/libbytesize-"
-                    version ".tar.gz"))
+                    "https://github.com/storaged-project/libbytesize/releases/"
+                    "download/" version "/libbytesize-" version ".tar.gz"))
               (sha256
                (base32
-                "1l7mxm2vq2h6137fyfa46v9r4lydp9dvmsixkd64xr3ylqk1g6fi"))))
+                "0bbqzln1nhjxl71aydq9k4jg3hvki9lqsb4w10s1i27jgibxqkdv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)

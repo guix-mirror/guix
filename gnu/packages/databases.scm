@@ -503,10 +503,9 @@ applications.")
                #t))
            (replace 'build
              (lambda _
-               (zero? (apply system*
-                             `("scons"
+               (apply invoke `("scons"
                                ,@common-options
-                               "mongod" "mongo" "mongos")))))
+                               "mongod" "mongo" "mongos"))))
            (replace 'check
              (lambda* (#:key tests? inputs #:allow-other-keys)
                (setenv "TZDIR"
@@ -1226,6 +1225,18 @@ is in the public domain.")
      (substitute-keyword-arguments (package-arguments sqlite)
        ((#:configure-flags flags)
         `(cons "--enable-fts5" ,flags))))))
+
+;; This is used by Qt.
+(define-public sqlite-with-column-metadata
+  (package (inherit sqlite)
+    (name "sqlite-with-column-metadata")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sqlite)
+       ((#:configure-flags flags)
+        `(list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
+                              "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
+                              "-DSQLITE_ENABLE_DBSTAT_VTAB "
+                              "-DSQLITE_ENABLE_COLUMN_METADATA")))))))
 
 (define-public tdb
   (package
