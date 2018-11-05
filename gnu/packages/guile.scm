@@ -1143,7 +1143,7 @@ Guile's foreign function interface.")
   (package
     (name "guile-sqlite3")
     (version "0.1.0")
-    (home-page "https://notabug.org/civodul/guile-sqlite3.git")
+    (home-page "https://notabug.org/guile-sqlite3/guile-sqlite3.git")
     (source (origin
               (method git-fetch)
               (uri (git-reference
