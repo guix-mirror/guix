@@ -161,7 +161,7 @@ Throw an error on failure."
                                     "/var/guix/daemon-socket/socket"))
   "Connect to the remote build daemon listening on SOCKET-NAME over SESSION,
 an SSH session.  Return a <nix-server> object."
-  (open-connection #:port (remote-daemon-channel session)))
+  (open-connection #:port (remote-daemon-channel session socket-name)))
 
 
 (define (store-import-channel session)
