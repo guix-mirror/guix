@@ -12433,3 +12433,33 @@ correctly.")
       (synopsis "Color ANSI codes in the REPL of SLIME")
       (description "Color ANSI codes in the REPL of SLIME")
       (license license:gpl2+))))
+
+(define-public emacs-helm-slime
+  (let ((commit "9980925f3e5f6ac5a30369d2a544e82006a79c76"))
+    (package
+      (name "emacs-helm-slime")
+      (version (git-version "0.0.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacs-helm/helm-slime")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0xa07gpfkzwn522x9573mq5mfxvbawdgd0m93gqj6w5a14wk8zzh"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-slime" ,emacs-slime)))
+      (home-page "https://github.com/emacs-helm/helm-slime")
+      (synopsis "Helm for SLIME, the Superior Lisp Interaction Mode for Emacs")
+      (description "Helm-SLIME defines a few new commands:
+
+@itemize
+@item helm-slime-complete: Select a symbol from the SLIME completion systems.
+@item helm-slime-list-connections: Yet another slime-list-connections with Helm.
+@item: helm-slime-apropos: Yet another slime-apropos with Helm.
+@item helm-slime-repl-history: Select an input from the SLIME REPL history and insert it.
+@end itemize\n")
+      (license license:gpl3+))))
