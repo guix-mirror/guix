@@ -290,7 +290,7 @@ DOMAIN, a gettext domain."
           ;; doesn't change at each commit?
           (call-with-output-file "version.texi"
             (lambda (port)
-              (let ((version "0.0-git)"))
+              (let ((version "0.0-git"))
                 (format port "
 @set UPDATED 1 January 1970
 @set UPDATED-MONTH January 1970
