@@ -462,8 +462,8 @@ check-system: $(GOBJECTS)
 
 # Public key used to sign substitutes from hydra.gnu.org & co.
 dist_pkgdata_DATA =				\
-  hydra.gnu.org.pub				\
-  berlin.guixsd.org.pub
+  etc/substitutes/hydra.gnu.org.pub		\
+  etc/substitutes/berlin.guixsd.org.pub
 
 # Bash completion file.
 dist_bashcompletion_DATA = etc/completion/bash/guix	\
