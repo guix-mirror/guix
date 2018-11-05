@@ -11746,10 +11746,10 @@ file.")
   (deprecated-package "emacs-wgrep-helm" emacs-wgrep))
 
 (define-public emacs-mu4e-conversation
-  (let ((commit "223cc66e99c7665326e3d991d6d383cb0d7512bb"))
+  (let ((commit "54368a009474276247bdf39683e25ea68ae1f943"))
     (package
       (name "emacs-mu4e-conversation")
-      (version (git-version "20180722" "2" commit))
+      (version (git-version "20181105" "3" commit))
       (source
        (origin
          (method url-fetch)
@@ -11760,7 +11760,7 @@ file.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "1ivy7pihhma465hi25p1y45dyi8h52nsm2m0cvizj5sw36jw0n81"))))
+           "1zqnp1d3cxyvzsd76d5iw40lkif19k9svlbhqy6dvqiaqm0jbd15"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("mu" ,mu)))
