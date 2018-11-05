@@ -408,7 +408,8 @@ load path."
                         #:key
                         (guile-version (effective-version))
                         compiled-modules
-                        info daemon guile
+                        info daemon substitute-keys
+                        guile
                         (command (guix-command modules
                                                #:dependencies dependencies
                                                #:guile guile
@@ -429,6 +430,13 @@ assumed to be part of MODULES."
                        (when #$daemon
                          (symlink (string-append #$daemon "/bin/guix-daemon")
                                   (string-append #$output "/bin/guix-daemon")))
+
+                       (when #$substitute-keys
+                         (mkdir-p (string-append #$output "/share/guix"))
+                         (copy-recursively #$substitute-keys
+                                           (string-append #$output
+                                                          "/share/guix")
+                                           #:log (%make-void-port "w")))
 
                        (let ((modules (string-append #$output
                                                      "/share/guile/site/"
@@ -666,6 +674,8 @@ assumed to be part of MODULES."
                                                'guix-daemon)
 
                           #:info (info-manual source)
+                          #:substitute-keys (sub-directory source
+                                                           "etc/substitutes")
                           #:guile-version guile-version)))
         ((= 0 pull-version)
          ;; Legacy 'guix pull': return the .scm and .go files as one
