@@ -2844,9 +2844,6 @@ The @command{guix pull} command is usually invoked with no arguments,
 but it supports the following options:
 
 @table @code
-@item --verbose
-Produce verbose output, writing build logs to the standard error output.
-
 @item --url=@var{url}
 @itemx --commit=@var{commit}
 @itemx --branch=@var{branch}
@@ -2879,6 +2876,14 @@ current generation only.
 @item --profile=@var{profile}
 @itemx -p @var{profile}
 Use @var{profile} instead of @file{~/.config/guix/current}.
+
+@item --dry-run
+@itemx -n
+Show which channel commit(s) would be used and what would be built or
+substituted but do not actually do it.
+
+@item --verbose
+Produce verbose output, writing build logs to the standard error output.
 
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only

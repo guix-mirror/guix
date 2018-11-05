@@ -87,6 +87,8 @@ Download and deploy the latest version of Guix.\n"))
   (display (G_ "
   -p, --profile=PROFILE  use PROFILE instead of ~/.config/guix/current"))
   (display (G_ "
+  -n, --dry-run          show what would be pulled and built"))
+  (display (G_ "
       --bootstrap        use the bootstrap Guile to build the new Guix"))
   (newline)
   (show-build-options-help)
@@ -164,15 +166,18 @@ Download and deploy the latest version of Guix.\n"))
     (_ #t)))
 
 (define* (build-and-install instances profile
-                            #:key verbose?)
-  "Build the tool from SOURCE, and install it in PROFILE."
+                            #:key verbose? dry-run?)
+  "Build the tool from SOURCE, and install it in PROFILE.  When DRY-RUN? is
+true, display what would be built without actually building it."
   (define update-profile
     (store-lift build-and-use-profile))
 
   (mlet %store-monad ((manifest (channel-instances->manifest instances)))
     (mbegin %store-monad
-      (update-profile profile manifest)
-      (return (display-profile-news profile)))))
+      (update-profile profile manifest
+                      #:dry-run? dry-run?)
+      (munless dry-run?
+        (display-profile-news profile)))))
 
 (define (honor-lets-encrypt-certificates! store)
   "Tell Guile-Git to use the Let's Encrypt certificates."
@@ -497,8 +502,6 @@ Use '~/.config/guix/channels.scm' instead."))
        (ensure-default-profile)
        (cond ((assoc-ref opts 'query)
               (process-query opts profile))
-             ((assoc-ref opts 'dry-run?)
-              #t)                                 ;XXX: not very useful
              (else
               (with-store store
                 (with-status-report print-build-event
@@ -531,6 +534,8 @@ Use '~/.config/guix/channels.scm' instead."))
                                            (canonical-package guile-2.2)))))
                         (run-with-store store
                           (build-and-install instances profile
+                                             #:dry-run?
+                                             (assoc-ref opts 'dry-run?)
                                              #:verbose?
                                              (assoc-ref opts 'verbose?))))))))))))))
 
