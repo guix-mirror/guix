@@ -7225,3 +7225,31 @@ R squared measure from L. J. Edwards et al. (2008) is extended to the GLMM
 using @dfn{penalized quasi-likelihood} (PQL) estimation (see Jaeger et
 al. (2016)).")
     (license license:gpl2)))
+
+(define-public r-weights
+  (package
+    (name "r-weights")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "weights" version))
+       (sha256
+        (base32
+         "0186bfpkhxngrshac6bpg37alp6slwhwd43inrm8hqg0vhpfgc4c"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gdata" ,r-gdata)
+       ("r-hmisc" ,r-hmisc)
+       ("r-mice" ,r-mice)))
+    (home-page
+     "https://cran.r-project.org/web/packages/weights/")
+    (synopsis "Weighting and weighted statistics")
+    (description "This package Provides a variety of functions for producing
+simple weighted statistics, such as weighted Pearson's correlations, partial
+correlations, Chi-Squared statistics, histograms, and t-tests.  Also now
+includes some software for quickly recoding survey data and plotting point
+estimates from interaction terms in regressions (and multiply imputed
+regressions).  NOTE: Weighted partial correlation calculations pulled to
+address a bug.")
+  (license license:gpl2+)))
