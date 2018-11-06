@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,13 +22,12 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix build-system go)
-  #:use-module (gnu packages golang))
+  #:use-module (guix build-system go))
 
 (define-public terraform-docs
   (package
     (name "terraform-docs")
-    (version "0.3.0")
+    (version "0.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -36,11 +36,8 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xchpik32ab8m89s6jv671vswg8xhprfvh6s5md0zd36482d2nmm"))))
+                "12w2yr669hk5kxdb9rrzsn8hwvx8rzrc1rmn8hs9l8z1bkfhr4gg"))))
     (build-system go-build-system)
-    (native-inputs
-     `(("go-github-com-hashicorp-hcl" ,go-github-com-hashicorp-hcl)
-       ("go-github-com-tj-docopt" ,go-github-com-tj-docopt)))
     (arguments
      '(#:import-path "github.com/segmentio/terraform-docs"))
     (synopsis "Generate documentation from Terraform modules")
