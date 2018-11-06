@@ -900,7 +900,16 @@ the current goroutine's ID.")
                   "0bg26pfg25vr16jmczig2m493mja2nxjxyswz3hha7avxw20rpi5"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "github.com/AudriusButkevicius/cli"))
+       '(#:import-path "github.com/AudriusButkevicius/cli"
+         ;; Tests don't pass "vet" on go-1.11.  See
+         ;; https://github.com/AudriusButkevicius/cli/pull/1.
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "test"
+                       "-vet=off"
+                       import-path))))))
       (synopsis "Library for building command-line interfaces in Go")
       (description "This package provides a library for building command-line
 interfaces in Go.")
