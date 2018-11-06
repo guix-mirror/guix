@@ -4169,9 +4169,9 @@ It uses the uwsgi protocol for all the networking/interprocess communications.")
     (version "1.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/stedolan/" name
-                                  "/releases/download/" name "-" version
-                                  "/" name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/stedolan/jq"
+                                  "/releases/download/jq-" version
+                                  "/jq-" version ".tar.gz"))
               (sha256
                (base32
                 "1a76f46a652i2g333kfvrl6mp2w7whf6h1yly519izg4y967h9cn"))))
