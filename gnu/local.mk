@@ -876,6 +876,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
   %D%/packages/patches/libgit2-mtime-0.patch			\
+  %D%/packages/patches/libgit2-oom-test.patch			\
   %D%/packages/patches/libgdata-fix-tests.patch			\
   %D%/packages/patches/libgdata-glib-duplicate-tests.patch	\
   %D%/packages/patches/libgnome-encoding.patch			\

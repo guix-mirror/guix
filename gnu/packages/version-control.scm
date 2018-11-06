@@ -469,7 +469,8 @@ everything from small to very large projects with speed and efficiency.")
               (sha256
                (base32
                 "15kp4sq72kh762bm7dgspyrk0a6siarvll3k7nrhs0xy77idf80g"))
-              (patches (search-patches "libgit2-mtime-0.patch"))
+              (patches (search-patches "libgit2-mtime-0.patch"
+                                       "libgit2-oom-test.patch"))
 
               ;; Remove bundled software.
               (snippet '(begin
