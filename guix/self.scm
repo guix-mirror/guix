@@ -405,11 +405,28 @@ load path."
                       (apply guix-main (command-line))))
                 #:guile guile))
 
+(define (miscellaneous-files source)
+  "Return data files taken from SOURCE."
+  (file-mapping "guix-misc"
+                `(("etc/bash_completion.d/guix"
+                   ,(file-append* source "/etc/completion/bash/guix"))
+                  ("etc/bash_completion.d/guix-daemon"
+                   ,(file-append* source "/etc/completion/bash/guix-daemon"))
+                  ("share/zsh/site-functions/_guix"
+                   ,(file-append* source "/etc/completion/zsh/_guix"))
+                  ("share/fish/vendor_completions.d/guix.fish"
+                   ,(file-append* source "/etc/completion/fish/guix.fish"))
+                  ("share/guix/hydra.gnu.org.pub"
+                   ,(file-append* source
+                                  "/etc/substitutes/hydra.gnu.org.pub"))
+                  ("share/guix/berlin.guixsd.org.pub"
+                   ,(file-append* source "/etc/substitutes/berlin.guixsd.org.pub")))))
+
 (define* (whole-package name modules dependencies
                         #:key
                         (guile-version (effective-version))
                         compiled-modules
-                        info daemon substitute-keys
+                        info daemon miscellany
                         guile
                         (command (guix-command modules
                                                #:dependencies dependencies
@@ -424,6 +441,7 @@ assumed to be part of MODULES."
                  (with-imported-modules '((guix build utils))
                    #~(begin
                        (use-modules (guix build utils))
+
                        (mkdir-p (string-append #$output "/bin"))
                        (symlink #$command
                                 (string-append #$output "/bin/guix"))
@@ -431,13 +449,6 @@ assumed to be part of MODULES."
                        (when #$daemon
                          (symlink (string-append #$daemon "/bin/guix-daemon")
                                   (string-append #$output "/bin/guix-daemon")))
-
-                       (when #$substitute-keys
-                         (mkdir-p (string-append #$output "/share/guix"))
-                         (copy-recursively #$substitute-keys
-                                           (string-append #$output
-                                                          "/share/guix")
-                                           #:log (%make-void-port "w")))
 
                        (let ((modules (string-append #$output
                                                      "/share/guile/site/"
@@ -449,6 +460,10 @@ assumed to be part of MODULES."
                            (symlink #$info
                                     (string-append #$output
                                                    "/share/info"))))
+
+                       (when #$miscellany
+                         (copy-recursively #$miscellany #$output
+                                           #:log (%make-void-port "w")))
 
                        ;; Object files.
                        (when #$compiled-modules
@@ -675,8 +690,7 @@ assumed to be part of MODULES."
                                                'guix-daemon)
 
                           #:info (info-manual source)
-                          #:substitute-keys (file-append* source
-                                                          "etc/substitutes")
+                          #:miscellany (miscellaneous-files source)
                           #:guile-version guile-version)))
         ((= 0 pull-version)
          ;; Legacy 'guix pull': return the .scm and .go files as one
