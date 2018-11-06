@@ -1097,7 +1097,14 @@ message streaming.")
                       (string-append (assoc-ref outputs "out")
                                      "/src/github.com/prometheus/common/expfmt/testdata/")
                       ".*\\.gz$"))
-               #t)))))
+               #t))
+           (replace 'check
+             ;; Tests don't pass "vet" on go-1.11.  See
+             ;; https://github.com/syncthing/syncthing/issues/5311.
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "test"
+                       "-vet=off"
+                       import-path))))))
       (propagated-inputs
        `(("go-github-com-golang-protobuf-proto"
           ,go-github-com-golang-protobuf-proto)
