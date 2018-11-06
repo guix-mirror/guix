@@ -2419,11 +2419,24 @@ and lookup requests.  Browse requests are not supported yet.")
           (base32
            "1cpjqnrviwflz150g78iir5ndrp3hh7a93zbp4dwbg6sb2q141p2"))))
       (build-system go-build-system)
-      (native-inputs
+      ;; From go-1.10 onward, "pkg" compiled libraries are not re-used, so
+      ;; when this package required as input for another one, it will have to
+      ;; be built again.  Thus its CGO requirements must be made available in
+      ;; the environment, that is, they must be propagated.
+      (propagated-inputs
        `(("pkg-config" ,pkg-config)
          ("taglib" ,taglib)))
       (arguments
-       `(#:import-path "github.com/wtolson/go-taglib"))
+       `(#:import-path "github.com/wtolson/go-taglib"
+         ;; Tests don't pass "vet" on go-1.11.  See
+         ;; https://github.com/wtolson/go-taglib/issues/12.
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "test"
+                       "-vet=off"
+                       import-path))))))
       (home-page "https://github.com/wtolson/go-taglib")
       (synopsis "Go wrapper for taglib")
       (description "Go wrapper for taglib")
