@@ -206,21 +206,22 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                (local-file file #:recursive? #t)))
        (find-files (string-append directory "/" sub-directory) pred)))
 
-(define* (sub-directory item sub-directory)
-  "Return SUB-DIRECTORY within ITEM, which may be a file name or a file-like
-object."
+(define* (file-append* item file #:key (recursive? #t))
+  "Return FILE within ITEM, which may be a file name or a file-like object.
+When ITEM is a plain file name (a string), simply return a 'local-file'
+record with the new file name."
   (match item
     ((? string?)
      ;; This is the optimal case: we return a new "source".  Thus, a
      ;; derivation that depends on this sub-directory does not depend on ITEM
      ;; itself.
-     (local-file (string-append item "/" sub-directory)
-                 #:recursive? #t))
+     (local-file (string-append item "/" file)
+                 #:recursive? recursive?))
     ;; TODO: Add 'local-file?' case.
     (_
      ;; In this case, anything that refers to the result also depends on ITEM,
      ;; which isn't great.
-     (file-append item "/" sub-directory))))
+     (file-append item "/" file))))
 
 (define* (locale-data source domain
                       #:optional (directory domain))
@@ -238,7 +239,7 @@ DOMAIN, a gettext domain."
                        (ice-9 match) (ice-9 ftw))
 
           (define po-directory
-            #+(sub-directory source (string-append "po/" directory)))
+            #+(file-append* source (string-append "po/" directory)))
 
           (define (compile language)
             (let ((gmo (string-append #$output "/" language "/LC_MESSAGES/"
@@ -273,10 +274,10 @@ DOMAIN, a gettext domain."
                 'graphviz))
 
   (define documentation
-    (sub-directory source "doc"))
+    (file-append* source "doc"))
 
   (define examples
-    (sub-directory source "gnu/system/examples"))
+    (file-append* source "gnu/system/examples"))
 
   (define build
     (with-imported-modules '((guix build utils))
@@ -674,8 +675,8 @@ assumed to be part of MODULES."
                                                'guix-daemon)
 
                           #:info (info-manual source)
-                          #:substitute-keys (sub-directory source
-                                                           "etc/substitutes")
+                          #:substitute-keys (file-append* source
+                                                          "etc/substitutes")
                           #:guile-version guile-version)))
         ((= 0 pull-version)
          ;; Legacy 'guix pull': return the .scm and .go files as one
