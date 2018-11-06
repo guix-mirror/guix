@@ -1267,7 +1267,16 @@ Prometheus HTTP API.")
                 "1y8bvzbxpw0lfnn7pbcdwzqj4l90qj6xf88dvv9pxd9yl5g6cskx"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "gopkg.in/asn1-ber.v1"))
+     '(#:import-path "gopkg.in/asn1-ber.v1"
+       ;; Tests don't pass "vet" on go-1.11.  See
+       ;; https://github.com/go-asn1-ber/asn1-ber/issues/20.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key import-path #:allow-other-keys)
+             (invoke "go" "test"
+                     "-vet=off"
+                     import-path))))))
     (synopsis "ASN.1 BER encoding and decoding in Go")
     (description "This package provides ASN.1 BER encoding and decoding in the
 Go language.")
