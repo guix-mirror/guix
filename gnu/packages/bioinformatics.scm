@@ -3006,16 +3006,11 @@ particular, reads spanning multiple exons.")
     (source
      (origin
        (method url-fetch)
-       ;; FIXME: a better source URL is
-       ;; (string-append "ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2"
-       ;;                "/downloads/hisat2-" version "-source.zip")
-       ;; with hash "0lywnr8kijwsc2aw10dwxic0n0yvip6fl3rjlvc8zzwahamy4x7g"
-       ;; but it is currently unavailable.
-       (uri "https://github.com/infphilo/hisat2/archive/cba6e8cb.tar.gz")
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2"
+                           "/downloads/hisat2-" version "-source.zip"))
        (sha256
         (base32
-         "1mf2hdsyv7cd97xm9mp9a4qws02yrj95y6w6f6cdwnq0klp81r50"))))
+         "0lywnr8kijwsc2aw10dwxic0n0yvip6fl3rjlvc8zzwahamy4x7g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
