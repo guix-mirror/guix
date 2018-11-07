@@ -2831,13 +2831,14 @@ comment or quality sections.")
     (name "gemma")
     (version "0.96")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/xiangzhou/GEMMA/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/xiangzhou/GEMMA.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "055ynn16gd12pf78n4vr2a9jlwsbwzajpdnf2y2yilg1krfff222"))
+                "0sa4mllp7890v5pss0mm02ik8yixl7az3vprcw3kp7qmr9gwrdai"))
               (patches (search-patches "gemma-intel-compat.patch"))))
     (inputs
      `(("gsl" ,gsl)
