@@ -11258,14 +11258,14 @@ sort, markdup, and depth.")
     (name "ritornello")
     (version "1.0.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/KlugerLab/"
-                                  "Ritornello/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/KlugerLab/Ritornello.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "02nik86gq9ljjriv6pamwlmqnfky3ads1fpklx6mc3hx6k40pg38"))))
+                "1xpki1pkxwmn7n5n23vv64zvikss4fj53vlzhnp3j34wrmxik3h8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
