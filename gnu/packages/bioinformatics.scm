@@ -9407,14 +9407,14 @@ TAB-Seq.")
 (define-public r-sva
   (package
     (name "r-sva")
-    (version "3.28.0")
+    (version "3.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "sva" version))
        (sha256
         (base32
-         "0a3jqbz0jp1jxrnjkqfpmca840yqcdwxprdl608bzzx2zb4jl52s"))))
+         "1xf0hlrqjxl0y3x13mrkxghiv39fd9v2g8gq3qzbf1wj7il6bph3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-genefilter" ,r-genefilter)
