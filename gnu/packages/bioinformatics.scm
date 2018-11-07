@@ -7140,19 +7140,20 @@ authoring books and technical documents with R Markdown.")
 
 (define-public r-biocstyle
   (package
-   (name "r-biocstyle")
-   (version "2.8.2")
+    (name "r-biocstyle")
+    (version "2.10.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocStyle" version))
               (sha256
                (base32
-                "17m901ylz00w1a3nq5f910v55zixm1nr6rb3qrsbhqd94qzr0l2p"))))
+                "01lm8xljilj666fcl3wnw82dxkcxnlr294lddr553rm8xr5nwg31"))))
     (properties
      `((upstream-name . "BiocStyle")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-bookdown" ,r-bookdown)
+     `(("r-biocmanager" ,r-biocmanager)
+       ("r-bookdown" ,r-bookdown)
        ("r-knitr" ,r-knitr)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-yaml" ,r-yaml)))
