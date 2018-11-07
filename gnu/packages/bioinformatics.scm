@@ -4110,7 +4110,7 @@ probabilistic distances of genome abundance and tetranucleotide frequency.")
 (define-public minced
   (package
     (name "minced")
-    (version "0.2.0")
+    (version "0.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4119,7 +4119,7 @@ probabilistic distances of genome abundance and tetranucleotide frequency.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04qp70vawbbp0q5q4hp6vjcgzfhhdrdcaxkn58av9hj79p9gfq2q"))))
+                "1f5h9him0gd355cnx7p6pnxpknhckd4g0v62mg8zyhfbx9as25fv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
