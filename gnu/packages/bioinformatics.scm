@@ -4670,13 +4670,14 @@ large-scale data and can be applied to hundreds of species at once.")
     (version "2.0.7")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://bitbucket.org/regulatorygenomicsupf/"
-                           "pyicoteo/get/v" version ".tar.bz2"))
-       (file-name (string-append name "-" version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://bitbucket.org/regulatorygenomicsupf/pyicoteo.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0d6087f29xp8wxwlj111c3sylli98n0l8ry58c51ixzq0zfm50wa"))))
+         "0hz5g8d25lbjy1wpscr490l0lmyvaix893hhax4fxnh1h9w34w8p"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2 ; does not work with Python 3
