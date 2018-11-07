@@ -9212,12 +9212,14 @@ group or two ChIP groups run under different conditions.")
       (name "filevercmp")
       (version (string-append "0-1." (string-take commit 7)))
       (source (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/ekg/filevercmp/archive/"
-                            commit ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32 "0yp5jswf5j2pqc6517x277s4s6h1ss99v57kxw9gy0jkfl3yh450"))))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ekg/filevercmp.git")
+                      (commit commit)))
+                (file-name (git-file-name name commit))
+                (sha256
+                 (base32
+                  "1j9vxsy0y050v59h0q1d6501fcw1kjvj0d18l1xk2zyg0jzj247c"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; There are no tests to run.
@@ -9227,7 +9229,8 @@ group or two ChIP groups run under different conditions.")
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                 (install-file "filevercmp" bin)))))))
+                 (install-file "filevercmp" bin)
+                 #t))))))
       (home-page "https://github.com/ekg/filevercmp")
       (synopsis "This program compares version strings")
       (description "This program compares version strings.  It intends to be a
