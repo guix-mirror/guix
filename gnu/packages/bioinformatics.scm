@@ -6397,14 +6397,14 @@ penalized least squares regression method.")
 (define-public r-genefilter
   (package
     (name "r-genefilter")
-    (version "1.62.0")
+    (version "1.64.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "genefilter" version))
        (sha256
         (base32
-         "14l0ff02spmjwxj0m1czhg5vlkgwcfi73cym8m2n9vn6i7bjdaqi"))))
+         "0p64s1n1627yafnp25wjr4b22p34lqw574fx2qg4s1m0lffh1z6i"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
