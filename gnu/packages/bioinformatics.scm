@@ -5654,14 +5654,14 @@ sequence itself can be retrieved from these databases.")
     (version "2.8.2-1")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/ncbi/sra-tools/archive/"
-                       version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ncbi/sra-tools.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1camsijmvv2s45mb4iyf44ghl4gkd4rl0viphpcgl3ccchy32a0g"))))
+         "12ln0pk8yajhmmj9xsfwa1qgv5m05ji40jsg17wdcls62zz6fwrk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
