@@ -11503,15 +11503,16 @@ applications for tackling some common problems in a user-friendly way.")
 (define-public tadbit
   (package
     (name "tadbit")
-    (version "0.2")
+    (version "0.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/3DGenomes/TADbit/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/3DGenomes/TADbit.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1cnfqrl4685zar4nnw94j94nhvl2h29jm448nadqi1h05z6fdk4f"))))
+                "07g3aj648prmsvxp9caz5yl41k0y0647vxh0f5p3w8376mfiljd0"))))
     (build-system python-build-system)
     (arguments
      `(;; Tests are included and must be run after installation, but
