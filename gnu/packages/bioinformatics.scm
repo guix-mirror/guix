@@ -10622,14 +10622,14 @@ family of feature/genome hypotheses.")
 (define-public r-gviz
   (package
     (name "r-gviz")
-    (version "1.24.0")
+    (version "1.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Gviz" version))
        (sha256
         (base32
-         "1fhli7ahkl5r43j0hc89ib41mfadj6qyrg36i03ncz8zs6iqwpx4"))))
+         "05zk9hf30afg6rjg97lzn5v8xij90v8zm09y9vcz0asmc3c8xs0a"))))
     (properties `((upstream-name . "Gviz")))
     (build-system r-build-system)
     (propagated-inputs
