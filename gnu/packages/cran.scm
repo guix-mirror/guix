@@ -7280,3 +7280,30 @@ This package provides an R interface.")
     ;; Annoy is released under ASL 2.0, but this wrapper is released under
     ;; GPLv2+.
     (license (list license:gpl2+ license:asl2.0))))
+
+(define-public r-ncdf4
+  (package
+    (name "r-ncdf4")
+    (version "1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ncdf4" version))
+       (sha256
+        (base32
+         "0lwjjis0b83c4l3xvqai4ckzrskd6mychck1iwxcxgjvh0d77mgd"))))
+    (build-system r-build-system)
+    (inputs
+     `(("netcdf" ,netcdf)
+       ("zlib" ,zlib)))
+    (home-page "https://cran.r-project.org/web/packages/ncdf4/index.html")
+    (synopsis "R interface to Unidata netCDF format data files")
+    (description
+     "This package provides a high-level R interface to data files written
+using Unidata's netCDF library (version 4 or earlier), which are binary data
+files that are portable across platforms and include metadata information in
+addition to the data sets.  Using this package, netCDF files can be opened and
+data sets read in easily.  It is also easy to create new netCDF dimensions,
+variables, and files, in either version 3 or 4 format, and manipulate existing
+netCDF files.")
+    (license license:gpl3+)))
