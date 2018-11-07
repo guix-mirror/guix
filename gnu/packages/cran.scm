@@ -6885,14 +6885,14 @@ directories or URLs with their associated programs.")
 (define-public r-rcmdcheck
   (package
     (name "r-rcmdcheck")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rcmdcheck" version))
        (sha256
         (base32
-         "13liz9lmx9xgc0f7pjiz3sp8ygvazx2zslbiwz3p9fimfsx1yfsg"))))
+         "1ga19jqix0zs7xyz2j155zyagwbv22r6dgv55g6wdjigc67qfsix"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
@@ -6904,6 +6904,7 @@ directories or URLs with their associated programs.")
        ("r-prettyunits" ,r-prettyunits)
        ("r-r6" ,r-r6)
        ("r-rprojroot" ,r-rprojroot)
+       ("r-sessioninfo" ,r-sessioninfo)
        ("r-withr" ,r-withr)
        ("r-xopen" ,r-xopen)))
     (home-page "https://github.com/r-Lib/rcmdcheck#readme")
