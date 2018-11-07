@@ -939,3 +939,32 @@ demultiplexed, i.e. assigned to their original reference barcode.")
 of Risso et al. (2014) for the normalization of RNA-Seq read counts between
 samples.")
     (license license:artistic2.0)))
+
+(define-public r-biocneighbors
+  (package
+    (name "r-biocneighbors")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiocNeighbors" version))
+       (sha256
+        (base32
+         "1fsb96acidlxwf0h65xv7fnwdi58ckmq00gmwykrlawh88wgn1ll"))))
+    (properties `((upstream-name . "BiocNeighbors")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocparallel" ,r-biocparallel)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppannoy" ,r-rcppannoy)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/BiocNeighbors")
+    (synopsis "Nearest Neighbor Detection for Bioconductor packages")
+    (description
+     "This package implements exact and approximate methods for nearest
+neighbor detection, in a framework that allows them to be easily switched
+within Bioconductor packages or workflows.  The exact algorithm is implemented
+using pre-clustering with the k-means algorithm.  Functions are also provided
+to search for all neighbors within a given distance.  Parallelization is
+achieved for all methods using the BiocParallel framework.")
+    (license license:gpl3)))
