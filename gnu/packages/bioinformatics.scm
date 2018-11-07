@@ -2893,14 +2893,14 @@ association studies (GWAS).")
     (name "grit")
     (version "2.0.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/nboley/grit/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/nboley/grit.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "157in84dj70wimbind3x7sy1whs3h57qfgcnj2s6lrd38fbrb7mj"))))
+                "0b1lhf87n1qd0faw19s4r6i3cfz7k68xnnn0l7r97lqc5i3hg2rr"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
