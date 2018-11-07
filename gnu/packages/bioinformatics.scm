@@ -690,38 +690,39 @@ Python.")
 
 (define-public python-biom-format
   (package
-   (name "python-biom-format")
-   (version "2.1.6")
-   (source
-    (origin
-     (method url-fetch)
-     ;; Use GitHub as source because PyPI distribution does not contain
-     ;; test data: https://github.com/biocore/biom-format/issues/693
-     (uri (string-append "https://github.com/biocore/biom-format/archive/"
-                         version ".tar.gz"))
-     (file-name (string-append name "-" version ".tar.gz"))
-     (sha256
-      (base32
-       "08cr7wpahk6zb31h4bs7jmzpvxcqv9s13xz40h6y2h656jvdvnpj"))))
-   (build-system python-build-system)
-   (propagated-inputs
-    `(("python-numpy" ,python-numpy)
-      ("python-scipy" ,python-scipy)
-      ("python-future" ,python-future)
-      ("python-click" ,python-click)
-      ("python-h5py" ,python-h5py)
-      ("python-pandas" ,python-pandas)))
-   (native-inputs
-    `(("python-nose" ,python-nose)))
-   (home-page "http://www.biom-format.org")
-   (synopsis "Biological Observation Matrix (BIOM) format utilities")
-   (description
-    "The BIOM file format is designed to be a general-use format for
+    (name "python-biom-format")
+    (version "2.1.6")
+    (source
+     (origin
+       (method git-fetch)
+       ;; Use GitHub as source because PyPI distribution does not contain
+       ;; test data: https://github.com/biocore/biom-format/issues/693
+       (uri (git-reference
+             (url "https://github.com/biocore/biom-format.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "00yi8hkj3n7vdz8p8x93bi810f7cpm8rb0dd3kfhr2cpbmd2rsql"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-future" ,python-future)
+       ("python-click" ,python-click)
+       ("python-h5py" ,python-h5py)
+       ("python-pandas" ,python-pandas)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "http://www.biom-format.org")
+    (synopsis "Biological Observation Matrix (BIOM) format utilities")
+    (description
+     "The BIOM file format is designed to be a general-use format for
 representing counts of observations e.g. operational taxonomic units, KEGG
 orthology groups or lipid types, in one or more biological samples
 e.g. microbiome samples, genomes, metagenomes.")
-   (license license:bsd-3)
-   (properties `((python2-variant . ,(delay python2-biom-format))))))
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-biom-format))))))
 
 (define-public python2-biom-format
   (let ((base (package-with-python2 (strip-python2-variant python-biom-format))))
