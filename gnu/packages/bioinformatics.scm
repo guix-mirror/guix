@@ -10830,14 +10830,20 @@ block processing.")
 (define-public r-rhdf5lib
   (package
     (name "r-rhdf5lib")
-    (version "1.2.1")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhdf5lib" version))
        (sha256
         (base32
-         "1y59acac6v8hrhv84gghn9ifsni9xxxacaj177rrl4frmkrz4x3c"))))
+         "01gpz780g850ql20b2ql6pvr678ydk4nq4sn5iiih94a4crb9lz1"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled binaries
+           (delete-file-recursively "src/winlib/")
+           #t))))
     (properties `((upstream-name . "Rhdf5lib")))
     (build-system r-build-system)
     (arguments
@@ -10854,7 +10860,7 @@ block processing.")
                 "'%s/libhdf5.a %s/libhdf5.a -lz'"))
              (with-directory-excursion "src"
                (invoke "tar" "xvf" (assoc-ref inputs "hdf5-source"))
-               (rename-file (string-append "hdf5-" ,(package-version hdf5))
+               (rename-file (string-append "hdf5-" ,(package-version hdf5-1.10))
                             "hdf5")
                ;; Remove timestamp and host system information to make
                ;; the build reproducible.
@@ -10883,9 +10889,9 @@ block processing.")
     (inputs
      `(("zlib" ,zlib)))
     (propagated-inputs
-     `(("hdf5" ,hdf5)))
+     `(("hdf5" ,hdf5-1.10)))
     (native-inputs
-     `(("hdf5-source" ,(package-source hdf5))))
+     `(("hdf5-source" ,(package-source hdf5-1.10))))
     (home-page "https://bioconductor.org/packages/Rhdf5lib")
     (synopsis "HDF5 library as an R package")
     (description "This package provides C and C++ HDF5 libraries for use in R
