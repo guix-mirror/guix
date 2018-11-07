@@ -3117,14 +3117,14 @@ from high-throughput sequencing assays.")
     (name "java-htsjdk")
     (version "2.3.0") ; last version without build dependency on gradle
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/samtools/htsjdk/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/samtools/htsjdk.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ibhzzxsfc38nqyk9r8zqj6blfc1kh26iirypd4q6n90hs2m6nyq"))
+                "1b178ixcabanm834ydjl3jiakpyxdmki32hqfv2abrzn3rcwa28i"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete pre-built binaries
