@@ -5868,7 +5868,7 @@ is one that takes arguments.")
 (define-public seqtk
   (package
     (name "seqtk")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5877,15 +5877,7 @@ is one that takes arguments.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mdkgmzdy734a0na9hxbl4k41jjkm87bvjbm7bdbh50fsra86f93"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Remove extraneous header files, as is done in the seqtk
-                  ;; master branch.
-                  (for-each (lambda (file) (delete-file file))
-                            (list "ksort.h" "kstring.h" "kvec.h"))
-                  #t))))
+                "1bfzlqa84b5s1qi22blmmw2s8xdyp9h9ydcq22pfjhh5gab3yz6l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -5893,11 +5885,12 @@ is one that takes arguments.")
          (delete 'configure)
          (replace 'check
            ;; There are no tests, so we just run a sanity check.
-           (lambda _ (zero? (system* "./seqtk" "seq"))))
+           (lambda _ (invoke "./seqtk" "seq") #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-               (install-file "seqtk" bin)))))))
+               (install-file "seqtk" bin)
+               #t))))))
     (inputs
      `(("zlib" ,zlib)))
     (home-page "https://github.com/lh3/seqtk")
