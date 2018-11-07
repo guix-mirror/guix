@@ -7718,13 +7718,13 @@ files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.6.6")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "0rkp0mfsq3wfnib389dh3i44ab0wiz8skkjcv4596dwgq50jqpf2"))))
+                "0cl5anqkjwvqx19snjhz0zj8cp8ibckiifl28h821h50g62nvb2f"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
