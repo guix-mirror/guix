@@ -504,12 +504,12 @@ the @code{arrayCGH} packages.")
 (define-public r-cghcall
   (package
    (name "r-cghcall")
-   (version "2.42.0")
+   (version "2.44.0")
    (source (origin
             (method url-fetch)
             (uri (bioconductor-uri "CGHcall" version))
             (sha256
-             (base32 "0y71vfxv9x0am3xvv520yr95cb7m7y92dhdx1vkqki80jrmf12dz"))))
+             (base32 "1k65kaiqvjyllzbpa2367n6f6kkmsy463kpflzs66hqhx2fshsmi"))))
    (properties `((upstream-name . "CGHcall")))
    (build-system r-build-system)
    (propagated-inputs
