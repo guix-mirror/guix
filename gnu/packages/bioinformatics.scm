@@ -4112,14 +4112,14 @@ probabilistic distances of genome abundance and tetranucleotide frequency.")
     (name "minced")
     (version "0.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/ctSkennerton/minced/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ctSkennerton/minced.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0wxmlsapxfpxfd3ps9636h7i2xy6la8i42mwh0j2lsky63h63jp1"))))
+                "04qp70vawbbp0q5q4hp6vjcgzfhhdrdcaxkn58av9hj79p9gfq2q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
