@@ -5948,14 +5948,14 @@ of these reads to align data quickly through a hash-based indexing scheme.")
     (version "2.1b")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/biocore/sortmerna/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/biocore/sortmerna.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ghaghvd82af9j5adavxh77g7hm247d1r69m3fbi6f1jdivj5ldk"))))
+         "0j3mbz4n25738yijmjbr5r4fyvkgm8v5vn3sshyfvmyqf5q9byqf"))))
     (build-system gnu-build-system)
     (outputs '("out"      ;for binaries
                "db"))     ;for sequence databases
