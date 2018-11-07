@@ -5870,15 +5870,15 @@ is one that takes arguments.")
     (name "seqtk")
     (version "1.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/lh3/seqtk/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/lh3/seqtk.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ywdyzpmfiz2wp6ampbzqg4y8bj450nfgqarpamg045b8mk32lxx"))
-                            (modules '((guix build utils)))
+                "1mdkgmzdy734a0na9hxbl4k41jjkm87bvjbm7bdbh50fsra86f93"))
+              (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Remove extraneous header files, as is done in the seqtk
