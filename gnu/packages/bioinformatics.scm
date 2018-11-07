@@ -10995,26 +10995,24 @@ quality control.")
 (define-public r-scran
   (package
     (name "r-scran")
-    (version "1.8.4")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scran" version))
        (sha256
         (base32
-         "17vq9vb9ak7n4mcqpwnm9x3z91vmr7xnsgj8f45b8dbj7m0v126j"))))
+         "1viyzrwfm9vccsf54c6g7k1dn7skkfx4ml1jy12q67wa20sx8l03"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)
        ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocneighbors" ,r-biocneighbors)
        ("r-biocparallel" ,r-biocparallel)
        ("r-delayedarray" ,r-delayedarray)
        ("r-delayedmatrixstats" ,r-delayedmatrixstats)
-       ("r-dt" ,r-dt)
        ("r-dynamictreecut" ,r-dynamictreecut)
        ("r-edger" ,r-edger)
-       ("r-fnn" ,r-fnn)
-       ("r-ggplot2" ,r-ggplot2)
        ("r-igraph" ,r-igraph)
        ("r-limma" ,r-limma)
        ("r-matrix" ,r-matrix)
@@ -11022,11 +11020,9 @@ quality control.")
        ("r-rhdf5lib" ,r-rhdf5lib)
        ("r-s4vectors" ,r-s4vectors)
        ("r-scater" ,r-scater)
-       ("r-shiny" ,r-shiny)
        ("r-singlecellexperiment" ,r-singlecellexperiment)
        ("r-statmod" ,r-statmod)
-       ("r-summarizedexperiment" ,r-summarizedexperiment)
-       ("r-viridis" ,r-viridis)))
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
     (home-page "https://bioconductor.org/packages/scran")
     (synopsis "Methods for single-cell RNA-Seq data analysis")
     (description "This package implements a variety of low-level analyses of
