@@ -8641,41 +8641,33 @@ paired-end data.")
 (define-public r-rcas
   (package
     (name "r-rcas")
-    (version "1.6.0")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "RCAS" version))
               (sha256
                (base32
-                "0vmn7a0rm2ban0kaxrf5danhss2r4hfhnwh5889fjcgqy300fdd5"))))
+                "0ss5hcg2m7gjji6dd23zxa5bd5a7knwcnada4qs5q2l4clgk39ad"))))
     (build-system r-build-system)
-    (native-inputs
-     `(("r-testthat" ,r-testthat)
-       ;; During vignette building knitr checks that "pandoc-citeproc"
-       ;; is in the PATH.
-       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)))
     (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocgenerics" ,r-biocgenerics)
        ("r-biomart" ,r-biomart)
        ("r-biostrings" ,r-biostrings)
        ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
-       ("r-bsgenome-mmusculus-ucsc-mm9" ,r-bsgenome-mmusculus-ucsc-mm9)
-       ("r-bsgenome-celegans-ucsc-ce10" ,r-bsgenome-celegans-ucsc-ce10)
-       ("r-bsgenome-dmelanogaster-ucsc-dm3" ,r-bsgenome-dmelanogaster-ucsc-dm3)
        ("r-cowplot" ,r-cowplot)
        ("r-data-table" ,r-data-table)
        ("r-dbi" ,r-dbi)
        ("r-dt" ,r-dt)
        ("r-genomation" ,r-genomation)
+       ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggseqlogo" ,r-ggseqlogo)
        ("r-knitr" ,r-knitr)
        ("r-motifrg" ,r-motifrg)
        ("r-org-hs-eg-db" ,r-org-hs-eg-db)
-       ("r-org-ce-eg-db" ,r-org-ce-eg-db)
-       ("r-org-dm-eg-db" ,r-org-dm-eg-db)
-       ("r-org-mm-eg-db" ,r-org-mm-eg-db)
        ("r-pbapply" ,r-pbapply)
        ("r-pheatmap" ,r-pheatmap)
        ("r-plotly" ,r-plotly)
