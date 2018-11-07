@@ -2768,16 +2768,14 @@ genes in incomplete assemblies or complete genomes.")
       (version "2.3")
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append
-               "https://github.com/ctSkennerton/fxtract/archive/"
-               version ".tar.gz"))
-         (file-name (string-append "ctstennerton-util-"
-                                   (string-take util-commit 7)
-                                   "-checkout"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ctSkennerton/fxtract.git")
+               (commit version)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
-           "0275cfdhis8517hm01is62062swmi06fxzifq7mr3knbbxjlaiwj"))))
+           "0hab3gpwf4w9s87qlbswq6ws1qqybh4dcqk79q1ahyldzai5fgp5"))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags (list
