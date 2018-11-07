@@ -753,15 +753,15 @@ e.g. microbiome samples, genomes, metagenomes.")
     (package
       (inherit base)
       (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           ;; Do not require the unmaintained pyqi library.
-           (add-after 'unpack 'remove-pyqi
-             (lambda _
-               (substitute* "setup.py"
-                 (("install_requires.append\\(\"pyqi\"\\)") "pass"))
-               #t)))
-         ,@(package-arguments base))))))
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; Do not require the unmaintained pyqi library.
+             (add-after 'unpack 'remove-pyqi
+               (lambda _
+                 (substitute* "setup.py"
+                   (("install_requires.append\\(\"pyqi\"\\)") "pass"))
+                 #t)))))))))
 
 (define-public bioperl-minimal
   (let* ((inputs `(("perl-module-build" ,perl-module-build)
