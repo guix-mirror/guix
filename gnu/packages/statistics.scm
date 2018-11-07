@@ -5017,14 +5017,14 @@ decompositions of such matrices, and solutions of linear systems.")
 (define-public r-modelmetrics
   (package
     (name "r-modelmetrics")
-    (version "1.2.0")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
         (uri (cran-uri "ModelMetrics" version))
         (sha256
          (base32
-          "1sgdyrf6fbsn18gk8slir4a1yhv133kfhyg2crfs759nff4aw89h"))))
+          "158ddbw2snlyzd2q6mdaif5i67kq4qfvadylwjxgv1w2cmszrmk6"))))
     (properties `((upstream-name . "ModelMetrics")))
     (build-system r-build-system)
     (propagated-inputs
