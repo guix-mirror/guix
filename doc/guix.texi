@@ -18672,6 +18672,11 @@ Cuirass jobs.
 Location of sqlite database which contains the build results and previously
 added specifications.
 
+@item @code{ttl} (default: @code{(* 30 24 3600)})
+Specifies the time-to-live (TTL) in seconds of garbage collector roots that
+are registered for build results.  This means that build results are protected
+from garbage collection for at least @var{ttl} seconds.
+
 @item @code{port} (default: @code{8081})
 Port number used by the HTTP server.
 
