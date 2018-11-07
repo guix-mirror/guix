@@ -4310,19 +4310,20 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
     (license license:lgpl3+)))
 
 (define-public pplacer
-  (let ((commit "g807f6f3"))
+  (let ((commit "807f6f3"))
     (package
       (name "pplacer")
       ;; The commit should be updated with each version change.
       (version "1.1.alpha19")
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/matsen/pplacer/archive/v"
-                             version ".tar.gz"))
-         (file-name (string-append name "-" version ".tar.gz"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/matsen/pplacer.git")
+               (commit (string-append "v" version))))
+         (file-name (git-file-name name version))
          (sha256
-          (base32 "0z1lnd2s8sh6kpzg106wzbh2szw7h0hvq8syd5a6wv4rmyyz6x0f"))))
+          (base32 "11ppbbbx20p2g9wj3ff64dhnarb12q79v7qh4rk0gj6lkbz4n7cn"))))
       (build-system ocaml-build-system)
       (arguments
        `(#:ocaml ,ocaml-4.01
@@ -4339,11 +4340,12 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
                       (local-dir "cddlib_guix"))
                  (mkdir local-dir)
                  (with-directory-excursion local-dir
-                   (system* "tar" "xvf" cddlib-src))
+                   (invoke "tar" "xvf" cddlib-src))
                  (let ((cddlib-src-folder
                         (string-append local-dir "/"
                                        (list-ref (scandir local-dir) 2)
                                        "/lib-src")))
+                   (for-each make-file-writable (find-files "cdd_src" ".*"))
                    (for-each
                     (lambda (file)
                       (copy-file file
