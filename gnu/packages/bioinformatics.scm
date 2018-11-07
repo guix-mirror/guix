@@ -3681,14 +3681,14 @@ data.  It also provides the @command{bgzip}, @command{htsfile}, and
     (name "idr")
     (version "2.0.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/nboley/idr/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/nboley/idr.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rjdly6daslw66r43g9md8znizlscn1sphycqyldzsidkc4vxqv3"))
+                "04j876h6z444v2q79drxx283d3k5snd72kj895wbalnl42206x9g"))
               ;; Delete generated C code.
               (snippet
                '(begin (delete-file "idr/inv_cdf.c") #t))))
