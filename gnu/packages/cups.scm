@@ -405,9 +405,13 @@ device-specific programs to convert and print many types of files.")
                (base32
                 "0g3q5mm2crjyc1z4z6gv4lam6sc5d3diz704djrnpqadk4q3h290"))
               (modules '((guix build utils)))
+              (patches (search-patches "hplip-remove-imageprocessor.patch"))
               (snippet
-               ;; Fix type mismatch.
                '(begin
+                  ;; Delete non-free blobs
+                  (for-each delete-file (find-files "." "\\.so$"))
+                  (delete-file "prnt/hpcups/ImageProcessor.h")
+                  ;; Fix type mismatch.
                   (substitute* "prnt/hpcups/genPCLm.cpp"
                     (("boolean") "bool"))
                   #t))))
