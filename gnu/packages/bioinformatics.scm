@@ -3977,7 +3977,7 @@ sequences).")
 (define-public mash
   (package
     (name "mash")
-    (version "2.0")
+    (version "2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3986,7 +3986,7 @@ sequences).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13h6v4wzfflb5raxwlqmkl2km54m3izm30f1w9p9scjmfrnfn0wx"))
+                "049hwcc059p2fd9vwndn63laifvvsi0wmv84i6y1fr79k15dxwy6"))
               (modules '((guix build utils)))
               (snippet
                '(begin
