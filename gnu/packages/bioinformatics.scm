@@ -5554,15 +5554,14 @@ structures, classes for genomic regions, mapped sequencing reads, etc.")
 (define-public preseq
   (package
     (name "preseq")
-    (version "2.0")
+    (version "2.0.3")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/smithlabcode/preseq.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append "https://github.com/smithlabcode/preseq/"
+                                  "releases/download/v" version
+                                  "/preseq_v" version ".tar.bz2"))
               (sha256
-               (base32 "09mwj7x3zavnk1j6cax66madxgfaxjpq4c11mf93lsgg7z46znkm"))
+               (base32 "149x9xmk1wy1gff85325yfzqc0qk4sgp1w6gbyj9cnji4x1dszbl"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Remove bundled samtools.
