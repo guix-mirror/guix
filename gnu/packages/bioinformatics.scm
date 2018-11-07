@@ -2891,7 +2891,7 @@ association studies (GWAS).")
 (define-public grit
   (package
     (name "grit")
-    (version "2.0.2")
+    (version "2.0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2900,7 +2900,7 @@ association studies (GWAS).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0b1lhf87n1qd0faw19s4r6i3cfz7k68xnnn0l7r97lqc5i3hg2rr"))))
+                "1l5v8vfvfbrpmgnrvbrbv40d0arhxcnmxgv2f1mlcqfa3q6bkqm9"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -2912,13 +2912,7 @@ association studies (GWAS).")
              (delete-file "grit/sparsify_support_fns.c")
              (delete-file "grit/call_peaks_support_fns.c")
              (substitute* "setup.py"
-               (("Cython.Setup") "Cython.Build")
-               ;; Add numpy include path to fix compilation
-               (("pyx\", \\]")
-                (string-append "pyx\", ], include_dirs = ['"
-                               (assoc-ref inputs "python-numpy")
-                               "/lib/python2.7/site-packages/numpy/core/include/"
-                               "']")))
+               (("Cython.Setup") "Cython.Build"))
              #t)))))
     (inputs
      `(("python-scipy" ,python2-scipy)
