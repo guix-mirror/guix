@@ -39,6 +39,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -75,7 +76,7 @@
 (define-public pspp
   (package
     (name "pspp")
-    (version "1.0.1")
+    (version "1.2.0")
     (source
      (origin
       (method url-fetch)
@@ -83,7 +84,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1r8smr5057993h90nx0mdnff8nxw9x546zzh6qpy4h3xblp1la5s"))))
+        "07pp27zycrb5x927jwaj9r3q7hy915jh51xs85zxby6gfiwl63m5"))))
     (build-system gnu-build-system)
     (inputs
      `(("cairo" ,cairo)
@@ -94,11 +95,15 @@
        ("readline" ,readline)
        ("gtk" ,gtk+)
        ("gtksourceview" ,gtksourceview)
+       ("spread-sheet-widget" ,spread-sheet-widget)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("glib" ,glib "bin")             ;for glib-genmarshal
+     `(("autoconf" ,autoconf)           ;for tests
+       ("glib" ,glib "bin")             ;for glib-genmarshal
        ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)             ;for tests
+       ("texinfo" ,texinfo)))
     (home-page "https://www.gnu.org/software/pspp/")
     (synopsis "Statistical analysis")
     (description
