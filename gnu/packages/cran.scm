@@ -539,14 +539,14 @@ is configured appropriately so R can use them.")
 (define-public r-pkgload
   (package
     (name "r-pkgload")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgload" version))
        (sha256
         (base32
-         "0mm0avvan528zbrcrxigl5fkd7za01fb0qhlqrqvm3ar0115cqa8"))))
+         "0z7jvharafahi2gv5547mk1n499isjzw06kfwymmxc0gd575d1ii"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-desc" ,r-desc)
