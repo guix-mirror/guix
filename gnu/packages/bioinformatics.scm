@@ -14123,9 +14123,30 @@ absolute GSEA.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'create-cabal-file
-           (lambda _ (invoke "hpack") #t)))))
+           (lambda _ (invoke "hpack") #t))
+         ;; These tools are expected to be installed alongside ngless.
+         (add-after 'install 'link-tools
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (symlink (string-append (assoc-ref inputs "prodigal")
+                                       "/bin/prodigal")
+                        (string-append bin "ngless-" ,version "-prodigal"))
+               (symlink (string-append (assoc-ref inputs "minimap2")
+                                       "/bin/minimap2")
+                        (string-append bin "ngless-" ,version "-minimap2"))
+               (symlink (string-append (assoc-ref inputs "samtools")
+                                       "/bin/samtools")
+                        (string-append bin "ngless-" ,version "-samtools"))
+               (symlink (string-append (assoc-ref inputs "bwa")
+                                       "/bin/bwa")
+                        (string-append bin "ngless-" ,version "-bwa"))
+               #t))))))
     (inputs
-     `(("ghc-aeson" ,ghc-aeson)
+     `(("prodigal" ,prodigal)
+       ("bwa" ,bwa)
+       ("samtools" ,samtools)
+       ("minimap2" ,minimap2)
+       ("ghc-aeson" ,ghc-aeson)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-async" ,ghc-async)
        ("ghc-atomic-write" ,ghc-atomic-write)
