@@ -6613,14 +6613,14 @@ analysis.")
 (define-public r-gostats
   (package
     (name "r-gostats")
-    (version "2.46.0")
+    (version "2.48.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GOstats" version))
        (sha256
         (base32
-         "1i5mydz5d95w2k28qr9j01hmbnl2id55jq94jvcpcyp1pvinkdq0"))))
+         "0wlqqgfynwqnqhckhsfjwg9zkj6hkmzwd5y76dhqz720vy21rcln"))))
     (properties `((upstream-name . "GOstats")))
     (build-system r-build-system)
     (propagated-inputs
