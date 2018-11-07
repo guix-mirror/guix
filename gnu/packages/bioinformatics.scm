@@ -3826,7 +3826,7 @@ data.")
 (define-public kaiju
   (package
     (name "kaiju")
-    (version "1.6.2")
+    (version "1.6.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3835,7 +3835,7 @@ data.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c6gqir9djm3wpvfjm43i5vvvf36k3rsvr9fph76wlcy9aghpbah"))))
+                "119pzi0ddzv9mjg4wwa6han0cwr3k3ssn7kirvsjfcq05mi5ka0x"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
