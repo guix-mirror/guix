@@ -7307,3 +7307,23 @@ data sets read in easily.  It is also easy to create new netCDF dimensions,
 variables, and files, in either version 3 or 4 format, and manipulate existing
 netCDF files.")
     (license license:gpl3+)))
+
+(define-public r-biocmanager
+  (package
+    (name "r-biocmanager")
+    (version "1.30.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "BiocManager" version))
+       (sha256
+        (base32
+         "0mfvx1xzsgiag9p42kdyqg8fvajyakrdy3z2smhdlaawzbi0qmax"))))
+    (properties `((upstream-name . "BiocManager")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/BiocManager/")
+    (synopsis "Access the Bioconductor project package repository")
+    (description
+     "This package provides a convenient tool to install and update
+Bioconductor packages.")
+    (license license:artistic2.0)))
