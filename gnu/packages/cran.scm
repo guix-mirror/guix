@@ -6820,14 +6820,14 @@ Rcpp, RStudio projects, and more.")
 (define-public r-sessioninfo
   (package
     (name "r-sessioninfo")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sessioninfo" version))
        (sha256
         (base32
-         "01c0m8yzadpwd825hky6as0f8ka4xyz7zfy0ih2iy7qqw11w6qn5"))))
+         "0j5f3l58fynxx3v0w62vqpii7miabszgljpja36xx9s8hikh8sqn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
