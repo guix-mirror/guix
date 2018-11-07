@@ -9361,13 +9361,13 @@ number detection tools.")
 (define-public r-methylkit
   (package
     (name "r-methylkit")
-    (version "1.6.3")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "methylKit" version))
               (sha256
                (base32
-                "1nla74d2sjs51yyvvxf038a03mhw9appvjzj60vr2vd3p5lhqn9k"))))
+                "0mz6lil1wax931incnw5byx0v9i8ryhwq9mv0nv8s48ai33ch3x6"))))
     (properties `((upstream-name . "methylKit")))
     (build-system r-build-system)
     (propagated-inputs
