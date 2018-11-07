@@ -9529,14 +9529,14 @@ proteomics packages.")
 (define-public r-mzr
   (package
     (name "r-mzr")
-    (version "2.14.0")
+    (version "2.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mzR" version))
        (sha256
         (base32
-         "190m2bq5bqxhljaj4f7vz9wj5h5laaxd8zp5jampnql6xc4zmarg"))
+         "0li1y6p95ljiva4lvfmql9sipn4dq42sknbh60b36ycjppnf8lj5"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -9558,11 +9558,11 @@ proteomics packages.")
              #t)))))
     (inputs
      `(("boost" ,boost) ; use this instead of the bundled boost sources
-       ("netcdf" ,netcdf)
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
+       ("r-ncdf4" ,r-ncdf4)
        ("r-protgenerics" ,r-protgenerics)
        ("r-rcpp" ,r-rcpp)
        ("r-rhdf5lib" ,r-rhdf5lib)
