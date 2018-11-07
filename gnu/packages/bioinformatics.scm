@@ -9675,14 +9675,14 @@ and specific in detecting differential transcription.")
 (define-public r-mzid
   (package
     (name "r-mzid")
-    (version "1.18.0")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mzID" version))
        (sha256
         (base32
-         "060k0xlhg8q802c6zsb4b8ps0ccd9ybyaz0gnsvqkxb786i2vk40"))))
+         "08jbq223viwknsmsi30hyxyxslvmb0l4wx3vmqlkl6qk4vfmxzjz"))))
     (properties `((upstream-name . "mzID")))
     (build-system r-build-system)
     (propagated-inputs
