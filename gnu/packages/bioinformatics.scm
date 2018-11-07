@@ -691,7 +691,7 @@ Python.")
 (define-public python-biom-format
   (package
     (name "python-biom-format")
-    (version "2.1.6")
+    (version "2.1.7")
     (source
      (origin
        (method git-fetch)
@@ -703,17 +703,40 @@ Python.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "00yi8hkj3n7vdz8p8x93bi810f7cpm8rb0dd3kfhr2cpbmd2rsql"))))
+         "1rna16lyk5aqhnv0dp77wwaplias93f1vw28ad3jmyw6hwkai05v"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-cython
+           (lambda _ (setenv "USE_CYTHON" "1") #t))
+         (add-after 'unpack 'disable-broken-test
+           (lambda _
+             (substitute* "biom/tests/test_cli/test_validate_table.py"
+               (("^(.+)def test_invalid_hdf5" m indent)
+                (string-append indent
+                               "@npt.dec.skipif(True, msg='Guix')\n"
+                               m)))
+             #t))
+         (add-before 'reset-gzip-timestamps 'make-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (file) (chmod file #o644))
+                         (find-files out "\\.gz"))
+               #t))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)
+       ("python-flake8" ,python-flake8)
        ("python-future" ,python-future)
        ("python-click" ,python-click)
        ("python-h5py" ,python-h5py)
        ("python-pandas" ,python-pandas)))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-nose" ,python-nose)))
     (home-page "http://www.biom-format.org")
     (synopsis "Biological Observation Matrix (BIOM) format utilities")
     (description
