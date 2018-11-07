@@ -11570,13 +11570,14 @@ models.  TADbit is complemented by TADkit for visualizing 3D models.")
     (version "302.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/ENCODE-DCC/kentUtils/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ENCODE-DCC/kentUtils.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "134aja3k1cj32kbk1nnw0q9gxjb2krr15q6sga8qldzvc0585rmm"))
+         "0n1wbyjpzii2b9qhyp9r1q76j623cggpg3y8fmw78ld3z4y7ivha"))
        (modules '((guix build utils)
                   (srfi srfi-26)
                   (ice-9 ftw)))
@@ -11627,6 +11628,8 @@ models.  TADbit is complemented by TADkit for visualizing 3D models.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-permissions
+           (lambda _ (make-file-writable "src/inc/localEnvironment.mk") #t))
          (add-after 'unpack 'fix-paths
            (lambda _
              (substitute* "Makefile"
