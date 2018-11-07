@@ -2319,14 +2319,14 @@ training models for classification or ranking.")
 (define-public r-xts
   (package
     (name "r-xts")
-    (version "0.11-1")
+    (version "0.11-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xts" version))
        (sha256
         (base32
-         "17d3g14xkxa1a5z5gd3gk1xjqfkjg1ik3i12q0arina8frql3jhd"))))
+         "1f0kxrvn13py3hk2gh2m56cqm39x3bqp1i350r5viddacrm2yxqj"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-zoo" ,r-zoo)))
     (home-page "https://github.com/joshuaulrich/xts")
