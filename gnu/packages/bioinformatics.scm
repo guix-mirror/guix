@@ -5906,20 +5906,20 @@ optionally compressed by gzip.")
     (name "snap-aligner")
     (version "1.0beta.18")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/amplab/snap/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/amplab/snap.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vnsjwv007k1fl1q7d681kbwn6bc66cgw6h16hym6gvyy71qv2ly"))))
+                "01w3qq4wm07z73vky0cfwlmrbf50n3w722cxrlzxfi99mnb808d8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (replace 'check (lambda _ (zero? (system* "./unit_tests"))))
+         (replace 'check (lambda _ (invoke "./unit_tests") #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
