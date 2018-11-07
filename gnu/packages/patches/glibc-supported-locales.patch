@@ -1,4 +1,6 @@
 This patch is taken from debian's glibc package (generate-supported.mk).
+It install the localedata/SUPPORTED file of the glibc. This file lists
+all the supported locales of the glibc.
 
 diff --git a/localedata/Makefile.old b/localedata/Makefile
 index 34877c0..a61d9b9 100644
