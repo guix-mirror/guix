@@ -2829,7 +2829,7 @@ comment or quality sections.")
 (define-public gemma
   (package
     (name "gemma")
-    (version "0.96")
+    (version "0.98")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2838,11 +2838,13 @@ comment or quality sections.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0sa4mllp7890v5pss0mm02ik8yixl7az3vprcw3kp7qmr9gwrdai"))
-              (patches (search-patches "gemma-intel-compat.patch"))))
+                "1s3ncnbn45r2hh1cvrqky1kbqq6546biypr4f5mkw1kqlrgyh0yg"))))
     (inputs
-     `(("gsl" ,gsl)
+     `(("eigen" ,eigen)
+       ("gfortran" ,gfortran "lib")
+       ("gsl" ,gsl)
        ("lapack" ,lapack)
+       ("openblas" ,openblas)
        ("zlib" ,zlib)))
     (build-system gnu-build-system)
     (arguments
@@ -2857,6 +2859,15 @@ comment or quality sections.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-after 'unpack 'find-eigen
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Ensure that Eigen headers can be found
+             (setenv "CPLUS_INCLUDE_PATH"
+                     (string-append (getenv "CPLUS_INCLUDE_PATH")
+                                    ":"
+                                    (assoc-ref inputs "eigen")
+                                    "/include/eigen3"))
+             #t))
          (add-before 'build 'bin-mkdir
           (lambda _
             (mkdir-p "bin")
