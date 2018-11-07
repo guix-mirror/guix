@@ -4040,13 +4040,14 @@ form of assemblies or reads.")
     (version "2.12.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://bitbucket.org/berkeleylab/metabat/get/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://bitbucket.org/berkeleylab/metabat.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1hmvdalz3zj5sqqklg0l4npjdv37cv2hsdi1al9iby2ndxjs1b73"))
+         "0hyg2smw1nz69mfvjpk45xyyychmda92c80a0cv7baji84ri4iyn"))
        (patches (search-patches "metabat-fix-compilation.patch"))))
     (build-system scons-build-system)
     (arguments
