@@ -3828,14 +3828,14 @@ data.")
     (name "kaiju")
     (version "1.6.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/bioinformatics-centre/kaiju/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bioinformatics-centre/kaiju")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kdn4rxs0kr9ibmrgrfcci71aa6j6gr71dbc8pff7731rpab6kj7"))))
+                "1c6gqir9djm3wpvfjm43i5vvvf36k3rsvr9fph76wlcy9aghpbah"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -3849,8 +3849,7 @@ data.")
              (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
                (mkdir-p bin)
                (chdir "..")
-               (copy-recursively "bin" bin)
-               (copy-recursively "util" bin))
+               (copy-recursively "bin" bin))
              #t)))))
     (inputs
      `(("perl" ,perl)
