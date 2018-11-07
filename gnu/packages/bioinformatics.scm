@@ -6349,13 +6349,13 @@ microarrays.")
 (define-public r-copynumber
   (package
     (name "r-copynumber")
-    (version "1.20.0")
+    (version "1.22.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "copynumber" version))
               (sha256
                (base32
-                "0y9nnwb0psphp3ix88wj2f8z5gr45r5znf55w892ysm27isdpmms"))))
+                "0ipwj9i5p1bwhg5d80jdjagm02krpj2v0j47qdgw41h8wncdyal3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-s4vectors" ,r-s4vectors)
