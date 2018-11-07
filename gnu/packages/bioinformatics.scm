@@ -3979,14 +3979,14 @@ sequences).")
     (name "mash")
     (version "2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/marbl/mash/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/marbl/mash.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "00fx14vpmgsijwxd1xql3if934l82v8ckqgjjyyhnr36qb9qrskv"))
+                "13h6v4wzfflb5raxwlqmkl2km54m3izm30f1w9p9scjmfrnfn0wx"))
               (modules '((guix build utils)))
               (snippet
                '(begin
