@@ -292,14 +292,14 @@ occupancy (overlap) analysis and plotting functions.")
 (define-public r-ripseeker
   (package
     (name "r-ripseeker")
-    (version "1.20.0")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "RIPSeeker" version))
        (sha256
         (base32
-         "0y9cvzqslfxj3z9mnp47mknff0pky2g5x8x1z1s5yjcx35q89xfi"))))
+         "1x2n1iyik4s67bxq0fl6fpf602k51g4pxjpjpxkgx1a5fsk61f2i"))))
     (properties `((upstream-name . "RIPSeeker")))
     (build-system r-build-system)
     (propagated-inputs
