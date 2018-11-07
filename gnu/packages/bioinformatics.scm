@@ -11925,14 +11925,14 @@ accurate as existing quantification tools.")
     (name "libgff")
     (version "1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Kingsford-Group/"
-                    "libgff/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Kingsford-Group/libgff.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0vc4nxyhlm6g9vvmx5l4lfs5pnvixsv1hiiy4kddf2y3p6jna8ls"))))
+                "0n6vfjnq7a2mianipscbshrvbncss8z4zkgkbjw754p9043nfkps"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))          ; no tests included
     (home-page "https://github.com/Kingsford-Group/libgff")
