@@ -8877,13 +8877,14 @@ Sequences.")
     (version "1.1.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/ManuSetty/SeqGL/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ManuSetty/SeqGL.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0pnk1p3sci5yipyc8xnb6jbmydpl80fld927xgnbcv104hy8h8yh"))))
+         "1r6ywvhxl3ffv48lgj7sbd582mcc6dha3ksgc2qjlvjrnkbj3799"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biostrings" ,r-biostrings)
