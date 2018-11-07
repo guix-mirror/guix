@@ -7071,13 +7071,13 @@ packages.")
 (define-public r-biocinstaller
   (package
     (name "r-biocinstaller")
-    (version "1.30.0")
+    (version "1.32.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocInstaller" version))
               (sha256
                (base32
-                "1xg1gi1hf5vflp71ji21gnmr4kcjpx8a6c47cllpc7yqnjv5nfg0"))))
+                "1s1f9qhyf3mc73ir25x2zlgi9hf45a37lg4z8fbva4i21hqisgsl"))))
     (properties
      `((upstream-name . "BiocInstaller")))
     (build-system r-build-system)
