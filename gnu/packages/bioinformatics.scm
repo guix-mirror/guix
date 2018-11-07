@@ -563,12 +563,14 @@ independently with transcriptional regulation.")
     (name "bioawk")
     (version "1.0")
     (source (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/lh3/bioawk/archive/v"
-                          version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
-      (sha256
-       (base32 "1daizxsk17ahi9n58fj8vpgwyhzrzh54bzqhanjanp88kgrz7gjw"))))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/lh3/bioawk.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1pxc3zdnirxbf9a0az698hd8xdik7qkhypm7v6hn922x8y9qmspm"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -582,13 +584,13 @@ independently with transcriptional regulation.")
        (modify-phases %standard-phases
          (delete 'configure) ; There is no configure phase.
          (replace 'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (bin  (string-append out "/bin"))
-                   (man (string-append out "/share/man/man1")))
-              (mkdir-p man)
-              (copy-file "awk.1" (string-append man "/bioawk.1"))
-              (install-file "bioawk" bin)))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (mkdir-p man)
+               (copy-file "awk.1" (string-append man "/bioawk.1"))
+               (install-file "bioawk" bin)))))))
     (home-page "https://github.com/lh3/bioawk")
     (synopsis "AWK with bioinformatics extensions")
     (description "Bioawk is an extension to Brian Kernighan's awk, adding the
