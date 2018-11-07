@@ -201,14 +201,14 @@ genomes and gene ID formats, largely based on the UCSC table browser.")
 (define-public r-hpar
   (package
     (name "r-hpar")
-    (version "1.22.2")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "hpar" version))
        (sha256
         (base32
-         "1b72hvzasf6q739gmx6jblbzzyq22l7crrkbbfkihv3v7s94g388"))))
+         "1pm3k8apgynmdzv2d0chca3b636kcai3b1x861fyv1m3xs6msgxn"))))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/hpar/")
     (synopsis "Human Protein Atlas in R")
