@@ -4679,14 +4679,14 @@ different command-line tools:
     (name "prodigal")
     (version "2.6.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/hyattpd/Prodigal/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hyattpd/Prodigal.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "17srxkqd3jc77xk15pfbgg1a9xahqg7337w95mrsia7mpza4l2c9"))))
+                "1fs1hqk83qjbjhrvhw6ni75zakx5ki1ayy3v6wwkn3xvahc9hi5s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no check target
