@@ -7253,3 +7253,30 @@ estimates from interaction terms in regressions (and multiply imputed
 regressions).  NOTE: Weighted partial correlation calculations pulled to
 address a bug.")
   (license license:gpl2+)))
+
+(define-public r-rcppannoy
+  (package
+    (name "r-rcppannoy")
+    (version "0.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppAnnoy" version))
+       (sha256
+        (base32
+         "1ik50ancfgcvh03n4jsqwjk8lf056rbgd70q4l4didmvh5kcyjd1"))))
+    (properties `((upstream-name . "RcppAnnoy")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://cran.r-project.org/web/packages/RcppAnnoy/")
+    (synopsis "Rcpp bindings for Annoy, a library for Approximate Nearest Neighbors")
+    (description
+     "Annoy is a small C++ library for Approximate Nearest Neighbors written
+for efficient memory usage as well an ability to load from and save to disk.
+This package provides an R interface.")
+    ;; Annoy is released under ASL 2.0, but this wrapper is released under
+    ;; GPLv2+.
+    (license (list license:gpl2+ license:asl2.0))))
