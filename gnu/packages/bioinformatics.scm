@@ -262,14 +262,14 @@ instance, it implements several methods to assess contig-wise read coverage.")
     (name "bamtools")
     (version "2.5.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/pezmaster31/bamtools/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pezmaster31/bamtools.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1z3kg24qrwq13a88n9d86izngrar4fll7gr6phddb2faw75pdgaa"))))
+                "0nfb2ypcx9959xnbz6wxh6py3xfizgmg8nrknxl95c507m9hmq8b"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
