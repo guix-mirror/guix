@@ -10783,14 +10783,14 @@ provided.")
 (define-public r-qvalue
   (package
     (name "r-qvalue")
-    (version "2.12.0")
+    (version "2.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "qvalue" version))
        (sha256
         (base32
-         "1ndwkj0hh7v4lwylq1v0fkxqs7mfmbcj8kxbdpj1wkvf131z2ns8"))))
+         "03qxshqwwq1rj23p6pjrz08jm3ziikvy9badi4mz2rcwy2nz783a"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
