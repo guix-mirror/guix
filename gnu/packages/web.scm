@@ -195,14 +195,14 @@ Interface} specification.")
     (name "nginx")
     ;; Consider updating the nginx-documentation package if the nginx package is
     ;; updated.
-    (version "1.14.0")
+    (version "1.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1d9c0avfpbwvzyg53b59ks8shpnrxnbnshcd7ziizflsyv5vw5ax"))))
+                "19542jxcjf4dvrqvgb5vr36mhbzcjrxc3v0xh451rm60610rf2dz"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -4166,19 +4166,15 @@ It uses the uwsgi protocol for all the networking/interprocess communications.")
 (define-public jq
   (package
     (name "jq")
-    (version "1.5")
+    (version "1.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/stedolan/" name
-                                  "/releases/download/" name "-" version
-                                  "/" name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/stedolan/jq"
+                                  "/releases/download/jq-" version
+                                  "/jq-" version ".tar.gz"))
               (sha256
                (base32
-                "0g29kyz4ykasdcrb0zmbrp2jqs9kv1wz9swx849i2d1ncknbzln4"))
-              ;; This patch has been pushed and the vulnerability will be
-              ;; fixed in the next release after 1.5.
-              ;; https://github.com/stedolan/jq/issues/995
-              (patches (search-patches "jq-CVE-2015-8863.patch"))))
+                "1a76f46a652i2g333kfvrl6mp2w7whf6h1yly519izg4y967h9cn"))))
     (inputs
      `(("oniguruma" ,oniguruma)))
     (native-inputs

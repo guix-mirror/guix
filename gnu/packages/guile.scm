@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 David Thompson <davet@gnu.org>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -68,6 +68,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages image)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages slang)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages networking)
@@ -1112,7 +1113,7 @@ Guile's foreign function interface.")
   (package
     (name "guile-sqlite3")
     (version "0.1.0")
-    (home-page "https://notabug.org/civodul/guile-sqlite3.git")
+    (home-page "https://notabug.org/guile-sqlite3/guile-sqlite3.git")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2242,5 +2243,40 @@ using S-expressions.")
      "This package provides a Guile library to communicate with a Debbugs bug
 tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
     (license license:gpl3+)))
+
+;; There has not been any release yet.
+(define-public guile-newt
+  (let ((commit "596ad760bee1be419d71271732f0f30eaee55143")
+        (revision "0"))
+    (package
+      (name "guile-newt")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/mothacehe/guile-newt")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "18qqbi0bc7vp2vlrhib3p3wwgn7wrlv5728dn0avirhw4fxxivnf"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags
+         '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+      (inputs
+       `(("guile" ,guile-2.2)
+         ("newt" ,newt)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (synopsis "Guile bindings to Newt")
+      (description
+       "This package provides bindings for Newt, a programming library for
+color text mode, widget based user interfaces.  The bindings are written in pure
+Scheme by using Guile’s foreign function interface.")
+      (home-page "https://gitlab.com/mothacehe/guile-newt")
+      (license license:gpl3+))))
 
 ;;; guile.scm ends here

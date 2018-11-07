@@ -614,14 +614,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.0.3")
+    (version "4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1vg229mxcrm415cq6q1nfm891hm4x56mb5p4cqjnlqnky7ikfg15"))))
+               "150rrm549fy1x71c9whmyi5knyd9sliwvmcsm438bdgg4v8c93m3"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -1269,7 +1269,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.10.05")
+    (version "2018.11.03")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1277,7 +1277,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1iq02kwxdgh07bf0w0fvbsjbdshs4kja35gy8m70ji9cj10l1mbw"))))
+                "11phhwhr1g050h4625d5jsgcsjnnv7jc6xcrbn7zdzd32f6gy2lj"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion

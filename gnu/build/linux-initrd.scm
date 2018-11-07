@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -139,6 +139,12 @@ REFERENCES-GRAPHS."
 
     (write-cpio-archive output "." #:gzip gzip))
 
+  ;; Make sure directories are writable so we can delete files.
+  (for-each make-file-writable
+            (find-files "contents"
+                        (lambda (file stat)
+                          (eq? 'directory (stat:type stat)))
+                        #:directories? #t))
   (delete-file-recursively "contents"))
 
 ;;; linux-initrd.scm ends here

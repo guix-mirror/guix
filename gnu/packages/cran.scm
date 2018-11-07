@@ -492,13 +492,13 @@ print, summary, plot, update, etc.
 (define-public r-ps
   (package
     (name "r-ps")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ps" version))
        (sha256
-        (base32 "0ai8igdkysmks1ihbp3h3s552da2hskxqwrvp4cx7vwn91x9f3wd"))))
+        (base32 "1zxylcb0nr4qb5v6j199mc2pfgf2bpf00jrw47jajmv59qb0fwmx"))))
     (build-system r-build-system)
     (home-page "http://ps.r-lib.org")
     (synopsis "List, query, and manipulate system processes")
@@ -539,14 +539,14 @@ is configured appropriately so R can use them.")
 (define-public r-pkgload
   (package
     (name "r-pkgload")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgload" version))
        (sha256
         (base32
-         "0mm0avvan528zbrcrxigl5fkd7za01fb0qhlqrqvm3ar0115cqa8"))))
+         "0z7jvharafahi2gv5547mk1n499isjzw06kfwymmxc0gd575d1ii"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-desc" ,r-desc)
@@ -891,14 +891,14 @@ in main memory.")
 (define-public r-ffbase
   (package
     (name "r-ffbase")
-    (version "0.12.5")
+    (version "0.12.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ffbase" version))
        (sha256
         (base32
-         "1h5x6rbb1nrpzf4ywkizn8ij0bz3mlz46byh46ylxhicg1ribi24"))))
+         "04kxx2f3f0743c5nvpb7x1x0pcd220dazpd5ag1pidxbz3xa85nw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bit" ,r-bit)
@@ -1762,14 +1762,14 @@ provided.")
 (define-public r-ipred
   (package
     (name "r-ipred")
-    (version "0.9-7")
+    (version "0.9-8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ipred" version))
        (sha256
         (base32
-         "0q53cqs46501wsd4cmfsmr78l8nv1hkbamk9m0ns5qy02df5r254"))))
+         "01xcg3c121ndfpz9dirqxszknh4yb1p222p7f1wbwwhdrg1i27cw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)
@@ -1789,14 +1789,14 @@ problems as well as resampling based estimators of prediction error.")
 (define-public r-psych
   (package
     (name "r-psych")
-    (version "1.8.4")
+    (version "1.8.10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "psych" version))
        (sha256
         (base32
-         "1kzv9nc7rwn1sj1zxd8xrbs6c7qlka7j2c8lsr4f20znkd3qx8gf"))))
+         "0n3frgzsfmnan6cp3yyq5h6c28v5pd7q5a42pp6byaa7n7d1v478"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreign" ,r-foreign)
@@ -2319,14 +2319,14 @@ training models for classification or ranking.")
 (define-public r-xts
   (package
     (name "r-xts")
-    (version "0.11-1")
+    (version "0.11-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xts" version))
        (sha256
         (base32
-         "17d3g14xkxa1a5z5gd3gk1xjqfkjg1ik3i12q0arina8frql3jhd"))))
+         "1f0kxrvn13py3hk2gh2m56cqm39x3bqp1i350r5viddacrm2yxqj"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-zoo" ,r-zoo)))
     (home-page "https://github.com/joshuaulrich/xts")
@@ -4814,14 +4814,14 @@ vice versa), or to deal with multiple declared missing values.")
 (define-public r-sjmisc
   (package
     (name "r-sjmisc")
-    (version "2.7.5")
+    (version "2.7.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjmisc" version))
        (sha256
         (base32
-         "05fjqfr2rfk11065zqkzb9mbqd6mgdkw9jdhq3by425a7f8m2dcg"))))
+         "1jhrigikjpkdar3jxvi7qhqsg6lgjkjqhqll9vaay98b88rfc2im"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
@@ -4829,15 +4829,12 @@ vice versa), or to deal with multiple declared missing values.")
        ("r-dplyr" ,r-dplyr)
        ("r-haven" ,r-haven)
        ("r-magrittr" ,r-magrittr)
-       ("r-pillar" ,r-pillar)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-sjlabelled" ,r-sjlabelled)
        ("r-stringdist" ,r-stringdist)
        ("r-stringr" ,r-stringr)
-       ("r-tibble" ,r-tibble)
-       ("r-tidyr" ,r-tidyr)
-       ("r-tidyselect" ,r-tidyselect)))
+       ("r-tidyr" ,r-tidyr)))
     (home-page "https://github.com/strengejacke/sjmisc")
     (synopsis "Data and variable transformation functions")
     (description
@@ -4899,14 +4896,14 @@ functions.")
 (define-public r-flextable
   (package
     (name "r-flextable")
-    (version "0.4.5")
+    (version "0.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "flextable" version))
        (sha256
         (base32
-         "09j2y0z7rkc0w1cl9pp1cpk6fnzzfr6245mxa3ca42z9k2cy2jfl"))))
+         "0fa42dvf0wyl91w4v0rywm3xgw9n03cfyl28ficrv8iabz4k4382"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-gdtools" ,r-gdtools)
@@ -6823,14 +6820,14 @@ Rcpp, RStudio projects, and more.")
 (define-public r-sessioninfo
   (package
     (name "r-sessioninfo")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sessioninfo" version))
        (sha256
         (base32
-         "01c0m8yzadpwd825hky6as0f8ka4xyz7zfy0ih2iy7qqw11w6qn5"))))
+         "0j5f3l58fynxx3v0w62vqpii7miabszgljpja36xx9s8hikh8sqn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
@@ -6846,14 +6843,14 @@ more information about packages, and where they were installed from.")
 (define-public r-remotes
   (package
     (name "r-remotes")
-    (version "2.0.1")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "remotes" version))
        (sha256
         (base32
-         "1xkzlciv68jyf4j8hads0i47nxbgsy1kv7258c6zzyq66z0amhss"))))
+         "0rsjxmhwpr51ilsdjfqn06mj8yr2d7nckcn3arv1ljn23qfkpcxa"))))
     (build-system r-build-system)
     (home-page "https://github.com/r-lib/remotes#readme")
     (synopsis "R package installation from remote repositories")
@@ -6888,14 +6885,14 @@ directories or URLs with their associated programs.")
 (define-public r-rcmdcheck
   (package
     (name "r-rcmdcheck")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rcmdcheck" version))
        (sha256
         (base32
-         "13liz9lmx9xgc0f7pjiz3sp8ygvazx2zslbiwz3p9fimfsx1yfsg"))))
+         "1ga19jqix0zs7xyz2j155zyagwbv22r6dgv55g6wdjigc67qfsix"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
@@ -6907,6 +6904,7 @@ directories or URLs with their associated programs.")
        ("r-prettyunits" ,r-prettyunits)
        ("r-r6" ,r-r6)
        ("r-rprojroot" ,r-rprojroot)
+       ("r-sessioninfo" ,r-sessioninfo)
        ("r-withr" ,r-withr)
        ("r-xopen" ,r-xopen)))
     (home-page "https://github.com/r-Lib/rcmdcheck#readme")
@@ -6943,14 +6941,14 @@ quick reporting.")
 (define-public r-pander
   (package
     (name "r-pander")
-    (version "0.6.2")
+    (version "0.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pander" version))
        (sha256
         (base32
-         "0gd7rqkpbraznip8jmri9lqa8ajg1sryyplhd6m633wg91whiipi"))))
+         "1bd9sdghlsppmff18k5fg3i0visq9f4wc82rlhwq5m82bmgdgnyi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
@@ -7225,3 +7223,105 @@ R squared measure from L. J. Edwards et al. (2008) is extended to the GLMM
 using @dfn{penalized quasi-likelihood} (PQL) estimation (see Jaeger et
 al. (2016)).")
     (license license:gpl2)))
+
+(define-public r-weights
+  (package
+    (name "r-weights")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "weights" version))
+       (sha256
+        (base32
+         "0186bfpkhxngrshac6bpg37alp6slwhwd43inrm8hqg0vhpfgc4c"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gdata" ,r-gdata)
+       ("r-hmisc" ,r-hmisc)
+       ("r-mice" ,r-mice)))
+    (home-page
+     "https://cran.r-project.org/web/packages/weights/")
+    (synopsis "Weighting and weighted statistics")
+    (description "This package Provides a variety of functions for producing
+simple weighted statistics, such as weighted Pearson's correlations, partial
+correlations, Chi-Squared statistics, histograms, and t-tests.  Also now
+includes some software for quickly recoding survey data and plotting point
+estimates from interaction terms in regressions (and multiply imputed
+regressions).  NOTE: Weighted partial correlation calculations pulled to
+address a bug.")
+  (license license:gpl2+)))
+
+(define-public r-rcppannoy
+  (package
+    (name "r-rcppannoy")
+    (version "0.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppAnnoy" version))
+       (sha256
+        (base32
+         "1ik50ancfgcvh03n4jsqwjk8lf056rbgd70q4l4didmvh5kcyjd1"))))
+    (properties `((upstream-name . "RcppAnnoy")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://cran.r-project.org/web/packages/RcppAnnoy/")
+    (synopsis "Rcpp bindings for Annoy, a library for Approximate Nearest Neighbors")
+    (description
+     "Annoy is a small C++ library for Approximate Nearest Neighbors written
+for efficient memory usage as well an ability to load from and save to disk.
+This package provides an R interface.")
+    ;; Annoy is released under ASL 2.0, but this wrapper is released under
+    ;; GPLv2+.
+    (license (list license:gpl2+ license:asl2.0))))
+
+(define-public r-ncdf4
+  (package
+    (name "r-ncdf4")
+    (version "1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ncdf4" version))
+       (sha256
+        (base32
+         "0lwjjis0b83c4l3xvqai4ckzrskd6mychck1iwxcxgjvh0d77mgd"))))
+    (build-system r-build-system)
+    (inputs
+     `(("netcdf" ,netcdf)
+       ("zlib" ,zlib)))
+    (home-page "https://cran.r-project.org/web/packages/ncdf4/index.html")
+    (synopsis "R interface to Unidata netCDF format data files")
+    (description
+     "This package provides a high-level R interface to data files written
+using Unidata's netCDF library (version 4 or earlier), which are binary data
+files that are portable across platforms and include metadata information in
+addition to the data sets.  Using this package, netCDF files can be opened and
+data sets read in easily.  It is also easy to create new netCDF dimensions,
+variables, and files, in either version 3 or 4 format, and manipulate existing
+netCDF files.")
+    (license license:gpl3+)))
+
+(define-public r-biocmanager
+  (package
+    (name "r-biocmanager")
+    (version "1.30.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "BiocManager" version))
+       (sha256
+        (base32
+         "0mfvx1xzsgiag9p42kdyqg8fvajyakrdy3z2smhdlaawzbi0qmax"))))
+    (properties `((upstream-name . "BiocManager")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/BiocManager/")
+    (synopsis "Access the Bioconductor project package repository")
+    (description
+     "This package provides a convenient tool to install and update
+Bioconductor packages.")
+    (license license:artistic2.0)))

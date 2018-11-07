@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: guix 0.15.0\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2018-06-22 14:08+0200\n"
-"PO-Revision-Date: 2018-08-24 20:57+0200\n"
+"PO-Revision-Date: 2018-10-27 02:22+0200\n"
 "Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
 "Language: de\n"
@@ -437,7 +437,7 @@ msgid ""
 "      --no-build-hook    do not attempt to offload builds via the build hook"
 msgstr ""
 "\n"
-"      --no-build-hook    nicht versuchen, Erstellungen über den »build hook«\n"
+"      --no-build-hook    nicht versuchen, Erstellungen über den »Build-Hook«\n"
 "                           auszulagern"
 
 #: guix/scripts/build.scm:362
@@ -497,7 +497,7 @@ msgstr ""
 #: guix/scripts/build.scm:479 guix/scripts/build.scm:486
 #, scheme-format
 msgid "not a number: '~a' option argument: ~a~%"
-msgstr "Keine Zahl: Kommandozeilenargument von »~a«: ~a~%"
+msgstr "Keine Zahl: Befehlszeilenargument von »~a«: ~a~%"
 
 #: guix/scripts/build.scm:505
 msgid ""
@@ -658,7 +658,7 @@ msgid ""
 "invalid argument: '~a' option argument: ~a, ~\n"
 "must be one of 'package', 'all', or 'transitive'~%"
 msgstr ""
-"Ungültiges Argument der Kommandozeilenoption »~a«: ~a, ~\n"
+"Ungültiges Argument der Befehlszeilenoption »~a«: ~a, ~\n"
 "muss entweder »package«, »all« oder »transitive« sein~%"
 
 #: guix/scripts/build.scm:621
@@ -1018,7 +1018,7 @@ msgstr ""
 msgid "upgrade regexp '~a' looks like a command-line option~%"
 msgstr ""
 "--upgrade: Der reguläre Ausdruck »~a«\n"
-"sieht wie eine Kommandozeilenoption aus"
+"sieht wie eine Befehlszeilenoption aus"
 
 #: guix/scripts/package.scm:443
 #, scheme-format
@@ -1183,7 +1183,7 @@ msgstr "Es sind bereits ~h Bytes verfügbar auf ~a, nichts zu tun~%"
 
 #: guix/scripts/gc.scm:205
 msgid "freeing ~h bytes~%"
-msgstr "Gebe ~h Bytes frei~%"
+msgstr "~h Bytes werden freigegeben~%"
 
 #: guix/scripts/gc.scm:217
 #, scheme-format
@@ -1192,7 +1192,7 @@ msgstr "Zusätzliche Argumente: ~{~a ~}~%"
 
 #: guix/scripts/gc.scm:237 guix/scripts/gc.scm:240
 msgid "freed ~h bytes~%"
-msgstr "~h Bytes freigegeben"
+msgstr "~h Bytes wurden freigegeben"
 
 #: guix/scripts/hash.scm:47
 msgid ""
@@ -2885,7 +2885,7 @@ msgid ""
 "  -R, --relocatable      produce relocatable executables"
 msgstr ""
 "\n"
-"  -R, --relocatable      »portable« ausführbare Datei erzeugen"
+"  -R, --relocatable      pfad-agnostische ausführbare Datei erzeugen"
 
 #: guix/scripts/pack.scm:650
 msgid ""
@@ -3331,7 +3331,7 @@ msgstr "Generation ~a des Profils »~a« existiert nicht~%"
 #: guix/ui.scm:628
 #, scheme-format
 msgid "   ... propagated from ~a@~a~%"
-msgstr "   … propagatiert von ~a@~a~%"
+msgstr "   … propagiert von ~a@~a~%"
 
 #: guix/ui.scm:638
 #, scheme-format
@@ -3703,7 +3703,7 @@ msgstr "URLS als die vorgegebene Liste von Substitutsanbietern nutzen"
 
 #: nix/nix-daemon/guix-daemon.cc:117
 msgid "do not use the 'build hook'"
-msgstr "den »build hook« nicht benutzen"
+msgstr "den »Build-Hook« nicht benutzen"
 
 #: nix/nix-daemon/guix-daemon.cc:119
 msgid "cache build failures"

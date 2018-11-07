@@ -339,14 +339,14 @@ D.V. Hinkley (1997, CUP), originally written by Angelo Canty for S.")
 (define-public r-mass
   (package
     (name "r-mass")
-    (version "7.3-51")
+    (version "7.3-51.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MASS" version))
        (sha256
         (base32
-         "0yp5ssfm9mahrp30y1hkqgjg70mzs6w065ba8h7j5ky1z6msdsdy"))))
+         "14907ia8418mp3p1rs1i2f1x5b6kk5z998dk353a29j3xqf3ybyq"))))
     (properties `((upstream-name . "MASS")))
     (build-system r-build-system)
     (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
@@ -467,13 +467,13 @@ estimation) corresponding to the book: Wand, M.P. and Jones, M.C. (1995)
 (define-public r-lattice
   (package
     (name "r-lattice")
-    (version "0.20-35")
+    (version "0.20-38")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "lattice" version))
               (sha256
                (base32
-                "0pcnmaz3lr62ly0dcy5hnnqxshc4yqd43hrvlz3almgc9l7sna88"))))
+                "0b8abkz7syscq883mrgv63pkwaqkcpwfx8rgbqy9vgfva0z5xszx"))))
     (build-system r-build-system)
     (home-page "http://lattice.r-forge.r-project.org/")
     (synopsis "High-level data visualization system")
@@ -487,14 +487,14 @@ also flexible enough to handle most nonstandard requirements.")
 (define-public r-matrix
   (package
     (name "r-matrix")
-    (version "1.2-14")
+    (version "1.2-15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Matrix" version))
        (sha256
         (base32
-         "15hknim84nj3f54vkchca5ac0c3ip15v1by18k5parmn8wsl19j9"))))
+         "1mshhyia6imh939p8labxi0wv21lal7csmccxi42klpgdh1j89kv"))))
     (properties `((upstream-name . "Matrix")))
     (build-system r-build-system)
     (propagated-inputs
@@ -614,14 +614,14 @@ analysis.")
 (define-public r-survival
   (package
     (name "r-survival")
-    (version "2.42-6")
+    (version "2.43-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "survival" version))
        (sha256
         (base32
-         "1bsxc2fir9pbvdzy9n474fkl7har606h9zhspp0z67wnjpp48g73"))))
+         "0220fjsq4ycx1n5zc5h39wdbj5j6xr8rzqbcixx2p25akzdn7kqk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
@@ -2233,13 +2233,13 @@ tables, autolinks and strikethrough text.")
 (define-public r-roxygen2
   (package
     (name "r-roxygen2")
-    (version "6.1.0")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "roxygen2" version))
               (sha256
                (base32
-                "0ji9k4s1bvfbl8wimfqj1lqr33h1claaz30vb5pgksxyg77j5xaa"))))
+                "0wq29ilqas8yn2z8v49fk0hbgchg29nmyyhwczgdipz0cbhbfipd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-brew" ,r-brew)
@@ -3085,13 +3085,13 @@ using the multicore functionality of the parallel package.")
 (define-public r-dt
   (package
     (name "r-dt")
-    (version "0.4")
+    (version "0.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "DT" version))
               (sha256
                (base32
-                "06gsqz7p2fv6hc3fm3759gaa50krcfrqrmy7qbxyam6a36w9daix"))))
+                "1s5d3sld4l8zygpkvprvlbqa0pm2cv1bm7h7p999wxlap28vnnqf"))))
     (properties
      `((upstream-name . "DT")))
     (build-system r-build-system)
@@ -3099,7 +3099,8 @@ using the multicore functionality of the parallel package.")
      `(("r-crosstalk" ,r-crosstalk)
        ("r-htmltools" ,r-htmltools)
        ("r-htmlwidgets" ,r-htmlwidgets)
-       ("r-magrittr" ,r-magrittr)))
+       ("r-magrittr" ,r-magrittr)
+       ("r-promises" ,r-promises)))
     (home-page "http://rstudio.github.io/DT")
     (synopsis "R wrapper of the DataTables JavaScript library")
     (description
@@ -3665,14 +3666,14 @@ selection.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "0485f19mkkglc4bv57y6bm6l9rfgd878hsz2xdg1nwgbqchjhgix"))))
+         "03s9dv6c2dj65a769h8fgy9878y46rdq7x65i53kd44kag80i9cr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
@@ -4031,14 +4032,14 @@ hierarchical clustering dendrograms.")
 (define-public r-preprocesscore
   (package
     (name "r-preprocesscore")
-    (version "1.42.0")
+    (version "1.44.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "preprocessCore" version))
        (sha256
         (base32
-         "1afar1z7959v7mbzsqa77vqfh0yc7y3nv5ayx71485a8scwsfwbk"))))
+         "0ijyjqi8mxxf350dhvgp36swwww5ag7ac9a6r6ymihc5syjr4w4j"))))
     (properties
      `((upstream-name . "preprocessCore")))
     (build-system r-build-system)
@@ -5016,14 +5017,14 @@ decompositions of such matrices, and solutions of linear systems.")
 (define-public r-modelmetrics
   (package
     (name "r-modelmetrics")
-    (version "1.2.0")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
         (uri (cran-uri "ModelMetrics" version))
         (sha256
          (base32
-          "1sgdyrf6fbsn18gk8slir4a1yhv133kfhyg2crfs759nff4aw89h"))))
+          "158ddbw2snlyzd2q6mdaif5i67kq4qfvadylwjxgv1w2cmszrmk6"))))
     (properties `((upstream-name . "ModelMetrics")))
     (build-system r-build-system)
     (propagated-inputs

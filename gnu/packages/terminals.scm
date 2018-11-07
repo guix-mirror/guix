@@ -187,96 +187,112 @@ text-based approach to terminal recording.")
     (license license:gpl3)))
 
 (define-public libtsm
-  (package
-    (name "libtsm")
-    (version "3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://freedesktop.org/software/kmscon/releases/"
-                    "libtsm-" version ".tar.xz"))
-              (sha256
-               (base32
-                "01ygwrsxfii0pngfikgqsb4fxp8n1bbs47l7hck81h9b9bc1ah8i"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("libxkbcommon" ,libxkbcommon)))
-    (synopsis "Xterm state machine library")
-    (description "TSM is a state machine for DEC VT100-VT520 compatible
+  (let ((commit "f70e37982f382b03c6939dac3d5f814450bda253")
+        (revision "1"))
+    (package
+      (name "libtsm")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                ;; The freedesktop repository is no longer maintained.
+                (uri (git-reference
+                      (url (string-append "https://github.com/Aetf/" name))
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0mwn91i5h5d518i1s05y7hzv6bc13vzcvxszpfh77473iwg4wprx"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:configure-flags '("-DBUILD_TESTING=ON")))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("libxkbcommon" ,libxkbcommon)
+         ("check" ,check)))
+      (synopsis "Xterm state machine library")
+      (description "TSM is a state machine for DEC VT100-VT520 compatible
 terminal emulators.  It tries to support all common standards while keeping
 compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
-    (home-page "https://www.freedesktop.org/wiki/Software/libtsm")
-    ;; Hash table implementation is lgpl2.1+ licensed.
-    ;; The wcwidth implementation in external/wcwidth.{h,c} uses a license
-    ;; derived from ISC.
-    ;; UCS-4 to UTF-8 encoding is copied from "terminology" which is released
-    ;; under the bsd 2 license.
-    (license (list license:expat license:lgpl2.1+ license:isc license:bsd-2))))
+      (home-page "https://www.freedesktop.org/wiki/Software/libtsm")
+      ;; Hash table implementation is lgpl2.1+ licensed.
+      ;; The wcwidth implementation in external/wcwidth.{h,c} uses a license
+      ;; derived from ISC.
+      ;; UCS-4 to UTF-8 encoding is copied from "terminology" which is released
+      ;; under the bsd 2 license.
+      (license (list license:expat license:lgpl2.1+ license:isc license:bsd-2)))))
 
 (define-public kmscon
-  (package
-    (name "kmscon")
-    (version "8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://freedesktop.org/software/kmscon/releases/"
-                    "kmscon-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0axfwrp3c8f4gb67ap2sqnkn75idpiw09s35wwn6kgagvhf1rc0a"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Use elogind instead of systemd.
-               '(begin
-                  (substitute* "configure"
-                    (("libsystemd-daemon libsystemd-login")
-                     "libelogind"))
-                  (substitute* "src/uterm_systemd.c"
-                    (("#include <systemd/sd-login.h>")
-                     "#include <elogind/sd-login.h>")
-                    ;; We don't have this header.
-                    (("#include <systemd/sd-daemon\\.h>")
-                     "")
-                    ;; Replace the call to 'sd_booted' by the truth value.
-                    (("sd_booted\\(\\)")
-                     "1"))
-                  #t))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("libxslt" ,libxslt)                       ;to build the man page
-       ("libxml2" ,libxml2)                       ;for XML_CATALOG_FILES
-       ("docbook-xsl" ,docbook-xsl)))
-    (inputs
-     `(("libdrm" ,libdrm)
-       ("libtsm" ,libtsm)
-       ("libxkbcommon" ,libxkbcommon)
-       ("logind" ,elogind)
-       ("mesa" ,mesa)
-       ("pango" ,pango)
-       ("udev" ,eudev)))
-    (synopsis "Linux KMS-based terminal emulator")
-    (description "Kmscon is a terminal emulator based on Linux's @dfn{kernel
+  (let ((commit "01dd0a231e2125a40ceba5f59fd945ff29bf2cdc")
+        (revision "1"))
+    (package
+      (name "kmscon")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                ;; The freedesktop repository is no longer maintained.
+                (uri (git-reference
+                      (url (string-append "https://github.com/Aetf/" name))
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0q62kjsvy2iwy8adfiygx2bfwlh83rphgxbis95ycspqidg9py87"))
+                (modules '((guix build utils)))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'autogen.sh
+                      (lambda _
+                        (zero? (system* "sh" "autogen.sh"))))
+                    ;; Use elogind instead of systemd.
+                    (add-before 'configure 'remove-systemd
+                      (lambda _
+                        (substitute* "configure"
+                          (("libsystemd-daemon libsystemd-login")
+                           "libelogind"))
+                        (substitute* "src/uterm_systemd.c"
+                          (("#include <systemd/sd-login.h>")
+                           "#include <elogind/sd-login.h>")
+                          ;; We don't have this header.
+                          (("#include <systemd/sd-daemon\\.h>")
+                           "")
+                          ;; Replace the call to 'sd_booted' by the truth value.
+                          (("sd_booted\\(\\)")
+                           "1")))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("libxslt" ,libxslt)                       ;to build the man page
+         ("libxml2" ,libxml2)                       ;for XML_CATALOG_FILES
+         ("docbook-xsl" ,docbook-xsl)))
+      (inputs
+       `(("libdrm" ,libdrm)
+         ("libtsm" ,libtsm)
+         ("libxkbcommon" ,libxkbcommon)
+         ("logind" ,elogind)
+         ("mesa" ,mesa)
+         ("pango" ,pango)
+         ("udev" ,eudev)))
+      (synopsis "Linux KMS-based terminal emulator")
+      (description "Kmscon is a terminal emulator based on Linux's @dfn{kernel
 mode setting} (KMS).  It can replace the in-kernel virtual terminal (VT)
 implementation with a user-space console.  Compared to the Linux console,
 kmscon provides enhanced features including XKB-compatible internationalized
 keyboard support, UTF-8 input/font support, hardware-accelerated rendering,
 multi-seat support, a replacement for @command{mingetty}, and more.")
-    (home-page "https://www.freedesktop.org/wiki/Software/kmscon")
-    ;; Hash table implementation is lgpl2.1+ licensed.
-    ;; The wcwidth implementation in external/wcwidth.{h,c} uses a license
-    ;; derived from ISC.
-    ;; UCS-4 to UTF-8 encoding is copied from "terminology" which is released
-    ;; under the bsd 2 license.
-    ;; Unifont-Font is from http://unifoundry.com/unifont.html and licensed
-    ;; under the terms of the GNU GPL.
-    (license (list license:expat license:lgpl2.1+ license:bsd-2
-                   license:gpl2+))
-    (supported-systems (filter (cut string-suffix? "-linux" <>)
-                               %supported-systems))))
+      (home-page "https://www.freedesktop.org/wiki/Software/kmscon")
+      ;; Hash table implementation is lgpl2.1+ licensed.
+      ;; The wcwidth implementation in external/wcwidth.{h,c} uses a license
+      ;; derived from ISC.
+      ;; UCS-4 to UTF-8 encoding is copied from "terminology" which is released
+      ;; under the bsd 2 license.
+      ;; Unifont-Font is from http://unifoundry.com/unifont.html and licensed
+      ;; under the terms of the GNU GPL.
+      (license (list license:expat license:lgpl2.1+ license:bsd-2
+                     license:gpl2+))
+      (supported-systems (filter (cut string-suffix? "-linux" <>)
+                                 %supported-systems)))))
 
 (define-public libtermkey
   (package

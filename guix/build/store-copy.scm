@@ -168,6 +168,28 @@ REFERENCE-GRAPHS, a list of reference-graph files."
 
   (reduce + 0 (map file-size items)))
 
+(define (reset-permissions file)
+  "Reset the permissions on FILE and its sub-directories so that they are all
+read-only."
+  ;; XXX: This procedure exists just to work around the inability of
+  ;; 'copy-recursively' to preserve permissions.
+  (file-system-fold (const #t)                    ;enter?
+                    (lambda (file stat _)         ;leaf
+                      (unless (eq? 'symlink (stat:type stat))
+                        (chmod file
+                               (if (zero? (logand (stat:mode stat)
+                                                  #o100))
+                                   #o444
+                                   #o555))))
+                    (const #t)                    ;down
+                    (lambda (directory stat _)    ;up
+                      (chmod directory #o555))
+                    (const #f)                    ;skip
+                    (const #f)                    ;error
+                    #t
+                    file
+                    lstat))
+
 (define* (populate-store reference-graphs target
                          #:key (log-port (current-error-port)))
   "Populate the store under directory TARGET with the items specified in
@@ -197,7 +219,13 @@ REFERENCE-GRAPHS, a list of reference-graph files."
         (for-each (lambda (thing)
                     (copy-recursively thing
                                       (string-append target thing)
+                                      #:keep-mtime? #t
                                       #:log (%make-void-port "w"))
+
+                    ;; XXX: Since 'copy-recursively' doesn't allow us to
+                    ;; preserve permissions, we have to traverse TARGET to
+                    ;; make sure everything is read-only.
+                    (reset-permissions (string-append target thing))
                     (report))
                   things)))))
 

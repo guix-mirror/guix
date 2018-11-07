@@ -31,7 +31,7 @@ Copyright @copyright{} 2016, 2017, 2018 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017, 2018 Clément Lassieur@*
-Copyright @copyright{} 2017 Mathieu Othacehe@*
+Copyright @copyright{} 2017, 2018 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
 Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
@@ -2844,9 +2844,6 @@ The @command{guix pull} command is usually invoked with no arguments,
 but it supports the following options:
 
 @table @code
-@item --verbose
-Produce verbose output, writing build logs to the standard error output.
-
 @item --url=@var{url}
 @itemx --commit=@var{commit}
 @itemx --branch=@var{branch}
@@ -2879,6 +2876,14 @@ current generation only.
 @item --profile=@var{profile}
 @itemx -p @var{profile}
 Use @var{profile} instead of @file{~/.config/guix/current}.
+
+@item --dry-run
+@itemx -n
+Show which channel commit(s) would be used and what would be built or
+substituted but do not actually do it.
+
+@item --verbose
+Produce verbose output, writing build logs to the standard error output.
 
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
@@ -10934,6 +10939,10 @@ A gexp denoting the name of the log-in program. The default log-in program is
 @item @code{login-arguments} (default: @code{'("-p")})
 A list of arguments to pass to @command{login}.
 
+@item @code{auto-login} (default: @code{#f})
+When passed a login name, as a string, the specified user will be logged
+in automatically without prompting for their login name or password.
+
 @item @code{hardware-acceleration?} (default: #f)
 Whether to use hardware acceleration.
 
@@ -18662,6 +18671,11 @@ Cuirass jobs.
 @item @code{database} (default: @code{"/var/lib/cuirass/cuirass.db"})
 Location of sqlite database which contains the build results and previously
 added specifications.
+
+@item @code{ttl} (default: @code{(* 30 24 3600)})
+Specifies the time-to-live (TTL) in seconds of garbage collector roots that
+are registered for build results.  This means that build results are protected
+from garbage collection for at least @var{ttl} seconds.
 
 @item @code{port} (default: @code{8081})
 Port number used by the HTTP server.

@@ -884,6 +884,25 @@ extremely large and complex data collections.")
     (license (license:x11-style
               "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
 
+(define-public hdf5-1.10
+  (package (inherit hdf5)
+    (version "1.10.4")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (list (string-append "https://support.hdfgroup.org/ftp/HDF5/releases/"
+                                "hdf5-" (version-major+minor version)
+                                "/hdf5-" version "/src/hdf5-"
+                                version ".tar.bz2")
+                 (string-append "https://support.hdfgroup.org/ftp/HDF5/"
+                                "current"
+                                (apply string-append
+                                       (take (string-split version #\.) 2))
+                                "/src/hdf5-" version ".tar.bz2")))
+      (sha256
+       (base32 "1pr85fa1sh2ky6ai2hs3f21lp252grl2cq3wbyi4rh7dm83gyrqj"))
+      (patches (list (search-patch "hdf5-config-date.patch")))))))
+
 (define-public hdf-java
   (package
    (name "hdf-java")
