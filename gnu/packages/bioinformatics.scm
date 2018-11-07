@@ -10903,20 +10903,21 @@ packages.")
 (define-public r-beachmat
   (package
     (name "r-beachmat")
-    (version "1.2.1")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "beachmat" version))
        (sha256
         (base32
-         "1w90v0jx1zgrfxzx99gdkk0dz2vi25hr51jml1bvq33i64rj7996"))))
+         "07zgmms0qg8gw7x0js46965bbhpfj2aa1h5ixdz9r332bxv9cdmr"))))
     (build-system r-build-system)
     (inputs
      `(("hdf5" ,hdf5)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("r-delayedarray" ,r-delayedarray)
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-delayedarray" ,r-delayedarray)
        ("r-hdf5array" ,r-hdf5array)
        ("r-rcpp" ,r-rcpp)
        ("r-rhdf5" ,r-rhdf5)
