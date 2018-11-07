@@ -4856,15 +4856,14 @@ extremely diverse sets of genomes.")
     (version "8.2.10")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append
-         "https://github.com/stamatak/standard-RAxML/archive/v"
-         version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stamatak/standard-RAxML.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "13s7aspfdcfr6asynwdg1x6vznys6pzap5f8wsffbnnwpkkg9ya8"))))
+         "1crf5xwchzlals3ypgb9gkm3yzllfp6bn571abdjc21q8c4x7v7k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
