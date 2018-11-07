@@ -247,14 +247,14 @@ region sets and other genomic features.")
 (define-public r-diffbind
   (package
     (name "r-diffbind")
-    (version "2.8.0")
+    (version "2.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DiffBind" version))
        (sha256
         (base32
-         "1w1hybzd732ccg3q8zhirwfilq8sx3frv1x98zfyj3svzw98fish"))))
+         "0j8pal40lr1gv8sss96hhkj7l1qn9sy4q4l2kqd4rfwl7qrcnfw5"))))
     (properties `((upstream-name . "DiffBind")))
     (build-system r-build-system)
     (inputs
