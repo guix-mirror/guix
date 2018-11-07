@@ -854,14 +854,14 @@ in omics data.")
 (define-public r-inspect
   (package
     (name "r-inspect")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "INSPEcT" version))
        (sha256
         (base32
-         "1gk0pwyimkswrvgb2xr3c2zy4myi448a2shr5ap65rq9pcpp0l8p"))))
+         "0b671x5v2wyq5np2flq2m1fnjz32f303yjlw64a1inwc9k2w2pz2"))))
     (properties `((upstream-name . "INSPEcT")))
     (build-system r-build-system)
     (propagated-inputs
