@@ -219,23 +219,24 @@ the Human Protein Atlas project.")
 (define-public r-regioner
   (package
     (name "r-regioner")
-    (version "1.12.0")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "regioneR" version))
        (sha256
         (base32
-         "09bzlaqdgy7wmzly3zc9y2da50d07mlixlnpaxdxpiwdk8qmhxsb"))))
+         "19la74swgzxp90z2nr3pzsgkxd7wp70zl6i2ipv3plg841f6k5zd"))))
     (properties `((upstream-name . "regioneR")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-memoise" ,r-memoise)
-       ("r-genomicranges" ,r-genomicranges)
+     `(("r-biostrings" ,r-biostrings)
        ("r-bsgenome" ,r-bsgenome)
-       ("r-rtracklayer" ,r-rtracklayer)
        ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
+       ("r-memoise" ,r-memoise)
+       ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)))
     (home-page "https://bioconductor.org/packages/regioneR/")
     (synopsis "Association analysis of genomic regions")
