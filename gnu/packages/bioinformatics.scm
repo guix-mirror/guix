@@ -10253,21 +10253,21 @@ chromosome region or transcript models of lincRNA genes.")
 (define-public r-organismdbi
   (package
     (name "r-organismdbi")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "OrganismDbi" version))
        (sha256
         (base32
-         "0hb9ni41bjfy5s5ryw2qmqs2sx3i7j47w1g0l8g1pvn7ppnxb6cv"))))
+         "11pyv56cy4iy095h40k6k0mpjdlh6gsb4ld3s57nfa9nd4ypx3yi"))))
     (properties `((upstream-name . "OrganismDbi")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocinstaller" ,r-biocinstaller)
+       ("r-biocmanager" ,r-biocmanager)
        ("r-dbi" ,r-dbi)
        ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
