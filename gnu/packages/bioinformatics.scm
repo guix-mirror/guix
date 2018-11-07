@@ -6838,14 +6838,14 @@ SELECT or UPDATE queries to an end-point.")
     (version "2.8.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/torognes/vsearch/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/torognes/vsearch.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "15pbirgzhvflj4pi5n82vybbzjy9mlb0lv5l3qhrmdkfzpbyahw3"))
+         "0lrw6n75gmqkxl053yi2pwwvnzwf1r79ypzxgv6m0kw6df5fwv6r"))
        (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin
