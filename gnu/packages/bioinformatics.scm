@@ -11256,7 +11256,7 @@ sort, markdup, and depth.")
 (define-public ritornello
   (package
     (name "ritornello")
-    (version "1.0.0")
+    (version "2.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11265,7 +11265,7 @@ sort, markdup, and depth.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1xpki1pkxwmn7n5n23vv64zvikss4fj53vlzhnp3j34wrmxik3h8"))))
+                "1xahvq215qld7x1w8vpa5zbrsj6p9crb9shqa2x89sb0aaxa02jk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -11274,7 +11274,7 @@ sort, markdup, and depth.")
          (add-after 'unpack 'patch-samtools-references
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("src/SamStream.h"
-                            "src/BufferedGenomeReader.h")
+                            "src/FLD.cpp")
                (("<sam.h>") "<samtools/sam.h>"))
              #t))
          (delete 'configure)
