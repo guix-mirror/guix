@@ -1630,6 +1630,33 @@ it does not deal with windowing system surfaces, drawing, scene graphs, or
 input.")
     (license license:expat)))
 
+(define-public spread-sheet-widget
+  (package
+    (name "spread-sheet-widget")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://alpha.gnu.org/gnu/ssw/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1h93yyh2by6yrmkwqg38nd5knids05k5nqzcihc1hdwgzg3c4b8y"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib" ,glib "bin") ; for glib-genmarshal, etc.
+       ("pkg-config" ,pkg-config)))
+    ;; In 'Requires' of spread-sheet-widget.pc.
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)))
+    (home-page "https://www.gnu.org/software/ssw/")
+    (synopsis "Gtk+ widget for dealing with 2-D tabular data")
+    (description
+     "GNU Spread Sheet Widget is a library for Gtk+ which provides a widget for
+viewing and manipulating 2 dimensional tabular data in a manner similar to many
+popular spread sheet programs.")
+    (license license:gpl3+)))
+
 (define-public yad
   (package
     (name "yad")
