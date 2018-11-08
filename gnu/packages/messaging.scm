@@ -574,7 +574,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.0.3")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -582,10 +582,11 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "0ds4rqwfrpj89a489w6yih8gx5zi7qa4ffgld950fk7s0qxvcfnb"))))
+                "1qis8vs7y7g1zn5i5dshwrszidc22qpflycwb4nixvp9lbmkq0va"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:test-target "test_nogui"
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
@@ -598,20 +599,6 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                       `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))
                 '("gajim" "gajim-remote" "gajim-history-manager")))
              #t))
-         (add-before 'check 'remove-test-resolver
-           ;; This test requires network access.
-           (lambda _
-             (substitute* "test/runtests.py"
-               (("'integration.test_resolver',") ""))
-             #t))
-         (add-before 'check 'start-xserver
-           ;; Tests require a running X server.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((xorg-server (assoc-ref inputs "xorg-server"))
-                   (display ":1"))
-               (setenv "DISPLAY" display)
-               (zero? (system (string-append xorg-server "/bin/Xvfb "
-                                             display " &"))))))
          (add-after 'install 'install-icons
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -648,12 +635,14 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
        ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("libsecret" ,libsecret)
        ("python-axolotl" ,python-axolotl)
+       ("python-cssutils" ,python-cssutils)
        ("python-dbus" ,python-dbus)
        ("python-docutils" ,python-docutils)
        ("python-gnupg" ,python-gnupg)
+       ("python-keyring" ,python-keyring)
        ("python-nbxmpp" ,python-nbxmpp)
        ("python-pillow" ,python-pillow)
-       ("python-pyasn1" ,python-pyasn1)
+       ("python-precis-i18n" ,python-precis-i18n)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
        ("python-pyopenssl" ,python-pyopenssl)
