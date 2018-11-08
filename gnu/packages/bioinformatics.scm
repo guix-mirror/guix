@@ -6202,8 +6202,7 @@ Cuffdiff or Ballgown programs.")
        #:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (zero? (system* "python" "-m" "unittest" "discover" "-v")))))))
+           (lambda _ (invoke "python" "-m" "unittest" "discover" "-v") #t)))))
     (propagated-inputs
      `(("python-sqlalchemy" ,python2-sqlalchemy)
        ("python-decorator" ,python2-decorator)
