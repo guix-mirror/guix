@@ -2788,6 +2788,18 @@ to BMP, JPEG or PNG image formats.")
            (lambda _
              (chmod "src/maxima" #o555)
              #t))
+         (replace 'check
+           (lambda _
+             ;; This is derived from the testing code in the "debian/rules" file
+             ;; of Debian's Maxima package.
+             ;; If Maxima can successfully run this, the binary to be installed
+             ;; should be fine.
+             (zero?
+              (system
+               (string-append "./maxima-local "
+                              "--lisp=gcl "
+                              "--batch-string=\"run_testsuite();\" "
+                              "| grep -q \"No unexpected errors found\"")))))
          ;; Make sure the doc and emacs files are found in the
          ;; standard location.  Also configure maxima to find gnuplot
          ;; without having it on the PATH.
