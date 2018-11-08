@@ -5303,7 +5303,7 @@ simultaneously.")
 (define-public ncbi-vdb
   (package
     (name "ncbi-vdb")
-    (version "2.8.2")
+    (version "2.9.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5312,7 +5312,7 @@ simultaneously.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ssy5wlqdm86pmbv9mfdjx518lbsk32wfv2qgr7m1z77kaicw7zq"))))
+                "1l4ny67nxwv1lagk9wwjbrgm7ln7adci6dnpc7k1yaln6shj0qpm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
