@@ -5353,8 +5353,7 @@ simultaneously.")
 
                ;; The 'configure' script doesn't recognize things like
                ;; '--enable-fast-install'.
-               (zero? (system*
-                       "./configure"
+               (invoke "./configure"
                        (string-append "--build-prefix=" (getcwd) "/build")
                        (string-append "--prefix=" (assoc-ref outputs "out"))
                        (string-append "--debug")
@@ -5363,7 +5362,8 @@ simultaneously.")
                        (string-append "--with-ngs-sdk-prefix="
                                       (assoc-ref inputs "ngs-sdk"))
                        (string-append "--with-hdf5-prefix="
-                                      (assoc-ref inputs "hdf5")))))))
+                                      (assoc-ref inputs "hdf5")))
+               #t)))
          (add-after 'install 'install-interfaces
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Install interface libraries.  On i686 the interface libraries
