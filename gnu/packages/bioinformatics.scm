@@ -6863,11 +6863,6 @@ SELECT or UPDATE queries to an end-point.")
            (delete-file "src/city.cc")
            #t))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
     (inputs
      `(("zlib" ,zlib)
        ("bzip2" ,bzip2)
