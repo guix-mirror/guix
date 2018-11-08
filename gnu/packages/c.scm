@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
@@ -160,8 +160,7 @@ standard.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (zero? (system* "make" "-C" "cc/cpp" "test")))))))
+           (lambda _ (invoke "make" "-C" "cc/cpp" "test") #t)))))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)))
