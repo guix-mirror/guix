@@ -5654,7 +5654,7 @@ sequence itself can be retrieved from these databases.")
 (define-public sra-tools
   (package
     (name "sra-tools")
-    (version "2.8.2-1")
+    (version "2.9.3")
     (source
      (origin
        (method git-fetch)
@@ -5664,7 +5664,7 @@ sequence itself can be retrieved from these databases.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "12ln0pk8yajhmmj9xsfwa1qgv5m05ji40jsg17wdcls62zz6fwrk"))))
+         "0663gcdxkziwsmlznjxysb00621rllpbz6jwsfifq7z3dj3lwm8b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -5733,18 +5733,6 @@ sequence itself can be retrieved from these databases.")
                                     (assoc-ref inputs "ngs-sdk"))
                      (string-append "--with-hdf5-prefix="
                                     (assoc-ref inputs "hdf5")))
-             #t))
-         ;; This version of sra-tools fails to build with glibc because of a
-         ;; naming conflict.  glibc-2.25/include/bits/mathcalls.h already
-         ;; contains a definition of "canonicalize", so we rename it.
-         ;;
-         ;; See upstream bug report:
-         ;; https://github.com/ncbi/sra-tools/issues/67
-         (add-after 'unpack 'patch-away-glibc-conflict
-           (lambda _
-             (substitute* "tools/bam-loader/bam.c"
-               (("canonicalize\\(" line)
-                (string-append "sra_tools_" line)))
              #t)))))
     (native-inputs `(("perl" ,perl)))
     (inputs
