@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
@@ -40,33 +42,30 @@
 (define-public bam
   (package
     (name "bam")
-    (version "0.4.0")
+    (version "0.5.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "http://github.com/downloads/matricks/"
-                                  "bam/bam-" version ".tar.bz2"))
+              ;; do not use auto-generated tarballs
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/matricks/bam.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0z90wvyd4nfl7mybdrv9dsd4caaikc6fxw801b72gqi1m9q0c0sn"))))
+                "13br735ig7lygvzyfd15fc2rdygrqm503j6xj5xkrl1r7w2wipq6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:make-flags `("CC=gcc"
+                      ,(string-append "INSTALL_PREFIX="
+                                      (assoc-ref %outputs "out")))
+       #:test-target "test"
+       #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (zero? (system* "bash" "make_unix.sh"))))
-         (replace 'check
-           (lambda _
-             (zero? (system* "python" "scripts/test.py"))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-               (mkdir-p bin)
-               (install-file "bam" bin)
-               #t))))))
+         (delete 'configure))))
     (native-inputs
      `(("python" ,python-2)))
+    (inputs
+     `(("lua" ,lua)))
     (home-page "https://matricks.github.io/bam/")
     (synopsis "Fast and flexible build system")
     (description "Bam is a fast and flexible build system.  Bam uses Lua to
