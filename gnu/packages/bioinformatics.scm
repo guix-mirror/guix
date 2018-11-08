@@ -4762,10 +4762,11 @@ partial genes, and identifies translation initiation sites.")
                                            (getenv "PATH")))
              (setenv "PERL5LIB" (string-append (getcwd) "/lib" ":"
                                                (getenv "PERL5LIB")))
-             (zero? (length (filter (lambda (file)
-                                      (display file)(display "\n")
-                                      (not (zero? (system* "perl" file))))
-                                    (find-files "t" ".*\\.t$"))))))
+             (for-each (lambda (file)
+                         (display file)(display "\n")
+                         (invoke "perl" file))
+                       (find-files "t" ".*\\.t$"))
+             #t))
          (replace 'install
            ;; There is no 'install' target in the Makefile.
            (lambda* (#:key outputs #:allow-other-keys)
