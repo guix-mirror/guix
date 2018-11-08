@@ -3476,26 +3476,28 @@ VCF.")
            (lambda* (#:key inputs #:allow-other-keys)
              (mkdir-p "lib/jni")
              (mkdir-p "jdk-src")
-             (and (zero? (system* "tar" "--strip-components=1" "-C" "jdk-src"
-                                  "-xf" (assoc-ref inputs "jdk-src")))
-                  (zero? (system* "javah" "-jni"
-                                  "-classpath" "classes"
-                                  "-d" "lib/"
-                                  "net.sf.samtools.util.zip.IntelDeflater"))
-                  (with-directory-excursion "src/c/inteldeflater"
-                    (zero? (system* "gcc" "-I../../../lib" "-I."
-                                    (string-append "-I" (assoc-ref inputs "jdk")
-                                                   "/include/linux")
-                                    "-I../../../jdk-src/src/share/native/common/"
-                                    "-I../../../jdk-src/src/solaris/native/common/"
-                                    "-c" "-O3" "-fPIC" "IntelDeflater.c"))
-                    (zero? (system* "gcc" "-shared"
-                                    "-o" "../../../lib/jni/libIntelDeflater.so"
-                                    "IntelDeflater.o" "-lz" "-lstdc++"))))))
+             (invoke "tar" "--strip-components=1" "-C" "jdk-src"
+                     "-xf" (assoc-ref inputs "jdk-src"))
+             (invoke "javah" "-jni"
+                     "-classpath" "classes"
+                     "-d" "lib/"
+                     "net.sf.samtools.util.zip.IntelDeflater")
+             (with-directory-excursion "src/c/inteldeflater"
+               (invoke "gcc" "-I../../../lib" "-I."
+                       (string-append "-I" (assoc-ref inputs "jdk")
+                                      "/include/linux")
+                       "-I../../../jdk-src/src/share/native/common/"
+                       "-I../../../jdk-src/src/solaris/native/common/"
+                       "-c" "-O3" "-fPIC" "IntelDeflater.c")
+               (invoke "gcc" "-shared"
+                       "-o" "../../../lib/jni/libIntelDeflater.so"
+                       "IntelDeflater.o" "-lz" "-lstdc++"))
+             #t))
          ;; We can only build everything else after building the JNI library.
          (add-after 'build-jni 'build-rest
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* `("ant" "all" ,@make-flags)))))
+             (apply invoke `("ant" "all" ,@make-flags))
+             #t))
          (add-before 'build 'set-JAVA6_HOME
            (lambda _
              (setenv "JAVA6_HOME" (getenv "JAVA_HOME"))
