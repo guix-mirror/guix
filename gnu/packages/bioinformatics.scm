@@ -5057,21 +5057,24 @@ distribution, coverage uniformity, strand specificity, etc.")
            (modify-phases %standard-phases
              (replace 'bootstrap
                (lambda _
-                 (invoke "bash" "gen_auto")))
+                 (substitute* "gen_tools_am"
+                   (("/usr/bin/env.*") (which "perl")))
+                 (invoke "bash" "gen_auto")
+                 #t))
              (add-after 'build 'build-additional-tools
                (lambda* (#:key make-flags #:allow-other-keys)
-                 (every (lambda (dir)
-                          (with-directory-excursion (string-append "tools/" dir)
-                            (zero? (apply system* "make" make-flags))))
-                        dirs)))
+                 (for-each (lambda (dir)
+                             (with-directory-excursion (string-append "tools/" dir)
+                               (apply invoke "make" make-flags)))
+                           dirs)
+                 #t))
              (add-after 'install 'install-additional-tools
                (lambda* (#:key make-flags #:allow-other-keys)
-                 (fold (lambda (dir result)
-                         (with-directory-excursion (string-append "tools/" dir)
-                           (and result
-                                (zero? (apply system*
-                                              `("make" ,@make-flags "install"))))))
-                       #t dirs)))))))
+                 (for-each (lambda (dir)
+                             (with-directory-excursion (string-append "tools/" dir)
+                               (apply invoke `("make" ,@make-flags "install"))))
+                           dirs)
+                 #t))))))
       (inputs
        `(("gsl" ,gsl)
          ("boost" ,boost)
