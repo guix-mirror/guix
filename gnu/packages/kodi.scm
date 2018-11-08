@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages gnunet)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages image)
@@ -232,6 +234,35 @@ generator library for C++.")
       (synopsis (package-synopsis libdvdcss))
       (description (package-description libdvdcss))
       (license license:gpl2+))))
+
+(define-public fstrcmp
+  (package
+    (name "fstrcmp")
+    (version "0.7.D001")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://fstrcmp.sourceforge.net/fstrcmp-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "0xilghiy3mz78bjmfldi39qyy7jvw5b6wafsx370lw401y2qw0g4"))))
+    (build-system gnu-build-system)
+    (home-page "http://fstrcmp.sourceforge.net/")
+    (arguments
+     '(#:configure-flags '("SH=sh")))
+    (native-inputs
+     `(("ghostscript" ,ghostscript) ; ps2pdf
+       ("groff" ,groff)
+       ("libtool" ,libtool)
+       ("which" ,which)))
+    (synopsis "fuzzy comparison of strings")
+    (description
+     "The fstrcmp project provides a library that is used to make fuzzy
+comparisons of strings and byte arrays, including multi-byte character strings.
+This can be useful in error messages, enabling the suggestion of likely valid
+alternatives. In compilers, this can reduce the cascade of secondary errors.")
+    (license license:gpl3+)))
 
 (define-public kodi
   ;; We package the git version because the current released
