@@ -9034,7 +9034,7 @@ AM_CONDITIONAL(AMPNG, true)"))
                (("\\$\\(bindir\\)/embossupdate") ""))
              #t))
          (add-after 'disable-update-check 'autogen
-           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
+           (lambda _ (invoke "autoreconf" "-vif") #t)))))
     (inputs
      `(("perl" ,perl)
        ("libpng" ,libpng)
