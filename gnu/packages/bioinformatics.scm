@@ -5469,12 +5469,13 @@ subsequent visualization, annotation and storage of results.")
     (version "1.90b4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/chrchang/plink-ng/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chrchang/plink-ng.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "09ixrds009aczjswxr2alcb774mksq5g0v78dgjjn1h4dky0kf9a"))))
+        (base32 "02npdwgkpfkdnhw819rhj5kw02a5k5m90b14zq9zzya4hyg929c0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no "check" target
