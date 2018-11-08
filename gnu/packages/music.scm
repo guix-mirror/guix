@@ -1748,9 +1748,7 @@ export.")
            (lambda _
              (substitute* "tcl/pd-gui.tcl"
                (("exec wish ") (string-append "exec " (which "wish8.6") " ")))
-             #t))
-         (add-after 'unpack 'autoconf
-           (lambda _ (zero? (system* "bash" "./autogen.sh")))))))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
