@@ -11974,14 +11974,14 @@ bytes of memory space, where n is the length of the string.")
     (name "sailfish")
     (version "0.10.1")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/kingsfordgroup/"
-                              "sailfish/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kingsfordgroup/sailfish.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1inn60dxiwsz8g9w7kvfhjxj4bwfb0r12dyhpzzhfbig712dkmm0"))
+                "1amcc5hqvsl42hg4x19bi9vy47cl874s0lw1fmi0hwsdk9i8c03v"))
               (modules '((guix build utils)))
               (snippet
                '(begin
