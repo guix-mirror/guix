@@ -309,14 +309,14 @@ playing your music.")
     (name "cmus")
     (version "2.7.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/" name "/" name "/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cmus/cmus.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0raixgjavkm7hxppzsc5zqbfbh2bhjcmbiplhnsxsmyj8flafyc1"))))
+                "0xd96py21bl869qlv1353zw7xsgq6v5s8szr0ldr63zj5fgc2ps5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; cmus does not include tests
