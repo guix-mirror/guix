@@ -2716,8 +2716,10 @@ Illumina, Roche 454, and the SOLiD platform.")
                   (string-append "  strcpy(train_dir, \"" share "/train/\");"))))
              #t))
          (replace 'build
-           (lambda _ (and (zero? (system* "make" "clean"))
-                          (zero? (system* "make" "fgs")))))
+           (lambda _
+             (invoke "make" "clean")
+             (invoke "make" "fgs")
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (string-append (assoc-ref outputs "out")))
@@ -2734,21 +2736,24 @@ Illumina, Roche 454, and the SOLiD platform.")
              (let* ((out (string-append (assoc-ref outputs "out")))
                     (bin (string-append out "/bin/"))
                     (frag (string-append bin "run_FragGeneScan.pl")))
-               (and (zero? (system* frag ; Test complete genome.
-                             "-genome=./example/NC_000913.fna"
-                             "-out=./test2"
-                             "-complete=1"
-                             "-train=complete"))
-                    (file-exists? "test2.faa")
-                    (file-exists? "test2.ffn")
-                    (file-exists? "test2.gff")
-                    (file-exists? "test2.out")
-                    (zero? (system* ; Test incomplete sequences.
-                            frag
-                            "-genome=./example/NC_000913-fgs.ffn"
-                            "-out=out"
-                            "-complete=0"
-                            "-train=454_30")))))))))
+               ;; Test complete genome.
+               (invoke frag
+                       "-genome=./example/NC_000913.fna"
+                       "-out=./test2"
+                       "-complete=1"
+                       "-train=complete")
+               (unless (and (file-exists? "test2.faa")
+                            (file-exists? "test2.ffn")
+                            (file-exists? "test2.gff")
+                            (file-exists? "test2.out"))
+                 (error "Expected files do not exist."))
+               ;; Test incomplete sequences.
+               (invoke frag
+                       "-genome=./example/NC_000913-fgs.ffn"
+                       "-out=out"
+                       "-complete=0"
+                       "-train=454_30")
+               #t))))))
     (inputs
      `(("perl" ,perl)
        ("python" ,python-2))) ;not compatible with python 3.
