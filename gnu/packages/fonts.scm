@@ -883,6 +883,31 @@ designed to work well in user interface environments.")
 work well in user interface (UI) environments.")
     (license license:silofl1.1)))
 
+(define-public font-adobe-source-serif-pro
+  (package
+    (name "font-adobe-source-serif-pro")
+    (version "2.007R-ro-1.007R-it")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/adobe-fonts/source-serif-pro/archive/"
+                    (regexp-substitute/global
+                     ;; The upstream tag uses "/" between the roman and italic
+                     ;; versions, so substitute our "-" separator here.
+                     #f "R-ro-" version 'pre "R-ro/" 'post) ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sws9k26ldqk375qsigk1zv8cq1xlvadjwvv3dqrcc3qzm1c7hwc"))))
+    (build-system font-build-system)
+    (home-page "https://github.com/adobe-fonts/source-serif-pro")
+    (synopsis
+     "Serif typeface to complement Source Sans Pro for setting text")
+    (description
+     "Source Serif Pro is a set of OpenType fonts to complement the Source
+Sans Pro family.")
+    (license license:silofl1.1)))
+
 (define-public font-fira-mono
   (package
     (name "font-fira-mono")
