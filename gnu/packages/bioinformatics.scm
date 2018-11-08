@@ -4266,11 +4266,6 @@ program for nucleotide and protein sequences.")
                  (base32
                   "1hkw21rq1mwf7xp0rmbb2gqc0i6p11108m69i7mr7xcjl268pxnb"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
     (inputs
      ;; XXX: TODO: Enable Lua and Guile bindings.
      ;; https://github.com/tjunier/newick_utils/issues/13
