@@ -5262,9 +5262,10 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
 
                ;; The 'configure' script doesn't recognize things like
                ;; '--enable-fast-install'.
-               (zero? (system* "./configure"
-                               (string-append "--build-prefix=" (getcwd) "/build")
-                               (string-append "--prefix=" out))))))
+               (invoke "./configure"
+                       (string-append "--build-prefix=" (getcwd) "/build")
+                       (string-append "--prefix=" out))
+               #t)))
          (add-after 'unpack 'enter-dir
            (lambda _ (chdir "ngs-sdk") #t)))))
     (native-inputs `(("perl" ,perl)))
