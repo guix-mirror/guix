@@ -4236,12 +4236,13 @@ that a read originated from a particular isoform.")
          (delete 'configure)
          (replace 'check
            ;; There are no tests, so just test if it runs.
-           (lambda _ (zero? (system* "./muscle" "-version"))))
+           (lambda _ (invoke "./muscle" "-version") #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
-               (install-file "muscle" bin)))))))
+               (install-file "muscle" bin)
+               #t))))))
     (home-page "http://www.drive5.com/muscle")
     (synopsis "Multiple sequence alignment program")
     (description
