@@ -4018,9 +4018,7 @@ sequences).")
                             "src/mash/CommandScreen.cpp")
                (("^#include \"kseq\\.h\"")
                 "#include \"htslib/kseq.h\""))
-             #t))
-         (add-after 'fix-includes 'autoconf
-           (lambda _ (zero? (system* "autoconf")))))))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ;; Capnproto and htslib are statically embedded in the final
