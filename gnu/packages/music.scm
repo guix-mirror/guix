@@ -4066,14 +4066,15 @@ ISRCs and the MCN (=UPC/EAN) from disc.")
         (base32
          "0ikb9igyyk28jm34raxfzkw2qyn4nzzwsymdyprp7cmvi6g2ajb7"))))
     (build-system cmake-build-system)
-    (arguments `(#:phases
-                 (modify-phases %standard-phases
-                   (replace 'check
-                     (lambda _
-                       (and
-                        ;; requires network connections
-                        ;; (zero? (system* "tests/mbtest"))
-                        (zero? (system* "tests/ctest"))))))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; requires network connections
+             ;; (invoke "tests/mbtest")
+             (invoke "tests/ctest")
+             #t)))))
     (inputs `(("neon" ,neon)
               ("libxml2" ,libxml2)))
     (native-inputs `(("pkg-config" ,pkg-config)))
