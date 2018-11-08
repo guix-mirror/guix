@@ -5237,16 +5237,15 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
   (package
     (name "ngs-sdk")
     (version "1.3.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/ncbi/ngs/archive/"
-                       version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1wiyf4c6nm2j87pv015cbi0qny5byf3pbvcw3likifz5dl56ag40"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ncbi/ngs.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1l8p81azb9p6nsdfai0hvyai33z6nsgy7hj30arh9b5kb6m443dx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
