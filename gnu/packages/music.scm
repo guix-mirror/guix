@@ -322,16 +322,14 @@ playing your music.")
      `(#:tests? #f ; cmus does not include tests
        #:phases
        (modify-phases %standard-phases
-         (replace
-          'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-
-              ;; It's an idiosyncratic configure script that doesn't
-              ;; understand --prefix=..; it wants prefix=.. instead.
-              (zero?
-               (system* "./configure"
-                        (string-append "prefix=" out)))))))))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; It's an idiosyncratic configure script that doesn't
+               ;; understand --prefix=..; it wants prefix=.. instead.
+               (invoke "./configure"
+                       (string-append "prefix=" out))
+               #t))))))
     ;; TODO: cmus optionally supports the following formats, which haven't yet
     ;; been added to Guix:
     ;;
