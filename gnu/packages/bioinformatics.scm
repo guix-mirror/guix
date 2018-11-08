@@ -5303,22 +5303,23 @@ simultaneously.")
   (package
     (name "ncbi-vdb")
     (version "2.8.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/ncbi/ncbi-vdb/archive/"
-                       version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1acn4bv81mfl137qnbn9995mjjhwd36pm0b7qli1iw5skrxa9j8m"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ncbi/ncbi-vdb.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ssy5wlqdm86pmbv9mfdjx518lbsk32wfv2qgr7m1z77kaicw7zq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
        #:tests? #f ; no "check" target
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _ (for-each make-file-writable (find-files "." ".*")) #t))
          (add-before 'configure 'set-perl-search-path
            (lambda _
              ;; Work around "dotless @INC" build failure.
