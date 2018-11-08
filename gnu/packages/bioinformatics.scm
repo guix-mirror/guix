@@ -4410,8 +4410,7 @@ downstream analysis.")
          (add-after 'unpack 'enter-scripts-dir
            (lambda _ (chdir "scripts")))
          (replace 'check
-           (lambda _
-             (zero? (system* "python" "-m" "unittest" "discover" "-v"))))
+           (lambda _ (invoke "python" "-m" "unittest" "discover" "-v") #t))
          (add-after 'install 'wrap-executables
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
