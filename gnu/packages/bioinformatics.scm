@@ -12014,10 +12014,10 @@ bytes of memory space, where n is the length of the string.")
                    (include "external/install/include/rapmap/")
                    (rapmap (assoc-ref inputs "rapmap")))
                (mkdir-p "/tmp/rapmap")
-               (system* "tar" "xf"
-                        (assoc-ref inputs "rapmap")
-                        "-C" "/tmp/rapmap"
-                        "--strip-components=1")
+               (invoke "tar" "xf"
+                       (assoc-ref inputs "rapmap")
+                       "-C" "/tmp/rapmap"
+                       "--strip-components=1")
                (mkdir-p src)
                (mkdir-p include)
                (for-each (lambda (file)
