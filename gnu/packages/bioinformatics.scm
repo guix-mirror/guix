@@ -5712,8 +5712,7 @@ sequence itself can be retrieved from these databases.")
 
              ;; The 'configure' script doesn't recognize things like
              ;; '--enable-fast-install'.
-             (zero? (system*
-                     "./configure"
+             (invoke "./configure"
                      (string-append "--build-prefix=" (getcwd) "/build")
                      (string-append "--prefix=" (assoc-ref outputs "out"))
                      (string-append "--debug")
@@ -5731,7 +5730,8 @@ sequence itself can be retrieved from these databases.")
                      (string-append "--with-ngs-sdk-prefix="
                                     (assoc-ref inputs "ngs-sdk"))
                      (string-append "--with-hdf5-prefix="
-                                    (assoc-ref inputs "hdf5"))))))
+                                    (assoc-ref inputs "hdf5")))
+             #t))
          ;; This version of sra-tools fails to build with glibc because of a
          ;; naming conflict.  glibc-2.25/include/bits/mathcalls.h already
          ;; contains a definition of "canonicalize", so we rename it.
