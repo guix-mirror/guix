@@ -64,6 +64,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages textutils)
@@ -77,11 +78,12 @@
   #:use-module (gnu packages assembly))
 
 (define-public crossguid
-  (let ((commit "8f399e8bd4252be9952f3dfa8199924cc8487ca4"))
+  (let ((commit "fef89a4174a7bf8cd99fa9154864ce9e8e3bf989")
+        (revision "2"))
     (package
       (name "crossguid")
-      (version (string-append "0.0-1." (string-take commit 7)))
-      ;; There's no official release.  Just a Git repository.
+      (version (string-append "0.0-" revision "." (string-take commit 7)))
+      ;; This is the commit that Kodi wants.
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -90,13 +92,12 @@
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1i29y207qqddvaxbn39pk2fbh3gx8zvdprfp35wasj9rw2wjk3s9"))))
+                  "1blrkc7zcqrqcr5msvhyhm98s2jvm9hr0isqs4288q2r4mdnrfq0"))))
       (build-system gnu-build-system)
       (arguments
        '(#:phases
          (modify-phases %standard-phases
            (delete 'configure)          ; no configure script
-           ;; There's no build system here, so we have to do it ourselves.
            (replace 'build
              (lambda _
                (invoke "g++" "-c" "guid.cpp" "-o" "guid.o"
@@ -131,7 +132,7 @@ generator library for C++.")
 ;; of the standard build process. To make things easier, we bootstrap
 ;; and patch shebangs here, so we don't have to worry about it later.
 (define libdvdnav/kodi
-  (let ((commit "6.0.0-Leia-Alpha-1"))
+  (let ((commit "6.0.0-Leia-Alpha-3"))
     (package
       (name "libdvdnav-bootstrapped")
       (version commit)
@@ -143,7 +144,7 @@ generator library for C++.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1xiyfgf8v8aknlxlzsvk6pbzkhclz0hbh3s1b0w6ivkng2k310j9"))))
+                  "0qwlf4lgahxqxk1r2pzl866mi03pbp7l1fc0rk522sc0ak2s9jhb"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f
@@ -166,7 +167,7 @@ generator library for C++.")
       (license license:gpl2+))))
 
 (define libdvdread/kodi
-  (let ((commit "6.0.0-Leia-Alpha-1"))
+  (let ((commit "6.0.0-Leia-Alpha-3"))
     (package
       (name "libdvdread-bootstrapped")
       (version commit)
@@ -178,7 +179,7 @@ generator library for C++.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1c3g18n2vwhgcfz3dka1pmw58bnv2ram7xjvizfiykb3sgi9zfwp"))))
+                  "1xxn01mhkdnp10cqdr357wx77vyzfb5glqpqyg8m0skyi75aii59"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f
@@ -201,7 +202,7 @@ generator library for C++.")
       (license (list license:gpl2+ license:lgpl2.1+)))))
 
 (define libdvdcss/kodi
-  (let ((commit "1.4.1-Leia-Alpha-1"))
+  (let ((commit "1.4.2-Leia-Beta-5"))
     (package
       (name "libdvdcss-bootstrapped")
       (version commit)
@@ -213,7 +214,7 @@ generator library for C++.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "0adafwsawxssj3nilkql447v0l4a2584rdpmy5rfjmznh91lykgh"))))
+                  "0j41ydzx0imaix069s3z07xqw9q95k7llh06fc27dcn6f7b8ydyl"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f
@@ -265,27 +266,23 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
     (license license:gpl3+)))
 
 (define-public kodi
-  ;; We package the git version because the current released
-  ;; version was cut while the cmake transition was in turmoil.
-  (let ((commit "ec16dbca4dcf2923f53f819695a6d47c52e68d74")
-        (revision "8"))
   (package
     (name "kodi")
-    (version (git-version "18.0_alpha" revision commit))
+    (version "18.0b5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/xbmc/xbmc.git")
-                    (commit commit)))
+                    (commit (string-append version "-Leia"))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rxg752cl59124cfpfwmyjldn6qpq5jginxddpzvgagfadf10i4d"))
+                "042qzvhys3sajby6ywgmrsymhji37qk0iqgppznrvm53vrizwsam"))
               (snippet
                '(begin
                   (use-modules (guix build utils))
                   (for-each delete-file-recursively
-                            '("project/BuildDependencies/bin/"
+                            '("project/BuildDependencies/"
                               ;; TODO: Purge these jars.
                               ;;"tools/codegenerator/groovy"
                               ;; And these sources:
@@ -401,10 +398,12 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
        ("eudev" ,eudev)
        ("ffmpeg" ,ffmpeg)
        ("flac" ,flac)
+       ("flatbuffers" ,flatbuffers)
        ("fmt" ,fmt)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("fribidi" ,fribidi)
+       ("fstrcmp" ,fstrcmp)
        ("giflib" ,giflib)
        ("glew" ,glew)
        ("gnutls" ,gnutls)
@@ -458,7 +457,7 @@ plug-in system.")
                    license:expat                  ;cpluff, dbwrappers
                    license:public-domain          ;cpluff/examples
                    license:bsd-3                  ;misc, gtest
-                   license:bsd-2)))))             ;xbmc/freebsd
+                   license:bsd-2))))              ;xbmc/freebsd
 
 (define-public kodi-cli
   (let ((commit "104dc23b2a993c8e6db8c46f4f8bec24b146549b") ; Add support for
