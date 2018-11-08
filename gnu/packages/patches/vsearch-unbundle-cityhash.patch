@@ -6,7 +6,7 @@ index e56a8a2..4adcc48 100644
  if TARGET_PPC
  AM_CXXFLAGS=-Wall -Wsign-compare -O3 -g -mcpu=power8
  else
--AM_CXXFLAGS=-Wall -Wsign-compare -O3 -g
+-AM_CXXFLAGS=-Wall -Wsign-compare -O3 -g -march=x86-64 -mtune=generic
 +AM_CXXFLAGS=-Wall -Wsign-compare -O3 -g -lcityhash
  endif
  
@@ -39,7 +39,7 @@ index e56a8a2..4adcc48 100644
 -
  if TARGET_WIN
  
--libcityhash_a_CXXFLAGS = -Wall -Wno-sign-compare -O3 -g -D_MSC_VER
+-libcityhash_a_CXXFLAGS = $(AM_CXXFLAGS) -Wno-sign-compare -D_MSC_VER
 -__top_builddir__bin_vsearch_LDFLAGS = -static
 -__top_builddir__bin_vsearch_LDADD = libregex.a libcityhash.a libcpu_ssse3.a libcpu_sse2.a
 +__top_builddir__bin_vsearch_LDFLAGS = -static -lcityhash
@@ -47,7 +47,7 @@ index e56a8a2..4adcc48 100644
  
  else
  
--libcityhash_a_CXXFLAGS = -Wall -Wno-sign-compare -O3 -g
+-libcityhash_a_CXXFLAGS = $(AM_CXXFLAGS) -Wno-sign-compare
 -
  if TARGET_PPC
 -__top_builddir__bin_vsearch_LDADD = libcityhash.a libcpu.a

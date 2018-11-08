@@ -6825,7 +6825,7 @@ SELECT or UPDATE queries to an end-point.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.8.0")
+    (version "2.9.1")
     (source
      (origin
        (method git-fetch)
@@ -6835,7 +6835,7 @@ SELECT or UPDATE queries to an end-point.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lrw6n75gmqkxl053yi2pwwvnzwf1r79ypzxgv6m0kw6df5fwv6r"))
+         "0vhrpjfdf75ba04b24xknp41790cvcgwl0vgpy7qbzj5xh2521ss"))
        (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin
