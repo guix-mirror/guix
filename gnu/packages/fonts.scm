@@ -23,6 +23,7 @@
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;; Copyright © 2018 Charlie Ritter <chewzerita@posteo.net>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
+;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -855,6 +856,31 @@ Powerline support.")
     (description
      "Source Code Pro is a set of monospaced OpenType fonts that have been
 designed to work well in user interface environments.")
+    (license license:silofl1.1)))
+
+(define-public font-adobe-source-sans-pro
+  (package
+    (name "font-adobe-source-sans-pro")
+    (version "2.040R-ro-1.090R-it")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/adobe-fonts/source-sans-pro/archive/"
+                    (regexp-substitute/global
+                     ;; The upstream tag uses "/" between the roman and italic
+                     ;; versions, so substitute our "-" separator here.
+                     #f "R-ro-" version 'pre "R-ro/" 'post) ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1wpbhd2idps53ph8rg1mhr3vz4lsgbpjprcq10nliwcxdz9d8lv0"))))
+    (build-system font-build-system)
+    (home-page "https://github.com/adobe-fonts/source-sans-pro")
+    (synopsis
+     "Sans serif font family for user interface environments")
+    (description
+     "Source Sans Pro is a set of OpenType fonts that have been designed to
+work well in user interface (UI) environments.")
     (license license:silofl1.1)))
 
 (define-public font-fira-mono
