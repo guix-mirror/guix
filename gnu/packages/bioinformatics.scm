@@ -10215,14 +10215,14 @@ originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2):
 (define-public r-ensembldb
   (package
     (name "r-ensembldb")
-    (version "2.6.0")
+    (version "2.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ensembldb" version))
        (sha256
         (base32
-         "12jqz9h6w4mxyfr43w5qbwmacn512aw0mnl0zvhsg5i7p4qj45ks"))))
+         "1js05dcv1dj4g2vj7lzlg0rgjcjlk2irdr9rxqpwxmivm8nbvf36"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
