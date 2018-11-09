@@ -7495,3 +7495,29 @@ distributions, modal clustering, discriminant analysis, and two-sample
 hypothesis testing.")
     ;; Either version of the GPL.
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-feature
+  (package
+    (name "r-feature")
+    (version "1.2.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "feature" version))
+       (sha256
+        (base32
+         "07hkw0bv38naj2hdsx4xxrm2dngi6w3rbvgr7s50bjic8hlgy1ra"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ks" ,r-ks)
+       ("r-misc3d" ,r-misc3d)
+       ("r-rgl" ,r-rgl)))
+    (home-page "http://www.mvstat.net/tduong/")
+    (synopsis "Inferential feature significance for kernel density estimation")
+    (description
+     "The feature package contains functions to display and compute kernel
+density estimates, significant gradient and significant curvature regions.
+Significant gradient and/or curvature regions often correspond to significant
+features (e.g. local modes).")
+    ;; Either version of the GPL.
+    (license (list license:gpl2 license:gpl3))))
