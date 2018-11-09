@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1411,7 +1412,12 @@ information.")
                (string-append (assoc-ref inputs "docbook-xsl")
                               "/xml/xsl/docbook-xsl-"
                               ,(package-version docbook-xsl)
-                              "/html/chunk.xsl")))
+                              "/html/chunk.xsl"))
+              (("http://docbook.sourceforge.net/release/xsl/current/common/en.xml")
+               (string-append (assoc-ref inputs "docbook-xsl")
+                              "/xml/xsl/docbook-xsl-"
+                              ,(package-version docbook-xsl)
+                              "/common/en.xml")))
              #t))
          (add-after 'patch-gtk-doc-scan 'patch-test-out
            (lambda _
