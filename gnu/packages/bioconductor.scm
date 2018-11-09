@@ -969,3 +969,29 @@ using pre-clustering with the k-means algorithm.  Functions are also provided
 to search for all neighbors within a given distance.  Parallelization is
 achieved for all methods using the BiocParallel framework.")
     (license license:gpl3)))
+
+(define-public r-savr
+  (package
+    (name "r-savr")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "savR" version))
+       (sha256
+        (base32
+         "13bwq2a2pygdkmhrcmvz525wsi5i01j911711zgs6x93wj20b2w7"))))
+    (properties `((upstream-name . "savR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-reshape2" ,r-reshape2)
+       ("r-scales" ,r-scales)
+       ("r-xml" ,r-xml)))
+    (home-page "https://github.com/bcalder/savR")
+    (synopsis "Parse and analyze Illumina SAV files")
+    (description
+     "This package provides tools to parse Illumina Sequence Analysis
+Viewer (SAV) files, access data, and generate QC plots.")
+    (license license:agpl3+)))
