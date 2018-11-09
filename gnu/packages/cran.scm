@@ -7443,3 +7443,23 @@ image formats, including PNG, Postscript, SVG, PGF.")
 or hash tables and to generate integer partitions.  Cool-lex order is similar
 to colexicographical order.")
     (license license:gpl2)))
+
+(define-public r-misc3d
+  (package
+    (name "r-misc3d")
+    (version "0.8-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "misc3d" version))
+       (sha256
+        (base32
+         "0qjzpw3h09qi2gfz52b7nhzd95p7yyxsd03fldc9wzzn6wi3vpkm"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/misc3d/")
+    (synopsis "Miscellaneous 3D Plots")
+    (description
+     "This package provides a collection of miscellaneous 3d plots, including
+isosurfaces.")
+    ;; Any version of the GPL.
+    (license (list license:gpl2+ license:gpl3+))))
