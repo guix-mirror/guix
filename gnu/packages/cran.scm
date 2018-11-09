@@ -7521,3 +7521,30 @@ Significant gradient and/or curvature regions often correspond to significant
 features (e.g. local modes).")
     ;; Either version of the GPL.
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-arm
+  (package
+    (name "r-arm")
+    (version "1.10-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "arm" version))
+       (sha256
+        (base32
+         "0vvp90jygajd6ydky57z66wqjq9msfbl88irj5jbsray574mh4bg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-coda" ,r-coda)
+       ("r-lme4" ,r-lme4)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-nlme" ,r-nlme)))
+    (home-page "https://cran.r-project.org/web/packages/arm/")
+    (synopsis "Data analysis using regression and multilevel/hierarchical models")
+    (description
+     "This package provides functions to accompany A. Gelman and J. Hill,
+Data Analysis Using Regression and Multilevel/Hierarchical Models, Cambridge
+University Press, 2007.")
+    (license license:gpl3+)))
