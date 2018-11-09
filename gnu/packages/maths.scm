@@ -2763,18 +2763,16 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "18.02.0")
+    (version "18.10.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/andrejv/" name "/archive"
-                           "/Version-" version ".tar.gz"))
+       (uri (string-append "https://github.com/wxMaxima-developers/" name
+                           "/archive/Version-" version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "03kr2rgfp4hcf3is8m8d8f9hj660c3xgrc50vrrfpixx4syh6wvj"))
-       (patches
-        (search-patches "wxmaxima-do-not-use-old-gnuplot-parameters.patch"))))
+         "0c2blq65r0am509p3rjqpwqk6vl5r2yg1p9nh2jczf80vhi3ldas"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
