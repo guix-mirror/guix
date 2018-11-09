@@ -121,7 +121,7 @@ be output in text, PostScript, PDF or HTML.")
 (define r-with-tests
   (package
     (name "r-with-tests")
-    (version "3.5.0")
+    (version "3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -129,7 +129,7 @@ be output in text, PostScript, PDF or HTML.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0w38865laqg28cdhikxdxhx4rfp0kgcn72gakwypsy91br9ja5zx"))))
+                "1vap2k8kj5icy9naw61f9zyphf4rs0c9rxvil0zxkwx0xvsvyqq4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
