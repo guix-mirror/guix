@@ -309,29 +309,27 @@ playing your music.")
     (name "cmus")
     (version "2.7.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/" name "/" name "/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cmus/cmus.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0raixgjavkm7hxppzsc5zqbfbh2bhjcmbiplhnsxsmyj8flafyc1"))))
+                "0xd96py21bl869qlv1353zw7xsgq6v5s8szr0ldr63zj5fgc2ps5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; cmus does not include tests
        #:phases
        (modify-phases %standard-phases
-         (replace
-          'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-
-              ;; It's an idiosyncratic configure script that doesn't
-              ;; understand --prefix=..; it wants prefix=.. instead.
-              (zero?
-               (system* "./configure"
-                        (string-append "prefix=" out)))))))))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; It's an idiosyncratic configure script that doesn't
+               ;; understand --prefix=..; it wants prefix=.. instead.
+               (invoke "./configure"
+                       (string-append "prefix=" out))
+               #t))))))
     ;; TODO: cmus optionally supports the following formats, which haven't yet
     ;; been added to Guix:
     ;;
@@ -1144,14 +1142,14 @@ your own lessons.")
     (name "powertabeditor")
     (version "2.0.0-alpha10")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/powertab/powertabeditor/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/powertab/powertabeditor.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fr14ql0yhlqvh6y08yaanszm2nvca5i50rqym396kfvga3ky18x"))
+                "1z4fhdp71ck9synr12rg1p6365xnypd8ih40c5icj4si36khvksk"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1185,14 +1183,14 @@ add_library( rapidjson INTERFACE IMPORTED )"))
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "bin/pte_tests"
-                             ;; FIXME: these tests fail
-                             "exclude:Actions/EditStaff"
-                             "exclude:Formats/PowerTabOldImport/MergeMultiBarRests"
-                             "exclude:Score/ViewFilter/FilterRule"
-                             "exclude:Score/ViewFilter/ViewFilter"
-                             "exclude:Formats/PowerTabOldImport/Directions"
-                             ))))
+             (invoke "bin/pte_tests"
+                     ;; FIXME: these tests fail
+                     "exclude:Actions/EditStaff"
+                     "exclude:Formats/PowerTabOldImport/MergeMultiBarRests"
+                     "exclude:Score/ViewFilter/FilterRule"
+                     "exclude:Score/ViewFilter/ViewFilter"
+                     "exclude:Formats/PowerTabOldImport/Directions")
+             #t))
          ;; FIXME: This bug has been fixed upstream, but no release has been
          ;; made yet.  See https://github.com/powertab/powertabeditor/issues/257
          (add-after 'unpack 'fix-boost-bug
@@ -1751,9 +1749,7 @@ export.")
            (lambda _
              (substitute* "tcl/pd-gui.tcl"
                (("exec wish ") (string-append "exec " (which "wish8.6") " ")))
-             #t))
-         (add-after 'unpack 'autoconf
-           (lambda _ (zero? (system* "bash" "./autogen.sh")))))))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -4071,14 +4067,15 @@ ISRCs and the MCN (=UPC/EAN) from disc.")
         (base32
          "0ikb9igyyk28jm34raxfzkw2qyn4nzzwsymdyprp7cmvi6g2ajb7"))))
     (build-system cmake-build-system)
-    (arguments `(#:phases
-                 (modify-phases %standard-phases
-                   (replace 'check
-                     (lambda _
-                       (and
-                        ;; requires network connections
-                        ;; (zero? (system* "tests/mbtest"))
-                        (zero? (system* "tests/ctest"))))))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; requires network connections
+             ;; (invoke "tests/mbtest")
+             (invoke "tests/ctest")
+             #t)))))
     (inputs `(("neon" ,neon)
               ("libxml2" ,libxml2)))
     (native-inputs `(("pkg-config" ,pkg-config)))

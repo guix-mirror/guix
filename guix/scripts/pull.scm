@@ -177,7 +177,7 @@ true, display what would be built without actually building it."
       (update-profile profile manifest
                       #:dry-run? dry-run?)
       (munless dry-run?
-        (display-profile-news profile)))))
+        (return (display-profile-news profile))))))
 
 (define (honor-lets-encrypt-certificates! store)
   "Tell Guile-Git to use the Let's Encrypt certificates."

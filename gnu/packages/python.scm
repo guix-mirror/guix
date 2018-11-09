@@ -10530,6 +10530,31 @@ useful as a validator for JSON data.")
 (define-public python2-validictory
   (package-with-python2 python-validictory))
 
+(define-public python-pyelftools
+  (package
+    (name "python-pyelftools")
+    (version "0.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyelftools" version))
+       (sha256
+        (base32
+         "090vdksbz341f7ljvr0zswblw4lspa8qaiikzyjkf318arpxmil9"))))
+    (build-system python-build-system)
+    ;; Test suite requires python-setuptools
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page
+     "https://github.com/eliben/pyelftools")
+    (synopsis
+     "Analyze binary and library file information")
+    (description "This Python library provides interfaces for parsing and
+analyzing two binary and library file formats; the Executable and Linking
+Format (ELF), and debugging information in the Debugging With Attributed
+Record Format (DWARF).")
+    (license license:public-domain)))
+
 (define-public python-pyev
   (package
     (name "python-pyev")
@@ -14532,14 +14557,14 @@ run on top of the dynamic task schedulers. ")
 (define-public python-ilinkedlist
   (package
     (name "python-ilinkedlist")
-    (version "0.2.0")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ilinkedlist" version))
        (sha256
         (base32
-         "0klb846q5vs62d8f89my7wan1sji4yjj6pjhjch9dha3p8vlncd2"))))
+         "04wpv7km8jggrngc4bjg3nm615czd3bjdvpsy2icg6c1c8162zyg"))))
     (build-system python-build-system)
     (native-inputs `(("python-pytest" ,python-pytest)))
     (inputs `(("python" ,python)))

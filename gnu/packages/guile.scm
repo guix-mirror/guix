@@ -2246,8 +2246,8 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
 
 ;; There has not been any release yet.
 (define-public guile-newt
-  (let ((commit "596ad760bee1be419d71271732f0f30eaee55143")
-        (revision "0"))
+  (let ((commit "4eaa3cf84b9b426cc0ff7bec48b76cca6ca3ec83")
+        (revision "1"))
     (package
       (name "guile-newt")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2259,7 +2259,7 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "18qqbi0bc7vp2vlrhib3p3wwgn7wrlv5728dn0avirhw4fxxivnf"))))
+                  "0ww7jbdsmjlsxm60ym6cb5s5kc4ljz8bn4y2lvcqnap0aihqfk10"))))
       (build-system gnu-build-system)
       (arguments
        '(#:make-flags

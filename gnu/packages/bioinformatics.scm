@@ -753,15 +753,15 @@ e.g. microbiome samples, genomes, metagenomes.")
     (package
       (inherit base)
       (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           ;; Do not require the unmaintained pyqi library.
-           (add-after 'unpack 'remove-pyqi
-             (lambda _
-               (substitute* "setup.py"
-                 (("install_requires.append\\(\"pyqi\"\\)") "pass"))
-               #t)))
-         ,@(package-arguments base))))))
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; Do not require the unmaintained pyqi library.
+             (add-after 'unpack 'remove-pyqi
+               (lambda _
+                 (substitute* "setup.py"
+                   (("install_requires.append\\(\"pyqi\"\\)") "pass"))
+                 #t)))))))))
 
 (define-public bioperl-minimal
   (let* ((inputs `(("perl-module-build" ,perl-module-build)
@@ -2716,8 +2716,10 @@ Illumina, Roche 454, and the SOLiD platform.")
                   (string-append "  strcpy(train_dir, \"" share "/train/\");"))))
              #t))
          (replace 'build
-           (lambda _ (and (zero? (system* "make" "clean"))
-                          (zero? (system* "make" "fgs")))))
+           (lambda _
+             (invoke "make" "clean")
+             (invoke "make" "fgs")
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (string-append (assoc-ref outputs "out")))
@@ -2734,21 +2736,24 @@ Illumina, Roche 454, and the SOLiD platform.")
              (let* ((out (string-append (assoc-ref outputs "out")))
                     (bin (string-append out "/bin/"))
                     (frag (string-append bin "run_FragGeneScan.pl")))
-               (and (zero? (system* frag ; Test complete genome.
-                             "-genome=./example/NC_000913.fna"
-                             "-out=./test2"
-                             "-complete=1"
-                             "-train=complete"))
-                    (file-exists? "test2.faa")
-                    (file-exists? "test2.ffn")
-                    (file-exists? "test2.gff")
-                    (file-exists? "test2.out")
-                    (zero? (system* ; Test incomplete sequences.
-                            frag
-                            "-genome=./example/NC_000913-fgs.ffn"
-                            "-out=out"
-                            "-complete=0"
-                            "-train=454_30")))))))))
+               ;; Test complete genome.
+               (invoke frag
+                       "-genome=./example/NC_000913.fna"
+                       "-out=./test2"
+                       "-complete=1"
+                       "-train=complete")
+               (unless (and (file-exists? "test2.faa")
+                            (file-exists? "test2.ffn")
+                            (file-exists? "test2.gff")
+                            (file-exists? "test2.out"))
+                 (error "Expected files do not exist."))
+               ;; Test incomplete sequences.
+               (invoke frag
+                       "-genome=./example/NC_000913-fgs.ffn"
+                       "-out=out"
+                       "-complete=0"
+                       "-train=454_30")
+               #t))))))
     (inputs
      `(("perl" ,perl)
        ("python" ,python-2))) ;not compatible with python 3.
@@ -3471,26 +3476,28 @@ VCF.")
            (lambda* (#:key inputs #:allow-other-keys)
              (mkdir-p "lib/jni")
              (mkdir-p "jdk-src")
-             (and (zero? (system* "tar" "--strip-components=1" "-C" "jdk-src"
-                                  "-xf" (assoc-ref inputs "jdk-src")))
-                  (zero? (system* "javah" "-jni"
-                                  "-classpath" "classes"
-                                  "-d" "lib/"
-                                  "net.sf.samtools.util.zip.IntelDeflater"))
-                  (with-directory-excursion "src/c/inteldeflater"
-                    (zero? (system* "gcc" "-I../../../lib" "-I."
-                                    (string-append "-I" (assoc-ref inputs "jdk")
-                                                   "/include/linux")
-                                    "-I../../../jdk-src/src/share/native/common/"
-                                    "-I../../../jdk-src/src/solaris/native/common/"
-                                    "-c" "-O3" "-fPIC" "IntelDeflater.c"))
-                    (zero? (system* "gcc" "-shared"
-                                    "-o" "../../../lib/jni/libIntelDeflater.so"
-                                    "IntelDeflater.o" "-lz" "-lstdc++"))))))
+             (invoke "tar" "--strip-components=1" "-C" "jdk-src"
+                     "-xf" (assoc-ref inputs "jdk-src"))
+             (invoke "javah" "-jni"
+                     "-classpath" "classes"
+                     "-d" "lib/"
+                     "net.sf.samtools.util.zip.IntelDeflater")
+             (with-directory-excursion "src/c/inteldeflater"
+               (invoke "gcc" "-I../../../lib" "-I."
+                       (string-append "-I" (assoc-ref inputs "jdk")
+                                      "/include/linux")
+                       "-I../../../jdk-src/src/share/native/common/"
+                       "-I../../../jdk-src/src/solaris/native/common/"
+                       "-c" "-O3" "-fPIC" "IntelDeflater.c")
+               (invoke "gcc" "-shared"
+                       "-o" "../../../lib/jni/libIntelDeflater.so"
+                       "IntelDeflater.o" "-lz" "-lstdc++"))
+             #t))
          ;; We can only build everything else after building the JNI library.
          (add-after 'build-jni 'build-rest
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* `("ant" "all" ,@make-flags)))))
+             (apply invoke `("ant" "all" ,@make-flags))
+             #t))
          (add-before 'build 'set-JAVA6_HOME
            (lambda _
              (setenv "JAVA6_HOME" (getenv "JAVA_HOME"))
@@ -3977,16 +3984,16 @@ sequences).")
 (define-public mash
   (package
     (name "mash")
-    (version "2.0")
+    (version "2.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/marbl/mash/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/marbl/mash.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "00fx14vpmgsijwxd1xql3if934l82v8ckqgjjyyhnr36qb9qrskv"))
+                "049hwcc059p2fd9vwndn63laifvvsi0wmv84i6y1fr79k15dxwy6"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -4011,9 +4018,7 @@ sequences).")
                             "src/mash/CommandScreen.cpp")
                (("^#include \"kseq\\.h\"")
                 "#include \"htslib/kseq.h\""))
-             #t))
-         (add-after 'fix-includes 'autoconf
-           (lambda _ (zero? (system* "autoconf")))))))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ;; Capnproto and htslib are statically embedded in the final
@@ -4040,13 +4045,14 @@ form of assemblies or reads.")
     (version "2.12.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://bitbucket.org/berkeleylab/metabat/get/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://bitbucket.org/berkeleylab/metabat.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1hmvdalz3zj5sqqklg0l4npjdv37cv2hsdi1al9iby2ndxjs1b73"))
+         "0hyg2smw1nz69mfvjpk45xyyychmda92c80a0cv7baji84ri4iyn"))
        (patches (search-patches "metabat-fix-compilation.patch"))))
     (build-system scons-build-system)
     (arguments
@@ -4109,16 +4115,16 @@ probabilistic distances of genome abundance and tetranucleotide frequency.")
 (define-public minced
   (package
     (name "minced")
-    (version "0.2.0")
+    (version "0.3.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/ctSkennerton/minced/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ctSkennerton/minced.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0wxmlsapxfpxfd3ps9636h7i2xy6la8i42mwh0j2lsky63h63jp1"))))
+                "1f5h9him0gd355cnx7p6pnxpknhckd4g0v62mg8zyhfbx9as25fv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -4230,12 +4236,13 @@ that a read originated from a particular isoform.")
          (delete 'configure)
          (replace 'check
            ;; There are no tests, so just test if it runs.
-           (lambda _ (zero? (system* "./muscle" "-version"))))
+           (lambda _ (invoke "./muscle" "-version") #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
-               (install-file "muscle" bin)))))))
+               (install-file "muscle" bin)
+               #t))))))
     (home-page "http://www.drive5.com/muscle")
     (synopsis "Multiple sequence alignment program")
     (description
@@ -4260,11 +4267,6 @@ program for nucleotide and protein sequences.")
                  (base32
                   "1hkw21rq1mwf7xp0rmbb2gqc0i6p11108m69i7mr7xcjl268pxnb"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
     (inputs
      ;; XXX: TODO: Enable Lua and Guile bindings.
      ;; https://github.com/tjunier/newick_utils/issues/13
@@ -4309,19 +4311,20 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
     (license license:lgpl3+)))
 
 (define-public pplacer
-  (let ((commit "g807f6f3"))
+  (let ((commit "807f6f3"))
     (package
       (name "pplacer")
       ;; The commit should be updated with each version change.
       (version "1.1.alpha19")
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/matsen/pplacer/archive/v"
-                             version ".tar.gz"))
-         (file-name (string-append name "-" version ".tar.gz"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/matsen/pplacer.git")
+               (commit (string-append "v" version))))
+         (file-name (git-file-name name version))
          (sha256
-          (base32 "0z1lnd2s8sh6kpzg106wzbh2szw7h0hvq8syd5a6wv4rmyyz6x0f"))))
+          (base32 "11ppbbbx20p2g9wj3ff64dhnarb12q79v7qh4rk0gj6lkbz4n7cn"))))
       (build-system ocaml-build-system)
       (arguments
        `(#:ocaml ,ocaml-4.01
@@ -4338,11 +4341,12 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
                       (local-dir "cddlib_guix"))
                  (mkdir local-dir)
                  (with-directory-excursion local-dir
-                   (system* "tar" "xvf" cddlib-src))
+                   (invoke "tar" "xvf" cddlib-src))
                  (let ((cddlib-src-folder
                         (string-append local-dir "/"
                                        (list-ref (scandir local-dir) 2)
                                        "/lib-src")))
+                   (for-each make-file-writable (find-files "cdd_src" ".*"))
                    (for-each
                     (lambda (file)
                       (copy-file file
@@ -4406,8 +4410,7 @@ downstream analysis.")
          (add-after 'unpack 'enter-scripts-dir
            (lambda _ (chdir "scripts")))
          (replace 'check
-           (lambda _
-             (zero? (system* "python" "-m" "unittest" "discover" "-v"))))
+           (lambda _ (invoke "python" "-m" "unittest" "discover" "-v") #t))
          (add-after 'install 'wrap-executables
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -4667,13 +4670,14 @@ large-scale data and can be applied to hundreds of species at once.")
     (version "2.0.7")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://bitbucket.org/regulatorygenomicsupf/"
-                           "pyicoteo/get/v" version ".tar.bz2"))
-       (file-name (string-append name "-" version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://bitbucket.org/regulatorygenomicsupf/pyicoteo.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0d6087f29xp8wxwlj111c3sylli98n0l8ry58c51ixzq0zfm50wa"))))
+         "0hz5g8d25lbjy1wpscr490l0lmyvaix893hhax4fxnh1h9w34w8p"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2 ; does not work with Python 3
@@ -4757,10 +4761,11 @@ partial genes, and identifies translation initiation sites.")
                                            (getenv "PATH")))
              (setenv "PERL5LIB" (string-append (getcwd) "/lib" ":"
                                                (getenv "PERL5LIB")))
-             (zero? (length (filter (lambda (file)
-                                      (display file)(display "\n")
-                                      (not (zero? (system* "perl" file))))
-                                    (find-files "t" ".*\\.t$"))))))
+             (for-each (lambda (file)
+                         (display file)(display "\n")
+                         (invoke "perl" file))
+                       (find-files "t" ".*\\.t$"))
+             #t))
          (replace 'install
            ;; There is no 'install' target in the Makefile.
            (lambda* (#:key outputs #:allow-other-keys)
@@ -4849,18 +4854,17 @@ extremely diverse sets of genomes.")
 (define-public raxml
   (package
     (name "raxml")
-    (version "8.2.10")
+    (version "8.2.12")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append
-         "https://github.com/stamatak/standard-RAxML/archive/v"
-         version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stamatak/standard-RAxML.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "13s7aspfdcfr6asynwdg1x6vznys6pzap5f8wsffbnnwpkkg9ya8"))))
+         "1jqjzhch0rips0vp04prvb8vmc20c5pdmsqn8knadcf91yy859fh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -5053,21 +5057,24 @@ distribution, coverage uniformity, strand specificity, etc.")
            (modify-phases %standard-phases
              (replace 'bootstrap
                (lambda _
-                 (invoke "bash" "gen_auto")))
+                 (substitute* "gen_tools_am"
+                   (("/usr/bin/env.*") (which "perl")))
+                 (invoke "bash" "gen_auto")
+                 #t))
              (add-after 'build 'build-additional-tools
                (lambda* (#:key make-flags #:allow-other-keys)
-                 (every (lambda (dir)
-                          (with-directory-excursion (string-append "tools/" dir)
-                            (zero? (apply system* "make" make-flags))))
-                        dirs)))
+                 (for-each (lambda (dir)
+                             (with-directory-excursion (string-append "tools/" dir)
+                               (apply invoke "make" make-flags)))
+                           dirs)
+                 #t))
              (add-after 'install 'install-additional-tools
                (lambda* (#:key make-flags #:allow-other-keys)
-                 (fold (lambda (dir result)
-                         (with-directory-excursion (string-append "tools/" dir)
-                           (and result
-                                (zero? (apply system*
-                                              `("make" ,@make-flags "install"))))))
-                       #t dirs)))))))
+                 (for-each (lambda (dir)
+                             (with-directory-excursion (string-append "tools/" dir)
+                               (apply invoke `("make" ,@make-flags "install"))))
+                           dirs)
+                 #t))))))
       (inputs
        `(("gsl" ,gsl)
          ("boost" ,boost)
@@ -5233,17 +5240,16 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
 (define-public ngs-sdk
   (package
     (name "ngs-sdk")
-    (version "1.3.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/ncbi/ngs/archive/"
-                       version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1wiyf4c6nm2j87pv015cbi0qny5byf3pbvcw3likifz5dl56ag40"))))
+    (version "2.9.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ncbi/ngs.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17c0v1nah3g3d2ib5bbi0vhma1ghd6vb9xycavqsh64lhp840rk3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -5259,9 +5265,10 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
 
                ;; The 'configure' script doesn't recognize things like
                ;; '--enable-fast-install'.
-               (zero? (system* "./configure"
-                               (string-append "--build-prefix=" (getcwd) "/build")
-                               (string-append "--prefix=" out))))))
+               (invoke "./configure"
+                       (string-append "--build-prefix=" (getcwd) "/build")
+                       (string-append "--prefix=" out))
+               #t)))
          (add-after 'unpack 'enter-dir
            (lambda _ (chdir "ngs-sdk") #t)))))
     (native-inputs `(("perl" ,perl)))
@@ -5299,23 +5306,24 @@ simultaneously.")
 (define-public ncbi-vdb
   (package
     (name "ncbi-vdb")
-    (version "2.8.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/ncbi/ncbi-vdb/archive/"
-                       version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1acn4bv81mfl137qnbn9995mjjhwd36pm0b7qli1iw5skrxa9j8m"))))
+    (version "2.9.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ncbi/ncbi-vdb.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1l4ny67nxwv1lagk9wwjbrgm7ln7adci6dnpc7k1yaln6shj0qpm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
        #:tests? #f ; no "check" target
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _ (for-each make-file-writable (find-files "." ".*")) #t))
          (add-before 'configure 'set-perl-search-path
            (lambda _
              ;; Work around "dotless @INC" build failure.
@@ -5349,8 +5357,7 @@ simultaneously.")
 
                ;; The 'configure' script doesn't recognize things like
                ;; '--enable-fast-install'.
-               (zero? (system*
-                       "./configure"
+               (invoke "./configure"
                        (string-append "--build-prefix=" (getcwd) "/build")
                        (string-append "--prefix=" (assoc-ref outputs "out"))
                        (string-append "--debug")
@@ -5359,7 +5366,8 @@ simultaneously.")
                        (string-append "--with-ngs-sdk-prefix="
                                       (assoc-ref inputs "ngs-sdk"))
                        (string-append "--with-hdf5-prefix="
-                                      (assoc-ref inputs "hdf5")))))))
+                                      (assoc-ref inputs "hdf5")))
+               #t)))
          (add-after 'install 'install-interfaces
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Install interface libraries.  On i686 the interface libraries
@@ -5464,12 +5472,13 @@ subsequent visualization, annotation and storage of results.")
     (version "1.90b4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/chrchang/plink-ng/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chrchang/plink-ng.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "09ixrds009aczjswxr2alcb774mksq5g0v78dgjjn1h4dky0kf9a"))))
+        (base32 "02npdwgkpfkdnhw819rhj5kw02a5k5m90b14zq9zzya4hyg929c0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no "check" target
@@ -5551,14 +5560,14 @@ structures, classes for genomic regions, mapped sequencing reads, etc.")
 (define-public preseq
   (package
     (name "preseq")
-    (version "2.0")
+    (version "2.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/smithlabcode/"
-                                  "preseq/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/smithlabcode/preseq/"
+                                  "releases/download/v" version
+                                  "/preseq_v" version ".tar.bz2"))
               (sha256
-               (base32 "08r684l50pnxjpvmhzjgqq56yv9rfw90k8vx0nsrnrzk8mf9hsdq"))
+               (base32 "149x9xmk1wy1gff85325yfzqc0qk4sgp1w6gbyj9cnji4x1dszbl"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Remove bundled samtools.
@@ -5648,17 +5657,17 @@ sequence itself can be retrieved from these databases.")
 (define-public sra-tools
   (package
     (name "sra-tools")
-    (version "2.8.2-1")
+    (version "2.9.3")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/ncbi/sra-tools/archive/"
-                       version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ncbi/sra-tools.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1camsijmvv2s45mb4iyf44ghl4gkd4rl0viphpcgl3ccchy32a0g"))))
+         "0663gcdxkziwsmlznjxysb00621rllpbz6jwsfifq7z3dj3lwm8b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -5708,8 +5717,7 @@ sequence itself can be retrieved from these databases.")
 
              ;; The 'configure' script doesn't recognize things like
              ;; '--enable-fast-install'.
-             (zero? (system*
-                     "./configure"
+             (invoke "./configure"
                      (string-append "--build-prefix=" (getcwd) "/build")
                      (string-append "--prefix=" (assoc-ref outputs "out"))
                      (string-append "--debug")
@@ -5727,18 +5735,7 @@ sequence itself can be retrieved from these databases.")
                      (string-append "--with-ngs-sdk-prefix="
                                     (assoc-ref inputs "ngs-sdk"))
                      (string-append "--with-hdf5-prefix="
-                                    (assoc-ref inputs "hdf5"))))))
-         ;; This version of sra-tools fails to build with glibc because of a
-         ;; naming conflict.  glibc-2.25/include/bits/mathcalls.h already
-         ;; contains a definition of "canonicalize", so we rename it.
-         ;;
-         ;; See upstream bug report:
-         ;; https://github.com/ncbi/sra-tools/issues/67
-         (add-after 'unpack 'patch-away-glibc-conflict
-           (lambda _
-             (substitute* "tools/bam-loader/bam.c"
-               (("canonicalize\\(" line)
-                (string-append "sra_tools_" line)))
+                                    (assoc-ref inputs "hdf5")))
              #t)))))
     (native-inputs `(("perl" ,perl)))
     (inputs
@@ -5865,24 +5862,16 @@ is one that takes arguments.")
 (define-public seqtk
   (package
     (name "seqtk")
-    (version "1.2")
+    (version "1.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/lh3/seqtk/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/lh3/seqtk.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ywdyzpmfiz2wp6ampbzqg4y8bj450nfgqarpamg045b8mk32lxx"))
-                            (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Remove extraneous header files, as is done in the seqtk
-                  ;; master branch.
-                  (for-each (lambda (file) (delete-file file))
-                            (list "ksort.h" "kstring.h" "kvec.h"))
-                  #t))))
+                "1bfzlqa84b5s1qi22blmmw2s8xdyp9h9ydcq22pfjhh5gab3yz6l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -5890,11 +5879,12 @@ is one that takes arguments.")
          (delete 'configure)
          (replace 'check
            ;; There are no tests, so we just run a sanity check.
-           (lambda _ (zero? (system* "./seqtk" "seq"))))
+           (lambda _ (invoke "./seqtk" "seq") #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-               (install-file "seqtk" bin)))))))
+               (install-file "seqtk" bin)
+               #t))))))
     (inputs
      `(("zlib" ,zlib)))
     (home-page "https://github.com/lh3/seqtk")
@@ -5910,20 +5900,20 @@ optionally compressed by gzip.")
     (name "snap-aligner")
     (version "1.0beta.18")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/amplab/snap/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/amplab/snap.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vnsjwv007k1fl1q7d681kbwn6bc66cgw6h16hym6gvyy71qv2ly"))))
+                "01w3qq4wm07z73vky0cfwlmrbf50n3w722cxrlzxfi99mnb808d8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (replace 'check (lambda _ (zero? (system* "./unit_tests"))))
+         (replace 'check (lambda _ (invoke "./unit_tests") #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -5952,14 +5942,14 @@ of these reads to align data quickly through a hash-based indexing scheme.")
     (version "2.1b")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/biocore/sortmerna/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/biocore/sortmerna.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ghaghvd82af9j5adavxh77g7hm247d1r69m3fbi6f1jdivj5ldk"))))
+         "0j3mbz4n25738yijmjbr5r4fyvkgm8v5vn3sshyfvmyqf5q9byqf"))))
     (build-system gnu-build-system)
     (outputs '("out"      ;for binaries
                "db"))     ;for sequence databases
@@ -6205,8 +6195,7 @@ Cuffdiff or Ballgown programs.")
        #:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (zero? (system* "python" "-m" "unittest" "discover" "-v")))))))
+           (lambda _ (invoke "python" "-m" "unittest" "discover" "-v") #t)))))
     (propagated-inputs
      `(("python-sqlalchemy" ,python2-sqlalchemy)
        ("python-decorator" ,python2-decorator)
@@ -6839,17 +6828,17 @@ SELECT or UPDATE queries to an end-point.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.8.0")
+    (version "2.9.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/torognes/vsearch/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/torognes/vsearch.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "15pbirgzhvflj4pi5n82vybbzjy9mlb0lv5l3qhrmdkfzpbyahw3"))
+         "0vhrpjfdf75ba04b24xknp41790cvcgwl0vgpy7qbzj5xh2521ss"))
        (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin
@@ -6860,11 +6849,6 @@ SELECT or UPDATE queries to an end-point.")
            (delete-file "src/city.cc")
            #t))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
     (inputs
      `(("zlib" ,zlib)
        ("bzip2" ,bzip2)
@@ -8874,13 +8858,14 @@ Sequences.")
     (version "1.1.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/ManuSetty/SeqGL/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ManuSetty/SeqGL.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0pnk1p3sci5yipyc8xnb6jbmydpl80fld927xgnbcv104hy8h8yh"))))
+         "1r6ywvhxl3ffv48lgj7sbd582mcc6dha3ksgc2qjlvjrnkbj3799"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biostrings" ,r-biostrings)
@@ -9042,7 +9027,7 @@ AM_CONDITIONAL(AMPNG, true)"))
                (("\\$\\(bindir\\)/embossupdate") ""))
              #t))
          (add-after 'disable-update-check 'autogen
-           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
+           (lambda _ (invoke "autoreconf" "-vif") #t)))))
     (inputs
      `(("perl" ,perl)
        ("libpng" ,libpng)
@@ -9215,12 +9200,14 @@ group or two ChIP groups run under different conditions.")
       (name "filevercmp")
       (version (string-append "0-1." (string-take commit 7)))
       (source (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/ekg/filevercmp/archive/"
-                            commit ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32 "0yp5jswf5j2pqc6517x277s4s6h1ss99v57kxw9gy0jkfl3yh450"))))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ekg/filevercmp.git")
+                      (commit commit)))
+                (file-name (git-file-name name commit))
+                (sha256
+                 (base32
+                  "1j9vxsy0y050v59h0q1d6501fcw1kjvj0d18l1xk2zyg0jzj247c"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; There are no tests to run.
@@ -9230,7 +9217,8 @@ group or two ChIP groups run under different conditions.")
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-                 (install-file "filevercmp" bin)))))))
+                 (install-file "filevercmp" bin)
+                 #t))))))
       (home-page "https://github.com/ekg/filevercmp")
       (synopsis "This program compares version strings")
       (description "This program compares version strings.  It intends to be a
@@ -11259,16 +11247,16 @@ sort, markdup, and depth.")
 (define-public ritornello
   (package
     (name "ritornello")
-    (version "1.0.0")
+    (version "2.0.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/KlugerLab/"
-                                  "Ritornello/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/KlugerLab/Ritornello.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "02nik86gq9ljjriv6pamwlmqnfky3ads1fpklx6mc3hx6k40pg38"))))
+                "1xahvq215qld7x1w8vpa5zbrsj6p9crb9shqa2x89sb0aaxa02jk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -11277,7 +11265,7 @@ sort, markdup, and depth.")
          (add-after 'unpack 'patch-samtools-references
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("src/SamStream.h"
-                            "src/BufferedGenomeReader.h")
+                            "src/FLD.cpp")
                (("<sam.h>") "<samtools/sam.h>"))
              #t))
          (delete 'configure)
@@ -11503,15 +11491,16 @@ applications for tackling some common problems in a user-friendly way.")
 (define-public tadbit
   (package
     (name "tadbit")
-    (version "0.2")
+    (version "0.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/3DGenomes/TADbit/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/3DGenomes/TADbit.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1cnfqrl4685zar4nnw94j94nhvl2h29jm448nadqi1h05z6fdk4f"))))
+                "07g3aj648prmsvxp9caz5yl41k0y0647vxh0f5p3w8376mfiljd0"))))
     (build-system python-build-system)
     (arguments
      `(;; Tests are included and must be run after installation, but
@@ -11566,13 +11555,14 @@ models.  TADbit is complemented by TADkit for visualizing 3D models.")
     (version "302.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/ENCODE-DCC/kentUtils/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ENCODE-DCC/kentUtils.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "134aja3k1cj32kbk1nnw0q9gxjb2krr15q6sga8qldzvc0585rmm"))
+         "0n1wbyjpzii2b9qhyp9r1q76j623cggpg3y8fmw78ld3z4y7ivha"))
        (modules '((guix build utils)
                   (srfi srfi-26)
                   (ice-9 ftw)))
@@ -11623,6 +11613,8 @@ models.  TADbit is complemented by TADkit for visualizing 3D models.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-permissions
+           (lambda _ (make-file-writable "src/inc/localEnvironment.mk") #t))
          (add-after 'unpack 'fix-paths
            (lambda _
              (substitute* "Makefile"
@@ -11918,14 +11910,14 @@ accurate as existing quantification tools.")
     (name "libgff")
     (version "1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Kingsford-Group/"
-                    "libgff/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Kingsford-Group/libgff.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0vc4nxyhlm6g9vvmx5l4lfs5pnvixsv1hiiy4kddf2y3p6jna8ls"))))
+                "0n6vfjnq7a2mianipscbshrvbncss8z4zkgkbjw754p9043nfkps"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))          ; no tests included
     (home-page "https://github.com/Kingsford-Group/libgff")
@@ -11970,14 +11962,14 @@ bytes of memory space, where n is the length of the string.")
     (name "sailfish")
     (version "0.10.1")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/kingsfordgroup/"
-                              "sailfish/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kingsfordgroup/sailfish.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1inn60dxiwsz8g9w7kvfhjxj4bwfb0r12dyhpzzhfbig712dkmm0"))
+                "1amcc5hqvsl42hg4x19bi9vy47cl874s0lw1fmi0hwsdk9i8c03v"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -12025,10 +12017,10 @@ bytes of memory space, where n is the length of the string.")
                    (include "external/install/include/rapmap/")
                    (rapmap (assoc-ref inputs "rapmap")))
                (mkdir-p "/tmp/rapmap")
-               (system* "tar" "xf"
-                        (assoc-ref inputs "rapmap")
-                        "-C" "/tmp/rapmap"
-                        "--strip-components=1")
+               (invoke "tar" "xf"
+                       (assoc-ref inputs "rapmap")
+                       "-C" "/tmp/rapmap"
+                       "--strip-components=1")
                (mkdir-p src)
                (mkdir-p include)
                (for-each (lambda (file)

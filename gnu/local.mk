@@ -813,6 +813,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
+  %D%/packages/patches/hplip-remove-imageprocessor.patch	\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icecat-CVE-2018-12383.patch		\
@@ -1230,7 +1231,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wpa-supplicant-fix-zeroed-keys.patch	\
   %D%/packages/patches/wpa-supplicant-fix-nonce-reuse.patch	\
   %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
-  %D%/packages/patches/wxmaxima-do-not-use-old-gnuplot-parameters.patch	\
   %D%/packages/patches/x265-detect512-all-arches.patch		\
   %D%/packages/patches/xboing-CVE-2004-0149.patch		\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\

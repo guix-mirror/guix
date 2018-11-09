@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages java)
   #:use-module (gnu packages gnuzilla)
@@ -2111,3 +2113,39 @@ derivations of regular expressions.")
      "The Haskell XML Toolbox bases on the ideas of HaXml and HXML, but
 introduces a more general approach for processing XML with Haskell.")
     (license license:expat)))
+
+(define-public xmlrpc-c
+  (package
+    (name "xmlrpc-c")
+    (version "1.43.08")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/xmlrpc-c/Xmlrpc-c%20Super%20Stable/"
+                                 version "/xmlrpc-c-" version ".tgz"))
+             (sha256
+              (base32
+               "18zwbj6i2hpcn5riiyp8i6rml0sfv60dd7phw1x8g4r4lj2bbxf9"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("curl" ,curl)))
+    (native-inputs
+     `(;; For tools, if ever needed.
+       ("perl" ,perl)))
+    (arguments
+     `(#:make-flags ; Add $libdir to the RUNPATH of all the executables.
+       (list (string-append "LDFLAGS_PERSONAL=-Wl,-rpath=" %output "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-/bin/sh-in-tests
+           (lambda _
+             (substitute* "GNUmakefile"
+               (("#! /bin/sh") (which "sh")))
+             #t)))))
+    (home-page "http://xmlrpc-c.sourceforge.net/")
+    (synopsis "Lightweight RPC library based on XML and HTTP")
+    (description
+     "XML-RPC is a quick-and-easy way to make procedure calls over the Internet.
+It converts the procedure call into an XML document, sends it to a remote
+server using HTTP, and gets back the response as XML.  This library provides a
+modular implementation of XML-RPC for C and C++.")
+    (license (list license:psfl license:expat))))

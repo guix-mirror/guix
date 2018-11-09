@@ -51,6 +51,7 @@ Copyright @copyright{} 2018 Mike Gerwitz@*
 Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
 Copyright @copyright{} 2018 Gábor Boskovits@*
 Copyright @copyright{} 2018 Florian Pelz@*
+Copyright @copyright{} 2018 Laura Lazzati@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -354,6 +355,7 @@ configuration in a transactional, reproducible, and stateless fashion
 (@pxref{System Configuration}).
 
 @cindex functional package management
+@cindex isolation
 Under the hood, Guix implements the @dfn{functional package management}
 discipline pioneered by Nix (@pxref{Acknowledgments}).
 In Guix, the package build and installation process is seen
@@ -387,6 +389,7 @@ garbage collection of packages (@pxref{Features}).
 @chapter Installation
 
 @cindex installing Guix
+@cindex official website
 GNU Guix is available for download from its website at
 @url{http://www.gnu.org/software/guix/}.  This section describes the
 software requirements of Guix, as well as how to install it and get
@@ -398,6 +401,8 @@ instead, you want to install the complete GNU operating system,
 @pxref{System Installation}.
 
 @cindex foreign distro
+@cindex directories related to foreign distro
+
 When installed on a running GNU/Linux system---thereafter called a
 @dfn{foreign distro}---GNU@tie{}Guix complements the available tools
 without interference.  Its data lives exclusively in two directories,
@@ -420,6 +425,7 @@ Once installed, Guix can be updated by running @command{guix pull}
 @section Binary Installation
 
 @cindex installing Guix from binaries
+@cindex installer script
 This section describes how to install Guix on an arbitrary system from a
 self-contained tarball providing binaries for Guix and for all its
 dependencies.  This is often quicker than installing from source, which

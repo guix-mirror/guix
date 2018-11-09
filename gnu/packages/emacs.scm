@@ -12463,3 +12463,78 @@ correctly.")
 @item helm-slime-repl-history: Select an input from the SLIME REPL history and insert it.
 @end itemize\n")
       (license license:gpl3+))))
+
+(define-public emacs-clang-format
+  (let ((commit "5556c31528af2661bed3011bd63ffc0ed44e18a0"))
+    (package
+      (name "emacs-clang-format")
+      (version (git-version "0.0.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacsorphanage/clang-format")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0ynvnp3vrcpngmwakb23xv4xn7jbkg43s196q7pg9nkl13x4n2nq"))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("clang" ,clang)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((clang (assoc-ref inputs "clang")))
+                 ;; Repo is read-only.
+                 (chmod "clang-format.el" #o644)
+                 (emacs-substitute-variables "clang-format.el"
+                   ("clang-format-executable"
+                    (string-append clang "/bin/clang-format"))))
+               #t)))))
+      (home-page "https://github.com/emacsorphanage/clang-format")
+      (synopsis "Format code using clang-format")
+      (description "This package allows to filter code through clang-format to
+fix its formatting.  @command{clang-format} is a tool that formats C/C++/Obj-C
+code according to a set of style options, see
+@url{http://clang.llvm.org/docs/ClangFormatStyleOptions.html}.")
+      (license license:gpl3+))))
+
+(define-public emacs-gtk-look
+  (package
+    (name "emacs-gtk-look")
+    (version "29")
+    (source (origin
+              (method url-fetch)
+              (uri "https://download.tuxfamily.org/user42/gtk-look.el")
+              (sha256
+               (base32
+                "14p2nwrd51cr1v06fxbjjn6jdrkf9d6vcxhmscm0kl677s25ypsp"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda _
+             ;; File is read-only.
+             (chmod "gtk-look.el" #o644)
+             (emacs-substitute-variables "gtk-look.el"
+               ("gtk-lookup-devhelp-indices"
+                '(list (expand-file-name "~/.guix-profile/share/gtk-doc/html/*/*.devhelp*"))))
+             #t)))))
+    (home-page "http://user42.tuxfamily.org/gtk-look/index.html")
+    (synopsis "Find and display HTML documentation for GTK, GNOME and Glib")
+    (description "@command{gtk-look} finds and displays HTML documentation for
+GTK, GNOME and Glib functions and variables in Emacs, similar to what
+info-lookup-symbol does for info files (C-h S).  The documentation is expected
+to be devhelp indexes with HTML files.  The location of the indexes can be
+customized.  In addition to C code development @command{gtk-look} is good for
+
+@itemize
+@item @command{perl-gtk2}, recognising class funcs like
+@command{Gtk2::Label->new} and bare method names like @command{set_text}.
+@item @command{guile-gnome}, recognising methods like @command{set-text} and
+classes like @command{<gtk-window>}.
+@end itemize\n")
+    (license license:gpl3+)))

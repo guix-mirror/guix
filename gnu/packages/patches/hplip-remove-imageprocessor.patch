@@ -1,0 +1,232 @@
+This patch is based heavily on the Debian patch.
+
+https://salsa.debian.org/printing-team/hplip/raw/debian/3.18.10+dfsg0-1/debian/patches/0025-Remove-all-ImageProcessor-functionality-which-is-clo.patch
+
+---
+ Makefile.am                  | 22 +++-------------------
+ Makefile.in                  | 33 +++++----------------------------
+ prnt/hpcups/HPCupsFilter.cpp | 21 ---------------------
+ 3 files changed, 8 insertions(+), 68 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index ef6480f..ecada5c 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -166,7 +166,7 @@ if !HPLIP_CLASS_DRIVER
+ dist_hplip_SCRIPTS = hpssd.py __init__.py hpdio.py
+ endif #HPLIP_CLASS_DRIVER
+ 
+-dist_noinst_DATA += prnt/drv/hpijs.drv.in.template prnt/drv/hpcups.drv.in.template prnt/hpcups/libImageProcessor-x86_64.so prnt/hpcups/libImageProcessor-x86_32.so
++dist_noinst_DATA += prnt/drv/hpijs.drv.in.template prnt/drv/hpcups.drv.in.template
+ dist_noinst_SCRIPTS += dat2drv.py install.py  hplip-install init-suse-firewall init-iptables-firewall class_rpm_build.sh hplipclassdriver.spec createPPD.sh Makefile_dat2drv hpijs-drv
+ 
+ if !HPLIP_CLASS_DRIVER
+@@ -590,11 +590,10 @@ hpcups_SOURCES = prnt/hpcups/HPCupsFilter.cpp prnt/hpcups/HPCupsFilter.h prnt/hp
+ 	prnt/hpcups/flate_colorspace.h prnt/hpcups/RunLenEncoding.h prnt/hpcups/common_defines.h \
+ 	prnt/hpcups/genPCLm.h \
+ 	common/utils.c common/utils.h prnt/hpcups/Hbpl1_Wrapper.cpp prnt/hpcups/genPCLm.cpp \
+-	prnt/hpcups/genJPEGStrips.cpp prnt/hpcups/RunLenEncoding.cpp \
+-	prnt/hpcups/ImageProcessor.h
++	prnt/hpcups/genJPEGStrips.cpp prnt/hpcups/RunLenEncoding.cpp
+ 
+ hpcups_CXXFLAGS = $(APDK_ENDIAN_FLAG) $(DBUS_CFLAGS)
+-hpcups_LDADD = -L./prnt/hpcups/ -ljpeg -ldl -lImageProcessor -lcups -lcupsimage -lz $(DBUS_LIBS)
++hpcups_LDADD = -L./prnt/hpcups/ -ljpeg -ldl -lcups -lcupsimage -lz $(DBUS_LIBS)
+ #else
+ #hpcupsdir = $(cupsfilterdir)
+ #hpcups_PROGRAMS = hpcups
+@@ -679,21 +678,10 @@ printpluginsdir=$(cupsfilterdir)
+ 
+ 
+ dist_filter_DATA = hpcups hpps dat2drv
+-dist_printplugins_DATA = prnt/plugins/hbpl1-arm32.so prnt/plugins/hbpl1-arm64.so prnt/plugins/hbpl1-x86_32.so prnt/plugins/hbpl1-x86_64.so prnt/plugins/lj-arm32.so prnt/plugins/lj-arm64.so prnt/plugins/lj-x86_32.so prnt/plugins/lj-x86_64.so
+ endif #HPLIP_CLASS_DRIVER
+ 
+ install-data-hook:
+ if HPLIP_BUILD
+-	if [ \( "$(UNAME)" = "x86_64" -a  -d "$(libdir)/" \) ]; then \
+-		cp prnt/hpcups/libImageProcessor-x86_64.so $(libdir)/ ; \
+-		chmod 775 $(libdir)/libImageProcessor-x86_64.so ; \
+-		ln -sf $(libdir)/libImageProcessor-x86_64.so $(libdir)/libImageProcessor.so ; \
+-	fi; \
+-	if [ \( \( "$(UNAME)" = "i686" -o "$(UNAME)" = "i386" \) -a -d "$(libdir)/" \) ]; then \
+-		cp prnt/hpcups/libImageProcessor-x86_32.so $(libdir)/ ; \
+-		chmod 775 $(libdir)/libImageProcessor-x86_32.so ; \
+-		ln -sf $(libdir)/libImageProcessor-x86_32.so $(libdir)/libImageProcessor.so ; \
+-	fi
+ if !HPLIP_CLASS_DRIVER
+ #	   If scanner build, add hpaio entry to sane dll.conf.
+ 	if [ "$(scan_build)" = "yes" ]; then \
+@@ -874,10 +862,6 @@ if HPLIP_CLASS_DRIVER
+ 	rm -rf $(distdir)/setup.py
+ 	rm -rf $(distdir)/systray.py
+ 	rm -rf $(distdir)/timedate.py
+-	rm -rf $(distdir)/prnt/plugins/lj-arm32.so
+-	rm -rf $(distdir)/prnt/plugins/lj-arm64.so
+-	rm -rf $(distdir)/prnt/plugins/lj-x86_32.so
+-	rm -rf $(distdir)/prnt/plugins/lj-x86_64.so
+ 	rm -rf $(distdir)/hpijs-drv
+ 	rm -rf $(distdir)/prnt/hpcups/
+ 	rm -rf $(distdir)/prnt/ps/
+diff --git a/Makefile.in b/Makefile.in
+index 910a268..cd44203 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -103,7 +103,7 @@ DIST_COMMON = $(am__configure_deps) \
+ 
+ # ip library
+ @HPLIP_BUILD_TRUE@am__append_12 = libhpip.la
+-@FULL_BUILD_TRUE@@HPLIP_BUILD_TRUE@am__append_13 = prnt/drv/hpijs.drv.in.template prnt/drv/hpcups.drv.in.template prnt/hpcups/libImageProcessor-x86_64.so prnt/hpcups/libImageProcessor-x86_32.so
++@FULL_BUILD_TRUE@@HPLIP_BUILD_TRUE@am__append_13 = prnt/drv/hpijs.drv.in.template prnt/drv/hpcups.drv.in.template
+ @FULL_BUILD_TRUE@@HPLIP_BUILD_TRUE@am__append_14 = dat2drv.py install.py  hplip-install init-suse-firewall init-iptables-firewall class_rpm_build.sh hplipclassdriver.spec createPPD.sh Makefile_dat2drv hpijs-drv
+ @FULL_BUILD_TRUE@@HPLIP_BUILD_TRUE@@HPLIP_CLASS_DRIVER_FALSE@am__append_15 = scan/sane/hpaio.desc \
+ @FULL_BUILD_TRUE@@HPLIP_BUILD_TRUE@@HPLIP_CLASS_DRIVER_FALSE@	installer/text_install.py \
+@@ -500,8 +500,7 @@ am__hpcups_SOURCES_DIST = prnt/hpcups/HPCupsFilter.cpp \
+ 	prnt/hpcups/RunLenEncoding.h prnt/hpcups/common_defines.h \
+ 	prnt/hpcups/genPCLm.h common/utils.c common/utils.h \
+ 	prnt/hpcups/Hbpl1_Wrapper.cpp prnt/hpcups/genPCLm.cpp \
+-	prnt/hpcups/genJPEGStrips.cpp prnt/hpcups/RunLenEncoding.cpp \
+-	prnt/hpcups/ImageProcessor.h
++	prnt/hpcups/genJPEGStrips.cpp prnt/hpcups/RunLenEncoding.cpp
+ @HPCUPS_INSTALL_TRUE@am_hpcups_OBJECTS =  \
+ @HPCUPS_INSTALL_TRUE@	hpcups-HPCupsFilter.$(OBJEXT) \
+ @HPCUPS_INSTALL_TRUE@	hpcups-dbuscomm.$(OBJEXT) \
+@@ -723,8 +722,7 @@ am__dist_locatedriver_DATA_DIST = locatedriver
+ am__dist_models_DATA_DIST = data/models/models.dat
+ am__dist_noinst_DATA_DIST = prnt/drv/hpijs.drv.in.template \
+ 	prnt/drv/hpcups.drv.in.template \
+-	prnt/hpcups/libImageProcessor-x86_64.so \
+-	prnt/hpcups/libImageProcessor-x86_32.so scan/sane/hpaio.desc \
++	scan/sane/hpaio.desc \
+ 	installer/text_install.py data/localization/hplip_de.ts \
+ 	data/localization/hplip_es.ts data/localization/hplip_fr.ts \
+ 	data/localization/hplip_it.ts data/localization/hplip_pt.ts \
+@@ -1932,11 +1930,6 @@ am__dist_ppd_DATA_DIST = prnt/ps/hp-designjet_z6810ps_42in-ps.ppd.gz \
+ 	ppd/classppd/ps/hp-postscript-inkjet.ppd.gz \
+ 	ppd/classppd/ps/hp-postscript-laserjet-pro.ppd.gz \
+ 	ppd/classppd/ps/hp-postscript-laserjet.ppd.gz
+-am__dist_printplugins_DATA_DIST = prnt/plugins/hbpl1-arm32.so \
+-	prnt/plugins/hbpl1-arm64.so prnt/plugins/hbpl1-x86_32.so \
+-	prnt/plugins/hbpl1-x86_64.so prnt/plugins/lj-arm32.so \
+-	prnt/plugins/lj-arm64.so prnt/plugins/lj-x86_32.so \
+-	prnt/plugins/lj-x86_64.so
+ am__dist_prnt_DATA_DIST = prnt/cups.py prnt/__init__.py prnt/ldl.py \
+ 	prnt/pcl.py prnt/colorcal.py
+ am__dist_rules_DATA_DIST = data/rules/56-hpmud.rules \
+@@ -4665,11 +4658,10 @@ libapdk_la_CFLAGS = $(libapdk_la_CXXFLAGS) -Iprnt/hpijs
+ @HPCUPS_INSTALL_TRUE@	prnt/hpcups/flate_colorspace.h prnt/hpcups/RunLenEncoding.h prnt/hpcups/common_defines.h \
+ @HPCUPS_INSTALL_TRUE@	prnt/hpcups/genPCLm.h \
+ @HPCUPS_INSTALL_TRUE@	common/utils.c common/utils.h prnt/hpcups/Hbpl1_Wrapper.cpp prnt/hpcups/genPCLm.cpp \
+-@HPCUPS_INSTALL_TRUE@	prnt/hpcups/genJPEGStrips.cpp prnt/hpcups/RunLenEncoding.cpp \
+-@HPCUPS_INSTALL_TRUE@	prnt/hpcups/ImageProcessor.h
++@HPCUPS_INSTALL_TRUE@	prnt/hpcups/genJPEGStrips.cpp prnt/hpcups/RunLenEncoding.cpp
+ 
+ @HPCUPS_INSTALL_TRUE@hpcups_CXXFLAGS = $(APDK_ENDIAN_FLAG) $(DBUS_CFLAGS)
+-@HPCUPS_INSTALL_TRUE@hpcups_LDADD = -L./prnt/hpcups/ -ljpeg -ldl -lImageProcessor -lcups -lcupsimage -lz $(DBUS_LIBS)
++@HPCUPS_INSTALL_TRUE@hpcups_LDADD = -L./prnt/hpcups/ -ljpeg -ldl -lcups -lcupsimage -lz $(DBUS_LIBS)
+ #else
+ #hpcupsdir = $(cupsfilterdir)
+ #hpcups_PROGRAMS = hpcups
+@@ -4717,7 +4709,6 @@ ppddir = $(hpppddir)
+ @HPLIP_CLASS_DRIVER_TRUE@filterdir = $(cupsfilterdir)
+ @HPLIP_CLASS_DRIVER_TRUE@printpluginsdir = $(cupsfilterdir)
+ @HPLIP_CLASS_DRIVER_TRUE@dist_filter_DATA = hpcups hpps dat2drv
+-@HPLIP_CLASS_DRIVER_TRUE@dist_printplugins_DATA = prnt/plugins/hbpl1-arm32.so prnt/plugins/hbpl1-arm64.so prnt/plugins/hbpl1-x86_32.so prnt/plugins/hbpl1-x86_64.so prnt/plugins/lj-arm32.so prnt/plugins/lj-arm64.so prnt/plugins/lj-x86_32.so prnt/plugins/lj-x86_64.so
+ all: all-am
+ 
+ .SUFFIXES:
+@@ -9380,16 +9371,6 @@ uninstall-am: uninstall-apparmor_abstractionDATA \
+ 
+ 
+ install-data-hook:
+-@HPLIP_BUILD_TRUE@	if [ \( "$(UNAME)" = "x86_64" -a  -d "$(libdir)/" \) ]; then \
+-@HPLIP_BUILD_TRUE@		cp prnt/hpcups/libImageProcessor-x86_64.so $(libdir)/ ; \
+-@HPLIP_BUILD_TRUE@		chmod 775 $(libdir)/libImageProcessor-x86_64.so ; \
+-@HPLIP_BUILD_TRUE@		ln -sf $(libdir)/libImageProcessor-x86_64.so $(libdir)/libImageProcessor.so ; \
+-@HPLIP_BUILD_TRUE@	fi; \
+-@HPLIP_BUILD_TRUE@	if [ \( \( "$(UNAME)" = "i686" -o "$(UNAME)" = "i386" \) -a -d "$(libdir)/" \) ]; then \
+-@HPLIP_BUILD_TRUE@		cp prnt/hpcups/libImageProcessor-x86_32.so $(libdir)/ ; \
+-@HPLIP_BUILD_TRUE@		chmod 775 $(libdir)/libImageProcessor-x86_32.so ; \
+-@HPLIP_BUILD_TRUE@		ln -sf $(libdir)/libImageProcessor-x86_32.so $(libdir)/libImageProcessor.so ; \
+-@HPLIP_BUILD_TRUE@	fi
+ #	   If scanner build, add hpaio entry to sane dll.conf.
+ @HPLIP_BUILD_TRUE@@HPLIP_CLASS_DRIVER_FALSE@	if [ "$(scan_build)" = "yes" ]; then \
+ @HPLIP_BUILD_TRUE@@HPLIP_CLASS_DRIVER_FALSE@	   $(mkinstalldirs) $(DESTDIR)/etc/sane.d; \
+@@ -9556,10 +9537,6 @@ dist-hook:
+ @HPLIP_CLASS_DRIVER_TRUE@	rm -rf $(distdir)/setup.py
+ @HPLIP_CLASS_DRIVER_TRUE@	rm -rf $(distdir)/systray.py
+ @HPLIP_CLASS_DRIVER_TRUE@	rm -rf $(distdir)/timedate.py
+-@HPLIP_CLASS_DRIVER_TRUE@	rm -rf $(distdir)/prnt/plugins/lj-arm32.so
+-@HPLIP_CLASS_DRIVER_TRUE@	rm -rf $(distdir)/prnt/plugins/lj-arm64.so
+-@HPLIP_CLASS_DRIVER_TRUE@	rm -rf $(distdir)/prnt/plugins/lj-x86_32.so
+-@HPLIP_CLASS_DRIVER_TRUE@	rm -rf $(distdir)/prnt/plugins/lj-x86_64.so
+ @HPLIP_CLASS_DRIVER_TRUE@	rm -rf $(distdir)/hpijs-drv
+ @HPLIP_CLASS_DRIVER_TRUE@	rm -rf $(distdir)/prnt/hpcups/
+ @HPLIP_CLASS_DRIVER_TRUE@	rm -rf $(distdir)/prnt/ps/
+diff --git a/prnt/hpcups/HPCupsFilter.cpp b/prnt/hpcups/HPCupsFilter.cpp
+index 5b282d8..0bacfaf 100644
+--- a/prnt/hpcups/HPCupsFilter.cpp
++++ b/prnt/hpcups/HPCupsFilter.cpp
+@@ -31,7 +31,6 @@
+ \*****************************************************************************/
+ 
+ #include "HPCupsFilter.h"
+-#include "ImageProcessor.h"
+ 
+ #include <signal.h>
+ #include <sys/wait.h>
+@@ -637,16 +636,10 @@ int HPCupsFilter::processRasterData(cups_raster_t *cups_raster)
+ 
+ 
+     sprintf(hpPreProcessedRasterFile, "%s/hp_%s_cups_SwapedPagesXXXXXX",CUPS_TMP_DIR, m_JA.user_name);
+-    image_processor_t* imageProcessor = imageProcessorCreate();
+ 
+     while (cupsRasterReadHeader2(cups_raster, &cups_header))
+     {
+ 
+-        IMAGE_PROCESSOR_ERROR result = imageProcessorStartPage(imageProcessor, &cups_header);
+-        if (result != IPE_SUCCESS){
+-            dbglog("DEBUG: imageProcessorStartPage failed result = %d\n", result);
+-        }
+-
+         current_page_number++;
+ 
+         if (current_page_number == 1) {
+@@ -745,12 +738,6 @@ int HPCupsFilter::processRasterData(cups_raster_t *cups_raster)
+             color_raster = rgbRaster;
+             black_raster = kRaster;
+ 
+-            result = imageProcessorProcessLine(imageProcessor, m_pPrinterBuffer, cups_header.cupsBytesPerLine);
+-            if (result != IPE_SUCCESS){
+-                dbglog("DEBUG: imageProcessorProcessLine failed result = %d\n", result);
+-            }
+-
+-
+             if ((y == 0) && !is_ljmono) {
+                 //For ljmono, make sure that first line is not a blankRaster line.Otherwise printer
+                 //may not skip blank lines before actual data
+@@ -780,12 +767,6 @@ int HPCupsFilter::processRasterData(cups_raster_t *cups_raster)
+             }
+         }  // for() loop end
+ 
+-        result = imageProcessorEndPage(imageProcessor);
+-        if (result != IPE_SUCCESS){
+-                dbglog("DEBUG: imageProcessorEndPage failed result = %d\n", result);
+-        }
+-
+-
+         m_Job.NewPage();
+         if (err != NO_ERROR) {
+             break;
+@@ -800,8 +781,6 @@ int HPCupsFilter::processRasterData(cups_raster_t *cups_raster)
+         rgbRaster = NULL;
+     }
+ 
+-    imageProcessorDestroy(imageProcessor);
+-
+     unlink(hpPreProcessedRasterFile);
+     return ret_status;
+ }
+-- 
+2.19.1
+
