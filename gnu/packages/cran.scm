@@ -571,14 +571,16 @@ you to rapidly iterate while developing a package.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "0.12.19")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "10mmiaawv9iwglc6z4y51mdpsfb1sivqmwr6xnfqkllcnpabdbk3"))))
+        (base32 "1hlbw4k79q9ich4w27b01gsvwrsnrflii8zjlcmgfzm1vpq8ndxp"))))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
     (description
