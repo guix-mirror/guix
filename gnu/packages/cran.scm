@@ -7422,3 +7422,24 @@ various standard 3D file formats including WebGL, PLY, OBJ, STL as well as 2D
 image formats, including PNG, Postscript, SVG, PGF.")
     ;; Any version of the GPL.
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-multicool
+  (package
+    (name "r-multicool")
+    (version "0.1-10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "multicool" version))
+       (sha256
+        (base32
+         "1ybg9piya9psqg42w9i3zsnavbxhkfklfwl7cb420i5nkq6wpc2v"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/multicool/")
+    (synopsis "Permutations of multisets in cool-lex order")
+    (description
+     "This package provides a set of tools to permute multisets without loops
+or hash tables and to generate integer partitions.  Cool-lex order is similar
+to colexicographical order.")
+    (license license:gpl2)))
