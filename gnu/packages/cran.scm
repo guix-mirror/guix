@@ -3071,6 +3071,26 @@ Analysis for Physical Applications, Donald B. Percival and Andrew T. Walden,
 Cambridge University Press, 1993.")
     (license license:gpl2)))
 
+(define-public r-aggregation
+  (package
+    (name "r-aggregation")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "aggregation" version))
+       (sha256
+        (base32
+         "0j9g604m2ccc7hcy02539yja9cf3xcbl25gvp838bp4x8w18my46"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/aggregation/")
+    (synopsis "Methods for p-value aggregation")
+    (description
+     "This package contains functionality for performing the following methods
+of p-value aggregation: Fisher's method, the Lancaster method (weighted
+Fisher's method), and Sidak correction.")
+    (license license:gpl3)))
+
 (define-public r-quantmod
   (package
     (name "r-quantmod")
