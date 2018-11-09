@@ -1182,14 +1182,14 @@ add_library( rapidjson INTERFACE IMPORTED )"))
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "bin/pte_tests"
-                             ;; FIXME: these tests fail
-                             "exclude:Actions/EditStaff"
-                             "exclude:Formats/PowerTabOldImport/MergeMultiBarRests"
-                             "exclude:Score/ViewFilter/FilterRule"
-                             "exclude:Score/ViewFilter/ViewFilter"
-                             "exclude:Formats/PowerTabOldImport/Directions"
-                             ))))
+             (invoke "bin/pte_tests"
+                     ;; FIXME: these tests fail
+                     "exclude:Actions/EditStaff"
+                     "exclude:Formats/PowerTabOldImport/MergeMultiBarRests"
+                     "exclude:Score/ViewFilter/FilterRule"
+                     "exclude:Score/ViewFilter/ViewFilter"
+                     "exclude:Formats/PowerTabOldImport/Directions")
+             #t))
          ;; FIXME: This bug has been fixed upstream, but no release has been
          ;; made yet.  See https://github.com/powertab/powertabeditor/issues/257
          (add-after 'unpack 'fix-boost-bug
