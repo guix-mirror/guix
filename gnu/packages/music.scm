@@ -1141,14 +1141,14 @@ your own lessons.")
     (name "powertabeditor")
     (version "2.0.0-alpha10")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/powertab/powertabeditor/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/powertab/powertabeditor.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fr14ql0yhlqvh6y08yaanszm2nvca5i50rqym396kfvga3ky18x"))
+                "1z4fhdp71ck9synr12rg1p6365xnypd8ih40c5icj4si36khvksk"))
               (modules '((guix build utils)))
               (snippet
                '(begin
