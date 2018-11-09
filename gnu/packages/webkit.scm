@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
@@ -66,11 +68,13 @@
                (base32
                 "147r7an41920zl4x9srdva7fxvw2znjin5ldjkhay1cndv9gih0m"))))
     (build-system cmake-build-system)
+    (outputs '("out" "doc"))
     (arguments
      '(#:tests? #f ; no tests
        #:build-type "Release" ; turn off debugging symbols to save space
        #:configure-flags (list
                           "-DPORT=GTK"
+                          "-DENABLE_GTKDOC=ON" ; No doc by default
                           (string-append ; uses lib64 by default
                            "-DLIB_INSTALL_DIR="
                            (assoc-ref %outputs "out") "/lib")
@@ -87,7 +91,28 @@
                           ;; XXX Disable WOFF2 ‘web fonts’.  These were never
                           ;; supported in our previous builds.  Enabling them
                           ;; requires building libwoff2 and possibly woff2dec.
-                          "-DUSE_WOFF2=OFF")))
+                          "-DUSE_WOFF2=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-gtk-doc-scan
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Source/WebKit/WebProcess/InjectedBundle/API/gtk/DOM/docs/webkitdomgtk-docs.sgml"
+               (("http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd")
+                (string-append (assoc-ref inputs "docbook-xml")
+                               "/xml/dtd/docbook/docbookx.dtd")))
+             (substitute* "Source/WebKit/UIProcess/API/gtk/docs/webkit2gtk-docs.sgml"
+               (("http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd")
+                (string-append (assoc-ref inputs "docbook-xml")
+                               "/xml/dtd/docbook/docbookx.dtd")))
+             #t))
+         (add-after 'install 'move-doc-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file (string-append out "/share/gtk-doc")
+                            (string-append doc "/share/gtk-doc"))
+               #t))))))
     (native-inputs
      `(("bison" ,bison)
        ("gettext" ,gettext-minimal)
@@ -97,6 +122,8 @@
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2) ; incompatible with Python 3 (print syntax)
+       ("gtk-doc" ,gtk-doc) ; For documentation generation
+       ("docbook-xml" ,docbook-xml) ; For documentation generation
        ("ruby" ,ruby)))
     (propagated-inputs
      `(("gtk+" ,gtk+)
