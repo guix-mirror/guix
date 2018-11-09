@@ -7463,3 +7463,35 @@ to colexicographical order.")
 isosurfaces.")
     ;; Any version of the GPL.
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-ks
+  (package
+    (name "r-ks")
+    (version "1.11.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ks" version))
+       (sha256
+        (base32
+         "0z749c3xzpf6n0g7xcfplrhap1di8k7kcfr7vigh95ywnigyhs8d"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fnn" ,r-fnn)
+       ("r-kernlab" ,r-kernlab)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-matrix" ,r-matrix)
+       ("r-mclust" ,r-mclust)
+       ("r-mgcv" ,r-mgcv)
+       ("r-misc3d" ,r-misc3d)
+       ("r-multicool" ,r-multicool)
+       ("r-mvtnorm" ,r-mvtnorm)))
+    (home-page "http://www.mvstat.net/tduong/")
+    (synopsis "Kernel smoothing")
+    (description
+     "This package provides kernel smoothers for univariate and multivariate
+data, including density functions, density derivatives, cumulative
+distributions, modal clustering, discriminant analysis, and two-sample
+hypothesis testing.")
+    ;; Either version of the GPL.
+    (license (list license:gpl2 license:gpl3))))
