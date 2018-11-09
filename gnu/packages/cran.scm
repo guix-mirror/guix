@@ -34,10 +34,13 @@
   #:use-module (guix build-system r)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
@@ -46,7 +49,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xorg))
 
 (define-public r-clipr
   (package
@@ -7376,3 +7380,45 @@ netCDF files.")
      "This package provides a convenient tool to install and update
 Bioconductor packages.")
     (license license:artistic2.0)))
+
+(define-public r-rgl
+  (package
+    (name "r-rgl")
+    (version "0.99.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rgl" version))
+       (sha256
+        (base32
+         "0q8sg8fr0140ilssqhscaxkjc29w1rpp6f4k50amw3zzs9g58ak9"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("libpng" ,libpng)
+       ("glu" ,glu)
+       ("libx11" ,libx11)
+       ("ghc-pandoc" ,ghc-pandoc)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-crosstalk" ,r-crosstalk)
+       ("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-knitr" ,r-knitr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-manipulatewidget" ,r-manipulatewidget)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://r-forge.r-project.org/projects/rgl/")
+    (synopsis "3D visualization using OpenGL")
+    (description
+     "This package provides medium to high level functions for 3D interactive graphics,
+including functions modelled on base graphics (@code{plot3d()}, etc.) as well
+as functions for constructing representations of geometric
+objects (@code{cube3d()}, etc.).  Output may be on screen using OpenGL, or to
+various standard 3D file formats including WebGL, PLY, OBJ, STL as well as 2D
+image formats, including PNG, Postscript, SVG, PGF.")
+    ;; Any version of the GPL.
+    (license (list license:gpl2+ license:gpl3+))))
