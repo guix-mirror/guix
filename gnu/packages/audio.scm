@@ -3443,14 +3443,14 @@ representations.")
     (name "cava")
     (version "0.6.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/karlstav/cava/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/karlstav/cava.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "13d72swnjs894llf0paandmhf1lf90dz6ygkcdw4bv84wzkq1f4q"))))
+                "1kvhqgijs29909w3sq9m0bslx2zxxn4b3i07kdz4hb0dqkppxpjy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
