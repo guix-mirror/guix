@@ -2851,14 +2851,14 @@ with a much different focus than most other audio daemons.")
     (name "xjackfreak")
     (version "1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/johnhldavis/xjackfreak/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/johnhldavis/xjackfreak.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xj6gpxfnw9jbdgwgm0x23xgfvj2kwmwb1nk0drw8lxgcchkq7d9"))))
+                "18c546qidbrj0f5wfiq5llii2192xpln0ab3r4vpr7i3wybxqjfz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
