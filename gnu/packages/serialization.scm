@@ -99,7 +99,6 @@ arbitrary data types and reversibly turns them into different representations,
 such as compact binary encodings, XML, or JSON.")
     (license license:bsd-3)))
 
-
 (define-public msgpack
   (package
     (name "msgpack")
@@ -132,13 +131,6 @@ such as compact binary encodings, XML, or JSON.")
     ;; zbuffer.hpp) which #include <zlib.h>.  However, 'guix gc --references'
     ;; does not detect a store reference to zlib since these headers are not
     ;; compiled.
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _
-             (invoke "autoreconf" "-vfi")
-             #t)))))
     (home-page "https://www.msgpack.org")
     (synopsis "Binary serialization library")
     (description "Msgpack is a library for C/C++ that implements binary
