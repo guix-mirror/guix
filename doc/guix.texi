@@ -14349,6 +14349,16 @@ Defaults to @samp{#t}.
 
 @end deftypevr
 
+@deftypevr {@code{service-configuration} parameter} non-negative-integer client-limit
+Maximum number of simultaneous client connections per process.  Once
+this number of connections is received, the next incoming connection
+will prompt Dovecot to spawn another process.  If set to 0,
+@code{default-client-limit} is used instead.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
 @deftypevr {@code{service-configuration} parameter} non-negative-integer service-count
 Number of connections to handle before starting a new process.
 Typically the only useful values are 0 (unlimited) or 1.  1 is more
