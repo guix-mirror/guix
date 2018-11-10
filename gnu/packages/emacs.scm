@@ -12568,3 +12568,23 @@ customized.  In addition to C code development @command{gtk-look} is good for
 classes like @command{<gtk-window>}.
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public emacs-ov
+  (package
+    (name "emacs-ov")
+    (version "1.0.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ShingoFukuyama/ov.el.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qxk2rf84j86syxi8xknsq252irwg7sz396v3bb4wqz4prpj0kzc"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ShingoFukuyama/ov.el")
+    (synopsis "Overlay library for Emacs Lisp")
+    (description "@code{ov.el} provides a simple way to manipulate overlays in
+Emacs.")
+    (license license:gpl3+)))
