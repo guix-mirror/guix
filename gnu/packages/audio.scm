@@ -1879,14 +1879,14 @@ software.")
     (name "lvtk")
     (version "1.2.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/lvtk/lvtk/archive/"
-                                 version
-                                 ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/lvtk/lvtk.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "03nbj2cqcklqwh50zj2gwm07crh5iwqbpxbpzwbg5hvgl4k4rnjd"))))
+               "1b01zvzl70ana6l1kn8fgyr7msnn3c7x61cgw7fdpp50322352p8"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f  ; no check target
