@@ -3949,7 +3949,7 @@ are exceeded.")
 (define-public mtd-utils
   (package
     (name "mtd-utils")
-    (version "1.5.2")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3957,18 +3957,18 @@ are exceeded.")
                     "mtd-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "007lhsd8yb34l899r4m37whhzdw815cz4fnjbpnblfha524p7dax"))))
+                "1f30jszknc5v6ykmil8ajxgksmcg54q3rsp84jsancp9x0dycggv"))))
+    (arguments
+     '(#:configure-flags '("--enable-unit-tests")))
+    (native-inputs
+     `(("cmocka" ,cmocka)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("acl" ,acl)
+     `(("acl" ,acl) ; for XATTR
        ("libuuid" ,util-linux)
        ("lzo" ,lzo)
        ("zlib" ,zlib)))
     (build-system gnu-build-system)
-    (arguments
-     `(#:test-target "tests"
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
     (synopsis "MTD Flash Storage Utilities")
     (description "This package provides utilities for testing, partitioning, etc
 of flash storage.")
