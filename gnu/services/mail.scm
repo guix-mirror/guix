@@ -301,6 +301,10 @@ used instead.")
    "Number of connections to handle before starting a new process.
 Typically the only useful values are 0 (unlimited) or 1.  1 is more
 secure, but 0 is faster.  <doc/wiki/LoginProcess.txt>.")
+  (process-limit
+   (non-negative-integer 0)
+   "Maximum number of processes that can exist for this service.  If set to 0,
+@code{default-process-limit} is used instead.")
   (process-min-avail
    (non-negative-integer 0)
    "Number of processes to always keep waiting for more connections.")
@@ -482,6 +486,7 @@ complex, customize the address and port fields of the
      (service-configuration
       (kind "imap-login")
       (client-limit 0)
+      (process-limit 0)
       (listeners
        (list
         (inet-listener-configuration (protocol "imap") (port 143) (ssl? #f))
@@ -495,14 +500,17 @@ complex, customize the address and port fields of the
      (service-configuration
       (kind "lmtp")
       (client-limit 1)
+      (process-limit 0)
       (listeners
        (list (unix-listener-configuration (path "lmtp") (mode "0666")))))
      (service-configuration
       (kind "imap")
-      (client-limit 1))
+      (client-limit 1)
+      (process-limit 1024))
      (service-configuration
       (kind "pop3")
-      (client-limit 1))
+      (client-limit 1)
+      (process-limit 1024))
      (service-configuration (kind "auth")
       ;; In what could be taken to be a bug, the default value of 1 for
       ;; service-count makes it so that a PAM auth worker can't fork off
@@ -514,14 +522,17 @@ complex, customize the address and port fields of the
       ;; 30.
       (service-count 30)
       (client-limit 0)
+      (process-limit 1)
       (listeners
        (list (unix-listener-configuration (path "auth-userdb")))))
      (service-configuration
       (kind "auth-worker")
-      (client-limit 1))
+      (client-limit 1)
+      (process-limit 0))
      (service-configuration
       (kind "dict")
       (client-limit 1)
+      (process-limit 0)
       (listeners (list (unix-listener-configuration (path "dict")))))))
    "List of services to enable.  Available services include @samp{imap},
 @samp{imap-login}, @samp{pop3}, @samp{pop3-login}, @samp{auth}, and

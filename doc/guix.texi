@@ -14364,6 +14364,15 @@ Number of connections to handle before starting a new process.
 Typically the only useful values are 0 (unlimited) or 1.  1 is more
 secure, but 0 is faster.  <doc/wiki/LoginProcess.txt>.
 Defaults to @samp{1}.
+
+@end deftypevr
+
+@deftypevr {@code{service-configuration} parameter} non-negative-integer process-limit
+Maximum number of processes that can exist for this service.  If set to
+0, @code{default-process-limit} is used instead.
+
+Defaults to @samp{0}.
+
 @end deftypevr
 
 @deftypevr {@code{service-configuration} parameter} non-negative-integer process-min-avail
