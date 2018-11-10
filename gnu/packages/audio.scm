@@ -654,14 +654,14 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
     (name "csound")
     (version "6.11.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/csound/csound/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/csound/csound.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "072pk5h9w0vhw0ncc9dn90haw1yv18v04iwwjn8nsp6930w7dvxd"))))
+                "1hlkrnv3gghx4v382nl6v6k2k1dzm5ddk35m5g3q6pzc959726s7"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
