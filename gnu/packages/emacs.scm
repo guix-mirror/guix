@@ -811,6 +811,29 @@ different tools.  It highlights errors and warnings inline in the buffer, and
 provides an optional IDE-like error list.")
     (license license:gpl3+)))                     ;+GFDLv1.3+ for the manual
 
+(define-public emacs-a
+  (package
+    (name "emacs-a")
+    (version "0.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/plexus/a.el.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "00v9w6qg3bkwdhypq0ssf0phdh0f4bcq59c20lngd6vhk0204dqi"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/plexus/a.el/")
+    (synopsis
+     "Emacs library for dealing with association lists and hash tables")
+    (description "@code{emacs-a} provides Emacs Lisp functions for dealing
+with associative structures in a uniform and functional way.  These functions
+can take association lists, hash tables, and in some cases vectors (where the
+index is considered the key).")
+    (license license:gpl3+)))
+
 
 ;;;
 ;;; Web browsing.
