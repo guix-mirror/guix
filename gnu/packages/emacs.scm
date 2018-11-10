@@ -7688,17 +7688,17 @@ value of the access token.")
 (define-public emacs-circe
   (package
     (name "emacs-circe")
-    (version "2.6")
+    (version "2.10")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/jorgenschaefer/circe.git")
              (commit (string-append "v" version))))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "19h3983zy3f15cgs86irvbdzz55qyjm48qd7gjlzcxplr7vnnh0j"))))
+         "10gi14kwxd81blddpvqh95lgmpbfgp0m955naxix3bs3r6a75n4s"))))
     (build-system emacs-build-system)
     ;; In order to securely connect to an IRC server using TLS, Circe requires
     ;; the GnuTLS binary.
