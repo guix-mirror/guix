@@ -38,7 +38,7 @@ Copyright @copyright{} 2016, 2017 Nikita Gillmann@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
-Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
+Copyright @copyright{} 2016, 2017, 2018, 2019, 2020, 2021 Christopher Baines@*
 Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@*
 Copyright @copyright{} 2017, 2018, 2020, 2021 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
@@ -342,7 +342,7 @@ Services
 * DNS Services::                DNS daemons.
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
-* Continuous Integration::      The Cuirass service.
+* Continuous Integration::      Cuirass and Laminar services.
 * Power Management Services::   Extending battery life.
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
@@ -14820,7 +14820,7 @@ declaration.
 * DNS Services::                DNS daemons.
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
-* Continuous Integration::      The Cuirass service.
+* Continuous Integration::      Cuirass and Laminar services.
 * Power Management Services::   Extending battery life.
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
@@ -27325,6 +27325,64 @@ The TCP port of the publish server.  It defaults to @code{5558}.
 @item @code{private-key}
 Use the specific @var{file}s as the public/private key pair used to sign
 the store items being published.
+
+@end table
+@end deftp
+
+@subsubheading Laminar
+
+@uref{https://laminar.ohwg.net/, Laminar} is a lightweight and modular
+Continuous Integration service.  It doesn't have a configuration web UI
+instead uses version-controllable configuration files and scripts.
+
+Laminar encourages the use of existing tools such as bash and cron
+instead of reinventing them.
+
+@defvr {Scheme Procedure} laminar-service-type
+The type of the Laminar service.  Its value must be a
+@code{laminar-configuration} object, as described below.
+
+All configuration values have defaults, a minimal configuration to get
+Laminar running is shown below. By default, the web interface is
+available on port 8080.
+
+@lisp
+(service laminar-service-type)
+@end lisp
+@end defvr
+
+@deftp {Data Type} laminar-configuration
+Data type representing the configuration of Laminar.
+
+@table @asis
+@item @code{laminar} (default: @code{laminar})
+The Laminar package to use.
+
+@item @code{home-directory} (default: @code{"/var/lib/laminar"})
+The directory for job configurations and run directories.
+
+@item @code{bind-http} (default: @code{"*:8080"})
+The interface/port or unix socket on which laminard should listen for
+incoming connections to the web frontend.
+
+@item @code{bind-rpc} (default: @code{"unix-abstract:laminar"})
+The interface/port or unix socket on which laminard should listen for
+incoming commands such as build triggers.
+
+@item @code{title} (default: @code{"Laminar"})
+The page title to show in the web frontend.
+
+@item @code{keep-rundirs} (default: @code{0})
+Set to an integer defining how many rundirs to keep per job.  The
+lowest-numbered ones will be deleted.  The default is 0, meaning all run
+dirs will be immediately deleted.
+
+@item @code{archive-url} (default: @code{#f})
+The web frontend served by laminard will use this URL to form links to
+artefacts archived jobs.
+
+@item @code{base-url} (default: @code{#f})
+Base URL to use for links to laminar itself.
 
 @end table
 @end deftp
