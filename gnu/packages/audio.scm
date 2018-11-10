@@ -572,13 +572,14 @@ based on human speech recordings.")
     (name "infamous-plugins")
     (version "0.2.04")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ssj71/infamousPlugins/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ssj71/infamousPlugins.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1n6rhqsmvad7692w2h01niw5gqg5yk7a09wxl5ivs77zyp93vf7z"))))
+                "0hmqk80w4qxq09iag7b7srf2g0wigkyhzq0ywxvhz2iz0hq9k0dh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
