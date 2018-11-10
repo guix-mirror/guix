@@ -2279,6 +2279,35 @@ using S-expressions.")
 tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
     (license license:gpl3+)))
 
+(define-public guile-email
+  (let ((commit "fa52eac55e5946db89621a6c583d2aa357864dee")
+        (revision "1"))
+    (package
+      (name "guile-email")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.systemreboot.net/guile-email")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1037mbz7qd9bzaqp8ysyhnl9ipd97fmj3b9jr8qfzx9179vvsj63"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)))
+      (inputs
+       `(("guile" ,guile-2.2.4)))
+      (home-page "https://git.systemreboot.net/guile-email")
+      (synopsis "Guile email parser")
+      (description "This package provides an email parser written in pure
+Guile.")
+      (license license:agpl3+))))
+
 ;; There has not been any release yet.
 (define-public guile-newt
   (let ((commit "4eaa3cf84b9b426cc0ff7bec48b76cca6ca3ec83")
