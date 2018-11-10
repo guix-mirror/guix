@@ -25837,3 +25837,44 @@ windows' layout, and their buffers.")
 between cursor and next word, parenthesis or delimiter while honoring some
 rules about where space should be left to separate words and parentheses.")
       (license license:gpl2+))))
+
+(define-public emacs-webpaste
+  (package
+    (name "emacs-webpaste")
+    (version "3.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/etu/webpaste.el")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "08545ihkzflw80rwklnxiswrpdrl8kr74xzxm5wsgrf36fkj9rn2"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "unit" "integration")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; Do not use cask to run tests.
+             (substitute* "Makefile"
+               (("\\$\\{CASK\\} exec ") ""))
+             ;; Disable tests that need network access.
+             (substitute* (list "tests/unit/test-webpaste-provider-creation.el"
+                                "tests/integration/test-webpaste-providers.el")
+               (("describe") "xdescribe")))))))
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)))
+    (propagated-inputs
+     `(("emacs-request" ,emacs-request)))
+    (home-page "https://github.com/etu/webpaste.el")
+    (synopsis "Paste to pastebin-like services")
+    (description "This mode allows to paste whole buffers or parts of buffers
+to pastebin-like services.  It supports more than one service and will
+failover if one service fails.  More services can easily be added over time
+and prefered services can easily be configured.")
+    (license license:gpl3+)))
