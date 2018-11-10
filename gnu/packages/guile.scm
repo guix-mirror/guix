@@ -2308,6 +2308,31 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
 Guile.")
       (license license:agpl3+))))
 
+(define-public guile-debbugs-next
+  (let ((commit "75a331d561c8b6f8efcf16216dab961c17759efe")
+        (revision "1"))
+    (package (inherit guile-debbugs)
+      (name "guile-debbugs")
+      (version (git-version "0.0.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/guile-debbugs.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0br3mgbw41bpc9x57jlghl0i8dz9nl63r4wzs5l47aqszf84870y"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("guile" ,guile-2.2.4)
+         ("guile-email" ,guile-email))))))
+
 ;; There has not been any release yet.
 (define-public guile-newt
   (let ((commit "4eaa3cf84b9b426cc0ff7bec48b76cca6ca3ec83")
