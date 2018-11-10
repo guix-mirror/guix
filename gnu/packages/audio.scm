@@ -2285,25 +2285,21 @@ tempo and pitch of an audio recording independently of one another.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
-       #:phases (modify-phases %standard-phases
-                  (add-after
-                   'unpack 'autoconf
-                   (lambda _ (invoke "autoreconf" "-vfi")))
-                  (add-before
-                   'build 'fix-makefile
-                   (lambda _
-                     (substitute* "Makefile"
-                       (("/bin/ln") "ln")
-                       (("RtMidi.h RtError.h") "RtMidi.h"))
-                     #t))
-                  (add-before
-                   'install 'make-target-dirs
-                   (lambda _
-                     (let ((out (assoc-ref %outputs "out")))
-                       (mkdir-p (string-append out "/bin"))
-                       (mkdir (string-append out "/lib"))
-                       (mkdir (string-append out "/include")))
-                     #t)))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("/bin/ln") "ln")
+               (("RtMidi.h RtError.h") "RtMidi.h"))
+             #t))
+         (add-before 'install 'make-target-dirs
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               (mkdir (string-append out "/lib"))
+               (mkdir (string-append out "/include")))
+             #t)))))
     (inputs
      `(("jack" ,jack-1)
        ("alsa-lib" ,alsa-lib)))
