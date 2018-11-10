@@ -428,6 +428,46 @@ and editing digital audio.  It features digital effects and spectrum analysis
 tools.")
     (license license:gpl2+)))
 
+(define-public autotalent
+  (package
+    (name "autotalent")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://tombaran.info/autotalent-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1n04qm66f14195ly6gsy3ra7v2j7zad5n19d8dwfmh0qs6h9hphh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-before 'install 'prepare-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib/ladspa"))
+             #t))
+         (add-after 'unpack 'override-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr/lib64/ladspa")
+                (string-append (assoc-ref outputs "out") "/lib/ladspa")))
+             #t)))))
+    (inputs
+     `(("ladspa" ,ladspa)))
+    (home-page "http://tombaran.info/autotalent.html")
+    (synopsis "Pitch-correction LADSPA audio plugin")
+    (description
+     "Autotalent is a LADSPA plugin for real-time pitch-correction.  Among its
+controls are allowable notes, strength of correction, LFO for vibrato and
+formant warp.")
+    ;; All code except the FFT routine is licensed under GPLv2+.
+    ;; The FFT routine is under BSD-3.
+    (license (list license:gpl2+))))
+
 (define-public azr3
   (package
     (name "azr3")
