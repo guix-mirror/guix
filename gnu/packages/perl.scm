@@ -364,7 +364,7 @@ sometimes even without using a single syscall.")
 (define-public perl-autovivification
   (package
     (name "perl-autovivification")
-    (version "0.16")
+    (version "0.18")
     (source
      (origin
        (method url-fetch)
@@ -372,7 +372,7 @@ sometimes even without using a single syscall.")
                            "autovivification-" version ".tar.gz"))
        (sha256
         (base32
-         "1422kw9fknv7rbjkgdfflg1q3mb69d3yryszp38dn0bgzkqhwkc1"))))
+         "01giacr2sx6b9bgfz6aqw7ndcnf08j8n6kwhm7880a94hmb9g69d"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/autovivification")
     (synopsis "Lexically disable autovivification")
