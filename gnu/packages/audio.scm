@@ -2812,12 +2812,13 @@ synthesizer written in C++.")
     (version "1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Themaister/RSound/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Themaister/RSound.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1wzs40c0k5zpkmm5ffl6c17xmr399sxli7ys0fbb9ib0fd334knx"))))
+        (base32 "0gspmr3klwnq98h17p5hc6ifygya4p80g4g8r7a1qavm3mv19waf"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
