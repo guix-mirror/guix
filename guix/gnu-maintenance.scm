@@ -247,7 +247,7 @@ network to check in GNU's database."
 (define (release-file? project file)
   "Return #f if FILE is not a release tarball of PROJECT, otherwise return
 true."
-  (and (not (string-suffix? ".sig" file))
+  (and (not (member (file-extension file) '("sig" "sign" "asc")))
        (and=> (regexp-exec %tarball-rx file)
               (lambda (match)
                 ;; Filter out unrelated files, like `guile-www-1.1.1'.
