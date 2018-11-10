@@ -2753,20 +2753,14 @@ portions of LAME.")
      ;; TODO: Add ASIHPI.
      `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)))
+    ;; Autoreconf is necessary because the audacity-compat patch modifies .in
+    ;; files.
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (arguments
-     '(#:phases
-       ;; Autoreconf is necessary because the audacity-compat patch modifies
-       ;; .in files.
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _
-             (invoke "autoreconf" "-vif"))))
-       #:tests? #f))                    ;no 'check' target
+    (arguments '(#:tests? #f))                    ;no 'check' target
     (home-page "http://www.portaudio.com/")
     (synopsis "Audio I/O library")
     (description
