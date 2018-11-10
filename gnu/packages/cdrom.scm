@@ -291,6 +291,15 @@ images.")
      `(#:tests? #f ; No tests.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-glibc-compatability
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; We use sed --in-place because substitute* cannot handle the
+             ;; character encoding used by growisofs.c.
+             (invoke "sed" "-i" "-e"
+                     (string-append
+                       "s,<sys/stat.h>,"
+                       "<sys/stat.h>\\\n#include <sys/sysmacros.h>,")
+                     "growisofs.c")))
          (replace 'configure
            (lambda _ (setenv "prefix" (assoc-ref %outputs "out")) #t))
          (add-before 'build 'embed-mkisofs
