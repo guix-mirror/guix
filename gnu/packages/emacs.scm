@@ -12627,3 +12627,35 @@ classes like @command{<gtk-window>}.
     (description "@code{ov.el} provides a simple way to manipulate overlays in
 Emacs.")
     (license license:gpl3+)))
+
+(define-public emacs-matrix-client
+  (let ((commit "3eab4c28280feff18ee1ddd7db66ada4f135cbf8"))
+    (package
+      (name "emacs-matrix-client")
+      (version (git-version "0.0.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jgkamat/matrix-client-el.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1k6721jz0m22vpb78881k087mpx8hf3s2219ic75v5mhgx355f7m"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("a" ,emacs-a)
+         ("dash" ,emacs-dash)
+         ("esxml" ,emacs-esxml)
+         ("f" ,emacs-f)
+         ("ht" ,emacs-ht)
+         ("ov" ,emacs-ov)
+         ("request" ,emacs-request)
+         ("s" ,emacs-s)
+         ("tracking" ,emacs-tracking)))
+      (home-page "https://github.com/jgkamat/matrix-client-el")
+      (synopsis "Matrix client for Emacs")
+      (description "@code{matrix-client} is a simple chat UI to Matrix.org
+rooms.  It also provides an API which allows Emacs to seamlessly create
+RPC channels with users and other software.")
+      (license license:gpl3+))))
