@@ -21,6 +21,7 @@
   #:use-module (web uri)
   #:use-module (web client)
   #:use-module (web response)
+  #:use-module (sxml simple)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -218,7 +219,7 @@ network to check in GNU's database."
 
 
 ;;;
-;;; Latest release.
+;;; Latest FTP release.
 ;;;
 
 (define (ftp-server/directory package)
@@ -440,6 +441,88 @@ hosted on ftp.gnu.org, or not under that name (this is the case for
                                         #:server server
                                         #:directory directory))))
 
+
+;;;
+;;; Latest HTTP release.
+;;;
+
+(define (html->sxml port)
+  "Read HTML from PORT and return the corresponding SXML tree."
+  (let ((str (get-string-all port)))
+    (catch #t
+      (lambda ()
+        ;; XXX: This is the poor developer's HTML-to-XML converter.  It's good
+        ;; enough for directory listings at <https://kernel.org/pub> but if
+        ;; needed we could resort to (htmlprag) from Guile-Lib.
+        (call-with-input-string (string-replace-substring str "<hr>" "<hr />")
+          xml->sxml))
+      (const '(html)))))                          ;parse error
+
+(define (html-links sxml)
+  "Return the list of links found in SXML, the SXML tree of an HTML page."
+  (let loop ((sxml sxml)
+             (links '()))
+    (match sxml
+      (('a ('@ attributes ...) body ...)
+       (match (assq 'href attributes)
+         (#f          (fold loop links body))
+         (('href url) (fold loop (cons url links) body))))
+      ((tag ('@ _ ...) body ...)
+       (fold loop links body))
+      ((tag body ...)
+       (fold loop links body))
+      (_
+       links))))
+
+(define* (latest-html-release package
+                              #:key
+                              (base-url "https://kernel.org/pub")
+                              (directory (string-append "/" package))
+                              (file->signature (cut string-append <> ".sig")))
+  "Return an <upstream-source> for the latest release of PACKAGE (a string) on
+SERVER under DIRECTORY, or #f.  BASE-URL should be the URL of an HTML page,
+typically a directory listing as found on 'https://kernel.org/pub'.
+
+FILE->SIGNATURE must be a procedure; it is passed a source file URL and must
+return the corresponding signature URL, or #f it signatures are unavailable."
+  (let* ((uri  (string->uri (string-append base-url directory "/")))
+         (port (http-fetch/cached uri #:ttl 3600))
+         (sxml (html->sxml port)))
+    (define (url->release url)
+      (and (string=? url (basename url))          ;relative reference?
+           (release-file? package url)
+           (let-values (((name version)
+                         (package-name->name+version (sans-extension url)
+                                                     #\-)))
+             (upstream-source
+              (package name)
+              (version version)
+              (urls (list (string-append base-url directory "/" url)))
+              (signature-urls
+               (list (string-append base-url directory "/"
+                                    (file-sans-extension url)
+                                    ".sign")))))))
+
+    (define candidates
+      (filter-map url->release (html-links sxml)))
+
+    (close-port port)
+    (match candidates
+      (() #f)
+      ((first . _)
+       ;; Select the most recent release and return it.
+       (reduce (lambda (r1 r2)
+                 (if (version>? (upstream-source-version r1)
+                                (upstream-source-version r2))
+                     r1 r2))
+               first
+               (coalesce-sources candidates))))))
+
+
+;;;
+;;; Updaters.
+;;;
+
 (define %gnu-file-list-uri
   ;; URI of the file list for ftp.gnu.org.
   (string->uri "https://ftp.gnu.org/find.txt.gz"))
@@ -555,19 +638,21 @@ releases are on gnu.org."
 
 (define (latest-kernel.org-release package)
   "Return the latest release of PACKAGE, the name of a kernel.org package."
-  (let ((uri (string->uri (origin-uri (package-source package)))))
-    (false-if-ftp-error
-     (latest-ftp-release
-      (package-name package)
-      #:server "ftp.free.fr"                      ;a mirror reachable over FTP
-      #:directory (string-append "/mirrors/ftp.kernel.org"
-                                 (dirname (uri-path uri)))
+  (define %kernel.org-base
+    ;; This URL and sub-directories thereof are nginx-generated directory
+    ;; listings suitable for 'latest-html-release'.
+    "https://mirrors.edge.kernel.org/pub")
 
-      ;; kernel.org provides "foo-x.y.tar.sign" files, which are signatures of
-      ;; the uncompressed tarball.
-      #:file->signature (lambda (tarball)
-                          (string-append (file-sans-extension tarball)
-                                         ".sign"))))))
+  (define (file->signature file)
+    (string-append (file-sans-extension file) ".sign"))
+
+  (let* ((uri       (string->uri (origin-uri (package-source package))))
+         (package   (package-upstream-name package))
+         (directory (dirname (uri-path uri))))
+    (latest-html-release package
+                         #:base-url %kernel.org-base
+                         #:directory directory
+                         #:file->signature file->signature)))
 
 (define %gnu-updater
   ;; This is for everything at ftp.gnu.org.
