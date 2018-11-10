@@ -2288,13 +2288,14 @@ follows a traditional multi-track tape recorder control paradigm.")
     (version "1.2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/blablack/ams-lv2/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/blablack/ams-lv2.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1xacxyzqcj83g9c1gwfn36gg1c6yi15v7km4vidfidrjzb4x27fq"))))
+         "1n1dnqnj24xhiy9323lj52nswr5120cj56fpckg802miss05sr6x"))))
     (build-system waf-build-system)
     (arguments
      `(#:phases
