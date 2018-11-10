@@ -25,26 +25,33 @@
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (gnu packages)
   #:use-module (guix packages)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
 (define-public cuirass
@@ -177,3 +184,118 @@
 intended as a replacement for Hydra.")
       (home-page "https://guix.gnu.org/cuirass/")
       (license l:gpl3+))))
+
+(define-public laminar
+  (package
+    (name "laminar")
+    (version "1.0")
+    (source
+     (origin (method url-fetch)
+             (uri (string-append "https://github.com/ohwgiles/laminar/archive/"
+                                 version
+                                 ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "11m6h3rdmj2rsmsryy7r40gqccj4gg1cnqwy6blscs87gx4s423g"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; TODO Can't build tests
+       #:configure-flags
+       (list "-DCMAKE_CXX_STANDARD=17"
+             ;; "-DBUILD_TESTS=true" TODO: objcopy: js/stPskyUS: can't add
+             ;; section '.note.GNU-stack': file format not recognized
+             (string-append "-DLAMINAR_VERSION=" ,version))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-CMakeLists.txt
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("file\\(DOWNLOAD.*\n$")
+                "# file download removed by Guix --")
+               (("install\\(FILES etc/laminar.service DESTINATION \\$\\{SYSTEMD\\_UNITDIR\\}\\)")
+                "")
+               (("install\\(FILES \\$\\{CMAKE\\_CURRENT\\_BINARY\\_DIR\\}\\/laminar\\.service DESTINATION \\$\\{SYSTEMD\\_UNITDIR\\}\\)")
+                "")
+               (("install\\(FILES etc/laminar\\.conf DESTINATION \\/etc\\)") "")
+               (("\\/usr\\/") ""))
+             #t))
+         (add-after 'configure 'copy-in-javascript-and-css
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (use-modules (ice-9 popen))
+
+             (mkdir-p "../build/js")
+             (for-each (lambda (name)
+                         (let* ((file
+                                 (assoc-ref inputs (string-append name ".js")))
+                                (port
+                                 (open-pipe* OPEN_READ "uglify-js" file))
+                                (destination
+                                 (string-append
+                                  "../build/js/" name ".min.js")))
+
+                           (call-with-output-file destination
+                             (lambda (output-port)
+                               (dump-port port output-port)))
+
+                           (let ((exit (close-pipe port)))
+                             (unless (zero? exit)
+                               (error "uglify-js failed" exit)))))
+
+                       '("vue"
+                         "vue-router"
+                         "Chart"))
+
+             ;; ansi_up.js isn't minified
+             (copy-file (assoc-ref inputs "ansi_up.js")
+                        "../build/js/ansi_up.js")
+
+             #t)))))
+    (inputs
+     `(("capnproto" ,capnproto)
+       ("rapidjson" ,rapidjson)
+       ("sqlite" ,sqlite)
+       ("boost" ,boost)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("uglify-js" ,uglify-js)
+
+       ("vue.js"
+        ,(origin (method url-fetch)
+                 (uri (string-append "https://raw.githubusercontent.com/"
+                                     "vuejs/vue/v2.6.12/dist/vue.js"))
+                 (sha256
+                  (base32
+                   "1mq2dn6yqbmzar77xf4x2bvvanf9xc9nwfq06sksl5zmr300m7qm"))))
+       ("vue-router.js"
+        ,(origin (method url-fetch)
+                 (uri (string-append "https://raw.githubusercontent.com/"
+                                     "vuejs/vue-router/v3.4.8/dist/vue-router.js"))
+                 (sha256
+                  (base32
+                   "1hkrbgzhpnrsb4zdafslqagy1vkac6bkdj7kh49js2lhkp9z4nj5"))))
+       ("ansi_up.js"
+        ,(origin (method url-fetch)
+                 (uri (string-append "https://raw.githubusercontent.com/"
+                                     "drudru/ansi_up/v1.3.0/ansi_up.js"))
+                 (sha256
+                  (base32
+                   "1993dywxqi2ylnxybwk7m0s0bg2bq7kfllpyr0s8ck6chd0p8i6r"))))
+       ("Chart.js"
+        ,(origin (method url-fetch)
+                 (uri (string-append "https://github.com/chartjs/Chart.js/"
+                                     "releases/download/v2.7.2/Chart.js"))
+                 (sha256
+                  (base32
+                   "05m3gk6hqjx92j20drnk7q075qpjraywqaf25lnglmsgsgpiqsr7"))))))
+    (synopsis "Lightweight continuous integration service")
+    (description
+     "Laminar is a lightweight and modular continuous integration service.  It
+doesn't have a configuration web UI instead uses version-controllable
+configuration files and scripts.
+
+Laminar encourages the use of existing tools such as bash and cron instead of
+reinventing them.")
+    (home-page "https://laminar.ohwg.net/")
+    (license l:gpl3+)))
