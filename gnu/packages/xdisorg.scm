@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -1338,15 +1338,11 @@ invert colors on a specific display/screen.")
     (build-system gnu-build-system)
     (arguments '(#:configure-flags `("--enable-sound"
                                      "--enable-wave"
-                                     "--enable-alsa")
-                 #:phases (modify-phases %standard-phases
-                           (add-before 'configure 'autoreconf
-                             (lambda _
-                               (invoke "autoreconf" "-vfi"))))))
-   (native-inputs `(("autoconf" ,autoconf)
-                    ("automake" ,automake)
-                    ("pkg-config" ,pkg-config)
-                    ("perl" ,perl)))
+                                     "--enable-alsa")))
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("pkg-config" ,pkg-config)
+                     ("perl" ,perl)))
     (inputs `(("libx11" ,libx11)
               ("alsa-lib" ,alsa-lib)))
     (synopsis "Daemon that performs an action every time the X11 bell is rung")
