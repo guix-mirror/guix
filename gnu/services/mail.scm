@@ -511,16 +511,9 @@ complex, customize the address and port fields of the
       (kind "pop3")
       (client-limit 1)
       (process-limit 1024))
-     (service-configuration (kind "auth")
-      ;; In what could be taken to be a bug, the default value of 1 for
-      ;; service-count makes it so that a PAM auth worker can't fork off
-      ;; subprocesses for making blocking queries.  The result is that nobody
-      ;; can log in -- very secure, but not very useful!  If we simply omit
-      ;; the service-count, it will default to the value of
-      ;; auth-worker-max-count, which is 30, instead of defaulting to 1, which
-      ;; is the default for all other services.  As a hack, bump this value to
-      ;; 30.
-      (service-count 30)
+     (service-configuration
+      (kind "auth")
+      (service-count 0)
       (client-limit 0)
       (process-limit 1)
       (listeners
