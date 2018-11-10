@@ -610,13 +610,14 @@ envelope follower, distortion effects, tape effects and more.")
     (name "swh-plugins-lv2")
     (version "1.0.16")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/swh/"
-                                  "lv2/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/swh/lv2.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0j1mih0lp4fds07knp5i32in515sh0df1qi6694pmyz2wqnm295w"))))
+                "0y7nnww864mm4k6ayy2lhcws3wlbhb2gkyjbrwk921fvc18qk9mz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
