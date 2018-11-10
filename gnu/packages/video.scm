@@ -871,6 +871,34 @@ audio/video codec library.")
               (base32
                "0b59qk5wpc5ksiha76jbhb859g5gxa4w0k6afh3kgvgajiivs73l"))))))
 
+(define-public ffmpeg-for-stepmania
+  (hidden-package
+   (package
+     (inherit ffmpeg)
+     (version "2.1.3")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/stepmania/ffmpeg.git")
+              (commit "eda6effcabcf9c238e4635eb058d72371336e09b")))
+        (sha256
+         (base32 "1by8rmbva8mfrivdbbkr2gx4kga89zqygkd4cfjl76nr8mdcdamb"))
+        (file-name (git-file-name "ffmpeg" version))))
+     (arguments
+      (substitute-keyword-arguments (package-arguments ffmpeg)
+        ((#:configure-flags flags)
+         '(list "--disable-programs"
+                "--disable-doc"
+                "--disable-debug"
+                "--disable-avdevice"
+                "--disable-swresample"
+                "--disable-postproc"
+                "--disable-avfilter"
+                "--disable-shared"
+                "--enable-static"))))
+     (inputs '()))))
+
 (define-public ffmpegthumbnailer
   (package
     (name "ffmpegthumbnailer")

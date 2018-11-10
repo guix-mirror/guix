@@ -70,6 +70,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -6011,3 +6012,130 @@ civilized than your own.")
                    license:cc-by-sa3.0
                    license:cc-by-sa4.0
                    license:public-domain))))
+
+(define-public stepmania
+  (package
+    (name "stepmania")
+    (version "5.1.0-b2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stepmania/stepmania.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0a7y9l7xm510vgnpmj1is7p9m6d6yd0fcaxrjcickz295k5w3rdn"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove song files, which are licensed under a non-commercial
+           ;; clause, and a course pointing to them.
+           (for-each delete-file-recursively
+                     '("Songs/StepMania 5/Goin' Under"
+                       "Songs/StepMania 5/MechaTribe Assault"
+                       "Songs/StepMania 5/Springtime"))
+           (for-each delete-file '("Courses/Default/Jupiter.crs"
+                                   "Courses/Default/Jupiter.png"))
+           ;; Unbundle libpng.
+           (substitute* "extern/CMakeLists.txt"
+             (("include\\(CMakeProject-png.cmake\\)") ""))
+           (delete-file-recursively "extern/libpng")
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;FIXME: couldn't find how to run tests
+       #:build-type "Release"
+       #:out-of-source? #f              ;for the 'install-desktop' phase
+       #:configure-flags
+       (list "-DWITH_SYSTEM_FFMPEG=1"
+             ;; Configuration cannot find GTK2 without the two following
+             ;; flags.
+             (string-append "-DGTK2_GDKCONFIG_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "gtk+")
+                            "/lib/gtk-2.0/include")
+             (string-append "-DGTK2_GLIBCONFIG_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "glib")
+                            "/lib/glib-2.0/include"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-install-subdir
+           ;; Installation would be done in "%out/stepmania-X.Y", but we
+           ;; prefer the more common layout "%out/share/stepmania".
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               (("\"stepmania-.*?\"") "\"share/stepmania\""))
+             #t))
+         (add-after 'unpack 'unbundle-libpng
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/CMakeLists.txt"
+               (("\\$\\{SM_EXTERN_DIR\\}/libpng/include")
+                (string-append (assoc-ref inputs "libpng") "/include")))
+             #t))
+         (add-after 'install 'install-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (exe (string-append out "/share/stepmania/stepmania")))
+               (mkdir-p bin)
+               (symlink exe (string-append bin "/stepmania"))
+               #t)))
+         (add-after 'install-executable 'install-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (applications (string-append share "/applications"))
+                    (icons (string-append share "/icons")))
+               (install-file "stepmania.desktop" applications)
+               (mkdir-p icons)
+               (copy-recursively "icons" icons)
+               #t)))
+         ;; Move documentation in a more usual place, i.e.,
+         ;; "%out/share/doc/stepmania/".
+         (add-after 'install-desktop 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share")))
+               (with-directory-excursion share
+                 (mkdir-p "doc")
+                 (symlink "../stepmania/Docs" "doc/stepmania"))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("yasm" ,yasm)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ;; Per upstream, StepMania is only guaranteed to work with a very
+       ;; specific FFmpeg version, which is included in the repository as
+       ;; a Git submodule.  This particular version requirement usually
+       ;; changes every few years.
+       ("ffmpeg" ,ffmpeg-for-stepmania)
+       ("glib" ,glib)
+       ("glew" ,glew)
+       ("gtk+" ,gtk+-2)
+       ("jsoncpp" ,jsoncpp)
+       ("libpng" ,libpng)
+       ("libjpeg" ,libjpeg-8)
+       ("libmad" ,libmad)
+       ("libogg" ,libogg)
+       ("libva" ,libva)
+       ("libvorbis" ,libvorbis)
+       ("libxinerama" ,libxinerama)
+       ("libxrandr" ,libxrandr)
+       ("mesa" ,mesa)
+       ("pcre" ,pcre)
+       ("pulseaudio" ,pulseaudio)
+       ("sdl" ,sdl2)
+       ("udev" ,eudev)
+       ("zlib" ,zlib)))
+    (synopsis "Advanced rhythm game designed for both home and arcade use")
+    (description "StepMania is a dance and rhythm game.  It features 3D
+graphics, keyboard and dance pad support, and an editor for creating your own
+steps.
+
+This package provides the core application, but no song is shipped.  You need
+to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
+    (home-page "https://www.stepmania.com")
+    (license license:expat)))
+
