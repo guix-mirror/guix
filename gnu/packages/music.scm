@@ -1865,13 +1865,14 @@ using a system-independent interface.")
     (name "portmidi-for-extempore")
     (version "217")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/extemporelang/portmidi/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/extemporelang/portmidi.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gjikwciyr8kk4y3qiv1pcq58xpgw38ql1m2gs6g0qc1s8sx4235"))))
+                "1inriyrjf7xx2b7r54x0vmf9ngyqgr7g5060c22bwkbsgg53apzv"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ; no tests
     (native-inputs '())
