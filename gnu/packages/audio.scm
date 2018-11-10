@@ -3026,15 +3026,16 @@ point audio data.")
     (name "cuetools")
     (version "1.4.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/svend/cuetools/archive/"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/svend/cuetools.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "01xi3rvdmil9nawsha04iagjylqr1l9v9vlzk99scs8c207l58i4"))))
+               "02ksv1ahf1v4cr2xbclsfv5x17m9ivzbssb5r8xjm97yh8a7spa3"))))
     (build-system gnu-build-system)
-    ;; The source tarball is not bootstrapped.
+    ;; The source checkout is not bootstrapped.
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
