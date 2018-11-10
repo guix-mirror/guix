@@ -7742,6 +7742,22 @@ activity in channels in the status bar so it stays out of your way unless you
 want to use it.")
     (license license:gpl3+)))
 
+(define-public emacs-tracking
+  (package
+    (inherit emacs-circe)
+    (name "emacs-tracking")
+    (arguments
+     ;; "tracking.el" is a library extracted from Circe package.  It requires
+     ;; "shorten.el".
+     `(#:include '("^shorten.el$" "^tracking.el$")
+       #:tests? #f))                    ;tests require buttercup
+    (home-page "https://github.com/jorgenschaefer/circe/wiki/Tracking")
+    (synopsis "Buffer tracking library")
+    (description "@code{tracking.el} provides a way for different modes to
+notify the user that a buffer needs attention.  The user then can cycle
+through them using @key{C-c C-SPC}.")
+    (license license:gpl3+)))
+
 (define-public emacs-slack
   (let ((commit "d90395482d26175ce38fd935e978c428be8af9a0")
         (revision "4"))
