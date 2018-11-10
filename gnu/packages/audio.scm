@@ -3388,13 +3388,14 @@ the following features:
     (version "1.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dpayne/cli-visualizer/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dpayne/cli-visualizer.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "07zkm87f2fr8kc6531zrkya7q81sdanm6813y2f54mg13g41y6hi"))))
+         "0mirp8bk398di5xyq95iprmdyvplfghxqmrfj7jdnpy554vx7ppc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
