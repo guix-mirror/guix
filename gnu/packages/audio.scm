@@ -2274,14 +2274,14 @@ tempo and pitch of an audio recording independently of one another.")
     (name "rtmidi")
     (version "2.1.0")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/powertab/rtmidi/archive/"
-                              version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/powertab/rtmidi.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d49lapnmdgmjxh4vw57h6xk74nn5r0zwysv7jbd7m8kqhpq5rjj"))))
+                "106v177y3nrjv2l1yskch4phpqd8h97b67zj0jiq9pc3c69jr1ay"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
