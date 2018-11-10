@@ -19,6 +19,7 @@
 (define-module (guix ci)
   #:use-module (guix http-client)
   #:autoload   (json parser) (json->scm)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:export (build?
             build-id
@@ -27,9 +28,21 @@
             build-status
             build-timestamp
 
+            checkout?
+            checkout-commit
+            checkout-input
+
+            evaluation?
+            evaluation-id
+            evaluation-spec
+            evaluation-complete?
+            evaluation-checkouts
+
             %query-limit
             queued-builds
-            latest-builds))
+            latest-builds
+            latest-evaluations
+            evaluation-for-commit))
 
 ;;; Commentary:
 ;;;
@@ -46,6 +59,20 @@
   (system      build-system)                      ;string
   (status      build-status)                      ;integer
   (timestamp   build-timestamp))                  ;integer
+
+(define-record-type <checkout>
+  (make-checkout commit input)
+  checkout?
+  (commit      checkout-commit)                   ;string (SHA1)
+  (input       checkout-input))                   ;string (name)
+
+(define-record-type <evaluation>
+  (make-evaluation id spec complete? checkouts)
+  evaluation?
+  (id          evaluation-id)                     ;integer
+  (spec        evaluation-spec)                   ;string
+  (complete?   evaluation-complete?)              ;Boolean
+  (checkouts   evaluation-checkouts))             ;<checkout>*
 
 (define %query-limit
   ;; Max number of builds requested in queries.
@@ -70,9 +97,50 @@
                                           (number->string limit)))))
     (map json->build queue)))
 
-(define* (latest-builds url #:optional (limit %query-limit))
+(define* (latest-builds url #:optional (limit %query-limit)
+                        #:key evaluation system)
+  "Return the latest builds performed by the CI server at URL.  If EVALUATION
+is an integer, restrict to builds of EVALUATION.  If SYSTEM is true (a system
+string such as \"x86_64-linux\"), restrict to builds for SYSTEM."
+  (define* (option name value #:optional (->string identity))
+    (if value
+        (string-append "&" name "=" (->string value))
+        ""))
+
   (let ((latest (json-fetch (string-append url "/api/latestbuilds?nr="
-                                           (number->string limit)))))
+                                           (number->string limit)
+                                           (option "evaluation" evaluation
+                                                   number->string)
+                                           (option "system" system)))))
     ;; Note: Hydra does not provide a "derivation" field for entries in
     ;; 'latestbuilds', but Cuirass does.
     (map json->build latest)))
+
+(define (json->checkout json)
+  (make-checkout (hash-ref json "commit")
+                 (hash-ref json "input")))
+
+(define (json->evaluation json)
+  (make-evaluation (hash-ref json "id")
+                   (hash-ref json "specification")
+                   (case (hash-ref json "in-progress")
+                     ((0) #t)
+                     (else #f))
+                   (map json->checkout (hash-ref json "checkouts"))))
+
+(define* (latest-evaluations url #:optional (limit %query-limit))
+  "Return the latest evaluations performed by the CI server at URL."
+  (map json->evaluation
+       (json->scm
+        (http-fetch (string-append url "/api/evaluations?nr="
+                                   (number->string limit))))))
+
+
+(define* (evaluations-for-commit url commit #:optional (limit %query-limit))
+  "Return the evaluations among the latest LIMIT evaluations that have COMMIT
+as one of their inputs."
+  (filter (lambda (evaluation)
+            (find (lambda (checkout)
+                    (string=? (checkout-commit checkout) commit))
+                  (evaluation-checkouts evaluation)))
+          (latest-evaluations url limit)))
