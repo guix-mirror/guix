@@ -256,18 +256,11 @@ on.")
                (base32
                 "1lx276ba8r2yydhmwj1g586jdqg695ad89ng36fr3mb067gvb2rz"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _
-             (invoke "autoreconf" "-vfi")
-             #t)))))
-    ;; wmclock requires autoreconf to generate its configure script.
     (inputs
      `(("libx11" ,libx11)
        ("libxext" ,libxext)
        ("libxpm" ,libxpm)))
+    ;; wmclock requires autoreconf to generate its configure script.
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
