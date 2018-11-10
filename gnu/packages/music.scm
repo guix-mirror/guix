@@ -2330,13 +2330,14 @@ and hold, etc.")
     (name "gxtuner")
     (version "2.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/brummer10/gxtuner/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/brummer10/gxtuner.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hn5qjac7qd00v0sp7ijhhc3sb26ks9bni06nngivva21h61xrjr"))))
+                "1fxd2akan2njlr7fpkh84830783qhh1gg7yakswqk5dd466dcn96"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
