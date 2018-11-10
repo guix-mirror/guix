@@ -363,7 +363,23 @@ decompression.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1sahaqc5bw4i0iyri05syfza4ncf5cml89an033fspn97klmxis6"))))
+                "1sahaqc5bw4i0iyri05syfza4ncf5cml89an033fspn97klmxis6"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Adjust the bundled gnulib to work with glibc 2.28.  See e.g.
+                 ;; "m4-gnulib-libio.patch".  This is a phase rather than patch
+                 ;; or snippet to work around <https://bugs.gnu.org/32347>.
+                 (substitute* (find-files "lib" "\\.c$")
+                   (("#if defined _IO_ftrylockfile")
+                    "#if defined _IO_EOF_SEEN"))
+                 (substitute* "lib/stdio-impl.h"
+                   (("^/\\* BSD stdio derived implementations")
+                    (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
+                                   "# define _IO_IN_BACKUP 0x100\n"
+                                   "#endif\n\n"
+                                   "/* BSD stdio derived implementations")))
+                 #t))))
     (build-system gnu-build-system)
     (synopsis "Parallel bzip2 compression utility")
     (description
