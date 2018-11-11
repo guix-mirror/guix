@@ -204,6 +204,9 @@ respectively."
 $GOPATH/pkg, so we have to copy them into the output directory manually.
 Compiled executable files should have already been installed to the store based
 on $GOBIN in the build phase."
+  ;; TODO: From go-1.10 onward, the pkg folder should not be needed (see
+  ;; https://lists.gnu.org/archive/html/guix-devel/2018-11/msg00208.html).
+  ;; Remove it?
   (when (file-exists? "pkg")
     (copy-recursively "pkg" (string-append (assoc-ref outputs "out") "/pkg")))
   #t)
