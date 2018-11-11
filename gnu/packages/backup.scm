@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
 (define-module (gnu packages backup)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
@@ -132,13 +134,14 @@ spying and/or modification by the server.")
     (name "par2cmdline")
     (version "0.8.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/Parchive/par2cmdline/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Parchive/par2cmdline.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jpshmmcr81mxly0md2rr231qz9c8c680bbvcmhh100dg9i4a6s6"))))
+                "0f1jsd5sw2wynjzi7yjqjaf13yhyjfdid91p8yh0jn32y03kjyrz"))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)))
