@@ -1967,14 +1967,14 @@ for systems using the Linux kernel.  This includes commands such as
     (name "inotify-tools")
     (version "3.20.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rvoicilas/inotify-tools/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rvoicilas/inotify-tools.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1b22c8x4pjnz3abx4dikpbj43zprjw79pdkd4xw111dsxlfwqcx4"))))
+                "14dci1i4mhsd5sa33k8h3ayphk19kizynh5ql9ryibdpmcanfiyq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
