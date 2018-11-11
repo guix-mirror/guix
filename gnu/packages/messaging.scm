@@ -623,7 +623,8 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                ;; For GtkFileChooserDialog.
                `("GSETTINGS_SCHEMA_DIR" =
                  (,(string-append (assoc-ref inputs "gtk+")
-                                  "/share/glib-2.0/schemas")))))))))
+                                  "/share/glib-2.0/schemas"))))
+             #t)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("xorg-server" ,xorg-server)))
