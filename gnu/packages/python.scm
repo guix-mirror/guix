@@ -12911,8 +12911,7 @@ belong to tagged versions.")
           (delete-file "pyclipper/pyclipper.cpp") #t))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f  ; 8 Tests fail, 37 succeed
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'cythonize-sources
            (lambda _
@@ -12922,6 +12921,9 @@ belong to tagged versions.")
      `(("python-setuptools-scm-git-archive" ,python-setuptools-scm-git-archive)))
     (native-inputs
      `(("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-unittest2" ,python-unittest2)
        ("unzip" ,unzip)))
     (home-page "https://github.com/greginvm/pyclipper")
     (synopsis "Wrapper for Angus Johnson's Clipper library")
