@@ -1194,13 +1194,20 @@ well as bzip2.")
 (define-public bitshuffle
   (package
     (name "bitshuffle")
-    (version "0.3.4")
+    (version "0.3.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "bitshuffle" version))
               (sha256
                (base32
-                "0ydawb01ghsvmw0lraczhrgvkjj97bpg98f1qqs1cnfp953mdd5v"))))
+                "1823x61kyax4dc2hjmc1xraskxi1193y8lvxd03vqv029jrj8cjy"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove generated Cython files.
+                  (delete-file "bitshuffle/h5.c")
+                  (delete-file "bitshuffle/ext.c")
+                  #t))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))           ; fail: https://github.com/h5py/h5py/issues/769
