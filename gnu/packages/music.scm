@@ -3532,13 +3532,14 @@ are a C compiler and glib.  Full API documentation and examples are included.")
     (version "1.1.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/LMMS/lmms/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/LMMS/lmms.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1g76z7ha3hd53vbqaq9n1qg6s3lw8zzaw51iny6y2bz0j1xqwcsr"))))
+         "03hhymc6d73fa3wbcqb7rm1l03zkw605k5i9kvkvjmv488bqh3pd"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
