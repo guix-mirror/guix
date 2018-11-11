@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,10 +74,6 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; The 6.7 tarball is missing ‘install.sh’. Create it.
-         (add-after 'unpack 'autoreconf
-           (lambda _
-             (invoke "autoreconf" "-i")))
          (add-before 'configure 'set-root-sbin
            (lambda _ ; Don't try to install in "/sbin".
              (setenv "ROOTSBINDIR"
