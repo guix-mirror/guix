@@ -96,14 +96,12 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-gtk-doc-scan
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "Source/WebKit/WebProcess/InjectedBundle/API/gtk/DOM/docs/webkitdomgtk-docs.sgml"
-               (("http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd")
-                (string-append (assoc-ref inputs "docbook-xml")
-                               "/xml/dtd/docbook/docbookx.dtd")))
-             (substitute* "Source/WebKit/UIProcess/API/gtk/docs/webkit2gtk-docs.sgml"
-               (("http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd")
-                (string-append (assoc-ref inputs "docbook-xml")
-                               "/xml/dtd/docbook/docbookx.dtd")))
+             (for-each (lambda (file)
+                         (substitute* file
+                           (("http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd")
+                            (string-append (assoc-ref inputs "docbook-xml")
+                                           "/xml/dtd/docbook/docbookx.dtd"))))
+                       (find-files "Source" "\\.sgml$"))
              #t))
          (add-after 'install 'move-doc-files
            (lambda* (#:key outputs #:allow-other-keys)
@@ -182,12 +180,13 @@ HTML/CSS applications to full-fledged web browsers.")
      `(("gcc" ,gcc-7)  ; webkitgtk-2.22 requires gcc-6 or newer
        ,@(package-native-inputs webkitgtk)))
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'work-around-gcc-7-include-path-issue
-                    ;; FIXME: Work around a problem with gcc-7 includes (see
-                    ;; <https://bugs.gnu.org/30756>).
-                    (lambda _
-                      (unsetenv "C_INCLUDE_PATH")
-                      (unsetenv "CPLUS_INCLUDE_PATH")
-                      #t)))
-       ,@(package-arguments webkitgtk)))))
+     (substitute-keyword-arguments (package-arguments webkitgtk)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'work-around-gcc-7-include-path-issue
+             ;; FIXME: Work around a problem with gcc-7 includes (see
+             ;; <https://bugs.gnu.org/30756>).
+             (lambda _
+               (unsetenv "C_INCLUDE_PATH")
+               (unsetenv "CPLUS_INCLUDE_PATH")
+               #t))))))))
