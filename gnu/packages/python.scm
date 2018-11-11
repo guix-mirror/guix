@@ -5208,25 +5208,6 @@ of the structure, dynamics, and functions of complex networks.")
 (define-public python2-networkx
   (package-with-python2 python-networkx))
 
-;; Define new package, because the current version of python-colormath does
-;; not build against 2.0.
-(define-public python-networkx2
-  (package (inherit python-networkx)
-    (name "python-networkx2")
-    (version "2.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "networkx" version ".zip"))
-       (sha256
-        (base32
-         "1ajl2jp8qry9nyjzzkqpy0vmsr14d23z1qk7y0vr5iwjbpvzhpyd"))
-       (patches
-        (search-patches "python-networkx2-reproducible-build.patch"))))))
-
-(define-public python2-networkx2
-  (package-with-python2 python-networkx2))
-
 (define-public python-datrie
   (package
     (name "python-datrie")
