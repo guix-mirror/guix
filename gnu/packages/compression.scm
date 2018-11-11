@@ -176,12 +176,7 @@ utility.  Instead of being written in Java, FastJar is written in C.")
               "02cihzl77ia0dcz7z2cga2412vyhhs5pa2355q4wpwbyga2lrwjh"))
             (patches (search-patches "libtar-CVE-2013-4420.patch"))))
    (build-system gnu-build-system)
-   (arguments
-    `(#:tests? #f ;no "check" target
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'autoconf
-          (lambda _ (invoke "sh" "autoreconf" "-vfi"))))))
+   (arguments `(#:tests? #f)) ; no "check" target
    (native-inputs
     `(("autoconf" ,autoconf)
       ("automake" ,automake)
