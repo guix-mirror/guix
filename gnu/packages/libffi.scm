@@ -88,7 +88,8 @@ conversions for values passed between the two languages.")
       (method url-fetch)
       (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "1x3lrj928dcxx1k8k9gf3s4s3jwvzv8mc3kkyg1g7c3a1sc1f3z9"))))
+       (base32 "1x3lrj928dcxx1k8k9gf3s4s3jwvzv8mc3kkyg1g7c3a1sc1f3z9"))
+      (patches (search-patches "python-cffi-x87-stack-clean.patch"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs

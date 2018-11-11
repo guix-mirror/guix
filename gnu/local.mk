@@ -1078,6 +1078,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-CVE-2018-14647.patch		\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
   %D%/packages/patches/python-cairocffi-dlopen-path.patch	\
+  %D%/packages/patches/python-cffi-x87-stack-clean.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
