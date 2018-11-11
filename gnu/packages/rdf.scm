@@ -142,9 +142,9 @@ Java Lucene text search engine API to C++.")
                (("instances_test remove_test") "instances_test")
                (("\\$\\(TESTS\\) remove_test") "$(TESTS)"))
              #t))
-         (add-after 'remove-out-of-tree-references 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))))
+         ;; The default bootstrap phase executes autogen.sh, which fails.
+         (replace 'bootstrap
+           (lambda _ (invoke "autoreconf" "-vif") #t)))))
     (inputs
      `(("raptor" ,raptor2)
        ("cyrus-sasl" ,cyrus-sasl)
