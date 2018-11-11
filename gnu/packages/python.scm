@@ -14611,3 +14611,22 @@ on regular expressions.")
              (propagated-inputs
               `(("python2-enum34" ,python2-enum34)
                 ,@(package-propagated-inputs reparser))))))
+
+(define-public python-precis-i18n
+  (package
+    (name "python-precis-i18n")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "precis_i18n" version))
+       (sha256
+        (base32
+         "0gjhvwd8aifx94rl1ag08vlmndyx2q3fkyqb0c4i46x3p2bc2yi2"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/byllyfish/precis_i18n")
+    (synopsis "Implementation of the PRECIS framework")
+    (description
+     "This module implements the PRECIS Framework as described in RFC 8264,
+RFC 8265 and RFC 8266.")
+    (license license:expat)))
