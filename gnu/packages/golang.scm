@@ -528,7 +528,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  (setenv "GOGC" "400")
                  #t)))))))))
 
-(define-public go go-1.9)
+(define-public go go-1.11)
 
 (define-public go-github-com-alsm-ioprogress
   (let ((commit "063c3725f436e7fba0c8f588547bee21ffec7ac5")
