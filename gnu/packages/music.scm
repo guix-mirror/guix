@@ -2731,14 +2731,14 @@ of tools for manipulating and accessing your music.")
     (name "milkytracker")
     (version "1.02.00")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/milkytracker/"
-                                  "MilkyTracker/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/milkytracker/MilkyTracker.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "08v0l4ipvvwkwv4ywkc6c8a6xnpkyb02anj36w8q6gikxrs6xjvb"))
+                "05a6d7l98k9i82dwrgi855dnccm3f2lkb144gi244vhk1156n0ca"))
               (modules '((guix build utils)))
               ;; Remove non-FSDG compliant sample songs.
               (snippet
