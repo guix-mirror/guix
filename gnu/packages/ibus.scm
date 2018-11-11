@@ -295,12 +295,13 @@ Japanese language input in most graphical applications.")
     (version "1.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/rime/" name
-                           "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rime/librime.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0qh0hy8bvj17bnzaxk0bmv4gsnbsd6jx8csr84936xmhkrysdday"))))
+        (base32 "1y0h3nnz97smx9z8h5fzk4c27mvrwv8kajxffqc43bhyvxvb2jd6"))))
     (build-system cmake-build-system)
     (inputs
      `(("boost" ,boost)
