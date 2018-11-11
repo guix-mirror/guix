@@ -321,12 +321,6 @@ languages are C and C++.")
          ("pkg-config" ,pkg-config)))
       (inputs
        `(("libusb" ,libusb)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'autoreconf
-             (lambda _
-               (zero? (system* "autoreconf" "-vfi")))))))
       (home-page "http://repo.or.cz/w/libjaylink.git")
       (synopsis "Library to interface Segger J-Link devices")
       (description "libjaylink is a shared library written in C to access
