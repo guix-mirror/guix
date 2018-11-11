@@ -2794,8 +2794,6 @@ for improved Amiga ProTracker 2/3 compatibility.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _ (invoke "autoreconf" "-vfi")))
          (add-before 'configure 'link-libm
            (lambda _ (setenv "LIBS" "-lm") #t)))))
     (native-inputs
