@@ -1047,13 +1047,14 @@ smaller than those produced by @code{Xdelta}.")
     (version "3.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/jmacd/xdelta/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jmacd/xdelta.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "17g2pbbqy6h20qgdjq7ykib7kg5ajh8fwbsfgyjqg8pwg19wy5bm"))
-       (file-name (string-append name "-" version ".tar.gz"))
+         "09mmsalc7dwlvgrda56s2k927rpl3a5dzfa88aslkqcjnr790wjy"))
        (snippet
         ;; This file isn't freely distributable and has no effect on building.
         '(begin
