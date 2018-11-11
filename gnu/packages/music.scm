@@ -886,9 +886,10 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
             #t))
          (add-after 'install 'install-info
            (lambda _
-             (zero? (system* "make"
-                             "-j" (number->string (parallel-job-count))
-                             "conf=www" "install-info")))))))
+             (invoke "make"
+                     "-j" (number->string (parallel-job-count))
+                     "conf=www" "install-info")
+             #t)))))
     (inputs
      `(("guile" ,guile-1.8)
        ("font-dejavu" ,font-dejavu)
