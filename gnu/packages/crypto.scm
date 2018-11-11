@@ -203,11 +203,7 @@ OpenBSD tool of the same name.")
        ("automake" ,automake)
        ("libtool" ,libtool)))
     (arguments
-     `(#:configure-flags '("--disable-tools" "--disable-python")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autoconf
-                    (lambda _
-                      (zero? (system* "autoreconf" "-vfi")))))))
+     `(#:configure-flags '("--disable-tools" "--disable-python")))
     (home-page "https://github.com/savoirfairelinux/opendht/")
     (synopsis "Distributed Hash Table (DHT) library")
     (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may
