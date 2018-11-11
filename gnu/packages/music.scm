@@ -4156,17 +4156,15 @@ at @code{musicbrainz.org}.")
     (version "0.10")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/trizen/clyrics/archive/"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trizen/clyrics.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1l0cg26afnjv8cgk0jbiavbyvq55q1djyigzmi526rpcjjwq9jwn"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "1qvj4dyipkkdccx5hci4z0q23i54ldk6hh7x5m35a7f70rrj6fbk"))))
     (build-system trivial-build-system)
-    (native-inputs `(("tar" ,tar)
-                     ("gzip" ,gzip)))
     (inputs
      `(("bash" ,bash)                             ;for the wrapped program
        ("perl" ,perl)
@@ -4183,17 +4181,12 @@ at @code{musicbrainz.org}.")
                                 (ice-9 match)
                                 (srfi srfi-26))
                    (let* ((source (assoc-ref %build-inputs "source"))
-                          (tar (assoc-ref %build-inputs "tar"))
-                          (gzip (assoc-ref %build-inputs "gzip"))
                           (output (assoc-ref %outputs "out")))
                      (setenv "PATH"
                              (string-append
-                              (assoc-ref %build-inputs "gzip") "/bin" ":"
                               (assoc-ref %build-inputs "bash") "/bin" ":"
                               (assoc-ref %build-inputs "perl") "/bin" ":"))
-                     (invoke (string-append tar "/bin/tar") "xvf"
-                             source)
-                     (chdir ,(string-append "clyrics-" version))
+                     (copy-recursively source (getcwd))
                      (patch-shebang "clyrics")
                      (substitute* "clyrics"
                        (("/usr/share") output))
