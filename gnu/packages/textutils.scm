@@ -568,14 +568,14 @@ categories.")
     (name "dotconf")
     (version "1.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/williamh/dotconf/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/williamh/dotconf.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lsnh0yaw44psmx59hq94cj1932gscp5h8d3cnh05l0svr0cy7kz"))))
+                "1sc95hw5k2xagpafny0v35filmcn05k1ds5ghkldfpf6xw4hakp7"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f))  ; FIXME maketest.sh does not work.
     (native-inputs
