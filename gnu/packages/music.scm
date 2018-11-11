@@ -2443,13 +2443,14 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
     (name "pianobar")
     (version "2016.06.02")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/PromyLOPh/"
-                                  name "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/PromyLOPh/pianobar.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hi5rr6jcr0kwf4xfz007ndwkjkp287lhwlsgfz6iryqa5n6jzcp"))))
+                "058fbdxp7n35hxwy3b8slfy4pb4n63cb173vfmywqa06wh1dv6f6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
