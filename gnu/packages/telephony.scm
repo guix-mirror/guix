@@ -295,16 +295,14 @@ protocol (RFC 3550).")
       (version (string-append "0.0.0-1." (string-take commit 7)))
       (source
        (origin
-         (method url-fetch)
-         (uri
-          (string-append
-           "https://gitlab.savoirfairelinux.com/sflphone/libiax2/"
-           "repository/archive.tar.gz?ref="
-           commit))
-         (file-name (string-append name "-" version ".tar.gz"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.savoirfairelinux.com/sflphone/libiax2.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
-           "0cj5293bixp3k5x3hjwyd0iq7z8w5p7yavxvvkqk5817hjq386y2"))))
+           "0d269474kk1933c55hx4azw3sak5ycfrxkw6ida0sb2cm00kfich"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
