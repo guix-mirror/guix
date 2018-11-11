@@ -855,13 +855,7 @@ protocols.")
        `(("libsodium" ,libsodium)
          ("opus" ,opus)
          ("libvpx" ,libvpx)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'autoconf
-             (lambda _
-               (zero? (system* "autoreconf" "-vfi")))))
-         #:tests? #f)) ; FIXME: Testsuite fails, reasons unspecific.
+      (arguments `(#:tests? #f)) ; FIXME: Testsuite fails, reasons unspecific.
       (synopsis "Library for the Tox encrypted messenger protocol")
       (description
        "C library implementation of the Tox encrypted messenger protocol.")
