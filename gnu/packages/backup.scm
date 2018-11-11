@@ -146,11 +146,6 @@ spying and/or modification by the server.")
      `(("automake" ,automake)
        ("autoconf" ,autoconf)))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _ (invoke "autoreconf" "-vfi"))))))
     (synopsis "File verification and repair tools")
     (description "Par2cmdline uses Reed-Solomon error-correcting codes to
 generate and verify PAR2 recovery files.  These files can be distributed
