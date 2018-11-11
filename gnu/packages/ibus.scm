@@ -602,12 +602,13 @@ Method Engine.")
     (version "1.3.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/rime/" name
-                           "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rime/ibus-rime.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0mfbz0vwky7n4wvxrwabnn1i9n9adnql0dd1rx57w1anaslr5amj"))))
+        (base32 "1nqi7ymv34a9kx24say3xj98lkrs9nkpv1n2ijb91wdz3cr012ly"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
