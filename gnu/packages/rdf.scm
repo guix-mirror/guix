@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -22,6 +22,7 @@
   #:use-module ((guix licenses)
                 #:select (non-copyleft isc gpl2 lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
+  #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -122,13 +123,14 @@ Java Lucene text search engine API to C++.")
     (name "lrdf")
     (version "0.6.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/swh/LRDF/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/swh/LRDF.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vxii4mlcpyi16dizcmnqfl2j9gffgr986yd8ic67hvs8xy42yfm"))))
+                "00wzkfb8y0aqd519ypz067cq099dpc89w69zw8ln39vl6f9x2pd4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
