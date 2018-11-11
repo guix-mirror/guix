@@ -239,11 +239,7 @@ Poppler PDF rendering library.")
       (list (string-append "--with-zlib="
                            (assoc-ref %build-inputs "zlib"))
             (string-append "--with-png="
-                           (assoc-ref %build-inputs "libpng")))
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'autogen
-          (lambda _ (invoke "autoreconf" "-vif"))))))
+                           (assoc-ref %build-inputs "libpng")))))
    (inputs
     `(("zlib" ,zlib)
       ("libpng" ,libpng)))
