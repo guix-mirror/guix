@@ -1068,9 +1068,7 @@ smaller than those produced by @code{Xdelta}.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-build-directory
-           (lambda _ (chdir "xdelta3") #t))
-         (add-after 'enter-build-directory 'autoconf
-           (lambda _ (invoke "autoreconf" "-vfi"))))))
+           (lambda _ (chdir "xdelta3") #t)))))
     (home-page "http://xdelta.org")
     (synopsis "Delta encoder for binary files")
     (description "xdelta encodes only the differences between two binary files
