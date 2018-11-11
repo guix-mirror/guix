@@ -1176,19 +1176,15 @@ PS, and DAB+.")
 (define-public faust-2
   (package
     (inherit faust)
-    (version "2.1.0")
+    (version "2.5.23")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/grame-cncm/faust.git")
-                    (commit (string-append "v"
-                                           (string-map (lambda (c)
-                                                         (if (char=? c #\.) #\- c))
-                                                       version)))))
-              (file-name (string-append "faust-" version "-checkout"))
+              (method url-fetch)
+              (uri (string-append "https://github.com/grame-cncm/faust/"
+                                  "releases/download/" version
+                                  "/faust-" version ".tar.gz"))
               (sha256
                (base32
-                "06km0ygwxxwgw1lqldccqidxhmjfz8ck0wnbd95qk5sg8sbpc068"))))
+                "1yz5jnr76hh7rmxkpdi7gyrw1wp4gyqfpq8zyl97qdi5ga5gjznq"))))
     (build-system gnu-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments faust)
@@ -1196,7 +1192,7 @@ PS, and DAB+.")
         `(list (string-append "prefix=" (assoc-ref %outputs "out"))
                "world"))))
     (native-inputs
-     `(("llvm" ,llvm-with-rtti)
+     `(("llvm" ,llvm-3.8-with-rtti)
        ("which" ,which)
        ("xxd" ,xxd)
        ("ctags" ,emacs-minimal)  ; for ctags
