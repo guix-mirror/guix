@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Francesco Frassinelli <fraph24@gmail.com>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;;
@@ -310,11 +310,6 @@ protocol (RFC 3550).")
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
          ("libtool" ,libtool)))
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'autoconf
-                      (lambda _
-                        (invoke "autoreconf" "-vfi"))))))
       (home-page "https://gitlab.savoirfairelinux.com/sflphone/libiax2")
       (synopsis "Inter-Asterisk-Protocol library")
       (description "LibIAX2 implements the Inter-Asterisk-Protocol for relaying
