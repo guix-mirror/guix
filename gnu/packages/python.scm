@@ -13272,14 +13272,14 @@ user's @file{~/Trash} directory.")
 (define-public python-yapf
   (package
     (name "python-yapf")
-    (version "0.21.0")
+    (version "0.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "yapf" version))
        (sha256
         (base32
-         "144gc7d6b1415vh02409rnb8qd5kxi6mxlr7y64d5cizgxbf72kx"))))
+         "0anwby0ydmyzcsgjc5dn1ryddwvii4dq61vck447q0n96npnzfyf"))))
     (build-system python-build-system)
     (home-page "https://github.com/google/yapf")
     (synopsis "Formatter for Python code")
