@@ -577,13 +577,7 @@ categories.")
                (base32
                 "0lsnh0yaw44psmx59hq94cj1932gscp5h8d3cnh05l0svr0cy7kz"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f ; FIXME maketest.sh does not work.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
+    (arguments `(#:tests? #f))  ; FIXME maketest.sh does not work.
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
