@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018 Alex Kost <alezost@gmail.com>
+;;; Copyright © 208 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,15 @@
                (base32
                 "1367rl3n6qxwf30lqyz234zpb43s9xjhig3hrvbg7cbqcl8g4fs0"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-glibc-compatability
+           (lambda _
+             (substitute* "src/get_media_devices.c"
+               (("<sys/stat.h>")
+                "<sys/stat.h>\n#include <sys/sysmacros.h>"))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("libx11" ,libx11)
