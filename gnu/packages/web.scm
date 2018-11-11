@@ -6761,14 +6761,14 @@ compressed JSON header blocks.
                     (srfi srfi-26)
                     (ice-9 popen)
                     (ice-9 rdelim))
-
          #:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'autoconf
+           (add-before 'configure 'set-variables
              (lambda _
+               ;; This prevents a few warnings
                (setenv "GUILE_AUTO_COMPILE" "0")
                (setenv "XDG_CACHE_HOME" (getcwd))
-               (invoke "autoreconf" "-vif")))
+               #t))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out      (assoc-ref outputs "out"))
