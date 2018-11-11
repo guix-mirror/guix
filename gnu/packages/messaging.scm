@@ -818,8 +818,8 @@ protocols.")
     (license license:x11)))
 
 (define-public libtoxcore
-  (let ((revision "1")
-        (commit "755f084e8720b349026c85afbad58954cb7ff1d4"))
+  (let ((revision "2")
+        (commit "bf69b54f64003d160d759068f4816b2d9b2e1e21"))
     (package
       (name "libtoxcore")
       (version (string-append "0.0.0" "-"
@@ -832,20 +832,19 @@ protocols.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "0ap1gvlyihnfivv235dbrgsxsiiz70bhlmlr5gn1027w3h5kqz8w"))))
+                  "11lqra4yd7v293cp286ynff5lqz1pprzg8vn3wq6vryj08g88zqb"))))
       (build-system gnu-build-system)
+      (arguments `(#:tests? #f)) ; FIXME: tests hang, some fail.
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
          ("libtool" ,libtool)
-         ;; TODO: Add when test suite is capable of passing.
-         ;; ("check" ,check)
+         ("check" ,check)
          ("pkg-config" ,pkg-config)))
       (inputs
        `(("libsodium" ,libsodium)
          ("opus" ,opus)
          ("libvpx" ,libvpx)))
-      (arguments `(#:tests? #f)) ; FIXME: Testsuite fails, reasons unspecific.
       (synopsis "Library for the Tox encrypted messenger protocol")
       (description
        "C library implementation of the Tox encrypted messenger protocol.")
