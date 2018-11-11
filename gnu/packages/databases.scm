@@ -2071,13 +2071,14 @@ for ODBC.")
     (version "0.7.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/brianb/mdbtools/archive/"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/brianb/mdbtools.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "05hbmxcq173kzb899gdi3bz2qcc1vi3n1qbbkwpsvrq7ggf11wyw"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "0gwcpp9y09xhs21g7my2fs8ncb8i6ahlyixcx8jd3q97jbzj441l"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)))
