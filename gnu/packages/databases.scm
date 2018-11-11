@@ -2088,12 +2088,6 @@ for ODBC.")
        ("pkg-config" ,pkg-config)
        ("txt2man" ,txt2man)
        ("which" ,which)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "http://mdbtools.sourceforge.net/")
     (synopsis "Read Microsoft Access databases")
     (description "MDB Tools is a set of tools and applications to read the
