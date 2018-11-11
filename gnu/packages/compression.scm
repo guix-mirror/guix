@@ -1210,7 +1210,14 @@ well as bzip2.")
                   #t))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))           ; fail: https://github.com/h5py/h5py/issues/769
+     `(#:tests? #f             ; fail: https://github.com/h5py/h5py/issues/769
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'dont-build-native
+           (lambda _
+             (substitute* "setup.py"
+               (("'-march=native', ") ""))
+             #t)))))
     (inputs
      `(("numpy" ,python-numpy)
        ("h5py" ,python-h5py)
