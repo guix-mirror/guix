@@ -1976,11 +1976,6 @@ for systems using the Linux kernel.  This includes commands such as
                (base32
                 "14dci1i4mhsd5sa33k8h3ayphk19kizynh5ql9ryibdpmcanfiyq"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
-                    (lambda _
-                      (invoke "autoreconf" "-vif"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
