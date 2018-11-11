@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -164,34 +164,31 @@ OpenBSD tool of the same name.")
                                           "See base64.c in the distribution for
                                            the license from IBM.")))))
 
-
 (define-public opendht
   (package
     (name "opendht")
     (version "0.6.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append
-         "https://github.com/savoirfairelinux/" name
-         "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (delete-file-recursively "src/argon2")
-           (substitute* "src/Makefile.am"
-             (("./argon2/libargon2.la") "")
-             (("SUBDIRS = argon2") ""))
-           (substitute* "src/crypto.cpp"
-             (("argon2/argon2.h") "argon2.h"))
-           (substitute* "configure.ac"
-             (("src/argon2/Makefile") ""))
-           #t))
-       (sha256
-        (base32
-         "09yvkmbqbym3b5md4n96qc1s9sf2n8ji404hagih45rmsj49599x"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/savoirfairelinux/opendht.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "src/argon2")
+                  (substitute* "src/Makefile.am"
+                    (("./argon2/libargon2.la") "")
+                    (("SUBDIRS = argon2") ""))
+                  (substitute* "src/crypto.cpp"
+                    (("argon2/argon2.h") "argon2.h"))
+                  (substitute* "configure.ac"
+                    (("src/argon2/Makefile") ""))
+                  #t))
+              (sha256
+               (base32
+                "1akk613f18rc8kqs0cxdm34iq7wwc9kffhgp5rng09arwlw8gw3w"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
