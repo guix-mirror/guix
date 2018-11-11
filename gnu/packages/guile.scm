@@ -517,10 +517,7 @@ AM_SCM_LOG_FLAGS =  --no-auto-compile -s")
                  ;; FIXME: one of the database tests fails for unknown
                  ;; reasons.  It does not fail when run outside of Guix.
                  (("tests/database.scm") ""))
-               #t))
-           (add-after 'fix-bug-22 'autogen
-             (lambda _
-               (zero? (system* "sh" "autogen.sh")))))))
+               #t)))))
       (inputs
        `(("guile" ,guile-2.0)))
       (native-inputs
