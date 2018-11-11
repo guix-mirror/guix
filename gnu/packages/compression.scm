@@ -124,10 +124,7 @@ in compression.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
-           (lambda _ (chdir "contrib/minizip") #t))
-         (add-after 'enter-source 'autoreconf
-           (lambda _
-             (invoke "autoreconf" "-vif"))))))
+           (lambda _ (chdir "contrib/minizip") #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
