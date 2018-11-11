@@ -24216,7 +24216,7 @@ to be updated to refer to these binaries on the target platform.  That
 is, the hashes and URLs of the bootstrap tarballs for the new platform
 must be added alongside those of the currently supported platforms.  The
 bootstrap Guile tarball is treated specially: it is expected to be
-available locally, and @file{gnu/local.mk} has rules do download it for
+available locally, and @file{gnu/local.mk} has rules to download it for
 the supported architectures; a rule for the new platform must be added
 as well.
 
