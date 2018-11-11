@@ -1,10 +1,20 @@
-Downloaded from https://anonscm.debian.org/cgit/pkg-games/teeworlds.git/plain/debian/patches/new-wavpack.patch.
+Downloaded from https://salsa.debian.org/games-team/teeworlds/raw/master/debian/patches/new-wavpack.patch.
 
-This patch lets us build teeworlds with wavpack 5.1.0.
+From: Markus Koschany <apo@debian.org>
+Date: Thu, 25 Oct 2018 20:52:27 +0200
+Subject: new-wavpack
 
+Make wavpack compatible with Debian's version.
+---
+ src/engine/client/sound.cpp | 33 +++++++++++++++------------------
+ src/engine/client/sound.h   |  4 ----
+ 2 files changed, 15 insertions(+), 22 deletions(-)
+
+diff --git a/src/engine/client/sound.cpp b/src/engine/client/sound.cpp
+index 048ec24..80de3c5 100644
 --- a/src/engine/client/sound.cpp
 +++ b/src/engine/client/sound.cpp
-@@ -328,17 +328,14 @@ void CSound::RateConvert(int SampleID)
+@@ -325,10 +325,6 @@ void CSound::RateConvert(int SampleID)
  	pSample->m_NumFrames = NumFrames;
  }
  
@@ -12,10 +22,10 @@ This patch lets us build teeworlds with wavpack 5.1.0.
 -{
 -	return io_read(ms_File, pBuffer, Size);
 -}
--
- int CSound::LoadWV(const char *pFilename)
+ 
+ ISound::CSampleHandle CSound::LoadWV(const char *pFilename)
  {
- 	CSample *pSample;
+@@ -336,6 +332,8 @@ ISound::CSampleHandle CSound::LoadWV(const char *pFilename)
  	int SampleID = -1;
  	char aError[100];
  	WavpackContext *pContext;
@@ -24,17 +34,18 @@ This patch lets us build teeworlds with wavpack 5.1.0.
  
  	// don't waste memory on sound when we are stress testing
  	if(g_Config.m_DbgStress)
-@@ -351,19 +348,23 @@ int CSound::LoadWV(const char *pFilename
- 	if(!m_pStorage)
- 		return -1;
+@@ -349,25 +347,29 @@ ISound::CSampleHandle CSound::LoadWV(const char *pFilename)
+ 		return CSampleHandle();
  
+ 	lock_wait(m_SoundLock);
 -	ms_File = m_pStorage->OpenFile(pFilename, IOFLAG_READ, IStorage::TYPE_ALL);
 -	if(!ms_File)
 +	File = m_pStorage->OpenFile(pFilename, IOFLAG_READ, IStorage::TYPE_ALL, aWholePath, sizeof(aWholePath));
 +	if(!File)
  	{
  		dbg_msg("sound/wv", "failed to open file. filename='%s'", pFilename);
- 		return -1;
+ 		lock_unlock(m_SoundLock);
+ 		return CSampleHandle();
  	}
 +	else
 +	{
@@ -43,7 +54,14 @@ This patch lets us build teeworlds with wavpack 5.1.0.
  
  	SampleID = AllocID();
  	if(SampleID < 0)
- 		return -1;
+ 	{
+-		io_close(ms_File);
+-		ms_File = 0;
++		io_close(File);
++		File = 0;
+ 		lock_unlock(m_SoundLock);
+ 		return CSampleHandle();
+ 	}
  	pSample = &m_aSamples[SampleID];
  
 -	pContext = WavpackOpenFileInput(ReadData, aError);
@@ -51,7 +69,29 @@ This patch lets us build teeworlds with wavpack 5.1.0.
  	if (pContext)
  	{
  		int m_aSamples = WavpackGetNumSamples(pContext);
-@@ -419,9 +420,6 @@ int CSound::LoadWV(const char *pFilename
+@@ -385,8 +387,8 @@ ISound::CSampleHandle CSound::LoadWV(const char *pFilename)
+ 		if(pSample->m_Channels > 2)
+ 		{
+ 			dbg_msg("sound/wv", "file is not mono or stereo. filename='%s'", pFilename);
+-			io_close(ms_File);
+-			ms_File = 0;
++			io_close(File);
++			File = 0;
+ 			lock_unlock(m_SoundLock);
+ 			return CSampleHandle();
+ 		}
+@@ -401,8 +403,8 @@ ISound::CSampleHandle CSound::LoadWV(const char *pFilename)
+ 		if(BitsPerSample != 16)
+ 		{
+ 			dbg_msg("sound/wv", "bps is %d, not 16, filname='%s'", BitsPerSample, pFilename);
+-			io_close(ms_File);
+-			ms_File = 0;
++			io_close(File);
++			File = 0;
+ 			lock_unlock(m_SoundLock);
+ 			return CSampleHandle();
+ 		}
+@@ -429,9 +431,6 @@ ISound::CSampleHandle CSound::LoadWV(const char *pFilename)
  		dbg_msg("sound/wv", "failed to open %s: %s", pFilename, aError);
  	}
  
@@ -61,14 +101,16 @@ This patch lets us build teeworlds with wavpack 5.1.0.
  	if(g_Config.m_Debug)
  		dbg_msg("sound/wv", "loaded %s", pFilename);
  
-@@ -527,7 +525,5 @@ void CSound::StopAll()
- 	lock_unlock(m_SoundLock);
+@@ -560,7 +559,5 @@ bool CSound::IsPlaying(CSampleHandle SampleID)
+ 	return Ret;
  }
  
 -IOHANDLE CSound::ms_File = 0;
 -
  IEngineSound *CreateEngineSound() { return new CSound; }
  
+diff --git a/src/engine/client/sound.h b/src/engine/client/sound.h
+index ff357c0..cec2cde 100644
 --- a/src/engine/client/sound.h
 +++ b/src/engine/client/sound.h
 @@ -21,10 +21,6 @@ public:
@@ -81,4 +123,4 @@ This patch lets us build teeworlds with wavpack 5.1.0.
 -
  	virtual bool IsSoundEnabled() { return m_SoundEnabled != 0; }
  
- 	virtual int LoadWV(const char *pFilename);
+ 	virtual CSampleHandle LoadWV(const char *pFilename);
