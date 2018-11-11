@@ -223,15 +223,16 @@ Poppler PDF rendering library.")
    (name "libharu")
    (version "2.3.0")
    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/libharu/libharu/archive/"
-                                 "RELEASE_"
-                                 (string-join (string-split version #\.) "_")
-                                 ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/libharu/libharu.git")
+                   (commit (string-append
+                            "RELEASE_"
+                            (string-join (string-split version #\.) "_")))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1lm4v539y9cb1lvbq387j57sy7yxda3yv8b1pk8m6zazbp66i7lg"))))
+               "15s9hswnl3qqi7yh29jyrg0hma2n99haxznvcywmsp8kjqlyg75q"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
