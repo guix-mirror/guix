@@ -2749,13 +2749,13 @@ reasonable substitute.")
 (define-public python-rq
   (package
     (name "python-rq")
-    (version "0.7.1")
+    (version "0.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rq" version))
        (sha256
-        (base32 "0gaq5pnh0zy46r8jvygi0ifbvz3pq6i7xla78ijcgjw0x77qzsdh"))))
+        (base32 "16d8kni57xlnah2hawy4xgw21xrv3f64j5q5shyp3zxx4yd9iibs"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)
