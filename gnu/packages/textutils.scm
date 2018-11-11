@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -198,11 +198,6 @@ encoding, supporting Unicode version 9.0.0.")
        (sha256
         (base32 "0jiybkb2z58wa2msvllnphr4js2hvjvh988pavb3mzkgr6ihwbkr"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
