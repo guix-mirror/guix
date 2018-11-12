@@ -7734,3 +7734,23 @@ levels of activity; statistically compare activity metrics through
 bootstrapping; and evaluate variation in linear variables with time (or other
 circular variables).")
     (license license:gpl3)))
+
+(define-public r-ouch
+  (package
+    (name "r-ouch")
+    (version "2.11-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ouch" version))
+       (sha256
+        (base32
+         "0xkwwi62vdahlcg3k32zb1nfwsx87zdssk79mvcxgfsw9bw4gahx"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-subplex" ,r-subplex)))
+    (home-page "http://kingaa.github.io/ouch/")
+    (synopsis "Ornstein-Uhlenbeck models for phylogenetic comparative hypotheses")
+    (description
+     "This package provides tools to fit and compare Ornstein-Uhlenbeck models
+for evolution along a phylogenetic tree.")
+    (license license:gpl2+)))
