@@ -15,6 +15,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -513,6 +514,47 @@ tools (analyzer, mono/stereo tools, crossovers).")
     ;; calfjackhost is released under GPLv2+
     ;; The plugins are released under LGPLv2.1+
     (license (list license:lgpl2.1+ license:gpl2+))))
+
+(define-public caps-plugins-lv2
+  (package
+    (name "caps-plugins-lv2")
+    (version "0.9.24") ; version that has been ported.
+    (source
+     (origin
+       ;; The Github project hasn't tagged a release.
+       (method git-fetch)
+       (uri (git-reference
+             ;; Actually https://github.com/moddevices/caps-lv2.git, but it's
+             ;; missing fixes for newer glibc, so using the origin of a pull
+             ;; request regarding this issue:
+             (url "https://github.com/jujudusud/caps-lv2.git")
+             (commit "9c9478b7fbd8f9714f552ebe2a6866398b0babfb")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1idfnazin3cca41zw1a8vwgnxjnkrap7bxxjamjqvgpmvydgcam1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-after 'unpack 'override-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* (find-files "plugins" "Makefile")
+               (("/usr/local")(assoc-ref outputs "out")))
+             #t)))))
+    (inputs
+     `(("lv2" ,lv2)))
+    ;; home-page of the original LADSPA version: http://quitte.de/dsp/caps.html
+    (home-page "https://github.com/moddevices/caps-lv2")
+    (synopsis "LV2 port of the CAPS audio plugin colection")
+    (description
+     "LV2 port of CAPS, a collection of audio plugins comprising basic virtual
+guitar amplification and a small range of classic effects, signal processors and
+generators of mostly elementary and occasionally exotic nature.")
+    (license license:gpl3+)))
 
 (define-public espeak
   (package
