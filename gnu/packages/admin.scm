@@ -125,7 +125,9 @@
      `(("libgcrypt" ,libgcrypt)
        ("libgpg-error" ,libgpg-error)
        ("libmhash" ,libmhash)
+       ("pcre:static" ,pcre "static")
        ("pcre" ,pcre)
+       ("zlib:static" ,zlib "static")
        ("zlib" ,zlib)))
     (synopsis "File and directory integrity checker")
     (description
