@@ -349,3 +349,55 @@ versions will also support Hermite and nonconforming elements.
 
 FIAT is part of the FEniCS Project.")
     (license license:lgpl3+)))
+
+(define-public python-fenics-ffc
+  (package
+    (name "python-fenics-ffc")
+    (version "2018.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "fenics-ffc" version))
+        (sha256
+          (base32
+            "1b2ia5vlkw298x7rf0k2p3ihlpwkwgc98p3s6sbpds3hqmfrzdz9"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-fenics-dijitso" ,python-fenics-dijitso)
+       ("python-fenics-fiat" ,python-fenics-fiat)
+       ("python-fenics-ufl" ,python-fenics-ufl)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
+             (with-directory-excursion "test"
+               ;; FIXME: the tests in subdirectory
+               ;; 'unit/ufc/finite_element' require the ffc_factory
+               ;; extension module.  This module, located in the 'libs'
+               ;; subdirectory, needs to be built and made accessible
+               ;; prior to running the tests.
+               (invoke "py.test" "unit/" "--ignore=unit/ufc/")
+               (with-directory-excursion "uflacs"
+                 (invoke "py.test" "unit/")))
+             #t)))))
+    (home-page "https://bitbucket.org/fenics-project/ffc/")
+    (synopsis "Compiler for finite element variational forms")
+    (description "The FEniCS Form Compiler (FFC) is a compiler for
+finite element variational forms.  From a high-level description of
+the form, it generates efficient low-level C++ code that can be used
+to assemble the corresponding discrete operator (tensor).  In
+particular, a bilinear form may be assembled into a matrix and a
+linear form may be assembled into a vector.  FFC may be used either
+from the command line (by invoking the @code{ffc} command) or as a
+Python module (@code{import ffc}).
+
+FFC is part of the FEniCS Project.")
+    ;; There are two files released with a public domain licence;
+    ;; ufc.h and ufc_geometry.h, in subdirectory 'ffc/backends/ufc'.
+    (license (list license:public-domain license:lgpl3+))))
