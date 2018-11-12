@@ -7683,3 +7683,28 @@ features (e.g. local modes).")
 Data Analysis Using Regression and Multilevel/Hierarchical Models, Cambridge
 University Press, 2007.")
     (license license:gpl3+)))
+
+(define-public r-circular
+  (package
+    (name "r-circular")
+    (version "0.4-93")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "circular" version))
+       (sha256
+        (base32
+         "0hki85rs8wc5950pjaw28q54rly2napfbcrx3pchlfap6wwy5kkn"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-boot" ,r-boot)
+       ("r-mvtnorm" ,r-mvtnorm)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/circular/")
+    (synopsis "Circular statistics")
+    (description
+     "This package provides tools for circular statistics, from \"Topics in
+circular Statistics\" (2001) S. Rao Jammalamadaka and A. SenGupta, World
+Scientific.")
+    (license license:gpl2+)))
