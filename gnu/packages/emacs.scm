@@ -12533,43 +12533,6 @@ correctly.")
 @end itemize\n")
       (license license:gpl3+))))
 
-(define-public emacs-clang-format
-  (let ((commit "5556c31528af2661bed3011bd63ffc0ed44e18a0"))
-    (package
-      (name "emacs-clang-format")
-      (version (git-version "0.0.0" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacsorphanage/clang-format")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0ynvnp3vrcpngmwakb23xv4xn7jbkg43s196q7pg9nkl13x4n2nq"))))
-      (build-system emacs-build-system)
-      (inputs
-       `(("clang" ,clang)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'configure
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((clang (assoc-ref inputs "clang")))
-                 ;; Repo is read-only.
-                 (chmod "clang-format.el" #o644)
-                 (emacs-substitute-variables "clang-format.el"
-                   ("clang-format-executable"
-                    (string-append clang "/bin/clang-format"))))
-               #t)))))
-      (home-page "https://github.com/emacsorphanage/clang-format")
-      (synopsis "Format code using clang-format")
-      (description "This package allows to filter code through clang-format to
-fix its formatting.  @command{clang-format} is a tool that formats C/C++/Obj-C
-code according to a set of style options, see
-@url{http://clang.llvm.org/docs/ClangFormatStyleOptions.html}.")
-      (license license:gpl3+))))
-
 (define-public emacs-gtk-look
   (package
     (name "emacs-gtk-look")

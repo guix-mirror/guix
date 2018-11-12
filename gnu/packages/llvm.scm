@@ -7,6 +7,8 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +32,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
@@ -433,3 +436,27 @@ code analysis tools.")
     (description
      "This package provides a Python binding to LLVM for use in Numba.")
     (license license:bsd-3)))
+
+(define-public emacs-clang-format
+  (package
+    (inherit clang)
+    (name "emacs-clang-format")
+    (build-system emacs-build-system)
+    (inputs
+     `(("clang" ,clang)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "clang")))
+               (copy-file "tools/clang-format/clang-format.el" "clang-format.el")
+               (emacs-substitute-variables "clang-format.el"
+                 ("clang-format-executable"
+                  (string-append clang "/bin/clang-format"))))
+             #t)))))
+    (synopsis "Format code using clang-format")
+    (description "This package allows to filter code through @code{clang-format}
+to fix its formatting.  @code{clang-format} is a tool that formats
+C/C++/Obj-C code according to a set of style options, see
+@url{http://clang.llvm.org/docs/ClangFormatStyleOptions.html}.")))
