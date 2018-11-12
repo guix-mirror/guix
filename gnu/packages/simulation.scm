@@ -18,11 +18,13 @@
 
 (define-module (gnu packages simulation)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
@@ -36,6 +38,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
@@ -44,6 +47,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (guix download)
   #:use-module (guix build utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
@@ -401,3 +405,190 @@ FFC is part of the FEniCS Project.")
     ;; There are two files released with a public domain licence;
     ;; ufc.h and ufc_geometry.h, in subdirectory 'ffc/backends/ufc'.
     (license (list license:public-domain license:lgpl3+))))
+
+(define-public fenics-dolfin
+  (package
+    (name "fenics-dolfin")
+    (version "2018.1.0.post1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://bitbucket.org/fenics-project/dolfin/get/"
+              version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+           "12zkk8j3xsg6l8p0ggwsl03084vlcivw4h99b7z9kndg7k89b3ya"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; Make sure we don't use the bundled test framework.
+            (delete-file-recursively "test/unit/cpp/catch")
+            (substitute* "test/unit/cpp/main.cpp"
+              ;; Use standard search paths for 'catch' header file.
+              (("#include.*")
+               "#include <catch.hpp>\n"))
+            (substitute* "test/unit/cpp/CMakeLists.txt"
+              ;; Add extra include directories required by the unit tests.
+              (("(^target_link_libraries.*)" line)
+               (string-append line "\n"
+                              "target_include_directories("
+                              "unittests PRIVATE "
+                              "${DOLFIN_SOURCE_DIR} "
+                              "${DOLFIN_SOURCE_DIR}/dolfin "
+                              "${DOLFIN_BINARY_DIR})\n"))
+              (("(^set\\(CATCH_INCLUDE_DIR ).*(/catch\\))" _ front back)
+               (string-append front
+                              "$ENV{CATCH_DIR}"
+                              "/include" back "\n")))
+            (substitute* "demo/CMakeLists.txt"
+              ;; Add extra include directories required by the demo tests.
+              (("(^#find_package.*)" line)
+               (string-append line "\n"
+                              "include_directories("
+                              "${DOLFIN_SOURCE_DIR} "
+                              "${DOLFIN_SOURCE_DIR}/dolfin "
+                              "${DOLFIN_BINARY_DIR})\n")))
+            #t))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("blas" ,openblas)
+       ("boost" ,boost)
+       ("eigen" ,eigen)
+       ("hdf5" ,hdf5-parallel-openmpi)
+       ("lapack" ,lapack)
+       ("libxml2" ,libxml2)
+       ("openmpi" ,openmpi)
+       ("python" ,python-3)
+       ("scotch" ,pt-scotch32)
+       ("suitesparse" ,suitesparse)
+       ("sundials" ,sundials-openmpi)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("catch" ,catch-framework2)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("ffc" ,python-fenics-ffc)
+       ("petsc" ,petsc-openmpi)
+       ("slepc" ,slepc-openmpi)))
+    (arguments
+     `(#:configure-flags
+       `("-DDOLFIN_ENABLE_DOCS:BOOL=OFF"
+         "-DDOLFIN_ENABLE_HDF5:BOOL=ON"
+         "-DDOLFIN_ENABLE_MPI:BOOL=ON"
+         "-DDOLFIN_ENABLE_PARMETIS:BOOL=OFF"
+         "-DDOLFIN_ENABLE_SCOTCH:BOOL=ON"
+         "-DDOLFIN_ENABLE_SUNDIALS:BOOL=ON"
+         "-DDOLFIN_ENABLE_TRILINOS:BOOL=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-usr-bin-file 'mpi-setup
+           ,%openmpi-setup)
+         (add-after 'patch-source-shebangs 'set-paths
+           (lambda _
+             ;; Define paths to store locations.
+             (setenv "BLAS_DIR" (assoc-ref %build-inputs "blas"))
+             (setenv "CATCH_DIR" (assoc-ref %build-inputs "catch"))
+             (setenv "LAPACK_DIR" (assoc-ref %build-inputs "lapack"))
+             (setenv "PETSC_DIR" (assoc-ref %build-inputs "petsc"))
+             (setenv "SLEPC_DIR" (assoc-ref %build-inputs "slepc"))
+             (setenv "SCOTCH_DIR" (assoc-ref %build-inputs "scotch"))
+             (setenv "SUNDIALS_DIR" (assoc-ref %build-inputs "sundials"))
+             (setenv "UMFPACK_DIR" (assoc-ref %build-inputs "suitesparse"))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; The Dolfin repository uses git-lfs, whereby web links are
+             ;; substituted for large files.  Guix does not currently support
+             ;; git-lfs, so only the links are downloaded.  The tests that
+             ;; require the absent meshes cannot run and are skipped.
+             ;;
+             ;; Two other serial tests fail and are skipped.
+             ;; i) demo_stokes-iterative_serial,
+             ;;   The MPI_Comm_rank() function was called before MPI_INIT was
+             ;;   invoked
+             ;; ii) demo_multimesh-stokes_serial:
+             ;;   Warning: Found no facets matching domain for boundary
+             ;;   condition.
+             ;;
+             ;; One mpi test fails and is skipped.
+             ;; i) demo_stokes-iterative_mpi:
+             ;;   The MPI_Comm_rank() function was called before MPI_INIT was
+             ;;   invoked
+             (call-with-output-file "CTestCustom.cmake"
+               (lambda (port)
+                 (display
+                   (string-append
+                    "set(CTEST_CUSTOM_TESTS_IGNORE "
+                    "demo_bcs_serial "
+                    "demo_bcs_mpi "
+                    "demo_eigenvalue_serial "
+                    "demo_eigenvalue_mpi "
+                    "demo_navier-stokes_serial "
+                    "demo_navier-stokes_mpi "
+                    "demo_stokes-taylor-hood_serial "
+                    "demo_stokes-taylor-hood_mpi "
+                    "demo_subdomains_serial "
+                    "demo_advection-diffusion_serial "
+                    "demo_advection-diffusion_mpi "
+                    "demo_auto-adaptive-navier-stokes_serial "
+                    "demo_contact-vi-snes_serial "
+                    "demo_contact-vi-snes_mpi "
+                    "demo_contact-vi-tao_serial "
+                    "demo_contact-vi-tao_mpi "
+                    "demo_curl-curl_serial "
+                    "demo_curl-curl_mpi "
+                    "demo_dg-advection-diffusion_serial "
+                    "demo_dg-advection-diffusion_mpi "
+                    "demo_elasticity_serial "
+                    "demo_elasticity_mpi "
+                    "demo_elastodynamics_serial "
+                    "demo_elastodynamics_mpi "
+                    "demo_lift-drag_serial "
+                    "demo_lift-drag_mpi "
+                    "demo_mesh-quality_serial "
+                    "demo_mesh-quality_mpi "
+                    "demo_multimesh-stokes_serial "
+                    "demo_stokes-iterative_serial "
+                    "demo_stokes-iterative_mpi "
+                    ")\n") port)))
+             #t))
+         (replace 'check
+           (lambda _
+             (and (invoke "make" "unittests")
+                  (invoke "make" "demos")
+                  (invoke "ctest" "-R" "unittests")
+                  (invoke "ctest" "-R" "demo" "-R" "serial")
+                  (invoke "ctest" "-R" "demo" "-R" "mpi")))))))
+    (home-page "https://bitbucket.org/fenics-project/dolfin/")
+    (synopsis "Problem solving environment for differential equations")
+    (description
+      "DOLFIN is a computational framework for finding numerical
+solutions to problems described by differential equations.  Numerical
+models in DOLFIN are constructed using general families of finite
+elements.  Data structures are provided for discretizing the governing
+system on a computational mesh.  A compact syntax, similar to
+mathematical notation, is made available for defining function spaces
+and expressing variational forms.  Interfaces to specialized matrix
+solvers are provided for solving the resultant linear systems.
+
+@code{fenics-dolfin} is part of the FEniCS project.  It is the C++
+user interface to the FEniCS core components and external libraries.")
+    ;; The source code for the DOLFIN C++ library is licensed under the
+    ;; GNU Lesser General Public License, version 3 or later, with the
+    ;; following exceptions:
+    ;;
+    ;; public-domain: dolfin/geometry/predicates.cpp
+    ;;                dolfin/geometry/predicates.h
+    ;;
+    ;; zlib:          dolfin/io/base64.cpp
+    ;;                dolfin/io/base64.h
+    ;;
+    ;; expat:         dolfin/io/pugiconfig.hpp
+    ;;                dolfin/io/pugixml.cpp
+    ;;                dolfin/io/pugixml.hpp
+    (license (list license:public-domain
+                   license:zlib
+                   license:expat
+                   license:lgpl3+))))
