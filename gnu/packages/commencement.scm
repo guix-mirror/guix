@@ -133,6 +133,7 @@
   (package-with-bootstrap-guile
    (package
      (inherit mes)
+     (version (package-version mes-boot0))
      (source (package-source mes-boot0))
      (name "mes-boot")
      (inputs '())
