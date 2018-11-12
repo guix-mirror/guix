@@ -4901,6 +4901,27 @@ transactions (tic) data, performs diurnal adjustments, fits various ACD models
 and tests them.")
     (license license:gpl2+)))
 
+(define-public r-overlap
+  (package
+    (name "r-overlap")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "overlap" version))
+       (sha256
+        (base32
+         "1j3m6ir1chdz0si2fhcw6gs7c9h09bv0chz18rpzxsywww6d4rzy"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/overlap/")
+    (synopsis "Estimates of coefficient of overlapping for animal activity patterns")
+    (description
+     "This package provides functions to fit kernel density functions to data
+on temporal activity patterns of animals; estimate coefficients of overlapping
+of densities for two species; and calculate bootstrap estimates of confidence
+intervals.")
+    (license license:gpl3+)))
+
 (define-public r-snakecase
   (package
     (name "r-snakecase")
