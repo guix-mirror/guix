@@ -7708,3 +7708,29 @@ University Press, 2007.")
 circular Statistics\" (2001) S. Rao Jammalamadaka and A. SenGupta, World
 Scientific.")
     (license license:gpl2+)))
+
+(define-public r-activity
+  (package
+    (name "r-activity")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "activity" version))
+       (sha256
+        (base32
+         "1lqajgxfps2h6amz1791vp3f52rs9ghmanq1nqfxqd2jmk3idkrx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-circular" ,r-circular)
+       ("r-overlap" ,r-overlap)
+       ("r-pbapply" ,r-pbapply)))
+    (home-page "https://cran.r-project.org/web/packages/activity/")
+    (synopsis "Animal activity statistics")
+    (description
+     "This package provides functions to fit kernel density functions to
+animal activity time data; plot activity distributions; quantify overall
+levels of activity; statistically compare activity metrics through
+bootstrapping; and evaluate variation in linear variables with time (or other
+circular variables).")
+    (license license:gpl3)))
