@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages linux)
@@ -263,3 +265,43 @@ only provides @code{MPI_THREAD_FUNNELED}.")))
      ;; in the build environment than the package wants while testing.
      (setenv "OMPI_MCA_rmaps_base_oversubscribe" "yes")
      #t))
+
+(define-public python-mpi4py
+  (package
+    (name "python-mpi4py")
+    (version "3.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mpi4py" version))
+        (sha256
+          (base32
+            "1mzgd26dfv4vwbci8gq77ss9f0x26i9aqzq9b9vs9ndxhlnv0mxl"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'mpi-setup
+           ,%openmpi-setup)
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Skip BaseTestSpawn class (causes error 'ompi_dpm_dyn_init()
+             ;; failed --> Returned "Unreachable"' in chroot environment).
+             (substitute* "test/test_spawn.py"
+               (("unittest.skipMPI\\('openmpi\\(<3.0.0\\)'\\)")
+                "unittest.skipMPI('openmpi')"))
+             #t)))))
+    (inputs
+     `(("openmpi" ,openmpi)))
+    (home-page "https://bitbucket.org/mpi4py/mpi4py/")
+    (synopsis "Python bindings for the Message Passing Interface standard")
+    (description "MPI for Python (mpi4py) provides bindings of the Message
+Passing Interface (MPI) standard for the Python programming language, allowing
+any Python program to exploit multiple processors.
+
+mpi4py is constructed on top of the MPI-1/MPI-2 specification and provides an
+object oriented interface which closely follows MPI-2 C++ bindings.  It
+supports point-to-point and collective communications of any picklable Python
+object as well as optimized communications of Python objects (such as NumPy
+arrays) that expose a buffer interface.")
+    (license bsd-3)))
