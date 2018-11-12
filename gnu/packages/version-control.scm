@@ -2279,3 +2279,55 @@ used to keep a folder in sync between computers.")
     ;; The web app is released under the AGPLv3+.
     (license (list license:gpl3+
                    license:agpl3+))))
+
+(define-public git-when-merged
+  ;; Use an unreleased version to get a PY3 compatibility fix.
+  (let ((commit "ab6af7865a0ba55ba364a6c507e0be6f84f31c6d"))
+    (package
+      (name "git-when-merged")
+      (version (string-append "1.2.0-" (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mhagger/git-when-merged/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0iyk2psf97bc9h43m89p3xjmm79fsx99i7px29g4lcnmdy5kmz0p"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; there are no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (install-file "bin/git-when-merged"
+                             (string-append (assoc-ref outputs "out")
+                                            "/bin"))
+               #t))
+           (add-before 'install 'patch-git
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((git (string-append (assoc-ref inputs "git")
+                                         "/bin/git")))
+                 (substitute* "bin/git-when-merged"
+                   (("'git'") (string-append "'" git "'")))
+                 #t)))
+           (add-after 'install 'wrap-script
+             (lambda* (#:key outputs #:allow-other-keys)
+               (wrap-program (string-append (assoc-ref outputs "out")
+                                            "/bin/git-when-merged")
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+               #t)))))
+      (inputs
+       `(("git" ,git)
+         ("python" ,python-wrapper)))
+      (home-page "https://github.com/mhagger/git-when-merged")
+      (synopsis "Determine when a commit was merged into a Git branch")
+      (description "This Git extension defines a subcommand,
+@code{when-merged}, whose core operation is to find the merge that brought a
+given commit into the specified ref(s).  It has various options that control
+how information about the merge is displayed.")
+      (license license:gpl2))))
