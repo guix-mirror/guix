@@ -307,3 +307,45 @@ forms in a notation close to mathematical notation.
 
 UFL is part of the FEniCS Project.")
     (license license:lgpl3+)))
+
+(define-public python-fenics-fiat
+  (package
+    (name "python-fenics-fiat")
+    (version "2018.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "fenics-fiat" version))
+        (sha256
+          (base32
+            "0fmjd93r6bwf6xs8csw86qzphrnr66xwv7f372w59gmq8mg6rljc"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-sympy" ,python-sympy)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
+             (with-directory-excursion "test"
+               (invoke "py.test" "unit/"))
+             #t)))))
+    (home-page "https://bitbucket.org/fenics-project/fiat/")
+    (synopsis "Tabulation of finite element function spaces")
+    (description
+      "The FInite element Automatic Tabulator (FIAT) supports
+generation of arbitrary order instances of the Lagrange elements on
+lines, triangles, and tetrahedra.  It is also capable of generating
+arbitrary order instances of Jacobi-type quadrature rules on the same
+element shapes.  Further, H(div) and H(curl) conforming finite element
+spaces such as the families of Raviart-Thomas, Brezzi-Douglas-Marini
+and Nedelec are supported on triangles and tetrahedra.  Upcoming
+versions will also support Hermite and nonconforming elements.
+
+FIAT is part of the FEniCS Project.")
+    (license license:lgpl3+)))
