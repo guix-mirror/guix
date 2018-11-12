@@ -14362,3 +14362,77 @@ both read length (longer is better) and read identity (higher is better) when
 choosing which reads pass the filter.")
       (license (list license:gpl3       ;filtlong
                      license:asl2.0))))) ;histogram.py
+
+(define-public nanopolish
+  ;; The recommended way to install is to clone the git repository
+  ;; <https://github.com/jts/nanopolish#installing-a-particular-release>.
+  ;; Also, the differences between release and current version seem to be
+  ;; significant.
+  (let ((commit "50e8b5cc62f9b46f5445f5c5e8c5ab7263ea6d9d")
+        (revision "1"))
+    (package
+      (name "nanopolish")
+      (version (git-version "0.10.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jts/nanopolish.git")
+               (commit commit)
+               (recursive? #t)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "09j5gz57yr9i34a27vbl72i4g8syv2zzgmsfyjq02yshmnrvkjs6"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags
+         `("HDF5=noinstall" "EIGEN=noinstall" "HTS=noinstall" "CC=gcc")
+         #:tests? #f                    ; no check target
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'find-eigen
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "CPATH"
+                       (string-append (assoc-ref inputs "eigen")
+                                      "/include/eigen3"))
+               #t))
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (scripts (string-append out "/share/nanopolish/scripts")))
+
+                 (install-file "nanopolish" bin)
+                 (for-each (lambda (file) (install-file file scripts))
+                           (find-files "scripts" ".*"))
+                 #t)))
+           (add-after 'install 'wrap-programs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (for-each (lambda (file)
+                           (wrap-program file `("PYTHONPATH" ":" prefix (,path))))
+                         (find-files "/share/nanopolish/scripts" "\\.py"))
+               (for-each (lambda (file)
+                           (wrap-program file `("PERL5LIB" ":" prefix (,path))))
+                         (find-files  "/share/nanopolish/scripts" "\\.pl"))
+               #t)))))
+      (inputs
+       `(("eigen" ,eigen)
+         ("hdf5" ,hdf5)
+         ("htslib" ,htslib)
+         ("perl" ,perl)
+         ("python" ,python)
+         ("python-biopython" ,python-biopython)
+         ("python-numpy" ,python-numpy)
+         ("python-pysam" ,python-pysam)
+         ("python-scikit-learn" , python-scikit-learn)
+         ("python-scipy" ,python-scipy)
+         ("zlib" ,zlib)))
+      (home-page "https://github.com/jts/nanopolish")
+      (synopsis "Signal-level analysis of Oxford Nanopore sequencing data")
+      (description
+       "This package analyses the Oxford Nanopore sequencing data at signal-level.
+Nanopolish can calculate an improved consensus sequence for a draft genome
+assembly, detect base modifications, call SNPs (Single nucleotide
+polymorphisms) and indels with respect to a reference genome and more.")
+      (license license:expat))))
