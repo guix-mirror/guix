@@ -1974,6 +1974,43 @@ arising after the discretization of partial differential equations.")
        ,@(alist-delete "petsc" (package-propagated-inputs slepc-openmpi))))
     (synopsis "Scalable library for eigenproblems (with complex scalars and MPI support)")))
 
+(define-public python-slepc4py
+  (package
+    (name "python-slepc4py")
+    (version "3.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "slepc4py" version))
+        (sha256
+          (base32
+            "02xr0vndgibgkz3rgprqk05n3mk5mpgqw550sr4681vcsgz4zvb7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; Define path to PETSc installation.
+             (setenv "PETSC_DIR" (assoc-ref %build-inputs "petsc"))
+             ;; Define path to SLEPc installation.
+             (setenv "SLEPC_DIR" (assoc-ref %build-inputs "slepc"))
+             #t))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
+    (inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-petsc4py" ,python-petsc4py)
+       ("slepc" ,slepc-openmpi)))
+    (home-page "https://bitbucket.org/slepc/slepc4py/")
+    (synopsis "Python bindings for SLEPc")
+    (description "SLEPc, the Scalable Library for Eigenvalue Problem
+Computations, is based on PETSc, the Portable, Extensible Toolkit for
+Scientific Computation.  It employs the MPI standard for all
+message-passing communication.  @code{slepc4py} provides Python
+bindings to almost all functions of SLEPc.")
+    (license license:bsd-3)))
+
 (define-public mumps
   (package
     (name "mumps")
