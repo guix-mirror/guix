@@ -4873,6 +4873,34 @@ statistical dependencies in messy, complex data.")
 or missing responses.")
     (license license:gpl2+)))
 
+(define-public r-acdm
+  (package
+    (name "r-acdm")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACDm" version))
+       (sha256
+        (base32
+         "0b4f02ga5ra66mbrm79g0bnlzmii82rks9kmxixxqgf18yhlyjil"))))
+    (properties `((upstream-name . "ACDm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-plyr" ,r-plyr)
+       ("r-rsolnp" ,r-rsolnp)
+       ("r-zoo" ,r-zoo)))
+    (home-page "https://cran.r-project.org/web/packages/ACDm/")
+    (synopsis "Tools for Autoregressive Conditional Duration Models")
+    (description
+     "ACDm is a package for Autoregressive Conditional Duration (ACD, Engle
+and Russell, 1998) models.  It creates trade, price or volume durations from
+transactions (tic) data, performs diurnal adjustments, fits various ACD models
+and tests them.")
+    (license license:gpl2+)))
+
 (define-public r-snakecase
   (package
     (name "r-snakecase")
