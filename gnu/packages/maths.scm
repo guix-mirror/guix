@@ -1808,6 +1808,41 @@ scientific applications modeled by partial differential equations.")
            ,@(delete "--with-mpi=0" ,cf)))))
     (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
 
+(define-public python-petsc4py
+  (package
+    (name "python-petsc4py")
+    (version "3.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "petsc4py" version))
+        (sha256
+          (base32
+            "1f8zd1ac9irsgkyqmzq30d9kl10fy1nh6zk312dhs43g449fkkhc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; Define path to PETSc installation.
+             (setenv "PETSC_DIR" (assoc-ref %build-inputs "petsc"))
+             #t))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
+    (inputs
+     `(("petsc" ,petsc-openmpi)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://bitbucket.org/petsc/petsc4py/")
+    (synopsis "Python bindings for PETSc")
+    (description "PETSc, the Portable, Extensible Toolkit for
+Scientific Computation, is a suite of data structures and routines for
+the scalable (parallel) solution of scientific applications modeled by
+partial differential equations.  It employs the MPI standard for all
+message-passing communication.  @code{petsc4py} provides Python
+bindings to almost all functions of PETSc.")
+    (license license:bsd-3)))
+
 (define-public python-kiwisolver
   (package
     (name "python-kiwisolver")
