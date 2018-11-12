@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017, 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +22,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
@@ -35,6 +36,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
@@ -43,6 +45,7 @@
   #:use-module (guix download)
   #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -221,3 +224,49 @@ with gas/liquid interfaces.  Large problems may be split into smaller, connected
 problems for efficient solution on parallel systems.")
     (license license:gpl3+)
     (home-page "https://openfoam.org")))
+
+(define-public python-fenics-dijitso
+  (package
+    (name "python-fenics-dijitso")
+    (version "2018.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "fenics-dijitso" version))
+        (sha256
+          (base32
+            "1qax2f52qsjbd1h5lk5i5shp448qlakxabjjybrfc1w823p0yql9"))))
+    (build-system python-build-system)
+    (inputs
+     `(("openmpi" ,openmpi)
+       ("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-pytest-cov" ,python-pytest-cov)))
+    (propagated-inputs
+     `(("python-mpi4py" ,python-mpi4py)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'mpi-setup
+           ,%openmpi-setup)
+         (replace 'check
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
+             (with-directory-excursion "test"
+               (invoke "./runtests.sh"))
+             #t)))))
+    (home-page "https://bitbucket.org/fenics-project/dijitso/")
+    (synopsis "Distributed just-in-time building of shared libraries")
+    (description
+      "Dijitso provides a core component of the @code{FEniCS} framework,
+namely the just-in-time compilation of C++ code that is generated from
+Python modules.  It is called from within a C++ library, using ctypes
+to import the dynamic shared library directly.
+
+As long as the compiled code can provide a simple factory function to
+a class implementing a predefined C++ interface, there is no limit to
+the complexity of that interface.  Parallel support depends on the
+@code{mpi4py} interface.")
+    (license license:lgpl3+)))
