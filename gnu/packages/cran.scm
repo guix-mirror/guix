@@ -4816,6 +4816,43 @@ be added or removed.  When working with Word documents, a cursor can be used
 to help insert or delete content at a specific location in the document.")
     (license license:gpl3)))
 
+(define-public r-abn
+  (package
+    (name "r-abn")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abn" version))
+       (sha256
+        (base32
+         "00k0razgdb5y5f62622fm7rxkcxrxg470nyyb02dvpfp60254kvs"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gsl" ,gsl)))
+    (propagated-inputs
+     `(("r-cairo" ,r-cairo)
+       ("r-lme4" ,r-lme4)
+       ("r-mass" ,r-mass)
+       ("r-nnet" ,r-nnet)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rjags" ,r-rjags)))
+    (home-page "http://www.r-bayesian-networks.org")
+    (synopsis "Modelling multivariate data with additive bayesian networks")
+    (description
+     "Bayesian network analysis is a form of probabilistic graphical models
+which derives from empirical data a directed acyclic graph, DAG, describing
+the dependency structure between random variables.  An additive Bayesian
+network model consists of a form of a DAG where each node comprises a
+@dfn{generalized linear model} (GLM).  Additive Bayesian network models are
+equivalent to Bayesian multivariate regression using graphical modelling, they
+generalises the usual multivariable regression, GLM, to multiple dependent
+variables.  This package provides routines to help determine optimal Bayesian
+network models for a given data set, where these models are used to identify
+statistical dependencies in messy, complex data.")
+    (license license:gpl2+)))
+
 (define-public r-snakecase
   (package
     (name "r-snakecase")
