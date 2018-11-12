@@ -4853,6 +4853,26 @@ network models for a given data set, where these models are used to identify
 statistical dependencies in messy, complex data.")
     (license license:gpl2+)))
 
+(define-public r-acd
+  (package
+    (name "r-acd")
+    (version "1.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ACD" version))
+       (sha256
+        (base32
+         "1a67bi3hklq8nlc50r0qnyr4k7m9kpvijy8sqqpm54by5hsysfd6"))))
+    (properties `((upstream-name . "ACD")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/ACD/")
+    (synopsis "Categorical data analysis with complete or missing responses")
+    (description
+     "This package provides tools for categorical data analysis with complete
+or missing responses.")
+    (license license:gpl2+)))
+
 (define-public r-snakecase
   (package
     (name "r-snakecase")
