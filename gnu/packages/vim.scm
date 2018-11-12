@@ -718,7 +718,7 @@ refactor Vim in order to:
 (define-public vifm
   (package
     (name "vifm")
-    (version "0.9.1")
+    (version "0.10")
     (source
       (origin
         (method url-fetch)
@@ -729,7 +729,7 @@ refactor Vim in order to:
                               "vifm-" version ".tar.bz2")))
         (sha256
          (base32
-          "1cz7vjjmghgdxd1lvsdwv85gvx4kz8idq14qijpwkpfrf2va9f98"))))
+          "1f380xcyjnm4xmcdazs6dj064bwddhywvn3mgm36k7r7b2gnjnp0"))))
     (build-system gnu-build-system)
     (arguments
     '(#:configure-flags '("--disable-build-timestamp")
