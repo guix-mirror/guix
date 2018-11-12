@@ -270,3 +270,40 @@ a class implementing a predefined C++ interface, there is no limit to
 the complexity of that interface.  Parallel support depends on the
 @code{mpi4py} interface.")
     (license license:lgpl3+)))
+
+(define-public python-fenics-ufl
+  (package
+    (name "python-fenics-ufl")
+    (version "2018.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "fenics-ufl" version))
+        (sha256
+          (base32
+            "1fq8yc86s1s3c8c0b1rc2vf265q0hrkzg57100fg1nghcz0p4vla"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) ":" (getenv "PYTHONPATH")))
+             (with-directory-excursion "test"
+               (invoke "py.test"))
+             #t)))))
+    (home-page "https://bitbucket.org/fenics-project/ufl/")
+    (synopsis "Unified language for form-compilers")
+    (description "The Unified Form Language (UFL) is a domain specific
+language for declaration of finite element discretizations of
+variational forms.  More precisely, it defines a flexible interface
+for choosing finite element spaces and defining expressions for weak
+forms in a notation close to mathematical notation.
+
+UFL is part of the FEniCS Project.")
+    (license license:lgpl3+)))
