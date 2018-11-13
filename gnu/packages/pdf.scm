@@ -82,6 +82,7 @@
 (define-public poppler
   (package
    (name "poppler")
+   (replacement poppler/fixed)
    (version "0.63.0")
    (source (origin
             (method url-fetch)
@@ -127,6 +128,14 @@
    (license license:gpl2+)
    (home-page "https://poppler.freedesktop.org/")))
 
+(define poppler/fixed
+  (package
+    (inherit poppler)
+    (source (origin
+              (inherit (package-source poppler))
+              (patches (append (origin-patches (package-source poppler))
+                               (search-patches "poppler-CVE-2018-19149.patch")))))))
+
 (define-public poppler-data
   (package
     (name "poppler-data")
@@ -158,14 +167,14 @@ When present, Poppler is able to correctly render CJK and Cyrillic text.")
                    license:gpl2))))
 
 (define-public poppler-qt4
-  (package (inherit poppler)
+  (package/inherit poppler
    (name "poppler-qt4")
    (inputs `(("qt-4" ,qt-4)
              ,@(package-inputs poppler)))
    (synopsis "Qt4 frontend for the Poppler PDF rendering library")))
 
 (define-public poppler-qt5
-  (package (inherit poppler)
+  (package/inherit poppler
    (name "poppler-qt5")
    (inputs `(("qtbase" ,qtbase)
              ,@(package-inputs poppler)))
