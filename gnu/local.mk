@@ -146,6 +146,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/documentation.scm		\
   %D%/packages/dunst.scm			\
   %D%/packages/dvtm.scm				\
+  %D%/packages/easyrpg.scm			\
   %D%/packages/ebook.scm			\
   %D%/packages/ed.scm				\
   %D%/packages/education.scm			\
