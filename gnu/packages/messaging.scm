@@ -860,13 +860,14 @@ protocols.")
     (version "0.2.8")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/TokTok/c-toxcore/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/TokTok/c-toxcore.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0qlkimlvbd24nlj7w9b5rpz1r807magqxmfylc1mlxsqhmfi5zj7"))))
+         "0xgnraysz25fbws5zwjk92mwnl8k1yih701qam8kgm3rxh50kyhm"))))
     (arguments
      `(#:tests? #f)) ; FIXME: Testsuite seems to stay stuck on test 3. Disable
                      ; for now.
