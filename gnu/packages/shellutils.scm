@@ -116,9 +116,10 @@ are already there.")
      '(#:test-target "test"
        #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases (delete 'configure))))
+    (inputs
+     `(("go" ,go-1.9)))
     (native-inputs
-      `(("go" ,go)
-        ("which" ,which)))
+      `(("which" ,which)))
     (home-page "https://direnv.net/")
     (synopsis "Environment switcher for the shell")
     (description
