@@ -36,6 +36,7 @@
             random-text
             random-bytevector
             file=?
+            canonical-file?
             network-reachable?
             shebang-too-long?
             mock
@@ -149,6 +150,14 @@ too expensive to build entirely in the test store."
           (string=? (readlink a) (readlink b)))
          (else
           (error "what?" (lstat a))))))
+
+(define (canonical-file? file)
+  "Return #t if FILE is in the store, is read-only, and its mtime is 1."
+  (let ((st (lstat file)))
+    (or (not (string-prefix? (%store-prefix) file))
+        (eq? 'symlink (stat:type st))
+        (and (= 1 (stat:mtime st))
+             (zero? (logand #o222 (stat:mode st)))))))
 
 (define (network-reachable?)
   "Return true if we can reach the Internet."

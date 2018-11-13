@@ -25,6 +25,8 @@
                 #:select (open-sha256-port open-sha256-input-port))
   #:use-module ((guix packages)
                 #:select (base32))
+  #:use-module ((guix build utils)
+                #:select (find-files))
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
@@ -354,7 +356,8 @@
                           (map (lambda (file)
                                  (call-with-input-file file
                                    get-string-all))
-                               files))))))))
+                               files))
+                  (every canonical-file? files)))))))
 
 (test-assert "restore-file-set (missing signature)"
   (let/ec return
