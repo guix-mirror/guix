@@ -93,6 +93,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -673,6 +674,41 @@ for group chat (with Multi-User Chat protocol), invitation, chat to group chat
 transformation; audio and video conferences; file transfer; TLS, GPG and
 end-to-end encryption support; XML console.")
     (license license:gpl3)))
+
+(define-public gajim-omemo
+  (package
+    (name "gajim-omemo")
+    (version "2.6.23")
+    (source (origin
+              (method url-fetch/zipbomb)
+              (uri (string-append
+                    "https://ftp.gajim.org/plugins_releases/omemo_"
+                    version ".zip"))
+              (sha256
+               (base32
+                "134zbscbcnhx4smad0ryvx3ngkqlsspafqf0kk8y2d3vcd9bf3pa"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share (in-vicinity out "share/gajim/plugins"))
+                (source (assoc-ref %build-inputs "source")))
+           (mkdir-p share)
+           (copy-recursively source share)
+           #t))))
+    (propagated-inputs
+     `(("python-axolotl" ,python-axolotl)))
+    (home-page
+     "https://dev.gajim.org/gajim/gajim-plugins/wikis/OmemoGajimPlugin")
+    (synopsis "Gajim OMEMO plugin")
+    (description
+     "This package provides the Gajim OMEMO plugin.  OMEMO is an XMPP
+Extension Protocol (XEP) for secure multi-client end-to-end encryption based
+on Axolotl and PEP.")
+    (license license:gpl3+)))
 
 (define-public dino
   ;; The only release tarball is for version 0.0, but it is very old and fails
