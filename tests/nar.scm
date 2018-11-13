@@ -359,6 +359,41 @@
                                files))
                   (every canonical-file? files)))))))
 
+(test-assert "restore-file-set with directories (signed, valid)"
+  ;; <https://bugs.gnu.org/33361> describes a bug whereby directories
+  ;; containing files subject to deduplication were not canonicalized--i.e.,
+  ;; their mtime and permissions were not reset.  Ensure that this bug is
+  ;; gone.
+  (with-store store
+    (let* ((text1 (random-text))
+           (text2 (random-text))
+           (tree  `("tree" directory
+                    ("a" regular (data ,text1))
+                    ("b" directory
+                     ("c" regular (data ,text2))
+                     ("d" regular (data ,text1))))) ;duplicate
+           (file  (add-file-tree-to-store store tree))
+           (dump  (call-with-bytevector-output-port
+                   (cute export-paths store (list file) <>))))
+      (delete-paths store (list file))
+      (and (not (file-exists? file))
+           (let* ((source   (open-bytevector-input-port dump))
+                  (imported (restore-file-set source)))
+             (and (equal? imported (list file))
+                  (file-exists? file)
+                  (valid-path? store file)
+                  (string=? text1
+                            (call-with-input-file (string-append file "/a")
+                              get-string-all))
+                  (string=? text2
+                            (call-with-input-file
+                                (string-append file "/b/c")
+                              get-string-all))
+                  (= (stat:ino (stat (string-append file "/a"))) ;deduplication
+                     (stat:ino (stat (string-append file "/b/d"))))
+                  (every canonical-file?
+                         (find-files file #:directories? #t))))))))
+
 (test-assert "restore-file-set (missing signature)"
   (let/ec return
     (with-store store
