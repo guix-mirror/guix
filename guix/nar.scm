@@ -22,8 +22,12 @@
   #:use-module (guix build syscalls)
   #:use-module ((guix build utils)
                 #:select (delete-file-recursively with-directory-excursion))
+
+  ;; XXX: Eventually we should use (guix store database) exclusively, and not
+  ;; (guix store) since this is "daemon-side" code.
   #:use-module (guix store)
   #:use-module (guix store database)
+
   #:use-module (guix ui)                          ; for '_'
   #:use-module (gcrypt hash)
   #:use-module (guix pki)
@@ -88,15 +92,12 @@
 REFERENCES and DERIVER.  When LOCK? is true, acquire exclusive locks on TARGET
 before attempting to register it; otherwise, assume TARGET's locks are already
 held."
-
-  ;; XXX: Currently we have to call out to the daemon to check whether TARGET
-  ;; is valid.
-  (with-store store
-    (unless (valid-path? store target)
+  (with-database %default-database-file db
+    (unless (path-id db target)
       (when lock?
         (lock-store-file target))
 
-      (unless (valid-path? store target)
+      (unless (path-id db target)
         ;; If FILE already exists, delete it (it's invalid anyway.)
         (when (file-exists? target)
           (delete-file-recursively target))
