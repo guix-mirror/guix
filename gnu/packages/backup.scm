@@ -887,6 +887,7 @@ is like a time machine for your data. ")
                                         ,version)
                ;; Disable 'restic self-update'.  It makes little sense in Guix.
                (substitute* "build.go" (("selfupdate") ""))
+               (setenv "HOME" (getcwd)) ; for $HOME/.cache/go-build
                (invoke "go" "run" "build.go"))))
 
          (replace 'check
