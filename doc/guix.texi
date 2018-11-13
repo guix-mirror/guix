@@ -10563,11 +10563,14 @@ Start,,, shepherd, The GNU Shepherd Manual}).  For example:
 
 The above command, run as @code{root}, lists the currently defined
 services.  The @command{herd doc} command shows a synopsis of the given
-service:
+service and its associated actions:
 
 @example
 # herd doc nscd
 Run libc's name service cache daemon (nscd).
+
+# herd doc nscd action invalidate
+invalidate: Invalidate the given cache--e.g., 'hosts' for host name lookups.
 @end example
 
 The @command{start}, @command{stop}, and @command{restart} sub-commands
@@ -10965,6 +10968,27 @@ The Kmscon package to use.
 Return a service that runs the libc name service cache daemon (nscd) with the
 given @var{config}---an @code{<nscd-configuration>} object.  @xref{Name
 Service Switch}, for an example.
+
+For convenience, the Shepherd service for nscd provides the following actions:
+
+@table @code
+@item invalidate
+@cindex cache invalidation, nscd
+@cindex nscd, cache invalidation
+This invalidate the given cache.  For instance, running:
+
+@example
+herd invalidate nscd hosts
+@end example
+
+@noindent
+invalidates the host name lookup cache of nscd.
+
+@item statistics
+Running @command{herd statistics nscd} displays information about nscd usage
+and caches.
+@end table
+
 @end deffn
 
 @defvr {Scheme Variable} %nscd-default-configuration
