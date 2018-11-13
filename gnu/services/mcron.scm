@@ -86,7 +86,7 @@ files."
                  (lambda ()
                    (zero? (close-pipe pipe)))
                  (lambda args
-                   ;; There's with race between the SIGCHLD handler, which
+                   ;; There's a race with the SIGCHLD handler, which
                    ;; could call 'waitpid' before 'close-pipe' above does.  If
                    ;; we get ECHILD, that means we lost the race, but that's
                    ;; fine.
