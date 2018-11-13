@@ -332,13 +332,6 @@
       (lambda ()
         (rmdir input)))))
 
-;; 'restore-file-set' depends on 'open-sha256-input-port', which in turn
-;; relies on a Guile 2.0.10+ feature.
-(test-skip (if (false-if-exception
-                (open-sha256-input-port (%make-void-port "r")))
-               0
-               3))
-
 (test-assert "restore-file-set (signed, valid)"
   (with-store store
     (let* ((texts (unfold (cut >= <> 10)
