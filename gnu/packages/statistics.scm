@@ -115,6 +115,36 @@ can be imported from spreadsheets, text files and database sources and it can
 be output in text, PostScript, PDF or HTML.")
     (license license:gpl3+)))
 
+(define-public jags
+  (package
+    (name "jags")
+    (version "4.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/mcmc-jags/JAGS/"
+                                  (version-major version) ".x/Source/"
+                                  "JAGS-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z3icccg2ic56vmhyrpinlsvpq7kcaflk1731rgpvz9bk1bxvica"))))
+    (build-system gnu-build-system)
+    (home-page "http://mcmc-jags.sourceforge.net/")
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("lapack" ,lapack)))
+    (synopsis "Gibbs sampler")
+    (description "JAGS is Just Another Gibbs Sampler.  It is a program for
+analysis of Bayesian hierarchical models using Markov Chain Monte Carlo (MCMC)
+simulation not wholly unlike BUGS.  JAGS was written with three aims in mind:
+
+@enumerate
+@item To have a cross-platform engine for the BUGS language;
+@item To be extensible, allowing users to write their own functions,
+  distributions and samplers;
+@item To be a platform for experimentation with ideas in Bayesian modelling.
+@end enumerate\n")
+    (license license:gpl2)))
+
 ;; Update this package together with the set of recommended packages: r-boot,
 ;; r-class, r-cluster, r-codetools, r-foreign, r-kernsmooth, r-lattice,
 ;; r-mass, r-matrix, r-mgcv, r-nlme, r-nnet, r-rpart, r-spatial, r-survival.
