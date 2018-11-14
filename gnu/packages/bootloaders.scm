@@ -573,7 +573,7 @@ board-independent tools.")))
                     )
                   #t))))))
       (native-inputs
-       `(("firmware" ,arm-trusted-firmware-pine64-plus)
+       `(("firmware" ,arm-trusted-firmware-sun50i-a64)
          ,@(package-native-inputs base))))))
 
 (define-public u-boot-bananapi-m2-ultra

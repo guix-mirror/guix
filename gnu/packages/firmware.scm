@@ -446,7 +446,7 @@ such as:
     (license (list license:bsd-3
                    license:bsd-2)))) ; libfdt
 
-(define-public arm-trusted-firmware-pine64-plus
+(define-public arm-trusted-firmware-sun50i-a64
   (let ((base (make-arm-trusted-firmware "sun50i_a64"))
         ;; Use unreleased version which enables additional features needed for
         ;; LCD support
@@ -454,7 +454,7 @@ such as:
         (revision "1"))
     (package
       (inherit base)
-      (name "arm-trusted-firmware-pine64-plus")
+      (name "arm-trusted-firmware-sun50i-a64")
       (version (git-version "2.0" revision commit))
       (source
         (origin
