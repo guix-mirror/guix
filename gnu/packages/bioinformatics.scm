@@ -14118,6 +14118,85 @@ enrichment analysis (GSEA) calculation with or without the absolute filtering.
 absolute GSEA.")
     (license license:gpl2)))
 
+(define-public jamm
+  (package
+    (name "jamm")
+    (version "1.0.7.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mahmoudibrahim/JAMM.git")
+             (commit (string-append "JAMMv" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ls889jcma1ch9h21jjhnkadgszgqj41842hhcjh6cg88f85qf3i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "JAMM.sh"
+               (("^sPath=.*")
+                (string-append "")))
+             #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (libexec (string-append out "/libexec/jamm"))
+                    (bin (string-append out "/bin")))
+               (substitute* '("JAMM.sh"
+                              "SignalGenerator.sh")
+                 (("^sPath=.*")
+                  (string-append "sPath=\"" libexec "\"\n")))
+               (for-each (lambda (file)
+                           (install-file file libexec))
+                         (list "bincalculator.r"
+                               "peakfinder.r"
+                               "peakhelper.r"
+                               "signalmaker.r"
+                               "xcorr.r"
+                               "xcorrhelper.r"
+                               ;; Perl scripts
+                               "peakfilter.pl"
+                               "readshifter.pl"))
+
+               (for-each
+                (lambda (script)
+                  (chmod script #o555)
+                  (install-file script bin)
+                  (wrap-program (string-append bin "/" script)
+                    `("PATH" ":" prefix
+                      (,(string-append (assoc-ref inputs "coreutils") "/bin")
+                       ,(string-append (assoc-ref inputs "gawk") "/bin")
+                       ,(string-append (assoc-ref inputs "perl") "/bin")
+                       ,(string-append (assoc-ref inputs "r-minimal") "/bin")))
+                    `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB")))
+                    `("R_LIBS_SITE" ":" prefix (,(getenv "R_LIBS_SITE")))))
+                (list "JAMM.sh" "SignalGenerator.sh")))
+             #t)))))
+    (inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("gawk" ,gawk)
+       ("perl" ,perl)
+       ("r-minimal" ,r-minimal)
+       ;;("r-parallel" ,r-parallel)
+       ("r-signal" ,r-signal)
+       ("r-mclust" ,r-mclust)))
+    (home-page "https://github.com/mahmoudibrahim/JAMM")
+    (synopsis "Peak finder for NGS datasets")
+    (description
+     "JAMM is a peak finder for next generation sequencing datasets (ChIP-Seq,
+ATAC-Seq, DNase-Seq, etc.) that can integrate replicates and assign peak
+boundaries accurately.  JAMM is applicable to both broad and narrow
+datasets.")
+    (license license:gpl3+)))
+
 (define-public ngless
   (package
     (name "ngless")
