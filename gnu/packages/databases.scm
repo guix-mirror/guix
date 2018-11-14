@@ -803,14 +803,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.5")
+    (version "10.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "04a07jkvc5s6zgh6jr78149kcjmsxclizsqabjw44ld4j5n633kc"))))
+                "0jv26y3f10svrjxzsgqxg956c86b664azyk2wppzpa5x11pjga38"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-uuid=e2fs")
@@ -2087,13 +2087,14 @@ for ODBC.")
     (version "0.7.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/brianb/mdbtools/archive/"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/brianb/mdbtools.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "05hbmxcq173kzb899gdi3bz2qcc1vi3n1qbbkwpsvrq7ggf11wyw"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "0gwcpp9y09xhs21g7my2fs8ncb8i6ahlyixcx8jd3q97jbzj441l"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)))
@@ -2104,12 +2105,6 @@ for ODBC.")
        ("pkg-config" ,pkg-config)
        ("txt2man" ,txt2man)
        ("which" ,which)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "http://mdbtools.sourceforge.net/")
     (synopsis "Read Microsoft Access databases")
     (description "MDB Tools is a set of tools and applications to read the

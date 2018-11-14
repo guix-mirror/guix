@@ -537,7 +537,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  (setenv "GOGC" "400")
                  #t)))))))))
 
-(define-public go go-1.9)
+(define-public go go-1.11)
 
 (define-public go-github-com-alsm-ioprogress
   (let ((commit "063c3725f436e7fba0c8f588547bee21ffec7ac5")
@@ -2161,26 +2161,28 @@ generate ANSI colored strings.")
           (base32
            "1d9hr29i36cza98afj3g6rs3l7xbkprwzz0blcxsr9dd7nak20di"))))
       (build-system go-build-system)
-      (native-inputs
+      ;; From go-1.10 onward, "pkg" compiled libraries are not re-used, so
+      ;; when this package required as input for another one, it will have to
+      ;; be built again.  Thus its CGO requirements must be made available in
+      ;; the environment, that is, they must be propagated.
+      (propagated-inputs
        `(("lua" ,lua)))
       (arguments
        `(#:unpack-path "github.com/aarzilli/golua"
          #:import-path "github.com/aarzilli/golua/lua"
          #:phases
          (modify-phases %standard-phases
-           (replace 'build
-             (lambda* (#:key import-path #:allow-other-keys)
-               (invoke "go" "install"
-                       "-v"  ; print the name of packages as they are compiled
-                       "-x"  ; print each command as it is invoked
-                       "-ldflags=-s -w" ; strip the symbol table and debug
-                       "-tags" "llua" ; Latest Lua on Guix does not have a version number.
-                       import-path)))
-           (replace 'check
-             (lambda* (#:key import-path #:allow-other-keys)
-               (invoke "go" "test"
-                       "-tags" "llua" ; Latest Lua on Guix does not have a version number.
-                       import-path))))))
+           ;; While it's possible to fix the CGO_LDFLAGS with the "-tags"
+           ;; command line argument, go-1.10+ does not re-use the produced pkg
+           ;; for dependencies, which means we would need to propagate the
+           ;; same "-tags" argument to all golua referrers.  A substitution is
+           ;; more convenient here.  We also need to propagate the lua
+           ;; dependency to make it available to referrers.
+           (add-after 'unpack 'fix-lua-ldflags
+             (lambda _
+               (substitute* "src/github.com/aarzilli/golua/lua/lua.go"
+                 (("#cgo linux,!llua,!luaa LDFLAGS: -llua5.3")
+                  "#cgo linux,!llua,!luaa LDFLAGS: -llua")))))))
       (home-page "https://github.com/aarzilli/golua")
       (synopsis "Go Bindings for the Lua C API")
       (description "This package provides @code{lua}, a Go module that can
@@ -2428,11 +2430,24 @@ and lookup requests.  Browse requests are not supported yet.")
           (base32
            "1cpjqnrviwflz150g78iir5ndrp3hh7a93zbp4dwbg6sb2q141p2"))))
       (build-system go-build-system)
-      (native-inputs
+      ;; From go-1.10 onward, "pkg" compiled libraries are not re-used, so
+      ;; when this package required as input for another one, it will have to
+      ;; be built again.  Thus its CGO requirements must be made available in
+      ;; the environment, that is, they must be propagated.
+      (propagated-inputs
        `(("pkg-config" ,pkg-config)
          ("taglib" ,taglib)))
       (arguments
-       `(#:import-path "github.com/wtolson/go-taglib"))
+       `(#:import-path "github.com/wtolson/go-taglib"
+         ;; Tests don't pass "vet" on go-1.11.  See
+         ;; https://github.com/wtolson/go-taglib/issues/12.
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "test"
+                       "-vet=off"
+                       import-path))))))
       (home-page "https://github.com/wtolson/go-taglib")
       (synopsis "Go wrapper for taglib")
       (description "Go wrapper for taglib")

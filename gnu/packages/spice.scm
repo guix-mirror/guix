@@ -250,7 +250,7 @@ Internet and from a wide variety of machine architectures.")
          (add-after 'unpack 'patch-spice-vdagent.desktop
            (lambda* (#:key outputs #:allow-other-keys)
             (substitute* "data/spice-vdagent.desktop"
-              (("Exec=/usr/bin/spice-vdagent\n")
+              (("Exec=/usr/bin/spice-vdagent")
                (string-append "Exec=" (assoc-ref outputs "out")
                               "/bin/spice-vdagent")))
              #t)))))

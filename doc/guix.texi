@@ -10563,11 +10563,14 @@ Start,,, shepherd, The GNU Shepherd Manual}).  For example:
 
 The above command, run as @code{root}, lists the currently defined
 services.  The @command{herd doc} command shows a synopsis of the given
-service:
+service and its associated actions:
 
 @example
 # herd doc nscd
 Run libc's name service cache daemon (nscd).
+
+# herd doc nscd action invalidate
+invalidate: Invalidate the given cache--e.g., 'hosts' for host name lookups.
 @end example
 
 The @command{start}, @command{stop}, and @command{restart} sub-commands
@@ -10965,6 +10968,27 @@ The Kmscon package to use.
 Return a service that runs the libc name service cache daemon (nscd) with the
 given @var{config}---an @code{<nscd-configuration>} object.  @xref{Name
 Service Switch}, for an example.
+
+For convenience, the Shepherd service for nscd provides the following actions:
+
+@table @code
+@item invalidate
+@cindex cache invalidation, nscd
+@cindex nscd, cache invalidation
+This invalidate the given cache.  For instance, running:
+
+@example
+herd invalidate nscd hosts
+@end example
+
+@noindent
+invalidates the host name lookup cache of nscd.
+
+@item statistics
+Running @command{herd statistics nscd} displays information about nscd usage
+and caches.
+@end table
+
 @end deffn
 
 @defvr {Scheme Variable} %nscd-default-configuration
@@ -14349,11 +14373,30 @@ Defaults to @samp{#t}.
 
 @end deftypevr
 
+@deftypevr {@code{service-configuration} parameter} non-negative-integer client-limit
+Maximum number of simultaneous client connections per process.  Once
+this number of connections is received, the next incoming connection
+will prompt Dovecot to spawn another process.  If set to 0,
+@code{default-client-limit} is used instead.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
 @deftypevr {@code{service-configuration} parameter} non-negative-integer service-count
 Number of connections to handle before starting a new process.
 Typically the only useful values are 0 (unlimited) or 1.  1 is more
 secure, but 0 is faster.  <doc/wiki/LoginProcess.txt>.
 Defaults to @samp{1}.
+
+@end deftypevr
+
+@deftypevr {@code{service-configuration} parameter} non-negative-integer process-limit
+Maximum number of processes that can exist for this service.  If set to
+0, @code{default-process-limit} is used instead.
+
+Defaults to @samp{0}.
+
 @end deftypevr
 
 @deftypevr {@code{service-configuration} parameter} non-negative-integer process-min-avail
@@ -24197,7 +24240,7 @@ to be updated to refer to these binaries on the target platform.  That
 is, the hashes and URLs of the bootstrap tarballs for the new platform
 must be added alongside those of the currently supported platforms.  The
 bootstrap Guile tarball is treated specially: it is expected to be
-available locally, and @file{gnu/local.mk} has rules do download it for
+available locally, and @file{gnu/local.mk} has rules to download it for
 the supported architectures; a rule for the new platform must be added
 as well.
 

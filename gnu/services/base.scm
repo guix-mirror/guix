@@ -1252,18 +1252,57 @@ the tty to run, among other things."
                                 (string-concatenate
                                  (map cache->config caches)))))))
 
+(define (nscd-action-procedure nscd config option)
+  ;; XXX: This is duplicated from mcron; factorize.
+  #~(lambda (_ . args)
+      ;; Run 'nscd' in a pipe so we can explicitly redirect its output to
+      ;; 'current-output-port', which at this stage is bound to the client
+      ;; connection.
+      (let ((pipe (apply open-pipe* OPEN_READ #$nscd
+                         "-f" #$config #$option args)))
+        (let loop ()
+          (match (read-line pipe 'concat)
+            ((? eof-object?)
+             (catch 'system-error
+               (lambda ()
+                 (zero? (close-pipe pipe)))
+               (lambda args
+                 ;; There's a race with the SIGCHLD handler, which could
+                 ;; call 'waitpid' before 'close-pipe' above does.  If we
+                 ;; get ECHILD, that means we lost the race, but that's
+                 ;; fine.
+                 (or (= ECHILD (system-error-errno args))
+                     (apply throw args)))))
+            (line
+             (display line)
+             (loop)))))))
+
+(define (nscd-actions nscd config)
+  "Return Shepherd actions for NSCD."
+  ;; Make this functionality available as actions because that's a simple way
+  ;; to run the right 'nscd' binary with the right config file.
+  (list (shepherd-action
+         (name 'statistics)
+         (documentation "Display statistics about nscd usage.")
+         (procedure (nscd-action-procedure nscd config "--statistics")))
+        (shepherd-action
+         (name 'invalidate)
+         (documentation
+          "Invalidate the given cache--e.g., 'hosts' for host name lookups.")
+         (procedure (nscd-action-procedure nscd config "--invalidate")))))
+
 (define (nscd-shepherd-service config)
   "Return a shepherd service for CONFIG, an <nscd-configuration> object."
-  (let ((nscd.conf     (nscd.conf-file config))
+  (let ((nscd          (file-append (nscd-configuration-glibc config)
+                                    "/sbin/nscd"))
+        (nscd.conf     (nscd.conf-file config))
         (name-services (nscd-configuration-name-services config)))
     (list (shepherd-service
            (documentation "Run libc's name service cache daemon (nscd).")
            (provision '(nscd))
            (requirement '(user-processes))
            (start #~(make-forkexec-constructor
-                     (list #$(file-append (nscd-configuration-glibc config)
-                                          "/sbin/nscd")
-                           "-f" #$nscd.conf "--foreground")
+                     (list #$nscd "-f" #$nscd.conf "--foreground")
 
                      ;; Wait for the PID file.  However, the PID file is
                      ;; written before nscd is actually listening on its
@@ -1277,7 +1316,12 @@ the tty to run, among other things."
                                                   (string-append dir "/lib"))
                                                 (list #$@name-services))
                                            ":")))))
-           (stop #~(make-kill-destructor))))))
+           (stop #~(make-kill-destructor))
+           (modules `((ice-9 popen)               ;for the actions
+                      (ice-9 rdelim)
+                      (ice-9 match)
+                      ,@%default-modules))
+           (actions (nscd-actions nscd nscd.conf))))))
 
 (define nscd-activation
   ;; Actions to take before starting nscd.

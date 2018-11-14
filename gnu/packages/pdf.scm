@@ -82,6 +82,7 @@
 (define-public poppler
   (package
    (name "poppler")
+   (replacement poppler/fixed)
    (version "0.68.0")
    (source (origin
             (method url-fetch)
@@ -131,6 +132,14 @@
    (license license:gpl2+)
    (home-page "https://poppler.freedesktop.org/")))
 
+(define poppler/fixed
+  (package
+    (inherit poppler)
+    (source (origin
+              (inherit (package-source poppler))
+              (patches (append (origin-patches (package-source poppler))
+                               (search-patches "poppler-CVE-2018-19149.patch")))))))
+
 (define-public poppler-data
   (package
     (name "poppler-data")
@@ -162,14 +171,14 @@ When present, Poppler is able to correctly render CJK and Cyrillic text.")
                    license:gpl2))))
 
 (define-public poppler-qt4
-  (package (inherit poppler)
+  (package/inherit poppler
    (name "poppler-qt4")
    (inputs `(("qt-4" ,qt-4)
              ,@(package-inputs poppler)))
    (synopsis "Qt4 frontend for the Poppler PDF rendering library")))
 
 (define-public poppler-qt5
-  (package (inherit poppler)
+  (package/inherit poppler
    (name "poppler-qt5")
    (inputs `(("qtbase" ,qtbase)
              ,@(package-inputs poppler)))
@@ -227,26 +236,23 @@ Poppler PDF rendering library.")
    (name "libharu")
    (version "2.3.0")
    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/libharu/libharu/archive/"
-                                 "RELEASE_"
-                                 (string-join (string-split version #\.) "_")
-                                 ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/libharu/libharu.git")
+                   (commit (string-append
+                            "RELEASE_"
+                            (string-join (string-split version #\.) "_")))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1lm4v539y9cb1lvbq387j57sy7yxda3yv8b1pk8m6zazbp66i7lg"))))
+               "15s9hswnl3qqi7yh29jyrg0hma2n99haxznvcywmsp8kjqlyg75q"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
       (list (string-append "--with-zlib="
                            (assoc-ref %build-inputs "zlib"))
             (string-append "--with-png="
-                           (assoc-ref %build-inputs "libpng")))
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'autogen
-          (lambda _ (invoke "autoreconf" "-vif"))))))
+                           (assoc-ref %build-inputs "libpng")))))
    (inputs
     `(("zlib" ,zlib)
       ("libpng" ,libpng)))

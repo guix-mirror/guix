@@ -110,7 +110,9 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages docbook)
   #:use-module ((guix licenses)
-                #:select (fdl1.1+ gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
+                #:select (fdl1.1+
+                           agpl3+
+                           gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
                            non-copyleft (expat . license:expat) bsd-3
                            public-domain bsd-4 isc (openssl . license:openssl)
                            bsd-2 x11-style agpl3 asl2.0 perl-license))
@@ -119,6 +121,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system guile)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial))
@@ -2640,3 +2643,50 @@ replacement for the @code{urlview} program.")
      "TNEF is a tar-like program that unpacks MIME attachments of type
 @code{application/ms-tnef}.")
     (license gpl2+)))
+
+(define-public mumi
+  (let ((commit "bfd96ce76b4600ae232e6548b26c9365095fd174")
+        (revision "2"))
+    (package
+      (name "mumi")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.elephly.net/software/mumi.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "05miwfi1bh0v9x2gvn15bwkb3gn4xy53z506ysjzns2y497zkc5h"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-executable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (scm (string-append out "/share/guile/site/2.2"))
+                      (go  (string-append out "/lib/guile/2.2/site-ccache")))
+                 (wrap-program (string-append bin "/mumi")
+                   `("GUILE_LOAD_PATH" ":" prefix
+                     (,scm ,(getenv "GUILE_LOAD_PATH")))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                     (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))
+                 #t))))))
+      (inputs
+       `(("guile-debbugs" ,guile-debbugs-next)
+         ("guile-email" ,guile-email)
+         ("guile-fibers" ,guile-fibers)
+         ("guile-json" ,guile-json)
+         ("guile-syntax-highlight" ,guile-syntax-highlight)
+         ("guile" ,guile-2.2)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://git.elephly.net/software/mumi.git")
+      (synopsis "Debbugs web interface")
+      (description "Mumi is a Debbugs web interface.")
+      (license agpl3+))))

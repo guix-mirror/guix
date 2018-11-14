@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -15,6 +15,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -197,11 +198,6 @@ encoding, supporting Unicode version 9.0.0.")
        (sha256
         (base32 "0jiybkb2z58wa2msvllnphr4js2hvjvh988pavb3mzkgr6ihwbkr"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -572,22 +568,16 @@ categories.")
     (name "dotconf")
     (version "1.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/williamh/dotconf/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/williamh/dotconf.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lsnh0yaw44psmx59hq94cj1932gscp5h8d3cnh05l0svr0cy7kz"))))
+                "1sc95hw5k2xagpafny0v35filmcn05k1ds5ghkldfpf6xw4hakp7"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f ; FIXME maketest.sh does not work.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
+    (arguments `(#:tests? #f))  ; FIXME maketest.sh does not work.
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -756,3 +746,26 @@ indentation.
 @end itemize\n")
     (home-page "http://docx2txt.sourceforge.net")
     (license license:gpl3+)))
+
+(define-public opencc
+  (package
+    (name "opencc")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/BYVoid/OpenCC"
+                           "/archive/ver." version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01870gbkf711msirf3206k0ajaabypjhnx3fny5wikw0ladn9q8w"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("python" ,python-wrapper)))
+    (home-page "https://github.com/BYVoid/OpenCC")
+    (synopsis "Convert between Traditional Chinese and Simplified Chinese")
+    (description "Open Chinese Convert (OpenCC) converts between Traditional
+Chinese and Simplified Chinese, supporting character-level conversion,
+phrase-level conversion, variant conversion, and regional idioms among
+Mainland China, Taiwan, and Hong-Kong.")
+    (license license:asl2.0)))

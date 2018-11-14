@@ -133,10 +133,7 @@ in compression.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
-           (lambda _ (chdir "contrib/minizip") #t))
-         (add-after 'enter-source 'autoreconf
-           (lambda _
-             (invoke "autoreconf" "-vif"))))))
+           (lambda _ (chdir "contrib/minizip") #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -188,12 +185,7 @@ utility.  Instead of being written in Java, FastJar is written in C.")
               "02cihzl77ia0dcz7z2cga2412vyhhs5pa2355q4wpwbyga2lrwjh"))
             (patches (search-patches "libtar-CVE-2013-4420.patch"))))
    (build-system gnu-build-system)
-   (arguments
-    `(#:tests? #f ;no "check" target
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'autoconf
-          (lambda _ (invoke "sh" "autoreconf" "-vfi"))))))
+   (arguments `(#:tests? #f)) ; no "check" target
    (native-inputs
     `(("autoconf" ,autoconf)
       ("automake" ,automake)
@@ -1122,13 +1114,14 @@ smaller than those produced by @code{Xdelta}.")
     (version "3.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/jmacd/xdelta/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jmacd/xdelta.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "17g2pbbqy6h20qgdjq7ykib7kg5ajh8fwbsfgyjqg8pwg19wy5bm"))
-       (file-name (string-append name "-" version ".tar.gz"))
+         "09mmsalc7dwlvgrda56s2k927rpl3a5dzfa88aslkqcjnr790wjy"))
        (snippet
         ;; This file isn't freely distributable and has no effect on building.
         '(begin
@@ -1142,9 +1135,7 @@ smaller than those produced by @code{Xdelta}.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-build-directory
-           (lambda _ (chdir "xdelta3") #t))
-         (add-after 'enter-build-directory 'autoconf
-           (lambda _ (invoke "autoreconf" "-vfi"))))))
+           (lambda _ (chdir "xdelta3") #t)))))
     (home-page "http://xdelta.org")
     (synopsis "Delta encoder for binary files")
     (description "xdelta encodes only the differences between two binary files

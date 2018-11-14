@@ -321,12 +321,6 @@ languages are C and C++.")
          ("pkg-config" ,pkg-config)))
       (inputs
        `(("libusb" ,libusb)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'autoreconf
-             (lambda _
-               (zero? (system* "autoreconf" "-vfi")))))))
       (home-page "http://repo.or.cz/w/libjaylink.git")
       (synopsis "Library to interface Segger J-Link devices")
       (description "libjaylink is a shared library written in C to access
@@ -404,9 +398,9 @@ language.")
                       "presto" "openjtag")))
        #:phases
        (modify-phases %standard-phases
+         ;; Required because of patched sources.
          (add-before 'configure 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi"))))
+           (lambda _ (invoke "autoreconf" "-vfi") #t))
          (add-after 'autoreconf 'change-udev-group
            (lambda _
              (substitute* "contrib/60-openocd.rules"
@@ -417,7 +411,8 @@ language.")
              (install-file "contrib/60-openocd.rules"
                            (string-append
                             (assoc-ref outputs "out")
-                            "/lib/udev/rules.d/")))))))
+                            "/lib/udev/rules.d/"))
+             #t)))))
     (home-page "http://openocd.org")
     (synopsis "On-Chip Debugger")
     (description "OpenOCD provides on-chip programming and debugging support

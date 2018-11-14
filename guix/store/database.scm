@@ -36,7 +36,9 @@
   #:use-module (ice-9 match)
   #:use-module (system foreign)
   #:export (sql-schema
+            %default-database-file
             with-database
+            path-id
             sqlite-register
             register-path
             register-items
@@ -84,6 +86,10 @@ create it and initialize it as a new database."
                     (proc db))
                   (lambda ()
                     (sqlite-close db)))))
+
+(define %default-database-file
+  ;; Default location of the store database.
+  (string-append %store-database-directory "/db.sqlite"))
 
 (define-syntax-rule (with-database file db exp ...)
   "Open DB from FILE and close it when the dynamic extent of EXP... is left.

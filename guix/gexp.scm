@@ -211,7 +211,12 @@ OBJ must be an object that has an associated gexp compiler, such as a
     (#f
      (raise (condition (&gexp-input-error (input obj)))))
     (lower
-     (lower obj system target))))
+     ;; Cache in STORE the result of lowering OBJ.
+     (mlet %store-monad ((graft? (grafting?)))
+       (mcached (let ((lower (lookup-compiler obj)))
+                  (lower obj system target))
+                obj
+                system target graft?)))))
 
 (define-syntax define-gexp-compiler
   (syntax-rules (=> compiler expander)

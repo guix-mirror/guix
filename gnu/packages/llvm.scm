@@ -91,17 +91,6 @@ languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
     (license license:ncsa)))
 
-(define-public llvm-with-rtti
-  (package (inherit llvm)
-    (name "llvm-with-rtti")
-    (arguments
-     (substitute-keyword-arguments (package-arguments llvm)
-       ((#:configure-flags flags)
-        `(append '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
-                   "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
-                   "-DLLVM_REQUIRES_RTTI=1")
-                 ,flags))))))
-
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))
   (package
@@ -291,6 +280,18 @@ code analysis tools.")
       (sha256
        (base32
         "1ybmnid4pw2hxn12ax5qa5kl1ldfns0njg8533y3mzslvd5cx0kf"))))))
+
+;; This is for Faust 2
+(define-public llvm-3.8-with-rtti
+  (package (inherit llvm-3.8)
+    (name "llvm-with-rtti")
+    (arguments
+     (substitute-keyword-arguments (package-arguments llvm)
+       ((#:configure-flags flags)
+        `(append '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
+                   "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
+                   "-DLLVM_REQUIRES_RTTI=1")
+                 ,flags))))))
 
 (define-public clang-runtime-3.8
   (clang-runtime-from-llvm

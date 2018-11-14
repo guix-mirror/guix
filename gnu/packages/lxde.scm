@@ -7,6 +7,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ison111 <ison111@protonmail.com>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -419,10 +420,10 @@ in LXDE.")
        (modify-phases %standard-phases
          (add-after 'unpack 'rm-stamp
            (lambda _
-             (for-each delete-file (find-files "." "\\.stamp$"))))
-         (add-after 'rm-stamp 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))))
+             (for-each delete-file (find-files "." "\\.stamp$"))
+             ;; Force regeneration of configure script.
+             (delete-file "configure")
+             #t)))))
     (inputs
      `(("gtk+-2" ,gtk+-2)
        ("polkit" ,polkit)))

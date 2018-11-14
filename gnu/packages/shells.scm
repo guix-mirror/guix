@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -414,10 +414,7 @@ use of experts and novices alike.")
                                              "/rx")))
                  (delete-file-recursively "rx")
                  (symlink rxpath "rx"))
-               #t))
-           (add-after 'unpack 'autoreconf
-             (lambda _
-               (invoke "autoreconf"))))))
+               #t)))))
       (inputs
        `(("scheme48" ,scheme48)
          ("scheme48-rx" ,scheme48-rx)))

@@ -335,6 +335,20 @@ info --version")
               (x
                (pk 'failure x #f))))
 
+          (test-equal "nscd invalidate action"
+            '(#t)                                 ;one value, #t
+            (marionette-eval '(with-shepherd-action 'nscd ('invalidate "hosts")
+                                                    result
+                                                    result)
+                             marionette))
+
+          (test-equal "nscd invalidate action, wrong table"
+            '(#f)                                 ;one value, #f
+            (marionette-eval '(with-shepherd-action 'nscd ('invalidate "xyz")
+                                                    result
+                                                    result)
+                             marionette))
+
           (test-equal "host not found"
             #f
             (marionette-eval

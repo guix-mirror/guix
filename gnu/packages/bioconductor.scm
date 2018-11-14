@@ -969,3 +969,64 @@ using pre-clustering with the k-means algorithm.  Functions are also provided
 to search for all neighbors within a given distance.  Parallelization is
 achieved for all methods using the BiocParallel framework.")
     (license license:gpl3)))
+
+(define-public r-destiny
+  (package
+    (name "r-destiny")
+    (version "2.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "destiny" version))
+       (sha256
+        (base32
+         "1iay17mrhsfmpwl920rh1nip5b6ybva4h6bna0yld04paq5yva67"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-fnn" ,r-fnn)
+       ("r-ggthemes" ,r-ggthemes)
+       ("r-hmisc" ,r-hmisc)
+       ("r-igraph" ,r-igraph)
+       ("r-matrix" ,r-matrix)
+       ("r-proxy" ,r-proxy)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-scales" ,r-scales)
+       ("r-scatterplot3d" ,r-scatterplot3d)
+       ("r-smoother" ,r-smoother)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-vim" ,r-vim)))
+    (home-page "https://bioconductor.org/packages/destiny/")
+    (synopsis "Create and plot diffusion maps")
+    (description "This package provides tools to create and plot diffusion
+maps.")
+    ;; Any version of the GPL
+    (license license:gpl3+)))
+
+(define-public r-savr
+  (package
+    (name "r-savr")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "savR" version))
+       (sha256
+        (base32
+         "13bwq2a2pygdkmhrcmvz525wsi5i01j911711zgs6x93wj20b2w7"))))
+    (properties `((upstream-name . "savR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-reshape2" ,r-reshape2)
+       ("r-scales" ,r-scales)
+       ("r-xml" ,r-xml)))
+    (home-page "https://github.com/bcalder/savR")
+    (synopsis "Parse and analyze Illumina SAV files")
+    (description
+     "This package provides tools to parse Illumina Sequence Analysis
+Viewer (SAV) files, access data, and generate QC plots.")
+    (license license:agpl3+)))

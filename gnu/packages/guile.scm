@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2016 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
@@ -486,10 +486,7 @@ AM_SCM_LOG_FLAGS =  --no-auto-compile -s")
                  ;; FIXME: one of the database tests fails for unknown
                  ;; reasons.  It does not fail when run outside of Guix.
                  (("tests/database.scm") ""))
-               #t))
-           (add-after 'fix-bug-22 'autogen
-             (lambda _
-               (zero? (system* "sh" "autogen.sh")))))))
+               #t)))))
       (inputs
        `(("guile" ,guile-2.0)))
       (native-inputs
@@ -829,14 +826,6 @@ provides tight coupling to Guix.")
                (base32
                 "0qjjvadr7gibdq9jvwkmlkb4afsw9n2shfj9phpiadinxk3p4m2g"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autoreconf
-                    (lambda _
-                      ;; Repository comes with a broken symlink
-                      (delete-file "README")
-                      (symlink "README.org" "README")
-                      (zero? (system* "autoreconf" "-fi")))))))
     (native-inputs
      `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
@@ -1550,10 +1539,7 @@ $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
                         (("^guilesitedir =.*$")
                          "guilesitedir = \
 $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
-                      #t))
-                  (add-after 'unpack 'autoreconf
-                    (lambda _
-                      (zero? (system* "autoreconf" "-vfi")))))))
+                      #t)))))
     (home-page "https://github.com/artyom-poptsov/guile-dsv")
     (synopsis "DSV module for Guile")
     (description
@@ -2243,6 +2229,60 @@ using S-expressions.")
      "This package provides a Guile library to communicate with a Debbugs bug
 tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
     (license license:gpl3+)))
+
+(define-public guile-email
+  (let ((commit "fa52eac55e5946db89621a6c583d2aa357864dee")
+        (revision "1"))
+    (package
+      (name "guile-email")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.systemreboot.net/guile-email")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1037mbz7qd9bzaqp8ysyhnl9ipd97fmj3b9jr8qfzx9179vvsj63"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (home-page "https://git.systemreboot.net/guile-email")
+      (synopsis "Guile email parser")
+      (description "This package provides an email parser written in pure
+Guile.")
+      (license license:agpl3+))))
+
+(define-public guile-debbugs-next
+  (let ((commit "75a331d561c8b6f8efcf16216dab961c17759efe")
+        (revision "1"))
+    (package (inherit guile-debbugs)
+      (name "guile-debbugs")
+      (version (git-version "0.0.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/guile-debbugs.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0br3mgbw41bpc9x57jlghl0i8dz9nl63r4wzs5l47aqszf84870y"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("guile" ,guile-2.2)
+         ("guile-email" ,guile-email))))))
 
 ;; There has not been any release yet.
 (define-public guile-newt

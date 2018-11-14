@@ -235,6 +235,13 @@ When INSTALL-BOOTLOADER? is true, install bootloader using BOOTCFG."
 the ownership of '~a' may be incorrect!~%")
                target))
 
+  ;; If a previous installation was attempted, make sure we start anew; in
+  ;; particular, we don't want to keep a store database that might not
+  ;; correspond to what we're actually putting in the store.
+  (let ((state (string-append target "/var/guix")))
+    (when (file-exists? state)
+      (delete-file-recursively state)))
+
   (chmod target #o755)
   (let ((os-dir   (derivation->output-path os-drv))
         (format   (lift format %store-monad))

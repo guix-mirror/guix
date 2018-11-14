@@ -572,13 +572,14 @@ based on human speech recordings.")
     (name "infamous-plugins")
     (version "0.2.04")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ssj71/infamousPlugins/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ssj71/infamousPlugins.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1n6rhqsmvad7692w2h01niw5gqg5yk7a09wxl5ivs77zyp93vf7z"))))
+                "0hmqk80w4qxq09iag7b7srf2g0wigkyhzq0ywxvhz2iz0hq9k0dh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -610,13 +611,14 @@ envelope follower, distortion effects, tape effects and more.")
     (name "swh-plugins-lv2")
     (version "1.0.16")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/swh/"
-                                  "lv2/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/swh/lv2.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0j1mih0lp4fds07knp5i32in515sh0df1qi6694pmyz2wqnm295w"))))
+                "0y7nnww864mm4k6ayy2lhcws3wlbhb2gkyjbrwk921fvc18qk9mz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -654,14 +656,14 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
     (name "csound")
     (version "6.11.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/csound/csound/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/csound/csound.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "072pk5h9w0vhw0ncc9dn90haw1yv18v04iwwjn8nsp6930w7dvxd"))))
+                "1hlkrnv3gghx4v382nl6v6k2k1dzm5ddk35m5g3q6pzc959726s7"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1174,19 +1176,15 @@ PS, and DAB+.")
 (define-public faust-2
   (package
     (inherit faust)
-    (version "2.1.0")
+    (version "2.5.23")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/grame-cncm/faust.git")
-                    (commit (string-append "v"
-                                           (string-map (lambda (c)
-                                                         (if (char=? c #\.) #\- c))
-                                                       version)))))
-              (file-name (string-append "faust-" version "-checkout"))
+              (method url-fetch)
+              (uri (string-append "https://github.com/grame-cncm/faust/"
+                                  "releases/download/" version
+                                  "/faust-" version ".tar.gz"))
               (sha256
                (base32
-                "06km0ygwxxwgw1lqldccqidxhmjfz8ck0wnbd95qk5sg8sbpc068"))))
+                "1yz5jnr76hh7rmxkpdi7gyrw1wp4gyqfpq8zyl97qdi5ga5gjznq"))))
     (build-system gnu-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments faust)
@@ -1194,7 +1192,7 @@ PS, and DAB+.")
         `(list (string-append "prefix=" (assoc-ref %outputs "out"))
                "world"))))
     (native-inputs
-     `(("llvm" ,llvm-with-rtti)
+     `(("llvm" ,llvm-3.8-with-rtti)
        ("which" ,which)
        ("xxd" ,xxd)
        ("ctags" ,emacs-minimal)  ; for ctags
@@ -1881,14 +1879,14 @@ software.")
     (name "lvtk")
     (version "1.2.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/lvtk/lvtk/archive/"
-                                 version
-                                 ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/lvtk/lvtk.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "03nbj2cqcklqwh50zj2gwm07crh5iwqbpxbpzwbg5hvgl4k4rnjd"))))
+               "1b01zvzl70ana6l1kn8fgyr7msnn3c7x61cgw7fdpp50322352p8"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f  ; no check target
@@ -2274,36 +2272,32 @@ tempo and pitch of an audio recording independently of one another.")
     (name "rtmidi")
     (version "2.1.0")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/powertab/rtmidi/archive/"
-                              version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/powertab/rtmidi.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d49lapnmdgmjxh4vw57h6xk74nn5r0zwysv7jbd7m8kqhpq5rjj"))))
+                "106v177y3nrjv2l1yskch4phpqd8h97b67zj0jiq9pc3c69jr1ay"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
-       #:phases (modify-phases %standard-phases
-                  (add-after
-                   'unpack 'autoconf
-                   (lambda _ (invoke "autoreconf" "-vfi")))
-                  (add-before
-                   'build 'fix-makefile
-                   (lambda _
-                     (substitute* "Makefile"
-                       (("/bin/ln") "ln")
-                       (("RtMidi.h RtError.h") "RtMidi.h"))
-                     #t))
-                  (add-before
-                   'install 'make-target-dirs
-                   (lambda _
-                     (let ((out (assoc-ref %outputs "out")))
-                       (mkdir-p (string-append out "/bin"))
-                       (mkdir (string-append out "/lib"))
-                       (mkdir (string-append out "/include")))
-                     #t)))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("/bin/ln") "ln")
+               (("RtMidi.h RtError.h") "RtMidi.h"))
+             #t))
+         (add-before 'install 'make-target-dirs
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               (mkdir (string-append out "/lib"))
+               (mkdir (string-append out "/include")))
+             #t)))))
     (inputs
      `(("jack" ,jack-1)
        ("alsa-lib" ,alsa-lib)))
@@ -2754,20 +2748,14 @@ portions of LAME.")
      ;; TODO: Add ASIHPI.
      `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)))
+    ;; Autoreconf is necessary because the audacity-compat patch modifies .in
+    ;; files.
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (arguments
-     '(#:phases
-       ;; Autoreconf is necessary because the audacity-compat patch modifies
-       ;; .in files.
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _
-             (invoke "autoreconf" "-vif"))))
-       #:tests? #f))                    ;no 'check' target
+    (arguments '(#:tests? #f))                    ;no 'check' target
     (home-page "http://www.portaudio.com/")
     (synopsis "Audio I/O library")
     (description
@@ -2813,12 +2801,13 @@ synthesizer written in C++.")
     (version "1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Themaister/RSound/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Themaister/RSound.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1wzs40c0k5zpkmm5ffl6c17xmr399sxli7ys0fbb9ib0fd334knx"))))
+        (base32 "0gspmr3klwnq98h17p5hc6ifygya4p80g4g8r7a1qavm3mv19waf"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -2851,14 +2840,14 @@ with a much different focus than most other audio daemons.")
     (name "xjackfreak")
     (version "1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/johnhldavis/xjackfreak/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/johnhldavis/xjackfreak.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xj6gpxfnw9jbdgwgm0x23xgfvj2kwmwb1nk0drw8lxgcchkq7d9"))))
+                "18c546qidbrj0f5wfiq5llii2192xpln0ab3r4vpr7i3wybxqjfz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -3026,15 +3015,16 @@ point audio data.")
     (name "cuetools")
     (version "1.4.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/svend/cuetools/archive/"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/svend/cuetools.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "01xi3rvdmil9nawsha04iagjylqr1l9v9vlzk99scs8c207l58i4"))))
+               "02ksv1ahf1v4cr2xbclsfv5x17m9ivzbssb5r8xjm97yh8a7spa3"))))
     (build-system gnu-build-system)
-    ;; The source tarball is not bootstrapped.
+    ;; The source checkout is not bootstrapped.
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -3075,13 +3065,14 @@ use them split WAVE data into multiple files.")
     (name "dcadec")
     (version "0.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/foo86/dcadec/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/foo86/dcadec.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0i0dpypgqkhhi4v1fmsp2way6w9kbcix3c7q79pmg39yvrzj17gd"))))
+                "07nd0ajizrp1w02bsyfcv18431r8m8rq8gjfmz9wmckpg7cxj2hs"))))
     (build-system gnu-build-system)
     (arguments
      ;; Test files are missing: https://github.com/foo86/dcadec/issues/53
@@ -3386,13 +3377,14 @@ the following features:
     (version "1.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dpayne/cli-visualizer/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dpayne/cli-visualizer.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "07zkm87f2fr8kc6531zrkya7q81sdanm6813y2f54mg13g41y6hi"))))
+         "0mirp8bk398di5xyq95iprmdyvplfghxqmrfj7jdnpy554vx7ppc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -3440,14 +3432,14 @@ representations.")
     (name "cava")
     (version "0.6.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/karlstav/cava/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/karlstav/cava.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "13d72swnjs894llf0paandmhf1lf90dz6ygkcdw4bv84wzkq1f4q"))))
+                "1kvhqgijs29909w3sq9m0bslx2zxxn4b3i07kdz4hb0dqkppxpjy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

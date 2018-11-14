@@ -7099,13 +7099,13 @@ Bioconductor, CRAN, and Github.")
 (define-public r-biocviews
   (package
     (name "r-biocviews")
-    (version "1.50.1")
+    (version "1.50.5")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biocViews" version))
               (sha256
                (base32
-                "0hjm3r58i0r9qhyar9pk250cx7sfijg0lnvi12a9s6brmmbip1a3"))))
+                "0rc1n89n04ylvy9gvsgvizcs77bh70jg1nkjjsjs7rqbr3zzdysz"))))
     (properties
      `((upstream-name . "biocViews")))
     (build-system r-build-system)
@@ -7268,13 +7268,13 @@ abnormal copy number.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.20.0")
+    (version "0.20.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "0qgiykjhnsvvpcp3zwmrnpx3bv3msvj0szchyvb1yb0fxw716xc5"))))
+                "18whrw67nxn82xshckl2pjy7d14sa3c27h3n9naqyqwz88lr6dzg"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
@@ -7349,7 +7349,7 @@ possible.")
 (define-public r-genomeinfodbdata
   (package
     (name "r-genomeinfodbdata")
-    (version "1.1.0")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -7359,7 +7359,7 @@ possible.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0k1hsjx6n2i1sf14hyrgdhxqxm5mxk0bgnivhiax944whcicmzbf"))))
+                "0di6nlqpsyqf693k2na65ayqldih563x3zfrczpqc5q2hl5kg35c"))))
     (properties
      `((upstream-name . "GenomeInfoDbData")))
     (build-system r-build-system)
@@ -7657,13 +7657,13 @@ objects.")
 (define-public r-biostrings
   (package
     (name "r-biostrings")
-    (version "2.50.0")
+    (version "2.50.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Biostrings" version))
               (sha256
                (base32
-                "0zw0dj67fnpbz4iqnam5fxs92c1c8w8d7mzl0rkq4ksx0xl8vgg7"))))
+                "1qyv1ps7vy6gy78pm2rcikg0bgf1mv7falahjp3pkwqq1272hrl8"))))
     (properties
      `((upstream-name . "Biostrings")))
     (build-system r-build-system)
@@ -7910,7 +7910,7 @@ extracting the desired features in a convenient format.")
 (define-public r-go-db
   (package
     (name "r-go-db")
-    (version "3.6.0")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.bioconductor.org/packages/"
@@ -7918,7 +7918,7 @@ extracting the desired features in a convenient format.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0fi2qywr9apg5lwfqfq9qq6bgrnv4rdhxx25656qn4bsy62i838j"))))
+                "0i3wcf5h3n0dawzc1hy0kv74f06j80c47n4p3g3fmrcxlhi3jpa5"))))
     (properties
      `((upstream-name . "GO.db")))
     (build-system r-build-system)
@@ -8121,7 +8121,7 @@ genomic intervals.  In addition, it can use BAM or BigWig files as input.")
 (define-public r-genomationdata
   (package
     (name "r-genomationdata")
-    (version "1.10.0")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -8131,7 +8131,7 @@ genomic intervals.  In addition, it can use BAM or BigWig files as input.")
                                   "genomationData_" version ".tar.gz"))
               (sha256
                (base32
-                "0h7g5x3kyb50qlblz5hc85lfm6n6f5nb68i146way3ggs04sqvla"))))
+                "10xyb8akjrhmak2i0mnv1agny2ipy364q9nlibyplpzc7vdb6bw7"))))
     (build-system r-build-system)
     ;; As this package provides little more than large data files, it doesn't
     ;; make sense to build substitutes.
@@ -8149,7 +8149,7 @@ downloaded from Encode.")
 (define-public r-org-hs-eg-db
   (package
     (name "r-org-hs-eg-db")
-    (version "3.5.0")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -8159,7 +8159,7 @@ downloaded from Encode.")
                                   "org.Hs.eg.db_" version ".tar.gz"))
               (sha256
                (base32
-                "1v6wa5613cjq59xd7x1qz8lr9nb2abm9abl2cci1khrnrlpla927"))))
+                "1qxz9l80yg3qdqszs6dsscp7lrpfi1bgd0pxh9j7q34vprzwhdim"))))
     (properties
      `((upstream-name . "org.Hs.eg.db")))
     (build-system r-build-system)
@@ -8175,7 +8175,7 @@ on mapping using Entrez Gene identifiers.")
 (define-public r-org-ce-eg-db
   (package
     (name "r-org-ce-eg-db")
-    (version "3.5.0")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -8185,7 +8185,7 @@ on mapping using Entrez Gene identifiers.")
                                   "org.Ce.eg.db_" version ".tar.gz"))
               (sha256
                (base32
-                "02ggchixlmzywhsbr0h2ms4dravv7m5964cjxqcjxqs16vjwlbk9"))))
+                "1w5br1ss4ha8wv4v2saj7cmbjc2jw0dyj2f2y269l078z31wcnaz"))))
     (properties
      `((upstream-name . "org.Ce.eg.db")))
     (build-system r-build-system)
@@ -8201,7 +8201,7 @@ annotations for the genome of the model worm Caenorhabditis elegans.")
 (define-public r-org-dm-eg-db
   (package
     (name "r-org-dm-eg-db")
-    (version "3.5.0")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -8211,7 +8211,7 @@ annotations for the genome of the model worm Caenorhabditis elegans.")
                                   "org.Dm.eg.db_" version ".tar.gz"))
               (sha256
                (base32
-                "033qak1d3wwz17va0bh8z8p8arx0aw2va6gm1qfwsvdkj9cd9d7d"))))
+                "1pqjrzlyg72bjpy8zsxvaglc7jsv176bnyi87xdajmkvsgxpm7b3"))))
     (properties
      `((upstream-name . "org.Dm.eg.db")))
     (build-system r-build-system)
@@ -8227,7 +8227,7 @@ annotations for the genome of the model fruit fly Drosophila melanogaster.")
 (define-public r-org-mm-eg-db
   (package
     (name "r-org-mm-eg-db")
-    (version "3.5.0")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -8237,7 +8237,7 @@ annotations for the genome of the model fruit fly Drosophila melanogaster.")
                                   "org.Mm.eg.db_" version ".tar.gz"))
               (sha256
                (base32
-                "11q21p3ki4bn4hb3aix0g775l45l66jmas6m94nfhqqnpjhv4d6g"))))
+                "1i3nvrd3wjigf1rmgxq1p5xxc3p8v02h5gwi62s30rkrsyjjfjxx"))))
     (properties
      `((upstream-name . "org.Mm.eg.db")))
     (build-system r-build-system)
@@ -8368,7 +8368,7 @@ in Biostrings objects.")
 (define-public r-txdb-mmusculus-ucsc-mm10-knowngene
   (package
     (name "r-txdb-mmusculus-ucsc-mm10-knowngene")
-    (version "3.4.0")
+    (version "3.4.4")
     (source (origin
               (method url-fetch)
               ;; We cannot use bioconductor-uri here because this tarball is
@@ -8379,7 +8379,7 @@ in Biostrings objects.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "08gava9wsvpcqz51k2sni3pj03n5155v32d9riqbf305nbirqbkb"))))
+                "01lgxc1fx5nhlpbwjd5zqghkkbmh6axd98ikx4b0spv0jdg6gf39"))))
     (properties
      `((upstream-name . "TxDb.Mmusculus.UCSC.mm10.knownGene")))
     (build-system r-build-system)
@@ -10215,14 +10215,14 @@ originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2):
 (define-public r-ensembldb
   (package
     (name "r-ensembldb")
-    (version "2.6.0")
+    (version "2.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ensembldb" version))
        (sha256
         (base32
-         "12jqz9h6w4mxyfr43w5qbwmacn512aw0mnl0zvhsg5i7p4qj45ks"))))
+         "1js05dcv1dj4g2vj7lzlg0rgjcjlk2irdr9rxqpwxmivm8nbvf36"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -14117,6 +14117,85 @@ enrichment analysis (GSEA) calculation with or without the absolute filtering.
   Without filtering, users can perform (original) two-tailed or one-tailed
 absolute GSEA.")
     (license license:gpl2)))
+
+(define-public jamm
+  (package
+    (name "jamm")
+    (version "1.0.7.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mahmoudibrahim/JAMM.git")
+             (commit (string-append "JAMMv" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ls889jcma1ch9h21jjhnkadgszgqj41842hhcjh6cg88f85qf3i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "JAMM.sh"
+               (("^sPath=.*")
+                (string-append "")))
+             #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (libexec (string-append out "/libexec/jamm"))
+                    (bin (string-append out "/bin")))
+               (substitute* '("JAMM.sh"
+                              "SignalGenerator.sh")
+                 (("^sPath=.*")
+                  (string-append "sPath=\"" libexec "\"\n")))
+               (for-each (lambda (file)
+                           (install-file file libexec))
+                         (list "bincalculator.r"
+                               "peakfinder.r"
+                               "peakhelper.r"
+                               "signalmaker.r"
+                               "xcorr.r"
+                               "xcorrhelper.r"
+                               ;; Perl scripts
+                               "peakfilter.pl"
+                               "readshifter.pl"))
+
+               (for-each
+                (lambda (script)
+                  (chmod script #o555)
+                  (install-file script bin)
+                  (wrap-program (string-append bin "/" script)
+                    `("PATH" ":" prefix
+                      (,(string-append (assoc-ref inputs "coreutils") "/bin")
+                       ,(string-append (assoc-ref inputs "gawk") "/bin")
+                       ,(string-append (assoc-ref inputs "perl") "/bin")
+                       ,(string-append (assoc-ref inputs "r-minimal") "/bin")))
+                    `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB")))
+                    `("R_LIBS_SITE" ":" prefix (,(getenv "R_LIBS_SITE")))))
+                (list "JAMM.sh" "SignalGenerator.sh")))
+             #t)))))
+    (inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("gawk" ,gawk)
+       ("perl" ,perl)
+       ("r-minimal" ,r-minimal)
+       ;;("r-parallel" ,r-parallel)
+       ("r-signal" ,r-signal)
+       ("r-mclust" ,r-mclust)))
+    (home-page "https://github.com/mahmoudibrahim/JAMM")
+    (synopsis "Peak finder for NGS datasets")
+    (description
+     "JAMM is a peak finder for next generation sequencing datasets (ChIP-Seq,
+ATAC-Seq, DNase-Seq, etc.) that can integrate replicates and assign peak
+boundaries accurately.  JAMM is applicable to both broad and narrow
+datasets.")
+    (license license:gpl3+)))
 
 (define-public ngless
   (package

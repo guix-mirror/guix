@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,14 +48,14 @@
     ;; The 7 release series has an incompatible API, while the 6 series is still
     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
     ;; users are ready for the 7-series API.
-    (version "6.9.10-12")
+    (version "6.9.10-14")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0ri96yqihdk921k5qx23y2sbhraxbp2avdccxiy6m3srjkirym2l"))))
+               "0vcfjvdk9in92x808djvy94l5gylpgds4a7mlr8jrxsv9snx88yi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch")

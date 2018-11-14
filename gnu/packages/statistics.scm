@@ -115,6 +115,36 @@ can be imported from spreadsheets, text files and database sources and it can
 be output in text, PostScript, PDF or HTML.")
     (license license:gpl3+)))
 
+(define-public jags
+  (package
+    (name "jags")
+    (version "4.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/mcmc-jags/JAGS/"
+                                  (version-major version) ".x/Source/"
+                                  "JAGS-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z3icccg2ic56vmhyrpinlsvpq7kcaflk1731rgpvz9bk1bxvica"))))
+    (build-system gnu-build-system)
+    (home-page "http://mcmc-jags.sourceforge.net/")
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("lapack" ,lapack)))
+    (synopsis "Gibbs sampler")
+    (description "JAGS is Just Another Gibbs Sampler.  It is a program for
+analysis of Bayesian hierarchical models using Markov Chain Monte Carlo (MCMC)
+simulation not wholly unlike BUGS.  JAGS was written with three aims in mind:
+
+@enumerate
+@item To have a cross-platform engine for the BUGS language;
+@item To be extensible, allowing users to write their own functions,
+  distributions and samplers;
+@item To be a platform for experimentation with ideas in Bayesian modelling.
+@end enumerate\n")
+    (license license:gpl2)))
+
 ;; Update this package together with the set of recommended packages: r-boot,
 ;; r-class, r-cluster, r-codetools, r-foreign, r-kernsmooth, r-lattice,
 ;; r-mass, r-matrix, r-mgcv, r-nlme, r-nnet, r-rpart, r-spatial, r-survival.
@@ -1620,13 +1650,13 @@ and printing capabilities than traditional data frames.")
 (define-public r-dplyr
   (package
     (name "r-dplyr")
-    (version "0.7.7")
+    (version "0.7.8")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "dplyr" version))
               (sha256
                (base32
-                "196lwck3i3m25jnn1f1nrda9svnjqqi89s0is79gbrphamddnlq5"))))
+                "06p59nhli8c1sarghzxq0y4pk6lyyz3xwkarp55b252dfg2rly9p"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -2528,13 +2558,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.9.100.5.0")
+    (version "0.9.200.4.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "1iyjqhfjip1nxrkllzh7r1m01jjnx7cahqkf3s557w34p987f2l1"))))
+                "1ayvpyi4hgaqrhx1kqi640iillc2byj4kam7vydlgqmdrzpgrfvz"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     (native-inputs
@@ -3268,14 +3298,14 @@ the way current RNG settings can be changed.")
 (define-public r-rtsne
   (package
     (name "r-rtsne")
-    (version "0.13")
+    (version "0.15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rtsne" version))
        (sha256
         (base32
-         "17crbdi80q4g2pwp9v7j3bdaznk96qlrqx01zvj3wwqippizyfqw"))))
+         "0v17vxizrs1msay24xl2bckfajr2c82wpqj07lyssbrq197nwdsn"))))
     (properties `((upstream-name . "Rtsne")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5123,14 +5153,14 @@ algorithms.")
 (define-public r-lme4
   (package
     (name "r-lme4")
-    (version "1.1-18-1")
+    (version "1.1-19")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lme4" version))
        (sha256
         (base32
-         "01ar4fak8zj7c1vmh9m576wchxj5qzpfqn637s7fh3fl6cpz0alq"))))
+         "0j8xhkkcdv45ilab960s9jrcjk6jbzvd7w7myswv5fmalrpq52pf"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
@@ -5325,14 +5355,14 @@ first and second order derivatives.")
 (define-public r-sn
   (package
     (name "r-sn")
-    (version "1.5-2")
+    (version "1.5-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sn" version))
        (sha256
         (base32
-         "16gwr68zzj5v83bqfmzxnzwig3dnjrkxdhs6clri1caqkvrq6aig"))))
+         "10via4lg0vx9pzq350vwhz5wv1dhzxr2l3r6jq99nk37vmyvj8fc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mnormt" ,r-mnormt)

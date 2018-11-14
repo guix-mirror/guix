@@ -6,6 +6,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -140,14 +141,6 @@ rejects UDP traffic from the application you're using.")
        #:configure-flags (list (string-append "--sysconfdir="
                                               (assoc-ref %outputs "out")
                                               "/etc/privoxy"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _
-             ;; Unfortunately, this is not a tarball produced by
-             ;; "make dist".
-             (invoke "autoreconf" "-vfi")
-             #t)))
        #:tests? #f))
     (inputs
      `(("w3m" ,w3m)

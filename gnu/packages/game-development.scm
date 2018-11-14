@@ -399,13 +399,14 @@ support.")
     (name "tiled")
     (version "1.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/bjorn/tiled/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bjorn/tiled.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "13dlf5kzvhhjkhy19118x3diakmraz4m9kxrsdam8dms6xivb6lp"))))
+                "1rra48hlkcgqxwxi802fb182p1q0723c9hhfvkd5inz9467idd4c"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)

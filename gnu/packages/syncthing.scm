@@ -900,7 +900,16 @@ the current goroutine's ID.")
                   "0bg26pfg25vr16jmczig2m493mja2nxjxyswz3hha7avxw20rpi5"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "github.com/AudriusButkevicius/cli"))
+       '(#:import-path "github.com/AudriusButkevicius/cli"
+         ;; Tests don't pass "vet" on go-1.11.  See
+         ;; https://github.com/AudriusButkevicius/cli/pull/1.
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "test"
+                       "-vet=off"
+                       import-path))))))
       (synopsis "Library for building command-line interfaces in Go")
       (description "This package provides a library for building command-line
 interfaces in Go.")
@@ -1097,7 +1106,14 @@ message streaming.")
                       (string-append (assoc-ref outputs "out")
                                      "/src/github.com/prometheus/common/expfmt/testdata/")
                       ".*\\.gz$"))
-               #t)))))
+               #t))
+           (replace 'check
+             ;; Tests don't pass "vet" on go-1.11.  See
+             ;; https://github.com/syncthing/syncthing/issues/5311.
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "test"
+                       "-vet=off"
+                       import-path))))))
       (propagated-inputs
        `(("go-github-com-golang-protobuf-proto"
           ,go-github-com-golang-protobuf-proto)
@@ -1251,7 +1267,16 @@ Prometheus HTTP API.")
                 "1y8bvzbxpw0lfnn7pbcdwzqj4l90qj6xf88dvv9pxd9yl5g6cskx"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "gopkg.in/asn1-ber.v1"))
+     '(#:import-path "gopkg.in/asn1-ber.v1"
+       ;; Tests don't pass "vet" on go-1.11.  See
+       ;; https://github.com/go-asn1-ber/asn1-ber/issues/20.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key import-path #:allow-other-keys)
+             (invoke "go" "test"
+                     "-vet=off"
+                     import-path))))))
     (synopsis "ASN.1 BER encoding and decoding in Go")
     (description "This package provides ASN.1 BER encoding and decoding in the
 Go language.")

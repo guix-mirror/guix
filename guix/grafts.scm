@@ -40,7 +40,8 @@
             graft-derivation/shallow
 
             %graft?
-            set-grafting))
+            set-grafting
+            grafting?))
 
 (define-record-type* <graft> graft make-graft
   graft?
@@ -327,6 +328,11 @@ DRV, and graft DRV itself to refer to those grafted dependencies."
 it otherwise.  It returns the previous setting."
   (lambda (store)
     (values (%graft? enable?) store)))
+
+(define (grafting?)
+  "Return a Boolean indicating whether grafting is enabled."
+  (lambda (store)
+    (values (%graft?) store)))
 
 ;; Local Variables:
 ;; eval: (put 'with-cache 'scheme-indent-function 1)

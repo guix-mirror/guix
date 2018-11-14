@@ -887,9 +887,10 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
             #t))
          (add-after 'install 'install-info
            (lambda _
-             (zero? (system* "make"
-                             "-j" (number->string (parallel-job-count))
-                             "conf=www" "install-info")))))))
+             (invoke "make"
+                     "-j" (number->string (parallel-job-count))
+                     "conf=www" "install-info")
+             #t)))))
     (inputs
      `(("guile" ,guile-1.8)
        ("font-dejavu" ,font-dejavu)
@@ -1255,12 +1256,14 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
     (name "jalv-select")
     (version "0.8")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/brummer10/jalv_select/"
-                                  "archive/V" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/brummer10/jalv_select.git")
+                    (commit (string-append "V" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zraagwr681b5s3qifxf399c7q93jz23c8sr42gmff9zqnvxc75q"))))
+                "0gqh768sbvn9ffyx1vqg9i57py9x9v4l65bk6wjsvgga4d7m83k1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1275,6 +1278,13 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
                 (string-append "ls -1 " (assoc-ref inputs "jalv") "/bin")))
              (substitute* "jalv.select.h"
                (("gtkmm.h") "gtkmm-2.4/gtkmm.h"))
+             #t))
+         (add-before 'reset-gzip-timestamps 'make-manpages-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each make-file-writable
+                       (find-files (string-append (assoc-ref outputs "out")
+                                                  "/share/man")
+                                   ".*\\.gz$"))
              #t)))))
     (inputs
      `(("lilv" ,lilv)
@@ -1857,13 +1867,14 @@ using a system-independent interface.")
     (name "portmidi-for-extempore")
     (version "217")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/extemporelang/portmidi/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/extemporelang/portmidi.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gjikwciyr8kk4y3qiv1pcq58xpgw38ql1m2gs6g0qc1s8sx4235"))))
+                "1inriyrjf7xx2b7r54x0vmf9ngyqgr7g5060c22bwkbsgg53apzv"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ; no tests
     (native-inputs '())
@@ -2279,13 +2290,14 @@ follows a traditional multi-track tape recorder control paradigm.")
     (version "1.2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/blablack/ams-lv2/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/blablack/ams-lv2.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1xacxyzqcj83g9c1gwfn36gg1c6yi15v7km4vidfidrjzb4x27fq"))))
+         "1n1dnqnj24xhiy9323lj52nswr5120cj56fpckg802miss05sr6x"))))
     (build-system waf-build-system)
     (arguments
      `(#:phases
@@ -2320,13 +2332,14 @@ and hold, etc.")
     (name "gxtuner")
     (version "2.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/brummer10/gxtuner/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/brummer10/gxtuner.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hn5qjac7qd00v0sp7ijhhc3sb26ks9bni06nngivva21h61xrjr"))))
+                "1fxd2akan2njlr7fpkh84830783qhh1gg7yakswqk5dd466dcn96"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -2432,13 +2445,14 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
     (name "pianobar")
     (version "2016.06.02")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/PromyLOPh/"
-                                  name "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/PromyLOPh/pianobar.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hi5rr6jcr0kwf4xfz007ndwkjkp287lhwlsgfz6iryqa5n6jzcp"))))
+                "058fbdxp7n35hxwy3b8slfy4pb4n63cb173vfmywqa06wh1dv6f6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -2719,14 +2733,14 @@ of tools for manipulating and accessing your music.")
     (name "milkytracker")
     (version "1.02.00")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/milkytracker/"
-                                  "MilkyTracker/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/milkytracker/MilkyTracker.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "08v0l4ipvvwkwv4ywkc6c8a6xnpkyb02anj36w8q6gikxrs6xjvb"))
+                "05a6d7l98k9i82dwrgi855dnccm3f2lkb144gi244vhk1156n0ca"))
               (modules '((guix build utils)))
               ;; Remove non-FSDG compliant sample songs.
               (snippet
@@ -2761,14 +2775,14 @@ for improved Amiga ProTracker 2/3 compatibility.")
     (name "schismtracker")
     (version "20180513")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/" name "/" name "/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/schismtracker/schismtracker.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1yjfd02arb51n0vyv11qgpn6imh7hcqnc3953cbvgwb4cnrswk9f"))
+                "0fayix1zbl96zhkfszgj71qr25dnddgy9hr6149nslww4gl7jk36"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove use of __DATE__ and __TIME__ for reproducibility.
@@ -2781,8 +2795,6 @@ for improved Amiga ProTracker 2/3 compatibility.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _ (invoke "autoreconf" "-vfi")))
          (add-before 'configure 'link-libm
            (lambda _ (setenv "LIBS" "-lm") #t)))))
     (native-inputs
@@ -3520,13 +3532,14 @@ are a C compiler and glib.  Full API documentation and examples are included.")
     (version "1.1.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/LMMS/lmms/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/LMMS/lmms.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1g76z7ha3hd53vbqaq9n1qg6s3lw8zzaw51iny6y2bz0j1xqwcsr"))))
+         "03hhymc6d73fa3wbcqb7rm1l03zkw605k5i9kvkvjmv488bqh3pd"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -4143,17 +4156,15 @@ at @code{musicbrainz.org}.")
     (version "0.10")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/trizen/clyrics/archive/"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trizen/clyrics.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1l0cg26afnjv8cgk0jbiavbyvq55q1djyigzmi526rpcjjwq9jwn"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "1qvj4dyipkkdccx5hci4z0q23i54ldk6hh7x5m35a7f70rrj6fbk"))))
     (build-system trivial-build-system)
-    (native-inputs `(("tar" ,tar)
-                     ("gzip" ,gzip)))
     (inputs
      `(("bash" ,bash)                             ;for the wrapped program
        ("perl" ,perl)
@@ -4170,17 +4181,12 @@ at @code{musicbrainz.org}.")
                                 (ice-9 match)
                                 (srfi srfi-26))
                    (let* ((source (assoc-ref %build-inputs "source"))
-                          (tar (assoc-ref %build-inputs "tar"))
-                          (gzip (assoc-ref %build-inputs "gzip"))
                           (output (assoc-ref %outputs "out")))
                      (setenv "PATH"
                              (string-append
-                              (assoc-ref %build-inputs "gzip") "/bin" ":"
                               (assoc-ref %build-inputs "bash") "/bin" ":"
                               (assoc-ref %build-inputs "perl") "/bin" ":"))
-                     (invoke (string-append tar "/bin/tar") "xvf"
-                             source)
-                     (chdir ,(string-append "clyrics-" version))
+                     (copy-recursively source (getcwd))
                      (patch-shebang "clyrics")
                      (substitute* "clyrics"
                        (("/usr/share") output))

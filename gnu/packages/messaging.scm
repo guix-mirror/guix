@@ -549,14 +549,14 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "0.6.7")
+    (version "0.6.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbxmpp" version))
        (sha256
         (base32
-         "0fas4iawjfdmkz8vr042wpq6b2qispi6fy35g4a62jw50jb1saav"))))
+         "1iip8ijxp86fx4bl1h67p2lp02p2zm1ga2p3q43nv30smj54nawc"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -574,7 +574,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.0.3")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -582,10 +582,11 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "0ds4rqwfrpj89a489w6yih8gx5zi7qa4ffgld950fk7s0qxvcfnb"))))
+                "1qis8vs7y7g1zn5i5dshwrszidc22qpflycwb4nixvp9lbmkq0va"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:test-target "test_nogui"
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
@@ -598,20 +599,6 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                       `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))
                 '("gajim" "gajim-remote" "gajim-history-manager")))
              #t))
-         (add-before 'check 'remove-test-resolver
-           ;; This test requires network access.
-           (lambda _
-             (substitute* "test/runtests.py"
-               (("'integration.test_resolver',") ""))
-             #t))
-         (add-before 'check 'start-xserver
-           ;; Tests require a running X server.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((xorg-server (assoc-ref inputs "xorg-server"))
-                   (display ":1"))
-               (setenv "DISPLAY" display)
-               (zero? (system (string-append xorg-server "/bin/Xvfb "
-                                             display " &"))))))
          (add-after 'install 'install-icons
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -636,9 +623,11 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                ;; For GtkFileChooserDialog.
                `("GSETTINGS_SCHEMA_DIR" =
                  (,(string-append (assoc-ref inputs "gtk+")
-                                  "/share/glib-2.0/schemas")))))))))
+                                  "/share/glib-2.0/schemas"))))
+             #t)))))
     (native-inputs
      `(("intltool" ,intltool)
+       ("python-docutils" ,python-docutils)
        ("xorg-server" ,xorg-server)))
     (inputs
      `(("adwaita-icon-theme" ,adwaita-icon-theme)
@@ -648,12 +637,13 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
        ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("libsecret" ,libsecret)
        ("python-axolotl" ,python-axolotl)
+       ("python-cssutils" ,python-cssutils)
        ("python-dbus" ,python-dbus)
-       ("python-docutils" ,python-docutils)
        ("python-gnupg" ,python-gnupg)
+       ("python-keyring" ,python-keyring)
        ("python-nbxmpp" ,python-nbxmpp)
        ("python-pillow" ,python-pillow)
-       ("python-pyasn1" ,python-pyasn1)
+       ("python-precis-i18n" ,python-precis-i18n)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
        ("python-pyopenssl" ,python-pyopenssl)
@@ -828,8 +818,8 @@ protocols.")
     (license license:x11)))
 
 (define-public libtoxcore
-  (let ((revision "1")
-        (commit "755f084e8720b349026c85afbad58954cb7ff1d4"))
+  (let ((revision "2")
+        (commit "bf69b54f64003d160d759068f4816b2d9b2e1e21"))
     (package
       (name "libtoxcore")
       (version (string-append "0.0.0" "-"
@@ -842,26 +832,19 @@ protocols.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "0ap1gvlyihnfivv235dbrgsxsiiz70bhlmlr5gn1027w3h5kqz8w"))))
+                  "11lqra4yd7v293cp286ynff5lqz1pprzg8vn3wq6vryj08g88zqb"))))
       (build-system gnu-build-system)
+      (arguments `(#:tests? #f)) ; FIXME: tests hang, some fail.
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
          ("libtool" ,libtool)
-         ;; TODO: Add when test suite is capable of passing.
-         ;; ("check" ,check)
+         ("check" ,check)
          ("pkg-config" ,pkg-config)))
       (inputs
        `(("libsodium" ,libsodium)
          ("opus" ,opus)
          ("libvpx" ,libvpx)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'autoconf
-             (lambda _
-               (zero? (system* "autoreconf" "-vfi")))))
-         #:tests? #f)) ; FIXME: Testsuite fails, reasons unspecific.
       (synopsis "Library for the Tox encrypted messenger protocol")
       (description
        "C library implementation of the Tox encrypted messenger protocol.")
@@ -877,13 +860,14 @@ protocols.")
     (version "0.2.8")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/TokTok/c-toxcore/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/TokTok/c-toxcore.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0qlkimlvbd24nlj7w9b5rpz1r807magqxmfylc1mlxsqhmfi5zj7"))))
+         "0xgnraysz25fbws5zwjk92mwnl8k1yih701qam8kgm3rxh50kyhm"))))
     (arguments
      `(#:tests? #f)) ; FIXME: Testsuite seems to stay stuck on test 3. Disable
                      ; for now.

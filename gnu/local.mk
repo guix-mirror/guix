@@ -816,7 +816,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/hplip-remove-imageprocessor.patch	\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
-  %D%/packages/patches/icecat-CVE-2018-12383.patch		\
   %D%/packages/patches/icecat-use-system-graphite2+harfbuzz.patch	\
   %D%/packages/patches/icecat-use-system-media-libs.patch	\
   %D%/packages/patches/icedtea-6-hotspot-gcc-segfault-workaround.patch  \
@@ -1048,6 +1047,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/plink-1.07-unclobber-i.patch		\
   %D%/packages/patches/plink-endian-detection.patch		\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\
+  %D%/packages/patches/poppler-CVE-2018-19149.patch		\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
   %D%/packages/patches/portmidi-modular-build.patch		\
   %D%/packages/patches/potrace-tests.patch			\

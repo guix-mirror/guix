@@ -23,6 +23,7 @@
   #:use-module (guix memoization)
   #:use-module (guix serialization)
   #:use-module (guix monads)
+  #:use-module (guix records)
   #:use-module (guix base16)
   #:use-module (guix base32)
   #:use-module (gcrypt hash)
@@ -30,6 +31,7 @@
   #:autoload   (guix build syscalls) (terminal-columns)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 binary-ports)
+  #:use-module ((ice-9 control) #:select (let/ec))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
@@ -55,6 +57,7 @@
             nix-server-minor-version
             nix-server-socket
             current-store-protocol-version        ;for internal use
+            mcached
 
             &nix-error nix-error?
             &nix-connection-error nix-connection-error?
@@ -332,10 +335,7 @@
 
 ;; remote-store.cc
 
-(define-record-type <nix-server>
-  (%make-nix-server socket major minor
-                    buffer flush
-                    ats-cache atts-cache)
+(define-record-type* <nix-server> nix-server %make-nix-server
   nix-server?
   (socket nix-server-socket)
   (major  nix-server-major-version)
@@ -348,7 +348,9 @@
   ;; during the session are temporary GC roots kept for the duration of
   ;; the session.
   (ats-cache  nix-server-add-to-store-cache)
-  (atts-cache nix-server-add-text-to-store-cache))
+  (atts-cache nix-server-add-text-to-store-cache)
+  (object-cache nix-server-object-cache
+                (default vlist-null)))            ;vhash
 
 (set-record-type-printer! <nix-server>
                           (lambda (obj port)
@@ -523,7 +525,8 @@ for this connection will be pinned.  Return a server object."
                                                     (protocol-minor v)
                                                     output flush
                                                     (make-hash-table 100)
-                                                    (make-hash-table 100))))
+                                                    (make-hash-table 100)
+                                                    vlist-null)))
                         (let loop ((done? (process-stderr conn)))
                           (or done? (process-stderr conn)))
                         conn)))))))))
@@ -543,7 +546,8 @@ connection.  Use with care."
                       (protocol-minor version)
                       output flush
                       (make-hash-table 100)
-                      (make-hash-table 100))))
+                      (make-hash-table 100)
+                      vlist-null)))
 
 (define (nix-server-version store)
   "Return the protocol version of STORE as an integer."
@@ -1485,6 +1489,56 @@ This makes sense only when the daemon was started with '--cache-failures'."
 ;; Instantiate templates for %STORE-MONAD since it's syntactically different
 ;; from %STATE-MONAD.
 (template-directory instantiations %store-monad)
+
+(define* (cache-object-mapping object keys result)
+  "Augment the store's object cache with a mapping from OBJECT/KEYS to RESULT.
+KEYS is a list of additional keys to match against, for instance a (SYSTEM
+TARGET) tuple.
+
+OBJECT is typically a high-level object such as a <package> or an <origin>,
+and RESULT is typically its derivation."
+  (lambda (store)
+    (values result
+            (nix-server
+             (inherit store)
+             (object-cache (vhash-consq object (cons result keys)
+                                        (nix-server-object-cache store)))))))
+
+(define* (lookup-cached-object object #:optional (keys '()))
+  "Return the cached object in the store connection corresponding to OBJECT
+and KEYS.  KEYS is a list of additional keys to match against, and which are
+compared with 'equal?'.  Return #f on failure and the cached result
+otherwise."
+  (lambda (store)
+    ;; Escape as soon as we find the result.  This avoids traversing the whole
+    ;; vlist chain and significantly reduces the number of 'hashq' calls.
+    (values (let/ec return
+              (vhash-foldq* (lambda (item result)
+                              (match item
+                                ((value . keys*)
+                                 (if (equal? keys keys*)
+                                     (return value)
+                                     result))))
+                            #f object
+                            (nix-server-object-cache store)))
+            store)))
+
+(define* (%mcached mthunk object #:optional (keys '()))
+  "Bind the monadic value returned by MTHUNK, which supposedly corresponds to
+OBJECT/KEYS, or return its cached value."
+  (mlet %store-monad ((cached (lookup-cached-object object keys)))
+    (if cached
+        (return cached)
+        (>>= (mthunk)
+             (lambda (result)
+               (cache-object-mapping object keys result))))))
+
+(define-syntax-rule (mcached mvalue object keys ...)
+  "Run MVALUE, which corresponds to OBJECT/KEYS, and cache it; or return the
+value associated with OBJECT/KEYS in the store's object cache if there is
+one."
+  (%mcached (lambda () mvalue)
+            object (list keys ...)))
 
 (define (preserve-documentation original proc)
   "Return PROC with documentation taken from ORIGINAL."

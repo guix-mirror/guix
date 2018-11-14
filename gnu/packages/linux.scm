@@ -423,8 +423,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.79")
-(define %linux-libre-4.14-hash "000rd4h2yk6k68wjg37v53hqnqw1mgwhdxbcvy8iywy8za9r12c8")
+(define %linux-libre-4.14-version "4.14.80")
+(define %linux-libre-4.14-hash "0h4hi5lqizdx5nk0f3immbcv2n7p5jh26m80v4x6bw4wi5b44fra")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -433,14 +433,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.135"
-                    "07v5s6hl08ls2z9xdkbqq1s210mqayfchqbckhp8hlaw089ap71f"
+  (make-linux-libre "4.9.136"
+                    "1kk6px1jcwbgkpfmf9pdklk6kz90h5l8fvdqwmvnk4bz6b2xrrfp"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.162"
-                    "1anb2k9i03369lvbwlw24vimxvk8zpcql4ryz0ydvf3pxv8lirm2"
+  (make-linux-libre "4.4.163"
+                    "05j0dm0cxilanp5z40n8kgjz9vn1p4rg63kksicd2v48w8ka82z6"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -1968,20 +1968,15 @@ for systems using the Linux kernel.  This includes commands such as
     (name "inotify-tools")
     (version "3.20.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rvoicilas/inotify-tools/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rvoicilas/inotify-tools.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1b22c8x4pjnz3abx4dikpbj43zprjw79pdkd4xw111dsxlfwqcx4"))))
+                "14dci1i4mhsd5sa33k8h3ayphk19kizynh5ql9ryibdpmcanfiyq"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
-                    (lambda _
-                      (invoke "autoreconf" "-vif"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -2916,7 +2911,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
 (define-public mdadm
   (package
     (name "mdadm")
-    (version "4.0")
+    (version "4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2924,7 +2919,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1ad3mma641946wn5lsllwf0lifw9lps34fv1nnkhyfpd9krffshx"))))
+                "0jjgjgqijpdp7ijh8slzzjjw690kydb1jjadf0x5ilq85628hxmb"))))
     (build-system gnu-build-system)
     (inputs
      `(("udev" ,eudev)))
@@ -3949,7 +3944,7 @@ are exceeded.")
 (define-public mtd-utils
   (package
     (name "mtd-utils")
-    (version "1.5.2")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3957,18 +3952,18 @@ are exceeded.")
                     "mtd-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "007lhsd8yb34l899r4m37whhzdw815cz4fnjbpnblfha524p7dax"))))
+                "1f30jszknc5v6ykmil8ajxgksmcg54q3rsp84jsancp9x0dycggv"))))
+    (arguments
+     '(#:configure-flags '("--enable-unit-tests")))
+    (native-inputs
+     `(("cmocka" ,cmocka)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("acl" ,acl)
+     `(("acl" ,acl) ; for XATTR
        ("libuuid" ,util-linux)
        ("lzo" ,lzo)
        ("zlib" ,zlib)))
     (build-system gnu-build-system)
-    (arguments
-     `(#:test-target "tests"
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
     (synopsis "MTD Flash Storage Utilities")
     (description "This package provides utilities for testing, partitioning, etc
 of flash storage.")
