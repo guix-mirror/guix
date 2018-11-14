@@ -163,8 +163,8 @@ if test "x$guix_build_daemon" = "xyes"; then
     [chmod +x nix/scripts/download])
   AC_CONFIG_FILES([nix/scripts/substitute],
     [chmod +x nix/scripts/substitute])
-  AC_CONFIG_FILES([nix/scripts/guix-authenticate],
-    [chmod +x nix/scripts/guix-authenticate])
+  AC_CONFIG_FILES([nix/scripts/authenticate],
+    [chmod +x nix/scripts/authenticate])
   AC_CONFIG_FILES([nix/scripts/offload],
     [chmod +x nix/scripts/offload])
 fi
