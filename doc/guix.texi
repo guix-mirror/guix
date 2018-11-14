@@ -11832,7 +11832,7 @@ Data Type representing the configuration of connman.
 The connman package to use.
 
 @item @code{disable-vpn?} (default: @code{#f})
-When true, enable connman's vpn plugin.
+When true, disable connman's vpn plugin.
 @end table
 @end deftp
 
