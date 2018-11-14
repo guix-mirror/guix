@@ -199,7 +199,7 @@
             ;; FIXME: This test fails on 32-bit architectures since Glibc 2.28:
             ;; <https://bugzilla.redhat.com/show_bug.cgi?id=1631847>.
             (substitute* "texk/web2c/omegafonts/check.test"
-              (("^\\./omfonts -ofm2opl \\$srcdir/tests/check tests/xcheck || exit 1")
+              (("^\\./omfonts -ofm2opl \\$srcdir/tests/check tests/xcheck \\|\\| exit 1")
                "./omfonts -ofm2opl $srcdir/tests/check tests/xcheck || exit 77"))
             #t))
         (add-after 'install 'postint
