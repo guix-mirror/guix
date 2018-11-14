@@ -21,8 +21,18 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages audio)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml))
 
 (define-public liblcf
@@ -60,3 +70,52 @@ It can read and write LCF and XML files.")
     ;;   src/inireader.cpp
     ;; TODO: Unbundle them.
     (license license:expat)))
+
+(define-public easyrpg-player
+  (package
+    (name "easyrpg-player")
+    (version "0.5.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://easyrpg.org/downloads/player/" version
+                    "/easyrpg-player-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0w0idr61slg5828j1q31c1kh1h0ryp8psc006y06jph5pp3qgm48"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--with-bash-completion-dir="
+                            %output "/etc/bash_completion.d/"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("harfbuzz" ,harfbuzz)
+       ("liblcf" ,liblcf)
+       ("libpng" ,libpng)
+       ("libsndfile" ,libsndfile)
+       ("libvorbis" ,libvorbis)
+       ("libxmp" ,libxmp)
+       ("mpg123" ,mpg123)
+       ("opusfile" ,opusfile)
+       ("pixman" ,pixman)
+       ("sdl2-mixer" ,sdl2-mixer)
+       ("sdl2" ,sdl2)
+       ("speexdsp" ,speexdsp)
+       ;; ("wildmidi" ,wildmidi)      ; TODO: package it
+       ("zlib" ,zlib)))
+    (home-page "https://easyrpg.org/")
+    (synopsis "Play RPG Maker 2000 and 2003 games")
+    (description
+     "EasyRPG Player is a game interpreter to play RPG Maker 2000, 2003 and
+EasyRPG games.  It uses the LCF parser library (liblcf) to read RPG Maker game
+data.")
+    ;; It bundles FMMidi YM2608 FM synthesizer emulator (bsd-3):
+    ;;   src/midisynth.h
+    ;;   src/midisynth.cpp
+    ;; and PicoJSON JSON parser/serializer (bsd-2):
+    ;;   src/picojson.h
+    ;; TODO: Unbundle them.
+    (license license:gpl3+)))
