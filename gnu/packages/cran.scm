@@ -4728,6 +4728,32 @@ Extract argument descriptions and other parts of the help pages of
 functions.")
     (license license:gpl2+)))
 
+(define-public r-rjags
+  (package
+    (name "r-rjags")
+    (version "4-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rjags" version))
+       (sha256
+        (base32
+         "17xmjksj69f9wk4x71jxk4cgiqhaf2fj6bjm0mgzp4qln5x84a8m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-coda" ,r-coda)))
+    (inputs
+     `(("jags" ,jags)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://mcmc-jags.sourceforge.net")
+    (synopsis "Bayesian graphical models using MCMC")
+    (description
+     "This package provides an R interface to the JAGS MCMC library.  JAGS is
+Just Another Gibbs Sampler.  It is a program for analysis of Bayesian
+hierarchical models using Markov Chain Monte Carlo (MCMC) simulation.")
+    (license license:gpl2)))
+
 (define-public r-rdpack
   (package
     (name "r-rdpack")
