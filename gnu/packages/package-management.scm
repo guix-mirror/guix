@@ -345,7 +345,8 @@ the Nix package manager.")
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (invoke "make" "install-binPROGRAMS"
-                       "install-nodist_pkglibexecSCRIPTS")
+                       "install-nodist_pkglibexecSCRIPTS"
+                       "install-nodist_libexecSCRIPTS") ;guix-authenticate
 
                ;; We need to tell 'guix-daemon' which 'guix' command to use.
                ;; Here we use a questionable hack where we hard-code root's
