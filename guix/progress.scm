@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -197,7 +198,7 @@ throughput."
   (define elapsed
     (duration->seconds
      (time-difference (current-time time-monotonic) start-time)))
-  (if (number? size)
+  (if (and (number? size) (not (zero? size)))
       (let* ((%  (* 100.0 (/ transferred size)))
              (throughput (/ transferred elapsed))
              (left       (format #f " ~a  ~a" file
