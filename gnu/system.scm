@@ -154,7 +154,7 @@
                     (default '()))                ; list of gexps/strings
   (bootloader operating-system-bootloader)        ; <bootloader-configuration>
 
-  (initrd operating-system-initrd                 ; (list fs) -> M derivation
+  (initrd operating-system-initrd                 ; (list fs) -> file-like
           (default base-initrd))
   (initrd-modules operating-system-initrd-modules ; list of strings
                   (thunked)                       ; it's system-dependent
@@ -442,7 +442,7 @@ value of the SYSTEM-SERVICE-TYPE service."
           (return `(("locale" ,locale)))
           (mlet %store-monad
               ((kernel  ->  (operating-system-kernel os))
-               (initrd      (operating-system-initrd-file os))
+               (initrd  ->  (operating-system-initrd-file os))
                (params      (operating-system-boot-parameters-file os)))
             (return `(("kernel" ,kernel)
                       ("parameters" ,params)
@@ -870,12 +870,12 @@ hardware-related operations as necessary when booting a Linux container."
   (define make-initrd
     (operating-system-initrd os))
 
-  (mlet %store-monad ((initrd (make-initrd boot-file-systems
-                                           #:linux (operating-system-kernel os)
-                                           #:linux-modules
-                                           (operating-system-initrd-modules os)
-                                           #:mapped-devices mapped-devices)))
-    (return (file-append initrd "/initrd"))))
+  (let ((initrd (make-initrd boot-file-systems
+                             #:linux (operating-system-kernel os)
+                             #:linux-modules
+                             (operating-system-initrd-modules os)
+                             #:mapped-devices mapped-devices)))
+    (file-append initrd "/initrd")))
 
 (define (locale-name->definition* name)
   "Variant of 'locale-name->definition' that raises an error upon failure."
@@ -957,7 +957,7 @@ listed in OS.  The C library expects to find it under
 parameters of OS.  When SYSTEM-KERNEL-ARGUMENTS? is true, add kernel arguments
 such as '--root' and '--load' to <boot-parameters>."
   (mlet* %store-monad
-      ((initrd (operating-system-initrd-file os))
+      ((initrd -> (operating-system-initrd-file os))
        (store -> (operating-system-store-file-system os))
        (bootloader  -> (bootloader-configuration-bootloader
                         (operating-system-bootloader os)))

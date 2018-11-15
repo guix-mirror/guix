@@ -9860,7 +9860,7 @@ The list of Linux kernel modules that need to be available in the
 initial RAM disk.  @xref{Initial RAM Disk}.
 
 @item @code{initrd} (default: @code{base-initrd})
-A monadic procedure that returns an initial RAM disk for the Linux
+A procedure that returns an initial RAM disk for the Linux
 kernel.  This field is provided to support low-level customization and
 should rarely be needed for casual use.  @xref{Initial RAM Disk}.
 
@@ -21917,10 +21917,10 @@ here is how to use it and customize it further.
 
 @cindex initrd
 @cindex initial RAM disk
-@deffn {Monadic Procedure} raw-initrd @var{file-systems} @
+@deffn {Scheme Procedure} raw-initrd @var{file-systems} @
        [#:linux-modules '()] [#:mapped-devices '()] @
        [#:helper-packages '()] [#:qemu-networking? #f] [#:volatile-root? #f]
-Return a monadic derivation that builds a raw initrd.  @var{file-systems} is
+Return a derivation that builds a raw initrd.  @var{file-systems} is
 a list of file systems to be mounted by the initrd, possibly in addition to
 the root file system specified on the kernel command line via @code{--root}.
 @var{linux-modules} is a list of kernel modules to be loaded at boot time.
@@ -21938,10 +21938,10 @@ When @var{volatile-root?} is true, the root file system is writable but any chan
 to it are lost.
 @end deffn
 
-@deffn {Monadic Procedure} base-initrd @var{file-systems} @
+@deffn {Scheme Procedure} base-initrd @var{file-systems} @
        [#:mapped-devices '()] [#:qemu-networking? #f] [#:volatile-root? #f]@
        [#:linux-modules '()]
-Return a monadic derivation that builds a generic initrd, with kernel
+Return as a file-like object a generic initrd, with kernel
 modules taken from @var{linux}.  @var{file-systems} is a list of file-systems to be
 mounted by the initrd, possibly in addition to the root file system specified
 on the kernel command line via @code{--root}.  @var{mapped-devices} is a list of device
@@ -21961,9 +21961,9 @@ program.  That gives a lot of flexibility.  The
 @code{expression->initrd} procedure builds such an initrd, given the
 program to run in that initrd.
 
-@deffn {Monadic Procedure} expression->initrd @var{exp} @
+@deffn {Scheme Procedure} expression->initrd @var{exp} @
        [#:guile %guile-static-stripped] [#:name "guile-initrd"]
-Return a derivation that builds a Linux initrd (a gzipped cpio archive)
+Return as a file-like object a Linux initrd (a gzipped cpio archive)
 containing @var{guile} and that evaluates @var{exp}, a G-expression,
 upon booting.  All the derivations referenced by @var{exp} are
 automatically copied to the initrd.

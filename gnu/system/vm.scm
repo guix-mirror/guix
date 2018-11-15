@@ -189,14 +189,12 @@ made available under the /xchg CIFS share."
                   #~(when (zero? (system* #$user-builder))
                       (reboot))))
 
-  (mlet* %store-monad
-      ((initrd       (if initrd                   ; use the default initrd?
-                         (return initrd)
-                         (base-initrd file-systems
-                                      #:on-error 'backtrace
-                                      #:linux linux
-                                      #:linux-modules %base-initrd-modules
-                                      #:qemu-networking? #t))))
+  (let ((initrd (or initrd
+                    (base-initrd file-systems
+                                 #:on-error 'backtrace
+                                 #:linux linux
+                                 #:linux-modules %base-initrd-modules
+                                 #:qemu-networking? #t))))
 
     (define builder
       ;; Code that launches the VM that evaluates EXP.
