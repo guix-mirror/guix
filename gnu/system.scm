@@ -127,23 +127,21 @@
 ;;;
 ;;; Code:
 
-(define (bootable-kernel-arguments kernel-arguments system.drv root-device)
-  "Prepend extra arguments to KERNEL-ARGUMENTS that allow SYSTEM.DRV to be
-booted from ROOT-DEVICE"
-  (cons* (string-append "--root="
-                        (cond ((uuid? root-device)
+(define (bootable-kernel-arguments system root-device)
+  "Return a list of kernel arguments (gexps) to boot SYSTEM from ROOT-DEVICE."
+  (list (string-append "--root="
+                       (cond ((uuid? root-device)
 
-                               ;; Note: Always use the DCE format because that's
-                               ;; what (gnu build linux-boot) expects for the
-                               ;; '--root' kernel command-line option.
-                               (uuid->string (uuid-bytevector root-device)
-                                             'dce))
-                              ((file-system-label? root-device)
-                               (file-system-label->string root-device))
-                              (else root-device)))
-         #~(string-append "--system=" #$system.drv)
-         #~(string-append "--load=" #$system.drv "/boot")
-         kernel-arguments))
+                              ;; Note: Always use the DCE format because that's
+                              ;; what (gnu build linux-boot) expects for the
+                              ;; '--root' kernel command-line option.
+                              (uuid->string (uuid-bytevector root-device)
+                                            'dce))
+                             ((file-system-label? root-device)
+                              (file-system-label->string root-device))
+                             (else root-device)))
+        #~(string-append "--system=" #$system)
+        #~(string-append "--load=" #$system "/boot")))
 
 ;; System-wide configuration.
 ;; TODO: Add per-field docstrings/stexi.
@@ -209,12 +207,11 @@ booted from ROOT-DEVICE"
   (sudoers-file operating-system-sudoers-file     ; file-like
                 (default %sudoers-specification)))
 
-(define (operating-system-kernel-arguments os system.drv root-device)
+(define (operating-system-kernel-arguments os root-device)
   "Return all the kernel arguments, including the ones not specified
 directly by the user."
-  (bootable-kernel-arguments (operating-system-user-kernel-arguments os)
-                             system.drv
-                             root-device))
+  (append (bootable-kernel-arguments os root-device)
+          (operating-system-user-kernel-arguments os)))
 
 
 ;;;
@@ -328,14 +325,11 @@ format is unrecognized.
 The object has its kernel-arguments extended in order to make it bootable."
   (let* ((file (string-append system "/parameters"))
          (params (call-with-input-file file read-boot-parameters))
-         (root (boot-parameters-root-device params))
-         (kernel-arguments (boot-parameters-kernel-arguments params)))
-    (if params
-      (boot-parameters
-        (inherit params)
-        (kernel-arguments (bootable-kernel-arguments kernel-arguments
-                                                     system root)))
-      #f)))
+         (root (boot-parameters-root-device params)))
+    (boot-parameters
+     (inherit params)
+     (kernel-arguments (append (bootable-kernel-arguments system root)
+                               (boot-parameters-kernel-arguments params))))))
 
 (define (boot-parameters->menu-entry conf)
   (menu-entry
@@ -942,10 +936,11 @@ listed in OS.  The C library expects to find it under
   "Return the bootloader configuration file for OS.  Use OLD-ENTRIES
 (which is a list of <menu-entry>) to populate the \"old entries\" menu."
   (mlet* %store-monad
-      ((system      (operating-system-derivation os))
-       (root-fs ->  (operating-system-root-file-system os))
+      ((root-fs ->  (operating-system-root-file-system os))
        (root-device -> (file-system-device root-fs))
-       (params (operating-system-boot-parameters os system root-device))
+       (params (operating-system-boot-parameters os root-device
+                                                 #:system-kernel-arguments?
+                                                 #t))
        (entry -> (boot-parameters->menu-entry params))
        (bootloader-conf -> (operating-system-bootloader os)))
     (define generate-config-file
@@ -956,10 +951,11 @@ listed in OS.  The C library expects to find it under
     (lower-object (generate-config-file bootloader-conf (list entry)
                                         #:old-entries old-entries))))
 
-(define (operating-system-boot-parameters os system.drv root-device)
-  "Return a monadic <boot-parameters> record that describes the boot parameters
-of OS.  SYSTEM.DRV is either a derivation or #f.  If it's a derivation, adds
-kernel arguments for that derivation to <boot-parameters>."
+(define* (operating-system-boot-parameters os root-device
+                                           #:key system-kernel-arguments?)
+  "Return a monadic <boot-parameters> record that describes the boot
+parameters of OS.  When SYSTEM-KERNEL-ARGUMENTS? is true, add kernel arguments
+such as '--root' and '--load' to <boot-parameters>."
   (mlet* %store-monad
       ((initrd (operating-system-initrd-file os))
        (store -> (operating-system-store-file-system os))
@@ -972,9 +968,9 @@ kernel arguments for that derivation to <boot-parameters>."
              (root-device root-device)
              (kernel (operating-system-kernel-file os))
              (kernel-arguments
-              (if system.drv
-                (operating-system-kernel-arguments os system.drv root-device)
-                (operating-system-user-kernel-arguments os)))
+              (if system-kernel-arguments?
+                  (operating-system-kernel-arguments os root-device)
+                  (operating-system-user-kernel-arguments os)))
              (initrd initrd)
              (bootloader-name bootloader-name)
              (store-device (ensure-not-/dev (file-system-device store)))
@@ -990,19 +986,22 @@ kernel arguments for that derivation to <boot-parameters>."
     (_
      device)))
 
-(define* (operating-system-boot-parameters-file os #:optional (system.drv #f))
+(define* (operating-system-boot-parameters-file os
+                                                #:key system-kernel-arguments?)
    "Return a file that describes the boot parameters of OS.  The primary use of
 this file is the reconstruction of GRUB menu entries for old configurations.
-SYSTEM.DRV is optional.  If given, adds kernel arguments for that system to the
-returned file (since the returned file is then usually stored into the
-content-addressed \"system\" directory, it's usually not a good idea
-to give it because the content hash would change by the content hash
+
+When SYSTEM-KERNEL-ARGUMENTS? is true, add kernel arguments such as '--root'
+and '--load' to the returned file (since the returned file is then usually
+stored into the content-addressed \"system\" directory, it's usually not a
+good idea to give it because the content hash would change by the content hash
 being stored into the \"parameters\" file)."
   (mlet* %store-monad ((root -> (operating-system-root-file-system os))
                        (device -> (file-system-device root))
-                       (params (operating-system-boot-parameters os
-                                                                 system.drv
-                                                                 device)))
+                       (params (operating-system-boot-parameters
+                                os device
+                                #:system-kernel-arguments?
+                                system-kernel-arguments?)))
      (gexp->file "parameters"
                  #~(boot-parameters
                     (version 0)

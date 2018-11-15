@@ -897,21 +897,20 @@ bootloader; otherwise it directly starts the operating system kernel.  The
 DISK-IMAGE-SIZE parameter specifies the size in bytes of the root disk image;
 it is mostly useful when FULL-BOOT?  is true."
   (mlet* %store-monad ((os ->  (virtualized-operating-system os mappings full-boot?))
-                       (os-drv (operating-system-derivation os))
                        (image  (system-qemu-image/shared-store
                                 os
                                 #:full-boot? full-boot?
                                 #:disk-image-size disk-image-size)))
     (define kernel-arguments
       #~(list #$@(if graphic? #~() #~("console=ttyS0"))
-              #+@(operating-system-kernel-arguments os os-drv "/dev/vda1")))
+              #+@(operating-system-kernel-arguments os "/dev/vda1")))
 
     (define qemu-exec
       #~(list (string-append #$qemu "/bin/" #$(qemu-command (%current-system)))
               #$@(if full-boot?
                      #~()
                      #~("-kernel" #$(operating-system-kernel-file os)
-                        "-initrd" #$(file-append os-drv "/initrd")
+                        "-initrd" #$(file-append os "/initrd")
                         (format #f "-append ~s"
                                 (string-join #$kernel-arguments " "))))
               #$@(common-qemu-options image
