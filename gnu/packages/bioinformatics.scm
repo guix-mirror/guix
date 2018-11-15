@@ -11158,7 +11158,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
 (define-public sambamba
   (package
     (name "sambamba")
-    (version "0.6.7-10-g223fa20")
+    (version "0.6.8")
     (source
      (origin
        (method git-fetch)
@@ -11168,7 +11168,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "1zb9hrxglxqh13ava9wwri30cvf85hjnbn8ccnr8l60a3k5avczn"))))
+         "0k0cz3qcv98p6cq09zlbgnjsggxcqbcmzxg5zikgcgbr2nfq4lry"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there is no test target
@@ -11179,9 +11179,10 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
          (add-after 'unpack 'fix-ldc-version
            (lambda _
              (substitute* "gen_ldc_version_info.py"
-               (("/usr/bin/env.*") (which "python")))
+               (("/usr/bin/env.*") (which "python3")))
              (substitute* "Makefile"
-               (("\\$\\(shell which ldmd2\\)") (which "ldmd2")))
+               ;; We use ldc2 instead of ldmd2 to compile sambamba.
+               (("\\$\\(shell which ldmd2\\)") (which "ldc2")))
              #t))
          (add-after 'unpack 'place-biod-and-undead
            (lambda* (#:key inputs #:allow-other-keys)
@@ -11193,21 +11194,21 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
              (substitute* "Makefile"
                (("htslib/libhts.a lz4/lib/liblz4.a")
                 "-L-lhts -L-llz4")
-               ((" htslib-static lz4-static") ""))
+               ((" lz4-static htslib-static") ""))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
                     (bin   (string-append out "/bin")))
                (mkdir-p bin)
-               (install-file "build/sambamba" bin)
+               (install-file "bin/sambamba" bin)
                #t))))))
     (native-inputs
      `(("ldc" ,ldc)
        ("rdmd" ,rdmd)
-       ("python" ,python2-minimal)
+       ("python" ,python-minimal)
        ("biod"
-        ,(let ((commit "c778e4f2d8bacea7499283ce39f5577b232732c6"))
+        ,(let ((commit "4f1a7d2fb7ef3dfe962aa357d672f354ebfbe42e"))
            (origin
              (method git-fetch)
              (uri (git-reference
@@ -11218,20 +11219,20 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
                                        "-checkout"))
              (sha256
               (base32
-               "1z90562hg47i63gx042wb3ak2vqjg5z7hwgn9bp2pdxfg3nxrw37")))))
+               "1k5pdjv1qvi0a3rwd1sfq6zbj37l86i7bf710m4c0y6737lxj426")))))
        ("undead"
-        ,(let ((commit "92803d25c88657e945511f0976a0c79d8da46e89"))
+        ,(let ((commit "9be93876982b5f14fcca60832563b3cd767dd84d"))
            (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/dlang/undeaD.git")
+                   (url "https://github.com/biod/undeaD.git")
                    (commit commit)))
              (file-name (string-append "undead-"
                                        (string-take commit 9)
                                        "-checkout"))
              (sha256
               (base32
-               "0vq6n81vzqvgphjw54lz2isc1j8lcxwjdbrhqz1h5gwrvw9w5138")))))))
+               "1xfarj0nqlmi5jd1vmcmm7pabzaf9hxyvk6hp0d6jslb5k9r8r3d")))))))
     (inputs
      `(("lz4" ,lz4)
        ("htslib" ,htslib-for-sambamba)))
