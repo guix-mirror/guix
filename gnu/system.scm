@@ -938,9 +938,9 @@ listed in OS.  The C library expects to find it under
   (mlet* %store-monad
       ((root-fs ->  (operating-system-root-file-system os))
        (root-device -> (file-system-device root-fs))
-       (params (operating-system-boot-parameters os root-device
-                                                 #:system-kernel-arguments?
-                                                 #t))
+       (params -> (operating-system-boot-parameters os root-device
+                                                    #:system-kernel-arguments?
+                                                    #t))
        (entry -> (boot-parameters->menu-entry params))
        (bootloader-conf -> (operating-system-bootloader os)))
     (define generate-config-file
@@ -956,25 +956,24 @@ listed in OS.  The C library expects to find it under
   "Return a monadic <boot-parameters> record that describes the boot
 parameters of OS.  When SYSTEM-KERNEL-ARGUMENTS? is true, add kernel arguments
 such as '--root' and '--load' to <boot-parameters>."
-  (mlet* %store-monad
-      ((initrd -> (operating-system-initrd-file os))
-       (store -> (operating-system-store-file-system os))
-       (bootloader  -> (bootloader-configuration-bootloader
-                        (operating-system-bootloader os)))
-       (bootloader-name -> (bootloader-name bootloader))
-       (label -> (kernel->boot-label (operating-system-kernel os))))
-    (return (boot-parameters
-             (label label)
-             (root-device root-device)
-             (kernel (operating-system-kernel-file os))
-             (kernel-arguments
-              (if system-kernel-arguments?
-                  (operating-system-kernel-arguments os root-device)
-                  (operating-system-user-kernel-arguments os)))
-             (initrd initrd)
-             (bootloader-name bootloader-name)
-             (store-device (ensure-not-/dev (file-system-device store)))
-             (store-mount-point (file-system-mount-point store))))))
+  (let* ((initrd          (operating-system-initrd-file os))
+         (store           (operating-system-store-file-system os))
+         (bootloader      (bootloader-configuration-bootloader
+                           (operating-system-bootloader os)))
+         (bootloader-name (bootloader-name bootloader))
+         (label           (kernel->boot-label (operating-system-kernel os))))
+    (boot-parameters
+     (label label)
+     (root-device root-device)
+     (kernel (operating-system-kernel-file os))
+     (kernel-arguments
+      (if system-kernel-arguments?
+          (operating-system-kernel-arguments os root-device)
+          (operating-system-user-kernel-arguments os)))
+     (initrd initrd)
+     (bootloader-name bootloader-name)
+     (store-device (ensure-not-/dev (file-system-device store)))
+     (store-mount-point (file-system-mount-point store)))))
 
 (define (device->sexp device)
   "Serialize DEVICE as an sexp (really, as an object with a read syntax.)"
@@ -996,12 +995,12 @@ and '--load' to the returned file (since the returned file is then usually
 stored into the content-addressed \"system\" directory, it's usually not a
 good idea to give it because the content hash would change by the content hash
 being stored into the \"parameters\" file)."
-  (mlet* %store-monad ((root -> (operating-system-root-file-system os))
-                       (device -> (file-system-device root))
-                       (params (operating-system-boot-parameters
-                                os device
-                                #:system-kernel-arguments?
-                                system-kernel-arguments?)))
+   (let* ((root   (operating-system-root-file-system os))
+          (device (file-system-device root))
+          (params (operating-system-boot-parameters
+                   os device
+                   #:system-kernel-arguments?
+                   system-kernel-arguments?)))
      (gexp->file "parameters"
                  #~(boot-parameters
                     (version 0)
