@@ -948,9 +948,13 @@ listed in OS.  The C library expects to find it under
        (params (operating-system-boot-parameters os system root-device))
        (entry -> (boot-parameters->menu-entry params))
        (bootloader-conf -> (operating-system-bootloader os)))
-    ((bootloader-configuration-file-generator
-      (bootloader-configuration-bootloader bootloader-conf))
-     bootloader-conf (list entry) #:old-entries old-entries)))
+    (define generate-config-file
+      (bootloader-configuration-file-generator
+       (bootloader-configuration-bootloader bootloader-conf)))
+
+    ;; TODO: Remove the 'lower-object' call to make it non-monadic.
+    (lower-object (generate-config-file bootloader-conf (list entry)
+                                        #:old-entries old-entries))))
 
 (define (operating-system-boot-parameters os system.drv root-device)
   "Return a monadic <boot-parameters> record that describes the boot parameters

@@ -20,26 +20,18 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu bootloader grub)
-  #:use-module (guix store)
-  #:use-module (guix packages)
-  #:use-module (guix derivations)
   #:use-module (guix records)
-  #:use-module (guix monads)
+  #:use-module ((guix utils) #:select (%current-system))
   #:use-module (guix gexp)
-  #:use-module (guix download)
   #:use-module (gnu artwork)
-  #:use-module (gnu system)
   #:use-module (gnu bootloader)
   #:use-module (gnu system uuid)
   #:use-module (gnu system file-systems)
   #:autoload   (gnu packages bootloaders) (grub)
-  #:autoload   (gnu packages compression) (gzip)
   #:autoload   (gnu packages gtk) (guile-cairo guile-rsvg)
-  #:autoload   (gnu packages guile) (guile-2.2)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
-  #:use-module (rnrs bytevectors)
   #:export (grub-image
             grub-image?
             grub-image-aspect-ratio
@@ -121,14 +113,14 @@ otherwise."
 
 (define* (svg->png svg #:key width height)
   "Build a PNG of HEIGHT x WIDTH from SVG."
-  (gexp->derivation "grub-image.png"
-                    (with-imported-modules '((gnu build svg))
-                      (with-extensions (list guile-rsvg guile-cairo)
-                        #~(begin
-                            (use-modules (gnu build svg))
-                            (svg->png #+svg #$output
-                                      #:width #$width
-                                      #:height #$height))))))
+  (computed-file "grub-image.png"
+                 (with-imported-modules '((gnu build svg))
+                   (with-extensions (list guile-rsvg guile-cairo)
+                     #~(begin
+                         (use-modules (gnu build svg))
+                         (svg->png #+svg #$output
+                                   #:width #$width
+                                   #:height #$height))))))
 
 (define* (grub-background-image config #:key (width 1024) (height 768))
   "Return the GRUB background image defined in CONFIG with a ratio of
@@ -138,15 +130,13 @@ WIDTH/HEIGHT, or #f if none was found."
                         (= (grub-image-aspect-ratio image) ratio))
                       (grub-theme-images
                        (bootloader-theme config)))))
-    (if image
-        (svg->png (grub-image-file image)
-                  #:width width #:height height)
-        (with-monad %store-monad
-          (return #f)))))
+    (and image
+         (svg->png (grub-image-file image)
+                   #:width width #:height height))))
 
 (define* (eye-candy config store-device store-mount-point
                     #:key system port)
-  "Return in %STORE-MONAD a gexp that writes to PORT (a port-valued gexp) the
+  "Return a gexp that writes to PORT (a port-valued gexp) the
 'grub.cfg' part concerned with graphics mode, background images, colors, and
 all that.  STORE-DEVICE designates the device holding the store, and
 STORE-MOUNT-POINT is its mount point; these are used to determine where the
@@ -194,9 +184,11 @@ fi~%" #$font-file)
     (strip-mount-point store-mount-point
                        (file-append grub "/share/grub/unicode.pf2")))
 
-  (mlet* %store-monad ((image (grub-background-image config)))
-    (return (and image
-                 #~(format #$port "
+  (define image
+    (grub-background-image config))
+
+  (and image
+       #~(format #$port "
 function setup_gfxterm {~a}
 
 # Set 'root' to the partition that contains /gnu/store.
@@ -213,14 +205,14 @@ else
   set menu_color_normal=cyan/blue
   set menu_color_highlight=white/blue
 fi~%"
-                           #$setup-gfxterm-body
-                           #$(grub-root-search store-device font-file)
-                           #$(setup-gfxterm config font-file)
-                           #$(grub-setup-io config)
+                 #$setup-gfxterm-body
+                 #$(grub-root-search store-device font-file)
+                 #$(setup-gfxterm config font-file)
+                 #$(grub-setup-io config)
 
-                           #$(strip-mount-point store-mount-point image)
-                           #$(theme-colors grub-theme-color-normal)
-                           #$(theme-colors grub-theme-color-highlight))))))
+                 #$(strip-mount-point store-mount-point image)
+                 #$(theme-colors grub-theme-color-normal)
+                 #$(theme-colors grub-theme-color-highlight))))
 
 
 ;;;
@@ -331,36 +323,36 @@ entries corresponding to old generations of the system."
                   #$(grub-root-search device kernel)
                   #$kernel (string-join (list #$@arguments))
                   #$initrd))))
-  (mlet %store-monad ((sugar (eye-candy config
-                                        (menu-entry-device
-                                         (first all-entries))
-                                        (menu-entry-device-mount-point
-                                         (first all-entries))
-                                        #:system system
-                                        #:port #~port)))
-    (define builder
-      #~(call-with-output-file #$output
-          (lambda (port)
-            (format port
-                    "# This file was generated from your GuixSD configuration.  Any changes
+  (define sugar
+    (eye-candy config
+               (menu-entry-device (first all-entries))
+               (menu-entry-device-mount-point (first all-entries))
+               #:system system
+               #:port #~port))
+
+  (define builder
+    #~(call-with-output-file #$output
+        (lambda (port)
+          (format port
+                  "# This file was generated from your GuixSD configuration.  Any changes
 # will be lost upon reconfiguration.
 ")
-            #$sugar
-            (format port "
+          #$sugar
+          (format port "
 set default=~a
 set timeout=~a~%"
-                    #$(bootloader-configuration-default-entry config)
-                    #$(bootloader-configuration-timeout config))
-            #$@(map menu-entry->gexp all-entries)
+                  #$(bootloader-configuration-default-entry config)
+                  #$(bootloader-configuration-timeout config))
+          #$@(map menu-entry->gexp all-entries)
 
-            #$@(if (pair? old-entries)
-                   #~((format port "
+          #$@(if (pair? old-entries)
+                 #~((format port "
 submenu \"GNU system, old configurations...\" {~%")
-                      #$@(map menu-entry->gexp old-entries)
-                      (format port "}~%"))
-                   #~()))))
+                    #$@(map menu-entry->gexp old-entries)
+                    (format port "}~%"))
+                 #~()))))
 
-    (gexp->derivation "grub.cfg" builder)))
+  (computed-file "grub.cfg" builder))
 
 
 
