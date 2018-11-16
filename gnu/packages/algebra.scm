@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
@@ -209,6 +209,36 @@ PARI is also available as a C library to allow for faster computations.
 GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
    (license license:gpl2)
    (home-page "https://pari.math.u-bordeaux.fr/")))
+
+(define-public cmh
+  (package
+   (name "cmh")
+   (version "1.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://gforge.inria.fr/frs/download.php/33497/cmh-"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "1a28xr9bs0igms0ik99x0w8lnb0jyfcmvyi26pbyh9ggcdivd33p"))))
+   (build-system gnu-build-system)
+   (inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("mpc" ,mpc)
+       ("mpfrcx" ,mpfrcx)
+       ("fplll" ,fplll)
+       ("pari-gp"  ,pari-gp)))
+   (synopsis "Igusa class polynomial computations")
+   (description
+    "The CMH software computes Igusa (genus 2) class polynomials, which
+parameterize the CM points in the moduli space of 2-dimensional abelian
+varieties, i.e. Jacobians of hyperelliptic curves.
+It can also be used to compute theta constants at arbitrary
+precision.")
+   (license license:gpl3+)
+   (home-page "http://cmh.gforge.inria.fr/")))
 
 (define-public giac-xcas
   (package
