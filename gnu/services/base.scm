@@ -2138,7 +2138,7 @@ This service is not part of @var{%base-services}."
 
        (shepherd-service
         (documentation "kmscon virtual terminal")
-        (requirement '(user-processes udev dbus-system virtual-terminal))
+        (requirement '(user-processes udev dbus-system))
         (provision (list (symbol-append 'term- (string->symbol virtual-terminal))))
         (start #~(make-forkexec-constructor #$kmscon-command))
         (stop #~(make-kill-destructor)))))))
