@@ -49,6 +49,7 @@
             %bootstrap-gcc
             %bootstrap-glibc
             %bootstrap-inputs
+            %bootstrap-mescc-tools
             %bootstrap-mes
             %mescc-tools-seed
             %srfi-43))
@@ -611,6 +612,54 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
     (synopsis "Bootstrap binaries of the GNU Compiler Collection")
+    (description synopsis)
+    (home-page #f)
+    (license gpl3+)))
+
+(define %bootstrap-mescc-tools
+  ;; The initial MesCC tools.  Uses binaries from a tarball typically built by
+  ;; %MESCC-TOOLS-BOOTSTRAP-TARBALL.
+  (package
+    (name "bootstrap-mescc-tools")
+    (version "0.5.2")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 popen))
+         (let ((out     (assoc-ref %outputs "out"))
+               (tar     (assoc-ref %build-inputs "tar"))
+               (xz      (assoc-ref %build-inputs "xz"))
+               (tarball (assoc-ref %build-inputs "tarball")))
+
+           (mkdir out)
+           (copy-file tarball "binaries.tar.xz")
+           (invoke xz "-d" "binaries.tar.xz")
+           (let ((builddir (getcwd))
+                 (bindir   (string-append out "/bin")))
+             (with-directory-excursion out
+               (invoke tar "xvf"
+                       (string-append builddir "/binaries.tar"))))))))
+    (inputs
+     `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
+       ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
+       ("tarball" ,(bootstrap-origin
+                    (origin
+                      (method url-fetch)
+                      (uri (string-append
+                            "http://lilypond.org/janneke/mes/"
+                            (match (%current-system)
+                              ((or "i686-linux" "x86_64-linux")
+                               "mescc-tools-static-0.5.2-0.bb062b0-i686-linux.tar.xz"))))
+                      (sha256
+                       (match (%current-system)
+                         ((or "i686-linux" "x86_64-linux")
+                          (base32 "0dkwl8mjmmizx7gba9spiq9sp8c5fqv7370qakggy5nxpply59jh")))))))))
+    (synopsis "Bootstrap binaries of MesCC Tools")
     (description synopsis)
     (home-page #f)
     (license gpl3+)))
