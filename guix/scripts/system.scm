@@ -851,11 +851,6 @@ static checks."
                                                 #:mappings mappings))
        (bootloader -> (bootloader-configuration-bootloader
                        (operating-system-bootloader os)))
-       (bootloader-package
-        (let ((package (bootloader-package bootloader)))
-          (if package
-              (package->derivation package)
-              (return #f))))
        (bootcfg  (if (eq? 'container action)
                      (return #f)
                      (lower-object
@@ -870,17 +865,15 @@ static checks."
         (let ((installer (bootloader-installer bootloader))
               (target    (or target "/")))
           (bootloader-installer-derivation installer
-                                           bootloader-package
+                                           (bootloader-package bootloader)
                                            bootloader-target target)))
 
        ;; For 'init' and 'reconfigure', always build BOOTCFG, even if
        ;; --no-bootloader is passed, because we then use it as a GC root.
        ;; See <http://bugs.gnu.org/21068>.
        (drvs   -> (if (memq action '(init reconfigure))
-                      (if (and install-bootloader? bootloader-package)
-                          (list sys bootcfg
-				bootloader-package
-				bootloader-installer)
+                      (if install-bootloader?
+                          (list sys bootcfg bootloader-installer)
                           (list sys bootcfg))
                       (list sys)))
        (%         (if derivations-only?
