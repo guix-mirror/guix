@@ -252,7 +252,7 @@ made available under the /xchg CIFS share."
                         file-system-uuid
                         (system (%current-system))
                         (qemu qemu-minimal)
-                        os-drv
+                        os
                         bootcfg-drv
                         bootloader
                         register-closures?
@@ -300,7 +300,7 @@ INPUTS is a list of inputs (as for packages)."
              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
              (make-iso9660-image #$(bootloader-package bootloader)
                                  #$bootcfg-drv
-                                 #$os-drv
+                                 #$os
                                  "/xchg/guixsd.iso"
                                  #:register-closures? #$register-closures?
                                  #:closures graphs
@@ -329,7 +329,7 @@ INPUTS is a list of inputs (as for packages)."
                      (file-system-type "ext4")
                      file-system-label
                      file-system-uuid
-                     os-drv
+                     os
                      bootcfg-drv
                      bootloader
                      (register-closures? #t)
@@ -395,7 +395,7 @@ the image."
                                  #:closures graphs
                                  #:copy-closures? #$copy-inputs?
                                  #:register-closures? #$register-closures?
-                                 #:system-directory #$os-drv
+                                 #:system-directory #$os
 
                                  ;; Disable deduplication to speed things up,
                                  ;; and because it doesn't help much for a
@@ -625,56 +625,54 @@ to USB sticks meant to be read-only."
               (string=? (file-system-mount-point fs) "/"))
             (operating-system-file-systems os)))
 
-  (let ((os (operating-system (inherit os)
-              ;; Since this is meant to be used on real hardware, don't
-              ;; install QEMU networking or anything like that.  Assume USB
-              ;; mass storage devices (usb-storage.ko) are available.
-              (initrd (lambda (file-systems . rest)
-                        (apply (operating-system-initrd os)
-                               file-systems
-                               #:volatile-root? #t
-                               rest)))
+  (let* ((os (operating-system (inherit os)
+               ;; Since this is meant to be used on real hardware, don't
+               ;; install QEMU networking or anything like that.  Assume USB
+               ;; mass storage devices (usb-storage.ko) are available.
+               (initrd (lambda (file-systems . rest)
+                         (apply (operating-system-initrd os)
+                                file-systems
+                                #:volatile-root? #t
+                                rest)))
 
-              (bootloader (if (string=? "iso9660" file-system-type)
-                              (bootloader-configuration
-                                (inherit (operating-system-bootloader os))
-                                (bootloader grub-mkrescue-bootloader))
-                              (operating-system-bootloader os)))
+               (bootloader (if (string=? "iso9660" file-system-type)
+                               (bootloader-configuration
+                                 (inherit (operating-system-bootloader os))
+                                 (bootloader grub-mkrescue-bootloader))
+                               (operating-system-bootloader os)))
 
-              ;; Force our own root file system.
-              (file-systems (cons (file-system
-                                    (mount-point "/")
-                                    (device root-uuid)
-                                    (type file-system-type))
-                                  file-systems-to-keep)))))
-
-    (mlet* %store-monad ((os-drv     (operating-system-derivation os))
-                         (bootcfg -> (operating-system-bootcfg os)))
-      (if (string=? "iso9660" file-system-type)
-          (iso9660-image #:name name
-                         #:file-system-label root-label
-                         #:file-system-uuid root-uuid
-                         #:os-drv os-drv
-                         #:register-closures? #t
-                         #:bootcfg-drv bootcfg
-                         #:bootloader (bootloader-configuration-bootloader
-                                        (operating-system-bootloader os))
-                         #:inputs `(("system" ,os-drv)
-                                    ("bootcfg" ,bootcfg)))
-          (qemu-image #:name name
-                      #:os-drv os-drv
-                      #:bootcfg-drv bootcfg
-                      #:bootloader (bootloader-configuration-bootloader
-                                    (operating-system-bootloader os))
-                      #:disk-image-size disk-image-size
-                      #:disk-image-format "raw"
-                      #:file-system-type file-system-type
-                      #:file-system-label root-label
-                      #:file-system-uuid root-uuid
-                      #:copy-inputs? #t
-                      #:register-closures? #t
-                      #:inputs `(("system" ,os-drv)
-                                 ("bootcfg" ,bootcfg)))))))
+               ;; Force our own root file system.
+               (file-systems (cons (file-system
+                                     (mount-point "/")
+                                     (device root-uuid)
+                                     (type file-system-type))
+                                   file-systems-to-keep))))
+        (bootcfg (operating-system-bootcfg os)))
+    (if (string=? "iso9660" file-system-type)
+        (iso9660-image #:name name
+                       #:file-system-label root-label
+                       #:file-system-uuid root-uuid
+                       #:os os
+                       #:register-closures? #t
+                       #:bootcfg-drv bootcfg
+                       #:bootloader (bootloader-configuration-bootloader
+                                     (operating-system-bootloader os))
+                       #:inputs `(("system" ,os)
+                                  ("bootcfg" ,bootcfg)))
+        (qemu-image #:name name
+                    #:os os
+                    #:bootcfg-drv bootcfg
+                    #:bootloader (bootloader-configuration-bootloader
+                                  (operating-system-bootloader os))
+                    #:disk-image-size disk-image-size
+                    #:disk-image-format "raw"
+                    #:file-system-type file-system-type
+                    #:file-system-label root-label
+                    #:file-system-uuid root-uuid
+                    #:copy-inputs? #t
+                    #:register-closures? #t
+                    #:inputs `(("system" ,os)
+                               ("bootcfg" ,bootcfg))))))
 
 (define* (system-qemu-image os
                             #:key
@@ -700,30 +698,28 @@ of the GNU system as described by OS."
                                'dce)))
 
 
-  (let ((os (operating-system (inherit os)
-              ;; Assume we have an initrd with the whole QEMU shebang.
+  (let* ((os (operating-system (inherit os)
+               ;; Assume we have an initrd with the whole QEMU shebang.
 
-              ;; Force our own root file system.  Refer to it by UUID so that
-              ;; it works regardless of how the image is used ("qemu -hda",
-              ;; Xen, etc.).
-              (file-systems (cons (file-system
-                                    (mount-point "/")
-                                    (device root-uuid)
-                                    (type file-system-type))
-                                  file-systems-to-keep)))))
-    (mlet* %store-monad
-        ((os-drv      (operating-system-derivation os))
-         (bootcfg ->  (operating-system-bootcfg os)))
-      (qemu-image  #:os-drv os-drv
-                   #:bootcfg-drv bootcfg
-                   #:bootloader (bootloader-configuration-bootloader
-                                 (operating-system-bootloader os))
-                   #:disk-image-size disk-image-size
-                   #:file-system-type file-system-type
-                   #:file-system-uuid root-uuid
-                   #:inputs `(("system" ,os-drv)
-                              ("bootcfg" ,bootcfg))
-                   #:copy-inputs? #t))))
+               ;; Force our own root file system.  Refer to it by UUID so that
+               ;; it works regardless of how the image is used ("qemu -hda",
+               ;; Xen, etc.).
+               (file-systems (cons (file-system
+                                     (mount-point "/")
+                                     (device root-uuid)
+                                     (type file-system-type))
+                                   file-systems-to-keep))))
+         (bootcfg (operating-system-bootcfg os)))
+    (qemu-image  #:os os
+                 #:bootcfg-drv bootcfg
+                 #:bootloader (bootloader-configuration-bootloader
+                               (operating-system-bootloader os))
+                 #:disk-image-size disk-image-size
+                 #:file-system-type file-system-type
+                 #:file-system-uuid root-uuid
+                 #:inputs `(("system" ,os)
+                            ("bootcfg" ,bootcfg))
+                 #:copy-inputs? #t)))
 
 
 ;;;
@@ -827,25 +823,26 @@ bootloader refers to: OS kernel, initrd, bootloader data, etc."
     ;; Use a fixed UUID to improve determinism.
     (operating-system-uuid os 'dce))
 
-  (mlet* %store-monad ((os-drv     (operating-system-derivation os))
-                       (bootcfg -> (operating-system-bootcfg os)))
-    ;; XXX: When FULL-BOOT? is true, we end up creating an image that contains
-    ;; BOOTCFG and all its dependencies, including the output of OS-DRV.
-    ;; This is more than needed (we only need the kernel, initrd, GRUB for its
-    ;; font, and the background image), but it's hard to filter that.
-    (qemu-image #:os-drv os-drv
-                #:bootcfg-drv bootcfg
-                #:bootloader (bootloader-configuration-bootloader
-                              (operating-system-bootloader os))
-                #:disk-image-size disk-image-size
-                #:file-system-uuid root-uuid
-                #:inputs (if full-boot?
-                             `(("bootcfg" ,bootcfg))
-                             '())
+  (define bootcfg
+    (operating-system-bootcfg os))
 
-                ;; XXX: Passing #t here is too slow, so let it off by default.
-                #:register-closures? #f
-                #:copy-inputs? full-boot?)))
+  ;; XXX: When FULL-BOOT? is true, we end up creating an image that contains
+  ;; BOOTCFG and all its dependencies, including the output of OS.
+  ;; This is more than needed (we only need the kernel, initrd, GRUB for its
+  ;; font, and the background image), but it's hard to filter that.
+  (qemu-image #:os os
+              #:bootcfg-drv bootcfg
+              #:bootloader (bootloader-configuration-bootloader
+                            (operating-system-bootloader os))
+              #:disk-image-size disk-image-size
+              #:file-system-uuid root-uuid
+              #:inputs (if full-boot?
+                           `(("bootcfg" ,bootcfg))
+                           '())
+
+              ;; XXX: Passing #t here is too slow, so let it off by default.
+              #:register-closures? #f
+              #:copy-inputs? full-boot?))
 
 (define* (common-qemu-options image shared-fs)
   "Return the a string-value gexp with the common QEMU options to boot IMAGE,
