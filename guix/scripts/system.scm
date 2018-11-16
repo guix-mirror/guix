@@ -833,6 +833,25 @@ static checks."
   (define println
     (cut format #t "~a~%" <>))
 
+  (define menu-entries
+    (if (eq? 'init action)
+        '()
+        (map boot-parameters->menu-entry (profile-boot-parameters))))
+
+  (define bootloader
+    (bootloader-configuration-bootloader (operating-system-bootloader os)))
+
+  (define bootcfg
+    (and (not (eq? 'container action))
+         (operating-system-bootcfg os menu-entries)))
+
+  (define bootloader-script
+    (let ((installer (bootloader-installer bootloader))
+          (target    (or target "/")))
+      (bootloader-installer-script installer
+                                   (bootloader-package bootloader)
+                                   bootloader-target target)))
+
   (when (eq? action 'reconfigure)
     (maybe-suggest-running-guix-pull))
 
@@ -852,23 +871,6 @@ static checks."
                                                 #:image-size image-size
                                                 #:full-boot? full-boot?
                                                 #:mappings mappings))
-       (bootloader -> (bootloader-configuration-bootloader
-                       (operating-system-bootloader os)))
-       (bootcfg -> (and (not (eq? 'container action))
-                        (operating-system-bootcfg
-                         os
-                         (if (eq? 'init action)
-                             '()
-                             (map boot-parameters->menu-entry
-                                  (profile-boot-parameters))))))
-       (bootcfg-file -> (bootloader-configuration-file bootloader))
-       (bootloader-installer
-        ->
-        (let ((installer (bootloader-installer bootloader))
-              (target    (or target "/")))
-          (bootloader-installer-script installer
-                                       (bootloader-package bootloader)
-                                       bootloader-target target)))
 
        ;; For 'init' and 'reconfigure', always build BOOTCFG, even if
        ;; --no-bootloader is passed, because we then use it as a GC root.
@@ -876,7 +878,7 @@ static checks."
        (drvs      (mapm %store-monad lower-object
                         (if (memq action '(init reconfigure))
                             (if install-bootloader?
-                                (list sys bootcfg bootloader-installer)
+                                (list sys bootcfg bootloader-script)
                                 (list sys bootcfg))
                             (list sys))))
        (%         (if derivations-only?
@@ -887,7 +889,7 @@ static checks."
 
     (if (or dry-run? derivations-only?)
         (return #f)
-        (begin
+        (let ((bootcfg-file (bootloader-configuration-file bootloader)))
           (for-each (compose println derivation->output-path)
                     drvs)
 
@@ -896,7 +898,7 @@ static checks."
              (mbegin %store-monad
                (switch-to-system os)
                (mwhen install-bootloader?
-                 (install-bootloader bootloader-installer
+                 (install-bootloader bootloader-script
                                      #:bootcfg bootcfg
                                      #:bootcfg-file bootcfg-file
                                      #:target "/"))))
