@@ -106,79 +106,6 @@
       (native-inputs '())
       (propagated-inputs '()))))
 
-(define mescc-tools-boot
-  (package-with-bootstrap-guile
-   (package
-     (inherit mescc-tools)
-     (name "mescc-tools-boot")
-     (version "0.5.2")
-     (source (origin
-               (method url-fetch)
-               (uri (string-append
-                     "http://git.savannah.nongnu.org/cgit/mescc-tools.git/snapshot/"
-                     name "-Release_" version
-                     ".tar.gz"))
-               (patches (search-patches "mescc-tools-boot.patch"))
-               (file-name (string-append "mescc-tools" "-" version ".tar.gz"))
-               (sha256
-                (base32
-                 "01x7bhmgwyf6mc2g1hcvibhps98nllacqm4f0j5l51b1mbi18pc2"))))
-     (inputs '())
-     (propagated-inputs '())
-     (native-inputs
-      `(("mescc-tools-seed" ,%mescc-tools-seed)
-        ("mes-source" ,(package-source mes-boot0))
-
-        ("bootstrap-mes" ,%bootstrap-mes)
-        ("coreutils" ,%bootstrap-coreutils&co)))
-     (build-system gnu-build-system)
-     (arguments
-      `(#:implicit-inputs? #f
-        #:guile ,%bootstrap-guile
-        #:strip-binaries? #f   ; binutil's strip b0rkes MesCC/M1/hex2 binaries
-        #:phases
-        (modify-phases %standard-phases
-          (add-after 'unpack 'unpack-seeds
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
-                     (mescc-tools-seed (assoc-ref %build-inputs "mescc-tools-seed"))
-                     (mes-source (assoc-ref %build-inputs "mes-source"))
-                     (out (assoc-ref %outputs "out")))
-                (with-directory-excursion ".."
-                  (and
-                   (mkdir-p "mescc-tools-seed")
-                   (invoke "tar" "--strip=1" "-C" "mescc-tools-seed"
-                           "-xvf" mescc-tools-seed)
-                   (mkdir-p "mes-source")
-                   (invoke "tar" "--strip=1" "-C" "mes-source"
-                           "-xvf" mes-source)
-                  #t)))))
-          (replace 'configure
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((coreutils (assoc-ref %build-inputs "coreutils"))
-                    (bootstrap-mes (assoc-ref %build-inputs "bootstrap-mes"))
-                    (out (assoc-ref %outputs "out")))
-                (setenv "PATH" (string-append coreutils "/bin"
-                                              ":" "../mescc-tools-seed"))
-                (format (current-error-port) "PATH=~s\n" (getenv "PATH"))
-                (setenv "PREFIX" out)
-                (setenv "MES_PREFIX" "../mes-source")
-                (setenv "MESCC_TOOLS_SEED" "../mescc-tools-seed")
-                (setenv "MES_SEED" (string-append bootstrap-mes "/lib"))
-                #t)))
-          (replace 'build
-            (lambda _
-              (invoke "sh" "build.sh")))
-          (replace 'check
-            (lambda _
-              ;; bootstrap build.sh lacks exec_enable, get_machine, and
-              ;; kaem_machine
-              ;; (invoke "sh" "check.sh")
-              #t))
-          (replace 'install
-            (lambda _
-              (invoke "sh" "install.sh")))))))))
-
 (define nyacc-boot
   (let ((version "0.86.0")
         (revision "0")
@@ -211,7 +138,7 @@
      (inputs '())
      (propagated-inputs '())
      (native-inputs
-      `(("mescc-tools" ,mescc-tools-boot)
+      `(("mescc-tools" ,%bootstrap-mescc-tools)
         ("nyacc-source" ,(package-source nyacc-boot))
 
         ("coreutils" , %bootstrap-coreutils&co)
@@ -332,7 +259,7 @@
        (propagated-inputs '())
        (native-inputs
         `(("mes" ,mes-boot)
-          ("mescc-tools" ,mescc-tools-boot)
+          ("mescc-tools" ,%bootstrap-mescc-tools)
           ("nyacc-source" ,(package-source nyacc-boot))
 
           ("coreutils" , %bootstrap-coreutils&co)
@@ -393,7 +320,6 @@
                   (setenv "OBJDUMP" "true")
                   (setenv "ONE_SOURCE" "1")
                   (setenv "PREPROCESS" "1")
-                  (setenv "MES_DEBUG" "1")
                   (setenv "MES_ARENA" "70000000")
                   (setenv "MES_MAX_ARENA" "70000000")
 

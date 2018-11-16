@@ -51,7 +51,6 @@
             %bootstrap-inputs
             %bootstrap-mescc-tools
             %bootstrap-mes
-            %mescc-tools-seed
             %srfi-43))
 
 ;;; Commentary:
@@ -713,17 +712,6 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
     (home-page #f)
     (license gpl3+)))
 
-(define %mescc-tools-seed ; todo: add tarballs to alpha.gnu.org/pub/mes/bootstrap/
-  (let ((commit "dc4e20e74924a5c80a2b7a77b4d7b927234fa71c"))
-    (origin
-      (method url-fetch)
-      (uri (string-append "https://gitlab.com/janneke/mescc-tools-seed"
-                          "/-/archive/" commit
-                          "/mescc-tools-seed-" commit ".tar.gz"))
-      (sha256
-       (base32
-        "1lj7df73vxanmffmiwkhcn83r7yd9n8568nkki06bqq5zg526nyz")))))
-
 (define %srfi-43
   (origin
     (method url-fetch)
@@ -739,7 +727,7 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
   `(,@(match (%current-system)
         ((or "i686-linux" "x86_64-linux")
          `(("linux-libre-headers" ,%bootstrap-linux-libre-headers)
-           ("mescc-tools-seed" ,%mescc-tools-seed)
+           ("bootstrap-mescc-tools" ,%bootstrap-mescc-tools)
            ("mes" ,%bootstrap-mes)
            ("srfi-43" ,%srfi-43 )))
         (_
