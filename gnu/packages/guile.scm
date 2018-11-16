@@ -2320,8 +2320,8 @@ Guile.")
 
 ;; There has not been any release yet.
 (define-public guile-newt
-  (let ((commit "a73889c57b0572347f7641facdb1bcf08922feff")
-        (revision "2"))
+  (let ((commit "f19b02d12451cf9f0e8c05e910499dd25f3810e6")
+        (revision "3"))
     (package
       (name "guile-newt")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2333,7 +2333,7 @@ Guile.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "0k37vir22r2sq121lyy74grfai4643s7kr55z01k4j0bh27i06c3"))))
+                  "1484ham2abzm8zjfzzmfl13ib3l0vfqd1d0ixkgpvp92yi03sacs"))))
       (build-system gnu-build-system)
       (arguments
        '(#:make-flags
