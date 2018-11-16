@@ -48,6 +48,7 @@
             %glibc-bootstrap-tarball
             %gcc-bootstrap-tarball
             %guile-bootstrap-tarball
+            %mescc-tools-bootstrap-tarball
             %mes-bootstrap-tarball
             %bootstrap-tarballs
 
@@ -535,6 +536,16 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            #t))))
     (inputs `(("gcc" ,%gcc-static)))))
 
+(define %mescc-tools-static
+  ;; A statically linked MesCC Tools for bootstrap.
+  (package
+    (inherit mescc-tools)
+    (name "mescc-tools-static")
+    (arguments
+     (substitute-keyword-arguments (package-arguments mescc-tools)
+       ((#:make-flags flags)
+        `(cons "CC=gcc -static" ,flags))))))
+
 (define %mes-stripped
   ;; The subset of Mes files needed for bootstrap.
   (package
@@ -730,6 +741,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define %guile-bootstrap-tarball
   ;; A tarball with the statically-linked, relocatable Guile.
   (tarball-package %guile-static-stripped))
+
+(define %mescc-tools-bootstrap-tarball
+  ;; A tarball with MesCC binary seed.
+  (tarball-package %mescc-tools-static))
 
 (define %mes-bootstrap-tarball
   ;; A tarball with Mes ASCII Seed and binary Mes C Library.
