@@ -119,6 +119,7 @@
             boot-parameters->menu-entry
 
             local-host-aliases
+            %root-account
             %setuid-programs
             %base-packages
             %base-firmware))

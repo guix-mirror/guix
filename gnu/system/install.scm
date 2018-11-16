@@ -22,16 +22,23 @@
 
 (define-module (gnu system install)
   #:use-module (gnu)
+  #:use-module (gnu system)
   #:use-module (gnu bootloader u-boot)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module ((guix store) #:select (%store-prefix))
+  #:use-module (gnu installer newt)
+  #:use-module (gnu installer build-installer)
+  #:use-module (gnu services dbus)
+  #:use-module (gnu services networking)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services ssh)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bootloaders)
+  #:use-module (gnu packages fonts)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ssh)
@@ -202,120 +209,114 @@ the user's target storage device rather than on the RAM disk."
                     (persistent? #f)
                     (max-database-size (* 5 (expt 2 20)))))) ;5 MiB
 
+(define (normal-tty tty)
+  (service kmscon-service-type
+           (kmscon-configuration
+            (virtual-terminal tty)
+            (auto-login "root"))))
+
+(define bare-bones-os
+  (load "examples/bare-bones.tmpl"))
+
 (define %installation-services
   ;; List of services of the installation system.
-  (let ((motd (plain-file "motd" "
-\x1b[1;37mWelcome to the installation of the Guix System Distribution!\x1b[0m
+  (list (login-service (login-configuration
+                        ;; The motd is overlapped by the graphical installer,
+                        ;; so make sure it is not printed.
+                        (motd #f)))
 
-\x1b[2mThere is NO WARRANTY, to the extent permitted by law.  In particular, you may
-LOSE ALL YOUR DATA as a side effect of the installation process.  Furthermore,
-it is 'beta' software, so it may contain bugs.
+        ;; This will be the active virtual terminal at boot.  The graphical
+        ;; installer is launched as the 'shell' program of the root
+        ;; user-account.  Thanks to auto-login, it will be started
+        ;; automatically.  Another option would have been to set the graphical
+        ;; installer as a login program.  However, it is preferable to wait
+        ;; for the login phase to be over, so that the environnment variables
+        ;; of /etc/environment like LANG are loaded by PAM.
+        (normal-tty "tty1")
 
-You have been warned.  Thanks for being so brave.\x1b[0m
-")))
-    (define (normal-tty tty)
-      (mingetty-service (mingetty-configuration (tty tty)
-                                                (auto-login "root")
-                                                (login-pause? #t))))
+        ;; Documentation.
+        (service kmscon-service-type
+                 (kmscon-configuration
+                  (virtual-terminal "tty2")
+                  (login-program (log-to-info))
+                  (auto-login "guest")))
 
-    (define bare-bones-os
-      (load "examples/bare-bones.tmpl"))
+        ;; Documentation add-on.
+        %configuration-template-service
 
-    (list (service virtual-terminal-service-type)
+        ;; A bunch of 'root' ttys.
+        (normal-tty "tty3")
+        (normal-tty "tty4")
+        (normal-tty "tty5")
+        (normal-tty "tty6")
 
-          (mingetty-service (mingetty-configuration
-                             (tty "tty1")
-                             (auto-login "root")))
+        ;; The usual services.
+        (syslog-service)
 
-          (login-service (login-configuration
-                          (motd motd)))
+        ;; The build daemon.  Register the hydra.gnu.org key as trusted.
+        ;; This allows the installation process to use substitutes by
+        ;; default.
+        (service guix-service-type
+                 (guix-configuration (authorize-key? #t)))
 
-          ;; Documentation.  The manual is in UTF-8, but
-          ;; 'console-font-service' sets up Unicode support and loads a font
-          ;; with all the useful glyphs like em dash and quotation marks.
-          (mingetty-service (mingetty-configuration
-                             (tty "tty2")
-                             (auto-login "guest")
-                             (login-program (log-to-info))))
+        ;; Start udev so that useful device nodes are available.
+        ;; Use device-mapper rules for cryptsetup & co; enable the CRDA for
+        ;; regulations-compliant WiFi access.
+        (udev-service #:rules (list lvm2 crda))
 
-          ;; Documentation add-on.
-          %configuration-template-service
+        ;; Add the 'cow-store' service, which users have to start manually
+        ;; since it takes the installation directory as an argument.
+        (cow-store-service)
 
-          ;; A bunch of 'root' ttys.
-          (normal-tty "tty3")
-          (normal-tty "tty4")
-          (normal-tty "tty5")
-          (normal-tty "tty6")
+        ;; To facilitate copy/paste.
+        (service gpm-service-type)
 
-          ;; The usual services.
-          (syslog-service)
+        ;; Add an SSH server to facilitate remote installs.
+        (service openssh-service-type
+                 (openssh-configuration
+                  (port-number 22)
+                  (permit-root-login #t)
+                  ;; The root account is passwordless, so make sure
+                  ;; a password is set before allowing logins.
+                  (allow-empty-passwords? #f)
+                  (password-authentication? #t)
 
-          ;; The build daemon.  Register the official server keys as trusted.
-          ;; This allows the installation process to use substitutes by
-          ;; default.
-          (service guix-service-type
-                   (guix-configuration (authorize-key? #t)))
+                  ;; Don't start it upfront.
+                  (%auto-start? #f)))
 
-          ;; Start udev so that useful device nodes are available.
-          ;; Use device-mapper rules for cryptsetup & co; enable the CRDA for
-          ;; regulations-compliant WiFi access.
-          (udev-service #:rules (list lvm2 crda))
+        ;; Since this is running on a USB stick with a overlayfs as the root
+        ;; file system, use an appropriate cache configuration.
+        (nscd-service (nscd-configuration
+                       (caches %nscd-minimal-caches)))
 
-          ;; Add the 'cow-store' service, which users have to start manually
-          ;; since it takes the installation directory as an argument.
-          (cow-store-service)
+        ;; Having /bin/sh is a good idea.  In particular it allows Tramp
+        ;; connections to this system to work.
+        (service special-files-service-type
+                 `(("/bin/sh" ,(file-append (canonical-package bash)
+                                            "/bin/sh"))))
 
-          ;; Install Unicode support and a suitable font.  Use a font that
-          ;; doesn't have more than 256 glyphs so that we can use colors with
-          ;; varying brightness levels (see note in setfont(8)).
-          (service console-font-service-type
-                   (map (lambda (tty)
-                          (cons tty "lat9u-16"))
-                        '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
+        ;; Loopback device, needed by OpenSSH notably.
+        (service static-networking-service-type
+                 (list (static-networking (interface "lo")
+                                          (ip "127.0.0.1")
+                                          (requirement '())
+                                          (provision '(loopback)))))
 
-          ;; To facilitate copy/paste.
-          (service gpm-service-type)
+        (service wpa-supplicant-service-type)
+        (dbus-service)
+        (service connman-service-type
+                 (connman-configuration
+                  (disable-vpn? #t)))
 
-          ;; Add an SSH server to facilitate remote installs.
-          (service openssh-service-type
-                   (openssh-configuration
-                    (port-number 22)
-                    (permit-root-login #t)
-                    ;; The root account is passwordless, so make sure
-                    ;; a password is set before allowing logins.
-                    (allow-empty-passwords? #f)
-                    (password-authentication? #t)
-
-                    ;; Don't start it upfront.
-                    (%auto-start? #f)))
-
-          ;; Since this is running on a USB stick with a overlayfs as the root
-          ;; file system, use an appropriate cache configuration.
-          (nscd-service (nscd-configuration
-                         (caches %nscd-minimal-caches)))
-
-          ;; Having /bin/sh is a good idea.  In particular it allows Tramp
-          ;; connections to this system to work.
-          (service special-files-service-type
-                   `(("/bin/sh" ,(file-append (canonical-package bash)
-                                              "/bin/sh"))))
-
-          ;; Loopback device, needed by OpenSSH notably.
-          (service static-networking-service-type
-                   (list (static-networking (interface "lo")
-                                            (ip "127.0.0.1")
-                                            (requirement '())
-                                            (provision '(loopback)))))
-
-          ;; Keep a reference to BARE-BONES-OS to make sure it can be
-          ;; installed without downloading/building anything.  Also keep the
-          ;; things needed by 'profile-derivation' to minimize the amount of
-          ;; download.
-          (service gc-root-service-type
-                   (list bare-bones-os
-                         glibc-utf8-locales
-                         texinfo
-                         (canonical-package guile-2.2))))))
+        ;; Keep a reference to BARE-BONES-OS to make sure it can be
+        ;; installed without downloading/building anything.  Also keep the
+        ;; things needed by 'profile-derivation' to minimize the amount of
+        ;; download.
+        (service gc-root-service-type
+                 (list bare-bones-os
+                       glibc-utf8-locales
+                       texinfo
+                       (canonical-package guile-2.2)))))
 
 (define %issue
   ;; Greeting.
@@ -360,13 +361,18 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                   %shared-memory-file-system
                   %immutable-store)))
 
-    (users (list (user-account
-                  (name "guest")
-                  (group "users")
-                  (supplementary-groups '("wheel")) ; allow use of sudo
-                  (password "")
-                  (comment "Guest of GNU")
-                  (home-directory "/home/guest"))))
+    (users (list
+            (user-account
+             (inherit %root-account)
+             ;; Launch the graphical installer.
+             (shell (installer-program newt-installer)))
+            (user-account
+             (name "guest")
+             (group "users")
+             (supplementary-groups '("wheel")) ; allow use of sudo
+             (password "")
+             (comment "Guest of GNU")
+             (home-directory "/home/guest"))))
 
     (issue %issue)
     (services %installation-services)
@@ -381,6 +387,8 @@ You have been warned.  Thanks for being so brave.\x1b[0m
 
     (packages (cons* (canonical-package glibc) ;for 'tzselect' & co.
                      parted gptfdisk ddrescue
+                     fontconfig
+                     font-dejavu font-gnu-unifont
                      grub                  ;mostly so xrefs to its manual work
                      cryptsetup
                      mdadm

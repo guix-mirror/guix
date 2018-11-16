@@ -135,6 +135,12 @@ if test "x$have_guile_gcrypt" != "xyes"; then
   AC_MSG_ERROR([Guile-Gcrypt could not be found; please install it.])
 fi
 
+dnl Guile-newt is used by the graphical installer.
+GUILE_MODULE_AVAILABLE([have_guile_newt], [(newt)])
+if test "x$have_guile_newt" != "xyes"; then
+  AC_MSG_ERROR([Guile-newt could not be found; please install it.])
+fi
+
 dnl Make sure we have a full-fledged Guile.
 GUIX_ASSERT_GUILE_FEATURES([regex posix socket net-db threads])
 

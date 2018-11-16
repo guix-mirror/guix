@@ -543,6 +543,28 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/marionette.scm			\
   %D%/build/vm.scm				\
 						\
+  %D%/installer.scm      			\
+  %D%/installer/build-installer.scm		\
+  %D%/installer/connman.scm			\
+  %D%/installer/keymap.scm			\
+  %D%/installer/locale.scm			\
+  %D%/installer/newt.scm			\
+  %D%/installer/steps.scm			\
+  %D%/installer/timezone.scm			\
+  %D%/installer/utils.scm			\
+						\
+  %D%/installer/newt/ethernet.scm		\
+  %D%/installer/newt/hostname.scm		\
+  %D%/installer/newt/keymap.scm			\
+  %D%/installer/newt/locale.scm			\
+  %D%/installer/newt/menu.scm			\
+  %D%/installer/newt/network.scm		\
+  %D%/installer/newt/page.scm			\
+  %D%/installer/newt/timezone.scm		\
+  %D%/installer/newt/utils.scm			\
+  %D%/installer/newt/welcome.scm		\
+  %D%/installer/newt/wifi.scm			\
+						\
   %D%/tests.scm					\
   %D%/tests/audio.scm				\
   %D%/tests/base.scm				\
