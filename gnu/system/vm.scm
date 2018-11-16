@@ -648,8 +648,8 @@ to USB sticks meant to be read-only."
                                     (type file-system-type))
                                   file-systems-to-keep)))))
 
-    (mlet* %store-monad ((os-drv   (operating-system-derivation os))
-                         (bootcfg  (operating-system-bootcfg os)))
+    (mlet* %store-monad ((os-drv     (operating-system-derivation os))
+                         (bootcfg -> (operating-system-bootcfg os)))
       (if (string=? "iso9660" file-system-type)
           (iso9660-image #:name name
                          #:file-system-label root-label
@@ -713,7 +713,7 @@ of the GNU system as described by OS."
                                   file-systems-to-keep)))))
     (mlet* %store-monad
         ((os-drv      (operating-system-derivation os))
-         (bootcfg     (operating-system-bootcfg os)))
+         (bootcfg ->  (operating-system-bootcfg os)))
       (qemu-image  #:os-drv os-drv
                    #:bootcfg-drv bootcfg
                    #:bootloader (bootloader-configuration-bootloader
@@ -827,8 +827,8 @@ bootloader refers to: OS kernel, initrd, bootloader data, etc."
     ;; Use a fixed UUID to improve determinism.
     (operating-system-uuid os 'dce))
 
-  (mlet* %store-monad ((os-drv   (operating-system-derivation os))
-                       (bootcfg  (operating-system-bootcfg os)))
+  (mlet* %store-monad ((os-drv     (operating-system-derivation os))
+                       (bootcfg -> (operating-system-bootcfg os)))
     ;; XXX: When FULL-BOOT? is true, we end up creating an image that contains
     ;; BOOTCFG and all its dependencies, including the output of OS-DRV.
     ;; This is more than needed (we only need the kernel, initrd, GRUB for its

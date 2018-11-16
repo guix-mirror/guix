@@ -935,21 +935,19 @@ listed in OS.  The C library expects to find it under
 (define* (operating-system-bootcfg os #:optional (old-entries '()))
   "Return the bootloader configuration file for OS.  Use OLD-ENTRIES,
 a list of <menu-entry>, to populate the \"old entries\" menu."
-  (mlet* %store-monad
-      ((root-fs ->  (operating-system-root-file-system os))
-       (root-device -> (file-system-device root-fs))
-       (params -> (operating-system-boot-parameters os root-device
-                                                    #:system-kernel-arguments?
-                                                    #t))
-       (entry -> (boot-parameters->menu-entry params))
-       (bootloader-conf -> (operating-system-bootloader os)))
+  (let* ((root-fs         (operating-system-root-file-system os))
+         (root-device     (file-system-device root-fs))
+         (params          (operating-system-boot-parameters
+                           os root-device
+                           #:system-kernel-arguments? #t))
+         (entry           (boot-parameters->menu-entry params))
+         (bootloader-conf (operating-system-bootloader os)))
     (define generate-config-file
       (bootloader-configuration-file-generator
        (bootloader-configuration-bootloader bootloader-conf)))
 
-    ;; TODO: Remove the 'lower-object' call to make it non-monadic.
-    (lower-object (generate-config-file bootloader-conf (list entry)
-                                        #:old-entries old-entries))))
+    (generate-config-file bootloader-conf (list entry)
+                          #:old-entries old-entries)))
 
 (define* (operating-system-boot-parameters os root-device
                                            #:key system-kernel-arguments?)

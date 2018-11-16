@@ -858,12 +858,13 @@ static checks."
               (return #f))))
        (bootcfg  (if (eq? 'container action)
                      (return #f)
-                     (operating-system-bootcfg
-                      os
-                      (if (eq? 'init action)
-                          '()
-                          (map boot-parameters->menu-entry
-                               (profile-boot-parameters))))))
+                     (lower-object
+                      (operating-system-bootcfg
+                       os
+                       (if (eq? 'init action)
+                           '()
+                           (map boot-parameters->menu-entry
+                                (profile-boot-parameters)))))))
        (bootcfg-file -> (bootloader-configuration-file bootloader))
        (bootloader-installer
         (let ((installer (bootloader-installer bootloader))
