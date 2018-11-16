@@ -933,8 +933,8 @@ listed in OS.  The C library expects to find it under
   (store-file-system (operating-system-file-systems os)))
 
 (define* (operating-system-bootcfg os #:optional (old-entries '()))
-  "Return the bootloader configuration file for OS.  Use OLD-ENTRIES
-(which is a list of <menu-entry>) to populate the \"old entries\" menu."
+  "Return the bootloader configuration file for OS.  Use OLD-ENTRIES,
+a list of <menu-entry>, to populate the \"old entries\" menu."
   (mlet* %store-monad
       ((root-fs ->  (operating-system-root-file-system os))
        (root-device -> (file-system-device root-fs))
