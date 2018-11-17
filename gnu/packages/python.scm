@@ -7761,14 +7761,14 @@ otherwise matches 3.2’s API.")
 (define-public python2-futures
   (package
     (name "python2-futures")
-    (version "3.0.5")
+    (version "3.2.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "futures" version))
         (sha256
          (base32
-          "1pw1z4329xvlabdpwqa6b7v2fxf7hl64m4cgr22ckbym8m8m4hh5"))))
+          "0rdjmmsab550kxsssdq49jcniz77zlkpw4pvi9hvib3lsskjmh4y"))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2
                  ;; FIXME: Python 2.7.14 moved the test.support library,
