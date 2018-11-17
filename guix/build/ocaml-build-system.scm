@@ -49,37 +49,40 @@
                           '())
                     ,@configure-flags)))
         (format #t "running 'setup.ml' with arguments ~s~%" args)
-        (zero? (apply system* "ocaml" "setup.ml" args)))
+        (apply invoke "ocaml" "setup.ml" args))
        (let ((args `("-prefix" ,out ,@configure-flags)))
         (format #t "running 'configure' with arguments ~s~%" args)
-        (zero? (apply system* "./configure" args))))))
+        (apply invoke "./configure" args))))
+    #t)
 
 (define* (build #:key inputs outputs (build-flags '()) (make-flags '())
                 (use-make? #f) #:allow-other-keys)
   "Build the given package."
   (if (and (file-exists? "setup.ml") (not use-make?))
-    (zero? (apply system* "ocaml" "setup.ml" "-build" build-flags))
+    (apply invoke "ocaml" "setup.ml" "-build" build-flags)
     (if (file-exists? "Makefile")
-      (zero? (apply system* "make" make-flags))
+      (apply invoke "make" make-flags)
       (let ((file (if (file-exists? "pkg/pkg.ml") "pkg/pkg.ml" "pkg/build.ml")))
-        (zero? (apply system* "ocaml" "-I"
-                              (string-append (assoc-ref inputs "findlib")
-                                             "/lib/ocaml/site-lib")
-                              file build-flags))))))
+        (apply invoke "ocaml" "-I"
+                      (string-append (assoc-ref inputs "findlib")
+                                     "/lib/ocaml/site-lib")
+                      file build-flags))))
+  #t)
 
 (define* (check #:key inputs outputs (make-flags '()) (test-target "test") tests?
                   (use-make? #f) #:allow-other-keys)
   "Install the given package."
   (when tests?
     (if (and (file-exists? "setup.ml") (not use-make?))
-      (zero? (system* "ocaml" "setup.ml" (string-append "-" test-target)))
+      (invoke "ocaml" "setup.ml" (string-append "-" test-target))
       (if (file-exists? "Makefile")
-        (zero? (apply system* "make" test-target make-flags))
+        (apply invoke "make" test-target make-flags)
         (let ((file (if (file-exists? "pkg/pkg.ml") "pkg/pkg.ml" "pkg/build.ml")))
-          (zero? (system* "ocaml" "-I"
-                          (string-append (assoc-ref inputs "findlib")
-                                         "/lib/ocaml/site-lib")
-                          file test-target)))))))
+          (invoke "ocaml" "-I"
+                  (string-append (assoc-ref inputs "findlib")
+                                 "/lib/ocaml/site-lib")
+                  file test-target)))))
+  #t)
 
 (define* (install #:key outputs (build-flags '()) (make-flags '()) (use-make? #f)
                   (install-target "install")
@@ -87,17 +90,19 @@
   "Install the given package."
   (let ((out (assoc-ref outputs "out")))
     (if (and (file-exists? "setup.ml") (not use-make?))
-      (zero? (apply system* "ocaml" "setup.ml"
-                    (string-append "-" install-target) build-flags))
+      (apply invoke "ocaml" "setup.ml"
+             (string-append "-" install-target) build-flags)
       (if (file-exists? "Makefile")
-        (zero? (apply system* "make" install-target make-flags))
-        (zero? (system* "opam-installer" "-i" (string-append "--prefix=" out)
-                        (string-append "--libdir=" out "/lib/ocaml/site-lib")))))))
+        (apply invoke "make" install-target make-flags)
+        (invoke "opam-installer" "-i" (string-append "--prefix=" out)
+                (string-append "--libdir=" out "/lib/ocaml/site-lib")))))
+  #t)
 
 (define* (prepare-install #:key outputs #:allow-other-keys)
   "Prepare for building the given package."
   (mkdir-p (string-append (assoc-ref outputs "out") "/lib/ocaml/site-lib"))
-  (mkdir-p (string-append (assoc-ref outputs "out") "/bin")))
+  (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
+  #t)
 
 (define %standard-phases
   ;; Everything is as with the GNU Build System except for the `configure'
