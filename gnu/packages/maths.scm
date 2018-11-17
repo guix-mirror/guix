@@ -3946,7 +3946,7 @@ as equations, scalars, vectors, and matrices.")
 (define-public z3
   (package
     (name "z3")
-    (version "4.5.0")
+    (version "4.8.1")
     (home-page "https://github.com/Z3Prover/z3")
     (source (origin
               (method git-fetch)
@@ -3954,7 +3954,7 @@ as equations, scalars, vectors, and matrices.")
                                   (commit (string-append "z3-" version))))
               (sha256
                (base32
-                "0ssp190ksak93hiz61z90x6hy9hcw1ywp8b2dzmbhn6fbd4bnxzp"))))
+                "1vr57bwx40sd5riijyrhy70i2wnv9xrdihf6y5zdz56yq88rl48f"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
