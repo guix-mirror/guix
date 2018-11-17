@@ -3947,14 +3947,14 @@ as equations, scalars, vectors, and matrices.")
   (package
     (name "z3")
     (version "4.5.0")
+    (home-page "https://github.com/Z3Prover/z3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Z3Prover/z3/archive/z3-"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "z3-" version))))
               (sha256
                (base32
-                "032a5lvji2liwmc25jv52bdrhimqflvqbpg77ccaq1jykhiivbmf"))))
+                "0ssp190ksak93hiz61z90x6hy9hcw1ywp8b2dzmbhn6fbd4bnxzp"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -3983,7 +3983,6 @@ as equations, scalars, vectors, and matrices.")
     (synopsis "Theorem prover")
     (description "Z3 is a theorem prover and @dfn{satisfiability modulo
 theories} (SMT) solver.  It provides a C/C++ API, as well as Python bindings.")
-    (home-page "https://github.com/Z3Prover/z3")
     (license license:expat)))
 
 (define-public cubicle
