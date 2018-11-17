@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016-2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
@@ -120,7 +120,7 @@
                          "/lib/ocaml/site-lib"))
     #:phases (modify-phases %standard-phases (delete 'configure))))
 
-(define-public ocaml
+(define-public ocaml-4.02
   (package
     (name "ocaml")
     (version "4.02.3")
@@ -145,7 +145,8 @@
             (files (list "lib/ocaml" "lib/ocaml/site-lib")))
            (search-path-specification
             (variable "CAML_LD_LIBRARY_PATH")
-            (files (list "lib/ocaml/site-lib/stubslibs")))))
+            (files (list "lib/ocaml/site-lib/stubslibs"
+                         "lib/ocaml/site-lib/stublibs")))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))
@@ -228,7 +229,7 @@ functional, imperative and object-oriented styles of programming.")
 
 (define-public ocaml-4.01
   (package
-    (inherit ocaml)
+    (inherit ocaml-4.02)
     (version "4.01.0")
     (source (origin
               (method url-fetch)
@@ -240,7 +241,7 @@ functional, imperative and object-oriented styles of programming.")
                (base32
                 "03d7ida94s1gpr3gadf4jyhmh5rrszd5s4m4z59daaib25rvfyv7"))))
     (arguments
-     (substitute-keyword-arguments (package-arguments ocaml)
+     (substitute-keyword-arguments (package-arguments ocaml-4.02)
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'build
@@ -256,10 +257,78 @@ functional, imperative and object-oriented styles of programming.")
                          (string-append
                           "TOPDIR=" (getcwd) "/.."))))))))))))
 
+(define-public ocaml-4.07
+  (package
+    (inherit ocaml-4.02)
+    (version "4.07.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://caml.inria.fr/pub/distrib/ocaml-"
+                    (version-major+minor version)
+                    "/ocaml-" version ".tar.xz"))
+              (sha256
+               (base32
+                "03wzkzv6w4rdiiva20g5amz0n4x75swpjl8d80468p6zm8hgfnzl"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ocaml-4.02)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'prepare-socket-test)
+           (replace 'check
+             (lambda _
+               (with-directory-excursion "testsuite"
+                 (invoke "make" "all"))
+               #t))))))))
+
+(define-public ocaml ocaml-4.07)
+
+(define-public ocamlbuild
+	  (package
+	    (name "ocamlbuild")
+	    (version "0.13.1")
+	    (source (origin
+	              (method url-fetch)
+	              (uri (string-append "https://github.com/ocaml/ocamlbuild/archive/"
+	                                  version ".tar.gz"))
+	              (file-name (string-append name "-" version ".tar.gz"))
+	              (sha256
+	               (base32
+	                "1320cfkixs1xlng5av04pa5qjb3ynvi2kl3k1ngqzg5fpi29b0vr"))))
+	    (build-system gnu-build-system)
+	    (arguments
+	     `(#:test-target "test"
+	       #:tests? #f; tests require findlib
+	       #:make-flags
+	       (list (string-append "OCAMLBUILD_PREFIX=" (assoc-ref %outputs "out"))
+	             (string-append "OCAMLBUILD_BINDIR=" (assoc-ref %outputs "out")
+                                "/bin")
+	             (string-append "OCAMLBUILD_LIBDIR=" (assoc-ref %outputs "out")
+                                "/lib/ocaml/site-lib")
+	             (string-append "OCAMLBUILD_MANDIR=" (assoc-ref %outputs "out")
+                                "/share/man"))
+	       #:phases
+	       (modify-phases %standard-phases
+	         (delete 'bootstrap)
+	         (delete 'configure)
+	         (add-before 'build 'findlib-environment
+	           (lambda* (#:key outputs #:allow-other-keys)
+	             (let* ((out (assoc-ref outputs "out")))
+	               (setenv "OCAMLFIND_DESTDIR" (string-append out "/lib/ocaml/site-lib"))
+	               (setenv "OCAMLFIND_LDCONF" "ignore")
+	               #t))))))
+	    (native-inputs
+	     `(("ocaml" ,ocaml)))
+	    (home-page "https://github.com/ocaml/ocamlbuild")
+	    (synopsis "OCaml build tool")
+	    (description "OCamlbuild is a generic build tool, that has built-in rules
+	for building OCaml library and programs.")
+	    (license license:lgpl2.1+)))
+
 (define-public opam
   (package
     (name "opam")
-    (version "1.2.2")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               ;; Use the '-full' version, which includes all the dependencies.
@@ -271,7 +340,7 @@ functional, imperative and object-oriented styles of programming.")
                )
               (sha256
                (base32
-                "004gwn6rbpcb53y3rpb3v23vk39rp2xmf0liyd5iy12ij8bigrhm"))))
+                "09gdpxiqmyr6z78l85d7pwhiwrycdi2xi1b2mafqr1sk9z5lzbcx"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Sometimes, 'make -jX' would fail right after ./configure with
@@ -321,7 +390,7 @@ Git-friendly development workflow.")
     ;; The 'LICENSE' file waives some requirements compared to LGPLv3.
     (license license:lgpl3)))
 
-(define-public camlp4
+(define-public camlp4-4.02
   (package
     (name "camlp4")
     (version "4.02+6")
@@ -334,9 +403,9 @@ Git-friendly development workflow.")
                 "0icdfzhsbgf89925gc8gl3fm8z2xzszzlib0v9dj5wyzkyv3a342"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
-    (native-inputs `(("ocaml" ,ocaml)
+    (native-inputs `(("ocaml" ,ocaml-4.02)
                      ("which" ,which)))
-    (inputs `(("ocaml" ,ocaml)))
+    (inputs `(("ocaml" ,ocaml-4.02)))
     (arguments
      '(#:tests? #f                                ;no documented test target
        ;; a race-condition will lead byte and native targets to  mkdir _build
@@ -377,17 +446,42 @@ syntax of OCaml.")
     ;; against the library to be released under any terms.
     (license license:lgpl2.0)))
 
+(define-public camlp4-4.07
+  (package
+    (inherit camlp4-4.02)
+    (name "camlp4")
+    (version "4.07+1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ocaml/camlp4/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "143hhxv1i6aq413z0i1pynrjcfl2g5gnh5r3863v6h9z0riqknzc"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (properties
+     `((ocaml4.02-variant . ,(delay camlp4-4.02))))
+    (native-inputs
+     `(("ocaml" ,ocaml-4.07)
+       ("ocamlbuild" ,ocamlbuild)
+       ("which" ,which)))
+    (inputs
+     `(("ocaml" ,ocaml-4.07)))))
+
+(define-public camlp4 camlp4-4.07)
+
 (define-public camlp5
   (package
     (name "camlp5")
-    (version "6.14")
+    (version "7.06")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://camlp5.gforge.inria.fr/distrib/src/"
-                                  name "-" version ".tgz"))
+              (uri (string-append "https://github.com/camlp5/camlp5/archive/rel"
+                                  (string-delete #\. version) ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ql04iyvclpyy9805kpddc4ndjb5d0qg4shhi2fc6bixi49fvy89"))))
+                "08kr0h2rq3jh3kzqh5f6pr589bqw3y76z8k59ad2kdh50fjgp8xy"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
@@ -404,6 +498,11 @@ syntax of OCaml.")
                       (invoke "./configure"
                               "--prefix" out
                               "--mandir" mandir))))
+         (add-before 'build 'fix-/bin-references
+           (lambda _
+             (substitute* "config/Makefile"
+               (("/bin/rm") "rm"))
+             #t))
          (replace 'build
                   (lambda _
                     (invoke "make" "-j" (number->string
@@ -427,17 +526,19 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
 (define-public hevea
   (package
     (name "hevea")
-    (version "2.28")
+    (version "2.32")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://hevea.inria.fr/old/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "14fns13wlnpiv9i05841kvi3cq4b9v2sw5x3ff6ziws28q701qnd"))))
+                "1s4yqphfcr1pf5mcj5c84mvmd107k525iiym5jdwsxz0ka0ccmfy"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)))
     (arguments
      `(#:tests? #f  ; no test suite
        #:make-flags (list (string-append "PREFIX=" %output))
@@ -454,6 +555,50 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
      "HeVeA is a LaTeX to HTML translator that generates modern HTML 5.  It is
 written in Objective Caml.")
     (license license:qpl)))
+
+(define-public ocaml-num
+  (package
+    (name "ocaml-num")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ocaml/num/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xlkd0svc0mgq5s7nrm2rjrsvg15i9wxqkc1kvwjp6sv8vv8bb04"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'fix-makefile
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This package supposes we install to the same directory as
+             ;; the ocaml package.
+             (substitute* "src/META"
+               (("\"\\^\"") (string-append "\"" (assoc-ref outputs "out")
+                                           "/lib/ocaml/site-lib\"")))
+             (substitute* "src/Makefile"
+               (("\\) \\$\\(STDLIBDIR\\)")
+                (string-append ") " (assoc-ref outputs "out")
+                               "/lib/ocaml/site-lib")))
+             #t))
+         (add-after 'install 'fix-stubslib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (format #t "~a~%" (find-files "." ".*.so"))
+             (let ((stubdir (string-append (assoc-ref outputs "out")
+                                           "/lib/ocaml/site-lib")))
+               (mkdir-p stubdir)
+               (install-file "src/dllnums.so" stubdir))
+             #t)))))
+    (home-page "https://github.com/ocaml/num")
+    (synopsis "Arbitrary-precision integer and rational arithmetic")
+    (description "OCaml-Num contains the legacy Num library for
+arbitrary-precision integer and rational arithmetic that used to be part of
+the OCaml core distribution.")
+    (license license:lgpl2.1+))); with linking exception
 
 (define-public coq
   (package
@@ -478,7 +623,8 @@ written in Objective Caml.")
     (inputs
      `(("lablgtk" ,lablgtk)
        ("python" ,python-2)
-       ("camlp5" ,camlp5)))
+       ("camlp5" ,camlp5)
+       ("ocaml-num" ,ocaml-num)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -598,7 +744,7 @@ provers.")
 (define-public emacs-tuareg
   (package
     (name "emacs-tuareg")
-    (version "2.0.10")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ocaml/tuareg/archive/"
@@ -606,7 +752,7 @@ provers.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1r2smclcs63n74lcyckbp90j09wyjdngn816cqzfkw54iwh3hd7q"))))
+                "1ynpfc170f9jqx49biji9npfkvfpflbm29xf24wc7fnxxayr49ig"))))
     (build-system gnu-build-system)
     (native-inputs `(("emacs" ,emacs-minimal)
                      ("opam" ,opam)))
@@ -650,6 +796,8 @@ Emacs.")
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)))
     (arguments
      `(#:parallel-build? #f ; Parallel build causes failure
        #:tests? #f ; No check target
@@ -660,6 +808,8 @@ Emacs.")
              (let ((out (assoc-ref outputs "out")))
                (setenv "PREFIX" out))
              #t)))))
+    (properties
+     `((ocaml4.02-variant . ,(delay ocaml4.02-menhir))))
     (home-page "http://gallium.inria.fr/~fpottier/menhir")
     (synopsis "Parser generator")
     (description "Menhir is a parser generator.  It turns high-level grammar
@@ -671,17 +821,26 @@ Knuth’s LR(1) parser construction technique.")
     ;; are QPL licensed.
     (license (list license:gpl2+ license:qpl))))
 
+(define-public ocaml4.02-menhir
+  (package
+    (inherit ocaml-menhir)
+    (name "ocaml4.02-menhir")
+    (inputs `(("ocaml" ,ocaml-4.02)))
+    (native-inputs '())))
+
 (define-public lablgtk
   (package
     (name "lablgtk")
-    (version "2.18.5")
+    (version "2.18.6")
     (source (origin
               (method url-fetch)
-              (uri (ocaml-forge-uri name version 1627))
+              (uri (ocaml-forge-uri name version 1726))
               (sha256
                (base32
-                "0cyj6sfdvzx8hw7553lhgwc0krlgvlza0ph3dk9gsxy047dm3wib"))))
+                "1y38fdvswy6hmppm65qvgdk4pb3ghhnvz7n4ialf46340r1s5p2d"))))
     (build-system gnu-build-system)
+    (properties
+     `((ocaml4.02-variant . ,(delay ocaml4.02-lablgtk))))
     (native-inputs
      `(("camlp4" ,camlp4)
        ("ocaml" ,ocaml)
@@ -731,6 +890,23 @@ gnomeui, gtksourceview, gtkspell,
 libglade (and it an generate OCaml code from .glade files),
 libpanel, librsvg and quartz.")
     (license license:lgpl2.1)))
+
+(define-public ocaml4.02-lablgtk
+  (package
+    (inherit lablgtk)
+    (name "ocaml4.02-lablgtk")
+    (version "2.18.5")
+    (source (origin
+              (method url-fetch)
+              (uri (ocaml-forge-uri name version 1627))
+              (sha256
+               (base32
+                "0cyj6sfdvzx8hw7553lhgwc0krlgvlza0ph3dk9gsxy047dm3wib"))))
+    (native-inputs
+     `(("camlp4" ,camlp4-4.02)
+       ("ocaml" ,ocaml-4.02)
+       ("findlib" ,ocaml4.02-findlib)
+       ("pkg-config" ,pkg-config)))))
 
 (define-public unison
   (package
@@ -792,12 +968,13 @@ libpanel, librsvg and quartz.")
     (outputs '("out"
                "doc"))                  ; 1.9 MiB of documentation
     (native-inputs
-     `(("ocaml" ,ocaml)
+     `(("ocaml" ,ocaml-4.02)
        ;; For documentation
        ("ghostscript" ,ghostscript)
        ("texlive" ,texlive)
        ("hevea" ,hevea)
-       ("lynx" ,lynx)))
+       ("lynx" ,lynx)
+       ("which" ,which)))
     (arguments
      `(#:parallel-build? #f
        #:parallel-tests? #f
@@ -827,6 +1004,14 @@ libpanel, librsvg and quartz.")
                (let ((doc (string-append (assoc-ref outputs "doc")
                                          "/share/doc/unison")))
                  (mkdir-p doc)
+                 ;; This is a workaround to prevent a build failure. Running
+                 ;; make docs somehow allows it to pass, but the generated
+                 ;; documentation is not pretty.
+                 (catch #t
+                   (lambda _
+                     (invoke "make" "docs"
+                             "TEXDIRECTIVES=\\\\draftfalse"))
+                   (lambda _ #t))
                  ;; This file needs write-permissions, because it's
                  ;; overwritten by 'docs' during documentation generation.
                  (chmod "src/strings.ml" #o600)
@@ -856,14 +1041,14 @@ to the other.")
 (define-public ocaml-findlib
   (package
     (name "ocaml-findlib")
-    (version "1.7.3")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.camlcity.org/download/"
                                   "findlib" "-" version ".tar.gz"))
               (sha256
                (base32
-                "12xx8si1qv3xz90qsrpazjjk4lc1989fzm97rsmc4diwla7n15ni"))))
+                "1b97zqjdriqd2ikgh4rmqajgxwdwn013riji5j53y3xvcmnpsyrb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("camlp4" ,camlp4)
@@ -912,6 +1097,15 @@ compilation and linkage, there are new frontends of the various OCaml
 compilers that can directly deal with packages.")
     (license license:x11)))
 
+(define-public ocaml4.02-findlib
+  (package
+    (inherit ocaml-findlib)
+    (name "ocaml4.02-findlib")
+    (native-inputs
+     `(("camlp4" ,camlp4-4.02)
+       ("m4" ,m4)
+       ("ocaml" ,ocaml-4.02)))))
+
 (define-public ocaml4.01-findlib
   (package
     (inherit ocaml-findlib)
@@ -933,7 +1127,8 @@ compilers that can directly deal with packages.")
                 "03ifp9hjcxg4m5j190iy373jcn4039d3vy10kmd8p4lfciwzwc1f"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("libxml2" ,libxml2)))           ; for xmllint
+     `(("libxml2" ,libxml2)           ; for xmllint
+       ("ocamlbuild" ,ocamlbuild)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -946,6 +1141,9 @@ other XUnit testing frameworks.")
 
 (define-public ocaml4.01-ounit
   (package-with-ocaml4.01 ocaml-ounit))
+
+(define-public ocaml4.02-ounit
+  (package-with-ocaml4.02 ocaml-ounit))
 
 (define-public camlzip
   (package
@@ -1007,19 +1205,23 @@ files in these formats.")
           (base32
            "0syh72jk9s0qwjmmfrkqchaj98m020ii082jn38pwnmb6v3p02wk")))))))
 
+(define-public ocaml4.02-camlzip
+  (package-with-ocaml4.02 camlzip))
+
 (define-public ocamlmod
   (package
     (name "ocamlmod")
-    (version "0.0.8")
+    (version "0.0.9")
     (source (origin
               (method url-fetch)
-              (uri (ocaml-forge-uri name version 1544))
+              (uri (ocaml-forge-uri name version 1702))
               (sha256
                (base32
-                "1w0w8lfyymvk300dv13gvhrddpcyknvyp4g2yvq2vaw7khkhjs9g"))))
+                "0cgp9qqrq7ayyhddrmqmq1affvfqcn722qiakjq4dkywvp67h4aa"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("ounit" ,ocaml-ounit)))
+     `(("ounit" ,ocaml-ounit)
+       ("ocamlbuild" ,ocamlbuild)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1029,6 +1231,9 @@ files in these formats.")
     (synopsis "Generate modules from OCaml source files")
     (description "Generate modules from OCaml source files.")
     (license license:lgpl2.1+))) ; with an exception
+
+(define-public ocaml4.02-ocamlmod
+  (package-with-ocaml4.02 ocamlmod))
 
 (define-public ocaml-zarith
   (package
@@ -1060,6 +1265,9 @@ over big integers. Small integers are represented as Caml unboxed integers,
 for speed and space economy.")
     (license license:lgpl2.1+))) ; with an exception
 
+(define-public ocaml4.02-zarith
+  (package-with-ocaml4.02 ocaml-zarith))
+
 (define-public ocaml-frontc
   (package
     (name "ocaml-frontc")
@@ -1073,7 +1281,9 @@ for speed and space economy.")
                 "16dz153s92dgbw1rrfwbhscy73did87kfmjwyh3qpvs748h1sc4g"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:phases
+     `(#:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib
+       #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-after 'install 'install-meta
@@ -1116,7 +1326,8 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
                 "1zs1pg5cb1iry554v3cdmmiglsrwmsqa9x8zxmzb118fnk5d3ha6"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("ounit" ,ocaml-ounit)))
+     `(("ounit" ,ocaml-ounit)
+       ("ocamlbuild" ,ocamlbuild)))
     (home-page "https://github.com/c-cube/qcheck")
     (synopsis "QuickCheck inspired property-based testing for OCaml")
     (description "QuickCheck inspired property-based testing for OCaml. This
@@ -1124,6 +1335,9 @@ module allows to check invariants (properties of some types) over randomly
 generated instances of the type. It provides combinators for generating
 instances and printing them.")
     (license license:lgpl3+)))
+
+(define-public ocaml4.02-qcheck
+  (package-with-ocaml4.02 ocaml-qcheck))
 
 (define-public ocaml-qtest
   (package
@@ -1139,7 +1353,7 @@ instances and printing them.")
                 "1ff4if64mc9c7wmhjdgnlnh6k6a713piqzr4043zzj4s5pw7smxk"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("findlib" ,ocaml-findlib)))
+     `(("ocamlbuild" ,ocamlbuild)))
     (propagated-inputs
      `(("ounit" ,ocaml-ounit)
        ("qcheck" ,ocaml-qcheck)))
@@ -1161,6 +1375,9 @@ to use -- to sophisticated random generation of test cases.")
 (define-public ocaml4.01-qtest
   (package-with-ocaml4.01 ocaml-qtest))
 
+(define-public ocaml4.02-qtest
+  (package-with-ocaml4.02 ocaml-qtest))
+
 (define-public ocaml-stringext
   (package
     (name "ocaml-stringext")
@@ -1175,7 +1392,8 @@ to use -- to sophisticated random generation of test cases.")
                 "19g6lfn03iki9f8h91hi0yiqn0b3wkxyq08b3y23wgv6jw6mssfh"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("qtest" ,ocaml-qtest)))
+     `(("ocamlbuild" ,ocamlbuild)
+       ("qtest" ,ocaml-qtest)))
     (home-page "https://github.com/rgrinberg/stringext")
     (synopsis "Extra string functions for OCaml")
     (description "Provides a single module named Stringext that provides a grab
@@ -1185,17 +1403,21 @@ full_split, cut, rcut, etc..")
     ;; where it says `mit'.
     (license license:expat)))
 
+(define-public ocaml4.02-stringext
+  (package-with-ocaml4.02 ocaml-stringext))
 
 (define-public ocaml-bisect
   (package
     (name "ocaml-bisect")
-    (version "1.3")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
-              (uri (ocaml-forge-uri "bisect" version 1051))
+              (uri (string-append "https://github.com/gasche/bisect/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0kcg2rh0qlkfpbv3nhcb75n62b04gbrz0zasq15ynln91zd5qrg0"))
+                "0p67fppk5ifb63b00kxwrb1xg75hrqhknng3bsdyw3gxxqyjlpmx"))
               (patches
                (search-patches
                 "ocaml-bisect-fix-camlp4-in-another-directory.patch"))))
@@ -1203,6 +1425,7 @@ full_split, cut, rcut, etc..")
     (native-inputs
      `(("camlp4" ,camlp4)
        ("libxml2" ,libxml2)
+       ("ocamlbuild" ,ocamlbuild)
        ("which" ,which)))
     (propagated-inputs
      `(("camlp4" ,camlp4)))
@@ -1215,9 +1438,11 @@ full_split, cut, rcut, etc..")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "./configure" "-prefix"
-                             (assoc-ref outputs "out"))))))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (invoke "./configure" "-prefix" (assoc-ref outputs "out")
+                     "-ocaml-prefix" (assoc-ref inputs "ocaml")
+                     "-camlp4-prefix" (assoc-ref inputs "camlp4"))
+             #t)))))
     (home-page "http://bisect.x9c.fr")
     (synopsis "Code coverage tool for the OCaml language")
     (description "Bisect is a code coverage tool for the OCaml language.  It is
@@ -1225,46 +1450,260 @@ a camlp4-based tool that allows to instrument your application before running
 tests.  After application execution, it is possible to generate a report in HTML
 format that is the replica of the application source code annotated with code
 coverage information.")
-    (properties `((ocaml4.01-variant . ,(delay ocaml4.01-bisect))))
+    (properties
+     `((ocaml4.01-variant . ,(delay ocaml4.01-bisect))
+       (ocaml4.02-variant . ,(delay ocaml4.02-bisect))))
     (license license:gpl3+)))
 
 (define-public ocaml4.01-bisect
   (let ((base (package-with-ocaml4.01 (strip-ocaml4.01-variant ocaml-bisect))))
     (package
       (inherit base)
+      (version "1.3")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://github.com/gasche/bisect/archive/"
+                                    version ".tar.gz"))
+                (file-name (string-append "ocaml-bisect-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1ip49jqf0kkbrqf8qspmfjbg9ap9fhvjkg718myzix88dg5rv8d4"))))
       (arguments
        `(#:ocaml ,ocaml-4.01
-         ;; Camlp4 is included with OCaml 4.01, so do not include it as a
-         ;; separate input.
-         ,@(strip-keyword-arguments '(#:make-flags) (package-arguments base))))
+         ,@(substitute-keyword-arguments (package-arguments ocaml-bisect)
+            ((#:make-flags flags)
+             `(list "all"))
+            ((#:phases phases)
+             `(modify-phases ,phases
+                (replace 'configure
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (invoke "./configure"
+                            "-ocaml-prefix" (assoc-ref inputs "ocaml"))
+                    #t)))))))
       (native-inputs `(,@(alist-delete "camlp4" (package-native-inputs base))))
       (propagated-inputs
        `(,@(alist-delete "camlp4" (package-propagated-inputs base)))))))
 
-(define-public ocaml-bitstring
+(define-public ocaml4.02-bisect
+  (let ((base (package-with-ocaml4.02 (strip-ocaml4.02-variant ocaml-bisect))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("camlp4" ,camlp4-4.02)
+         ("libxml2" ,libxml2)
+         ("which" ,which)))
+      (propagated-inputs
+       `(("camlp4" ,camlp4-4.02))))))
+
+(define-public dune
   (package
-    (name "ocaml-bitstring")
-    (version "2.1.1")
+    (name "dune")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/xguerin/bitstring"
-                                  "/archive/v" version ".tar.gz"))
+              (uri (string-append "https://github.com/ocaml/dune/releases/"
+                                  "download/" version "/dune-" version ".tbz"))
+              (sha256
+               (base32
+                "00c5dbm4hkdapc2i7pg07b2lj8sv6ly38qr7zid58cdmbmzq21z9"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f; require odoc
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "./configure")
+             #t)))))
+    (home-page "https://github.com/ocaml/dune")
+    (synopsis "OCaml build system")
+    (description "Dune is a build system that was designed to simplify the
+release of Jane Street packages.  It reads metadata from @file{dune} files
+following a very simple s-expression syntax.")
+    (license license:expat)))
+
+(define-public ocaml-migrate-parsetree
+  (package
+    (name "ocaml-migrate-parsetree")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ocaml-ppx/"
+                                  "ocaml-migrate-parsetree/releases/download/v"
+                                  version "/ocaml-migrate-parsetree-"
+                                  version ".tbz"))
+              (sha256
+               (base32
+                "01zjp1q4hryqaxv4apkjd868fycz2kf887r6lkb6x2a545h1lh7f"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "jbuilder" "build" "@install")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "jbuilder" "install"
+                     "--prefix" (assoc-ref outputs "out"))
+             #t)))))
+    (propagated-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("ocaml-result" ,ocaml-result)))
+    (native-inputs
+     `(("dune" ,dune)))
+    (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
+    (synopsis "OCaml parsetree convertor")
+    (description "This library converts between parsetrees of different OCaml
+versions.  For each version, there is a snapshot of the parsetree and conversion
+functions to the next and/or previous version.")
+    (license license:lgpl2.1+)))
+ 
+(define-public ocaml-ppx-tools-versioned
+  (package
+    (name "ocaml-ppx-tools-versioned")
+    (version "5.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ocaml-ppx/"
+                                  "ppx_tools_versioned/archive/"
+                                  version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0vy8ibrxccii1jbsk5q6yh1kxjigqvi7lhhcmizvd5gfhf7mfyc8"))
-              (patches (search-patches "ocaml-bitstring-fix-configure.patch"))))
+                "1x2xfjpkzbcz4rza1d7gh3ipliw6jqfcklbsln82v3561qgkqgmh"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "dune" "build" "@install")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "dune" "install"
+                     "--prefix" (assoc-ref outputs "out"))
+             #t)))))
+    (native-inputs
+     `(("dune" ,dune)))
+    (propagated-inputs
+     `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)))
+    (home-page "https://github.com/let-def/ppx_tools_versioned")
+    (synopsis "Variant of ppx_tools")
+    (description "This package is a variant of ppx_tools based on
+ocaml-migrate-parsetree")
+    (license license:expat)))
+
+(define-public ocaml-ppx-tools-versioned
+  (package
+    (name "ocaml-ppx-tools-versioned")
+    (version "5.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ocaml-ppx/"
+                                  "ppx_tools_versioned/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1x2xfjpkzbcz4rza1d7gh3ipliw6jqfcklbsln82v3561qgkqgmh"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "dune" "build" "@install")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "dune" "install"
+                     "--prefix" (assoc-ref outputs "out"))
+             #t)))))
+    (native-inputs
+     `(("dune" ,dune)))
+    (propagated-inputs
+     `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)))
+    (home-page "https://github.com/let-def/ppx_tools_versioned")
+    (synopsis "Variant of ppx_tools")
+    (description "This package is a variant of ppx_tools based on
+ocaml-migrate-parsetree")
+    (license license:expat)))
+
+(define-public ocaml-bitstring
+  (package
+    (name "ocaml-bitstring")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://bitbucket.org/thanatonauts/bitstring/"
+                                  "get/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15jjk2pq1vx311gl49s5ag6x5y0654x35w75z07g7kr2q334hqps"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("camlp4" ,camlp4)
        ("time" ,time)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("bisect" ,ocaml-bisect)))
+       ("bisect" ,ocaml-bisect)
+       ("dune" ,dune)))
     (propagated-inputs
-     `(("camlp4" ,camlp4)))
+     `(("camlp4" ,camlp4)
+       ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
     (arguments
-     `(#:configure-flags
+     `(#:tests? #f; Tests fail to build
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "jbuilder" "build" "@install")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "dune" "install"
+                     "--prefix" (assoc-ref outputs "out"))
+             #t)))))
+    (properties
+      `((ocaml4.02-variant . ,(delay ocaml4.02-bitstring))))
+    (home-page "https://github.com/xguerin/bitstring")
+    (synopsis "Bitstrings and bitstring matching for OCaml")
+    (description "Adds Erlang-style bitstrings and matching over bitstrings as
+a syntax extension and library for OCaml.  You can use this module to both parse
+and generate binary formats, files and protocols.  Bitstring handling is added
+as primitives to the language, making it exceptionally simple to use and very
+powerful.")
+    (license license:isc)))
+ 
+(define-public ocaml4.02-bitstring
+  (let ((base (package-with-ocaml4.02 (strip-ocaml4.02-variant ocaml-bitstring))))
+    (package
+      (inherit base)
+      (version "2.1.1")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://github.com/xguerin/bitstring"
+                                    "/archive/v" version ".tar.gz"))
+                (file-name (string-append "ocaml-bitstring-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "0vy8ibrxccii1jbsk5q6yh1kxjigqvi7lhhcmizvd5gfhf7mfyc8"))
+                (patches (search-patches "ocaml-bitstring-fix-configure.patch"))))
+    (arguments
+     `(#:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib
+       #:configure-flags
        (list "CAMLP4OF=camlp4of" "--enable-coverage")
        #:make-flags
        (list (string-append "BISECTLIB="
@@ -1280,14 +1719,6 @@ coverage information.")
                             "$(BISECTLIB)/bisect"))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "Makefile.in"
-               (("@abs_top_builddir@")
-                (string-append "@abs_top_builddir@:" (getenv "LIBRARY_PATH"))))
-             (substitute* "configure"
-               (("-/bin/sh") (string-append "-" (assoc-ref inputs "bash")
-                                            "/bin/sh")))))
          (add-after 'install 'link-lib
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1297,15 +1728,24 @@ coverage information.")
                                         "/lib/ocaml/site-lib/bitstring")))
                (mkdir-p stubs)
                (symlink (string-append lib "/dllbitstring.so")
-                        (string-append stubs "/dllbitstring.so"))))))))
-    (home-page "https://github.com/xguerin/bitstring")
-    (synopsis "Bitstrings and bitstring matching for OCaml")
-    (description "Adds Erlang-style bitstrings and matching over bitstrings as
-a syntax extension and library for OCaml.  You can use this module to both parse
-and generate binary formats, files and protocols.  Bitstring handling is added
-as primitives to the language, making it exceptionally simple to use and very
-powerful.")
-    (license license:isc)))
+                        (string-append stubs "/dllbitstring.so")))
+             #t))
+         (add-before 'configure 'fix-configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("@abs_top_builddir@")
+                (string-append "@abs_top_builddir@:" (getenv "LIBRARY_PATH"))))
+             (substitute* "configure"
+               (("-/bin/sh") (string-append "-" (assoc-ref inputs "bash")
+                                            "/bin/sh"))))))))
+      (native-inputs
+       `(("camlp4" ,camlp4-4.02)
+         ("time" ,time)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("bisect" ,ocaml4.02-bisect)))
+      (propagated-inputs
+       `(("camlp4" ,camlp4-4.02))))))
 
 (define-public ocaml-result
   (package
@@ -1331,6 +1771,9 @@ powerful.")
 staying compatible with older version of OCaml should use the Result module
 defined in this library.")
     (license license:bsd-3)))
+ 
+(define-public ocaml4.02-result
+  (package-with-ocaml4.02 ocaml-result))
 
 (define-public ocaml-topkg
   (package
@@ -1345,7 +1788,8 @@ defined in this library.")
                 "18rrh6fmf708z7dd30amljmcgaypj3kk49jrmrj68r4wnw8004j8"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("opam" ,opam)))
+     `(("opam" ,opam)
+       ("ocamlbuild" ,ocamlbuild)))
     (propagated-inputs
      `(("result" ,ocaml-result)))
     (arguments
@@ -1361,6 +1805,9 @@ provides an API to describe the files a package installs in a given build
 configuration and to specify information about the package's distribution,
 creation and publication procedures.")
     (license license:isc)))
+ 
+(define-public ocaml4.02-topkg
+  (package-with-ocaml4.02 ocaml-topkg))
 
 (define-public ocaml-rresult
   (package
@@ -1375,7 +1822,8 @@ creation and publication procedures.")
                 "1xxycxhdhaq8p9vhwi93s2mlxjwgm44fcxybx5vghzgbankz9yhm"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("opam" ,opam)))
+     `(("opam" ,opam)
+       ("ocamlbuild" ,ocamlbuild)))
     (propagated-inputs
      `(("topkg" ,ocaml-topkg)))
     (arguments
@@ -1392,6 +1840,9 @@ to operate on the result type available from OCaml 4.03 in the standard
 library.")
     (license license:isc)))
 
+(define-public ocaml4.02-rresult
+  (package-with-ocaml4.02 ocaml-rresult))
+
 (define-public ocaml-sqlite3
   (package
     (name "ocaml-sqlite3")
@@ -1407,7 +1858,8 @@ library.")
          "14c1nir7c6bivajg0vyx853y7la7r5d25g1v5hjb2wfi73r15p1m"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("ocamlbuild" ,ocamlbuild)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("sqlite" ,sqlite)))
     (home-page "https://mmottl.github.io/sqlite3-ocaml")
@@ -1424,6 +1876,9 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
 (define-public ocaml4.01-sqlite3
   (package-with-ocaml4.01 ocaml-sqlite3))
 
+(define-public ocaml4.02-sqlite3
+  (package-with-ocaml4.02 ocaml-sqlite3))
+
 (define-public ocaml-csv
   (package
     (name "ocaml-csv")
@@ -1439,6 +1894,8 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
         (base32
          "0rv7x843vn6scxj87hzl01yqrl26rc27lr8s7z6rp9vs745g05zj"))))
     (build-system ocaml-build-system)
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)))
     (home-page "https://github.com/Chris00/ocaml-csv")
     (synopsis "Pure OCaml functions to read and write CSV")
     (description
@@ -1450,6 +1907,9 @@ manipulate such data.")
 
 (define-public ocaml4.01-csv
   (package-with-ocaml4.01 ocaml-csv))
+
+(define-public ocaml4.02-csv
+  (package-with-ocaml4.02 ocaml-csv))
 
 (define-public ocaml-mtime
   (package
@@ -1464,7 +1924,8 @@ manipulate such data.")
                 "1hfx4ny2dkw6jf3jppz0640dafl5xgn8r2si9kpwzhmibal8qrah"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("opam" ,opam)))
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)))
     (propagated-inputs
      `(("topkg" ,ocaml-topkg)))
     (arguments
@@ -1480,6 +1941,9 @@ manipulate such data.")
 spans without being subject to operating system calendar time adjustments.")
     (license license:isc)))
 
+(define-public ocaml4.02-mtime
+  (package-with-ocaml4.02 ocaml-mtime))
+
 (define-public ocaml-cmdliner
   (package
     (name "ocaml-cmdliner")
@@ -1493,7 +1957,8 @@ spans without being subject to operating system calendar time adjustments.")
                 "0hdxlkgiwjml9dpaa80282a8350if7mc1m6yz2mrd7gci3fszykx"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("opam" ,opam)))
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)))
     (arguments
      `(#:tests? #f
        #:build-flags '("native=true" "native-dynlink=true")
@@ -1510,6 +1975,9 @@ generation. It supports programs with single or multiple commands and respects
 most of the POSIX and GNU conventions.")
     (license license:bsd-3)))
 
+(define-public ocaml4.02-cmdliner
+  (package-with-ocaml4.02 ocaml-cmdliner))
+
 (define-public ocaml-fmt
   (package
     (name "ocaml-fmt")
@@ -1522,10 +1990,13 @@ most of the POSIX and GNU conventions.")
         (sha256 (base32
                   "16y7ibndnairb53j8a6qgipyqwjxncn4pl9jiw5bxjfjm59108px"))))
     (build-system ocaml-build-system)
-    (native-inputs `(("opam" ,opam)
-                     ("topkg" ,ocaml-topkg)))
-    (propagated-inputs `(("result" ,ocaml-result)
-                         ("cmdliner" ,ocaml-cmdliner)))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)
+       ("topkg" ,ocaml-topkg)))
+    (propagated-inputs
+     `(("result" ,ocaml-result)
+       ("cmdliner" ,ocaml-cmdliner)))
     (arguments `(#:tests? #f
                  #:build-flags (list "build" "--with-base-unix" "true"
                                      "--with-cmdliner" "true")
@@ -1537,6 +2008,9 @@ most of the POSIX and GNU conventions.")
     (description "Fmt exposes combinators to devise Format pretty-printing
 functions.")
     (license license:isc)))
+
+(define-public ocaml4.02-fmt
+  (package-with-ocaml4.02 ocaml-fmt))
 
 (define-public ocaml-astring
   (package
@@ -1550,13 +2024,16 @@ functions.")
         (sha256 (base32
                   "0ixjwc3plrljvj24za3l9gy0w30lsbggp8yh02lwrzw61ls4cri0"))))
     (build-system ocaml-build-system)
-    (native-inputs `(("opam" ,opam)
-                     ("topkg" ,ocaml-topkg)))
-    (arguments `(#:tests? #f
-                 #:build-flags (list "build")
-                 #:phases
-                 (modify-phases %standard-phases
-                   (delete 'configure))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)
+       ("topkg" ,ocaml-topkg)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags (list "build")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
     (home-page "http://erratique.ch/software/astring")
     (synopsis "Alternative String module for OCaml")
     (description "Astring exposes an alternative String module for OCaml.  This
@@ -1567,6 +2044,9 @@ removes deprecated and rarely used functions, alters some signatures and names,
 adds a few missing functions and fully exploits OCaml's newfound string
 immutability.")
     (license license:isc)))
+
+(define-public ocaml4.02-astring
+  (package-with-ocaml4.02 ocaml-astring))
 
 (define-public ocaml-alcotest
   (package
@@ -1580,15 +2060,19 @@ immutability.")
                 (base32
                   "0g5lzk0gpfx4q8hyhr460gr4lab5wakfxsmhfwvb3yinxwzs95gc"))))
     (build-system ocaml-build-system)
-    (arguments `(#:tests? #f
-                 #:build-flags (list "build")
-                 #:phases
-                 (modify-phases %standard-phases
-                   (delete 'configure))))
-    (native-inputs `(("opam" ,opam)
-                     ("topkg" ,ocaml-topkg)))
-    (propagated-inputs `(("fmt" ,ocaml-fmt)
-                         ("astring" ,ocaml-astring)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags (list "build")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)
+       ("topkg" ,ocaml-topkg)))
+    (propagated-inputs
+     `(("fmt" ,ocaml-fmt)
+       ("astring" ,ocaml-astring)))
     (home-page "https://github.com/mirage/alcotest")
     (synopsis "Lightweight OCaml test framework")
     (description "Alcotest exposes simple interface to perform unit tests.  It
@@ -1599,24 +2083,43 @@ displayed at the end of the run (with the full logs ready to inspect), with a
 simple (yet expressive) query language to select the tests to run.")
     (license license:isc)))
 
+(define-public ocaml4.02-alcotest
+  (package-with-ocaml4.02 ocaml-alcotest))
+
 (define-public ocaml-ppx-tools
   (package
     (name "ocaml-ppx-tools")
-    (version "5.0+4.02.0")
+    (version "5.1+4.06.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/alainfrisch/ppx_tools/archive/"
                             version ".tar.gz"))
         (sha256 (base32
-                  "0rjg4rngi8k9873z4zq95zn9hj8qyw1vcrf11y15aqasfpqq16rc"))))
+                  "0mncpy9v2mcjgnj7s2vqpp2b1ixv54djicfx66ic9wny9d202gj1"))))
     (build-system ocaml-build-system)
-    (arguments `(#:phases (modify-phases %standard-phases (delete 'configure))
-                 #:tests? #f))
+    (arguments
+     `(#:phases (modify-phases %standard-phases (delete 'configure))
+       #:tests? #f))
+    (properties
+      `((ocaml4.02-variant . ,(delay ocaml4.02-ppx-tools))))
     (home-page "https://github.com/alainfrisch/ppx_tools")
     (synopsis "Tools for authors of ppx rewriters and other syntactic tools")
     (description "Tools for authors of ppx rewriters and other syntactic tools.")
     (license license:expat)))
+
+(define-public ocaml4.02-ppx-tools
+  (let ((base (package-with-ocaml4.02 (strip-ocaml4.02-variant ocaml-ppx-tools))))
+    (package
+      (inherit base)
+      (version "5.0+4.02.0")
+      (source
+        (origin
+          (method url-fetch)
+          (uri (string-append "https://github.com/alainfrisch/ppx_tools/archive/"
+                              version ".tar.gz"))
+          (sha256 (base32
+                    "0rjg4rngi8k9873z4zq95zn9hj8qyw1vcrf11y15aqasfpqq16rc")))))))
 
 (define-public ocaml-react
   (package
@@ -1630,12 +2133,15 @@ simple (yet expressive) query language to select the tests to run.")
         (sha256 (base32
                   "0knhgbngphv5sp1yskfd97crf169qhpc0igr6w7vqw0q36lswyl8"))))
     (build-system ocaml-build-system)
-    (native-inputs `(("opam" ,opam)))
-    (arguments `(#:tests? #f
-                 #:build-flags (list "native=true" "native-dynlink=true")
-                 #:phases
-                 (modify-phases %standard-phases
-                   (delete 'configure))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags (list "native=true" "native-dynlink=true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
     (home-page "http://erratique.ch/software/react")
     (synopsis "Declarative events and signals for OCaml")
     (description "React is an OCaml module for functional reactive programming
@@ -1643,6 +2149,9 @@ simple (yet expressive) query language to select the tests to run.")
 events and signals.  React doesn't define any primitive event or signal, it
 lets the client choose the concrete timeline.")
     (license license:bsd-3)))
+
+(define-public ocaml4.02-react
+  (package-with-ocaml4.02 ocaml-react))
 
 (define-public ocaml-ssl
   (package
@@ -1658,20 +2167,23 @@ lets the client choose the concrete timeline.")
         (sha256 (base32
                   "0fviq8xhp3qk7pmkl7knchywsipxgb7p0z489hj8qnf2sx8xzdmy"))))
     (build-system ocaml-build-system)
-    (arguments `(#:tests? #f
-                 #:make-flags (list "OCAMLFIND_LDCONF=ignore")
-                 #:phases
-                 (modify-phases %standard-phases
-                   (add-after 'unpack 'bootstrap
-                     (lambda* (#:key #:allow-other-keys)
-                       (system* "sh" "bootstrap")
-                       (substitute* "src/OCamlMakefile"
-                         (("/bin/sh") (which "bash")))
-                       (substitute* "configure"
-                         (("/bin/sh") (which "bash"))))))))
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("which" ,which)))
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list "OCAMLFIND_LDCONF=ignore")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda* (#:key #:allow-other-keys)
+             (system* "sh" "bootstrap")
+             (substitute* "src/OCamlMakefile"
+               (("/bin/sh") (which "bash")))
+             (substitute* "configure"
+               (("/bin/sh") (which "bash")))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("which" ,which)))
     (propagated-inputs `(("openssl" ,openssl)))
     (home-page "https://github.com/savonet/ocaml-ssl/")
     (synopsis "OCaml bindings for OpenSSL")
@@ -1680,10 +2192,13 @@ lets the client choose the concrete timeline.")
 through Transport Layer Security (@dfn{TLS}) encrypted connections.")
     (license license:lgpl2.1)))
 
+(define-public ocaml4.02-ssl
+  (package-with-ocaml4.02 ocaml-ssl))
+
 (define-public ocaml-lwt
   (package
     (name "ocaml-lwt")
-    (version "2.6.0")
+    (version "4.1.0")
     (source
       (origin
         (method url-fetch)
@@ -1691,35 +2206,37 @@ through Transport Layer Security (@dfn{TLS}) encrypted connections.")
                             ".tar.gz"))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256 (base32
-                  "1gbw0g8a5a4b16diqrmlhc8ilnikrm4w3jjm1zq310maqg8z0zxz"))))
+                  "0mhh019bjkg5xfvpy1pxs4xdxb759fyydmgb6l4j0qww1qgr8klp"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:configure-flags
-       (list "--enable-ssl" "--enable-glib" "--enable-react"
-             "--enable-ppx")
+     `(#:tests? #f; require lwt_ppx
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'disable-some-checks
-           (lambda* (#:key #:allow-other-keys)
-             (substitute* "tests/unix/main.ml"
-               (("Test_mcast.suite;") ""))))
-         (add-after 'install 'link-stubs
+         (replace 'configure
+           (lambda _
+             (invoke "ocaml" "src/util/configure.ml" "-use-libev" "true")
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "jbuilder" "build" "@install")
+             #t))
+         (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
-                    (lib (string-append out "/lib/ocaml/site-lib/lwt")))
-               (mkdir-p stubs)
-               (symlink (string-append lib "/dlllwt-glib_stubs.so")
-                        (string-append stubs "/dlllwt-glib_stubs.so"))
-               (symlink (string-append lib "/dlllwt-unix_stubs.so")
-                        (string-append stubs "/dlllwt-unix_stubs.so"))))))))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("ppx-tools" ,ocaml-ppx-tools)))
-    (inputs `(("libev" ,libev)
-              ("glib" ,glib)))
-    (propagated-inputs `(("result" ,ocaml-result)
-                         ("ocaml-ssl" ,ocaml-ssl)
-                         ("ocaml-react" ,ocaml-react)))
+             (invoke "jbuilder" "install" "--prefix" (assoc-ref outputs "out"))
+             #t)))))
+    (native-inputs
+     `(("dune" ,dune)
+       ("ocaml-cppo" ,ocaml-cppo)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("pkg-config" ,pkg-config)
+       ("ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
+    (inputs
+     `(("libev" ,libev)
+       ("glib" ,glib)))
+    (propagated-inputs
+     `(("result" ,ocaml-result)
+       ("ocaml-ssl" ,ocaml-ssl)
+       ("ocaml-react" ,ocaml-react)))
     (home-page "https://github.com/ocsigen/lwt")
     (synopsis "Cooperative threads and I/O in monadic style")
     (description "Lwt provides typed, composable cooperative threads.  These
@@ -1727,6 +2244,48 @@ make it easy to run normally-blocking I/O operations concurrently in a single
 process.  Also, in many cases, Lwt threads can interact without the need for
 locks or other synchronization primitives.")
     (license license:lgpl2.1)))
+
+(define-public ocaml4.02-lwt
+  (package-with-ocaml4.02 ocaml-lwt))
+
+(define-public ocaml-lwt-log
+  (package
+    (name "ocaml-lwt-log")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/aantron/lwt_log/archive/" version
+                            ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256 (base32
+                  "1lr62j2266pbsi54xmzsfvl2z7fi7smhak7fp1ybl8hssxwi6in2"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f; require lwt_ppx
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "jbuilder" "build" "@install")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "jbuilder" "install" "--prefix" (assoc-ref outputs "out"))
+             #t)))))
+    (native-inputs
+     `(("dune" ,dune)))
+    (propagated-inputs
+     `(("lwt" ,ocaml-lwt)))
+    (home-page "https://github.com/aantron/lwt_log")
+    (synopsis "Logging library")
+    (description "This package provides a deprecated logging component for
+ocaml lwt.")
+    (license license:lgpl2.1)))
+
+(define-public ocaml4.02-lwt-log
+  (package-with-ocaml4.02 ocaml-lwt-log))
 
 (define-public ocaml-logs
   (package
@@ -1740,24 +2299,31 @@ locks or other synchronization primitives.")
                 (base32
                   "1khbn7jqpid83zn8rvyh1x1sirls7zc878zj4fz985m5xlsfy853"))))
     (build-system ocaml-build-system)
-    (arguments `(#:tests? #f
-                 #:build-flags (list "build" "--with-js_of_ocaml" "false")
-                 #:phases
-                 (modify-phases %standard-phases
-                   (delete 'configure))))
-    (native-inputs `(("opam" ,opam)))
-    (propagated-inputs `(("fmt" ,ocaml-fmt)
-                         ("lwt" ,ocaml-lwt)
-                         ("mtime" ,ocaml-mtime)
-                         ("result" ,ocaml-result)
-                         ("cmdliner" ,ocaml-cmdliner)
-                         ("topkg" ,ocaml-topkg)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags (list "build" "--with-js_of_ocaml" "false")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("fmt" ,ocaml-fmt)
+       ("lwt" ,ocaml-lwt)
+       ("mtime" ,ocaml-mtime)
+       ("result" ,ocaml-result)
+       ("cmdliner" ,ocaml-cmdliner)
+       ("topkg" ,ocaml-topkg)))
     (home-page "http://erratique.ch/software/logs")
     (synopsis "Logging infrastructure for OCaml")
     (description "Logs provides a logging infrastructure for OCaml.  Logging is
 performed on sources whose reporting level can be set independently.  Log
 message report is decoupled from logging and is handled by a reporter.")
     (license license:isc)))
+
+(define-public ocaml4.02-logs
+  (package-with-ocaml4.02 ocaml-logs))
 
 (define-public ocaml-fpath
   (package
@@ -1771,20 +2337,27 @@ message report is decoupled from logging and is handled by a reporter.")
                 (base32
                   "05134ij27xjl6gaqsc65yl19vfj6cjxq3mbm9bf4mija8grdpn6g"))))
     (build-system ocaml-build-system)
-    (arguments `(#:tests? #f
-                 #:build-flags (list "build")
-                 #:phases
-                 (modify-phases %standard-phases
-                   (delete 'configure))))
-    (native-inputs `(("opam" ,opam)))
-    (propagated-inputs `(("topkg" ,ocaml-topkg)
-                         ("astring" ,ocaml-astring)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags (list "build")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("topkg" ,ocaml-topkg)
+       ("astring" ,ocaml-astring)))
     (home-page "http://erratique.ch/software/fpath")
     (synopsis "File system paths for OCaml")
     (description "Fpath is an OCaml module for handling file system paths with
 POSIX or Windows conventions.  Fpath processes paths without accessing the
 file system and is independent from any system library.")
     (license license:isc)))
+
+(define-public ocaml4.02-fpath
+  (package-with-ocaml4.02 ocaml-fpath))
 
 (define-public ocaml-bos
   (package
@@ -1798,18 +2371,22 @@ file system and is independent from any system library.")
                 (base32
                   "1ly66lysk4w6mdy4k1n3ynlpfpq7lw4wshcpzgx58v6x613w5s7q"))))
     (build-system ocaml-build-system)
-    (arguments `(#:tests? #f
-                 #:build-flags (list "build")
-                 #:phases
-                 (modify-phases %standard-phases
-                   (delete 'configure))))
-    (native-inputs `(("opam" ,opam)))
-    (propagated-inputs `(("topkg" ,ocaml-topkg)
-                         ("astring" ,ocaml-astring)
-                         ("fmt" ,ocaml-fmt)
-                         ("fpath" ,ocaml-fpath)
-                         ("logs" ,ocaml-logs)
-                         ("rresult" ,ocaml-rresult)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags (list "build")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)))
+    (propagated-inputs
+     `(("topkg" ,ocaml-topkg)
+       ("astring" ,ocaml-astring)
+       ("fmt" ,ocaml-fmt)
+       ("fpath" ,ocaml-fpath)
+       ("logs" ,ocaml-logs)
+       ("rresult" ,ocaml-rresult)))
     (home-page "http://erratique.ch/software/bos")
     (synopsis "Basic OS interaction for OCaml")
     (description "Bos provides support for basic and robust interaction with
@@ -1818,26 +2395,31 @@ environment, parse command line arguments, interact with the file system and
 run command line programs.")
     (license license:isc)))
 
+(define-public ocaml4.02-bos
+  (package-with-ocaml4.02 ocaml-bos))
+
 (define-public ocaml-xmlm
   (package
     (name "ocaml-xmlm")
-    (version "1.2.0")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/xmlm/releases/"
                                   "xmlm-" version ".tbz"))
               (sha256
                 (base32
-                  "1jywcrwn5z3gkgvicr004cxmdaqfmq8wh72f81jqz56iyn5024nh"))))
+                  "1rrdxg5kh9zaqmgapy9bhdqyxbbvxxib3bdfg1vhw4rrkp1z0x8n"))))
     (build-system ocaml-build-system)
-    (arguments `(#:tests? #f
-                 #:phases
-                 (modify-phases %standard-phases
-                   (delete 'configure)
-                   (replace 'build
-                     (lambda* (#:key #:allow-other-keys)
-                       (zero? (system* "pkg/build" "true")))))))
-    (native-inputs `(("opam" ,opam)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags (list "build")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("ocaml-topkg" ,ocaml-topkg)
+       ("opam" ,opam)))
     (home-page "http://erratique.ch/software/xmlm")
     (synopsis "Streaming XML codec for OCaml")
     (description "Xmlm is a streaming codec to decode and encode the XML data
@@ -1848,31 +2430,40 @@ representation of the data.")
 (define-public ocaml4.01-xmlm
   (package-with-ocaml4.01 ocaml-xmlm))
 
+(define-public ocaml4.02-xmlm
+  (package-with-ocaml4.02 ocaml-xmlm))
+
 (define-public ocaml-ulex
   (package
     (name "ocaml-ulex")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.cduce.org/download/ulex-"
+              (uri (string-append "https://github.com/whitequark/ulex/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                 (base32
-                  "0fjlkwps14adfgxdrbb4yg65fhyimplvjjs1xqj5np197cig67x0"))))
+                  "16gnbhqs6y2v89vw4igzvxdf2g8ybh5643636824aldcv8sscac0"))))
     (build-system ocaml-build-system)
-    (arguments `(#:phases (modify-phases %standard-phases (delete 'configure))
-                 #:tests? #f
-                 #:make-flags
-                 (list "all.opt"
-                       (string-append "OCAMLBUILD=ocamlbuild -byte-plugin "
-                                      "-cflags -I,"
-                                      (assoc-ref %build-inputs "camlp4")
-                                      "/lib/ocaml/site-lib/camlp4"))))
-    (native-inputs `(("camlp4" ,camlp4)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases (delete 'configure))
+       #:tests? #f
+       #:make-flags
+       (list "all.opt"
+             (string-append "OCAMLBUILD=ocamlbuild -byte-plugin "
+                            "-cflags -I," (assoc-ref %build-inputs "camlp4")
+                            "/lib/ocaml/site-lib/camlp4"))))
+    (native-inputs
+     `(("camlp4" ,camlp4)
+       ("ocamlbuild" ,ocamlbuild)))
     (home-page "http://www.cduce.org/download.html#side")
     (synopsis "Lexer generator for Unicode and OCaml")
     (description "Lexer generator for Unicode and OCaml.")
     (license license:expat)))
+
+(define-public ocaml4.02-ulex
+  (package-with-ocaml4.02 ocaml-ulex))
 
 (define-public ocaml-uchar
   (package
@@ -1886,39 +2477,49 @@ representation of the data.")
         (sha256 (base32
                   "0ficw1x7ymbd6m8hqw3w1aycwm1hbwd6bad3c5pspwnzh3qlikhi"))))
     (build-system ocaml-build-system)
-    (arguments `(#:tests? #f
-                 #:build-flags (list "native=true" "native-dynlink=true")
-                 #:phases
-                 (modify-phases %standard-phases
-                   (delete 'configure))))
-    (native-inputs `(("opam" ,opam)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags (list "native=true" "native-dynlink=true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)))
     (home-page "https://github.com/ocaml/uchar")
     (synopsis "Compatibility library for OCaml's Uchar module")
     (description "The uchar package provides a compatibility library for the
 `Uchar` module introduced in OCaml 4.03.")
     (license license:lgpl2.1)))
 
+(define-public ocaml4.02-uchar
+  (package-with-ocaml4.02 ocaml-uchar))
+
 (define-public ocaml-uutf
   (package
     (name "ocaml-uutf")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/uutf/releases/"
                                   "uutf-" version ".tbz"))
               (sha256
                 (base32
-                  "08i0cw02cxw4mi2rs01v9xi307qshs6fnd1dlqyb52kcxzblpp37"))))
+                  "1gp96dcggq7s84934vimxh89caaxa77lqiff1yywbwkilkkjcfqj"))))
     (build-system ocaml-build-system)
-    (arguments `(#:tests? #f
-                 #:build-flags (list "build")
-                 #:phases
-                 (modify-phases %standard-phases
-                   (delete 'configure))))
-    (native-inputs `(("opam" ,opam)
-                     ("topkg" ,ocaml-topkg)))
-    (propagated-inputs `(("uchar" ,ocaml-uchar)
-                         ("cmdliner" ,ocaml-cmdliner)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags (list "build")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)
+       ("topkg" ,ocaml-topkg)))
+    (propagated-inputs
+     `(("uchar" ,ocaml-uchar)
+       ("cmdliner" ,ocaml-cmdliner)))
     (home-page "http://erratique.ch/software/uutf")
     (synopsis "Non-blocking streaming Unicode codec for OCaml")
     (description "Uutf is a non-blocking streaming codec to decode and encode
@@ -1930,27 +2531,34 @@ Functions are also provided to fold over the characters of UTF encoded OCaml
 string values and to directly encode characters in OCaml Buffer.t values.")
     (license license:isc)))
 
+(define-public ocaml4.02-uutf
+  (package-with-ocaml4.02 ocaml-uutf))
+
 (define-public ocaml-jsonm
   (package
     (name "ocaml-jsonm")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/jsonm/releases/"
                                   "jsonm-" version ".tbz"))
               (sha256
                 (base32
-                  "1v3ln6d965lplj28snjdqdqablpp1kx8bw2cfx0m6i157mqyln62"))))
+                  "1176dcmxb11fnw49b7yysvkjh0kpzx4s48lmdn5psq9vshp5c29w"))))
     (build-system ocaml-build-system)
-    (arguments `(#:tests? #f
-                 #:build-flags (list "build")
-                 #:phases
-                 (modify-phases %standard-phases
-                   (delete 'configure))))
-    (native-inputs `(("opam" ,opam)
-                     ("topkg" ,ocaml-topkg)))
-    (propagated-inputs `(("uutf" ,ocaml-uutf)
-                         ("cmdliner" ,ocaml-cmdliner)))
+    (arguments
+     `(#:tests? #f
+       #:build-flags (list "build")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)
+       ("topkg" ,ocaml-topkg)))
+    (propagated-inputs
+     `(("uutf" ,ocaml-uutf)
+       ("cmdliner" ,ocaml-cmdliner)))
     (home-page "http://erratique.ch/software/jsonm")
     (synopsis "Non-blocking streaming JSON codec for OCaml")
     (description "Jsonm is a non-blocking streaming codec to decode and encode
@@ -1958,31 +2566,39 @@ the JSON data format.  It can process JSON text without blocking on IO and
 without a complete in-memory representation of the data.")
     (license license:isc)))
 
+(define-public ocaml4.02-jsonm
+  (package-with-ocaml4.02 ocaml-jsonm))
+
 (define-public ocaml-ocurl
   (package
     (name "ocaml-ocurl")
-    (version "0.7.9")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ygrek.org.ua/p/release/ocurl/ocurl-"
                                   version ".tar.gz"))
               (sha256
                 (base32
-                  "0pm6nm33wi0p9h765k6zb94ljpknryam4qd1hmb2rsk2y0y1181n"))))
+                  "1ax3xdlzgb1zg7d0wr9nwgmh6a45a764m0wk8p6mx07ad94hz0q9"))))
     (build-system ocaml-build-system)
-    (arguments `(#:phases
-                 (modify-phases %standard-phases
-                   (add-before 'configure 'fix-/bin/sh
-                     (lambda* (#:key inputs #:allow-other-keys)
-                       (substitute* "configure"
-                         (("-/bin/sh") (string-append "-" (which "bash")))))))))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-/bin/sh
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "configure"
+               (("-/bin/sh") (string-append "-" (which "bash")))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs `(("curl" ,curl)))
     (home-page "http://ocurl.forge.ocamlcore.org/")
     (synopsis "OCaml bindings for libcurl")
     (description "Client-side URL transfer library, supporting HTTP and a
 multitude of other network protocols (FTP/SMTP/RTSP/etc).")
     (license license:isc)))
+
+(define-public ocaml4.02-ocurl
+  (package-with-ocaml4.02 ocaml-ocurl))
 
 (define-public ocaml-base64
   (package
@@ -2005,6 +2621,7 @@ multitude of other network protocols (FTP/SMTP/RTSP/etc).")
          (delete 'configure))))
     (native-inputs
      `(("topkg" ,ocaml-topkg)
+       ("ocamlbuild" ,ocamlbuild)
        ("opam" ,opam)
        ("rresult" ,ocaml-rresult)
        ("bos" ,ocaml-bos)
@@ -2015,6 +2632,9 @@ multitude of other network protocols (FTP/SMTP/RTSP/etc).")
 that represent binary data in an ASCII string format by translating it into a
 radix-64 representation.  It is specified in RFC 4648.")
     (license license:isc)))
+
+(define-public ocaml4.02-base64
+  (package-with-ocaml4.02 ocaml-base64))
 
 (define-public ocamlify
   (package
@@ -2029,7 +2649,9 @@ radix-64 representation.  It is specified in RFC 4648.")
     (build-system ocaml-build-system)
     ; tests are done during build
     (arguments
-     `(#:phases
+     `(#:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib
+       #:phases
        (modify-phases %standard-phases
          (delete 'check))))
     (home-page "https://forge.ocamlcore.org/projects/ocamlify")
@@ -2043,14 +2665,14 @@ OCaml code.")
 (define-public omake
   (package
     (name "omake")
-    (version "0.10.1")
+    (version "0.10.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.camlcity.org/download/"
                                   "omake-" version ".tar.gz"))
               (sha256
                (base32
-                "093ansbppms90hiqvzar2a46fj8gm9iwnf8gn38s6piyp70lrbsj"))
+                "07bdg1h5i7qnlv9xq81ad5hfypl10hxm771h4rjyl5cn8plhfcgz"))
               (patches (search-patches "omake-fix-non-determinism.patch"))))
     (build-system ocaml-build-system)
     (arguments
@@ -2063,6 +2685,8 @@ OCaml code.")
                      (lambda* (#:key outputs #:allow-other-keys)
                        (substitute* "mk/osconfig_unix.mk"
                                     (("CC = cc") "CC = gcc")))))))
+    (properties
+      `((ocaml4.02-variant . ,(delay ocaml4.02-omake))))
     (native-inputs `(("hevea" ,hevea)))
     (home-page "http://projects.camlcity.org/projects/omake.html")
     (synopsis "Build system designed for scalability and portability")
@@ -2084,28 +2708,66 @@ many additional enhancements, including:
                    license:gpl2)))) ; OMake itself, with ocaml linking exception
                                     ; see LICENSE.OMake
 
+(define-public ocaml4.02-omake
+  (let ((base (package-with-ocaml4.02 (strip-ocaml4.02-variant omake))))
+    (package
+      (inherit base)
+      (version "0.10.2")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "http://download.camlcity.org/download/"
+                                    "omake-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1znnlkpz89hk44byvnl1pr92ym6hwfyyw2qm9clq446r6l2z4m64"))
+                (patches (search-patches "omake-fix-non-determinism.patch")))))))
+
 (define-public ocaml-batteries
   (package
     (name "ocaml-batteries")
-    (version "2.5.3")
+    (version "2.9.0")
     (source (origin
               (method url-fetch)
-              (uri (ocaml-forge-uri "batteries" version 1650))
+              (uri (string-append "https://github.com/ocaml-batteries-team/"
+                                  "batteries-included/releases/download/v"
+                                  version "/batteries-" version ".tar.gz"))
               (sha256
                (base32
-                "1a97w3x2l1jr5x9kj5gqm1x6b0q9fjqdcsvls7arnl3bvzgsia0n"))))
+                "0lkdmv2my5hirkswmci2cch341n6wkkj2q8apjhs83sg6528caxi"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("qtest" ,ocaml-qtest)
+     `(("ocamlbuild" ,ocamlbuild)
+       ("qtest" ,ocaml-qtest)
        ("bisect" ,ocaml-bisect)
        ("ounit" ,ocaml-ounit)))
+    (propagated-inputs
+     `(("ocaml-num" ,ocaml-num)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (delete 'check) ; tests are run by the build phase
          (replace 'build
-           (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "ocaml" "setup.ml" "-build")))))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((files
+                     (map (lambda (str)
+                            (substring str 0 (- (string-length str) 1)))
+                          (append
+                            (find-files "src" ".*.mliv")
+                            (find-files "src" ".*.mlv")
+                            (find-files "src" ".*.mlp")))))
+               (apply invoke "ocamlbuild" "-no-links" "-use-ocamlfind" "-I" "num"
+                      "-lflag" "-dllpath-all" files)
+               (for-each (lambda (file)
+                           (copy-file (string-append "_build/" file) file))
+                         files))
+             (invoke "ocamlbuild" "-no-links" "-use-ocamlfind" "-I" "num"
+                     "-lflag" "-dllpath-all" "build/mkconf.byte")
+             (copy-file "_build/build/mkconf.byte" "build/mkconf.byte")
+             (invoke "make" "all")
+             #t)))))
+    (properties
+      `((ocaml4.01-variant . ,(delay ocaml4.01-batteries))
+        (ocaml4.02-variant . ,(delay ocaml4.02-batteries))))
     (home-page "http://batteries.forge.ocamlcore.org/")
     (synopsis "Development platform for the OCaml programming language")
     (description "Define a standard set of libraries which may be expected on
@@ -2113,8 +2775,24 @@ every compliant installation of OCaml and organize these libraries into a
 hierarchy of modules.")
     (license license:lgpl2.1+)))
 
+(define-public ocaml4.02-batteries
+  (let ((base (package-with-ocaml4.02 (strip-ocaml4.02-variant ocaml-batteries))))
+    (package
+      (inherit base)
+      (version "2.5.3")
+      (source (origin
+                (method url-fetch)
+                (uri (ocaml-forge-uri "batteries" version 1650))
+                (sha256
+                 (base32
+                  "1a97w3x2l1jr5x9kj5gqm1x6b0q9fjqdcsvls7arnl3bvzgsia0n"))))
+      (propagated-inputs '()))))
+
 (define-public ocaml4.01-batteries
-  (package-with-ocaml4.01 ocaml-batteries))
+  (let ((base (package-with-ocaml4.01 (strip-ocaml4.01-variant ocaml4.02-batteries))))
+    (package
+      (inherit base)
+      (name "ocaml4.01-batteries"))))
 
 (define-public ocaml-pcre
   (package
@@ -2139,9 +2817,11 @@ hierarchy of modules.")
                     (lib (string-append out "/lib/ocaml/site-lib/pcre")))
                (mkdir-p stubs)
                (symlink (string-append lib "/dllpcre_stubs.so")
-                        (string-append stubs "/dllpcre_stubs.so"))))))))
+                        (string-append stubs "/dllpcre_stubs.so")))
+             #t)))))
     (native-inputs
      `(("batteries" ,ocaml-batteries)
+       ("ocamlbuild" ,ocamlbuild)
        ("pcre:bin" ,pcre "bin")))
     (propagated-inputs `(("pcre" ,pcre)))
     (home-page "https://mmottl.github.io/pcre-ocaml")
@@ -2151,19 +2831,26 @@ matching and substitution, similar to the functionality offered by the Perl
 language.")
     (license license:lgpl2.1+))); with the OCaml link exception
 
+(define-public ocaml4.02-pcre
+  (package-with-ocaml4.02 ocaml-pcre))
+
 (define-public ocaml-expect
   (package
     (name "ocaml-expect")
-    (version "0.0.5")
+    (version "0.0.6")
     (source (origin
               (method url-fetch)
-              (uri (ocaml-forge-uri name version 1372))
+              (uri (ocaml-forge-uri name version 1736))
               (sha256
                (base32
-                "07xq8w2x2vffc32z7vk6y14jwbfb1cw0m2lm1jzi60hnr1dvg8by"))))
+                "098qvg9d4yrqzr5ax291y3whrpax0m3sx4gi6is0mblc96r9yqk0"))))
+    (arguments
+     `(#:tests? #f))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("ocaml-pcre" ,ocaml-pcre)
+     `(("ocamlbuild" ,ocamlbuild)
+       ("ocaml-num" ,ocaml-num)
+       ("ocaml-pcre" ,ocaml-pcre)
        ("ounit" ,ocaml-ounit)))
     (propagated-inputs `(("batteries" ,ocaml-batteries)))
     (home-page "https://forge.ocamlcore.org/projects/ocaml-expect/")
@@ -2172,18 +2859,22 @@ language.")
 can match the question using a regular expression or a timeout.")
     (license license:lgpl2.1+))) ; with the OCaml static compilation exception
 
-(define-public ocaml-fileutils
+(define-public ocaml4.02-fileutils
   (package
-    (name "ocaml-fileutils")
-    (version "0.5.1")
+    (name "ocaml4.02-fileutils")
+    (version "0.5.3")
     (source (origin
               (method url-fetch)
-              (uri (ocaml-forge-uri name version 1651))
+              (uri (ocaml-forge-uri name version 1728))
               (sha256
                (base32
-                "0g6zx2rcvacklxyli19ixcf6ich9ipxsps4k3jz98f5zlaab0a7g"))))
+                "1rc4cqlvdhbs55i85zfbfhz938fsy4fj6kwlkfm3ra7bpwn8bmpd"))))
     (build-system ocaml-build-system)
-    (native-inputs `(("ounit" ,ocaml-ounit)))
+    (arguments
+     `(#:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib))
+    (native-inputs
+     `(("ounit" ,ocaml4.02-ounit)))
     (home-page "http://ocaml-fileutils.forge.ocamlcore.org")
     (synopsis "Pure OCaml functions to manipulate real file and filename")
     (description "Library to provide pure OCaml functions to manipulate real
@@ -2193,20 +2884,20 @@ file (POSIX like) and filename.")
 (define-public ocaml-oasis
   (package
     (name "ocaml-oasis")
-    (version "0.4.8")
+    (version "0.4.11")
     (source (origin
               (method url-fetch)
-              (uri (ocaml-forge-uri name version 1669))
+              (uri (ocaml-forge-uri name version 1757))
               (sha256
                (base32
-                "1ln7vc7ip6s5xbi20mhnn087xi4a2m5vqawx0703qqnfkzhmslqy"))
+                "0bn13mzfa98dq3y0jwzzndl55mnywaxv693z6f1rlvpdykp3vdqq"))
             (modules '((guix build utils)))
             (snippet
              '(begin
                 (substitute* "test/test-main/Test.ml"
                   ;; most of these tests fail because ld cannot find crti.o, but according
                   ;; to the log file, the environment variables {LD_,}LIBRARY_PATH
-                  ;; are set correctly whene LD_LIBRARY_PATH is defined beforhand.
+                  ;; are set correctly when LD_LIBRARY_PATH is defined beforhand.
                   (("TestBaseCompat.tests;") "")
                   (("TestExamples.tests;") "")
                   (("TestFull.tests;") "")
@@ -2216,23 +2907,21 @@ file (POSIX like) and filename.")
                   (("TestPluginOMake.tests;") ""))
                 #t))))
     (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f))
     (native-inputs
-     `(("ocamlify" ,ocamlify)
-       ("ocamlmod" ,ocamlmod)
-       ("ounit" ,ocaml-ounit)
-       ("omake" ,omake)
-       ("ocaml-expect" ,ocaml-expect)
-       ("ocaml-pcre" ,ocaml-pcre)
-       ("ocaml-fileutils" ,ocaml-fileutils)
-       ("camlp4" ,camlp4)
-       ("texlive" ,texlive)
-       ("pkg-config" ,pkg-config)))
+     `(("ocamlbuild" ,ocamlbuild)
+       ("ocamlify" ,ocamlify)
+       ("ocamlmod" ,ocamlmod)))
     (home-page "https://oasis.forge.ocamlcore.org")
     (synopsis "Integrates a configure, build, install system in OCaml projects")
     (description "OASIS is a tool to integrate a configure, build and install
 system in your OCaml projects.  It helps to create standard entry points in your
 build system and allows external tools to analyse your project easily.")
     (license license:lgpl2.1+))) ; with ocaml static compilation exception
+
+(define-public ocaml4.02-oasis
+  (package-with-ocaml4.02 ocaml-oasis))
 
 (define-public ocaml-js-build-tools
   (package
@@ -2242,6 +2931,7 @@ build system and allows external tools to analyse your project easily.")
               "0r8z4fz8iy5y6hkdlkpwf6rk4qigcr3dzyv35585xgg2ahf12zy6"))
     (native-inputs
      `(("oasis" ,ocaml-oasis)
+       ("ocamlbuild" ,ocamlbuild)
        ("opam" ,opam)))
     (build-system ocaml-build-system)
     (arguments janestreet-arguments)
@@ -2256,17 +2946,23 @@ from the oasis build log
 @end enumerate")
     (license license:asl2.0)))
 
-(define-public ocaml-bin-prot
+(define-public ocaml4.02-js-build-tools
+  (package-with-ocaml4.02 ocaml-js-build-tools))
+
+(define-public ocaml4.02-bin-prot
   (package
-    (name "ocaml-bin-prot")
+    (name "ocaml4.02-bin-prot")
     (version "113.33.03")
     (source (janestreet-origin "bin_prot" version
                "1ws8c017z8nbj3vw92ndvjk9011f71rmp3llncbv8r5fc76wqv3l"))
-    (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
-       ("opam" ,opam)))
     (build-system ocaml-build-system)
-    (arguments janestreet-arguments)
+    (native-inputs
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
+       ("opam" ,opam)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/bin_prot/")
     (synopsis "Binary protocol generator")
     (description "This library contains functionality for reading and writing
@@ -2277,17 +2973,20 @@ protocol is also heavily optimized for size, making it ideal for long-term
 storage of large amounts of data.")
     (license license:asl2.0)))
 
-(define-public ocaml-fieldslib
+(define-public ocaml4.02-fieldslib
   (package
-    (name "ocaml-fieldslib")
+    (name "ocaml4.02-fieldslib")
     (version "113.33.03")
     (source (janestreet-origin "fieldslib" version
                "1rm3bn54bzk2hlq8f3w067ak8s772w4a8f78i3yh79vxfzq8ncvv"))
-    (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
-       ("opam" ,opam)))
     (build-system ocaml-build-system)
-    (arguments janestreet-arguments)
+    (native-inputs
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
+       ("opam" ,opam)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/fieldslib/")
     (synopsis "Syntax extension to record fields")
     (description "Syntax extension to define first class values representing
@@ -2295,18 +2994,21 @@ record fields, to get and set record fields, iterate and fold over all fields
 of a record and create new record values.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-core
+(define-public ocaml4.02-ppx-core
   (package
-    (name "ocaml-ppx-core")
+    (name "ocaml4.02-ppx-core")
     (version "113.33.03")
     (source (janestreet-origin "ppx_core" version
                "0f69l4czhgssnhb5ds2j9dbqjyz8dp1y3i3x0i4h6pxnms20zbxa"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
-    (inputs `(("ppx-tools" ,ocaml-ppx-tools)))
-    (arguments janestreet-arguments)
+    (inputs `(("ppx-tools" ,ocaml4.02-ppx-tools)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_core/")
     (synopsis "Standard library for ppx rewriters")
     (description "Ppx_core is a standard library for OCaml AST transformers.
@@ -2319,20 +3021,23 @@ It contains:
 @end enumerate")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-optcomp
+(define-public ocaml4.02-ppx-optcomp
   (package
-    (name "ocaml-ppx-optcomp")
+    (name "ocaml4.02-ppx-optcomp")
     (version "113.33.03")
     (source (janestreet-origin "ppx_optcomp" version
                "13an8p2r7sd0d5lv54mlzrxdni47408bwqi3bjcx4m6005170q30"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-core" ,ocaml-ppx-core)))
-    (arguments janestreet-arguments)
+     `(("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-core" ,ocaml4.02-ppx-core)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_optcomp/")
     (synopsis "Optional compilation for OCaml")
     (description "Ppx_optcomp stands for Optional Compilation.  It is a tool
@@ -2340,21 +3045,24 @@ used to handle optional compilations of pieces of code depending of the word
 size, the version of the compiler, ...")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-driver
+(define-public ocaml4.02-ppx-driver
   (package
-    (name "ocaml-ppx-driver")
+    (name "ocaml4.02-ppx-driver")
     (version "113.33.03")
     (source (janestreet-origin "ppx_driver" version
               "011zzr45897j49b7iiybb29k7pspcx36mlnp7nh6pxb8b0ga76fh"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)
-       ("ppx-optcomp" ,ocaml-ppx-optcomp)))
+       ("ppx-optcomp" ,ocaml4.02-ppx-optcomp)))
     (propagated-inputs
-     `(("ppx-optcomp" ,ocaml-ppx-optcomp)
-       ("ppx-core" ,ocaml-ppx-core)))
-    (arguments janestreet-arguments)
+     `(("ppx-optcomp" ,ocaml4.02-ppx-optcomp)
+       ("ppx-core" ,ocaml4.02-ppx-core)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_driver/")
     (synopsis "Feature-full driver for OCaml AST transformers")
     (description "A driver is an executable created from a set of OCaml AST
@@ -2372,21 +3080,33 @@ provide a tool that can be used to:
 (define-public ocaml-cppo
   (package
     (name "ocaml-cppo")
-    (version "1.4.1")
+    (version "1.6.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/mjambon/cppo/archive/v" version
                             ".tar.gz"))
         (sha256 (base32
-                  "02gma6nw09vfnd6h7bl3n70lwz7m9z2svplxyfh6h5bf4lqgqzjv"))
+                  "1dkm3d5h6h56y937gcdk2wixlpzl59vv5pmiafglr89p20kf7gqf"))
         (file-name (string-append name "-" version ".tar.gz"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases (delete 'configure))
-       #:make-flags (list (string-append "BINDIR="
-                                         (assoc-ref %outputs "out") "/bin"))
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "dune" "build" "@install" "--profile" "release")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "dune" "install"
+                     "--prefix" (assoc-ref outputs "out"))
+             #t)))
        #:tests? #f))
+    (native-inputs
+     `(("dune" ,dune)
+       ("ocamlbuild" ,ocamlbuild)))
     (home-page "https://github.com/mjambon/cppo")
     (synopsis "Equivalent of the C preprocessor for OCaml programs")
     (description "Cppo is an equivalent of the C preprocessor for OCaml
@@ -2399,11 +3119,14 @@ programs.  It allows the definition of simple macros and file inclusion.  Cpp oi
 @end enumerate")
     (license license:bsd-3)))
 
+(define-public ocaml4.02-cppo
+  (package-with-ocaml4.02 ocaml-cppo))
+
 ;; this package is not reproducible. This is related to temporary filenames
 ;; such as findlib_initxxxxx where xxxxx is random.
-(define-public ocaml-ppx-deriving
+(define-public ocaml4.02-ppx-deriving
   (package
-    (name "ocaml-ppx-deriving")
+    (name "ocaml4.02-ppx-deriving")
     (version "4.1")
     (source
       (origin
@@ -2415,15 +3138,17 @@ programs.  It allows the definition of simple macros and file inclusion.  Cpp oi
         (file-name (string-append name "-" version ".tar.gz"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
-       ("cppo" ,ocaml-cppo)
-       ("ounit" ,ocaml-ounit)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
+       ("cppo" ,ocaml4.02-cppo)
+       ("ounit" ,ocaml4.02-ounit)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("result" ,ocaml-result)
-       ("ppx-tools" ,ocaml-ppx-tools)))
+     `(("result" ,ocaml4.02-result)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)))
     (arguments
-     `(#:phases
+     `(#:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib
+       #:phases
        (modify-phases %standard-phases
          (delete 'configure)
            (add-before 'install 'fix-environment
@@ -2438,90 +3163,100 @@ programs.  It allows the definition of simple macros and file inclusion.  Cpp oi
 code based on type definitions, and a set of useful plugins for common tasks.")
     (license license:expat)))
 
-(define-public ocaml-ppx-type-conv
+(define-public ocaml4.02-ppx-type-conv
   (package
-    (name "ocaml-ppx-type-conv")
+    (name "ocaml4.02-ppx-type-conv")
     (version "113.33.03")
     (source
       (janestreet-origin "ppx_type_conv" version
         "1sp602ads2f250nv4d4rgw54d14k7flyhb4w8ff084f657hhmxv2"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-deriving" ,ocaml-ppx-deriving)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("result" ,ocaml-result)
-       ("ppx-core" ,ocaml-ppx-core)
-       ("ppx-driver" ,ocaml-ppx-driver)))
-    (arguments janestreet-arguments)
+     `(("ppx-deriving" ,ocaml4.02-ppx-deriving)
+       ("ppx-core" ,ocaml4.02-ppx-core)
+       ("ppx-driver" ,ocaml4.02-ppx-driver)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_type_conv/")
     (synopsis "Support Library for type-driven code generators")
     (description "The type_conv library factors out functionality needed by
 different preprocessors that generate code from type specifications.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-inline-test
+(define-public ocaml4.02-ppx-inline-test
   (package
-    (name "ocaml-ppx-inline-test")
+    (name "ocaml4.02-ppx-inline-test")
     (version "113.33.03")
     (source (janestreet-origin "ppx_inline_test" version
               "0859ni43fl39dd5g6cxfhq0prxmx59bd2bfq8jafp593ba4q0icq"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)
-       ("ppx-core" ,ocaml-ppx-core)))
+       ("ppx-core" ,ocaml4.02-ppx-core)))
     (propagated-inputs
-      `(("ppx-driver" ,ocaml-ppx-driver)
-        ("ppx-tools" ,ocaml-ppx-tools)
-        ("ppx-core" ,ocaml-ppx-core)))
-    (arguments janestreet-arguments)
+      `(("ppx-driver" ,ocaml4.02-ppx-driver)
+        ("ppx-tools" ,ocaml4.02-ppx-tools)
+        ("ppx-core" ,ocaml4.02-ppx-core)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_inline_test/")
     (synopsis "Syntax extension for writing in-line tests in ocaml code")
     (description "Syntax extension for writing in-line tests in ocaml code.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-bench
+(define-public ocaml4.02-ppx-bench
   (package
-    (name "ocaml-ppx-bench")
+    (name "ocaml4.02-ppx-bench")
     (version "113.33.03")
     (source (janestreet-origin "ppx_bench" version
                    "1hky3y17qpb925rymf97wv54di9gaqdmkix7wpkjw14qzl512b68"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)
-       ("ppx-core" ,ocaml-ppx-core)))
+       ("ppx-core" ,ocaml4.02-ppx-core)))
     (propagated-inputs
-     `(("ppx-driver" ,ocaml-ppx-driver)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-inline-test" ,ocaml-ppx-inline-test)
-       ("ppx-core" ,ocaml-ppx-core)))
-    (arguments janestreet-arguments)
+     `(("ppx-driver" ,ocaml4.02-ppx-driver)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-inline-test" ,ocaml4.02-ppx-inline-test)
+       ("ppx-core" ,ocaml4.02-ppx-core)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_bench/")
     (synopsis "Syntax extension for writing in-line benchmarks in ocaml code")
     (description "Syntax extension for writing in-line benchmarks in ocaml code.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-compare
+(define-public ocaml4.02-ppx-compare
   (package
-    (name "ocaml-ppx-compare")
+    (name "ocaml4.02-ppx-compare")
     (version "113.33.03")
     (source (janestreet-origin "ppx_compare" version
               "0bfhi33kq9l4q6zzc6svki2csracz5j4731c3npcy6cs73jynn0z"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)
-       ("ppx-core" ,ocaml-ppx-core)))
+       ("ppx-core" ,ocaml4.02-ppx-core)))
     (propagated-inputs
-     `(("ppx-driver" ,ocaml-ppx-driver)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-core" ,ocaml-ppx-core)
-       ("ppx-type-conv" ,ocaml-ppx-type-conv)))
-    (arguments janestreet-arguments)
+     `(("ppx-driver" ,ocaml4.02-ppx-driver)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-core" ,ocaml4.02-ppx-core)
+       ("ppx-type-conv" ,ocaml4.02-ppx-type-conv)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_compare/")
     (synopsis "Generation of comparison functions from types")
     (description "Generation of fast comparison functions from type expressions
@@ -2532,94 +3267,109 @@ flexibility by allowing you to override them for a specific type and more safety
 by making sure that you only compare comparable values.")
     (license license:asl2.0)))
 
-(define-public ocaml-sexplib
+(define-public ocaml4.02-sexplib
   (package
-    (name "ocaml-sexplib")
+    (name "ocaml4.02-sexplib")
     (version "113.33.03")
     (source (janestreet-origin "sexplib" version
               "1ffjmj8if9lyv965cgn2ld1xv7g52qsr8mqflbm515ck1i8l2ima"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
-    (arguments janestreet-arguments)
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/sexplib/")
     (synopsis "Library for serializing OCaml values to and from S-expressions")
     (description "Sexplib contains functionality for parsing and pretty-printing
 s-expressions.")
     (license license:asl2.0)))
 
-(define-public ocaml-typerep
+(define-public ocaml4.02-typerep
   (package
-    (name "ocaml-typerep")
+    (name "ocaml4.02-typerep")
     (version "113.33.03")
     (source (janestreet-origin "typerep" version
               "1b9v5bmi824a9d4sx0f40ixq0yfcbiqxafg4a1jx95xg9199zafy"))
-    (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
-       ("opam" ,opam)))
     (build-system ocaml-build-system)
-    (arguments janestreet-arguments)
+    (native-inputs
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
+       ("opam" ,opam)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/typerep/")
     (synopsis "Typerep is a library for runtime types")
     (description "Typerep is a library for runtime types.")
     (license license:asl2.0)))
 
-(define-public ocaml-variantslib
+(define-public ocaml4.02-variantslib
   (package
-    (name "ocaml-variantslib")
+    (name "ocaml4.02-variantslib")
     (version "113.33.03")
     (source (janestreet-origin "variantslib" version
               "05vp799vl38fvl98ga5miwbzh09cnnpapi6q6gdvwyqi6w7s919n"))
-    (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
-       ("opam" ,opam)))
     (build-system ocaml-build-system)
-    (arguments janestreet-arguments)
+    (native-inputs
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
+       ("opam" ,opam)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/variantslib")
     (synopsis "OCaml variants as first class values")
     (description "OCaml variants as first class values.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-sexp-conv
+(define-public ocaml4.02-ppx-sexp-conv
   (package
-    (name "ocaml-ppx-sexp-conv")
+    (name "ocaml4.02-ppx-sexp-conv")
     (version "113.33.03")
     (source (janestreet-origin "ppx_sexp_conv" version
               "1rbj6d5dl625gdxih34xcrdvikci6h8i2dl9x3wraa4qrgishiw7"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)
-       ("ppx-core" ,ocaml-ppx-core)))
+       ("ppx-core" ,ocaml4.02-ppx-core)))
     (propagated-inputs
-     `(("sexplib" ,ocaml-sexplib)
-       ("ppx-core" ,ocaml-ppx-core)
-       ("ppx-type-conv" ,ocaml-ppx-type-conv)
-       ("ppx-tools" ,ocaml-ppx-tools)))
-    (arguments janestreet-arguments)
+     `(("sexplib" ,ocaml4.02-sexplib)
+       ("ppx-core" ,ocaml4.02-ppx-core)
+       ("ppx-type-conv" ,ocaml4.02-ppx-type-conv)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_sexp_conv")
     (synopsis "Generation of S-expression conversion functions from type definitions")
     (description "Generation of S-expression conversion functions from type
 definitions.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-variants-conv
+(define-public ocaml4.02-ppx-variants-conv
   (package
-    (name "ocaml-ppx-variants-conv")
+    (name "ocaml4.02-ppx-variants-conv")
     (version "113.33.03")
     (source (janestreet-origin "ppx_variants_conv" version
               "0vnn2l1118cj72413d3f7frlw6yc09l8f64jlzkzbgb9bxpalx34"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-core" ,ocaml-ppx-core)
-       ("variantslib" ,ocaml-variantslib)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-type-conv" ,ocaml-ppx-type-conv)))
-    (arguments janestreet-arguments)
+     `(("ppx-core" ,ocaml4.02-ppx-core)
+       ("variantslib" ,ocaml4.02-variantslib)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-type-conv" ,ocaml4.02-ppx-type-conv)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_variants_conv")
     (synopsis "Generation of accessor and iteration functions for ocaml variant
 types")
@@ -2627,65 +3377,74 @@ types")
 variant types.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-here
+(define-public ocaml4.02-ppx-here
   (package
-    (name "ocaml-ppx-here")
+    (name "ocaml4.02-ppx-here")
     (version "113.33.03")
     (source (janestreet-origin "ppx_here" version
               "1ay8lfxi0qg3ib2zkwh4h0vqk3gjmxaz572gzab0bbxyqn3z86v7"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-driver" ,ocaml-ppx-driver)
-       ("ppx-core" ,ocaml-ppx-core)))
-    (arguments janestreet-arguments)
+     `(("ppx-driver" ,ocaml4.02-ppx-driver)
+       ("ppx-core" ,ocaml4.02-ppx-core)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_here")
     (synopsis "Expands [%here] into its location")
     (description "Expands [%here] into its location.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-assert
+(define-public ocaml4.02-ppx-assert
   (package
-    (name "ocaml-ppx-assert")
+    (name "ocaml4.02-ppx-assert")
     (version "113.33.03")
     (source (janestreet-origin "ppx_assert" version
               "1k5kxmqkibp5fk25pgz81f3c1r4mgvb5byzf6bnmxd24y60wn46p"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-compare" ,ocaml-ppx-compare)
-       ("ppx-core" ,ocaml-ppx-core)
-       ("ppx-driver" ,ocaml-ppx-driver)
-       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-type-conv" ,ocaml-ppx-type-conv)
-       ("ppx-sexplib" ,ocaml-sexplib)
-       ("ppx-here" ,ocaml-ppx-here)))
-    (arguments janestreet-arguments)
+     `(("ppx-compare" ,ocaml4.02-ppx-compare)
+       ("ppx-core" ,ocaml4.02-ppx-core)
+       ("ppx-driver" ,ocaml4.02-ppx-driver)
+       ("ppx-sexp-conv" ,ocaml4.02-ppx-sexp-conv)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-type-conv" ,ocaml4.02-ppx-type-conv)
+       ("ppx-sexplib" ,ocaml4.02-sexplib)
+       ("ppx-here" ,ocaml4.02-ppx-here)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_assert")
     (synopsis "Assert-like extension nodes that raise useful errors on failure")
     (description "Assert-like extension nodes that raise useful errors on failure.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-enumerate
+(define-public ocaml4.02-ppx-enumerate
   (package
-    (name "ocaml-ppx-enumerate")
+    (name "ocaml4.02-ppx-enumerate")
     (version "113.33.03")
     (source (janestreet-origin "ppx_enumerate" version
               "15g7yfv9wg2h9r6k6q1zrhygmsl4xrfn25mrb0i4czjjivzmxjh4"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-type-conv" ,ocaml-ppx-type-conv)
-       ("ppx-core" ,ocaml-ppx-core)))
-    (arguments janestreet-arguments)
+     `(("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-type-conv" ,ocaml4.02-ppx-type-conv)
+       ("ppx-core" ,ocaml4.02-ppx-core)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_enumerate")
     (synopsis "Generate a list containing all values of a finite type")
     (description "Ppx_enumerate is a ppx rewriter which generates a definition
@@ -2693,174 +3452,198 @@ for the list of all values of a type (for a type which only has finitely
 many values).")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-let
+(define-public ocaml4.02-ppx-let
   (package
-    (name "ocaml-ppx-let")
+    (name "ocaml4.02-ppx-let")
     (version "113.33.03")
     (source (janestreet-origin "ppx_let" version
               "0gd6d3gdaqfwjcs7gaw1qxc30i584q6a86ndaj1bx1q63xqd6yx9"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-driver" ,ocaml-ppx-driver)
-       ("ppx-core" ,ocaml-ppx-core)))
-    (arguments janestreet-arguments)
+     `(("ppx-driver" ,ocaml4.02-ppx-driver)
+       ("ppx-core" ,ocaml4.02-ppx-core)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_let")
     (synopsis "Monadic let-bindings")
     (description "A ppx rewriter for monadic and applicative let bindings,
 match expressions, and if expressions.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-typerep-conv
+(define-public ocaml4.02-ppx-typerep-conv
   (package
-    (name "ocaml-ppx-typerep-conv")
+    (name "ocaml4.02-ppx-typerep-conv")
     (version "113.33.03")
     (source (janestreet-origin "ppx_typerep_conv" version
               "0g0xqm9s1b2jjvxb8yp69281q2s3bwz6sibn10fvgcdawpa0rmrg"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-type-conv" ,ocaml-ppx-type-conv)
-       ("ppx-core" ,ocaml-ppx-core)
-       ("typerep" ,ocaml-typerep)))
-    (arguments janestreet-arguments)
+     `(("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-type-conv" ,ocaml4.02-ppx-type-conv)
+       ("ppx-core" ,ocaml4.02-ppx-core)
+       ("typerep" ,ocaml4.02-typerep)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_typerep_conv")
     (synopsis "Generation of runtime types from type declarations")
     (description "Automatic generation of runtime types from type definitions.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-sexp-value
+(define-public ocaml4.02-ppx-sexp-value
   (package
-    (name "ocaml-ppx-sexp-value")
+    (name "ocaml4.02-ppx-sexp-value")
     (version "113.33.03")
     (source (janestreet-origin "ppx_sexp_value" version
               "0m3ag23mbqm0i2pv1dzilfks15ipa5q60mf57a0cd3p0pvarq10g"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-driver" ,ocaml-ppx-driver)
-       ("ppx-here" ,ocaml-ppx-here)
-       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-core" ,ocaml-ppx-core)))
-    (arguments janestreet-arguments)
+     `(("ppx-driver" ,ocaml4.02-ppx-driver)
+       ("ppx-here" ,ocaml4.02-ppx-here)
+       ("ppx-sexp-conv" ,ocaml4.02-ppx-sexp-conv)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-core" ,ocaml4.02-ppx-core)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_sexp_value/")
     (synopsis "Simplify building s-expressions from ocaml values")
     (description "A ppx rewriter that simplifies building s-expressions from
 ocaml values.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-pipebang
+(define-public ocaml4.02-ppx-pipebang
   (package
-    (name "ocaml-ppx-pipebang")
+    (name "ocaml4.02-ppx-pipebang")
     (version "113.33.03")
     (source (janestreet-origin "ppx_pipebang" version
               "1965c7hymp26ncmjs0pfxi2s5jlj60z2c9b194lgcwxqiav56pcw"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-driver" ,ocaml-ppx-driver)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-core" ,ocaml-ppx-core)))
-    (arguments janestreet-arguments)
+     `(("ppx-driver" ,ocaml4.02-ppx-driver)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-core" ,ocaml4.02-ppx-core)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_pipebang/")
     (synopsis "Inline reverse application operators `|>` and `|!`")
     (description "A ppx rewriter that inlines reverse application operators
 @code{|>} and @code{|!}.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-bin-prot
+(define-public ocaml4.02-ppx-bin-prot
   (package
-    (name "ocaml-ppx-bin-prot")
+    (name "ocaml4.02-ppx-bin-prot")
     (version "113.33.03")
     (source (janestreet-origin "ppx_bin_prot" version
               "173kjv36giik11zgfvsbzwfbpr66dm2pcha9vf990jgzh8hqz39h"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("bin-prot" ,ocaml-bin-prot)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-type-conv" ,ocaml-ppx-type-conv)
-       ("ppx-core" ,ocaml-ppx-core)))
-    (arguments janestreet-arguments)
+     `(("bin-prot" ,ocaml4.02-bin-prot)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-type-conv" ,ocaml4.02-ppx-type-conv)
+       ("ppx-core" ,ocaml4.02-ppx-core)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_bin_prot/")
     (synopsis "Generation of bin_prot readers and writers from types")
     (description "Generation of binary serialization and deserialization
 functions from type definitions.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-fail
+(define-public ocaml4.02-ppx-fail
   (package
-    (name "ocaml-ppx-fail")
+    (name "ocaml4.02-ppx-fail")
     (version "113.33.03")
     (source (janestreet-origin "ppx_fail" version
               "1dwgad0f05gqp5rnwf9dcasidpfi7q3mrpazsw3a2vijjblbhjgn"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-driver" ,ocaml-ppx-driver)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-here" ,ocaml-ppx-here)
-       ("ppx-core" ,ocaml-ppx-core)))
-    (arguments janestreet-arguments)
+     `(("ppx-driver" ,ocaml4.02-ppx-driver)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-here" ,ocaml4.02-ppx-here)
+       ("ppx-core" ,ocaml4.02-ppx-core)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_fail/")
     (synopsis "Add location to calls to failwiths")
     (description "Syntax extension that makes [failwiths] always include a
 position.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-custom-printf
+(define-public ocaml4.02-ppx-custom-printf
   (package
-    (name "ocaml-ppx-custom-printf")
+    (name "ocaml4.02-ppx-custom-printf")
     (version "113.33.03")
     (source (janestreet-origin "ppx_custom_printf" version
               "11jlx0n87g2j1vyyp343dibx7lvvwig5j5q0nq0b80kbsq0k6yr8"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-core" ,ocaml-ppx-core)
-       ("ppx-driver" ,ocaml-ppx-driver)))
-    (arguments janestreet-arguments)
+     `(("ppx-sexp-conv" ,ocaml4.02-ppx-sexp-conv)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-core" ,ocaml4.02-ppx-core)
+       ("ppx-driver" ,ocaml4.02-ppx-driver)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_custom_printf/")
     (synopsis "Printf-style format-strings for user-defined string conversion")
     (description "Extensions to printf-style format-strings for user-defined
 string conversion.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-sexp-message
+(define-public ocaml4.02-ppx-sexp-message
   (package
-    (name "ocaml-ppx-sexp-message")
+    (name "ocaml4.02-ppx-sexp-message")
     (version "113.33.03")
     (source (janestreet-origin "ppx_sexp_message" version
               "084w1l3gnyw4ri9vbn7bv9b2xkw1520qczfxpxdarfivdrz8xr68"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-driver" ,ocaml-ppx-driver)
-       ("ppx-here" ,ocaml-ppx-here)
-       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-core" ,ocaml-ppx-core)))
-    (arguments janestreet-arguments)
+     `(("ppx-driver" ,ocaml4.02-ppx-driver)
+       ("ppx-here" ,ocaml4.02-ppx-here)
+       ("ppx-sexp-conv" ,ocaml4.02-ppx-sexp-conv)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-core" ,ocaml4.02-ppx-core)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_sexp_message/")
     (synopsis "A ppx rewriter for easy construction of s-expressions")
     (description "Ppx_sexp_message aims to ease the creation of s-expressions
@@ -2869,23 +3652,26 @@ where one needs to construct a s-expression based on various element of the
 context such as function arguments.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-fields-conv
+(define-public ocaml4.02-ppx-fields-conv
   (package
-    (name "ocaml-ppx-fields-conv")
+    (name "ocaml4.02-ppx-fields-conv")
     (version "113.33.03")
     (source (janestreet-origin "ppx_fields_conv" version
               "1vzbdz27g5qhhfs7wx6rjf979q4xyssxqbmp6sc1sxknbghslbdv"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)
-       ("ppx-core" ,ocaml-ppx-core)))
+       ("ppx-core" ,ocaml4.02-ppx-core)))
     (propagated-inputs
-     `(("fieldslib" ,ocaml-fieldslib)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-core" ,ocaml-ppx-core)
-       ("ppx-type-conv" ,ocaml-ppx-type-conv)))
-    (arguments janestreet-arguments)
+     `(("fieldslib" ,ocaml4.02-fieldslib)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-core" ,ocaml4.02-ppx-core)
+       ("ppx-type-conv" ,ocaml4.02-ppx-type-conv)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_fields_conv/")
     (synopsis "Generation of accessor and iteration functions for ocaml records")
     (description "Ppx_fields_conv is a ppx rewriter that can be used to define
@@ -2894,10 +3680,59 @@ and set record fields, iterate and fold over all fields of a record and create
 new record values.")
     (license license:asl2.0)))
 
+(define-public ocaml-seq
+  (package
+    (name "ocaml-seq")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/c-cube/seq/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02lb2d9i12bxrz2ba5wygk2bycan316skqlyri0597q7j9210g8r"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((install-dir (string-append (assoc-ref outputs "out")
+                                               "/lib/ocaml/site-lib/seq")))
+               (mkdir-p install-dir)
+               (with-output-to-file (string-append install-dir "/META")
+                 (lambda _
+                   (display "name=\"seq\"
+version=\"[distributed with ocaml]\"
+description=\"dummy package for compatibility\"
+requires=\"\"")))
+             #t))))))
+    (properties
+      `((ocaml4.02-variant . ,(delay ocaml4.02-seq))))
+    (home-page "https://github.com/c-cube/seq")
+    (synopsis "OCaml's standard iterator type")
+    (description "This package is a compatibility package for OCaml's
+standard iterator type starting from 4.07.")
+    (license license:lgpl2.1+)))
+
+(define-public ocaml4.02-seq
+  (let ((base (package-with-ocaml4.02 (strip-ocaml4.02-variant ocaml-seq))))
+    (package
+      (inherit base)
+      (arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib
+         #:tests? #f; no tests
+         #:phases (modify-phases %standard-phases (delete 'configure)))))))
+
 (define-public ocaml-re
   (package
     (name "ocaml-re")
-    (version "1.7.1")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ocaml/ocaml-re//archive/"
@@ -2905,9 +3740,27 @@ new record values.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1s3rcr76cgm4p1xmaazc58arkg2lz3zfcp1icm00m6s5ccnkh67b"))))
+                "1pdb0mr6z5ax6szblr3f5lbdnqq9grm97cmsfjmdma60yrx2rqhd"))))
     (build-system ocaml-build-system)
-    (native-inputs `(("ounit" ,ocaml-ounit)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "dune" "build" "@install" "--profile" "release")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "dune" "install"
+                     "--prefix" (assoc-ref outputs "out"))
+             #t)))))
+    (propagated-inputs
+     `(("ocaml-seq" ,ocaml-seq)))
+    (native-inputs
+     `(("dune" ,dune)
+       ("ounit" ,ocaml-ounit)))
     (home-page "https://github.com/ocaml/ocaml-re/")
     (synopsis "Regular expression library for OCaml")
     (description "Pure OCaml regular expressions with:
@@ -2920,32 +3773,38 @@ new record values.")
 @end enumerate")
     (license license:expat)))
 
-(define-public ocaml-ppx-expect
+(define-public ocaml4.02-re
+  (package-with-ocaml4.02 ocaml-re))
+
+(define-public ocaml4.02-ppx-expect
   (package
-    (name "ocaml-ppx-expect")
+    (name "ocaml4.02-ppx-expect")
     (version "113.33.03")
     (source (janestreet-origin "ppx_expect" version
               "03sbs4s5i8l9syr45v25f5hzy7msd2b47k2a9wsq9m43d4imgkrc"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("fieldslib" ,ocaml-fieldslib)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("ppx-assert" ,ocaml-ppx-assert)
-       ("ppx-compare" ,ocaml-ppx-compare)
-       ("ppx-core" ,ocaml-ppx-core)
-       ("ppx-custom-printf" ,ocaml-ppx-custom-printf)
-       ("ppx-driver" ,ocaml-ppx-driver)
-       ("ppx-fields-conv" ,ocaml-ppx-fields-conv)
-       ("ppx-inline-test" ,ocaml-ppx-inline-test)
-       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
-       ("ppx-variants-conv" ,ocaml-ppx-variants-conv)
-       ("re" ,ocaml-re)
-       ("sexplib" ,ocaml-sexplib)
-       ("variantslib" ,ocaml-variantslib)))
-    (arguments janestreet-arguments)
+     `(("fieldslib" ,ocaml4.02-fieldslib)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("ppx-assert" ,ocaml4.02-ppx-assert)
+       ("ppx-compare" ,ocaml4.02-ppx-compare)
+       ("ppx-core" ,ocaml4.02-ppx-core)
+       ("ppx-custom-printf" ,ocaml4.02-ppx-custom-printf)
+       ("ppx-driver" ,ocaml4.02-ppx-driver)
+       ("ppx-fields-conv" ,ocaml4.02-ppx-fields-conv)
+       ("ppx-inline-test" ,ocaml4.02-ppx-inline-test)
+       ("ppx-sexp-conv" ,ocaml4.02-ppx-sexp-conv)
+       ("ppx-variants-conv" ,ocaml4.02-ppx-variants-conv)
+       ("re" ,ocaml4.02-re)
+       ("sexplib" ,ocaml4.02-sexplib)
+       ("variantslib" ,ocaml4.02-variantslib)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_expect/")
     (synopsis "Cram like framework for OCaml")
     (description "Expect-test is a framework for writing tests in OCaml, similar
@@ -2955,66 +3814,72 @@ output-generating code, interleaved with %expect extension expressions to denote
 the expected output.")
     (license license:asl2.0)))
 
-(define-public ocaml-ppx-jane
+(define-public ocaml4.02-ppx-jane
   (package
-    (name "ocaml-ppx-jane")
+    (name "ocaml4.02-ppx-jane")
     (version "113.33.03")
     (source (janestreet-origin "ppx_jane" version
               "0bjxkhmzgm6x9dcvjwybbccn34khbvyyjimcbaja30fp6qcqk5yl"))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("ppx-assert" ,ocaml-ppx-assert)
-       ("ppx-bench" ,ocaml-ppx-bench)
-       ("ppx-bin-prot" ,ocaml-ppx-bin-prot)
-       ("ppx-compare" ,ocaml-ppx-compare)
-       ("ppx-custom-printf" ,ocaml-ppx-custom-printf)
-       ("ppx-deriving" ,ocaml-ppx-deriving)
-       ("ppx-enumerate" ,ocaml-ppx-enumerate)
-       ("ppx-expect" ,ocaml-ppx-expect)
-       ("ppx-fail" ,ocaml-ppx-fail)
-       ("ppx-fields-conv" ,ocaml-ppx-fields-conv)
-       ("ppx-here" ,ocaml-ppx-here)
-       ("ppx-inline-test" ,ocaml-ppx-inline-test)
-       ("ppx-let" ,ocaml-ppx-let)
-       ("ppx-pipebang" ,ocaml-ppx-pipebang)
-       ("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
-       ("ppx-sexp-message" ,ocaml-ppx-sexp-message)
-       ("ppx-sexp-value" ,ocaml-ppx-sexp-value)
-       ("ppx-typerep-conv" ,ocaml-ppx-typerep-conv)
-       ("ppx-variants-conv" ,ocaml-ppx-variants-conv)))
-    (arguments janestreet-arguments)
+     `(("ppx-assert" ,ocaml4.02-ppx-assert)
+       ("ppx-bench" ,ocaml4.02-ppx-bench)
+       ("ppx-bin-prot" ,ocaml4.02-ppx-bin-prot)
+       ("ppx-compare" ,ocaml4.02-ppx-compare)
+       ("ppx-custom-printf" ,ocaml4.02-ppx-custom-printf)
+       ("ppx-deriving" ,ocaml4.02-ppx-deriving)
+       ("ppx-enumerate" ,ocaml4.02-ppx-enumerate)
+       ("ppx-expect" ,ocaml4.02-ppx-expect)
+       ("ppx-fail" ,ocaml4.02-ppx-fail)
+       ("ppx-fields-conv" ,ocaml4.02-ppx-fields-conv)
+       ("ppx-here" ,ocaml4.02-ppx-here)
+       ("ppx-inline-test" ,ocaml4.02-ppx-inline-test)
+       ("ppx-let" ,ocaml4.02-ppx-let)
+       ("ppx-pipebang" ,ocaml4.02-ppx-pipebang)
+       ("ppx-sexp-conv" ,ocaml4.02-ppx-sexp-conv)
+       ("ppx-sexp-message" ,ocaml4.02-ppx-sexp-message)
+       ("ppx-sexp-value" ,ocaml4.02-ppx-sexp-value)
+       ("ppx-typerep-conv" ,ocaml4.02-ppx-typerep-conv)
+       ("ppx-variants-conv" ,ocaml4.02-ppx-variants-conv)))
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/ppx_jane/")
     (synopsis "Standard Jane Street ppx rewriters")
     (description "Ppx_jane is a ppx_driver including all standard ppx rewriters.")
     (license license:asl2.0)))
 
-(define-public ocaml-core-kernel
+(define-public ocaml4.02-core-kernel
   (package
-    (name "ocaml-core-kernel")
+    (name "ocaml4.02-core-kernel")
     (version "113.33.03")
     (source (janestreet-origin "core_kernel" version
                "0fl23jrwivixawhxinbwaw9cabqnzn7fini7dxpxjjvkxdc8ip5y"))
     (native-inputs
-     `(("js-build-tools" ,ocaml-js-build-tools)
-       ("ppx-jane" ,ocaml-ppx-jane)
+     `(("js-build-tools" ,ocaml4.02-js-build-tools)
+       ("ppx-jane" ,ocaml4.02-ppx-jane)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("bin_prot" ,ocaml-bin-prot)
-       ("ppx-assert" ,ocaml-ppx-assert)
-       ("ppx-bench" ,ocaml-ppx-bench)
-       ("ppx-driver" ,ocaml-ppx-driver)
-       ("ppx-expect" ,ocaml-ppx-expect)
-       ("ppx-inline-test" ,ocaml-ppx-inline-test)
-       ("typerep" ,ocaml-typerep)
-       ("sexplib" ,ocaml-sexplib)
-       ("variantslib" ,ocaml-variantslib)
-       ("result" ,ocaml-result)
-       ("fieldslib" ,ocaml-fieldslib)))
+     `(("bin_prot" ,ocaml4.02-bin-prot)
+       ("ppx-assert" ,ocaml4.02-ppx-assert)
+       ("ppx-bench" ,ocaml4.02-ppx-bench)
+       ("ppx-driver" ,ocaml4.02-ppx-driver)
+       ("ppx-expect" ,ocaml4.02-ppx-expect)
+       ("ppx-inline-test" ,ocaml4.02-ppx-inline-test)
+       ("typerep" ,ocaml4.02-typerep)
+       ("sexplib" ,ocaml4.02-sexplib)
+       ("variantslib" ,ocaml4.02-variantslib)
+       ("result" ,ocaml4.02-result)
+       ("fieldslib" ,ocaml4.02-fieldslib)))
     (build-system ocaml-build-system)
-    (arguments janestreet-arguments)
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/core_kernel/")
     (synopsis "Portable standard library for OCaml")
     (description "Core is an alternative to the OCaml standard library.
@@ -3023,127 +3888,145 @@ Core_kernel is the system-independent part of Core.  It is aimed for cases when
 the full Core is not available, such as in Javascript.")
     (license license:asl2.0)))
 
-(define-public ocaml-async-kernel
+(define-public ocaml4.02-async-kernel
   (package
-    (name "ocaml-async-kernel")
+    (name "ocaml4.02-async-kernel")
     (version "113.33.03")
     (source (janestreet-origin "async_kernel" version
               "04bjsaa23j831r09r38x6xx9nhryvp0z5ihickvhxqa4fb2snyvd"))
     (native-inputs
      `(("oasis" ,ocaml-oasis)
-       ("js-build-tools" ,ocaml-js-build-tools)
-       ("ppx-jane" ,ocaml-ppx-jane)
+       ("js-build-tools" ,ocaml4.02-js-build-tools)
+       ("ppx-jane" ,ocaml4.02-ppx-jane)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("core-kernel" ,ocaml-core-kernel)))
+     `(("core-kernel" ,ocaml4.02-core-kernel)))
     (build-system ocaml-build-system)
-    (arguments janestreet-arguments)
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/async_kernel/")
     (synopsis "Monadic concurrency library")
     (description "Async-kernel is a library for concurrent programming in OCaml.")
     (license license:asl2.0)))
 
-(define-public ocaml-async-rpc-kernel
+(define-public ocaml4.02-async-rpc-kernel
   (package
-    (name "ocaml-async-rpc-kernel")
+    (name "ocaml4.02-async-rpc-kernel")
     (version "113.33.03")
     (source (janestreet-origin "async_rpc_kernel" version
              "0y97h9pkb00v7jpf87m8cbb0ffkclj9g26ph6sq97q8dpisnkjwh"))
     (native-inputs
      `(("oasis" ,ocaml-oasis)
-       ("js-build-tools" ,ocaml-js-build-tools)
-       ("ppx-jane" ,ocaml-ppx-jane)
+       ("js-build-tools" ,ocaml4.02-js-build-tools)
+       ("ppx-jane" ,ocaml4.02-ppx-jane)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("async-kernel" ,ocaml-async-kernel)))
+     `(("async-kernel" ,ocaml4.02-async-kernel)))
     (build-system ocaml-build-system)
-    (arguments janestreet-arguments)
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/async_rpc_kernel/")
     (synopsis "Platform-independent core of the Async RPC library")
     (description "Async_rpc_kernel is the platform-independent core of
 the Async RPC library.")
     (license license:asl2.0)))
 
-(define-public ocaml-core
+(define-public ocaml4.02-core
   (package
-    (name "ocaml-core")
+    (name "ocaml4.02-core")
     (version "113.33.03")
     (source (janestreet-origin "core" version
               "1znll157qg56g9d3247fjibv1hxv3r9wxgr4nhy19j2vzdh6a268"))
     (native-inputs
      `(("oasis" ,ocaml-oasis)
-       ("js-build-tools" ,ocaml-js-build-tools)
-       ("ppx-jane" ,ocaml-ppx-jane)
+       ("js-build-tools" ,ocaml4.02-js-build-tools)
+       ("ppx-jane" ,ocaml4.02-ppx-jane)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("core-kernel" ,ocaml-core-kernel)))
+     `(("core-kernel" ,ocaml4.02-core-kernel)))
     (build-system ocaml-build-system)
-    (arguments janestreet-arguments)
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/core/")
     (synopsis "Alternative to OCaml's standard library")
     (description "The Core suite of libraries is an alternative to OCaml's
 standard library that was developed by Jane Street.")
     (license license:asl2.0)))
 
-(define-public ocaml-async-unix
+(define-public ocaml4.02-async-unix
   (package
-    (name "ocaml-async-unix")
+    (name "ocaml4.02-async-unix")
     (version "113.33.03")
     (source (janestreet-origin "async_unix" version
               "1fwl0lfrizllcfjk8hk8m7lsz9ha2jg6qgk4gssfyz377qvpcq4h"))
     (native-inputs
      `(("oasis" ,ocaml-oasis)
-       ("js-build-tools" ,ocaml-js-build-tools)
-       ("ppx-jane" ,ocaml-ppx-jane)
+       ("js-build-tools" ,ocaml4.02-js-build-tools)
+       ("ppx-jane" ,ocaml4.02-ppx-jane)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("async-kernel" ,ocaml-async-kernel)
-       ("core" ,ocaml-core)))
+     `(("async-kernel" ,ocaml4.02-async-kernel)
+       ("core" ,ocaml4.02-core)))
     (build-system ocaml-build-system)
-    (arguments janestreet-arguments)
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/async_unix")
     (synopsis "Asynchronous execution library for Unix")
     (description "Async_unix is an asynchronous execution library for Unix.")
     (license license:asl2.0)))
 
-(define-public ocaml-async-extra
+(define-public ocaml4.02-async-extra
   (package
-    (name "ocaml-async-extra")
+    (name "ocaml4.02-async-extra")
     (version "113.33.03")
     (source (janestreet-origin "async_extra" version
               "1si8jgiq5xh5sl9f2b7f9p17p7zx5h1pg557x2cxywi2x7pxqg4f"))
     (native-inputs
      `(("oasis" ,ocaml-oasis)
-       ("js-build-tools" ,ocaml-js-build-tools)
-       ("ppx-jane" ,ocaml-ppx-jane)
+       ("js-build-tools" ,ocaml4.02-js-build-tools)
+       ("ppx-jane" ,ocaml4.02-ppx-jane)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("async-rpc-kernel" ,ocaml-async-rpc-kernel)
-       ("async-unix" ,ocaml-async-unix)
-       ("core" ,ocaml-core)))
+     `(("async-rpc-kernel" ,ocaml4.02-async-rpc-kernel)
+       ("async-unix" ,ocaml4.02-async-unix)
+       ("core" ,ocaml4.02-core)))
     (build-system ocaml-build-system)
-    (arguments janestreet-arguments)
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/async_extra")
     (synopsis "Extra functionnalities for the async library")
     (description "Async_extra provides additional functionnalities for the
 async library.")
     (license license:asl2.0)))
 
-(define-public ocaml-async
+(define-public ocaml4.02-async
   (package
-    (name "ocaml-async")
+    (name "ocaml4.02-async")
     (version "113.33.03")
     (source (janestreet-origin "async" version
               "0210fyhcs12kpmmd26015bgivkfd2wqkyn3c5wd7688d0f872y25"))
     (native-inputs
      `(("oasis" ,ocaml-oasis)
-       ("js-build-tools" ,ocaml-js-build-tools)
-       ("ppx-jane" ,ocaml-ppx-jane)
+       ("js-build-tools" ,ocaml4.02-js-build-tools)
+       ("ppx-jane" ,ocaml4.02-ppx-jane)
        ("opam" ,opam)))
     (propagated-inputs
-     `(("async-extra" ,ocaml-async-extra)))
+     `(("async-extra" ,ocaml4.02-async-extra)))
     (build-system ocaml-build-system)
-    (arguments janestreet-arguments)
+    (arguments
+      (ensure-keyword-arguments janestreet-arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib)))
     (home-page "https://github.com/janestreet/async")
     (synopsis "Monadic concurrency library")
     (description "Async is a library for concurrent programming in OCaml.")
@@ -3162,7 +4045,9 @@ async library.")
                 "0hwj09rnzjs0m0kazz5h2mgs6p95j0zlga8cda5srnzqmzhniwkn"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system ocaml-build-system)
-    (native-inputs `(("cppo" ,ocaml-cppo)))
+    (native-inputs
+     `(("cppo" ,ocaml-cppo)
+       ("ocamlbuild" ,ocamlbuild)))
     (home-page "https://github.com/OCamlPro/ocplib-endian")
     (synopsis "Optimised functions to read and write int16/32/64 from strings
 and bigarrays")
@@ -3172,9 +4057,12 @@ strings, bytes and bigstring (Bigarrys of chars), and provides submodules for
 big- and little-endian, with their unsafe counter-parts.")
     (license license:lgpl2.1)))
 
-(define-public ocaml-cstruct
+(define-public ocaml4.02-ocplib-endian
+  (package-with-ocaml4.02 ocaml-ocplib-endian))
+
+(define-public ocaml4.02-cstruct
   (package
-    (name "ocaml-cstruct")
+    (name "ocaml4.02-cstruct")
     (version "2.3.1")
     (source (origin
               (method url-fetch)
@@ -3186,7 +4074,9 @@ big- and little-endian, with their unsafe counter-parts.")
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:configure-flags
+     `(#:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib
+       #:configure-flags
        (list "--enable-lwt" "--enable-async")
        #:phases
        (modify-phases %standard-phases
@@ -3199,14 +4089,14 @@ big- and little-endian, with their unsafe counter-parts.")
                (symlink (string-append lib "/dllcstruct_stubs.so")
                         (string-append stubs "/dllcstruct_stubs.so"))))))))
     (native-inputs
-     `(("ounit" ,ocaml-ounit)
-       ("ppx-tools" ,ocaml-ppx-tools)
-       ("camlp4" ,camlp4)))
+     `(("ounit" ,ocaml4.02-ounit)
+       ("ppx-tools" ,ocaml4.02-ppx-tools)
+       ("camlp4" ,camlp4-4.02)))
     (propagated-inputs
-     `(("ocplib-endian" ,ocaml-ocplib-endian)
-       ("lwt" ,ocaml-lwt)
-       ("async" ,ocaml-async)
-       ("sexplib" ,ocaml-sexplib)))
+     `(("ocplib-endian" ,ocaml4.02-ocplib-endian)
+       ("lwt" ,ocaml4.02-lwt)
+       ("async" ,ocaml4.02-async)
+       ("sexplib" ,ocaml4.02-sexplib)))
     (home-page "https://github.com/mirage/ocaml-cstruct")
     (synopsis "Access C structures via a camlp4 extension")
     (description "Cstruct is a library and syntax extension to make it easier
@@ -3214,9 +4104,9 @@ to access C-like structures directly from OCaml.  It supports both reading and
 writing to these structures, and they are accessed via the Bigarray module.")
     (license license:isc)))
 
-(define-public ocaml-hex
+(define-public ocaml4.02-hex
   (package
-    (name "ocaml-hex")
+    (name "ocaml4.02-hex")
     (version "1.0.0")
     (source (origin
               (method url-fetch)
@@ -3227,15 +4117,19 @@ writing to these structures, and they are accessed via the Bigarray module.")
                 "0s63g0b8gfv2xm6fv6xg7bva8h76b5pcjb0zw3f8cygs0lq9072v"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system ocaml-build-system)
-    (propagated-inputs `(("cstruct" ,ocaml-cstruct)))
+    (arguments
+     `(#:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib))
+    (propagated-inputs
+     `(("cstruct" ,ocaml4.02-cstruct)))
     (home-page "https://github.com/mirage/ocaml-hex/")
     (synopsis "Minimal library providing hexadecimal converters")
     (description "Hex is a minimal library providing hexadecimal converters.")
     (license license:isc)))
 
-(define-public ocaml-ezjsonm
+(define-public ocaml4.02-ezjsonm
   (package
-    (name "ocaml-ezjsonm")
+    (name "ocaml4.02-ezjsonm")
     (version "0.4.3")
     (source (origin
               (method url-fetch)
@@ -3247,14 +4141,16 @@ writing to these structures, and they are accessed via the Bigarray module.")
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system ocaml-build-system)
     (native-inputs
-     `(("alcotest" ,ocaml-alcotest)))
+     `(("alcotest" ,ocaml4.02-alcotest)))
     (propagated-inputs
-     `(("hex" ,ocaml-hex)
-       ("jsonm" ,ocaml-jsonm)
-       ("lwt" ,ocaml-lwt)
-       ("sexplib" ,ocaml-sexplib)))
+     `(("hex" ,ocaml4.02-hex)
+       ("jsonm" ,ocaml4.02-jsonm)
+       ("lwt" ,ocaml4.02-lwt)
+       ("sexplib" ,ocaml4.02-sexplib)))
     (arguments
-     `(#:configure-flags (list "--enable-lwt")))
+     `(#:configure-flags (list "--enable-lwt")
+       #:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib))
     (home-page "https://github.com/mirage/ezjsonm/")
     (synopsis "Read and write JSON data")
     (description "Ezjsonm provides more convenient (but far less flexible) input
@@ -3263,9 +4159,9 @@ the need to write signal code, which is useful for quick scripts that manipulate
 JSON.")
     (license license:isc)))
 
-(define-public ocaml-uri
+(define-public ocaml4.02-uri
   (package
-    (name "ocaml-uri")
+    (name "ocaml4.02-uri")
     (version "1.9.2")
     (source (origin
               (method url-fetch)
@@ -3276,14 +4172,17 @@ JSON.")
                 "02bzrag79prx261rxf9mlak749pwf4flpfl8p012x1xznv9m0clc"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system ocaml-build-system)
+    (arguments
+     `(#:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib))
     (native-inputs
-     `(("ounit" ,ocaml-ounit)))
+     `(("ounit" ,ocaml4.02-ounit)))
     (propagated-inputs
-     `(("ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
-       ("re" ,ocaml-re)
-       ("ppx-deriving" ,ocaml-ppx-deriving)
-       ("sexplib" ,ocaml-sexplib)
-       ("stringext" ,ocaml-stringext)))
+     `(("ppx-sexp-conv" ,ocaml4.02-ppx-sexp-conv)
+       ("re" ,ocaml4.02-re)
+       ("ppx-deriving" ,ocaml4.02-ppx-deriving)
+       ("sexplib" ,ocaml4.02-sexplib)
+       ("stringext" ,ocaml4.02-stringext)))
     (home-page "https://github.com/mirage/ocaml-uri")
     (synopsis "RFC3986 URI/URL parsing library")
     (description "OCaml-uri is a library for parsing URI/URL in the RFC3986 format.")
@@ -3312,6 +4211,9 @@ JSON.")
 Format module of the OCaml standard library.")
     (license license:bsd-3)))
 
+(define-public ocaml4.02-easy-format
+  (package-with-ocaml4.02 ocaml-easy-format))
+
 (define-public optcomp
   (package
     (name "optcomp")
@@ -3326,13 +4228,15 @@ Format module of the OCaml standard library.")
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:use-make? #t
+     `(#:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib
+       #:use-make? #t
        #:make-flags
        (list (string-append "BUILDFLAGS=\"-cflags -I,"
                             (assoc-ref %build-inputs "camlp4")
                             "/lib/ocaml/site-lib/camlp4/Camlp4Parsers\""))))
-    (native-inputs `(("camlp4" ,camlp4)))
-    (propagated-inputs `(("camlp4" ,camlp4)))
+    (native-inputs `(("camlp4" ,camlp4-4.02)))
+    (propagated-inputs `(("camlp4" ,camlp4-4.02)))
     (home-page "https://github.com/diml/optcomp")
     (synopsis "Optional compilation for OCaml")
     (description "Optcomp provides an optional compilation facility with
@@ -3342,14 +4246,14 @@ cpp-like directives.")
 (define-public ocaml-piqilib
   (package
     (name "ocaml-piqilib")
-    (version "0.6.13")
+    (version "0.6.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alavrik/piqi/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1whqr2bb3gds2zmrzqnv8vqka9928w4lx6mi6g244kmbwb2h8d8l"))
+                "1ssccnwqzfyf7syfq2fv4zyhwayxwd75rhq9y28mvq1w6qbww4l7"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system ocaml-build-system)
     (arguments
@@ -3365,14 +4269,17 @@ cpp-like directives.")
              (let ((out (assoc-ref outputs "out")))
                (substitute* "make/OCamlMakefile"
                  (("/bin/sh") (which "bash")))
-               (zero? (system* "./configure" "--prefix" out "--ocaml-libdir"
-                               (string-append out "/lib/ocaml/site-lib"))))))
+               (invoke "./configure" "--prefix" out "--ocaml-libdir"
+                       (string-append out "/lib/ocaml/site-lib")))
+             #t))
        (add-after 'build 'build-ocaml
          (lambda* (#:key outputs #:allow-other-keys)
-           (zero? (system* "make" "ocaml")))) 
+           (invoke "make" "ocaml")
+           #t))
        (add-after 'install 'install-ocaml
          (lambda* (#:key outputs #:allow-other-keys)
-           (zero? (system* "make" "ocaml-install"))))
+           (invoke "make" "ocaml-install")
+           #t))
        (add-after 'install-ocaml 'link-stubs
          (lambda* (#:key outputs #:allow-other-keys)
            (let* ((out (assoc-ref outputs "out"))
@@ -3388,14 +4295,17 @@ cpp-like directives.")
     (propagated-inputs
      `(("xmlm" ,ocaml-xmlm)
        ("ulex" ,ocaml-ulex)
-       ("optcomp" ,optcomp)
        ("easy-format" ,ocaml-easy-format)
        ("base64" ,ocaml-base64)))
+    (home-page "http://www.cduce.org/download.html#side")
     (home-page "http://piqi.org")
     (synopsis "Data serialization and conversion library")
     (description "Piqilib is the common library used by the piqi command-line
 tool and piqi-ocaml.")
     (license license:asl2.0)))
+
+(define-public ocaml4.02-piqilib
+  (package-with-ocaml4.02 ocaml-piqilib))
 
 (define-public ocaml-uuidm
   (package
@@ -3416,7 +4326,8 @@ tool and piqi-ocaml.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (native-inputs
-     `(("opam" ,opam)))
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)))
     (propagated-inputs
      `(("cmdliner" ,ocaml-cmdliner)
        ("topkg" ,ocaml-topkg)))
@@ -3427,21 +4338,24 @@ unique identifiers (UUIDs) version 3, 5 (named based with MD5, SHA-1 hashing)
 and 4 (random based) according to RFC 4122.")
     (license license:isc)))
 
+(define-public ocaml4.02-uuidm
+  (package-with-ocaml4.02 ocaml-uuidm))
+
 (define-public ocaml-graph
   (package
     (name "ocaml-graph")
-    (version "1.8.7")
+    (version "1.8.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ocamlgraph.lri.fr/download/"
                                   "ocamlgraph-" version ".tar.gz"))
               (sha256
                (base32
-                "1845r537swjil2fcj7lgbibc2zybfwqqasrd2s7bncajs83cl1nz"))
-              (patches (search-patches "ocaml-graph-honor-source-date-epoch.patch"))))
+                "0m9g16wrrr86gw4fz2fazrh8nkqms0n863w7ndcvrmyafgxvxsnr"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:install-target "install-findlib"
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'set-shell
@@ -3454,10 +4368,13 @@ and 4 (random based) according to RFC 4122.")
     (description "OCamlgraph is a generic graph library for OCaml.")
     (license license:lgpl2.1)))
 
+(define-public ocaml4.02-graph
+  (package-with-ocaml4.02 ocaml-graph))
+
 (define-public ocaml-piqi
   (package
     (name "ocaml-piqi")
-    (version "0.7.5")
+    (version "0.7.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alavrik/piqi-ocaml/"
@@ -3465,7 +4382,7 @@ and 4 (random based) according to RFC 4122.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ngz6y8i98i5v2ma8nk6mc83pdsmf2z0ks7m3xi6clfg3zqbddrv"))))
+                "0da0v2v28aj65b0cwpvvmcqyrfvz94pp3j5zgfdr1jrl5s37c21g"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:make-flags
@@ -3477,9 +4394,13 @@ and 4 (random based) according to RFC 4122.")
          (delete 'configure))))
     (native-inputs
      `(("which" ,which)
+       ("camlp4" ,camlp4)
        ("protobuf" ,protobuf))) ; for tests
     (propagated-inputs
-     `(("piqilib" ,ocaml-piqilib)))
+     `(("num" ,ocaml-num)
+       ("piqilib" ,ocaml-piqilib)))
+    (properties
+      `((ocaml4.02-variant . ,(delay ocaml4.02-piqi))))
     (home-page "https://github.com/alavrik/piqi-ocaml")
     (synopsis "Protocol serialization system for OCaml")
     (description "Piqi is a multi-format data serialization system for OCaml.
@@ -3487,67 +4408,73 @@ It provides a uniform interface for serializing OCaml data structures to JSON,
 XML and Protocol Buffers formats.")
     (license license:asl2.0)))
 
+(define-public ocaml4.02-piqi
+  (let ((base (package-with-ocaml4.02 (strip-ocaml4.02-variant ocaml-piqi))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("piqilib" ,ocaml4.02-piqilib))))))
+
 (define-public bap
   (package
     (name "bap")
-    (version "1.1.0")
+    (version "1.3.0")
     (home-page "https://github.com/BinaryAnalysisPlatform/bap")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "/archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "1ms95m4j1qrmy7zqmsn2izh7gq68lnmssl7chyhk977kd3sxj66m"))
+                "0v95v9mp7mg8fj25ry0w7566zd9xp6cs8nnqj4l38q54fb1hfav9"))
               (file-name (string-append name "-" version ".tar.gz"))))
    (build-system ocaml-build-system)
    (native-inputs
-    `(("oasis" ,ocaml-oasis)
+    `(("oasis" ,ocaml4.02-oasis)
       ("clang" ,clang-3.8)
-      ("ounit" ,ocaml-ounit)))
+      ("ounit" ,ocaml4.02-ounit)))
    (propagated-inputs
-    `(("core-kernel" ,ocaml-core-kernel)
-      ("ppx-driver" ,ocaml-ppx-driver)
-      ("uri" ,ocaml-uri)
+    `(("core-kernel" ,ocaml4.02-core-kernel)
+      ("ppx-driver" ,ocaml4.02-ppx-driver)
+      ("bin-prot" ,ocaml4.02-bin-prot)
+      ("uri" ,ocaml4.02-uri)
       ("llvm" ,llvm-3.8)
       ("gmp" ,gmp)
       ("clang-runtime" ,clang-runtime)
-      ("fileutils" ,ocaml-fileutils)
-      ("cmdliner" ,ocaml-cmdliner)
-      ("zarith" ,ocaml-zarith)
-      ("uuidm" ,ocaml-uuidm)
-      ("camlzip" ,camlzip)
+      ("fileutils" ,ocaml4.02-fileutils)
+      ("cmdliner" ,ocaml4.02-cmdliner)
+      ("zarith" ,ocaml4.02-zarith)
+      ("uuidm" ,ocaml4.02-uuidm)
+      ("camlzip" ,ocaml4.02-camlzip)
       ("frontc" ,ocaml-frontc)
-      ("ezjsonm" ,ocaml-ezjsonm)
-      ("ocurl" ,ocaml-ocurl)
-      ("piqi" ,ocaml-piqi)
-      ("ocamlgraph" ,ocaml-graph)
-      ("bitstring" ,ocaml-bitstring)
-      ("ppx-jane" ,ocaml-ppx-jane)
-      ("re" ,ocaml-re)))
+      ("ezjsonm" ,ocaml4.02-ezjsonm)
+      ("ocurl" ,ocaml4.02-ocurl)
+      ("piqi" ,ocaml4.02-piqi)
+      ("ocamlgraph" ,ocaml4.02-graph)
+      ("bitstring" ,ocaml4.02-bitstring)
+      ("ppx-jane" ,ocaml4.02-ppx-jane)
+      ("re" ,ocaml4.02-re)))
    (inputs `(("llvm" ,llvm-3.8)))
    (arguments
-    `(#:use-make? #t
+    `(#:ocaml ,ocaml-4.02
+      #:findlib ,ocaml4.02-findlib
+      #:use-make? #t
       #:phases
       (modify-phases %standard-phases
         (replace 'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (zero? (system* "./configure" "--prefix"
-                            (assoc-ref outputs "out")
-                            "--libdir"
-                            (string-append
-                              (assoc-ref outputs "out")
-                              "/lib/ocaml/site-lib")
-                            "--with-llvm-version=3.8"
-                            "--with-llvm-config=llvm-config"
-                            "--enable-everything"))))
-        (add-after 'install 'link-stubs
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
-                   (lib (string-append out "/lib/ocaml/site-lib/bap-plugin-llvm")))
-              (mkdir-p stubs)
-              (symlink (string-append lib "/dllllvm_plugin_stubs.so")
-                       (string-append stubs "/dllllvm_plugin_stubs.so"))))))))
+          (lambda* (#:key outputs inputs #:allow-other-keys)
+            (invoke "./configure" "--prefix"
+                    (assoc-ref outputs "out")
+                    "--libdir"
+                    (string-append
+                      (assoc-ref outputs "out")
+                      "/lib/ocaml/site-lib")
+                    "--with-llvm-version=3.8"
+                    "--with-llvm-config=llvm-config"
+                    "--enable-everything")
+            (substitute* "plugins/objdump/objdump_main.ml"
+              (("Re_perl") "Re.Perl"))
+            (substitute* "oasis/objdump"
+              (("re.pcre") "re.pcre, re.perl")))))))
    (synopsis "Binary Analysis Platform")
    (description "Binary Analysis Platform is a framework for writing program
 analysis tools, that target binary files.  The framework consists of a plethora
@@ -3558,23 +4485,33 @@ the plugins facilitate extensibility, and the frontends serve as entry points.")
 (define-public ocaml-camomile
   (package
     (name "ocaml-camomile")
-    (version "0.8.5")
+    (version "1.0.1")
     (home-page "https://github.com/yoriyuki/Camomile")
     (source (origin
               (method url-fetch)
-              (uri (string-append home-page "/releases/download/rel-" version
-                                  "/camomile-" version ".tar.bz2"))
+              (uri (string-append home-page "/releases/download/" version
+                                  "/camomile-" version ".tbz"))
               (sha256
                (base32
-                "003ikpvpaliy5hblhckfmln34zqz0mk3y2m1fqvbjngh3h2np045"))))
+                "01ssjrqz41jvrqh27jxnh9cx7ywi9b5sgsykd00i7z9nrcwhlfy2"))))
     (build-system ocaml-build-system)
-    (native-inputs `(("camlp4" ,camlp4)))
+    (native-inputs
+     `(("camlp4" ,camlp4)
+       ("dune" ,dune)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-bin/sh
+         (delete 'configure)
+         (replace 'build
            (lambda _
-             (setenv "CONFIG_SHELL" (which "bash")))))))
+             (invoke "dune" "build" "@install" "--profile" "release")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "dune" "install"
+                     "--prefix" (assoc-ref outputs "out"))
+             #t)))
+       #:tests? #f))
     (synopsis "Comprehensive Unicode library")
     (description "Camomile is a Unicode library for OCaml.  Camomile provides
 Unicode character type, UTF-8, UTF-16, UTF-32 strings, conversion to/from about
@@ -3582,6 +4519,9 @@ Unicode character type, UTF-8, UTF-16, UTF-32 strings, conversion to/from about
 library is currently designed for Unicode Standard 3.2.")
     ;; with an exception for linked libraries to use a different license
     (license license:lgpl2.0+)))
+
+(define-public ocaml4.02-camomile
+  (package-with-ocaml4.02 ocaml-camomile))
 
 (define-public ocaml-jbuilder
   (package
@@ -3595,10 +4535,12 @@ library is currently designed for Unicode Standard 3.2.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0gcy52y0mkg450yxwszp3lww303a1154566r8jb4hh5l61dh4dwj"))))
+                "1cy07pwvbrlysszs938yd74yyvvbgkffpb82qrjph77zf0h2gdi7"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:phases
+     `(#:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib
+       #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
@@ -3606,7 +4548,7 @@ library is currently designed for Unicode Standard 3.2.")
                (setenv "PREFIX" out))
              #t)))))
     (native-inputs
-     `(("menhir" ,ocaml-menhir)))
+     `(("menhir" ,ocaml4.02-menhir)))
     (propagated-inputs
      `(("opam" ,opam)))
     (home-page "https://github.com/janestreet/jbuilder")
@@ -3654,10 +4596,13 @@ to write text editors, edition widgets, readlines, etc.  You just have to
 connect an engine to your inputs and rendering functions to get an editor.")
     (license license:bsd-3)))
 
+(define-public ocaml4.02-zed
+  (package-with-ocaml4.02 ocaml-zed))
+
 (define-public ocaml-lambda-term
   (package
     (name "ocaml-lambda-term")
-    (version "1.11")
+    (version "1.13")
     (source
      (origin
        (method url-fetch)
@@ -3665,26 +4610,27 @@ connect an engine to your inputs and rendering functions to get an editor.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "10lx1jqgmmfwwlv64di4a8nia9l53v7179z70n9fx6aq5l7r8nba"))))
+        (base32 "1hy5ryagqclgdm9lzh1qil5mrynlypv7mn6qm858hdcnmz9zzn0l"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:test-target "test"
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         ;; currently, ocaml-lwt is an old version of lwt from before lwt.react
-         ;; was split into a separate module called lwt_react
-         (add-before 'build 'use-old-lwt-react-name
+         (replace 'build
            (lambda _
-             (substitute* "src/jbuild" (("lwt_react") "lwt.react"))))
+             (invoke "dune" "build" "@install" "--profile" "release")
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "jbuilder" "install" "--prefix" out))))))))
+             (invoke "dune" "install"
+                     "--prefix" (assoc-ref outputs "out"))
+             #t)))
+       #:tests? #f))
     (native-inputs
-     `(("jbuilder" ,ocaml-jbuilder)))
+     `(("dune" ,dune)))
     (propagated-inputs
      `(("lwt" ,ocaml-lwt)
+       ("lwt-log" ,ocaml-lwt-log)
        ("zed" ,ocaml-zed)))
     (home-page "https://github.com/diml/lambda-term")
     (synopsis "Terminal manipulation library for OCaml")
@@ -3696,18 +4642,21 @@ manipulation than, for example, ncurses, by providing a native OCaml interface
 instead of bindings to a C library.")
     (license license:bsd-3)))
 
+(define-public ocaml4.02-lambda-term
+  (package-with-ocaml4.02 ocaml-lambda-term))
+
 (define-public ocaml-utop
   (package
     (name "ocaml-utop")
-    (version "2.0.2")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/diml/utop/archive/"
+              (uri (string-append "https://github.com/ocaml-community/utop/archive/"
                                   version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rglznh4prcix8spi3f060jz2gngk7x8vkd291fxs10b88aqcpxf"))))
+                "1414snwmqaxs1x8wbpjf6fn3jsl01hq0phrr7639xmb5vh15mgd4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -3761,6 +4710,8 @@ sensitive completion, colors, and more.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)))
     (inputs
      `(("topkg" ,ocaml-topkg)
        ("opam" ,opam)))
@@ -3773,7 +4724,7 @@ long and size_t whose sizes depend on the host platform.")
 (define-public ocaml-ctypes
   (package
    (name "ocaml-ctypes")
-   (version "0.13.1")
+   (version "0.14.0")
    (home-page "https://github.com/ocamllabs/ocaml-ctypes")
    (source (origin
              (method url-fetch)
@@ -3781,10 +4732,11 @@ long and size_t whose sizes depend on the host platform.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "17w0pr5k0zjcjns4y9n36rjpfl35zhvp3h8ggqs9lz12qhshdk2m"))))
+               "0zrsd42q2nciyg9375g2kydqax6ay299rhyfgms59qiw7d9ylyp9"))))
    (build-system ocaml-build-system)
    (arguments
-    `(#:make-flags
+    `(#:tests? #f; require an old lwt
+      #:make-flags
       (list (string-append "INSTALL_HEADERS = $(wildcard $($(PROJECT).dir)/*.h)"))
       #:phases
       (modify-phases %standard-phases
@@ -3832,7 +4784,8 @@ without writing or generating any C!")
     `(("topkg" ,ocaml-topkg)
       ("opam" ,opam)))
    (native-inputs
-    `(("astring" ,ocaml-astring)))
+    `(("astring" ,ocaml-astring)
+      ("ocamlbuild" ,ocamlbuild)))
    (synopsis "OCamlbuild plugin for C stubs")
    (description "Ocb-stubblr is about ten lines of code that you need to
 repeat over, over, over and over again if you are using ocamlbuild to build
@@ -3860,7 +4813,8 @@ OCaml projects that contain C stubs.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (native-inputs
-     `(("opam" ,opam)
+     `(("ocamlbuild" ,ocamlbuild)
+       ("opam" ,opam)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("topkg" ,ocaml-topkg)

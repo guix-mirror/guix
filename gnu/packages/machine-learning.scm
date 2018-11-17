@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -300,7 +301,9 @@ networks) based on simulation of (stochastic) flow in graphs.")
          "1l5jbhwjpsj38x8b9698hfpkv75h8hn3kj0gihjhn8ym2cwwv110"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:phases
+     `(#:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-paths
            (lambda _

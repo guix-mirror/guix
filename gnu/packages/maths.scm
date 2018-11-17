@@ -28,6 +28,7 @@
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3988,37 +3989,52 @@ theories} (SMT) solver.  It provides a C/C++ API, as well as Python bindings.")
 (define-public cubicle
   (package
     (name "cubicle")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://cubicle.lri.fr/cubicle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1sny9c4fm14k014pk62ibpwbrjjirkx8xmhs9jg7q1hk7y7x3q2h"))))
+                "10kk80jdmpdvql88sdjsh7vqzlpaphd8vip2lp47aarxjkwjlz1q"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ocaml" ,ocaml)
+     `(("automake" ,automake)
+       ("ocaml" ,ocaml)
        ("which" ,(@@ (gnu packages base) which))))
     (propagated-inputs
-     `(("z3" ,z3)))
+     `(("ocaml-num" ,ocaml-num)
+       ("z3" ,z3)))
     (arguments
      `(#:configure-flags (list "--with-z3")
+       #:make-flags (list "QUIET=")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'configure-for-release
            (lambda _
              (substitute* "Makefile.in"
-               (("SVNREV=") "#SVNREV="))))
+               (("SVNREV=") "#SVNREV="))
+             #t))
          (add-before 'configure 'fix-/bin/sh
            (lambda _
              (substitute* "configure"
-               (("/bin/sh") (which "sh")))))
+               (("-/bin/sh") (string-append "-" (which "sh"))))
+             #t))
          (add-before 'configure 'fix-smt-z3wrapper.ml
            (lambda _
              (substitute* "Makefile.in"
-               (("\\\\n") "")))))))
+               (("\\\\n") ""))
+             #t))
+         (add-before 'configure 'fix-ocaml-num
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("= \\$\\(FUNCTORYLIB\\)")
+                (string-append "= -I "
+                               (assoc-ref inputs "ocaml-num")
+                               "/lib/ocaml/site-lib"
+                               " $(FUNCTORYLIB)")))
+             #t)))))
     (home-page "http://cubicle.lri.fr/")
     (synopsis "Model checker for array-based systems")
     (description "Cubicle is a model checker for verifying safety properties
