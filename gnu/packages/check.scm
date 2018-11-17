@@ -26,7 +26,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -51,6 +51,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages time)
@@ -2088,3 +2089,42 @@ aspects of UnitTest++.  UnitTest++ is mostly standard C++ and makes minimal use
 of advanced library and language features, which means it should be easily
 portable to just about any platform.")
     (license license:expat)))
+
+(define-public libfaketime
+  (package
+    (name "libfaketime")
+    (version "0.9.7")
+    (home-page "https://github.com/wolfcw/libfaketime")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1cin1pqwpsswcv7amiwijirvcg3x1zf2l00s1x84nxc5602fzr5c"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (setenv "CC" "gcc")
+                        (setenv "PREFIX" out)
+                        #t)))
+                  (add-before 'check 'pre-check
+                    (lambda _
+                      (substitute* "test/functests/test_exclude_mono.sh"
+                        (("/bin/bash") (which "bash")))
+                      #t)))
+       #:test-target "test"))
+    (native-inputs
+     `(("perl" ,perl)))                           ;for tests
+    (synopsis "Fake the system time for single applications")
+    (description
+     "The libfaketime library allows users to modify the system time that an
+application \"sees\".  It is meant to be loaded using the dynamic linker's
+@code{LD_PRELOAD} environment variable.  The @command{faketime} command
+provides a simple way to achieve this.")
+    (license license:gpl2)))
