@@ -259,7 +259,8 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
             ((or "x86_64-linux" "i686-linux")
-             `(("llvm" ,llvm)))
+             ;; FIXME: Change to 'llvm' in the next rebuild cycle.
+             `(("llvm" ,llvm-without-rtti)))
             (_
              `()))
         ("makedepend" ,makedepend)
