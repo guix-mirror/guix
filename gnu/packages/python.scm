@@ -2416,7 +2416,7 @@ logic-free templating system Mustache.")
            (lambda _ (invoke "pytest" "-v" "joblib"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://pythonhosted.org/joblib/")
+    (home-page "https://joblib.readthedocs.io/")
     (synopsis "Using Python functions as pipeline jobs")
     (description
      "Joblib is a set of tools to provide lightweight pipelining in Python.
