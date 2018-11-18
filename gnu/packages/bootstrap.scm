@@ -701,16 +701,13 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                       (uri (string-append
                             "http://lilypond.org/janneke/mes/"
                             (match (%current-system)
-                              ("x86_64-linux" "mes-stripped-0.18-0.08f04f5-x86_64-linux.tar.xz")
-                              ("i686-linux" "mes-stripped-0.18-0.08f04f5-i686-linux.tar.xz"))))
+                              ((or "i686-linux" "x86_64-linux")
+                               "mes-minimal-stripped-0.18-0.08f04f5-i686-linux.tar.xz"))))
                       (sha256
                        (match (%current-system)
-                         ("x86_64-linux"
+                         ((or "i686-linux" "x86_64-linux")
                           (base32
-                           "1yhxqf1sm67gwjbkkc26m4lcscvpjfmi71bzy8rhysal4lcj1vc8"))
-                         ("i686-linux"
-                          (base32
-                           "1p116ya9n52852bryh34n7db4mhvi98qifmmwygl7nbyc4dz92jy")))))))))
+                           "0qwpby91hp6afmg5ibdrrk3fw85zxdazfk7rhrdsihsfzqwmfhfx")))))))))
     (synopsis "Bootstrap binaries of Mes")
     (description synopsis)
     (home-page #f)
