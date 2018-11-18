@@ -546,11 +546,36 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
        ((#:make-flags flags)
         `(cons "CC=gcc -static" ,flags))))))
 
-(define %mes-stripped
+(define %mes-minimal
+  ;; A minimal Mes without documentation dependencies, for bootstrap.
+  (let ((triplet "i686-unknown-linux-gnu"))
+    (package
+      (inherit mes)
+      (name "mes-minimal")
+      (native-inputs
+       `(("guile" ,guile-2.2)
+         ,@(if (not (string-prefix? "i686-linux" (or (%current-target-system)
+                                                     (%current-system))))
+               ;; Use cross-compiler rather than #:system "i686-linux" to get
+               ;; MesCC 64 bit .go files installed ready for use with Guile.
+               `(("i686-linux-binutils" ,(cross-binutils triplet))
+                 ("i686-linux-gcc" ,(cross-gcc triplet)))
+               '())))
+      (arguments
+       `(#:strip-binaries? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'optional-dot
+             (lambda _
+               (substitute* "configure"
+                 (("#:version-option \"-V\"" all)
+                  (string-append all "#:optional? #t")))))))))))
+
+(define-public %mes-minimal-stripped
   ;; The subset of Mes files needed for bootstrap.
   (package
-    (inherit mes)
-    (name "mes-stripped")
+    (inherit %mes-minimal)
+    (name "mes-minimal-stripped")
     (build-system trivial-build-system)
     (source #f)
     (arguments
@@ -573,7 +598,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                                 (string-suffix? ".c" file)))
                              (find-files out ".*")))
            #t))))
-    (inputs `(("mes" ,mes)))))
+    (inputs `(("mes" ,%mes-minimal)))))
 
 (define %guile-static
   ;; A statically-linked Guile that is relocatable--i.e., it can search
@@ -748,7 +773,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 
 (define %mes-bootstrap-tarball
   ;; A tarball with Mes ASCII Seed and binary Mes C Library.
-  (tarball-package %mes-stripped))
+  (tarball-package %mes-minimal-stripped))
 
 (define %bootstrap-tarballs
   ;; A single derivation containing all the bootstrap tarballs, for
