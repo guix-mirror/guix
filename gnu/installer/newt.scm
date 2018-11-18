@@ -25,11 +25,9 @@
 
 (define (modules)
   (cons '(newt)
-        (map module-name
-             (scheme-modules
-              (dirname (search-path %load-path "guix.scm"))
-              "gnu/installer/newt"
-              #:warn warn-about-load-error))))
+        (scheme-modules*
+         (dirname (search-path %load-path "guix.scm"))
+         "gnu/installer/newt")))
 
 (define init
   #~(begin
