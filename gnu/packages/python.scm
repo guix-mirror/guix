@@ -10193,26 +10193,41 @@ Python to manipulate OpenDocument 1.2 files.")
 (define-public python-natsort
   (package
     (name "python-natsort")
-    (version "5.0.2")
+    (version "5.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "natsort" version))
               (sha256
                (base32
-                "0bh6j0l8iapjnsgg3bs6q075cnzjl6zw1vlgqyv3qrygm2cxypkn"))))
+                "0i732amg6yzkx4g4c9j09jmqq39q377x9cl2nbkm5hax2c2v0wxf"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:modules ((guix build utils)
+                  (guix build python-build-system)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (ice-9 ftw))
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-cachedir
            ;; Tests require write access to $HOME by default
-           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t)))))
+           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t))
+         (replace 'check
+           (lambda _
+             (let ((cwd (getcwd)))
+               (setenv "PYTHONPATH"
+                       (string-append
+                        cwd "/build/"
+                        (find (cut string-prefix? "lib" <>)
+                              (scandir (string-append cwd "/build")))
+                        ":"
+                        (getenv "PYTHONPATH")))
+               (invoke "pytest" "-v")))))))
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)
-       ("python-pytest-cache" ,python-pytest-cache)
        ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-flakes" ,python-pytest-flakes)
-       ("python-pytest-pep8" ,python-pytest-pep8)))
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs ; TODO: Add python-fastnumbers.
      `(("python-pyicu" ,python-pyicu)))
     (home-page "https://github.com/SethMMorton/natsort")
@@ -10234,8 +10249,6 @@ functionality in the command line.")
     (package (inherit base)
              (native-inputs
               `(("python2-pathlib" ,python2-pathlib)
-                ("python2-mock" ,python2-mock)
-                ("python2-enum34" ,python2-enum34)
                 ,@(package-native-inputs base))))))
 
 (define-public python-glances
