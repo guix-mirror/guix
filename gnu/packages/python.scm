@@ -2401,47 +2401,21 @@ logic-free templating system Mustache.")
 (define-public python-joblib
   (package
     (name "python-joblib")
-    (version "0.10.3")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "joblib" version))
               (sha256
                (base32
-                "0787k919zlfmgymprz5bzv0v1df5bbirlf3awrghmjgvkrd9dci9"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Remove pre-compiled .pyc files from source.
-           (for-each delete-file-recursively
-                     (find-files "." "__pycache__" #:directories? #t))
-           (for-each delete-file (find-files "." "\\.pyc$"))
-           #t))))
+                "0612nazad8dxmn3xghfrmjax6456l4xy6hn9cngs7vydi14ds7v5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'disable-failing-tests
-           (lambda _
-             ;; This numpydoc tests fails for unknown reasons
-             (delete-file "doc/sphinxext/numpydoc/tests/test_docscrape.py")
-             ;; This numpydoc test depends on matplotlib, which is not a
-             ;; required input.
-             (delete-file "doc/sphinxext/numpydoc/tests/test_plot_directive.py")
-             ;; These tests fail to execute sys.executable
-             (substitute* "joblib/test/test_parallel.py"
-               (("import nose" line)
-                (string-append "from nose.plugins.skip import SkipTest\n" line))
-               (("def test_nested_parallel_warnings" line)
-                (string-append "@SkipTest\n" line))
-               (("def test_parallel_with_interactively_defined_functions" line)
-                (string-append "@SkipTest\n" line)))
-             #t)))))
-    ;; Provide nose to enable tests command
+         (replace 'check
+           (lambda _ (invoke "pytest" "-v" "joblib"))))))
     (native-inputs
-     `(("python-nose"       ,python-nose)
-       ("python-sphinx"     ,python-sphinx)
-       ("python-docutils"   ,python-docutils)
-       ("python-numpydoc"   ,python-numpydoc)))
+     `(("python-pytest" ,python-pytest)))
     (home-page "http://pythonhosted.org/joblib/")
     (synopsis "Using Python functions as pipeline jobs")
     (description
