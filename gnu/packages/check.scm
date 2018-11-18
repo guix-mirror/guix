@@ -1351,11 +1351,11 @@ the last py.test invocation.")
                "08f06rvj31wqf0vgmd1waya87r7vy6x8ck48lxl3dxy83q5gcam7"))))
     (build-system python-build-system)
     (arguments
-      `(#:phases (modify-phases %standard-phases
+     '(#:phases
+       (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (invoke "py.test" "--genscript=runtests.py")
-             (invoke "py.test"))))))
+             (invoke "py.test" "-v"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-requests" ,python-requests)
