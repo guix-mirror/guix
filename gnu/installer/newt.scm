@@ -57,13 +57,8 @@
   #~(lambda* (zonetab)
       (run-timezone-page zonetab)))
 
-(define logo
-  (string-append
-   (dirname (search-path %load-path "guix.scm"))
-   "/gnu/installer/aux-files/logo.txt"))
-
 (define welcome-page
-  #~(run-welcome-page #$(local-file logo)))
+  #~(run-welcome-page #$(local-file "aux-files/logo.txt")))
 
 (define menu-page
   #~(lambda (steps)
