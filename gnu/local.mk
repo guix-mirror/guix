@@ -1099,6 +1099,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
+  %D%/packages/patches/qt-5-renameat2.patch			\
   %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/quilt-test-fix-regex.patch		\
