@@ -211,6 +211,10 @@ which allows users to view a desktop computing environment.")
       `(#:configure-flags
         '("--enable-lz4"
           "--enable-automated-tests")
+
+        ;; Several tests appear to be opening the same sockets concurrently.
+        #:parallel-tests? #f
+
         #:phases (modify-phases %standard-phases
                    (add-before 'check 'use-empty-ssl-cert-file
                      (lambda _ (setenv "SSL_CERT_FILE" "/dev/null") #t)))))
