@@ -588,6 +588,12 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
      `(#:test-target "test_nogui"
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'add-plugin-dirs
+           (lambda _
+             (substitute* "gajim/common/configpaths.py"
+               (("_paths\\['PLUGINS_USER'\\]")
+                "_paths['PLUGINS_USER'],os.getenv('GAJIM_PLUGIN_PATH')"))
+             #t))
          (add-after 'install 'wrap-gi-typelib-path
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -625,6 +631,18 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                  (,(string-append (assoc-ref inputs "gtk+")
                                   "/share/glib-2.0/schemas"))))
              #t)))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GAJIM_PLUGIN_PATH")
+            (separator #f)              ;single entry
+            (files '("share/gajim/plugins")))
+           ;; Gajim needs to use the propagated inputs of its plugins.
+           (search-path-specification
+            (variable "PYTHONPATH")
+            (files (list (string-append
+                          "lib/python"
+                          (version-major+minor (package-version python))
+                          "/site-packages"))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("python-docutils" ,python-docutils)
@@ -636,7 +654,6 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
        ("gtkspell3" ,gtkspell3)
        ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("libsecret" ,libsecret)
-       ("python-axolotl" ,python-axolotl)
        ("python-cssutils" ,python-cssutils)
        ("python-dbus" ,python-dbus)
        ("python-gnupg" ,python-gnupg)
