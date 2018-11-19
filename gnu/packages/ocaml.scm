@@ -3663,26 +3663,14 @@ standard iterator type starting from 4.07.")
               (sha256
                (base32
                 "1pdb0mr6z5ax6szblr3f5lbdnqq9grm97cmsfjmdma60yrx2rqhd"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
      `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "dune" "build" "@install" "--profile" "release")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))))
+       #:build-flags (list "--profile" "release")))
     (propagated-inputs
      `(("ocaml-seq" ,ocaml-seq)))
     (native-inputs
-     `(("dune" ,dune)
-       ("ounit" ,ocaml-ounit)))
+     `(("ounit" ,ocaml-ounit)))
     (home-page "https://github.com/ocaml/ocaml-re/")
     (synopsis "Regular expression library for OCaml")
     (description "Pure OCaml regular expressions with:
