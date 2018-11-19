@@ -12,6 +12,7 @@
 # Copyright © 2018 Nils Gillmann <ng0@n0.is>
 # Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 # Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+# Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -172,6 +173,7 @@ MODULES =					\
   guix/build/syscalls.scm                       \
   guix/build/gremlin.scm			\
   guix/build/debug-link.scm			\
+  guix/build/clojure-utils.scm			\
   guix/build/emacs-utils.scm			\
   guix/build/java-utils.scm			\
   guix/build/lisp-utils.scm			\

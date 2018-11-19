@@ -600,6 +600,7 @@ interface.")
          (library-names (match libraries
                           (((library-name _) ...)
                            library-name))))
+
     (package
       (name "clojure")
       (version "1.9.0")
@@ -613,11 +614,13 @@ interface.")
           (base32 "0xjbzcw45z32vsn9pifp7ndysjzqswp5ig0jkjpivigh2ckkdzha"))))
       (build-system ant-build-system)
       (arguments
-       `(#:modules ((guix build ant-build-system)
+       `(#:imported-modules ((guix build clojure-utils)
+                             (guix build guile-build-system)
+                             ,@%ant-build-system-modules)
+         #:modules ((guix build ant-build-system)
+                    (guix build clojure-utils)
                     (guix build java-utils)
                     (guix build utils)
-                    (ice-9 ftw)
-                    (ice-9 regex)
                     (srfi srfi-26))
          #:test-target "test"
          #:phases
@@ -643,18 +646,8 @@ interface.")
                #t))
            (add-after 'build 'build-javadoc ant-build-javadoc)
            (replace 'install (install-jars "./"))
-           (add-after 'install 'install-doc
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((doc-dir (string-append (assoc-ref outputs "out")
-                                             "/share/doc/clojure-"
-                                             ,version "/")))
-                 (copy-recursively "doc/clojure" doc-dir)
-                 (for-each (cut install-file <> doc-dir)
-                           (filter (cut string-match
-                                     ".*\\.(html|markdown|md|txt)"
-                                     <>)
-                                   (scandir "./")))
-                 #t)))
+           (add-after 'install-license-files 'install-doc
+             (cut install-doc #:doc-dirs '("doc/clojure/") <...>))
            (add-after 'install-doc 'install-javadoc
              (install-javadoc "target/javadoc/")))))
       (native-inputs libraries)
