@@ -2330,4 +2330,4 @@ used to keep a folder in sync between computers.")
 @code{when-merged}, whose core operation is to find the merge that brought a
 given commit into the specified ref(s).  It has various options that control
 how information about the merge is displayed.")
-      (license license:gpl2))))
+      (license license:gpl2+))))
