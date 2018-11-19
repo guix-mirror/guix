@@ -2206,22 +2206,10 @@ locks or other synchronization primitives.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256 (base32
                   "1lr62j2266pbsi54xmzsfvl2z7fi7smhak7fp1ybl8hssxwi6in2"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
      `(#:tests? #f; require lwt_ppx
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "jbuilder" "build" "@install")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "jbuilder" "install" "--prefix" (assoc-ref outputs "out"))
-             #t)))))
-    (native-inputs
-     `(("dune" ,dune)))
+       #:jbuild? #t))
     (propagated-inputs
      `(("lwt" ,ocaml-lwt)))
     (home-page "https://github.com/aantron/lwt_log")
