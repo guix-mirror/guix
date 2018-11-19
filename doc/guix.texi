@@ -53,6 +53,7 @@ Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
 Copyright @copyright{} 2018 Gábor Boskovits@*
 Copyright @copyright{} 2018 Florian Pelz@*
 Copyright @copyright{} 2018 Laura Lazzati@*
+Copyright @copyright{} 2018 Alex Vong@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -4393,6 +4394,63 @@ In its @code{configure} phase, this build system replaces dependencies
 specified in the @file{Carto.toml} file with inputs to the Guix package.
 The @code{install} phase installs the binaries, and it also installs the
 source code and @file{Cargo.toml} file.
+@end defvr
+
+@cindex Clojure (programming language)
+@cindex simple Clojure build system
+@defvr {Scheme Variable} clojure-build-system
+This variable is exported by @code{(guix build-system clojure)}.  It implements
+a simple build procedure for @uref{https://clojure.org/, Clojure} packages
+using plain old @code{compile} in Clojure.  Cross-compilation is not supported
+yet.
+
+It adds @code{clojure}, @code{icedtea} and @code{zip} to the set of inputs.
+Different packages can be specified with the @code{#:clojure}, @code{#:jdk} and
+@code{#:zip} parameters, respectively.
+
+A list of source directories, test directories and jar names can be specified
+with the @code{#:source-dirs}, @code{#:test-dirs} and @code{#:jar-names}
+parameters, respectively.  Compile directory and main class can be specified
+with the @code{#:compile-dir} and @code{#:main-class} parameters, respectively.
+Other parameters are documented below.
+
+This build system is an extension of @var{ant-build-system}, but with the
+following phases changed:
+
+@table @code
+
+@item build
+This phase calls @code{compile} in Clojure to compile source files and runs
+@command{jar} to create jars from both source files and compiled files
+according to the include list and exclude list specified in
+@code{#:aot-include} and @code{#:aot-exclude}, respectively.  The exclude list
+has priority over the include list.  These lists consist of symbols
+representing Clojure libraries or the special keyword @code{#:all} representing
+all Clojure libraries found under the source directories.  The parameter
+@code{#:omit-source?} decides if source should be included into the jars.
+
+@item check
+This phase runs tests according to the include list and exclude list specified
+in @code{#:test-include} and @code{#:test-exclude}, respectively.  Their
+meanings are analogous to that of @code{#:aot-include} and
+@code{#:aot-exclude}, except that the special keyword @code{#:all} now
+stands for all Clojure libraries found under the test directories.  The
+parameter @code{#:tests?} decides if tests should be run.
+
+@item install
+This phase installs all jars built previously.
+@end table
+
+Apart from the above, this build system also contains an additional phase:
+
+@table @code
+
+@item install-doc
+This phase installs all top-level files with base name matching
+@var{%doc-regex}.  A different regex can be specified with the
+@code{#:doc-regex} parameter.  All files (recursively) inside the documentation
+directories specified in @code{#:doc-dirs} are installed as well.
+@end table
 @end defvr
 
 @defvr {Scheme Variable} cmake-build-system
