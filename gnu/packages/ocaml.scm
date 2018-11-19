@@ -2161,26 +2161,18 @@ through Transport Layer Security (@dfn{TLS}) encrypted connections.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256 (base32
                   "0mhh019bjkg5xfvpy1pxs4xdxb759fyydmgb6l4j0qww1qgr8klp"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
      `(#:tests? #f; require lwt_ppx
+       #:jbuild? #t
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
+         (add-before 'build 'configure
            (lambda _
              (invoke "ocaml" "src/util/configure.ml" "-use-libev" "true")
-             #t))
-         (replace 'build
-           (lambda _
-             (invoke "jbuilder" "build" "@install")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "jbuilder" "install" "--prefix" (assoc-ref outputs "out"))
              #t)))))
     (native-inputs
-     `(("dune" ,dune)
-       ("ocaml-cppo" ,ocaml-cppo)
+     `(("ocaml-cppo" ,ocaml-cppo)
        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
        ("pkg-config" ,pkg-config)
        ("ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
