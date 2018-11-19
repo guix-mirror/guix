@@ -3023,24 +3023,12 @@ provide a tool that can be used to:
         (sha256 (base32
                   "1dkm3d5h6h56y937gcdk2wixlpzl59vv5pmiafglr89p20kf7gqf"))
         (file-name (string-append name "-" version ".tar.gz"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "dune" "build" "@install" "--profile" "release")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))
-       #:tests? #f))
+     `(#:tests? #f
+       #:build-flags (list "--profile" "release")))
     (native-inputs
-     `(("dune" ,dune)
-       ("ocamlbuild" ,ocamlbuild)))
+     `(("ocamlbuild" ,ocamlbuild)))
     (home-page "https://github.com/mjambon/cppo")
     (synopsis "Equivalent of the C preprocessor for OCaml programs")
     (description "Cppo is an equivalent of the C preprocessor for OCaml
