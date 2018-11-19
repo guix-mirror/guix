@@ -4508,23 +4508,10 @@ connect an engine to your inputs and rendering functions to get an editor.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1hy5ryagqclgdm9lzh1qil5mrynlypv7mn6qm858hdcnmz9zzn0l"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "dune" "build" "@install" "--profile" "release")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))
+     `(#:build-flags (list "--profile" "release")
        #:tests? #f))
-    (native-inputs
-     `(("dune" ,dune)))
     (propagated-inputs
      `(("lwt" ,ocaml-lwt)
        ("lwt-log" ,ocaml-lwt-log)
