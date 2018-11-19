@@ -6725,14 +6725,14 @@ detection, parallelism through BLAS and parallel user templates.")
 (define-public r-sjstats
   (package
     (name "r-sjstats")
-    (version "0.17.1")
+    (version "0.17.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjstats" version))
        (sha256
         (base32
-         "0s9b0xr8gmcm0kh48jkwk8ns0lqknd8kpys4f7czf0xwzmcx2n1z"))))
+         "0c7g35vn7r9rylhp0gj1yfslg7jybwrhpqpp7vdcd90xfccih24r"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayesplot" ,r-bayesplot)
