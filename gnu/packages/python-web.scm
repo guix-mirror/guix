@@ -5343,6 +5343,50 @@ application.  The library accepts HTTP and HTTPS proxy connections, and routes
 them to a designated prefix.")
     (license license:asl2.0)))
 
+(define-public python-warcio
+  ;; The PyPI release is missing some test support files (see:
+  ;; https://github.com/webrecorder/warcio/issues/132).
+  (let ((revision "0")
+        (commit "aa702cb321621b233c6e5d2a4780151282a778be"))
+    (package
+      (name "python-warcio")
+      (version (git-version "1.7.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/webrecorder/warcio")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "11afr6zy3r6rda81010iq496dazg4xid0izg3smg6ighpmvsnzf2"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'skip-problematic-tests
+             (lambda _
+               ;; These tests fail due to networking requirements.
+               (substitute* "setup.py"
+                 (("pytest.main\\(\\[" all)
+                  (string-append all "'-k', '"
+                                 (string-append "not test_post_chunked and "
+                                                "not test_remote") "'"))))))))
+      (native-inputs
+       ;; These inputs are required for the test suite.
+       `(("python-httpbin" ,python-httpbin)
+         ("python-pytest-cov" ,python-pytest-cov)
+         ("python-requests" ,python-requests)
+         ("python-wsgiprox" ,python-wsgiprox)))
+      (home-page "https://github.com/webrecorder/warcio")
+      (synopsis "Streaming web archival archive (WARC) library")
+      (description "warcio is a Python library to read and write the WARC format
+commonly used in Web archives. It is designed for fast, low-level access to
+web archival content, oriented around a stream of WARC records rather than
+files.")
+      (license license:asl2.0))))
+
 (define-public python-websockets
   (package
     (name "python-websockets")
