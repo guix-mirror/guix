@@ -4403,23 +4403,11 @@ the plugins facilitate extensibility, and the frontends serve as entry points.")
               (sha256
                (base32
                 "01ssjrqz41jvrqh27jxnh9cx7ywi9b5sgsykd00i7z9nrcwhlfy2"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (native-inputs
-     `(("camlp4" ,camlp4)
-       ("dune" ,dune)))
+     `(("camlp4" ,camlp4)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "dune" "build" "@install" "--profile" "release")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))
+     `(#:build-flags (list "--profile" "realease")
        #:tests? #f))
     (synopsis "Comprehensive Unicode library")
     (description "Camomile is a Unicode library for OCaml.  Camomile provides
