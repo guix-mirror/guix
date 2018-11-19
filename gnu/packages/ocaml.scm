@@ -1592,60 +1592,9 @@ functions to the next and/or previous version.")
               (sha256
                (base32
                 "1x2xfjpkzbcz4rza1d7gh3ipliw6jqfcklbsln82v3561qgkqgmh"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "dune" "build" "@install")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))))
-    (native-inputs
-     `(("dune" ,dune)))
-    (propagated-inputs
-     `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)))
-    (home-page "https://github.com/let-def/ppx_tools_versioned")
-    (synopsis "Variant of ppx_tools")
-    (description "This package is a variant of ppx_tools based on
-ocaml-migrate-parsetree")
-    (license license:expat)))
-
-(define-public ocaml-ppx-tools-versioned
-  (package
-    (name "ocaml-ppx-tools-versioned")
-    (version "5.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml-ppx/"
-                                  "ppx_tools_versioned/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1x2xfjpkzbcz4rza1d7gh3ipliw6jqfcklbsln82v3561qgkqgmh"))))
-    (build-system ocaml-build-system)
-    (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "dune" "build" "@install")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))))
-    (native-inputs
-     `(("dune" ,dune)))
+     `(#:test-target "."))
     (propagated-inputs
      `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)))
     (home-page "https://github.com/let-def/ppx_tools_versioned")
