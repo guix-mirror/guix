@@ -251,21 +251,21 @@ the ownership of '~a' may be incorrect!~%")
         (format   (lift format %store-monad))
         (populate (lift2 populate-root-file-system %store-monad)))
 
-    (mbegin %store-monad
-      ;; Copy the closure of BOOTCFG, which includes OS-DIR,
-      ;; eventual background image and so on.
-      (maybe-copy
-       (derivation->output-path bootcfg))
+    (mlet %store-monad ((bootcfg (lower-object bootcfg)))
+      (mbegin %store-monad
+        ;; Copy the closure of BOOTCFG, which includes OS-DIR,
+        ;; eventual background image and so on.
+        (maybe-copy (derivation->output-path bootcfg))
 
-      ;; Create a bunch of additional files.
-      (format log-port "populating '~a'...~%" target)
-      (populate os-dir target)
+        ;; Create a bunch of additional files.
+        (format log-port "populating '~a'...~%" target)
+        (populate os-dir target)
 
-      (mwhen install-bootloader?
-        (install-bootloader bootloader-installer
-                            #:bootcfg bootcfg
-                            #:bootcfg-file bootcfg-file
-                            #:target target)))))
+        (mwhen install-bootloader?
+          (install-bootloader bootloader-installer
+                              #:bootcfg bootcfg
+                              #:bootcfg-file bootcfg-file
+                              #:target target))))))
 
 
 ;;;
