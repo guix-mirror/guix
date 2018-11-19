@@ -1864,14 +1864,14 @@ provides a one-row summary of model-level statistics.")
 (define-public r-recipes
   (package
     (name "r-recipes")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "recipes" version))
        (sha256
         (base32
-         "1vqh3pxs4n1azhnd1lzg91vasya6g323kllhbrw177j7kdxqyimy"))))
+         "0bwijw4427v2k5z3qci2kyr5dyzql8b3lvf88rwy16p741jckjsn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
