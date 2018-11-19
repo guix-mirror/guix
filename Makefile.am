@@ -75,6 +75,7 @@ MODULES =					\
   guix/discovery.scm				\
   guix/git-download.scm				\
   guix/hg-download.scm				\
+  guix/swh.scm					\
   guix/monads.scm				\
   guix/monad-repl.scm				\
   guix/gexp.scm					\
