@@ -63,6 +63,7 @@
   #:use-module (gnu packages web-browsers)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (guix build-system dune)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
   #:use-module (guix download)
@@ -1564,26 +1565,13 @@ following a very simple s-expression syntax.")
               (sha256
                (base32
                 "01zjp1q4hryqaxv4apkjd868fycz2kf887r6lkb6x2a545h1lh7f"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
      `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "jbuilder" "build" "@install")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "jbuilder" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))))
+       #:jbuild? #t))
     (propagated-inputs
      `(("ocamlbuild" ,ocamlbuild)
        ("ocaml-result" ,ocaml-result)))
-    (native-inputs
-     `(("dune" ,dune)))
     (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
     (synopsis "OCaml parsetree convertor")
     (description "This library converts between parsetrees of different OCaml
