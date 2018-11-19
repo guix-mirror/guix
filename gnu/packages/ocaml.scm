@@ -1615,31 +1615,19 @@ ocaml-migrate-parsetree")
               (sha256
                (base32
                 "15jjk2pq1vx311gl49s5ag6x5y0654x35w75z07g7kr2q334hqps"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (native-inputs
      `(("camlp4" ,camlp4)
        ("time" ,time)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("bisect" ,ocaml-bisect)
-       ("dune" ,dune)))
+       ("bisect" ,ocaml-bisect)))
     (propagated-inputs
      `(("camlp4" ,camlp4)
        ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
     (arguments
      `(#:tests? #f; Tests fail to build
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "jbuilder" "build" "@install")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))))
+       #:jbuild? #t))
     (properties
       `((ocaml4.02-variant . ,(delay ocaml4.02-bitstring))))
     (home-page "https://github.com/xguerin/bitstring")
@@ -1665,44 +1653,45 @@ powerful.")
                  (base32
                   "0vy8ibrxccii1jbsk5q6yh1kxjigqvi7lhhcmizvd5gfhf7mfyc8"))
                 (patches (search-patches "ocaml-bitstring-fix-configure.patch"))))
-    (arguments
-     `(#:ocaml ,ocaml-4.02
-       #:findlib ,ocaml4.02-findlib
-       #:configure-flags
-       (list "CAMLP4OF=camlp4of" "--enable-coverage")
-       #:make-flags
-       (list (string-append "BISECTLIB="
-                            (assoc-ref %build-inputs "bisect")
-                            "/lib/ocaml/site-lib")
-             (string-append "OCAMLCFLAGS=-g -I "
-                            (assoc-ref %build-inputs "camlp4")
-                            "/lib/ocaml/site-lib/camlp4 -I "
-                            "$(BISECTLIB)/bisect")
-             (string-append "OCAMLOPTFLAGS=-g -I "
-                            (assoc-ref %build-inputs "camlp4")
-                            "/lib/ocaml/site-lib/camlp4 -I "
-                            "$(BISECTLIB)/bisect"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'link-lib
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (stubs (string-append out
-                                          "/lib/ocaml/site-lib/stubslibs"))
-                    (lib (string-append out
-                                        "/lib/ocaml/site-lib/bitstring")))
-               (mkdir-p stubs)
-               (symlink (string-append lib "/dllbitstring.so")
-                        (string-append stubs "/dllbitstring.so")))
-             #t))
-         (add-before 'configure 'fix-configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "Makefile.in"
-               (("@abs_top_builddir@")
-                (string-append "@abs_top_builddir@:" (getenv "LIBRARY_PATH"))))
-             (substitute* "configure"
-               (("-/bin/sh") (string-append "-" (assoc-ref inputs "bash")
-                                            "/bin/sh"))))))))
+      (build-system ocaml-build-system)
+      (arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib
+         #:configure-flags
+         (list "CAMLP4OF=camlp4of" "--enable-coverage")
+         #:make-flags
+         (list (string-append "BISECTLIB="
+                              (assoc-ref %build-inputs "bisect")
+                              "/lib/ocaml/site-lib")
+               (string-append "OCAMLCFLAGS=-g -I "
+                              (assoc-ref %build-inputs "camlp4")
+                              "/lib/ocaml/site-lib/camlp4 -I "
+                              "$(BISECTLIB)/bisect")
+               (string-append "OCAMLOPTFLAGS=-g -I "
+                              (assoc-ref %build-inputs "camlp4")
+                              "/lib/ocaml/site-lib/camlp4 -I "
+                              "$(BISECTLIB)/bisect"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'link-lib
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (stubs (string-append out
+                                            "/lib/ocaml/site-lib/stubslibs"))
+                      (lib (string-append out
+                                          "/lib/ocaml/site-lib/bitstring")))
+                 (mkdir-p stubs)
+                 (symlink (string-append lib "/dllbitstring.so")
+                          (string-append stubs "/dllbitstring.so")))
+               #t))
+           (add-before 'configure 'fix-configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "Makefile.in"
+                 (("@abs_top_builddir@")
+                  (string-append "@abs_top_builddir@:" (getenv "LIBRARY_PATH"))))
+               (substitute* "configure"
+                 (("-/bin/sh") (string-append "-" (assoc-ref inputs "bash")
+                                              "/bin/sh"))))))))
       (native-inputs
        `(("camlp4" ,camlp4-4.02)
          ("time" ,time)
