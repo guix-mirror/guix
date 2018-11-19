@@ -99,13 +99,14 @@ in print.  With attention to detail for high resolution rendering.")
     (name "font-ubuntu")
     (version "0.83")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://font.ubuntu.com/download/ubuntu-font-family-"
-                    version ".zip"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://salsa.debian.org/fonts-team/fonts-ubuntu")
+                    (commit (string-append "upstream/" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hjvq2x758dx0sfwqhzflns0ns035qm7h6ygskbx1svzg517sva5"))))
+                "1d2xrjpxy70f3nsgqiggwv6pj06qglf5vj2847pqx60w3ygi903g"))))
     (build-system font-build-system)
     (home-page "http://font.ubuntu.com/")
     (synopsis "The Ubuntu Font Family")
