@@ -637,13 +637,13 @@ sfArk file format to the uncompressed sf2 format.")
   (package
     (name "libmspack")
     (home-page "https://cabextract.org.uk/libmspack/")
-    (version "0.8")
+    (version "0.9.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append home-page name "-" version "alpha.tar.gz"))
       (sha256
-       (base32 "1byx98jajv927f0a7np0hvs8lxzccny6pj8vrrgmldv1jlp7jcq5"))))
+       (base32 "0h1f5w8rjnq7dcqpqm1mpx5m8q80691kid6f7npqlqwqqzckd8v2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
