@@ -617,6 +617,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/chmlib-inttypes.patch			\
   %D%/packages/patches/clamav-config-llvm-libs.patch		\
   %D%/packages/patches/clamav-system-tomsfastmath.patch		\
+  %D%/packages/patches/clang-3.5-libc-search-path.patch		\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
   %D%/packages/patches/clang-6.0-libc-search-path.patch		\
   %D%/packages/patches/clang-runtime-asan-build-fixes.patch	\
