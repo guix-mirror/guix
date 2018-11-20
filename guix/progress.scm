@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -197,7 +198,7 @@ throughput."
   (define elapsed
     (duration->seconds
      (time-difference (current-time time-monotonic) start-time)))
-  (if (number? size)
+  (if (and (number? size) (not (zero? size)))
       (let* ((%  (* 100.0 (/ transferred size)))
              (throughput (/ transferred elapsed))
              (left       (format #f " ~a  ~a" file
@@ -211,17 +212,20 @@ throughput."
                                     (current-terminal-columns))
                  log-port)
         (force-output log-port))
-      (let* ((throughput (/ transferred elapsed))
-             (left       (format #f " ~a" file))
-             (right      (format #f "~a/s ~a | ~a transferred"
-                                 (byte-count->string throughput)
-                                 (seconds->string elapsed)
-                                 (byte-count->string transferred))))
-        (erase-current-line log-port)
-        (display (string-pad-middle left right
-                                    (current-terminal-columns))
-                 log-port)
-        (force-output log-port))))
+      ;; If we don't know the total size, the last transfer will have a 0B
+      ;; size.  Don't display it.
+      (unless (zero? transferred)
+        (let* ((throughput (/ transferred elapsed))
+               (left       (format #f " ~a" file))
+               (right      (format #f "~a/s ~a | ~a transferred"
+                                   (byte-count->string throughput)
+                                   (seconds->string elapsed)
+                                   (byte-count->string transferred))))
+          (erase-current-line log-port)
+          (display (string-pad-middle left right
+                                      (current-terminal-columns))
+                   log-port)
+          (force-output log-port)))))
 
 (define %progress-interval
   ;; Default interval between subsequent outputs for rate-limited displays.

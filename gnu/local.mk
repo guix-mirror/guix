@@ -19,6 +19,7 @@
 # Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 # Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
+# Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -60,6 +61,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/android.scm			\
   %D%/packages/animation.scm			\
   %D%/packages/anthy.scm			\
+  %D%/packages/antivirus.scm			\
   %D%/packages/apl.scm				\
   %D%/packages/apr.scm				\
   %D%/packages/aspell.scm			\
@@ -614,6 +616,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/ceph-skip-unittest_blockdev.patch	\
   %D%/packages/patches/ceph-volume-respect-PATH.patch		\
   %D%/packages/patches/chmlib-inttypes.patch			\
+  %D%/packages/patches/clamav-config-llvm-libs.patch		\
+  %D%/packages/patches/clamav-system-tomsfastmath.patch		\
   %D%/packages/patches/clang-3.5-libc-search-path.patch		\
   %D%/packages/patches/clang-3.5-libsanitizer-ustat-fix.patch	\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
@@ -664,6 +668,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-highlight-stages-add-gexp.patch	\
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
+  %D%/packages/patches/emacs-realgud-fix-configure-ac.patch	\
   %D%/packages/patches/enlightenment-fix-setuid-path.patch	\
   %D%/packages/patches/erlang-man-path.patch			\
   %D%/packages/patches/eudev-rules-directory.patch		\
@@ -1179,6 +1184,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tk-find-library.patch			\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
+  %D%/packages/patches/tomsfastmath-constness.patch		\
   %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-include-qregexpvalidator.patch	\

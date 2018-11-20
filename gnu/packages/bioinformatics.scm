@@ -7380,13 +7380,13 @@ ID and species.  It is used by functions in the GenomeInfoDb package.")
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
-    (version "1.18.0")
+    (version "1.18.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomeInfoDb" version))
               (sha256
                (base32
-                "1xqpgngd8by0yn627v9kz26a03v5a1lhcfwlnx2i0ivplk9bd40s"))))
+                "049pyzr8iszv3g7wdqf3pz7vg7bzd450c20ln6fgw4g5xnkkr10s"))))
     (properties
      `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
@@ -9748,14 +9748,14 @@ structure (pcaRes) to provide a common interface to the PCA results.")
 (define-public r-msnbase
   (package
     (name "r-msnbase")
-    (version "2.8.0")
+    (version "2.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MSnbase" version))
        (sha256
         (base32
-         "0nnlydpklmv9kwlk3gkjgabx7l6y4gav3imq98w8wskb1fhm50c0"))))
+         "0y658anh06vnvbkfs7r8q40gqgyqr2r8kj7jlpnp33fy1lvp1nv7"))))
     (properties `((upstream-name . "MSnbase")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10223,14 +10223,14 @@ originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2):
 (define-public r-ensembldb
   (package
     (name "r-ensembldb")
-    (version "2.6.1")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ensembldb" version))
        (sha256
         (base32
-         "1js05dcv1dj4g2vj7lzlg0rgjcjlk2irdr9rxqpwxmivm8nbvf36"))))
+         "0hdz1f34v7sas2v4225icwl3wd4sf17ykpd5dkbx1hc7wcy4w3np"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -11166,7 +11166,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
 (define-public sambamba
   (package
     (name "sambamba")
-    (version "0.6.7-10-g223fa20")
+    (version "0.6.8")
     (source
      (origin
        (method git-fetch)
@@ -11176,7 +11176,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "1zb9hrxglxqh13ava9wwri30cvf85hjnbn8ccnr8l60a3k5avczn"))))
+         "0k0cz3qcv98p6cq09zlbgnjsggxcqbcmzxg5zikgcgbr2nfq4lry"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there is no test target
@@ -11187,9 +11187,10 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
          (add-after 'unpack 'fix-ldc-version
            (lambda _
              (substitute* "gen_ldc_version_info.py"
-               (("/usr/bin/env.*") (which "python")))
+               (("/usr/bin/env.*") (which "python3")))
              (substitute* "Makefile"
-               (("\\$\\(shell which ldmd2\\)") (which "ldmd2")))
+               ;; We use ldc2 instead of ldmd2 to compile sambamba.
+               (("\\$\\(shell which ldmd2\\)") (which "ldc2")))
              #t))
          (add-after 'unpack 'place-biod-and-undead
            (lambda* (#:key inputs #:allow-other-keys)
@@ -11201,21 +11202,21 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
              (substitute* "Makefile"
                (("htslib/libhts.a lz4/lib/liblz4.a")
                 "-L-lhts -L-llz4")
-               ((" htslib-static lz4-static") ""))
+               ((" lz4-static htslib-static") ""))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
                     (bin   (string-append out "/bin")))
                (mkdir-p bin)
-               (install-file "build/sambamba" bin)
+               (install-file "bin/sambamba" bin)
                #t))))))
     (native-inputs
      `(("ldc" ,ldc)
        ("rdmd" ,rdmd)
-       ("python" ,python2-minimal)
+       ("python" ,python-minimal)
        ("biod"
-        ,(let ((commit "c778e4f2d8bacea7499283ce39f5577b232732c6"))
+        ,(let ((commit "4f1a7d2fb7ef3dfe962aa357d672f354ebfbe42e"))
            (origin
              (method git-fetch)
              (uri (git-reference
@@ -11226,20 +11227,20 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
                                        "-checkout"))
              (sha256
               (base32
-               "1z90562hg47i63gx042wb3ak2vqjg5z7hwgn9bp2pdxfg3nxrw37")))))
+               "1k5pdjv1qvi0a3rwd1sfq6zbj37l86i7bf710m4c0y6737lxj426")))))
        ("undead"
-        ,(let ((commit "92803d25c88657e945511f0976a0c79d8da46e89"))
+        ,(let ((commit "9be93876982b5f14fcca60832563b3cd767dd84d"))
            (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/dlang/undeaD.git")
+                   (url "https://github.com/biod/undeaD.git")
                    (commit commit)))
              (file-name (string-append "undead-"
                                        (string-take commit 9)
                                        "-checkout"))
              (sha256
               (base32
-               "0vq6n81vzqvgphjw54lz2isc1j8lcxwjdbrhqz1h5gwrvw9w5138")))))))
+               "1xfarj0nqlmi5jd1vmcmm7pabzaf9hxyvk6hp0d6jslb5k9r8r3d")))))))
     (inputs
      `(("lz4" ,lz4)
        ("htslib" ,htslib-for-sambamba)))
@@ -14376,3 +14377,77 @@ both read length (longer is better) and read identity (higher is better) when
 choosing which reads pass the filter.")
       (license (list license:gpl3       ;filtlong
                      license:asl2.0))))) ;histogram.py
+
+(define-public nanopolish
+  ;; The recommended way to install is to clone the git repository
+  ;; <https://github.com/jts/nanopolish#installing-a-particular-release>.
+  ;; Also, the differences between release and current version seem to be
+  ;; significant.
+  (let ((commit "50e8b5cc62f9b46f5445f5c5e8c5ab7263ea6d9d")
+        (revision "1"))
+    (package
+      (name "nanopolish")
+      (version (git-version "0.10.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jts/nanopolish.git")
+               (commit commit)
+               (recursive? #t)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "09j5gz57yr9i34a27vbl72i4g8syv2zzgmsfyjq02yshmnrvkjs6"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags
+         `("HDF5=noinstall" "EIGEN=noinstall" "HTS=noinstall" "CC=gcc")
+         #:tests? #f                    ; no check target
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'find-eigen
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "CPATH"
+                       (string-append (assoc-ref inputs "eigen")
+                                      "/include/eigen3"))
+               #t))
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (scripts (string-append out "/share/nanopolish/scripts")))
+
+                 (install-file "nanopolish" bin)
+                 (for-each (lambda (file) (install-file file scripts))
+                           (find-files "scripts" ".*"))
+                 #t)))
+           (add-after 'install 'wrap-programs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (for-each (lambda (file)
+                           (wrap-program file `("PYTHONPATH" ":" prefix (,path))))
+                         (find-files "/share/nanopolish/scripts" "\\.py"))
+               (for-each (lambda (file)
+                           (wrap-program file `("PERL5LIB" ":" prefix (,path))))
+                         (find-files  "/share/nanopolish/scripts" "\\.pl"))
+               #t)))))
+      (inputs
+       `(("eigen" ,eigen)
+         ("hdf5" ,hdf5)
+         ("htslib" ,htslib)
+         ("perl" ,perl)
+         ("python" ,python)
+         ("python-biopython" ,python-biopython)
+         ("python-numpy" ,python-numpy)
+         ("python-pysam" ,python-pysam)
+         ("python-scikit-learn" , python-scikit-learn)
+         ("python-scipy" ,python-scipy)
+         ("zlib" ,zlib)))
+      (home-page "https://github.com/jts/nanopolish")
+      (synopsis "Signal-level analysis of Oxford Nanopore sequencing data")
+      (description
+       "This package analyses the Oxford Nanopore sequencing data at signal-level.
+Nanopolish can calculate an improved consensus sequence for a draft genome
+assembly, detect base modifications, call SNPs (Single nucleotide
+polymorphisms) and indels with respect to a reference genome and more.")
+      (license license:expat))))

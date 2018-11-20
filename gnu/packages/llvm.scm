@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
@@ -66,6 +66,7 @@
                            "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
                            "-DBUILD_SHARED_LIBS:BOOL=TRUE"
                            "-DLLVM_ENABLE_FFI:BOOL=TRUE"
+                           "-DLLVM_REQUIRES_RTTI=1" ; For some third-party utilities
                            "-DLLVM_INSTALL_UTILS=ON") ; Needed for rustc.
 
        ;; Don't use '-g' during the build, to save space.
@@ -90,6 +91,26 @@ front-ends derived from GCC 4.0.1.  A new front-end for the C family of
 languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
     (license license:ncsa)))
+
+;; FIXME: This package is here to prevent many rebuilds on x86_64 and i686
+;; from commit fc9dbf41311d99d0fd8befc789ea7c0e35911890.  Update users of
+;; this in the next rebuild cycle.
+(define-public llvm-without-rtti
+  (package
+    (inherit llvm)
+    (arguments
+     `(#:configure-flags '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
+                           "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
+                           "-DBUILD_SHARED_LIBS:BOOL=TRUE"
+                           "-DLLVM_ENABLE_FFI:BOOL=TRUE"
+                           "-DLLVM_INSTALL_UTILS=ON")
+       #:build-type "Release"
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'shared-lib-workaround
+                    (lambda _
+                      (setenv "LD_LIBRARY_PATH"
+                              (string-append (getcwd) "/lib"))
+                      #t)))))))
 
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))
@@ -280,18 +301,6 @@ code analysis tools.")
       (sha256
        (base32
         "1ybmnid4pw2hxn12ax5qa5kl1ldfns0njg8533y3mzslvd5cx0kf"))))))
-
-;; This is for Faust 2
-(define-public llvm-3.8-with-rtti
-  (package (inherit llvm-3.8)
-    (name "llvm-with-rtti")
-    (arguments
-     (substitute-keyword-arguments (package-arguments llvm)
-       ((#:configure-flags flags)
-        `(append '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
-                   "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
-                   "-DLLVM_REQUIRES_RTTI=1")
-                 ,flags))))))
 
 (define-public clang-runtime-3.8
   (clang-runtime-from-llvm

@@ -28,6 +28,7 @@
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1808,6 +1809,41 @@ scientific applications modeled by partial differential equations.")
            ,@(delete "--with-mpi=0" ,cf)))))
     (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
 
+(define-public python-petsc4py
+  (package
+    (name "python-petsc4py")
+    (version "3.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "petsc4py" version))
+        (sha256
+          (base32
+            "1f8zd1ac9irsgkyqmzq30d9kl10fy1nh6zk312dhs43g449fkkhc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; Define path to PETSc installation.
+             (setenv "PETSC_DIR" (assoc-ref %build-inputs "petsc"))
+             #t))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
+    (inputs
+     `(("petsc" ,petsc-openmpi)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://bitbucket.org/petsc/petsc4py/")
+    (synopsis "Python bindings for PETSc")
+    (description "PETSc, the Portable, Extensible Toolkit for
+Scientific Computation, is a suite of data structures and routines for
+the scalable (parallel) solution of scientific applications modeled by
+partial differential equations.  It employs the MPI standard for all
+message-passing communication.  @code{petsc4py} provides Python
+bindings to almost all functions of PETSc.")
+    (license license:bsd-3)))
+
 (define-public python-kiwisolver
   (package
     (name "python-kiwisolver")
@@ -1938,6 +1974,43 @@ arising after the discretization of partial differential equations.")
      `(("petsc" ,petsc-complex-openmpi)
        ,@(alist-delete "petsc" (package-propagated-inputs slepc-openmpi))))
     (synopsis "Scalable library for eigenproblems (with complex scalars and MPI support)")))
+
+(define-public python-slepc4py
+  (package
+    (name "python-slepc4py")
+    (version "3.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "slepc4py" version))
+        (sha256
+          (base32
+            "02xr0vndgibgkz3rgprqk05n3mk5mpgqw550sr4681vcsgz4zvb7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; Define path to PETSc installation.
+             (setenv "PETSC_DIR" (assoc-ref %build-inputs "petsc"))
+             ;; Define path to SLEPc installation.
+             (setenv "SLEPC_DIR" (assoc-ref %build-inputs "slepc"))
+             #t))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
+    (inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-petsc4py" ,python-petsc4py)
+       ("slepc" ,slepc-openmpi)))
+    (home-page "https://bitbucket.org/slepc/slepc4py/")
+    (synopsis "Python bindings for SLEPc")
+    (description "SLEPc, the Scalable Library for Eigenvalue Problem
+Computations, is based on PETSc, the Portable, Extensible Toolkit for
+Scientific Computation.  It employs the MPI standard for all
+message-passing communication.  @code{slepc4py} provides Python
+bindings to almost all functions of SLEPc.")
+    (license license:bsd-3)))
 
 (define-public mumps
   (package
@@ -2716,6 +2789,18 @@ to BMP, JPEG or PNG image formats.")
            (lambda _
              (chmod "src/maxima" #o555)
              #t))
+         (replace 'check
+           (lambda _
+             ;; This is derived from the testing code in the "debian/rules" file
+             ;; of Debian's Maxima package.
+             ;; If Maxima can successfully run this, the binary to be installed
+             ;; should be fine.
+             (zero?
+              (system
+               (string-append "./maxima-local "
+                              "--lisp=gcl "
+                              "--batch-string=\"run_testsuite();\" "
+                              "| grep -q \"No unexpected errors found\"")))))
          ;; Make sure the doc and emacs files are found in the
          ;; standard location.  Also configure maxima to find gnuplot
          ;; without having it on the PATH.
@@ -3861,15 +3946,15 @@ as equations, scalars, vectors, and matrices.")
 (define-public z3
   (package
     (name "z3")
-    (version "4.5.0")
+    (version "4.8.1")
+    (home-page "https://github.com/Z3Prover/z3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Z3Prover/z3/archive/z3-"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "z3-" version))))
               (sha256
                (base32
-                "032a5lvji2liwmc25jv52bdrhimqflvqbpg77ccaq1jykhiivbmf"))))
+                "1vr57bwx40sd5riijyrhy70i2wnv9xrdihf6y5zdz56yq88rl48f"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -3898,43 +3983,57 @@ as equations, scalars, vectors, and matrices.")
     (synopsis "Theorem prover")
     (description "Z3 is a theorem prover and @dfn{satisfiability modulo
 theories} (SMT) solver.  It provides a C/C++ API, as well as Python bindings.")
-    (home-page "https://github.com/Z3Prover/z3")
     (license license:expat)))
 
 (define-public cubicle
   (package
     (name "cubicle")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://cubicle.lri.fr/cubicle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1sny9c4fm14k014pk62ibpwbrjjirkx8xmhs9jg7q1hk7y7x3q2h"))))
+                "10kk80jdmpdvql88sdjsh7vqzlpaphd8vip2lp47aarxjkwjlz1q"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ocaml" ,ocaml)
+     `(("automake" ,automake)
+       ("ocaml" ,ocaml)
        ("which" ,(@@ (gnu packages base) which))))
     (propagated-inputs
-     `(("z3" ,z3)))
+     `(("ocaml-num" ,ocaml-num)
+       ("z3" ,z3)))
     (arguments
      `(#:configure-flags (list "--with-z3")
+       #:make-flags (list "QUIET=")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'configure-for-release
            (lambda _
              (substitute* "Makefile.in"
-               (("SVNREV=") "#SVNREV="))))
+               (("SVNREV=") "#SVNREV="))
+             #t))
          (add-before 'configure 'fix-/bin/sh
            (lambda _
              (substitute* "configure"
-               (("/bin/sh") (which "sh")))))
+               (("-/bin/sh") (string-append "-" (which "sh"))))
+             #t))
          (add-before 'configure 'fix-smt-z3wrapper.ml
            (lambda _
              (substitute* "Makefile.in"
-               (("\\\\n") "")))))))
+               (("\\\\n") ""))
+             #t))
+         (add-before 'configure 'fix-ocaml-num
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("= \\$\\(FUNCTORYLIB\\)")
+                (string-append "= -I "
+                               (assoc-ref inputs "ocaml-num")
+                               "/lib/ocaml/site-lib"
+                               " $(FUNCTORYLIB)")))
+             #t)))))
     (home-page "http://cubicle.lri.fr/")
     (synopsis "Model checker for array-based systems")
     (description "Cubicle is a model checker for verifying safety properties

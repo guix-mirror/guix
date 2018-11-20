@@ -11,6 +11,7 @@
 
 @c Identifier of the OpenPGP key used to sign tarballs and such.
 @set OPENPGP-SIGNING-KEY-ID 3CE464558A84FDC69DB40CFB090B11993D9AEBB5
+@set KEY-SERVER pool.sks-keyservers.net
 
 @copying
 Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès@*
@@ -52,6 +53,7 @@ Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
 Copyright @copyright{} 2018 Gábor Boskovits@*
 Copyright @copyright{} 2018 Florian Pelz@*
 Copyright @copyright{} 2018 Laura Lazzati@*
+Copyright @copyright{} 2018 Alex Vong@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -460,7 +462,8 @@ If that command fails because you do not have the required public key,
 then run this command to import it:
 
 @example
-$ gpg --keyserver pgp.mit.edu --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
+$ gpg --keyserver @value{KEY-SERVER} \
+      --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
 @end example
 
 @noindent
@@ -4391,6 +4394,63 @@ In its @code{configure} phase, this build system replaces dependencies
 specified in the @file{Carto.toml} file with inputs to the Guix package.
 The @code{install} phase installs the binaries, and it also installs the
 source code and @file{Cargo.toml} file.
+@end defvr
+
+@cindex Clojure (programming language)
+@cindex simple Clojure build system
+@defvr {Scheme Variable} clojure-build-system
+This variable is exported by @code{(guix build-system clojure)}.  It implements
+a simple build procedure for @uref{https://clojure.org/, Clojure} packages
+using plain old @code{compile} in Clojure.  Cross-compilation is not supported
+yet.
+
+It adds @code{clojure}, @code{icedtea} and @code{zip} to the set of inputs.
+Different packages can be specified with the @code{#:clojure}, @code{#:jdk} and
+@code{#:zip} parameters, respectively.
+
+A list of source directories, test directories and jar names can be specified
+with the @code{#:source-dirs}, @code{#:test-dirs} and @code{#:jar-names}
+parameters, respectively.  Compile directory and main class can be specified
+with the @code{#:compile-dir} and @code{#:main-class} parameters, respectively.
+Other parameters are documented below.
+
+This build system is an extension of @var{ant-build-system}, but with the
+following phases changed:
+
+@table @code
+
+@item build
+This phase calls @code{compile} in Clojure to compile source files and runs
+@command{jar} to create jars from both source files and compiled files
+according to the include list and exclude list specified in
+@code{#:aot-include} and @code{#:aot-exclude}, respectively.  The exclude list
+has priority over the include list.  These lists consist of symbols
+representing Clojure libraries or the special keyword @code{#:all} representing
+all Clojure libraries found under the source directories.  The parameter
+@code{#:omit-source?} decides if source should be included into the jars.
+
+@item check
+This phase runs tests according to the include list and exclude list specified
+in @code{#:test-include} and @code{#:test-exclude}, respectively.  Their
+meanings are analogous to that of @code{#:aot-include} and
+@code{#:aot-exclude}, except that the special keyword @code{#:all} now
+stands for all Clojure libraries found under the test directories.  The
+parameter @code{#:tests?} decides if tests should be run.
+
+@item install
+This phase installs all jars built previously.
+@end table
+
+Apart from the above, this build system also contains an additional phase:
+
+@table @code
+
+@item install-doc
+This phase installs all top-level files with base name matching
+@var{%doc-regex}.  A different regex can be specified with the
+@code{#:doc-regex} parameter.  All files (recursively) inside the documentation
+directories specified in @code{#:doc-dirs} are installed as well.
+@end table
 @end defvr
 
 @defvr {Scheme Variable} cmake-build-system
@@ -9045,7 +9105,8 @@ If that command fails because you do not have the required public key,
 then run this command to import it:
 
 @example
-$ gpg --keyserver pgp.mit.edu --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
+$ gpg --keyserver @value{KEY-SERVER} \
+      --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
 @end example
 
 @noindent
@@ -9857,7 +9918,7 @@ The list of Linux kernel modules that need to be available in the
 initial RAM disk.  @xref{Initial RAM Disk}.
 
 @item @code{initrd} (default: @code{base-initrd})
-A monadic procedure that returns an initial RAM disk for the Linux
+A procedure that returns an initial RAM disk for the Linux
 kernel.  This field is provided to support low-level customization and
 should rarely be needed for casual use.  @xref{Initial RAM Disk}.
 
@@ -11832,7 +11893,7 @@ Data Type representing the configuration of connman.
 The connman package to use.
 
 @item @code{disable-vpn?} (default: @code{#f})
-When true, enable connman's vpn plugin.
+When true, disable connman's vpn plugin.
 @end table
 @end deftp
 
@@ -21914,10 +21975,10 @@ here is how to use it and customize it further.
 
 @cindex initrd
 @cindex initial RAM disk
-@deffn {Monadic Procedure} raw-initrd @var{file-systems} @
+@deffn {Scheme Procedure} raw-initrd @var{file-systems} @
        [#:linux-modules '()] [#:mapped-devices '()] @
        [#:helper-packages '()] [#:qemu-networking? #f] [#:volatile-root? #f]
-Return a monadic derivation that builds a raw initrd.  @var{file-systems} is
+Return a derivation that builds a raw initrd.  @var{file-systems} is
 a list of file systems to be mounted by the initrd, possibly in addition to
 the root file system specified on the kernel command line via @code{--root}.
 @var{linux-modules} is a list of kernel modules to be loaded at boot time.
@@ -21935,10 +21996,10 @@ When @var{volatile-root?} is true, the root file system is writable but any chan
 to it are lost.
 @end deffn
 
-@deffn {Monadic Procedure} base-initrd @var{file-systems} @
+@deffn {Scheme Procedure} base-initrd @var{file-systems} @
        [#:mapped-devices '()] [#:qemu-networking? #f] [#:volatile-root? #f]@
        [#:linux-modules '()]
-Return a monadic derivation that builds a generic initrd, with kernel
+Return as a file-like object a generic initrd, with kernel
 modules taken from @var{linux}.  @var{file-systems} is a list of file-systems to be
 mounted by the initrd, possibly in addition to the root file system specified
 on the kernel command line via @code{--root}.  @var{mapped-devices} is a list of device
@@ -21958,9 +22019,9 @@ program.  That gives a lot of flexibility.  The
 @code{expression->initrd} procedure builds such an initrd, given the
 program to run in that initrd.
 
-@deffn {Monadic Procedure} expression->initrd @var{exp} @
+@deffn {Scheme Procedure} expression->initrd @var{exp} @
        [#:guile %guile-static-stripped] [#:name "guile-initrd"]
-Return a derivation that builds a Linux initrd (a gzipped cpio archive)
+Return as a file-like object a Linux initrd (a gzipped cpio archive)
 containing @var{guile} and that evaluates @var{exp}, a G-expression,
 upon booting.  All the derivations referenced by @var{exp} are
 automatically copied to the initrd.

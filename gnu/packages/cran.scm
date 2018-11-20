@@ -1593,14 +1593,14 @@ the Kaplan-Meier and Aalen-Johansen methods.")
 (define-public r-dimred
   (package
     (name "r-dimred")
-    (version "0.1.0")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dimRed" version))
        (sha256
         (base32
-         "0fasca5fsbrxdwv30hch7vb9snb844l7l8p5fjf239dq45xfy37v"))))
+         "0ssy2qriiy6zdawriqcbl67qiq68ipml3frq7aqlq70r2fqyyw48"))))
     (properties `((upstream-name . "dimRed")))
     (build-system r-build-system)
     (propagated-inputs `(("r-drr" ,r-drr)))
@@ -1864,14 +1864,14 @@ provides a one-row summary of model-level statistics.")
 (define-public r-recipes
   (package
     (name "r-recipes")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "recipes" version))
        (sha256
         (base32
-         "1vqh3pxs4n1azhnd1lzg91vasya6g323kllhbrw177j7kdxqyimy"))))
+         "0bwijw4427v2k5z3qci2kyr5dyzql8b3lvf88rwy16p741jckjsn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
@@ -4450,14 +4450,14 @@ and adds the annotation to the plot.")
 (define-public r-ggpubr
   (package
     (name "r-ggpubr")
-    (version "0.1.9")
+    (version "0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggpubr" version))
        (sha256
         (base32
-         "0rvfgii2gxarra7d33n6c63ky0mivxxyx35acsrn94xkbd8mbcsj"))))
+         "0rkpcjb1x7lvhj68aam5airbi534jqyiq12x5xk40a25iifhghq6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cowplot" ,r-cowplot)
@@ -6725,14 +6725,14 @@ detection, parallelism through BLAS and parallel user templates.")
 (define-public r-sjstats
   (package
     (name "r-sjstats")
-    (version "0.17.1")
+    (version "0.17.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjstats" version))
        (sha256
         (base32
-         "0s9b0xr8gmcm0kh48jkwk8ns0lqknd8kpys4f7czf0xwzmcx2n1z"))))
+         "0c7g35vn7r9rylhp0gj1yfslg7jybwrhpqpp7vdcd90xfccih24r"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayesplot" ,r-bayesplot)
@@ -6803,14 +6803,14 @@ differentiation.")
 (define-public r-ggeffects
   (package
     (name "r-ggeffects")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggeffects" version))
        (sha256
         (base32
-         "00l02g7yssqxmcmbrzk2wsj3i9ywd0xsy0rmbfh57q1qi76a1wq1"))))
+         "070c3fxmzajq2fy816s5pfqdyjlnzkabj97z7fcsva4h5rnqi9d6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-crayon" ,r-crayon)
@@ -7499,14 +7499,14 @@ netCDF files.")
 (define-public r-biocmanager
   (package
     (name "r-biocmanager")
-    (version "1.30.3")
+    (version "1.30.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "BiocManager" version))
        (sha256
         (base32
-         "0mfvx1xzsgiag9p42kdyqg8fvajyakrdy3z2smhdlaawzbi0qmax"))))
+         "0kxs76pixk1d2lpvkyrq6nnvv1rqf55ph5f7igkadyyqirf3y2ah"))))
     (properties `((upstream-name . "BiocManager")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/BiocManager/")

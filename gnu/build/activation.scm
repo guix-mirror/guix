@@ -148,11 +148,15 @@ properties.  Return #t on success."
                           `("-G" ,(string-join supplementary-groups ","))
                           '())
                     ,@(if comment `("-c" ,comment) '())
-                    ,@(if (and home create-home?)
-                          (if (file-exists? home)
-                              `("-d" ,home)     ; avoid warning from 'useradd'
-                              `("-d" ,home "--create-home"))
+                    ,@(if home `("-d" ,home) '())
+
+                    ;; Home directories of non-system accounts are created by
+                    ;; 'activate-user-home'.
+                    ,@(if (and home create-home? system?
+                               (not (file-exists? home)))
+                          '("--create-home")
                           '())
+
                     ,@(if shell `("-s" ,shell) '())
                     ,@(if password `("-p" ,password) '())
                     ,@(if system? '("--system") '())
@@ -229,10 +233,7 @@ numeric gid or #f."
                      #:supplementary-groups supplementary-groups
                      #:comment comment
                      #:home home
-
-                     ;; Home directories of non-system accounts are created by
-                     ;; 'activate-user-home'.
-                     #:create-home? (and create-home? system?)
+                     #:create-home? create-home?
 
                      #:shell shell
                      #:password password)

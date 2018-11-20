@@ -400,8 +400,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.19.1")
-(define %linux-libre-hash "12mrrgg2ih4jiylpy45q5nsd8afj3nya0klr543s0mcga88v9527")
+(define %linux-libre-version "4.19.2")
+(define %linux-libre-hash "1yh4ll9qh4wmf9r62ksyic57g1iy1b84qbv855l545ilk12znbmj")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -423,8 +423,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.80")
-(define %linux-libre-4.14-hash "0h4hi5lqizdx5nk0f3immbcv2n7p5jh26m80v4x6bw4wi5b44fra")
+(define %linux-libre-4.14-version "4.14.81")
+(define %linux-libre-4.14-hash "0vxs8k7ka8aqnn1fcr88bhr07wa5jg83pq1rcjby9k422mbv254q")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -433,8 +433,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.136"
-                    "1kk6px1jcwbgkpfmf9pdklk6kz90h5l8fvdqwmvnk4bz6b2xrrfp"
+  (make-linux-libre "4.9.137"
+                    "1d8313r2k0qr4x7nqlnbwn5lzfc7dz6w8sfg47jml1q38c2fyjf2"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -3188,7 +3188,7 @@ is flexible, efficient and uses a modular implementation.")
 (define-public fuse-exfat
   (package
     (name "fuse-exfat")
-    (version "1.2.8")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3196,7 +3196,7 @@ is flexible, efficient and uses a modular implementation.")
                     version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jwnxw0bg9v5ij8xvbg4xpjr50nykq8a1lmc2xkblz204rq7wd8z"))))
+                "1lz00q8g4590mrdqmf13ba1s9zrqq645ymgm5p9y99ad0qv22r87"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

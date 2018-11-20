@@ -34,6 +34,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages firmware)
@@ -361,7 +362,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2018.09")
+    (version "2018.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -369,12 +370,13 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0s122kyz1svvs2yjzj4j9qravl3ra4vn0fjqgski7rlczqyg56w3"))))
+                "0znkwljfwwn4y7j20pzz4ilqw8znphrfxns0x1lwdzh3xbr96z3k"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
        ("dtc" ,dtc)
        ("flex" ,flex)
+       ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("python-2" ,python-2)
        ("python2-coverage" ,python2-coverage)

@@ -26,6 +26,7 @@
 (define-module (gnu packages multiprecision)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages gcc)
   #:use-module (guix packages)
@@ -225,3 +226,68 @@ minor changes to the source code.  In most cases only a few type statements
 and (for Fortran-90 programs) read/write statements need to be changed.  PSLQ
 and numerical quadrature programs are included.")
     (license bsd-3)))
+
+(define-public tomsfastmath
+  (package
+    (name "tomsfastmath")
+    (version "0.13.0")
+    (synopsis "Large integer arithmetic library")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/libtom/tomsfastmath/"
+                                  "releases/download/v" version "/"
+                                  "tfm-" (version-major+minor version) ".tar.bz2"))
+              (sha256
+               (base32
+                "01rlsvp6lskk2a0gfdi24ak5h8vdwi6kqbvbwjnmb92r0zrfdvwd"))
+              (patches (search-patches "tomsfastmath-constness.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("libtool" ,libtool)))
+    (arguments
+     `(#:make-flags (list "-f" "makefile.shared"
+                          (string-append "LIBPATH=" %output "/lib")
+                          (string-append "INCPATH=" %output "/include")
+                          "GROUP=root" "USER=root"
+                          "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configuration
+         (replace 'check
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (and (zero? (apply system* "make"
+                                "stest" "test_standalone"
+                                make-flags))
+                  (zero? (system* "./stest"))
+                  (zero? (system* "./test")))))
+         (add-before 'install 'install-nogroup
+           (lambda _
+             ;; Let permissions inherit from the current process
+             (substitute* "makefile.shared"
+               (("-g \\$\\(GROUP\\) -o \\$\\(USER\\)") ""))
+             #t))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((docdir (string-append (assoc-ref outputs "out")
+                                          "/share/doc/tomsfastmath")))
+               (install-file "doc/tfm.pdf" docdir)
+               #t)))
+         (add-after 'install 'install-pc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pc-dir (string-append out "/lib/pkgconfig")))
+               (call-with-output-file "tomsfastmath.pc"
+                 (lambda (port)
+                   (format port "~
+Name: TomsFastMath
+Description: ~a
+Version: ~a
+Libs: -L~a/lib -ltfm~%"
+                           ,synopsis ,version out)))
+               (install-file "tomsfastmath.pc" pc-dir)
+               #t))))))
+    (home-page "http://www.libtom.org/TomsFastMath/")
+    (description "TomsFastMath is a large integer library written in portable
+ISO C.  It is a port of LibTomMath with optional support for inline assembler
+multiplies.")
+    (license public-domain)))

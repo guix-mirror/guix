@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -215,6 +215,18 @@ Linux kernel and C library interfaces employed by user-space programs.")
 \"--help\" and \"--version\" command-line arguments into a manual page
 automatically.")
     (license gpl3+)))
+
+(define-public help2man/latest
+  (package
+    (inherit help2man)
+    (version "1.47.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/help2man/help2man-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1p5830h88cx0zn0snwaj0vpph81xicpsirfwlxmcgjrlmn0nm3sj"))))))
 
 (define-public txt2man
   (package

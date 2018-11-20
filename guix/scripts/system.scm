@@ -175,12 +175,16 @@ TARGET, and register them."
 
     (return *unspecified*)))
 
-(define* (install-bootloader installer-drv
+(define* (install-bootloader installer
                              #:key
                              bootcfg bootcfg-file
                              target)
-  "Call INSTALLER-DRV with error handling, in %STORE-MONAD."
-  (with-monad %store-monad
+  "Run INSTALLER, a bootloader installation script, with error handling, in
+%STORE-MONAD."
+  (mlet %store-monad ((installer-drv (if installer
+                                         (lower-object installer)
+                                         (return #f)))
+                      (bootcfg       (lower-object bootcfg)))
     (let* ((gc-root      (string-append target %gc-roots-directory
                                         "/bootcfg"))
            (temp-gc-root (string-append gc-root ".new"))
@@ -247,21 +251,21 @@ the ownership of '~a' may be incorrect!~%")
         (format   (lift format %store-monad))
         (populate (lift2 populate-root-file-system %store-monad)))
 
-    (mbegin %store-monad
-      ;; Copy the closure of BOOTCFG, which includes OS-DIR,
-      ;; eventual background image and so on.
-      (maybe-copy
-       (derivation->output-path bootcfg))
+    (mlet %store-monad ((bootcfg (lower-object bootcfg)))
+      (mbegin %store-monad
+        ;; Copy the closure of BOOTCFG, which includes OS-DIR,
+        ;; eventual background image and so on.
+        (maybe-copy (derivation->output-path bootcfg))
 
-      ;; Create a bunch of additional files.
-      (format log-port "populating '~a'...~%" target)
-      (populate os-dir target)
+        ;; Create a bunch of additional files.
+        (format log-port "populating '~a'...~%" target)
+        (populate os-dir target)
 
-      (mwhen install-bootloader?
-        (install-bootloader bootloader-installer
-                            #:bootcfg bootcfg
-                            #:bootcfg-file bootcfg-file
-                            #:target target)))))
+        (mwhen install-bootloader?
+          (install-bootloader bootloader-installer
+                              #:bootcfg bootcfg
+                              #:bootcfg-file bootcfg-file
+                              #:target target))))))
 
 
 ;;;
@@ -790,19 +794,18 @@ checking this by themselves in their 'check' procedure."
     (warning (G_ "Consider running 'guix pull' before 'reconfigure'.~%"))
     (warning (G_ "Failing to do that may downgrade your system!~%"))))
 
-(define (bootloader-installer-derivation installer
-                                         bootloader device target)
+(define (bootloader-installer-script installer
+                                     bootloader device target)
   "Return a file calling INSTALLER gexp with given BOOTLOADER, DEVICE
 and TARGET arguments."
-  (with-monad %store-monad
-    (gexp->file "bootloader-installer"
-                (with-imported-modules '((gnu build bootloader)
-                                         (guix build utils))
-                  #~(begin
-                      (use-modules (gnu build bootloader)
-                                   (guix build utils)
-                                   (ice-9 binary-ports))
-                      (#$installer #$bootloader #$device #$target))))))
+  (scheme-file "bootloader-installer"
+               (with-imported-modules '((gnu build bootloader)
+                                        (guix build utils))
+                 #~(begin
+                     (use-modules (gnu build bootloader)
+                                  (guix build utils)
+                                  (ice-9 binary-ports))
+                     (#$installer #$bootloader #$device #$target)))))
 
 (define* (perform-action action os
                          #:key skip-safety-checks?
@@ -830,6 +833,25 @@ static checks."
   (define println
     (cut format #t "~a~%" <>))
 
+  (define menu-entries
+    (if (eq? 'init action)
+        '()
+        (map boot-parameters->menu-entry (profile-boot-parameters))))
+
+  (define bootloader
+    (bootloader-configuration-bootloader (operating-system-bootloader os)))
+
+  (define bootcfg
+    (and (not (eq? 'container action))
+         (operating-system-bootcfg os menu-entries)))
+
+  (define bootloader-script
+    (let ((installer (bootloader-installer bootloader))
+          (target    (or target "/")))
+      (bootloader-installer-script installer
+                                   (bootloader-package bootloader)
+                                   bootloader-target target)))
+
   (when (eq? action 'reconfigure)
     (maybe-suggest-running-guix-pull))
 
@@ -849,39 +871,16 @@ static checks."
                                                 #:image-size image-size
                                                 #:full-boot? full-boot?
                                                 #:mappings mappings))
-       (bootloader -> (bootloader-configuration-bootloader
-                       (operating-system-bootloader os)))
-       (bootloader-package
-        (let ((package (bootloader-package bootloader)))
-          (if package
-              (package->derivation package)
-              (return #f))))
-       (bootcfg  (if (eq? 'container action)
-                     (return #f)
-                     (operating-system-bootcfg
-                      os
-                      (if (eq? 'init action)
-                          '()
-                          (map boot-parameters->menu-entry
-                               (profile-boot-parameters))))))
-       (bootcfg-file -> (bootloader-configuration-file bootloader))
-       (bootloader-installer
-        (let ((installer (bootloader-installer bootloader))
-              (target    (or target "/")))
-          (bootloader-installer-derivation installer
-                                           bootloader-package
-                                           bootloader-target target)))
 
        ;; For 'init' and 'reconfigure', always build BOOTCFG, even if
        ;; --no-bootloader is passed, because we then use it as a GC root.
        ;; See <http://bugs.gnu.org/21068>.
-       (drvs   -> (if (memq action '(init reconfigure))
-                      (if (and install-bootloader? bootloader-package)
-                          (list sys bootcfg
-				bootloader-package
-				bootloader-installer)
-                          (list sys bootcfg))
-                      (list sys)))
+       (drvs      (mapm %store-monad lower-object
+                        (if (memq action '(init reconfigure))
+                            (if install-bootloader?
+                                (list sys bootcfg bootloader-script)
+                                (list sys bootcfg))
+                            (list sys))))
        (%         (if derivations-only?
                       (return (for-each (compose println derivation-file-name)
                                         drvs))
@@ -890,7 +889,7 @@ static checks."
 
     (if (or dry-run? derivations-only?)
         (return #f)
-        (begin
+        (let ((bootcfg-file (bootloader-configuration-file bootloader)))
           (for-each (compose println derivation->output-path)
                     drvs)
 
@@ -899,7 +898,7 @@ static checks."
              (mbegin %store-monad
                (switch-to-system os)
                (mwhen install-bootloader?
-                 (install-bootloader bootloader-installer
+                 (install-bootloader bootloader-script
                                      #:bootcfg bootcfg
                                      #:bootcfg-file bootcfg-file
                                      #:target "/"))))

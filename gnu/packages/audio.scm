@@ -15,6 +15,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -427,6 +428,46 @@ and editing digital audio.  It features digital effects and spectrum analysis
 tools.")
     (license license:gpl2+)))
 
+(define-public autotalent
+  (package
+    (name "autotalent")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://tombaran.info/autotalent-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1n04qm66f14195ly6gsy3ra7v2j7zad5n19d8dwfmh0qs6h9hphh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-before 'install 'prepare-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib/ladspa"))
+             #t))
+         (add-after 'unpack 'override-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr/lib64/ladspa")
+                (string-append (assoc-ref outputs "out") "/lib/ladspa")))
+             #t)))))
+    (inputs
+     `(("ladspa" ,ladspa)))
+    (home-page "http://tombaran.info/autotalent.html")
+    (synopsis "Pitch-correction LADSPA audio plugin")
+    (description
+     "Autotalent is a LADSPA plugin for real-time pitch-correction.  Among its
+controls are allowable notes, strength of correction, LFO for vibrato and
+formant warp.")
+    ;; All code except the FFT routine is licensed under GPLv2+.
+    ;; The FFT routine is under BSD-3.
+    (license (list license:gpl2+))))
+
 (define-public azr3
   (package
     (name "azr3")
@@ -513,6 +554,47 @@ tools (analyzer, mono/stereo tools, crossovers).")
     ;; calfjackhost is released under GPLv2+
     ;; The plugins are released under LGPLv2.1+
     (license (list license:lgpl2.1+ license:gpl2+))))
+
+(define-public caps-plugins-lv2
+  (package
+    (name "caps-plugins-lv2")
+    (version "0.9.24") ; version that has been ported.
+    (source
+     (origin
+       ;; The Github project hasn't tagged a release.
+       (method git-fetch)
+       (uri (git-reference
+             ;; Actually https://github.com/moddevices/caps-lv2.git, but it's
+             ;; missing fixes for newer glibc, so using the origin of a pull
+             ;; request regarding this issue:
+             (url "https://github.com/jujudusud/caps-lv2.git")
+             (commit "9c9478b7fbd8f9714f552ebe2a6866398b0babfb")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1idfnazin3cca41zw1a8vwgnxjnkrap7bxxjamjqvgpmvydgcam1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-after 'unpack 'override-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* (find-files "plugins" "Makefile")
+               (("/usr/local")(assoc-ref outputs "out")))
+             #t)))))
+    (inputs
+     `(("lv2" ,lv2)))
+    ;; home-page of the original LADSPA version: http://quitte.de/dsp/caps.html
+    (home-page "https://github.com/moddevices/caps-lv2")
+    (synopsis "LV2 port of the CAPS audio plugin colection")
+    (description
+     "LV2 port of CAPS, a collection of audio plugins comprising basic virtual
+guitar amplification and a small range of classic effects, signal processors and
+generators of mostly elementary and occasionally exotic nature.")
+    (license license:gpl3+)))
 
 (define-public espeak
   (package
@@ -1045,7 +1127,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1054,7 +1136,7 @@ follower.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1mqyym5qkh8xd1rqj3yhfxbw5dxjcrljb6nkfqzvcarlv4h6rjn7"))))
+                "02vs5sfsyh1dl7wlcvgs4w3x0qcmsl7vi000qgp99ynwh3wjb274"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -1193,7 +1275,7 @@ PS, and DAB+.")
         `(list (string-append "prefix=" (assoc-ref %outputs "out"))
                "world"))))
     (native-inputs
-     `(("llvm" ,llvm-3.8-with-rtti)
+     `(("llvm" ,llvm-3.8)
        ("which" ,which)
        ("xxd" ,xxd)
        ("ctags" ,emacs-minimal)  ; for ctags
@@ -3522,3 +3604,37 @@ using ALSA, MPD, PulseAudio, or a FIFO buffer as its input.")
       (synopsis "Pro-quality GM soundfont")
       (description "Fluid-3 is Frank Wen's pro-quality GM soundfont.")
       (license license:expat))))
+
+(define-public libfdk
+  (let ((commit "2326faaf8f2cdf2c3a9108ccdaf1d7551aec543e")
+        (revision "0"))
+    (package
+      (name "libfdk")
+      ;; The latest upstream revision, with many bug fixes.
+      (version (git-version "0.1.6" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/mstorsjo/fdk-aac")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "0yy6ndd9d61bwl283vl1r5kva2a4acc0f4r9g0sza156f2abr9ws"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      (home-page "https://github.com/mstorsjo/fdk-aac")
+      (synopsis "Fraunhofer FDK AAC library")
+      (description "FDK is a library for encoding and decoding Advanced Audio
+Coding (AAC) format audio, developed by Fraunhofer IIS, and included as part of
+Android.  It supports several Audio Object Types including MPEG-2 and MPEG-4 AAC
+LC, HE-AAC (AAC LC + SBR), HE-AACv2 (LC + SBR + PS) as well AAC-LD (low delay)
+and AAC-ELD (enhanced low delay) for real-time communication.  The encoding
+library supports sample rates up to 96 kHz and up to eight channels (7.1
+surround).")
+      (license (license:fsf-free "https://github.com/mstorsjo/fdk-aac/blob/master/NOTICE"
+                                 "https://www.gnu.org/licenses/license-list.html#fdk")))))

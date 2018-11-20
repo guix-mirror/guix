@@ -20,8 +20,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu system linux-initrd)
-  #:use-module (guix monads)
-  #:use-module (guix store)
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module ((guix store)
@@ -63,7 +61,7 @@
                              (gzip gzip)
                              (name "guile-initrd")
                              (system (%current-system)))
-  "Return a derivation that builds a Linux initrd (a gzipped cpio archive)
+  "Return as a file-like object a Linux initrd (a gzipped cpio archive)
 containing GUILE and that evaluates EXP, a G-expression, upon booting.  All
 the derivations referenced by EXP are automatically copied to the initrd."
 
@@ -100,8 +98,9 @@ the derivations referenced by EXP are automatically copied to the initrd."
                         #:references-graphs '("closure")
                         #:gzip (string-append #$gzip "/bin/gzip")))))
 
-  (gexp->derivation name builder
-                    #:references-graphs `(("closure" ,init))))
+  (computed-file name builder
+                 #:options
+                 `(#:references-graphs (("closure" ,init)))))
 
 (define (flat-linux-module-directory linux modules)
   "Return a flat directory containing the Linux kernel modules listed in
@@ -143,7 +142,7 @@ MODULES and taken from LINUX."
                       qemu-networking?
                       volatile-root?
                       (on-error 'debug))
-  "Return a monadic derivation that builds a raw initrd, with kernel
+  "Return as a file-like object a raw initrd, with kernel
 modules taken from LINUX.  FILE-SYSTEMS is a list of file-systems to be
 mounted by the initrd, possibly in addition to the root file system specified
 on the kernel command line via '--root'. LINUX-MODULES is a list of kernel
@@ -294,7 +293,7 @@ FILE-SYSTEMS."
                       volatile-root?
                       (extra-modules '())         ;deprecated
                       (on-error 'debug))
-  "Return a monadic derivation that builds a generic initrd, with kernel
+  "Return as a file-like object a generic initrd, with kernel
 modules taken from LINUX.  FILE-SYSTEMS is a list of file-systems to be
 mounted by the initrd, possibly in addition to the root file system specified
 on the kernel command line via '--root'.  MAPPED-DEVICES is a list of device

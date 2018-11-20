@@ -20,13 +20,8 @@
 (define-module (gnu bootloader u-boot)
   #:use-module (gnu bootloader extlinux)
   #:use-module (gnu bootloader)
-  #:use-module (gnu system)
-  #:use-module (gnu build bootloader)
   #:use-module (gnu packages bootloaders)
   #:use-module (guix gexp)
-  #:use-module (guix monads)
-  #:use-module (guix records)
-  #:use-module (guix utils)
   #:export (u-boot-bootloader
             u-boot-a20-olinuxino-lime-bootloader
             u-boot-a20-olinuxino-lime2-bootloader

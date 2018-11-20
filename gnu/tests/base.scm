@@ -154,10 +154,15 @@ info --version")
                                                  (#f (reverse result))
                                                  (x  (loop (cons x result))))))
                                           marionette)))
-              (lset= string=?
-                     (map passwd:name users)
+              (lset= equal?
+                     (map (lambda (user)
+                            (list (passwd:name user)
+                                  (passwd:dir user)))
+                          users)
                      (list
-                      #$@(map user-account-name
+                      #$@(map (lambda (account)
+                                `(list ,(user-account-name account)
+                                       ,(user-account-home-directory account)))
                               (operating-system-user-accounts os))))))
 
           (test-assert "shepherd services"

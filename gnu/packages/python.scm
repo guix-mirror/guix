@@ -2381,48 +2381,22 @@ logic-free templating system Mustache.")
 (define-public python-joblib
   (package
     (name "python-joblib")
-    (version "0.10.3")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "joblib" version))
               (sha256
                (base32
-                "0787k919zlfmgymprz5bzv0v1df5bbirlf3awrghmjgvkrd9dci9"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Remove pre-compiled .pyc files from source.
-           (for-each delete-file-recursively
-                     (find-files "." "__pycache__" #:directories? #t))
-           (for-each delete-file (find-files "." "\\.pyc$"))
-           #t))))
+                "0612nazad8dxmn3xghfrmjax6456l4xy6hn9cngs7vydi14ds7v5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'disable-failing-tests
-           (lambda _
-             ;; This numpydoc tests fails for unknown reasons
-             (delete-file "doc/sphinxext/numpydoc/tests/test_docscrape.py")
-             ;; This numpydoc test depends on matplotlib, which is not a
-             ;; required input.
-             (delete-file "doc/sphinxext/numpydoc/tests/test_plot_directive.py")
-             ;; These tests fail to execute sys.executable
-             (substitute* "joblib/test/test_parallel.py"
-               (("import nose" line)
-                (string-append "from nose.plugins.skip import SkipTest\n" line))
-               (("def test_nested_parallel_warnings" line)
-                (string-append "@SkipTest\n" line))
-               (("def test_parallel_with_interactively_defined_functions" line)
-                (string-append "@SkipTest\n" line)))
-             #t)))))
-    ;; Provide nose to enable tests command
+         (replace 'check
+           (lambda _ (invoke "pytest" "-v" "joblib"))))))
     (native-inputs
-     `(("python-nose"       ,python-nose)
-       ("python-sphinx"     ,python-sphinx)
-       ("python-docutils"   ,python-docutils)
-       ("python-numpydoc"   ,python-numpydoc)))
-    (home-page "http://pythonhosted.org/joblib/")
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://joblib.readthedocs.io/")
     (synopsis "Using Python functions as pipeline jobs")
     (description
      "Joblib is a set of tools to provide lightweight pipelining in Python.
@@ -9875,7 +9849,7 @@ and/or Xon/Xoff.  The port is accessed in RAW mode.")
 (define-public python-kivy
   (package
     (name "python-kivy")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
@@ -9883,7 +9857,7 @@ and/or Xon/Xoff.  The port is accessed in RAW mode.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1394zh6kvf7k5d8vlzxcsfcailr3q59xwg9b1n7qaf25bvyq1h98"))))
+         "1zzxjdp78hfjjiklzr82l4zwibwcq4j6kgicspqs6iyyfn5yisbw"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f              ; Tests require many optional packages
@@ -10126,26 +10100,41 @@ Python to manipulate OpenDocument 1.2 files.")
 (define-public python-natsort
   (package
     (name "python-natsort")
-    (version "5.0.2")
+    (version "5.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "natsort" version))
               (sha256
                (base32
-                "0bh6j0l8iapjnsgg3bs6q075cnzjl6zw1vlgqyv3qrygm2cxypkn"))))
+                "0i732amg6yzkx4g4c9j09jmqq39q377x9cl2nbkm5hax2c2v0wxf"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:modules ((guix build utils)
+                  (guix build python-build-system)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (ice-9 ftw))
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'set-cachedir
            ;; Tests require write access to $HOME by default
-           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t)))))
+           (lambda _ (setenv "PYTHON_EGG_CACHE" "/tmp") #t))
+         (replace 'check
+           (lambda _
+             (let ((cwd (getcwd)))
+               (setenv "PYTHONPATH"
+                       (string-append
+                        cwd "/build/"
+                        (find (cut string-prefix? "lib" <>)
+                              (scandir (string-append cwd "/build")))
+                        ":"
+                        (getenv "PYTHONPATH")))
+               (invoke "pytest" "-v")))))))
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)
-       ("python-pytest-cache" ,python-pytest-cache)
        ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-flakes" ,python-pytest-flakes)
-       ("python-pytest-pep8" ,python-pytest-pep8)))
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs ; TODO: Add python-fastnumbers.
      `(("python-pyicu" ,python-pyicu)))
     (home-page "https://github.com/SethMMorton/natsort")
@@ -10167,8 +10156,6 @@ functionality in the command line.")
     (package (inherit base)
              (native-inputs
               `(("python2-pathlib" ,python2-pathlib)
-                ("python2-mock" ,python2-mock)
-                ("python2-enum34" ,python2-enum34)
                 ,@(package-native-inputs base))))))
 
 (define-public python-glances
