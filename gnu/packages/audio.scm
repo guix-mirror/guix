@@ -466,7 +466,7 @@ controls are allowable notes, strength of correction, LFO for vibrato and
 formant warp.")
     ;; All code except the FFT routine is licensed under GPLv2+.
     ;; The FFT routine is under BSD-3.
-    (license (list license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public azr3
   (package
