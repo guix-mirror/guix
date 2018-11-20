@@ -40,7 +40,7 @@
                 (lambda (opt name arg result)
                   (unless (member arg '("human" "channels"))
                     (leave (G_ "~a: unsupported output format~%") arg))
-                  (alist-cons 'format 'channels result)))
+                  (alist-cons 'format (string->symbol arg) result)))
         (option '(#\h "help") #f #f
                 (lambda args
                   (show-help)
