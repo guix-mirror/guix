@@ -23930,13 +23930,12 @@ to use that term for what we do now.}.
 
 The Reduced Binary Seed bootstrap removes the most critical tools---from a
 trust perspective---from the bootstrap binaries: GCC, Binutils and the GNU C
-Library are replaced by: @code{mescc-tools-seed} (a tiny assembler and linker)
-@code{bootstrap-mes} (a small Scheme Interpreter and a C compiler written in
-Scheme and the Mes C Library, built for TinyCC and for GCC).  Using these new
-binary seeds and a new set of
+Library are replaced by: @code{bootstrap-mescc-tools} (a tiny assembler and
+linker) and @code{bootstrap-mes} (a small Scheme Interpreter and a C compiler
+written in Scheme and the Mes C Library, built for TinyCC and for GCC).  Using
+these new binary seeds and a new set of
 @c
 packages@footnote{@c
-mescc-tools-boot,
 nyacc-boot,
 mes-boot,
 tcc-boot0,
@@ -24030,8 +24029,8 @@ corresponds to the @code{#:modules} argument of
 
 Finally, the various tarballs are unpacked by the derivations
 @code{gcc-bootstrap-0.drv}, @code{glibc-bootstrap-0.drv}, or
-@code{bootstrap-mes-0.drv} and @code{mescc-tools-boot-0.drv}, at which point
-we have a working C tool chain.
+@code{bootstrap-mes-0.drv} and @code{bootstrap-mescc-tools-0.drv}, at which
+point we have a working C tool chain.
 
 @unnumberedsubsec Building the Build Tools
 
@@ -24096,11 +24095,11 @@ those rarely need to be updated.  Nevertheless, it is useful to have an
 automated way to produce them, should an update occur, and this is what
 the @code{(gnu packages make-bootstrap)} module provides.
 
-The following command builds the tarballs containing the bootstrap
-binaries (Binutils, GCC, glibc, for the traditional bootstrap and
-linux-libre-headers, mescc-tools-seed, bootstrap-mes for the Reduced
-Binary Seed bootstrap, and Guile, and a tarball containing a mixture
-of Coreutils and other basic command-line tools):
+The following command builds the tarballs containing the bootstrap binaries
+(Binutils, GCC, glibc, for the traditional bootstrap and linux-libre-headers,
+bootstrap-mescc-tools, bootstrap-mes for the Reduced Binary Seed bootstrap,
+and Guile, and a tarball containing a mixture of Coreutils and other basic
+command-line tools):
 
 @example
 guix build bootstrap-tarballs
