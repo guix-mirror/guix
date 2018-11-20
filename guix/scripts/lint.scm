@@ -33,6 +33,7 @@
   #:use-module (guix packages)
   #:use-module (guix licenses)
   #:use-module (guix records)
+  #:use-module (guix grafts)
   #:use-module (guix ui)
   #:use-module (guix upstream)
   #:use-module (guix utils)
@@ -789,15 +790,16 @@ descriptions maintained upstream."
                                          (condition-message c)))))
           (with-store store
             ;; Disable grafts since it can entail rebuilds.
-            (package-derivation store package system #:graft? #f)
+            (parameterize ((%graft? #f))
+              (package-derivation store package system #:graft? #f)
 
-            ;; If there's a replacement, make sure we can compute its
-            ;; derivation.
-            (match (package-replacement package)
-              (#f #t)
-              (replacement
-               (package-derivation store replacement system
-                                   #:graft? #f))))))
+              ;; If there's a replacement, make sure we can compute its
+              ;; derivation.
+              (match (package-replacement package)
+                (#f #t)
+                (replacement
+                 (package-derivation store replacement system
+                                     #:graft? #f)))))))
       (lambda args
         (emit-warning package
                       (format #f (G_ "failed to create ~a derivation: ~s")
