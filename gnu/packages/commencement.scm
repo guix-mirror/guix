@@ -174,6 +174,8 @@
                 (symlink (string-append "../nyacc-source/module") "nyacc")
                 (setenv "GUILE_LOAD_PATH" "nyacc")
                 (setenv "GUILE_TOOLS" "true") ; no tools in bootstrap-guile
+                (substitute* "configure.sh"
+                  (("^arch=.*") "arch=i686\n"))
                 (invoke "bash" "configure.sh"
                         (string-append "--prefix=" out))
                 (setenv "MES" "src/mes")

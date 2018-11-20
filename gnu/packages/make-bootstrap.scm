@@ -542,9 +542,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (inherit mescc-tools)
     (name "mescc-tools-static")
     (arguments
-     (substitute-keyword-arguments (package-arguments mescc-tools)
-       ((#:make-flags flags)
-        `(cons "CC=gcc -static" ,flags))))))
+     `(#:system "i686-linux"
+       ,@(substitute-keyword-arguments (package-arguments mescc-tools)
+           ((#:make-flags flags)
+            `(cons "CC=gcc -static" ,flags)))))))
 
 (define %mes-minimal
   ;; A minimal Mes without documentation dependencies, for bootstrap.
@@ -553,16 +554,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
       (inherit mes)
       (name "mes-minimal")
       (native-inputs
-       `(("guile" ,guile-2.2)
-         ,@(if (not (string-prefix? "i686-linux" (or (%current-target-system)
-                                                     (%current-system))))
-               ;; Use cross-compiler rather than #:system "i686-linux" to get
-               ;; MesCC 64 bit .go files installed ready for use with Guile.
-               `(("i686-linux-binutils" ,(cross-binutils triplet))
-                 ("i686-linux-gcc" ,(cross-gcc triplet)))
-               '())))
+       `(("guile" ,guile-2.2)))
       (arguments
-       `(#:strip-binaries? #f
+       `(#:system "i686-linux"
+         #:strip-binaries? #f
          #:phases
          (modify-phases %standard-phases
            (add-before 'configure 'optional-dot
