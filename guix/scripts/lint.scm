@@ -774,30 +774,36 @@ descriptions maintained upstream."
 
 (define (check-derivation package)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
-  (catch #t
-    (lambda ()
-      (guard (c ((nix-protocol-error? c)
-                 (emit-warning package
-                               (format #f (G_ "failed to create derivation: ~a")
-                                       (nix-protocol-error-message c))))
-                ((message-condition? c)
-                 (emit-warning package
-                               (format #f (G_ "failed to create derivation: ~a")
-                                       (condition-message c)))))
-        (with-store store
-          ;; Disable grafts since it can entail rebuilds.
-          (package-derivation store package #:graft? #f)
+  (define (try system)
+    (catch #t
+      (lambda ()
+        (guard (c ((nix-protocol-error? c)
+                   (emit-warning package
+                                 (format #f (G_ "failed to create ~a derivation: ~a")
+                                         system
+                                         (nix-protocol-error-message c))))
+                  ((message-condition? c)
+                   (emit-warning package
+                                 (format #f (G_ "failed to create ~a derivation: ~a")
+                                         system
+                                         (condition-message c)))))
+          (with-store store
+            ;; Disable grafts since it can entail rebuilds.
+            (package-derivation store package system #:graft? #f)
 
-          ;; If there's a replacement, make sure we can compute its
-          ;; derivation.
-          (match (package-replacement package)
-            (#f #t)
-            (replacement
-             (package-derivation store replacement #:graft? #f))))))
-    (lambda args
-      (emit-warning package
-                    (format #f (G_ "failed to create derivation: ~s~%")
-                            args)))))
+            ;; If there's a replacement, make sure we can compute its
+            ;; derivation.
+            (match (package-replacement package)
+              (#f #t)
+              (replacement
+               (package-derivation store replacement system
+                                   #:graft? #f))))))
+      (lambda args
+        (emit-warning package
+                      (format #f (G_ "failed to create ~a derivation: ~s")
+                              system args)))))
+
+  (for-each try (package-supported-systems package)))
 
 (define (check-license package)
   "Warn about type errors of the 'license' field of PACKAGE."
