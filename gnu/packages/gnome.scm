@@ -2116,6 +2116,7 @@ editors, IDEs, etc.")
     (inherit vte)
     (name "vte-ng")
     (version "0.52.2.a")
+    (home-page "https://github.com/thestinger/vte-ng")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
