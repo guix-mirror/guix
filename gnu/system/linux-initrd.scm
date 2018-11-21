@@ -91,16 +91,17 @@ the derivations referenced by EXP are automatically copied to the initrd."
             (lambda (port)
               (simple-format port "~A\n" #$guile)))
 
-          (build-initrd (string-append #$output "/initrd")
+          (build-initrd (string-append #$output "/initrd.cpio.gz")
                         #:guile #$guile
                         #:init #$init
                         ;; Copy everything INIT refers to into the initrd.
                         #:references-graphs '("closure")
                         #:gzip (string-append #$gzip "/bin/gzip")))))
 
-  (computed-file name builder
-                 #:options
-                 `(#:references-graphs (("closure" ,init)))))
+  (file-append (computed-file name builder
+                              #:options
+                              `(#:references-graphs (("closure" ,init))))
+               "/initrd.cpio.gz"))
 
 (define (flat-linux-module-directory linux modules)
   "Return a flat directory containing the Linux kernel modules listed in
