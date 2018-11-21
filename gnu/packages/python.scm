@@ -9021,6 +9021,14 @@ own code, responding to click events and updating clock every second.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'check 'adjust-tests
+           (lambda _
+             (when (which "python3")
+               ;; Adjust the example output to match that of Python 3.7:
+               ;; <https://github.com/ionelmc/python-tblib/issues/36>.
+               (substitute* "README.rst"
+                 (("Exception\\('fail',") "Exception('fail'"))
+               #t)))
          (replace 'check
            (lambda _
              ;; Upstream runs tests after installation and the package itself
