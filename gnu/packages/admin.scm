@@ -2462,18 +2462,10 @@ make it a perfect utility on modern distros.")
         "1cs2pq8xvfnsvrhg2bxawk4kn3z1qmfrnpnhs178pvfbglzh15hc"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (invoke "sh" "autogen.sh")
-             #t)))
-       #:configure-flags
+     `(#:configure-flags
        (let ((out      (assoc-ref %outputs "out")))
          (list (string-append "--sysconfdir="
                               out "/etc")
-               (string-append "--with-udev-dir="
-                              out "/lib/udev")
                (string-append "--with-dbus-sys-dir="
                               out "/etc/dbus-1/system.d")
                "--localstatedir=/var"))))
