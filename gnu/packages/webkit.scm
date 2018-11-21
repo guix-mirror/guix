@@ -168,14 +168,14 @@ HTML/CSS applications to full-fledged web browsers.")
 (define-public webkitgtk-2.22
   (package/inherit webkitgtk
     (name "webkitgtk")
-    (version "2.22.3")
+    (version "2.22.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0wnddhm2bihmmkmi919lyxskvjk2wrzx6azkiypyjfwm08lm9zcx"))))
+                "1f2335hjzsvjxjf6hy5cyypsn65wykpx2pbk1sp548w0hclbxdgs"))))
     (native-inputs
      `(("gcc" ,gcc-7)  ; webkitgtk-2.22 requires gcc-6 or newer
        ,@(package-native-inputs webkitgtk)))
