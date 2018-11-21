@@ -1593,15 +1593,15 @@ filters, new key bindings and faces.  It can be enabled by
   (package
     (name "emacs-pdf-tools")
     (version "0.80")
+    (home-page "https://github.com/politza/pdf-tools")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/politza/pdf-tools/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "06imydn3a92vr57azpn1zhqc14kxyyslmyi9ldsyphan9b724gb6"))))
+                "1i4647vax5na73basc5dz4lh9kprir00fh8ps4i0l1y3ippnjs2s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -1626,6 +1626,8 @@ filters, new key bindings and faces.  It can be enabled by
            (lambda _ (chdir "../lisp") #t))
          (add-after 'enter-lisp-dir 'emacs-patch-variables
            (lambda* (#:key outputs #:allow-other-keys)
+             (for-each make-file-writable (find-files "."))
+
              ;; Set path to epdfinfo program.
              (emacs-substitute-variables "pdf-info.el"
                ("pdf-info-epdfinfo-program"
@@ -1659,7 +1661,6 @@ filters, new key bindings and faces.  It can be enabled by
 files.  The key difference is that pages are not pre-rendered by
 e.g. ghostscript and stored in the file-system, but rather created on-demand
 and stored in memory.")
-    (home-page "https://github.com/politza/pdf-tools")
     (license license:gpl3+)))
 
 (define-public emacs-dash
