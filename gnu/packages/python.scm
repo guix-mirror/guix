@@ -5387,20 +5387,34 @@ SVG, EPS, PNG and terminal output.")
 (define-public python-seaborn
   (package
     (name "python-seaborn")
-    (version "0.7.1")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "seaborn" version))
        (sha256
-        (base32 "0pawrqc3mxpwd5g9pvi9gba02637bh5c8ldpp8izfwpfn52469zs"))))
+        (base32 "0bqysi3fxfjl1866m5jq8z7mynhqbqnikim74dmzn8539iwkzj3n"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; Tests requires a running X11 server.
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server")))
+               ;; There must be a running X server and make check doesn't
+               ;; start one.  Therefore we must do it.
+               (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
+               (setenv "DISPLAY" ":1")
+               #t)))
+         (replace 'check (lambda _ (invoke "pytest" "seaborn") #t)))))
     (propagated-inputs
      `(("python-pandas" ,python-pandas)
        ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("xorg-server" ,xorg-server)))
     (home-page "http://stanford.edu/~mwaskom/software/seaborn/")
     (synopsis "Statistical data visualization")
     (description
@@ -5408,15 +5422,10 @@ SVG, EPS, PNG and terminal output.")
 graphics in Python.  It is built on top of matplotlib and tightly integrated
 with the PyData stack, including support for numpy and pandas data structures
 and statistical routines from scipy and statsmodels.")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-seaborn))))))
+    (license license:bsd-3)))
 
 (define-public python2-seaborn
-  (let ((base (package-with-python2 (strip-python2-variant python-seaborn))))
-    (package
-      (inherit base)
-      (propagated-inputs `(("python2-pytz" ,python2-pytz)
-                           ,@(package-propagated-inputs base))))))
+  (package-with-python2 python-seaborn))
 
 (define-public python-mpmath
   (package
