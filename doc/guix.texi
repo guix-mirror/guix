@@ -3276,7 +3276,9 @@ pull -C} or installed as @file{~/.config/guix/channels.scm} (@pxref{Invoking
 guix pull});
 @item json
 @cindex JSON
-produce a list of channel specifications in JSON format.
+produce a list of channel specifications in JSON format;
+@item recutils
+produce a list of channel specifications in Recutils format.
 @end table
 
 @item --profile=@var{profile}

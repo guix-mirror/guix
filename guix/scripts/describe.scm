@@ -41,7 +41,7 @@
   ;; Specifications of the command-line options.
   (list (option '(#\f "format") #t #f
                 (lambda (opt name arg result)
-                  (unless (member arg '("human" "channels" "json"))
+                  (unless (member arg '("human" "channels" "json" "recutils"))
                     (leave (G_ "~a: unsupported output format~%") arg))
                   (alist-cons 'format (string->symbol arg) result)))
         (option '(#\p "profile") #t #f
@@ -98,6 +98,11 @@ Display information about the channels currently in use.\n"))
                       (url . ,(channel-url channel))
                       (commit . ,(channel-commit channel)))))
 
+(define (channel->recutils channel port)
+  (format port "name: ~a~%" (channel-name channel))
+  (format port "url: ~a~%" (channel-url channel))
+  (format port "commit: ~a~%" (channel-commit channel)))
+
 (define* (display-checkout-info fmt #:optional directory)
   "Display information about the current checkout according to FMT, a symbol
 denoting the requested format.  Exit if the current directory does not lie
@@ -125,7 +130,12 @@ within a Git checkout."
        (display (channel->json (channel (name 'guix)
                                         (url (dirname directory))
                                         (commit commit))))
-       (newline)))
+       (newline))
+      ('recutils
+       (channel->recutils (channel (name 'guix)
+                                   (url (dirname directory))
+                                   (commit commit))
+                          (current-output-port))))
     (display-package-search-path fmt)))
 
 (define (display-profile-info profile fmt)
@@ -166,7 +176,14 @@ in the format specified by FMT."
     ('channels
      (pretty-print `(list ,@(map channel->sexp channels))))
     ('json
-     (format #t "[~a]~%" (string-join (map channel->json channels) ","))))
+     (format #t "[~a]~%" (string-join (map channel->json channels) ",")))
+    ('recutils
+     (format #t "~{~a~%~}"
+             (map (lambda (channel)
+                    (with-output-to-string
+                      (lambda ()
+                        (channel->recutils channel (current-output-port)))))
+                  channels))))
   (display-package-search-path fmt))
 
 
