@@ -21,6 +21,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -253,6 +254,61 @@ files.  It can compress them as much as 40% losslessly.")
 (define-public pngcrunch
   ;; This package used to be wrongfully name "pngcrunch".
   (deprecated-package "pngcrunch" pngcrush))
+
+(define-public pnglite
+  (let ((commit "11695c56f7d7db806920bd9229b69f230e6ffb38")
+        (revision "1"))
+    (package
+      (name "pnglite")
+      ;; The project was moved from sourceforge to github.
+      ;; The latest version in sourceforge was 0.1.17:
+      ;; https://sourceforge.net/projects/pnglite/files/pnglite/
+      ;; No releases are made in github.
+      (version (git-version "0.1.17" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dankar/pnglite")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1lmmkdxby5b8z9kx3zrpgpk33njpcf2xx8z9bgqag855sjsqbbby"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda _
+               ;; common build flags for building shared libraries
+               (let ((cflags '("-O2" "-g" "-fPIC"))
+                     (ldflags '("-shared")))
+                 (apply invoke
+                        `("gcc"
+                          "-o" "libpnglite.so"
+                          ,@cflags
+                          ,@ldflags
+                          "pnglite.c"))
+                 #t)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib/"))
+                      (include (string-append out "/include/"))
+                      (doc (string-append out "/share/doc/"
+                                          ,name "-" ,version "/")))
+                 (install-file "libpnglite.so" lib)
+                 (install-file "pnglite.h" include)
+                 (install-file "README.md" doc)
+                 #t))))))
+      (inputs `(("zlib" ,zlib)))
+      (home-page "https://github.com/dankar/pnglite")
+      (synopsis "Pretty small png library")
+      (description "A pretty small png library.
+Currently all documentation resides in @file{pnglite.h}.")
+      (license license:zlib))))
 
 (define-public libjpeg
   (package

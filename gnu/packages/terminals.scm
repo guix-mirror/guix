@@ -104,7 +104,7 @@ configurable through a graphical wizard.")
 (define-public termite
   (package
     (name "termite")
-    (version "13")
+    (version "14")
     (source
       (origin
         (method git-fetch)
@@ -116,7 +116,7 @@ configurable through a graphical wizard.")
         (file-name (string-append name "-" version "-checkout"))
         (sha256
          (base32
-          "02cn70ygl93ghhkhs3xdxn5b1yadc255v3yp8cmhhyzsv5027hvj"))))
+          "0dmz9rpc2fdvcwhcmjnhb48ixn403gxpq03g334d1hgjw2hsyx7x"))))
     (build-system gnu-build-system)
     (arguments
       `(#:phases

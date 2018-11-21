@@ -28,6 +28,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -581,6 +582,37 @@ It aims to conform to RFC 7159.")
                  (substitute* (find-files "." "Makefile\\.in")
                    (("-Werror") ""))
                  #t))))))
+
+(define-public json-parser
+  (package
+    (name "json-parser")
+    (version "1.1.0")
+    (source (origin
+              ;; do not use auto-generated tarballs
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/udp/json-parser.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ls7z4fx0sq633s5bc0j1gh36sv087gmrgr7rza22wjq2d4606yf"))))
+    ;; FIXME: we should build the python bindings in a separate package
+    (build-system gnu-build-system)
+    ;; the tests are written for the python bindings which are not built here
+    (arguments '(#:tests? #f))
+    (home-page "https://github.com/udp/json-parser")
+    (synopsis "JSON parser written in ANSI C")
+    (description "This package provides a very low footprint JSON parser
+written in portable ANSI C.
+
+@itemize
+@item BSD licensed with no dependencies (i.e. just drop the C file into your
+project)
+@item Never recurses or allocates more memory than it needs
+@item Very simple API with operator sugar for C++
+@end itemize")
+    (license l:bsd-2)))
 
 (define-public qjson
   (package

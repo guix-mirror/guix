@@ -910,7 +910,7 @@ static checks."
                       #:install-bootloader? install-bootloader?
                       #:bootcfg bootcfg
                       #:bootcfg-file bootcfg-file
-                      #:bootloader-installer bootloader-installer))
+                      #:bootloader-installer bootloader-script))
             (else
              ;; All we had to do was to build SYS and maybe register an
              ;; indirect GC root.

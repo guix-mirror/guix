@@ -870,12 +870,11 @@ hardware-related operations as necessary when booting a Linux container."
   (define make-initrd
     (operating-system-initrd os))
 
-  (let ((initrd (make-initrd boot-file-systems
-                             #:linux (operating-system-kernel os)
-                             #:linux-modules
-                             (operating-system-initrd-modules os)
-                             #:mapped-devices mapped-devices)))
-    (file-append initrd "/initrd")))
+  (make-initrd boot-file-systems
+               #:linux (operating-system-kernel os)
+               #:linux-modules
+               (operating-system-initrd-modules os)
+               #:mapped-devices mapped-devices))
 
 (define (locale-name->definition* name)
   "Variant of 'locale-name->definition' that raises an error upon failure."

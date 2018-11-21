@@ -213,7 +213,7 @@ made available under the /xchg CIFS share."
               (let* ((inputs  '#$(list qemu (canonical-package coreutils)))
                      (linux   (string-append #$linux "/"
                                              #$(system-linux-image-file-name)))
-                     (initrd  (string-append #$initrd "/initrd"))
+                     (initrd  #$initrd)
                      (loader  #$loader)
                      (graphs  '#$(match references-graphs
                                    (((graph-files . _) ...) graph-files)

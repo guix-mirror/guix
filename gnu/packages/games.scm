@@ -35,6 +35,7 @@
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4139,31 +4140,54 @@ small robot living in the nano world, repair its maker.")
 (define-public teeworlds
   (package
     (name "teeworlds")
-    (version "0.6.4")
+    (version "0.7.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/teeworlds/teeworlds/"
-                                  "archive/" version "-release.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              ;; do not use auto-generated tarballs
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/teeworlds/teeworlds.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mqhp6xjl75l49050cid36wxyjn1qr0vjx1c709dfg1lkvmgs6l3"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (for-each delete-file-recursively
-                            '("src/engine/external/wavpack/"
-                              "src/engine/external/zlib/"))
+                "0jigg2yikihbivzs7hpljr0mghx1l9v4f1cdr8fbmqv2wb51ah8q"))
+              (modules '((guix build utils)
+                         (ice-9 ftw)
+                         (ice-9 regex)
+                         (srfi srfi-1)
+                         (srfi srfi-26)))
+              (snippet ; remove bundled libraries except md5
+               '(let ((base-dir "src/engine/external/"))
+                  (for-each (compose (cut delete-file-recursively <>)
+                                     (cut string-append base-dir <>))
+                            (remove (cut string-match "(^.)|(^md5$)" <>)
+                                    (scandir base-dir)))
                   #t))
               (patches
                (search-patches "teeworlds-use-latest-wavpack.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests included
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
+             ;; The bundled json-parser uses an old API.
+             ;; To use the latest non-bundled version, we need to pass the
+             ;; length of the data in all 'json_parse_ex' calls.
+             (define (use-latest-json-parser file)
+               (substitute* file
+                 (("engine/external/json-parser/json\\.h")
+                  "json-parser/json.h")
+                 (("json_parse_ex\\(&JsonSettings, pFileData, aError\\);")
+                  "json_parse_ex(&JsonSettings,
+                                 pFileData,
+                                 strlen(pFileData),
+                                 aError);")))
+
              ;; Embed path to assets.
              (substitute* "src/engine/shared/storage.cpp"
                (("#define DATA_DIR.*")
@@ -4173,50 +4197,68 @@ small robot living in the nano world, repair its maker.")
                                "\"")))
 
              ;; Bam expects all files to have a recent time stamp.
-             (for-each (lambda (file)
-                         (utime file 1 1))
+             (for-each (cut utime <> 1 1)
                        (find-files "."))
 
              ;; Do not use bundled libraries.
              (substitute* "bam.lua"
-               (("if config.zlib.value == 1 then")
-                "if true then")
-               (("wavpack = .*")
-                "wavpack = {}
-settings.link.libs:Add(\"wavpack\")\n"))
+               (("local json = Compile.+$")
+                "local json = nil
+settings.link.libs:Add(\"jsonparser\")")
+               (("local png = Compile.+$")
+                "local png = nil
+settings.link.libs:Add(\"pnglite\")")
+               (("local wavpack = Compile.+$")
+                "local wavpack = nil
+settings.link.libs:Add(\"wavpack\")")
+               (("if config\\.zlib\\.value == 1")
+                "if config.zlib.value"))
+             (substitute* "src/engine/client/graphics_threaded.cpp"
+               (("engine/external/pnglite/pnglite\\.h")
+                "pnglite.h"))
              (substitute* "src/engine/client/sound.cpp"
-               (("#include <engine/external/wavpack/wavpack.h>")
-                "#include <wavpack/wavpack.h>"))
+               (("engine/external/wavpack/wavpack\\.h")
+                "wavpack/wavpack.h"))
+             (for-each use-latest-json-parser
+                       '("src/game/client/components/countryflags.cpp"
+                         "src/game/client/components/menus_settings.cpp"
+                         "src/game/client/components/skins.cpp"
+                         "src/game/client/localization.cpp"
+                         "src/game/editor/auto_map.h"
+                         "src/game/editor/editor.cpp"))
              #t))
          (replace 'build
            (lambda _
-             (zero? (system* "bam" "-a" "-v" "release"))))
+             (invoke "bam" "-a" "-v" "conf=release")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (bin  (string-append out "/bin"))
-                    (data (string-append out "/share/teeworlds/data")))
-               (mkdir-p bin)
-               (mkdir-p data)
-               (for-each (lambda (file)
-                           (install-file file bin))
-                         '("teeworlds" "teeworlds_srv"))
-               (copy-recursively "data" data)
+             (let* ((arch ,(system->linux-architecture
+                            (or (%current-target-system)
+                                (%current-system))))
+                    (build (string-append "build/" arch "/release/"))
+                    (data-built (string-append build "data/"))
+                    (out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (data (string-append out "/share/teeworlds/data/")))
+               (for-each (cut install-file <> bin)
+                         (map (cut string-append build <>)
+                              '("teeworlds" "teeworlds_srv")))
+               (copy-recursively data-built data)
                #t))))))
-    ;; FIXME: teeworlds bundles the sources of "pnglite", a two-file PNG
-    ;; library without a build system.
     (inputs
      `(("freetype" ,freetype)
        ("glu" ,glu)
+       ("json-parser" ,json-parser)
        ("mesa" ,mesa)
-       ("sdl-union" ,(sdl-union (list sdl
-                                      sdl-mixer
-                                      sdl-image)))
+       ("pnglite" ,pnglite)
+       ("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-mixer" ,sdl2-mixer)
        ("wavpack" ,wavpack)
        ("zlib" ,zlib)))
     (native-inputs
      `(("bam" ,bam)
-       ("python" ,python-2)
+       ("python" ,python-wrapper)
        ("pkg-config" ,pkg-config)))
     (home-page "https://www.teeworlds.com")
     (synopsis "2D retro multiplayer shooter game")
