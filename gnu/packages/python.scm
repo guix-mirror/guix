@@ -5607,9 +5607,12 @@ so it might be a tiny bit slower.")
            (lambda _
              (invoke "python" "waf" "--version")))
          (replace 'install
-           (lambda _
-             (copy-file "waf" %output)
-             #t)))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "waf" (string-append out "/bin")))
+             #t))
+         ;; waf breaks when it is wrapped.
+         (delete 'wrap))))
     (home-page "https://waf.io/")
     (synopsis "Python-based build system")
     (description
