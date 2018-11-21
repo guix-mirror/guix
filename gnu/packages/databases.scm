@@ -32,6 +32,7 @@
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,6 +67,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -103,6 +105,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix bzr-download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
@@ -282,6 +285,89 @@ mapping from string keys to string values.")
     (description "Memcached is an in-memory key-value store.  It has a small
 and generic API, and was originally intended for use with dynamic web
 applications.")
+    (license license:bsd-3)))
+
+(define-public libmemcached
+  (package
+    (name "libmemcached")
+    (version "1.0.18")
+    ;; We build from the sources since we want to build the extra HTML
+    ;; documentation which is not included with the release.
+    (source (origin
+              (method bzr-fetch)
+              (uri (bzr-reference
+                    (url "lp:libmemcached/1.0")
+                    (revision (string-append "tag:" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1842s4dxdh21gdr46q4dgxigidcs6dkqnbnqjwb9l8r0bqx5nb10"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("memcached" ,memcached)
+       ("libtool" ,libtool)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bison" ,bison)
+       ("flex" ,flex)
+       ("perl" ,perl)
+       ("python-sphinx" ,python-sphinx))) ;to build the HTML doc.
+    (inputs
+     `(("libevent" ,libevent)
+       ("cyrus-sasl" ,cyrus-sasl)))
+    (outputs '("out" "doc"))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'fix-configure.ac
+           ;; Move the AC_CONFIG_AUX_DIR macro use under AC_INIT, otherwise we
+           ;; get the error ``configure: error: cannot find install-sh,
+           ;; install.sh, or shtool in "." "./.." "./../.."`` (see:
+           ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=19539 and
+           ;; https://bugs.launchpad.net/libmemcached/+bug/1803922).
+           (lambda _
+             (delete-file "bootstrap.sh") ;not useful in the context of Guix
+             (substitute* "configure.ac"
+               (("^AC_CONFIG_AUX_DIR\\(\\[build-aux\\]\\).*") "")
+               (("(^AC_INIT.*)" anchor)
+                (string-append anchor "AC_CONFIG_AUX_DIR([build-aux])\n")))
+             #t))
+         (add-before 'bootstrap 'disable-failing-tests
+           ;; See: https://bugs.launchpad.net/libmemcached/+bug/1803926
+           (lambda _
+             ;; Mark some heavily failing test suites as expected to fail.
+             (substitute* "Makefile.am"
+               (("(XFAIL_TESTS =[^\n]*)" xfail_tests)
+                (string-append xfail_tests " tests/testudp"
+                               " tests/libmemcached-1.0/testapp"
+                               " tests/libmemcached-1.0/testsocket")))
+             ;; Disable two tests of the unittest test suite.
+             (substitute* "libtest/unittest.cc"
+               ((".*echo_fubar_BINARY \\},.*") "")
+               ((".*application_doesnotexist_BINARY \\},.*") ""))
+             #t))
+         (add-after 'disable-dns-tests 'build-and-install-html-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((html (string-append (assoc-ref outputs "doc")
+                                        "/share/doc/libmemcached/html/")))
+               (invoke "make" "install-html")
+               ;; Cleanup useless files.
+               (for-each delete-file-recursively
+                         (map (lambda (x) (string-append html x))
+                              '("_sources" ".doctrees" ".buildinfo"))))
+             #t)))))
+    (home-page "https://libmemcached.org/")
+    (synopsis "C++ library for memcached")
+    (description "libMemcached is a library to use memcached in C/C++
+applications.  It comes with a complete reference guide and documentation of
+the API, and provides features such as:
+@itemize
+@item Asynchronous and synchronous transport support
+@item Consistent hashing and distribution
+@item Tunable hashing algorithm to match keys
+@item Access to large object support
+@item Local replication
+@end itemize")
     (license license:bsd-3)))
 
 (define-public mongodb
