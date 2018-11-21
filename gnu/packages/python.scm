@@ -14667,3 +14667,25 @@ on regular expressions.")
      "This module implements the PRECIS Framework as described in RFC 8264,
 RFC 8265 and RFC 8266.")
     (license license:expat)))
+
+(define-public python-wikidata
+  (package
+    (name "python-wikidata")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Wikidata" version))
+       (sha256
+        (base32
+         "08nlnydddfp1jj0cdmshvld1irzngbp3dij928wqsg9ziklm6mw9"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-babel" ,python-babel)))
+    (home-page "https://github.com/dahlia/wikidata")
+    (synopsis "Wikidata client library")
+    (description
+     "This package provides a Python interface to
+@url{https://www.wikidata.org/, Wikidata}.")
+    (properties '((upstream-name . "Wikidata")))
+    (license license:gpl3+)))

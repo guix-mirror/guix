@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
@@ -2455,26 +2455,20 @@ make it a perfect utility on modern distros.")
     (version "1.7.2")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/01org/thermal_daemon/archive/v"
-                          version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
-      (sha256 (base32
-               "15a6vb67y5wsmf0irrq7sxam18yqpz64130k83ryf24mp40h661b"))))
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/01org/thermal_daemon")
+             (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "1cs2pq8xvfnsvrhg2bxawk4kn3z1qmfrnpnhs178pvfbglzh15hc"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (invoke "sh" "autogen.sh")
-             #t)))
-       #:configure-flags
+     `(#:configure-flags
        (let ((out      (assoc-ref %outputs "out")))
          (list (string-append "--sysconfdir="
                               out "/etc")
-               (string-append "--with-udev-dir="
-                              out "/lib/udev")
                (string-append "--with-dbus-sys-dir="
                               out "/etc/dbus-1/system.d")
                "--localstatedir=/var"))))

@@ -1983,6 +1983,31 @@ transfers.")
        `(("python2-futures" ,python2-futures)
          ,@(package-native-inputs base))))))
 
+(define-public python-slimit
+  (package
+    (name "python-slimit")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "slimit" version ".zip"))
+       (sha256
+        (base32
+         "02vj2x728rs1127q2nc27frrqra4fczivnb7gch6n5lzi7pxqczl"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (propagated-inputs
+     `(("python-ply" ,python-ply)))
+    (home-page "https://slimit.readthedocs.io/")
+    (synopsis "JavaScript minifier, parser and lexer written in Python")
+    (description
+     "SlimIt is a JavaScript minifier written in Python.  It compiles
+JavaScript into more compact code so that it downloads and runs faster.
+SlimIt also provides a library that includes a JavaScript parser, lexer,
+pretty printer and a tree visitor.")
+    (license license:expat)))
+
 (define-public python-flask-restful
   (package
     (name "python-flask-restful")
@@ -2167,6 +2192,25 @@ It comes with safe defaults and easily configurable options.")
 
 (define-public python2-flask-htmlmin
   (package-with-python2 python-flask-htmlmin))
+
+(define-public python-jsmin
+  (package
+    (name "python-jsmin")
+    (version "2.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jsmin" version))
+       (sha256
+        (base32
+         "0fsmqbjvpxvff0984x7c0y8xmf49ax9mncz48b9xjx8wrnr9kpxn"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/tikitu/jsmin/")
+    (synopsis "Python JavaScript minifier")
+    (description
+     "@code{jsmin} is a JavaScript minifier, usable from both Python code and
+on the command line.")
+    (license license:expat)))
 
 (define-public python-flask-login
   (package

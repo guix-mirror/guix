@@ -696,13 +696,13 @@ sfArk file format to the uncompressed sf2 format.")
   (package
     (name "libmspack")
     (home-page "https://cabextract.org.uk/libmspack/")
-    (version "0.8")
+    (version "0.9.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append home-page name "-" version "alpha.tar.gz"))
       (sha256
-       (base32 "1byx98jajv927f0a7np0hvs8lxzccny6pj8vrrgmldv1jlp7jcq5"))))
+       (base32 "0h1f5w8rjnq7dcqpqm1mpx5m8q80691kid6f7npqlqwqqzckd8v2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
@@ -1085,13 +1085,13 @@ smaller than those produced by @code{Xdelta}.")
  (package
    (name "cabextract")
    (home-page "https://cabextract.org.uk/")
-   (version "1.7")
+   (version "1.9")
    (source (origin
               (method url-fetch)
               (uri (string-append home-page name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1g86wmb8lkjiv2jarfz979ngbgg7d3si8x5il4g801604v406wi9"))
+                "1hf4zhjxfdgq9x172r5zfdnafma9q0zf7372syn8hcn7hcypkg0v"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1099,11 +1099,27 @@ smaller than those produced by @code{Xdelta}.")
                   (delete-file-recursively "mspack")
                   #t))))
     (build-system gnu-build-system)
-    (arguments '(#:configure-flags '("--with-external-libmspack")))
+    (arguments
+     '(#:configure-flags '("--with-external-libmspack")
+       #:phases
+       (modify-phases %standard-phases
+         ;; cabextract needs some of libmspack's header files.
+         ;; These are located in the "mspack" directory of libmspack.
+         (add-before 'build 'unpack-libmspack
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((dir-name "libmspack-src"))
+               (mkdir dir-name)
+               (invoke "tar" "-xvf" (assoc-ref inputs "libmspack-source")
+                       "-C" dir-name "--strip-components" "1")
+               (rename-file (string-append dir-name "/mspack")
+                            "mspack")
+               (delete-file-recursively dir-name)
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libmspack" ,libmspack)))
+     `(("libmspack" ,libmspack)
+       ("libmspack-source" ,(package-source libmspack))))
     (synopsis "Tool to unpack Cabinet archives")
     (description "Extracts files out of Microsoft Cabinet (.cab) archives")
     ;; Some source files specify gpl2+, lgpl2+, however COPYING is gpl3.

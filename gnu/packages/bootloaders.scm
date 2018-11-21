@@ -555,8 +555,8 @@ board-independent tools.")))
 (define-public u-boot-beagle-bone-black
   (make-u-boot-package "am335x_boneblack" "arm-linux-gnueabihf"))
 
-(define-public u-boot-pine64-plus
-  (let ((base (make-u-boot-package "pine64_plus" "aarch64-linux-gnu")))
+(define-public (make-u-boot-sunxi64-package board triplet)
+  (let ((base (make-u-boot-package board triplet)))
     (package
       (inherit base)
       (arguments
@@ -574,8 +574,11 @@ board-independent tools.")))
                     )
                   #t))))))
       (native-inputs
-       `(("firmware" ,arm-trusted-firmware-pine64-plus)
+       `(("firmware" ,arm-trusted-firmware-sun50i-a64)
          ,@(package-native-inputs base))))))
+
+(define-public u-boot-pine64-plus
+  (make-u-boot-sunxi64-package "pine64_plus" "aarch64-linux-gnu"))
 
 (define-public u-boot-bananapi-m2-ultra
   (make-u-boot-package "Bananapi_M2_Ultra" "arm-linux-gnueabihf"))

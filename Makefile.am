@@ -101,6 +101,7 @@ MODULES =					\
   guix/build-system/android-ndk.scm		\
   guix/build-system/ant.scm			\
   guix/build-system/cargo.scm			\
+  guix/build-system/clojure.scm			\
   guix/build-system/cmake.scm			\
   guix/build-system/dub.scm			\
   guix/build-system/emacs.scm			\
@@ -173,6 +174,7 @@ MODULES =					\
   guix/build/syscalls.scm                       \
   guix/build/gremlin.scm			\
   guix/build/debug-link.scm			\
+  guix/build/clojure-build-system.scm		\
   guix/build/clojure-utils.scm			\
   guix/build/emacs-utils.scm			\
   guix/build/java-utils.scm			\

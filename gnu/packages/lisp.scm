@@ -533,12 +533,8 @@ statistical profiler, a code coverage tool, and many other extensions.")
                (install-file kernel libdir)
                (install-file heap libdir)
 
-               (let ((dirs '("lib" "library" "examples" "tools" "objc-bridge"
-                             ,(match (%current-system)
-                                ("x86_64-linux"
-                                 "x86-headers64")
-                                ("i686-linux"
-                                 "x86-headers")))))
+               (let ((dirs '("lib" "library" "examples" "contrib"
+                             "tools" "objc-bridge")))
                  (for-each copy-recursively
                            dirs
                            (map (cut string-append libdir <>) dirs)))
