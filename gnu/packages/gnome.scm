@@ -2115,7 +2115,7 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.52.2.a")
+    (version "0.54.2.a")
     (home-page "https://github.com/thestinger/vte-ng")
     (source (origin
               (method git-fetch)
@@ -2123,7 +2123,7 @@ editors, IDEs, etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1csmjrw3c2avh711xcrn3khqwp4cwz97c3fmyirq2rg0hndng4s3"))))
+                "1r7d9m07cpdr4f7rw3yx33hmp4jmsk0dn5byq5wgksb2qjbc4ags"))))
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
