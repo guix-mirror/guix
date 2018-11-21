@@ -579,6 +579,22 @@ board-independent tools.")))
 (define-public u-boot-pine64-plus
   (make-u-boot-sunxi64-package "pine64_plus" "aarch64-linux-gnu"))
 
+(define-public u-boot-pinebook
+  (let ((base (make-u-boot-sunxi64-package "pinebook" "aarch64-linux-gnu")))
+    (package
+      (inherit base)
+      (source (origin
+              (inherit (package-source u-boot))
+              (patches (search-patches
+                        ;; Add patches to enable Pinebook support from sunxi
+                        ;; maintainer tree: git://git.denx.de/u-boot-sunxi.git
+                        "u-boot-pinebook-a64-update-dts.patch"
+                        "u-boot-pinebook-syscon-node.patch"
+                        "u-boot-pinebook-mmc-calibration.patch"
+                        "u-boot-pinebook-video-bridge.patch"
+                        "u-boot-pinebook-r_i2c-controller.patch"
+                        "u-boot-pinebook-dts.patch")))))))
+
 (define-public u-boot-bananapi-m2-ultra
   (make-u-boot-package "Bananapi_M2_Ultra" "arm-linux-gnueabihf"))
 

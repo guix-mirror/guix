@@ -1,0 +1,50 @@
+From 8336a43792a103c13d939b3925cb75322911f7fb Mon Sep 17 00:00:00 2001
+From: Vasily Khoruzhick <anarsoul@gmail.com>
+Date: Mon, 5 Nov 2018 20:24:29 -0800
+Subject: [PATCH 08/13] dm: video: bridge: don't fail to activate bridge if
+ reset or sleep GPIO is missing
+
+Both GPIOs are optional, so we shouldn't fail if any is missing.
+Without this fix reset is not deasserted if sleep GPIO is missing.
+
+Signed-off-by: Vasily Khoruzhick <anarsoul@gmail.com>
+Acked-by: Maxime Ripard <maxime.ripard@bootlin.com>
+Tested-by: Maxime Ripard <maxime.ripard@bootlin.com>
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Cc: Vagrant Cascadian <vagrant@debian.org>
+---
+ drivers/video/bridge/video-bridge-uclass.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/video/bridge/video-bridge-uclass.c b/drivers/video/bridge/video-bridge-uclass.c
+index cd4959cc71..5fecb4cfd5 100644
+--- a/drivers/video/bridge/video-bridge-uclass.c
++++ b/drivers/video/bridge/video-bridge-uclass.c
+@@ -106,13 +106,19 @@ static int video_bridge_pre_probe(struct udevice *dev)
+ int video_bridge_set_active(struct udevice *dev, bool active)
+ {
+ 	struct video_bridge_priv *uc_priv = dev_get_uclass_priv(dev);
+-	int ret;
++	int ret = 0;
+ 
+ 	debug("%s: %d\n", __func__, active);
+-	ret = dm_gpio_set_value(&uc_priv->sleep, !active);
+-	if (ret)
+-		return ret;
+-	if (active) {
++	if (uc_priv->sleep.dev) {
++		ret = dm_gpio_set_value(&uc_priv->sleep, !active);
++		if (ret)
++			return ret;
++	}
++
++	if (!active)
++		return 0;
++
++	if (uc_priv->reset.dev) {
+ 		ret = dm_gpio_set_value(&uc_priv->reset, true);
+ 		if (ret)
+ 			return ret;
+-- 
+2.11.0
+
