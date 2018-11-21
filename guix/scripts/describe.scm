@@ -41,6 +41,10 @@
                   (unless (member arg '("human" "channels"))
                     (leave (G_ "~a: unsupported output format~%") arg))
                   (alist-cons 'format (string->symbol arg) result)))
+        (option '(#\p "profile") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'profile (canonicalize-profile arg)
+                              result)))
         (option '(#\h "help") #f #f
                 (lambda args
                   (show-help)
@@ -58,6 +62,8 @@
 Display information about the channels currently in use.\n"))
   (display (G_ "
   -f, --format=FORMAT    display information in the given FORMAT"))
+  (display (G_ "
+  -p, --profile=PROFILE  display information about PROFILE"))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
@@ -78,11 +84,11 @@ Display information about the channels currently in use.\n"))
         (format #t (G_ "~%;; warning: GUIX_PACKAGE_PATH=\"~a\"~%")
                 string))))))
 
-(define (display-checkout-info fmt)
+(define* (display-checkout-info fmt #:optional directory)
   "Display information about the current checkout according to FMT, a symbol
 denoting the requested format.  Exit if the current directory does not lie
 within a Git checkout."
-  (let* ((program    (car (command-line)))
+  (let* ((program    (or directory (car (command-line))))
          (directory  (catch 'git-error
                        (lambda ()
                          (repository-discover (dirname program)))
@@ -146,15 +152,16 @@ in the format specified by FMT."
 ;;;
 
 (define (guix-describe . args)
-  (let* ((opts   (args-fold* args %options
-                             (lambda (opt name arg result)
-                               (leave (G_ "~A: unrecognized option~%")
-                                      name))
-                             cons
-                             %default-options))
-         (format (assq-ref opts 'format)))
+  (let* ((opts    (args-fold* args %options
+                              (lambda (opt name arg result)
+                                (leave (G_ "~A: unrecognized option~%")
+                                       name))
+                              cons
+                              %default-options))
+         (format  (assq-ref opts 'format))
+         (profile (or (assq-ref opts 'profile) (current-profile))))
     (with-error-handling
-      (match (current-profile)
+      (match profile
         (#f
          (display-checkout-info format))
         (profile
