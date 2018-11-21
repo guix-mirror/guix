@@ -370,6 +370,45 @@ the API, and provides features such as:
 @end itemize")
     (license license:bsd-3)))
 
+(define-public python-pylibmc
+  (package
+    (name "python-pylibmc")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pylibmc" version))
+       (sha256
+        (base32
+         "1n6nvvhl0g52gpzzwdj1my6049xljkfwyxxygnwda9smrbj7pyay"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-memcached-daemon
+           ;; The test suite requires a memcached server.
+           (lambda _
+             (invoke "memcached" "-d"))))))
+    (native-inputs
+     `(("memcached" ,memcached)
+       ("python-nose" ,python-nose)))
+    (inputs
+     `(("libmemcached" ,libmemcached)
+       ("zlib" ,zlib)
+       ("cyrus-sasl" ,cyrus-sasl)))
+    (home-page
+     "http://sendapatch.se/projects/pylibmc/")
+    (synopsis
+     "Python client for memcached")
+    (description
+     "@code{pylibmc} is a client in Python for memcached.  It is a wrapper
+around TangentOrg’s libmemcached library, and can be used as a drop-in
+replacement for the code@{python-memcached} library.")
+    (license license:bsd-3)))
+
+(define-public python2-pylibmc
+  (package-with-python2 python-pylibmc))
+
 (define-public mongodb
   (package
     (name "mongodb")
