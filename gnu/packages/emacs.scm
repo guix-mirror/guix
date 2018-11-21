@@ -1601,7 +1601,8 @@ filters, new key bindings and faces.  It can be enabled by
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1i4647vax5na73basc5dz4lh9kprir00fh8ps4i0l1y3ippnjs2s"))))
+                "1i4647vax5na73basc5dz4lh9kprir00fh8ps4i0l1y3ippnjs2s"))
+              (patches (search-patches "emacs-pdf-tools-poppler.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
