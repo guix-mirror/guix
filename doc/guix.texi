@@ -3273,7 +3273,10 @@ produce human-readable output;
 @item channels
 produce a list of channel specifications that can be passed to @command{guix
 pull -C} or installed as @file{~/.config/guix/channels.scm} (@pxref{Invoking
-guix pull}).
+guix pull});
+@item json
+@cindex JSON
+produce a list of channel specifications in JSON format.
 @end table
 
 @item --profile=@var{profile}

@@ -25,6 +25,7 @@
   #:use-module (guix profiles)
   #:use-module ((guix scripts pull) #:select (display-profile-content))
   #:use-module (git)
+  #:use-module (json)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
@@ -40,7 +41,7 @@
   ;; Specifications of the command-line options.
   (list (option '(#\f "format") #t #f
                 (lambda (opt name arg result)
-                  (unless (member arg '("human" "channels"))
+                  (unless (member arg '("human" "channels" "json"))
                     (leave (G_ "~a: unsupported output format~%") arg))
                   (alist-cons 'format (string->symbol arg) result)))
         (option '(#\p "profile") #t #f
@@ -92,6 +93,11 @@ Display information about the channels currently in use.\n"))
     (url ,(channel-url channel))
     (commit ,(channel-commit channel))))
 
+(define (channel->json channel)
+  (scm->json-string `((name . ,(channel-name channel))
+                      (url . ,(channel-url channel))
+                      (commit . ,(channel-commit channel)))))
+
 (define* (display-checkout-info fmt #:optional directory)
   "Display information about the current checkout according to FMT, a symbol
 denoting the requested format.  Exit if the current directory does not lie
@@ -114,7 +120,12 @@ within a Git checkout."
       ('channels
        (pretty-print `(list ,(channel->sexp (channel (name 'guix)
                                                      (url (dirname directory))
-                                                     (commit commit)))))))
+                                                     (commit commit))))))
+      ('json
+       (display (channel->json (channel (name 'guix)
+                                        (url (dirname directory))
+                                        (commit commit))))
+       (newline)))
     (display-package-search-path fmt)))
 
 (define (display-profile-info profile fmt)
@@ -153,7 +164,9 @@ in the format specified by FMT."
     ('human
      (display-profile-content profile number))
     ('channels
-     (pretty-print `(list ,@(map channel->sexp channels)))))
+     (pretty-print `(list ,@(map channel->sexp channels))))
+    ('json
+     (format #t "[~a]~%" (string-join (map channel->json channels) ","))))
   (display-package-search-path fmt))
 
 
