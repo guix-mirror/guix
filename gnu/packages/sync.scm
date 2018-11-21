@@ -214,7 +214,8 @@ and does not hamper local file system performance.")
               (sha256
                (base32
                 "0znkp3fcksrykcsv06y2mjvf2lbwmin25snmvfa8i5qfm3f4rm88"))
-              (file-name (string-append name "-" version "-checkout"))))
+              (file-name (string-append name "-" version "-checkout"))
+              (patches (search-patches "casync-renameat2-declaration.patch"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
