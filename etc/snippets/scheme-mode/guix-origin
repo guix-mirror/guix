@@ -9,15 +9,17 @@
                                  "cvs-fetch"
                                  "git-fetch"
                                  "hg-fetch"
-                                 "svn-fetch")})
+                                 "svn-fetch"
+                                 "bzr-fetch")})
  (uri ${1:$(cond ((equal yas-text "git-fetch") "git-reference...")
                  ((equal yas-text "svn-fetch") "svn-reference...")
                  ((equal yas-text "hg-fetch")  "hg-reference...")
                  ((equal yas-text "cvs-fetch") "cvs-reference...")
+                 ((equal yas-text "bzr-fetch") "bzr-reference...")
                  (t "(string-append \\"https://\\" version \\".tar.gz\\")"))}$0)
  ${1:$(cond ((equal yas-text "git-fetch")
              "(file-name (git-file-name name version))")
-            ((member yas-text '("svn-fetch" "hg-fetch" "cvs-fetch"))
+            ((member yas-text '("svn-fetch" "hg-fetch" "cvs-fetch" "bzr-fetch"))
              "(file-name (string-append name \\"-\\" version \\"-checkout\\"))")
             (t ""))}
  (sha256

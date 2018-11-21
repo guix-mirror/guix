@@ -78,6 +78,7 @@ MODULES =					\
   guix/modules.scm				\
   guix/download.scm				\
   guix/discovery.scm				\
+  guix/bzr-download.scm            		\
   guix/git-download.scm				\
   guix/hg-download.scm				\
   guix/swh.scm					\
@@ -160,6 +161,7 @@ MODULES =					\
   guix/build/font-build-system.scm		\
   guix/build/go-build-system.scm		\
   guix/build/asdf-build-system.scm		\
+  guix/build/bzr.scm				\
   guix/build/git.scm				\
   guix/build/hg.scm				\
   guix/build/glib-or-gtk-build-system.scm	\
