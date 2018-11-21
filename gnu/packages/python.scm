@@ -11361,28 +11361,37 @@ clone, while other processes access the original tree.")
 (define-public python-astroid
   (package
     (name "python-astroid")
-    (version "1.5.3")
+    (version "2.0.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://github.com/PyCQA/astroid/archive/astroid-"
-             version ".tar.gz"))
+       (uri (pypi-uri "astroid" version))
        (sha256
         (base32
-         "0isn5p7f9n48hmksgbrj7dkm9dyglnayzn5jngk37qywg8a74ngn"))))
+         "138svbm88w5k0y2nvl4svyas1jfhcc5iy0d2ywkbcpn9kq8ks0f7"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
        ("python-six" ,python-six)
        ("python-wrapt" ,python-wrapt)))
+    (native-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+            (add-after 'unpack 'remove-spurious-test
+              (lambda _
+                ;; This can be removed after upgrading from python-3.7
+                ;; https://github.com/PyCQA/astroid/issues/593
+                ;; https://bugs.python.org/issue34056
+                (delete-file "astroid/tests/unittest_modutils.py")
+                #t))
          (replace 'check
-                  (lambda _
-                    (zero? (system* "python" "-m" "unittest" "discover"
-                                    "-p" "unittest*.py")))))))
+           (lambda _
+             (invoke "pytest" "astroid"))))))
     (home-page "https://github.com/PyCQA/astroid")
     (synopsis "Common base representation of python source code for pylint and
 other projects")
@@ -11402,12 +11411,35 @@ builds partial trees by inspecting living objects.")
   (let ((base (package-with-python2
                (strip-python2-variant python-astroid))))
     (package (inherit base)
-             (propagated-inputs
-              `(("python2-backports-functools-lru-cache"
-                 ,python2-backports-functools-lru-cache)
-                ("python2-enum34" ,python2-enum34)
-                ("python2-singledispatch" ,python2-singledispatch)
-                ,@(package-propagated-inputs base))))))
+    ;; Version 2.x removes python2 support.
+    (version "1.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "astroid" version))
+       (sha256
+        (base32
+         "0fir4b67sm7shcacah9n61pvq313m523jb4q80sycrh3p8nmi6zw"))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments base)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-after 'unpack 'remove-spurious-test
+              (lambda _
+                ;; https://github.com/PyCQA/astroid/issues/276
+                (delete-file "astroid/tests/unittest_brain.py")
+                #t))
+            (replace 'check
+              (lambda _
+                (invoke"python" "-m" "unittest" "discover"
+                                "-p" "unittest*.py")))))))
+    (native-inputs `())
+    (propagated-inputs
+      `(("python2-backports-functools-lru-cache"
+         ,python2-backports-functools-lru-cache)
+        ("python2-enum34" ,python2-enum34)
+        ("python2-singledispatch" ,python2-singledispatch)
+        ,@(package-propagated-inputs base))))))
 
 (define-public python-isort
   (package
