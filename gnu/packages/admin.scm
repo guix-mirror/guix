@@ -2871,3 +2871,82 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
     (description "This package provides tools to manage clients of the
 Logitech Unifying Receiver.")
     (license license:gpl2)))
+
+(define-public lynis
+  (package
+    (name "lynis")
+    (version "2.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/CISOfy/lynis")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0rzc0y8lk22bymf56249jzmllki2lh0rz5in4lkrc5fkmp29c2wv"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove proprietary plugins. As of now, all plugins supplied with
+           ;; lynis are proprietary. In the future, if free plugins are
+           ;; provided, whitelist them from deletion.
+           (for-each delete-file (find-files "plugins"))
+           #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(;; For tests
+       ("lynis-sdk"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/CISOfy/lynis-sdk")
+                 (commit "3310aef4f2b3dd97d166c96ad0253c89c4ad390d")))
+           (file-name (git-file-name "lynis-sdk" version))
+           (sha256
+            (base32
+             "0sqsrm5wal742yrwps8bqb8a8lxd93n4b93n3kkm1b30nbs25g7y"))))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "lynis"
+               (("/usr/share/lynis")
+                (string-append (assoc-ref outputs "out") "/share/lynis")))
+             (substitute* "include/functions"
+               (("/usr/local/etc/lynis")
+                (string-append (assoc-ref outputs "out") "/etc/lynis")))
+             #t))
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "lynis" (string-append out "/bin/"))
+               (install-file "default.prf" (string-append out "/etc/lynis"))
+               (for-each
+                (lambda (dir)
+                  (copy-recursively dir (string-append out "/share/lynis/" dir)))
+                (list "db" "include" "plugins"))
+               (install-file "lynis.8" (string-append out "/share/man/man8"))
+               #t)))
+         (replace 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "lynis-sdk") "../lynis-sdk")
+             (setenv "LANG" "en_US.UTF-8")
+             (let ((lynis-dir (getcwd)))
+               (with-directory-excursion "../lynis-sdk"
+                 (substitute* "config"
+                   (("\\.\\./lynis") lynis-dir))
+                 (substitute* "unit-tests/tests-language-translations.sh"
+                   (("\\.\\./lynis") lynis-dir))
+                 (invoke "sh" "lynis-devkit" "run" "unit-tests"))))))))
+    (home-page "https://cisofy.com/lynis/")
+    (synopsis "Security auditing tool")
+    (description "Lynis is a security auditing tool.  It performs an in-depth
+security scan and runs on the system itself.  The primary goal is to test
+security defenses and provide tips for further system hardening.  It will also
+scan for general system information, vulnerable software packages, and
+possible configuration issues.")
+    (license license:gpl3+)))
