@@ -557,7 +557,8 @@ interaction.")
                                   "/podofo-" version ".tar.gz"))
               (sha256
                (base32
-                "0wj0y4zcmj4q79wrn3vv3xq4bb0vhhxs8yifafwy9f2sjm83c5p9"))))
+                "0wj0y4zcmj4q79wrn3vv3xq4bb0vhhxs8yifafwy9f2sjm83c5p9"))
+              (patches (search-patches "podofo-cmake-3.12.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)

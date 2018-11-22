@@ -1055,6 +1055,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/plink-1.07-unclobber-i.patch		\
   %D%/packages/patches/plink-endian-detection.patch		\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\
+  %D%/packages/patches/podofo-cmake-3.12.patch			\
   %D%/packages/patches/poppler-CVE-2018-19149.patch		\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
   %D%/packages/patches/portmidi-modular-build.patch		\
