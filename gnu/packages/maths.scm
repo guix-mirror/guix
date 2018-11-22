@@ -1655,7 +1655,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.9.3")
+    (version "3.10.2")
     (source
      (origin
       (method url-fetch)
@@ -1663,7 +1663,7 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "1fwkbwv4g7zf2lc8fw865xd0bl9anb6jaczfis5dff7h449gwa48"))))
+       (base32 "0bl64pydak3rblnjffi482r8bin4xim9sb37ksl2jkcxf0i0irsi"))))
     (outputs '("out"                    ;libraries and headers
                "examples"))             ;~30MiB of examples
     (build-system gnu-build-system)
