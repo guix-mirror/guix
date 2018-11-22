@@ -1978,14 +1978,14 @@ arising after the discretization of partial differential equations.")
 (define-public python-slepc4py
   (package
     (name "python-slepc4py")
-    (version "3.9.0")
+    (version "3.10.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "slepc4py" version))
         (sha256
           (base32
-            "02xr0vndgibgkz3rgprqk05n3mk5mpgqw550sr4681vcsgz4zvb7"))))
+            "0x049dyc8frgh79fvvavf4vlbqp4mgm61nsaivzdav4316vvlv1j"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
