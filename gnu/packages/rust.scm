@@ -41,7 +41,6 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages version-control)
   #:use-module (gnu packages)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system gnu)
@@ -387,7 +386,6 @@ test = { path = \"../libtest\" }
        ("cmake" ,cmake)
        ("flex" ,flex) ; For the tests
        ("gdb" ,gdb)   ; For the tests
-       ("git" ,git)
        ("procps" ,procps) ; For the tests
        ("python-2" ,python-2)
        ("rustc-bootstrap" ,mrustc)
@@ -446,6 +444,13 @@ safety and thread safety guarantees.")
                  ;; i686-linux.
                  (substitute* "src/tools/cargo/tests/test.rs"
                    (("fn cargo_test_env") "#[ignore]\nfn cargo_test_env"))
+
+                 ;; These tests pull in a dependency on "git", which changes
+                 ;; too frequently take part in the Rust toolchain.
+                 (substitute* "src/tools/cargo/tests/new.rs"
+                   (("fn author_prefers_cargo") "#[ignore]\nfn author_prefers_cargo")
+                   (("fn finds_author_git") "#[ignore]\nfn finds_author_git")
+                   (("fn finds_local_author_git") "#[ignore]\nfn finds_local_author_git"))
                  #t))
              (add-after 'patch-cargo-tests 'ignore-glibc-2.27-incompatible-test
                ;; https://github.com/rust-lang/rust/issues/47863
@@ -678,6 +683,12 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  ;; i686-linux.
                  (substitute* "src/tools/cargo/tests/testsuite/test.rs"
                    (("fn cargo_test_env") "#[ignore]\nfn cargo_test_env"))
+
+                 ;; Avoid dependency on "git".
+                 (substitute* "src/tools/cargo/tests/testsuite/new.rs"
+                   (("fn author_prefers_cargo") "#[ignore]\nfn author_prefers_cargo")
+                   (("fn finds_author_git") "#[ignore]\nfn finds_author_git")
+                   (("fn finds_local_author_git") "#[ignore]\nfn finds_local_author_git"))
                  #t))
              (add-after 'patch-cargo-tests 'disable-cargo-test-for-nightly-channel
                (lambda* _
