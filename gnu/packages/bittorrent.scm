@@ -43,6 +43,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
@@ -460,3 +462,40 @@ It aims to be a good alternative to all other BitTorrent clients out there.
 qBittorrent is fast, stable and provides unicode support as well as many
 features.")
     (license l:gpl2+)))
+
+(define-public deluge
+  (package
+    (name "deluge")
+    (version "1.3.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://download.deluge-torrent.org/source/deluge-"
+             version ".tar.xz"))
+       (sha256
+        (base32
+         "0b7rri4x0wrcj7rjghrnw1kfrsd5i7i6aq85dsg5dg1w1qa0ar59"))))
+    (build-system python-build-system)
+    (inputs
+     `(("libtorrent" ,libtorrent-rasterbar)
+       ("python2-chardet" ,python2-chardet)
+       ("python2-pygtk" ,python2-pygtk)
+       ("python2-pyopenssl" ,python2-pyopenssl)
+       ("python2-pyxdg" ,python2-pyxdg)
+       ("python2-service-identity" ,python2-service-identity)
+       ("python2-twisted" ,python2-twisted)))
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://www.deluge-torrent.org/")
+    (synopsis  "Fully-featured cross-platform ​BitTorrent client")
+    (description
+     "Deluge contains the common features to BitTorrent clients such as
+Protocol Encryption, DHT, Local Peer Discovery (LSD), Peer Exchange
+(PEX), UPnP, NAT-PMP, Proxy support, Web seeds, global and per-torrent
+speed limits.  Deluge heavily utilises the ​libtorrent library.  It is
+designed to run as both a normal standalone desktop application and as a
+​client-server.")
+    (license l:gpl3+)))
