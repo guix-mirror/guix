@@ -550,9 +550,8 @@ statistical profiler, a code coverage tool, and many other extensions.")
                    (display
                     (string-append
                      "#!" bash "/bin/sh\n"
-                     "CCL_DEFAULT_DIRECTORY=" libdir "\n"
-                     "export CCL_DEFAULT_DIRECTORY\n"
-                     "exec " libdir kernel "\n"))))
+                     "export CCL_DEFAULT_DIRECTORY=" libdir "\n"
+                     "exec -a \"$0\" " libdir kernel " \"$@\"\n"))))
                (chmod wrapper #o755))
              #t)))))
     (supported-systems '("i686-linux" "x86_64-linux" "armhf-linux"))
