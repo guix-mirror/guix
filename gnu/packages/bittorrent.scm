@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -393,7 +394,18 @@ and will take advantage of multiple processor cores where possible.")
              "CXXFLAGS=-std=c++11")     ; Use std::chrono instead of boost
        #:make-flags (list
                      (string-append "LDFLAGS=-Wl,-rpath="
-                                    (assoc-ref %outputs "out") "/lib"))))
+                                    (assoc-ref %outputs "out") "/lib"))
+       #:phases (modify-phases %standard-phases
+           (add-after 'unpack 'compile-python-c++11
+             (lambda _
+               ;; Make sure the Python bindings are compiled in C++ mode to
+               ;; avoid undefined references as mentioned in
+               ;; <https://github.com/qbittorrent/qBittorrent/issues/638>.
+               ;; XXX: This can be removed for 1.2+.
+               (substitute* "bindings/python/setup.py"
+                 (("\\+ target_specific\\(\\)\\,")
+                  "+ target_specific() + ['-std=c++11'],"))
+               #t)))))
     (inputs `(("boost" ,boost)
               ("openssl" ,openssl)))
     (native-inputs `(("python" ,python-2)
