@@ -53,7 +53,7 @@
 
 (define sqlite-exec
   ;; XXX: This is was missing from guile-sqlite3 until
-  ;; <https://notabug.org/civodul/guile-sqlite3/commit/b87302f9bcd18a286fed57b2ea521845eb1131d7>.
+  ;; <https://notabug.org/guile-sqlite3/guile-sqlite3/commit/b87302f9bcd18a286fed57b2ea521845eb1131d7>.
   (let ((exec (pointer->procedure
                int
                (dynamic-func "sqlite3_exec" (@@ (sqlite3) libsqlite3))

@@ -641,7 +641,7 @@ later, including 2.2.x;
 (@pxref{Guile Preparations, how to install the GnuTLS bindings for
 Guile,, gnutls-guile, GnuTLS-Guile});
 @item
-@uref{https://notabug.org/civodul/guile-sqlite3, Guile-SQLite3}, version 0.1.0
+@uref{https://notabug.org/guile-sqlite3/guile-sqlite3, Guile-SQLite3}, version 0.1.0
 or later;
 @item
 @c FIXME: Specify a version number once a release has been made.
