@@ -393,6 +393,9 @@ addition to build events."
   expected hash: ~a
   actual hash:   ~a~%"))
              expected actual))
+    (('build-remote drv host _ ...)
+     (format port (info (G_ "offloading build of ~a to '~a'")) drv host)
+     (newline port))
     (('build-log pid line)
      (if (multiplexed-output-supported?)
          (if (not pid)
