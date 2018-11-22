@@ -706,7 +706,7 @@ computing environments.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.19.2")
+    (version "0.20.1")
     (source
      (origin
        (method git-fetch)
@@ -716,9 +716,7 @@ computing environments.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1dk9hdj01c0bny4ps78b7869fjw9gr6qklxf6wyql8h6nh4k19xm"))
-       (patches (search-patches
-                 "python-scikit-learn-fix-test-non-determinism.patch"))))
+         "0qv7ir1fy9vjar3llc72yxmfja3gxm5icdf0y3q57vsn3wcdglkz"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -729,11 +727,11 @@ computing environments.")
            (lambda _
              ;; Restrict OpenBLAS threads to prevent segfaults while testing!
              (setenv "OPENBLAS_NUM_THREADS" "1")
-             ;; Disable tests that require network access
-             (delete-file "sklearn/datasets/tests/test_mldata.py")
-             (delete-file "sklearn/datasets/tests/test_rcv1.py")
-             (invoke "pytest" "sklearn")
-             #t))
+
+             ;; Some tests require write access to $HOME.
+             (setenv "HOME" "/tmp")
+
+             (invoke "pytest" "sklearn" "-m" "not network")))
          ;; FIXME: This fails with permission denied
          (delete 'reset-gzip-timestamps))))
     (inputs
@@ -753,24 +751,7 @@ data analysis.")
     (license license:bsd-3)))
 
 (define-public python2-scikit-learn
-  (let ((parent (package-with-python2 python-scikit-learn)))
-    (package (inherit parent)
-      (arguments
-       (substitute-keyword-arguments (package-arguments parent)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (replace 'check
-               (lambda _
-                 ;; Restrict OpenBLAS threads to prevent segfaults while testing!
-                 (setenv "OPENBLAS_NUM_THREADS" "1")
-                 ;; Some tests expect to be able to write to HOME.
-                 (setenv "HOME" "/tmp")
-                 ;; Disable tests that require network access
-                 (delete-file "sklearn/datasets/tests/test_kddcup99.py")
-                 (delete-file "sklearn/datasets/tests/test_mldata.py")
-                 (delete-file "sklearn/datasets/tests/test_rcv1.py")
-                 (invoke "pytest" "sklearn")
-                 #t)))))))))
+  (package-with-python2 python-scikit-learn))
 
 (define-public python-autograd
   (let* ((commit "442205dfefe407beffb33550846434baa90c4de7")
