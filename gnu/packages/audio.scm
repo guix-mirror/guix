@@ -1604,6 +1604,7 @@ synchronous execution of all clients, and low latency operation.")
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
+       #:python ,python-2
        #:phases
        (modify-phases %standard-phases
          (add-before
