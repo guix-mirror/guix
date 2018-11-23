@@ -37,7 +37,8 @@
   #:use-module (gnu packages xorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
-  #:export (installer-program))
+  #:export (installer-program
+            installer-program-launcher))
 
 (define not-config?
   ;; Select (guix …) and (gnu …) modules, except (guix config).
@@ -288,3 +289,34 @@ selected keymap."
             #$(installer-exit installer)))))
 
   (program-file "installer" installer-builder))
+
+;; We want the installer to honor the LANG environment variable, so that the
+;; locale is correctly installed when the installer is launched, and the
+;; welcome page is possibly translated.  The /etc/environment file (containing
+;; LANG) is supposed to be loaded using PAM by the login program. As the
+;; installer replaces the login program, read this file and set all the
+;; variables it contains before starting the installer. This is a dirty hack,
+;; we might want to find a better way to do it in the future.
+(define (installer-program-launcher installer)
+  "Return a file-like object that set the variables in /etc/environment and
+run the given INSTALLER."
+  (define load-environment
+    #~(call-with-input-file "/etc/environment"
+        (lambda (port)
+          (let ((lines (read-lines port)))
+            (map (lambda (line)
+                   (match (string-split line #\=)
+                     ((name value)
+                      (setenv name value))))
+                 lines)))))
+
+  (define wrapper
+    (with-imported-modules '((gnu installer utils))
+      #~(begin
+          (use-modules (gnu installer utils)
+                       (ice-9 match))
+
+          #$load-environment
+          (system #$(installer-program installer)))))
+
+  (program-file "installer-launcher" wrapper))
