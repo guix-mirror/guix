@@ -9328,12 +9328,20 @@ GuixSD in a virtual machine (VM).
 @subsection Preparing for Installation
 
 Once you have successfully booted your computer using the installation medium,
-you should end up with a root prompt.  Several console TTYs are configured
-and can be used to run commands as root.  TTY2 shows this documentation,
-browsable using the Info reader commands (@pxref{Top,,, info-stnd,
-Stand-alone GNU Info}).  The installation system runs the GPM mouse
-daemon, which allows you to select text with the left mouse button and
-to paste it with the middle button.
+you should end up with the welcome page of the graphical installer.  The
+graphical installer is a text-based user interface built upon the newt
+library.  It shall guide you through all the different steps needed to install
+GNU GuixSD.  However, as the graphical installer is still under heavy
+development, you might want to fallback to the original, shell based install
+process, by switching to TTYs 3 to 6 with the shortcuts CTRL-ALT-F[3-6]. The
+following sections describe the installation procedure assuming you're using
+one of those TTYs. They are configured and can be used to run commands as
+root.
+
+TTY2 shows this documentation, browsable using the Info reader commands
+(@pxref{Top,,, info-stnd, Stand-alone GNU Info}).  The installation system
+runs the GPM mouse daemon, which allows you to select text with the left mouse
+button and to paste it with the middle button.
 
 @quotation Note
 Installation requires access to the Internet so that any missing
