@@ -26,20 +26,14 @@
   #:use-module (newt)
   #:export (run-welcome-page))
 
-;; Margin between screen border and newt root window.
-(define margin-left (make-parameter 3))
-(define margin-top (make-parameter 3))
-
 ;; Expected width and height for the logo.
-(define logo-width (make-parameter 50))
-(define logo-height (make-parameter 23))
+(define logo-width (make-parameter 43))
+(define logo-height (make-parameter 19))
 
-(define (nearest-exact-integer x)
-  "Given a real number X, return the nearest exact integer, with ties going to
-the nearest exact even integer."
-  (inexact->exact (round x)))
+(define info-textbox-width (make-parameter 70))
+(define options-listbox-height (make-parameter 5))
 
-(define* (run-menu-page title logo
+(define* (run-menu-page title info-text logo
                         #:key
                         listbox-items
                         listbox-item->text)
@@ -55,30 +49,27 @@ we want this page to occupy all the screen space available."
              (cons key item)))
          items))
 
-  (let* ((windows
-          (make-window (margin-left)
-                       (margin-top)
-                       (- (screen-columns) (* 2 (margin-left)))
-                       (- (screen-rows) (* 2 (margin-top)))
-                       title))
-         (logo-textbox
-          (make-textbox (nearest-exact-integer
-                         (- (/ (screen-columns) 2)
-                            (+ (/ (logo-width) 2) (margin-left))))
-                        (margin-top) (logo-width) (logo-height) 0))
-         (text (set-textbox-text logo-textbox
-                                 (read-all logo)))
+  (let* ((logo-textbox
+          (make-textbox -1 -1 (logo-width) (logo-height) 0))
+         (info-textbox
+          (make-reflowed-textbox -1 -1
+                                 info-text
+                                 (info-textbox-width)))
          (options-listbox
-          (make-listbox (margin-left)
-                        (+ (logo-height) (margin-top))
-                        (- (screen-rows) (+ (logo-height)
-                                            (* (margin-top) 4)))
+          (make-listbox -1 -1
+                        (options-listbox-height)
                         (logior FLAG-BORDER FLAG-RETURNEXIT)))
          (keys (fill-listbox options-listbox listbox-items))
+         (grid (vertically-stacked-grid
+                GRID-ELEMENT-COMPONENT logo-textbox
+                GRID-ELEMENT-COMPONENT info-textbox
+                GRID-ELEMENT-COMPONENT options-listbox))
          (form (make-form)))
-    (set-listbox-width options-listbox (- (screen-columns)
-                                          (* (margin-left) 4)))
-    (add-components-to-form form logo-textbox options-listbox)
+
+    (set-textbox-text logo-textbox (read-all logo))
+
+    (add-form-to-grid grid form #t)
+    (make-wrapped-grid-window grid title)
 
     (receive (exit-reason argument)
         (run-form form)
@@ -102,6 +93,11 @@ the page. Ask the user to choose between manual installation, graphical
 installation and reboot."
   (run-menu-page
    (G_ "GNU GuixSD install")
+   (G_ "Welcome to GNU GuixSD installer!
+
+Please note that the present graphical installer is still under heavy \
+development, so you might want to fallback to the classical installer by \
+pressing CTRL-ALT-F3.")
    logo
    #:listbox-items
    `((,(G_ "Install using the unguided shell based process")
