@@ -959,8 +959,34 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        (sha256
         (base32
          "0i4gf3qi16fg7dxq2l4vhkwh4f5lx7xd1ilpzcw26vccqkv3hvyl"))
-       (patches (search-patches "libreoffice-icu.patch"
-                                "libreoffice-glm.patch"))))
+       (patches
+        (append (list (origin
+                        ;; Support newer versions of Orcus and MDDS.  These patches
+                        ;; are taken from upstream, but we use the patches from Arch
+                        ;; because they are adapted for the release tarball.
+                        ;; Note: remove the related substitutions below when these
+                        ;; are no longer needed.
+                        (method url-fetch)
+                        (uri (string-append "https://git.archlinux.org/svntogit"
+                                            "/packages.git/plain/trunk/"
+                                            "0001-Update-orcus-to-0.14.0.patch?&id="
+                                            "4002fa927f2a143bd2ec008a0c400b2ce9f2c8a7"))
+                        (file-name "libreoffice-orcus.patch")
+                        (sha256
+                         (base32
+                          "0v1knblrmfzkb4g9pm5mdnrmjib59bznvca1ygbwlap2ln1h4mk0")))
+                      (origin
+                        (method url-fetch)
+                        (uri (string-append "https://git.archlinux.org/svntogit"
+                                            "/packages.git/plain/trunk/"
+                                            "0001-Update-mdds-to-1.4.1.patch?&id="
+                                            "4002fa927f2a143bd2ec008a0c400b2ce9f2c8a7"))
+                        (file-name "libreoffice-mdds.patch")
+                        (sha256
+                         (base32
+                          "0apbmammmp4pk473xiv5vk50r4c5gjvqzf9jkficksvz58q6114f"))))
+                (search-patches "libreoffice-icu.patch"
+                                "libreoffice-glm.patch")))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -1048,6 +1074,13 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
                          "solenv/gbuild/gbuild.mk"
                          "solenv/gbuild/platform/unxgcc.mk")
                  (("/bin/sh") (which "sh")))
+
+               ;; XXX: Adjust the checks for MDDS and liborcus to avoid having
+               ;; to re-bootstrap the whole thing.  Remove this with the related
+               ;; patches above.
+               (substitute* "configure"
+                 (("mdds-1.2 >= 1.2.3") "mdds-1.4 >= 1.4.1")
+                 (("liborcus-0.13 >= 0.13.3") "liborcus-0.14 >= 0.14.0"))
 
                ;; GPGME++ headers are installed in a gpgme++ subdirectory, but
                ;; files in "xmlsecurity/source/gpg/" and elsewhere expect to
