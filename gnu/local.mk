@@ -543,6 +543,29 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/marionette.scm			\
   %D%/build/vm.scm				\
 						\
+  %D%/tests.scm					\
+  %D%/tests/audio.scm				\
+  %D%/tests/base.scm				\
+  %D%/tests/databases.scm			\
+  %D%/tests/desktop.scm				\
+  %D%/tests/dict.scm				\
+  %D%/tests/docker.scm				\
+  %D%/tests/monitoring.scm                      \
+  %D%/tests/nfs.scm				\
+  %D%/tests/install.scm				\
+  %D%/tests/mail.scm				\
+  %D%/tests/messaging.scm			\
+  %D%/tests/networking.scm			\
+  %D%/tests/rsync.scm				\
+  %D%/tests/security-token.scm			\
+  %D%/tests/ssh.scm				\
+  %D%/tests/version-control.scm			\
+  %D%/tests/virtualization.scm			\
+  %D%/tests/web.scm
+
+if ENABLE_INSTALLER
+
+GNU_SYSTEM_MODULES +=                           \
   %D%/installer.scm      			\
   %D%/installer/build-installer.scm		\
   %D%/installer/connman.scm			\
@@ -563,29 +586,9 @@ GNU_SYSTEM_MODULES =				\
   %D%/installer/newt/timezone.scm		\
   %D%/installer/newt/utils.scm			\
   %D%/installer/newt/welcome.scm		\
-  %D%/installer/newt/wifi.scm			\
-						\
-  %D%/tests.scm					\
-  %D%/tests/audio.scm				\
-  %D%/tests/base.scm				\
-  %D%/tests/databases.scm			\
-  %D%/tests/desktop.scm				\
-  %D%/tests/dict.scm				\
-  %D%/tests/docker.scm				\
-  %D%/tests/monitoring.scm                      \
-  %D%/tests/nfs.scm				\
-  %D%/tests/install.scm				\
-  %D%/tests/mail.scm				\
-  %D%/tests/messaging.scm			\
-  %D%/tests/networking.scm			\
-  %D%/tests/rsync.scm				\
-  %D%/tests/security-token.scm			\
-  %D%/tests/ssh.scm				\
-  %D%/tests/version-control.scm			\
-  %D%/tests/virtualization.scm			\
-  %D%/tests/web.scm				\
-						\
-  %D%/ci.scm
+  %D%/installer/newt/wifi.scm	
+
+endif ENABLE_INSTALLER
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
