@@ -2600,15 +2600,16 @@ YACC = bison -pscotchyy -y -b y
            (replace
             'build
             (lambda _
-              (and
-               (zero? (system* "make"
-                               (format #f "-j~a" (parallel-job-count))
-                               "ptscotch" "ptesmumps"))
-               ;; Install the serial metis compatibility library
-               (zero? (system* "make" "-C" "libscotchmetis" "install")))))
-           (replace
-            'check
-            (lambda _ (zero? (system* "make" "ptcheck"))))))))
+              (invoke "make" (format #f "-j~a" (parallel-job-count))
+                      "ptscotch" "ptesmumps")
+
+              ;; Install the serial metis compatibility library
+              (invoke "make" "-C" "libscotchmetis" "install")))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)
+           (replace 'check
+             (lambda _
+               (invoke "make" "ptcheck")))))))
     (synopsis "Programs and libraries for graph algorithms (with MPI)")))
 
 (define-public pt-scotch32
@@ -2622,15 +2623,15 @@ YACC = bison -pscotchyy -y -b y
         `(modify-phases ,scotch32-phases
            (replace 'build
              (lambda _
-               (and
-                (zero? (system* "make"
-                                (format #f "-j~a" (parallel-job-count))
-                                "ptscotch" "ptesmumps"))
-                ;; Install the serial metis compatibility library
-                (zero? (system* "make" "-C" "libscotchmetis" "install")))))
+               (invoke "make" (format #f "-j~a" (parallel-job-count))
+                       "ptscotch" "ptesmumps")
+               ;; Install the serial metis compatibility library
+               (invoke "make" "-C" "libscotchmetis" "install")))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)
            (replace 'check
              (lambda _
-               (zero? (system* "make" "ptcheck"))))))))
+               (invoke "make" "ptcheck")))))))
     (synopsis
      "Programs and libraries for graph algorithms (with MPI and 32-bit integers)")))
 
