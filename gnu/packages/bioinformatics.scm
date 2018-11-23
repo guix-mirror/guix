@@ -12400,8 +12400,7 @@ variational inference.")
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
        ("python-numpy" ,python-numpy)
-       ("python-scipy" ,python-scipy)
-       ("python-typing" ,python-typing)))
+       ("python-scipy" ,python-scipy)))
     (home-page "https://github.com/linnarsson-lab/loompy")
     (synopsis "Work with .loom files for single-cell RNA-seq data")
     (description "The loom file format is an efficient format for very large
