@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,8 +46,10 @@ Mercurial changeset identifier.  Return #t on success, #f otherwise."
   ;; The contents of '.hg' vary as a function of the current
   ;; status of the Mercurial repo.  Since we want a fixed
   ;; output, this directory needs to be taken out.
-  (with-directory-excursion directory
-    (delete-file-recursively ".hg"))
+  ;; Since the '.hg' file is also in sub-modules, we have to
+  ;; search for it in all sub-directories.
+  (for-each delete-file-recursively
+            (find-files directory "^\\.hg$" #:directories? #t))
 
   #t)
 
