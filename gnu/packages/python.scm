@@ -9081,6 +9081,30 @@ are synchronized with data exchanges on \"channels\".")
 (define-public python2-greenlet
   (package-with-python2 python-greenlet))
 
+(define-public python-objgraph
+  (package
+    (name "python-objgraph")
+    (version "3.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "objgraph" version))
+       (sha256
+        (base32
+         "184m09am5gpbqfaiy7l0hwh476mczbrly1dffs0rw2p1d1i2q32a"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-graphviz" ,python-graphviz)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("graphviz" ,graphviz)))
+    (home-page "https://mg.pov.lt/objgraph/")
+    (synopsis "Draw Python object reference graphs with graphviz")
+    (description
+     "This package provides tools to draw Python object reference graphs with
+graphviz.")
+    (license license:expat)))
+
 (define-public python-gevent
   (package
     (name "python-gevent")
