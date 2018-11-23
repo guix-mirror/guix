@@ -9108,13 +9108,13 @@ graphviz.")
 (define-public python-gevent
   (package
     (name "python-gevent")
-    (version "1.2.2")
+    (version "1.3.7")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "gevent" version))
               (sha256
                (base32
-                "0bbbjvi423y9k9xagrcsimnayaqymg6f2dj76m9z3mjpkjpci4a7"))
+                "0b0fr04qdk1p4sniv87fh8z5psac60x01pv054kpgi94520g81iz"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -9146,11 +9146,14 @@ graphviz.")
                                 (find-files "src/greentest" "\\.py$"))
                       #t))
                   (add-before 'build 'do-not-use-bundled-sources
-                    (lambda _
+                    (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CONFIG_SHELL" (which "bash"))
                       (setenv "LIBEV_EMBED" "false")
                       (setenv "CARES_EMBED" "false")
                       (setenv "EMBED" "false")
+                      (setenv "CPATH"
+                              (string-append (assoc-ref inputs "python-greenlet")
+                                             "/include/python3.7m"))
                       #t))
                   (replace 'check
                     (lambda _
@@ -9171,7 +9174,8 @@ graphviz.")
                                                  (make-regexp "test_+(subprocess|core)")
                                                  <>)))))))))
     (propagated-inputs
-     `(("python-greenlet" ,python-greenlet)))
+     `(("python-greenlet" ,python-greenlet)
+       ("python-objgraph" ,python-objgraph)))
     (native-inputs
      `(("libev-source" ,(package-source libev))
        ("python-six" ,python-six)))
