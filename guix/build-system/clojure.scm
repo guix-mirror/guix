@@ -51,7 +51,7 @@
 
 (define-with-docs %default-clojure
   "The default Clojure package."
-  (delay (@* (gnu packages lisp) clojure)))
+  (delay (@* (gnu packages clojure) clojure)))
 
 (define-with-docs %default-jdk
   "The default JDK package."
