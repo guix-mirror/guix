@@ -229,13 +229,14 @@ the freedesktop.org XDG Base Directory specification.")
     (name "elogind")
     (version "232.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/elogind/elogind/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/elogind/elogind")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qcxian48z2dj5gfmp7brrngdydqf2jm00f4rjr5sy1myh8fy931"))
+                "06qqs6yfcwg8aiinqqvy5374pys6sspmvsrqz93c724hqq38d93z"))
               (patches (search-patches "elogind-glibc-2.27.patch"))
               (modules '((guix build utils)))
               (snippet
