@@ -261,6 +261,10 @@
                                             ((or "." "..") #f)
                                             (file
                                              (not
+                                              ;; FIXME: Add the 'support' directory
+                                              ;; in the next rebuild cycle, since it
+                                              ;; moved in 2.7.14.  See also
+                                              ;; python2-futures below.
                                               (string-prefix? "test_support."
                                                               file))))))
                        (call-with-output-file "__init__.py" (const #t))
@@ -7766,7 +7770,11 @@ otherwise matches 3.2’s API.")
          (base32
           "1pw1z4329xvlabdpwqa6b7v2fxf7hl64m4cgr22ckbym8m8m4hh5"))))
     (build-system python-build-system)
-    (arguments `(#:python ,python-2))
+    (arguments `(#:python ,python-2
+                 ;; FIXME: Python 2.7.14 moved the test.support library,
+                 ;; but our package has not yet been adjusted.  Enable
+                 ;; tests when the python2 package has been fixed.
+                 #:tests? #f))
     (home-page "https://github.com/agronholm/pythonfutures")
     (synopsis
      "Backport of the concurrent.futures package from Python 3.2")
