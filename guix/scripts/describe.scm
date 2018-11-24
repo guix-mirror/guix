@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,11 +19,13 @@
 
 (define-module (guix scripts describe)
   #:use-module ((guix ui) #:hide (display-profile-content))
+  #:use-module (guix channels)
   #:use-module (guix scripts)
   #:use-module (guix describe)
   #:use-module (guix profiles)
   #:use-module ((guix scripts pull) #:select (display-profile-content))
   #:use-module (git)
+  #:use-module (json)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
@@ -38,7 +41,7 @@
   ;; Specifications of the command-line options.
   (list (option '(#\f "format") #t #f
                 (lambda (opt name arg result)
-                  (unless (member arg '("human" "channels"))
+                  (unless (member arg '("human" "channels" "json" "recutils"))
                     (leave (G_ "~a: unsupported output format~%") arg))
                   (alist-cons 'format (string->symbol arg) result)))
         (option '(#\p "profile") #t #f
@@ -84,6 +87,22 @@ Display information about the channels currently in use.\n"))
         (format #t (G_ "~%;; warning: GUIX_PACKAGE_PATH=\"~a\"~%")
                 string))))))
 
+(define (channel->sexp channel)
+  `(channel
+    (name ,(channel-name channel))
+    (url ,(channel-url channel))
+    (commit ,(channel-commit channel))))
+
+(define (channel->json channel)
+  (scm->json-string `((name . ,(channel-name channel))
+                      (url . ,(channel-url channel))
+                      (commit . ,(channel-commit channel)))))
+
+(define (channel->recutils channel port)
+  (format port "name: ~a~%" (channel-name channel))
+  (format port "url: ~a~%" (channel-url channel))
+  (format port "commit: ~a~%" (channel-commit channel)))
+
 (define* (display-checkout-info fmt #:optional directory)
   "Display information about the current checkout according to FMT, a symbol
 denoting the requested format.  Exit if the current directory does not lie
@@ -104,10 +123,19 @@ within a Git checkout."
        (format #t (G_ "  branch: ~a~%") (reference-shorthand head))
        (format #t (G_ "  commit: ~a~%") commit))
       ('channels
-       (pretty-print `(list (channel
-                             (name 'guix)
-                             (url ,(dirname directory))
-                             (commit ,commit))))))
+       (pretty-print `(list ,(channel->sexp (channel (name 'guix)
+                                                     (url (dirname directory))
+                                                     (commit commit))))))
+      ('json
+       (display (channel->json (channel (name 'guix)
+                                        (url (dirname directory))
+                                        (commit commit))))
+       (newline))
+      ('recutils
+       (channel->recutils (channel (name 'guix)
+                                   (url (dirname directory))
+                                   (commit commit))
+                          (current-output-port))))
     (display-package-search-path fmt)))
 
 (define (display-profile-info profile fmt)
@@ -116,34 +144,46 @@ in the format specified by FMT."
   (define number
     (generation-number profile))
 
+  (define channels
+    (map (lambda (entry)
+           (match (assq 'source (manifest-entry-properties entry))
+             (('source ('repository ('version 0)
+                                    ('url url)
+                                    ('branch branch)
+                                    ('commit commit)
+                                    _ ...))
+              (channel (name (string->symbol (manifest-entry-name entry)))
+                       (url url)
+                       (commit commit)))
+
+             ;; Pre-0.15.0 Guix does not provide that information,
+             ;; so there's not much we can do in that case.
+             (_ (channel (name 'guix)
+                         (url "?")
+                         (commit "?")))))
+
+         ;; Show most recently installed packages last.
+         (reverse
+          (manifest-entries
+           (profile-manifest
+            (if (zero? number)
+                profile
+                (generation-file-name profile number)))))))
+
   (match fmt
     ('human
      (display-profile-content profile number))
     ('channels
-     (pretty-print
-      `(list ,@(map (lambda (entry)
-                      (match (assq 'source (manifest-entry-properties entry))
-                        (('source ('repository ('version 0)
-                                               ('url url)
-                                               ('branch branch)
-                                               ('commit commit)
-                                               _ ...))
-                         `(channel (name ',(string->symbol
-                                            (manifest-entry-name entry)))
-                                   (url ,url)
-                                   (commit ,commit)))
-
-                        ;; Pre-0.15.0 Guix does not provide that information,
-                        ;; so there's not much we can do in that case.
-                        (_ '???)))
-
-                    ;; Show most recently installed packages last.
-                    (reverse
-                     (manifest-entries
-                      (profile-manifest
-                       (if (zero? number)
-                           profile
-                           (generation-file-name profile number))))))))))
+     (pretty-print `(list ,@(map channel->sexp channels))))
+    ('json
+     (format #t "[~a]~%" (string-join (map channel->json channels) ",")))
+    ('recutils
+     (format #t "~{~a~%~}"
+             (map (lambda (channel)
+                    (with-output-to-string
+                      (lambda ()
+                        (channel->recutils channel (current-output-port)))))
+                  channels))))
   (display-package-search-path fmt))
 
 

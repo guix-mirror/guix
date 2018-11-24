@@ -1191,6 +1191,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-include-qregexpvalidator.patch	\
+  %D%/packages/patches/u-boot-pinebook-a64-update-dts.patch	\
+  %D%/packages/patches/u-boot-pinebook-mmc-calibration.patch	\
+  %D%/packages/patches/u-boot-pinebook-r_i2c-controller.patch	\
+  %D%/packages/patches/u-boot-pinebook-dts.patch		\
+  %D%/packages/patches/u-boot-pinebook-syscon-node.patch	\
+  %D%/packages/patches/u-boot-pinebook-video-bridge.patch	\
   %D%/packages/patches/unrtf-CVE-2016-10091.patch		\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
   %D%/packages/patches/unzip-CVE-2014-8140.patch		\

@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -54,6 +56,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
@@ -371,17 +374,17 @@ and will take advantage of multiple processor cores where possible.")
 (define-public libtorrent-rasterbar
   (package
     (name "libtorrent-rasterbar")
-    (version "1.1.8")
+    (version "1.1.11")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
-                "https://github.com/arvidn/libtorrent/releases/download/libtorrent-"
+                "https://github.com/arvidn/libtorrent/releases/download/libtorrent_"
                 (string-join (string-split version #\.) "_")
                 "/libtorrent-rasterbar-" version ".tar.gz"))
               (sha256
                (base32
-                "0pcdy26l5ivcs78y2bqh2qca83ikzjfchw5815xh69qf8g88zgvb"))))
+                "0isqidr11fnhybr0wvk0qxd97jaikmh8fx9h89b84yd2gyxdw8vw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -393,7 +396,18 @@ and will take advantage of multiple processor cores where possible.")
              "CXXFLAGS=-std=c++11")     ; Use std::chrono instead of boost
        #:make-flags (list
                      (string-append "LDFLAGS=-Wl,-rpath="
-                                    (assoc-ref %outputs "out") "/lib"))))
+                                    (assoc-ref %outputs "out") "/lib"))
+       #:phases (modify-phases %standard-phases
+           (add-after 'unpack 'compile-python-c++11
+             (lambda _
+               ;; Make sure the Python bindings are compiled in C++ mode to
+               ;; avoid undefined references as mentioned in
+               ;; <https://github.com/qbittorrent/qBittorrent/issues/638>.
+               ;; XXX: This can be removed for 1.2+.
+               (substitute* "bindings/python/setup.py"
+                 (("\\+ target_specific\\(\\)\\,")
+                  "+ target_specific() + ['-std=c++11'],"))
+               #t)))))
     (inputs `(("boost" ,boost)
               ("openssl" ,openssl)))
     (native-inputs `(("python" ,python-2)
@@ -448,3 +462,40 @@ It aims to be a good alternative to all other BitTorrent clients out there.
 qBittorrent is fast, stable and provides unicode support as well as many
 features.")
     (license l:gpl2+)))
+
+(define-public deluge
+  (package
+    (name "deluge")
+    (version "1.3.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://download.deluge-torrent.org/source/deluge-"
+             version ".tar.xz"))
+       (sha256
+        (base32
+         "0b7rri4x0wrcj7rjghrnw1kfrsd5i7i6aq85dsg5dg1w1qa0ar59"))))
+    (build-system python-build-system)
+    (inputs
+     `(("libtorrent" ,libtorrent-rasterbar)
+       ("python2-chardet" ,python2-chardet)
+       ("python2-pygtk" ,python2-pygtk)
+       ("python2-pyopenssl" ,python2-pyopenssl)
+       ("python2-pyxdg" ,python2-pyxdg)
+       ("python2-service-identity" ,python2-service-identity)
+       ("python2-twisted" ,python2-twisted)))
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://www.deluge-torrent.org/")
+    (synopsis  "Fully-featured cross-platform ​BitTorrent client")
+    (description
+     "Deluge contains the common features to BitTorrent clients such as
+Protocol Encryption, DHT, Local Peer Discovery (LSD), Peer Exchange
+(PEX), UPnP, NAT-PMP, Proxy support, Web seeds, global and per-torrent
+speed limits.  Deluge heavily utilises the ​libtorrent library.  It is
+designed to run as both a normal standalone desktop application and as a
+​client-server.")
+    (license l:gpl3+)))

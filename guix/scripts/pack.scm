@@ -149,6 +149,7 @@ dependencies are registered."
 
 (define* (self-contained-tarball name profile
                                  #:key target
+                                 (profile-name "guix-profile")
                                  deduplicate?
                                  (compressor (first %compressors))
                                  localstatedir?
@@ -221,6 +222,7 @@ added to the pack."
           ;; <http://lists.gnu.org/archive/html/bug-tar/2017-11/msg00009.html>.
           (populate-single-profile-directory %root
                                              #:profile #$profile
+                                             #:profile-name #$profile-name
                                              #:closure "profile"
                                              #:database #+database)
 
@@ -279,6 +281,7 @@ added to the pack."
 
 (define* (squashfs-image name profile
                          #:key target
+                         (profile-name "guix-profile")
                          (compressor (first %compressors))
                          localstatedir?
                          (symlinks '())
@@ -377,6 +380,7 @@ added to the pack."
 
 (define* (docker-image name profile
                        #:key target
+                       (profile-name "guix-profile")
                        (compressor (first %compressors))
                        localstatedir?
                        (symlinks '())
@@ -587,6 +591,7 @@ please email '~a'~%")
 (define %default-options
   ;; Alist of default option values.
   `((format . tarball)
+    (profile-name . "guix-profile")
     (system . ,(%current-system))
     (substitutes? . #t)
     (build-hook? . #t)
@@ -658,6 +663,13 @@ please email '~a'~%")
          (option '("localstatedir") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'localstatedir? #t result)))
+         (option '("profile-name") #t #f
+                 (lambda (opt name arg result)
+                   (match arg
+                     ((or "guix-profile" "current-guix")
+                      (alist-cons 'profile-name arg result))
+                     (_
+                      (leave (G_ "~a: unsupported profile name~%") arg)))))
          (option '("bootstrap") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'bootstrap? #t result)))
@@ -690,6 +702,9 @@ Create a bundle of PACKAGE.\n"))
   -m, --manifest=FILE    create a pack with the manifest from FILE"))
   (display (G_ "
       --localstatedir    include /var/guix in the resulting pack"))
+  (display (G_ "
+      --profile-name=NAME
+                         populate /var/guix/profiles/.../NAME"))
   (display (G_ "
       --bootstrap        use the bootstrap binaries to build the pack"))
   (newline)
@@ -779,7 +794,8 @@ Create a bundle of PACKAGE.\n"))
                                 (#f
                                  (leave (G_ "~a: unknown pack format~%")
                                         pack-format))))
-                 (localstatedir? (assoc-ref opts 'localstatedir?)))
+                 (localstatedir? (assoc-ref opts 'localstatedir?))
+                 (profile-name   (assoc-ref opts 'profile-name)))
             (run-with-store store
               (mlet* %store-monad ((profile (profile-derivation
                                              manifest
@@ -798,6 +814,8 @@ Create a bundle of PACKAGE.\n"))
                                                      symlinks
                                                      #:localstatedir?
                                                      localstatedir?
+                                                     #:profile-name
+                                                     profile-name
                                                      #:archiver
                                                      archiver)))
                 (mbegin %store-monad

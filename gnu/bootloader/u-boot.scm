@@ -32,6 +32,7 @@
             u-boot-nintendo-nes-classic-edition-bootloader
             u-boot-novena-bootloader
             u-boot-pine64-plus-bootloader
+            u-boot-pinebook-bootloader
             u-boot-puma-rk3399-bootloader
             u-boot-wandboard-bootloader))
 
@@ -167,6 +168,11 @@
   (bootloader
    (inherit u-boot-allwinner64-bootloader)
    (package u-boot-pine64-plus)))
+
+(define u-boot-pinebook-bootloader
+  (bootloader
+   (inherit u-boot-allwinner64-bootloader)
+   (package u-boot-pinebook)))
 
 (define u-boot-puma-rk3399-bootloader
   (bootloader

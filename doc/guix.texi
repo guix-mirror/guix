@@ -499,18 +499,20 @@ archive content is independent of its creation time, thus making it
 reproducible.
 
 @item
-Make @code{root}'s profile available under @file{~root/.guix-profile}:
+Make the profile available under @file{~root/.config/guix/current}, which is
+where @command{guix pull} will install updates (@pxref{Invoking guix pull}):
 
 @example
-# ln -sf /var/guix/profiles/per-user/root/guix-profile \
-         ~root/.guix-profile
+# mkdir -p ~root/.config/guix
+# ln -sf /var/guix/profiles/per-user/root/current-guix \
+         ~root/.config/guix/current
 @end example
 
 Source @file{etc/profile} to augment @code{PATH} and other relevant
 environment variables:
 
 @example
-# GUIX_PROFILE="`echo ~root`/.guix-profile" ; \
+# GUIX_PROFILE="`echo ~root`/.config/guix/current" ; \
   source $GUIX_PROFILE/etc/profile
 @end example
 
@@ -532,8 +534,8 @@ with these commands:
 @c http://lists.gnu.org/archive/html/guix-devel/2017-01/msg01199.html
 
 @example
-# cp ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
-        /etc/systemd/system/
+# cp ~root/.config/guix/current/lib/systemd/system/guix-daemon.service \
+     /etc/systemd/system/
 # systemctl start guix-daemon && systemctl enable guix-daemon
 @end example
 
@@ -541,14 +543,16 @@ If your host distro uses the Upstart init system:
 
 @example
 # initctl reload-configuration
-# cp ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
+# cp ~root/.config/guix/current/lib/upstart/system/guix-daemon.conf \
+     /etc/init/
 # start guix-daemon
 @end example
 
 Otherwise, you can still start the daemon manually with:
 
 @example
-# ~root/.guix-profile/bin/guix-daemon --build-users-group=guixbuild
+# ~root/.config/guix/current/bin/guix-daemon \
+       --build-users-group=guixbuild
 @end example
 
 @item
@@ -558,7 +562,7 @@ for instance with:
 @example
 # mkdir -p /usr/local/bin
 # cd /usr/local/bin
-# ln -s /var/guix/profiles/per-user/root/guix-profile/bin/guix
+# ln -s /var/guix/profiles/per-user/root/current-guix/bin/guix
 @end example
 
 It is also a good idea to make the Info version of this manual available
@@ -567,7 +571,7 @@ there:
 @example
 # mkdir -p /usr/local/share/info
 # cd /usr/local/share/info
-# for i in /var/guix/profiles/per-user/root/guix-profile/share/info/* ;
+# for i in /var/guix/profiles/per-user/root/current-guix/share/info/* ;
   do ln -s $i ; done
 @end example
 
@@ -582,7 +586,8 @@ To use substitutes from @code{hydra.gnu.org} or one of its mirrors
 (@pxref{Substitutes}), authorize them:
 
 @example
-# guix archive --authorize < ~root/.guix-profile/share/guix/hydra.gnu.org.pub
+# guix archive --authorize < \
+     ~root/.config/guix/current/share/guix/hydra.gnu.org.pub
 @end example
 
 @item
@@ -616,7 +621,8 @@ make guix-binary.@var{system}.tar.xz
 ... which, in turn, runs:
 
 @example
-guix pack -s @var{system} --localstatedir guix
+guix pack -s @var{system} --localstatedir \
+  --profile-name=current-guix guix
 @end example
 
 @xref{Invoking guix pack}, for more info on this handy tool.
@@ -641,7 +647,7 @@ later, including 2.2.x;
 (@pxref{Guile Preparations, how to install the GnuTLS bindings for
 Guile,, gnutls-guile, GnuTLS-Guile});
 @item
-@uref{https://notabug.org/civodul/guile-sqlite3, Guile-SQLite3}, version 0.1.0
+@uref{https://notabug.org/guile-sqlite3/guile-sqlite3, Guile-SQLite3}, version 0.1.0
 or later;
 @item
 @c FIXME: Specify a version number once a release has been made.
@@ -3273,7 +3279,12 @@ produce human-readable output;
 @item channels
 produce a list of channel specifications that can be passed to @command{guix
 pull -C} or installed as @file{~/.config/guix/channels.scm} (@pxref{Invoking
-guix pull}).
+guix pull});
+@item json
+@cindex JSON
+produce a list of channel specifications in JSON format;
+@item recutils
+produce a list of channel specifications in Recutils format.
 @end table
 
 @item --profile=@var{profile}
@@ -3483,8 +3494,11 @@ For instance, @code{-S /opt/gnu/bin=bin} creates a @file{/opt/gnu/bin}
 symlink pointing to the @file{bin} sub-directory of the profile.
 
 @item --localstatedir
-Include the ``local state directory'', @file{/var/guix}, in the
-resulting pack.
+@itemx --profile-name=@var{name}
+Include the ``local state directory'', @file{/var/guix}, in the resulting
+pack, and notably the @file{/var/guix/profiles/per-user/root/@var{name}}
+profile---by default @var{name} is @code{guix-profile}, which corresponds to
+@file{~root/.guix-profile}.
 
 @file{/var/guix} contains the store database (@pxref{The Store}) as well
 as garbage-collector roots (@pxref{Invoking guix gc}).  Providing it in

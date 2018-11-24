@@ -15,11 +15,57 @@ Please send Guix bug reports to bug-guix@gnu.org.
 
 ** Package management
 
+*** ‘guix pull -l’ lists new and upgraded packages
+*** ‘guix pull’ now supports channels via ~/.config/guix/channels.scm
+*** New ‘--profile’ or ‘-p’ option for ‘guix pull’
+*** New ‘guix describe’ command
+*** ‘guix package’ no longer shows build logs by default
+*** ‘guix’ commands now produce colored output by default
+*** Manifests can now refer to arbitrary Guix commits using “inferiors”
+*** New ‘guix processes’ command
+*** ‘guix pack’ now honors ‘--localstatedir’ for all its backends
 *** ‘guix import pypi’ has a new ‘--recursive’ option
 *** ‘guix import hackage’ has a new ‘--recursive’ option
 *** ‘guix import stackage’ has a new ‘--recursive’ option
 The short option for ‘--lts-version’ is now ‘-l’ (used to be ‘-r’).
+*** ‘guix refresh’ now stores upstream keys in ~/.config/guix/upstream
+*** Guix now depends on Guile-Gcrypt
 
+** Distribution
+
+*** The GNU Shepherd was upgraded to 0.5.0
+*** ‘guix system reconfigure’ now loads Shepherd service replacements
+*** ‘herd schedule mcron’ now displays mcron’s job schedule
+*** ‘herd statistics nscd’ now displays nscd statistics
+*** ‘herd invalidate nscd TABLE’ instructs nscd to invalidate TABLE
+*** New services
+
+gitolite, iptables, pcscd, prometheus-node-exporter, varnish
+
+** Programming interfaces
+
+*** New (guix channels) module
+*** New (guix inferior) module
+*** New (guix status) module
+*** ‘packages->manifest’ now accepts inferior packages
+*** New build systems: ‘clojure’, ‘guile’
+*** Shepherd services can now declare custom actions
+*** More of the (gnu system …) APIs are now non-monadic
+*** New ‘add-file-tree-to-store’ procedure in (guix store)
+
+** Noteworthy bug fixes
+
+** Native language support
+
+*** The manual is now partially translated into German, in addition to French
+
+To read the German manual, just type “info guix.de” or read it on-line at
+<https://gnu.org/s/guix/manual/de/html_node>.  Consider translating the manual
+to your native language by joining the Translation Project:
+<https://translationproject.org/domain/guix-manual.html>.
+
+*** Updated translations:
+*** New translations:
 
 * Changes in 0.15.0 (since 0.14.0)
 

@@ -6,8 +6,8 @@
 Description=Build daemon for GNU Guix
 
 [Service]
-ExecStart=@localstatedir@/guix/profiles/per-user/root/guix-profile/bin/guix-daemon --build-users-group=guixbuild
-Environment=GUIX_LOCPATH=/root/.guix-profile/lib/locale
+ExecStart=@localstatedir@/guix/profiles/per-user/root/current-guix/bin/guix-daemon --build-users-group=guixbuild
+Environment=GUIX_LOCPATH=@localstatedir@/guix/profiles/per-user/root/guix-profile/lib/locale
 RemainAfterExit=yes
 StandardOutput=syslog
 StandardError=syslog

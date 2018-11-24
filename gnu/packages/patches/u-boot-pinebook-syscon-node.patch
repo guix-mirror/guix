@@ -1,0 +1,38 @@
+From ababb5920e8992c9bb7956df3cc85dc68d27dfe8 Mon Sep 17 00:00:00 2001
+From: Andre Przywara <andre.przywara@arm.com>
+Date: Mon, 29 Oct 2018 00:56:48 +0000
+Subject: [PATCH 04/13] sunxi: A64: Re-add syscon to DT node
+
+The sun50i-a64.dtsi changes introduced in Linux v4.19-rc1 changed the
+compatible name for the syscon controller, dropping the generic "syscon"
+fallback. Using this new DT node will make the Ethernet driver in every
+older kernel (or non-Linux kernels) fail to initialise the MAC device.
+
+To allow booting distribution kernels (from installer images via UEFI,
+for instance), re-add the syscon compatible string as a fallback. This
+works with both older and newer kernels.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Acked-by: Maxime Ripard <maxime.ripard@bootlin.com>
+Reviewed-by: Jagan Teki <jagan@openedev.com>
+---
+ arch/arm/dts/sun50i-a64.dtsi | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/sun50i-a64.dtsi b/arch/arm/dts/sun50i-a64.dtsi
+index f3a66f8882..ff41abc96a 100644
+--- a/arch/arm/dts/sun50i-a64.dtsi
++++ b/arch/arm/dts/sun50i-a64.dtsi
+@@ -259,7 +259,8 @@
+ 		};
+ 
+ 		syscon: syscon@1c00000 {
+-			compatible = "allwinner,sun50i-a64-system-control";
++			compatible = "allwinner,sun50i-a64-system-control",
++				"syscon";
+ 			reg = <0x01c00000 0x1000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+-- 
+2.11.0
+

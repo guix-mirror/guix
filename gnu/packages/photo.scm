@@ -69,14 +69,14 @@
 (define-public libraw
   (package
     (name "libraw")
-    (version "0.19.0")
+    (version "0.19.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.libraw.org/data/LibRaw-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nfj7s7qmgfy1cl8s3ck7dxjvprfq5glfi6iidmvmy8r7gl52gz8"))))
+                "1xjyw4n9gfr2r637pjbpbi3h98h9mdjn61b0hsxwqynq2vdij452"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

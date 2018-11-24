@@ -410,6 +410,7 @@ SH_TESTS =					\
   tests/guix-gc.sh				\
   tests/guix-hash.sh				\
   tests/guix-pack.sh				\
+  tests/guix-pack-localstatedir.sh		\
   tests/guix-pack-relocatable.sh		\
   tests/guix-package.sh				\
   tests/guix-package-net.sh			\
@@ -600,13 +601,11 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --enable-daemon				\
   ac_cv_guix_test_root="$(GUIX_TEST_ROOT)"
 
-# The self-contained tarball.  Add 'glibc-utf8-locales' along with glibc just
-# so 'etc/profile' defines 'GUIX_LOCPATH' pointing to a valid set of locales.
+# The self-contained tarball.
 guix-binary.%.tar.xz:
 	$(AM_V_GEN)GUIX_PACKAGE_PATH=					\
 	tarball=`$(top_builddir)/pre-inst-env guix pack -K -C xz	\
-	  -s "$*" --localstatedir guix glibc-utf8-locales		\
-	  -e  '(@@ (gnu packages commencement) glibc-final)'` ;		\
+	  -s "$*" --localstatedir --profile-name=current-guix guix` ;	\
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 

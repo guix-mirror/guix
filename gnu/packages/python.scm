@@ -14610,14 +14610,14 @@ run on top of the dynamic task schedulers. ")
 (define-public python-ilinkedlist
   (package
     (name "python-ilinkedlist")
-    (version "0.3.1")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ilinkedlist" version))
        (sha256
         (base32
-         "04wpv7km8jggrngc4bjg3nm615czd3bjdvpsy2icg6c1c8162zyg"))))
+         "0nrw4sr3afldrp7073hvc0rgdz282s0l819jdmj1i6nn05v33h0l"))))
     (build-system python-build-system)
     (native-inputs `(("python-pytest" ,python-pytest)))
     (inputs `(("python" ,python)))

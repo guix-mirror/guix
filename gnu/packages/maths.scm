@@ -1655,7 +1655,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.9.3")
+    (version "3.10.2")
     (source
      (origin
       (method url-fetch)
@@ -1663,7 +1663,7 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "1fwkbwv4g7zf2lc8fw865xd0bl9anb6jaczfis5dff7h449gwa48"))))
+       (base32 "0bl64pydak3rblnjffi482r8bin4xim9sb37ksl2jkcxf0i0irsi"))))
     (outputs '("out"                    ;libraries and headers
                "examples"))             ;~30MiB of examples
     (build-system gnu-build-system)
@@ -1812,14 +1812,14 @@ scientific applications modeled by partial differential equations.")
 (define-public python-petsc4py
   (package
     (name "python-petsc4py")
-    (version "3.9.1")
+    (version "3.10.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "petsc4py" version))
         (sha256
           (base32
-            "1f8zd1ac9irsgkyqmzq30d9kl10fy1nh6zk312dhs43g449fkkhc"))))
+            "0ch3g6dsvxl7qi984fcssv7cxfbif4bw04gkvxl2l1b8wrmvrm25"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1871,7 +1871,7 @@ savings are consistently > 5x.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.9.2")
+    (version "3.10.1")
     (source
      (origin
        (method url-fetch)
@@ -1879,7 +1879,7 @@ savings are consistently > 5x.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0gmhdqac8zm3jx43h935z7bflazjnpvqxjv4jh5za2y1z2rqax94"))))
+         "188j1a133q91h8pivpnzwcf78kz8dvz2nzf6ndnjygdbqb48fizn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -1978,14 +1978,14 @@ arising after the discretization of partial differential equations.")
 (define-public python-slepc4py
   (package
     (name "python-slepc4py")
-    (version "3.9.0")
+    (version "3.10.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "slepc4py" version))
         (sha256
           (base32
-            "02xr0vndgibgkz3rgprqk05n3mk5mpgqw550sr4681vcsgz4zvb7"))))
+            "0x049dyc8frgh79fvvavf4vlbqp4mgm61nsaivzdav4316vvlv1j"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

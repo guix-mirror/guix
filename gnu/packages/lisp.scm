@@ -533,8 +533,13 @@ statistical profiler, a code coverage tool, and many other extensions.")
                (install-file kernel libdir)
                (install-file heap libdir)
 
-               (let ((dirs '("lib" "library" "examples" "contrib"
-                             "tools" "objc-bridge")))
+               (let ((dirs '("lib" "library" "examples" "tools" "objc-bridge"
+                             ,@(match (%current-system)
+                                ("x86_64-linux"
+                                 '("x86-headers64"))
+                                ("i686-linux"
+                                 '("x86-headers"))
+                                (_ '())))))
                  (for-each copy-recursively
                            dirs
                            (map (cut string-append libdir <>) dirs)))
@@ -545,13 +550,12 @@ statistical profiler, a code coverage tool, and many other extensions.")
                    (display
                     (string-append
                      "#!" bash "/bin/sh\n"
-                     "CCL_DEFAULT_DIRECTORY=" libdir "\n"
-                     "export CCL_DEFAULT_DIRECTORY\n"
-                     "exec " libdir kernel "\n"))))
+                     "export CCL_DEFAULT_DIRECTORY=" libdir "\n"
+                     "exec -a \"$0\" " libdir kernel " \"$@\"\n"))))
                (chmod wrapper #o755))
              #t)))))
     (supported-systems '("i686-linux" "x86_64-linux" "armhf-linux"))
-    (home-page "http://ccl.clozure.com/")
+    (home-page "https://ccl.clozure.com/")
     (synopsis "Common Lisp implementation")
     (description "Clozure CL (often called CCL for short) is a Common Lisp
 implementation featuring fast compilation speed, native threads, a precise,

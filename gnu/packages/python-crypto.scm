@@ -18,6 +18,7 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
+;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -970,3 +971,33 @@ been constructed to maintain extensive documentation on how to use
     (description "This is a set of Python bindings for the scrypt key
 derivation function.")
     (license license:bsd-2)))
+
+(define-public python-service-identity
+  (package
+    (name "python-service-identity")
+    (version "17.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "service_identity" version))
+       (sha256
+        (base32
+         "1aq24cn3nnsjr9g797dayhx4g653h6bd41ksqhidzq0rvarzn0a0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyasn1-modules" ,python-pyasn1-modules)
+       ("python-pyopenssl" ,python-pyopenssl)))
+    (home-page "https://service-identity.readthedocs.io/")
+    (synopsis "Service identity verification for PyOpenSSL")
+    (description
+     "@code{service_identity} aspires to give you all the tools you need
+for verifying whether a certificate is valid for the intended purposes.
+In the simplest case, this means host name verification.  However,
+service_identity implements RFC 6125 fully and plans to add other
+relevant RFCs too.")
+    (license license:expat)))
+
+(define-public python2-service-identity
+  (package-with-python2 python-service-identity))

@@ -588,7 +588,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
      `(#:test-target "test_nogui"
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'wrap-program
+         (add-after 'install 'wrap-gi-typelib-path
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (for-each
@@ -616,7 +616,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                  (symlink adwaita "Adwaita")
                  (copy-recursively hicolor "hicolor")))
              #t))
-         (add-after 'install-icons 'wrap-program
+         (add-after 'install-icons 'wrap-gsettings-schema-dir
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (wrap-program (string-append (assoc-ref outputs "out")
                                           "/bin/gajim")

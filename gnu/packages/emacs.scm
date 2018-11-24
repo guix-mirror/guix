@@ -811,6 +811,29 @@ different tools.  It highlights errors and warnings inline in the buffer, and
 provides an optional IDE-like error list.")
     (license license:gpl3+)))                     ;+GFDLv1.3+ for the manual
 
+(define-public emacs-a
+  (package
+    (name "emacs-a")
+    (version "0.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/plexus/a.el.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "00v9w6qg3bkwdhypq0ssf0phdh0f4bcq59c20lngd6vhk0204dqi"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/plexus/a.el/")
+    (synopsis
+     "Emacs library for dealing with association lists and hash tables")
+    (description "@code{emacs-a} provides Emacs Lisp functions for dealing
+with associative structures in a uniform and functional way.  These functions
+can take association lists, hash tables, and in some cases vectors (where the
+index is considered the key).")
+    (license license:gpl3+)))
+
 
 ;;;
 ;;; Web browsing.
@@ -7744,6 +7767,22 @@ activity in channels in the status bar so it stays out of your way unless you
 want to use it.")
     (license license:gpl3+)))
 
+(define-public emacs-tracking
+  (package
+    (inherit emacs-circe)
+    (name "emacs-tracking")
+    (arguments
+     ;; "tracking.el" is a library extracted from Circe package.  It requires
+     ;; "shorten.el".
+     `(#:include '("^shorten.el$" "^tracking.el$")
+       #:tests? #f))                    ;tests require buttercup
+    (home-page "https://github.com/jorgenschaefer/circe/wiki/Tracking")
+    (synopsis "Buffer tracking library")
+    (description "@code{tracking.el} provides a way for different modes to
+notify the user that a buffer needs attention.  The user then can cycle
+through them using @key{C-c C-SPC}.")
+    (license license:gpl3+)))
+
 (define-public emacs-slack
   (let ((commit "d90395482d26175ce38fd935e978c428be8af9a0")
         (revision "4"))
@@ -11737,8 +11776,8 @@ file.")
       (license license:gpl3+))))
 
 (define-public emacs-picpocket
-  (let ((version "20180610.1059") ; taken from melpa
-        (commit "ce4b6ed088384f2414af82e8e4eae5b92c2874bf"))
+  (let ((version "40")
+        (commit "6fd88b8711c4370662c0f9c462170187d092a046"))
     (package
       (name "emacs-picpocket")
       (version version)
@@ -11750,7 +11789,7 @@ file.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "15vpbcv83mc4j1pvrk7xic0klh2bl9gzg2xxs7c2lmnix52hy8mv"))))
+          (base32 "1mdzzxf7xm7zwrpnqqxa27d1cr31pd72d7ilbwljv13qp177a3yw"))))
       (build-system emacs-build-system)
       (arguments ; needed for running tests
        `(#:tests? #t
@@ -12570,3 +12609,55 @@ customized.  In addition to C code development @command{gtk-look} is good for
 classes like @command{<gtk-window>}.
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public emacs-ov
+  (package
+    (name "emacs-ov")
+    (version "1.0.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ShingoFukuyama/ov.el.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qxk2rf84j86syxi8xknsq252irwg7sz396v3bb4wqz4prpj0kzc"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ShingoFukuyama/ov.el")
+    (synopsis "Overlay library for Emacs Lisp")
+    (description "@code{ov.el} provides a simple way to manipulate overlays in
+Emacs.")
+    (license license:gpl3+)))
+
+(define-public emacs-matrix-client
+  (let ((commit "3eab4c28280feff18ee1ddd7db66ada4f135cbf8"))
+    (package
+      (name "emacs-matrix-client")
+      (version (git-version "0.0.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jgkamat/matrix-client-el.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1k6721jz0m22vpb78881k087mpx8hf3s2219ic75v5mhgx355f7m"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("a" ,emacs-a)
+         ("dash" ,emacs-dash)
+         ("esxml" ,emacs-esxml)
+         ("f" ,emacs-f)
+         ("ht" ,emacs-ht)
+         ("ov" ,emacs-ov)
+         ("request" ,emacs-request)
+         ("s" ,emacs-s)
+         ("tracking" ,emacs-tracking)))
+      (home-page "https://github.com/jgkamat/matrix-client-el")
+      (synopsis "Matrix client for Emacs")
+      (description "@code{matrix-client} is a simple chat UI to Matrix.org
+rooms.  It also provides an API which allows Emacs to seamlessly create
+RPC channels with users and other software.")
+      (license license:gpl3+))))
