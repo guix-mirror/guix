@@ -339,6 +339,13 @@ various Android core host applications.")
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
            (lambda _ (chdir "adb") #t))
+         (add-after 'enter-source 'glibc-compat
+           (lambda _
+             ;; Include sysmacros.h for "major" and "minor" in Glibc 2.28.
+             (substitute* "usb_linux.cpp"
+               (("#include <sys/types.h>" all)
+                (string-append all "\n#include <sys/sysmacros.h>\n")))
+             #t))
          (add-after 'enter-source 'make-libs-available
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "Android.mk"
