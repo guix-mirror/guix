@@ -3391,7 +3391,7 @@ organizer.")
 (define-public emacs-zenburn-theme
   (package
     (name "emacs-zenburn-theme")
-    (version "2.5")
+    (version "2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3400,7 +3400,7 @@ organizer.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "03kfhzgbbbl8ivpzzky6qxw4j9mmp452m1sk7wikxmcalfnix0gn"))))
+                "0qc9d1rwq55yzh8shbppyd6izy1grpyr8kqh5zdgm7c5jccngpr4"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/bbatsov/zenburn-emacs")
     (synopsis "Low contrast color theme for Emacs")
