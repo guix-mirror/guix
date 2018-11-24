@@ -10698,22 +10698,52 @@ possible on all supported Python versions.")
       (propagated-inputs `(("python2-bz2file" ,python2-bz2file)
                            ,@(package-propagated-inputs base))))))
 
-(define-public python2-cheetah
+(define-public python-cheetah
   (package
-    (name "python2-cheetah")
-    (version "2.4.4")
+    (name "python-cheetah")
+    (version "3.1.0")
     (source
       (origin
         (method url-fetch)
-        (uri (pypi-uri "Cheetah" version))
+        (uri (pypi-uri "Cheetah3" version))
         (sha256
           (base32
-            "0l5mm4lnysjkzpjr95q5ydm9xc8bv43fxmr79ypybrf1y0lq4c5y"))))
+           "1ihag9cxll6b86fc8v5lkhmr3brdbi4yiz16zpgw79yylmv8fgr9"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))
+     `(#:modules ((guix build utils)
+                  (guix build python-build-system)
+                  (ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'use-absolute-python
+                    (lambda _
+                      (substitute* "Cheetah/CheetahWrapper.py"
+                        (("#!/usr/bin/env python")
+                         (string-append "#!" (which "python"))))
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      (let ((cwd (getcwd)))
+                        (setenv "PYTHONPATH"
+                                (string-append
+                                 cwd "/build/"
+                                 (find (cut string-prefix? "lib" <>)
+                                       (scandir (string-append cwd "/build")))
+                                 ":" (getenv "PYTHONPATH")))
+                        (setenv "PATH"
+                                (string-append (getenv "PATH")
+                                               ":" cwd "/bin"))
+                        (setenv "TMPDIR" "/tmp")
+
+                        (substitute* "Cheetah/Tests/Test.py"
+                          (("unittest.TextTestRunner\\(\\)")
+                           "unittest.TextTestRunner(verbosity=2)"))
+
+                        (invoke "python" "Cheetah/Tests/Test.py")))))))
     (propagated-inputs
-     `(("python2-markdown" ,python2-markdown)))
+     `(("python-markdown" ,python-markdown)))    ;optional
     (home-page "http://cheetahtemplate.org/")
     (synopsis "Template engine")
     (description "Cheetah is a text-based template engine and Python code
@@ -10741,6 +10771,9 @@ Features:
 @item Compiles templates into optimized, yet readable, Python code.
 @end enumerate")
     (license (license:x11-style "file://LICENSE"))))
+
+(define-public python2-cheetah
+  (package-with-python2 python-cheetah))
 
 (define-public python-dulwich
   (package
