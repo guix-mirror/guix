@@ -4297,7 +4297,6 @@ cpp-like directives.")
        ("ulex" ,ocaml-ulex)
        ("easy-format" ,ocaml-easy-format)
        ("base64" ,ocaml-base64)))
-    (home-page "http://www.cduce.org/download.html#side")
     (home-page "http://piqi.org")
     (synopsis "Data serialization and conversion library")
     (description "Piqilib is the common library used by the piqi command-line
