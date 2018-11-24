@@ -5228,6 +5228,7 @@ viewer.")
                         #t))))))
       (inputs
        `(("perl" ,perl)
+         ("zlib:static" ,zlib "static")
          ("zlib" ,zlib)))
       (supported-systems '("x86_64-linux"))
       (home-page "https://github.com/wanpinglee/MOSAIK")
