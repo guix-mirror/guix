@@ -10714,7 +10714,7 @@ possible on all supported Python versions.")
      `(#:python ,python-2))
     (propagated-inputs
      `(("python2-markdown" ,python2-markdown)))
-    (home-page "https://pythonhosted.org/Cheetah/")
+    (home-page "http://cheetahtemplate.org/")
     (synopsis "Template engine")
     (description "Cheetah is a text-based template engine and Python code
 generator.
