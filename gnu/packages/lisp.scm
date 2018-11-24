@@ -316,14 +316,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "1.4.4")
+    (version "1.4.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "1k6v5b8qv7vyxvh8asx6phf2hbapx5pp5p5j47hgnq123fwnh4fa"))
+        (base32 "120rnnz8367lk7ljqlf8xidm4b0d738xqsib4kq0q5ms5r7fzgvm"))
        (modules '((guix build utils)))
        (snippet
         ;; Add sbcl-bundle-systems to 'default-system-source-registry'.
@@ -335,11 +335,20 @@ an interpreter, a compiler, a debugger, and much more.")
     (outputs '("out" "doc"))
     ;; Bootstrap with CLISP.
     (native-inputs
-     `(("clisp" ,clisp)
+     ;; From INSTALL:
+     ;;     Supported build hosts are:
+     ;;       SBCL
+     ;;       CMUCL
+     ;;       CCL (formerly known as OpenMCL)
+     ;;       ABCL (recent versions only)
+     ;;       CLISP (only some versions: 2.44.1 is OK, 2.47 is not)
+     ;;       XCL
+     ;; CCL seems ideal then.
+     `(("ccl" ,ccl)
        ("which" ,which)
        ("inetutils" ,inetutils)         ;for hostname(1)
        ("ed" ,ed)
-       ("texlive" ,texlive)
+       ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
        ("texinfo" ,texinfo)))
     (arguments
      '(#:modules ((guix build gnu-build-system)
@@ -394,20 +403,24 @@ an interpreter, a compiler, a debugger, and much more.")
                   (string-append "#+nil ;disabled by Guix\n" all))
                  (("\\(deftest grent\\.[12]" all)
                   (string-append "#+nil ;disabled by Guix\n" all))))))
+         ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
+         ;; them in HOME, so it needs to be writeable.
+         (add-before 'build 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp") #t))
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")
-             (zero? (system* "sh" "make.sh" "clisp"
-                             (string-append "--prefix="
-                                            (assoc-ref outputs "out"))))))
+             (invoke "sh" "make.sh" "ccl"
+                     (string-append "--prefix="
+                                    (assoc-ref outputs "out")))))
          (replace 'install
            (lambda _
-             (zero? (system* "sh" "install.sh"))))
+             (invoke "sh" "install.sh")))
          (add-after 'build 'build-doc
            (lambda _
              (with-directory-excursion "doc/manual"
-               (and  (zero? (system* "make" "info"))
-                     (zero? (system* "make" "dist"))))))
+               (and  (invoke "make" "info")
+                     (invoke "make" "dist")))))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
