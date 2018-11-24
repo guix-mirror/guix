@@ -261,9 +261,6 @@ selected keymap."
                          (guix build utils)
                          (ice-9 match))
 
-            ;; Set the default locale to install unicode support.
-            (setlocale LC_ALL "en_US.utf8")
-
             ;; Initialize gettext support so that installers can use
             ;; (guix i18n) module.
             #$init-gettext
@@ -295,4 +292,11 @@ selected keymap."
                   (primitive-exit 1))))
             ((installer-exit current-installer))))))
 
-  (program-file "installer" installer-builder))
+  (program-file
+   "installer"
+   #~(begin
+       ;; Set the default locale to install unicode support.  For
+       ;; some reason, unicode support is not correctly installed
+       ;; when calling this in 'installer-builder'.
+       (setenv "LANG" "en_US.UTF-8")
+       (system #$(program-file "installer-real" installer-builder)))))
