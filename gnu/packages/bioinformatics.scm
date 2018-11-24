@@ -1243,7 +1243,7 @@ confidence to have in an alignment.")
      '(#:tests? #f ;no "check" target
        #:make-flags
        (list (string-append "ZLIB="
-                            (assoc-ref %build-inputs "zlib")
+                            (assoc-ref %build-inputs "zlib:static")
                             "/lib/libz.a")
              (string-append "LDFLAGS="
                             (string-join '("-lboost_filesystem"
@@ -1286,6 +1286,7 @@ confidence to have in an alignment.")
        ("boost" ,boost)
        ("sparsehash" ,sparsehash)
        ("pigz" ,pigz)
+       ("zlib:static" ,zlib "static")
        ("zlib" ,zlib)))
     (supported-systems '("x86_64-linux"))
     (home-page "https://sourceforge.net/p/bless-ec/wiki/Home/")
