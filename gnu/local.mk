@@ -666,7 +666,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/dropbear-CVE-2018-15599.patch		\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
-  %D%/packages/patches/elogind-glibc-2.27.patch			\
   %D%/packages/patches/einstein-build.patch			\
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
