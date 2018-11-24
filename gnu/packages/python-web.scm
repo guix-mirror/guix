@@ -443,7 +443,15 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
     (arguments
      ;; The tests attempt to access external web servers, so we cannot run
      ;; them.  Furthermore, they are skipped altogether when using Python 2.
-     '(#:tests? #f))
+     '(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                    (add-before 'build 'configure-tls-backend
+                      (lambda _
+                        ;; XXX: PycURL fails to automatically determine which TLS
+                        ;; backend to use when cURL is built with --disable-static.
+                        ;; See setup.py and <https://github.com/pycurl/pycurl/pull/147>.
+                        (setenv "PYCURL_SSL_LIBRARY" "gnutls")
+                        #t)))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-bottle" ,python-bottle)))
