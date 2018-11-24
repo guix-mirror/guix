@@ -405,14 +405,13 @@ $out/bin/guile --version~%"
    (lambda (system)
      (origin
        (method url-fetch)
-       (uri (match system
-              ((or "i686-linux"
-                   "x86_64-linux")
-               "http://lilypond.org/janneke/mes/linux-libre-headers-stripped-4.14.26-i686-linux.tar.xz")
-              (_ (error "linux-libre-headers-bootstrap: system not supported"))))
+       (uri (map (cute string-append <>
+                       "/i686-linux/20181020/"
+                       "linux-libre-headers-stripped-4.14.67-i686-linux.tar.xz")
+                 %bootstrap-base-urls))
        (sha256
         (base32
-         "0nwspwydn089xbd28nnas762iwl6l9ymbcz170qvfi50ywgim1ma"))))
+         "0sm2z9x4wk45bh6qfs94p0w1d6hsy6dqx9sw38qsqbvxwa1qzk8s"))))
    #f                                   ; no program to test
    "Bootstrap linux-libre-headers"))
 
@@ -646,18 +645,18 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
     (inputs
      `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
        ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
-       ("tarball" ,(bootstrap-origin
-                    (origin
-                      (method url-fetch)
-                      (uri (string-append
-                            "http://lilypond.org/janneke/mes/"
-                            (match (%current-system)
-                              ((or "i686-linux" "x86_64-linux")
-                               "mescc-tools-static-0.5.2-0.bb062b0-i686-linux.tar.xz"))))
-                      (sha256
-                       (match (%current-system)
-                         ((or "i686-linux" "x86_64-linux")
-                          (base32 "0dkwl8mjmmizx7gba9spiq9sp8c5fqv7370qakggy5nxpply59jh")))))))))
+       ("tarball"
+        ,(bootstrap-origin
+          (origin
+            (method url-fetch)
+            (uri (map
+                  (cute string-append <>
+                        "/i686-linux/20181020/"
+                        "mescc-tools-static-0.5.2-0.bb062b0-i686-linux.tar.xz")
+                  %bootstrap-base-urls))
+            (sha256
+             (base32
+              "11lniw0vg61kmyhvnwkmcnkci9ym6hbmiksiqggd0hkipbq7hvlz")))))))
     (synopsis "Bootstrap binaries of MesCC Tools")
     (description synopsis)
     (home-page #f)
@@ -694,19 +693,20 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
     (inputs
      `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
        ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
-       ("tarball" ,(bootstrap-origin
-                    (origin
-                      (method url-fetch)
-                      (uri (string-append
-                            "http://lilypond.org/janneke/mes/"
-                            (match (%current-system)
-                              ((or "i686-linux" "x86_64-linux")
-                               "mes-minimal-stripped-0.18-0.08f04f5-i686-linux.tar.xz"))))
-                      (sha256
-                       (match (%current-system)
-                         ((or "i686-linux" "x86_64-linux")
-                          (base32
-                           "0qwpby91hp6afmg5ibdrrk3fw85zxdazfk7rhrdsihsfzqwmfhfx")))))))))
+       ("tarball"
+        ,(bootstrap-origin
+          (origin
+            (method url-fetch)
+            (uri (map
+                  (cute string-append <>
+                        "/i686-linux/20181020/"
+                        "mes-minimal-stripped-0.18-0.08f04f5-i686-linux.tar.xz")
+                 %bootstrap-base-urls))
+            (sha256
+             (match (%current-system)
+               ((or "i686-linux" "x86_64-linux")
+                (base32
+                 "0qwpby91hp6afmg5ibdrrk3fw85zxdazfk7rhrdsihsfzqwmfhfx")))))))))
     (synopsis "Bootstrap binaries of Mes")
     (description synopsis)
     (home-page #f)
