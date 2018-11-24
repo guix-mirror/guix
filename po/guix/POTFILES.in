@@ -9,7 +9,7 @@ gnu/system/mapped-devices.scm
 gnu/system/shadow.scm
 guix/import/opam.scm
 gnu/installer.scm
-gnu/installer/build-installer.scm
+gnu/installer/record.scm
 gnu/installer/connman.scm
 gnu/installer/keymap.scm
 gnu/installer/locale.scm

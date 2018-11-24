@@ -28,8 +28,7 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module ((guix store) #:select (%store-prefix))
-  #:use-module (gnu installer newt)
-  #:use-module (gnu installer build-installer)
+  #:use-module (gnu installer)
   #:use-module (gnu services dbus)
   #:use-module (gnu services networking)
   #:use-module (gnu services shepherd)
@@ -233,8 +232,7 @@ You have been warned.  Thanks for being so brave.\x1b[0m
           (service kmscon-service-type
                    (kmscon-configuration
                     (virtual-terminal "tty1")
-                    (login-program (installer-program-launcher
-                                    newt-installer))))
+                    (login-program (installer-program))))
 
           (login-service (login-configuration
                           (motd motd)))

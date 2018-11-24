@@ -604,11 +604,7 @@ Info manual."
     (scheme-node "guix-system"
                  `((gnu system)
                    (gnu services)
-                   ,@(filter-map
-                      (match-lambda
-                        (('gnu 'system 'install) #f)
-                        (name name))
-                      (scheme-modules* source "gnu/system"))
+                   ,@(scheme-modules* source "gnu/system")
                    ,@(scheme-modules* source "gnu/services"))
                  (list *core-package-modules* *package-modules*
                        *extra-modules* *core-modules*)
@@ -616,7 +612,9 @@ Info manual."
                  #:extra-files
                  (append (file-imports source "gnu/system/examples"
                                        (const #t))
-
+                         ;; All the installer code is on the build-side.
+                         (file-imports source "gnu/installer/"
+                                       (const #t))
                          ;; Build-side code that we don't build.  Some of
                          ;; these depend on guile-rsvg, the Shepherd, etc.
                          (file-imports source "gnu/build" (const #t)))

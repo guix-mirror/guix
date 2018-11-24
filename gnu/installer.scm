@@ -17,95 +17,282 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu installer)
-  #:use-module (guix discovery)
-  #:use-module (guix records)
+  #:use-module (guix packages)
+  #:use-module (guix gexp)
+  #:use-module (guix modules)
+  #:use-module (guix utils)
   #:use-module (guix ui)
+  #:use-module ((guix self) #:select (make-config.scm))
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages connman)
+  #:use-module (gnu packages guile)
+  #:autoload   (gnu packages gnupg) (guile-gcrypt)
+  #:use-module (gnu packages iso-codes)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages package-management)
+  #:use-module (gnu packages xorg)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
-  #:export (<installer>
-            installer
-            make-installer
-            installer?
-            installer-name
-            installer-modules
-            installer-init
-            installer-exit
-            installer-exit-error
-            installer-keymap-page
-            installer-locale-page
-            installer-menu-page
-            installer-network-page
-            installer-timezone-page
-            installer-hostname-page
-            installer-user-page
-            installer-welcome-page
+  #:export (installer-program))
 
-            %installers
-            lookup-installer-by-name))
+(define not-config?
+  ;; Select (guix …) and (gnu …) modules, except (guix config).
+  (match-lambda
+    (('guix 'config) #f)
+    (('guix rest ...) #t)
+    (('gnu rest ...) #t)
+    (rest #f)))
 
-
-;;;
-;;; Installer record.
-;;;
+(define* (build-compiled-file name locale-builder)
+  "Return a file-like object that evalutes the gexp LOCALE-BUILDER and store
+its result in the scheme file NAME. The derivation will also build a compiled
+version of this file."
+  (define set-utf8-locale
+    #~(begin
+        (setenv "LOCPATH"
+                #$(file-append glibc-utf8-locales "/lib/locale/"
+                               (version-major+minor
+                                (package-version glibc-utf8-locales))))
+        (setlocale LC_ALL "en_US.utf8")))
 
-;; The <installer> record contains pages that will be run to prompt the user
-;; for the system configuration. The goal of the installer is to produce a
-;; complete <operating-system> record and install it.
+  (define builder
+    (with-extensions (list guile-json)
+      (with-imported-modules (source-module-closure
+                              '((gnu installer locale)))
+        #~(begin
+            (use-modules (gnu installer locale))
 
-(define-record-type* <installer>
-  installer make-installer
-  installer?
-  ;; symbol
-  (name installer-name)
-  ;; list of installer modules
-  (modules installer-modules)
-  ;; procedure: void -> void
-  (init installer-init)
-  ;; procedure: void -> void
-  (exit installer-exit)
-  ;; procedure (key arguments) -> void
-  (exit-error installer-exit-error)
-  ;; procedure (#:key models layouts) -> (list model layout variant)
-  (keymap-page installer-keymap-page)
-  ;; procedure: (#:key supported-locales iso639-languages iso3166-territories)
-  ;; -> glibc-locale
-  (locale-page installer-locale-page)
-  ;; procedure: (steps) -> step-id
-  (menu-page installer-menu-page)
-  ;; procedure void -> void
-  (network-page installer-network-page)
-  ;; procedure (zonetab) -> posix-timezone
-  (timezone-page installer-timezone-page)
-  ;; procedure void -> void
-  (hostname-page installer-hostname-page)
-  ;; procedure void -> void
-  (user-page installer-user-page)
-  ;; procedure (logo) -> void
-  (welcome-page installer-welcome-page))
+            ;; The locale files contain non-ASCII characters.
+            #$set-utf8-locale
 
-
-;;;
-;;; Installers.
-;;;
+            (mkdir #$output)
+            (let ((locale-file
+                   (string-append #$output "/" #$name ".scm"))
+                  (locale-compiled-file
+                   (string-append #$output "/" #$name ".go")))
+              (call-with-output-file locale-file
+                (lambda (port)
+                  (write #$locale-builder port)))
+              (compile-file locale-file
+                            #:output-file locale-compiled-file))))))
+  (computed-file name builder))
 
-(define (installer-top-modules)
-  "Return the list of installer modules."
-  (all-modules (map (lambda (entry)
-                      `(,entry . "gnu/installer"))
-                    %load-path)
-               #:warn warn-about-load-error))
+(define apply-locale
+  ;; Install the specified locale.
+  #~(lambda (locale-name)
+      (false-if-exception
+       (setlocale LC_ALL locale-name))))
 
-(define %installers
-  ;; The list of publically-known installers.
-  (delay (fold-module-public-variables (lambda (obj result)
-                                         (if (installer? obj)
-                                             (cons obj result)
-                                             result))
-                                       '()
-                                       (installer-top-modules))))
+(define* (compute-locale-step #:key
+                              locales-name
+                              iso639-languages-name
+                              iso3166-territories-name)
+  "Return a gexp that run the locale-page of INSTALLER, and install the
+selected locale. The list of locales, languages and territories passed to
+locale-page are computed in derivations named respectively LOCALES-NAME,
+ISO639-LANGUAGES-NAME and ISO3166-TERRITORIES-NAME. Those lists are compiled,
+so that when the installer is run, all the lengthy operations have already
+been performed at build time."
+  (define (compiled-file-loader file name)
+    #~(load-compiled
+       (string-append #$file "/" #$name ".go")))
 
-(define (lookup-installer-by-name name)
-  "Return the installer called NAME."
-  (or (find (lambda (installer)
-              (eq? name (installer-name installer)))
-            (force %installers))
-      (leave (G_ "~a: no such installer~%") name)))
+  (let* ((supported-locales #~(supported-locales->locales
+                               #$(local-file "installer/aux-files/SUPPORTED")))
+         (iso-codes #~(string-append #$iso-codes "/share/iso-codes/json/"))
+         (iso639-3 #~(string-append #$iso-codes "iso_639-3.json"))
+         (iso639-5 #~(string-append #$iso-codes "iso_639-5.json"))
+         (iso3166 #~(string-append #$iso-codes "iso_3166-1.json"))
+         (locales-file (build-compiled-file
+                        locales-name
+                        #~`(quote ,#$supported-locales)))
+         (iso639-file (build-compiled-file
+                       iso639-languages-name
+                       #~`(quote ,(iso639->iso639-languages
+                                   #$supported-locales
+                                   #$iso639-3 #$iso639-5))))
+         (iso3166-file (build-compiled-file
+                        iso3166-territories-name
+                        #~`(quote ,(iso3166->iso3166-territories #$iso3166))))
+         (locales-loader (compiled-file-loader locales-file
+                                               locales-name))
+         (iso639-loader (compiled-file-loader iso639-file
+                                              iso639-languages-name))
+         (iso3166-loader (compiled-file-loader iso3166-file
+                                               iso3166-territories-name)))
+    #~(lambda (current-installer)
+        (let ((result
+               ((installer-locale-page current-installer)
+                #:supported-locales #$locales-loader
+                #:iso639-languages #$iso639-loader
+                #:iso3166-territories #$iso3166-loader)))
+          (#$apply-locale result)))))
+
+(define apply-keymap
+  ;; Apply the specified keymap.
+  #~(match-lambda
+      ((model layout variant)
+       (kmscon-update-keymap model layout variant))))
+
+(define* (compute-keymap-step)
+  "Return a gexp that runs the keymap-page of INSTALLER and install the
+selected keymap."
+  #~(lambda (current-installer)
+      (let ((result
+             (call-with-values
+                 (lambda ()
+                   (xkb-rules->models+layouts
+                    (string-append #$xkeyboard-config
+                                   "/share/X11/xkb/rules/base.xml")))
+               (lambda (models layouts)
+                 ((installer-keymap-page current-installer)
+                  #:models models
+                  #:layouts layouts)))))
+        (#$apply-keymap result))))
+
+(define (installer-steps)
+  (let ((locale-step (compute-locale-step
+                      #:locales-name "locales"
+                      #:iso639-languages-name "iso639-languages"
+                      #:iso3166-territories-name "iso3166-territories"))
+        (keymap-step (compute-keymap-step))
+        (timezone-data #~(string-append #$tzdata
+                                        "/share/zoneinfo/zone.tab")))
+    #~(lambda (current-installer)
+        (list
+         ;; Welcome the user and ask him to choose between manual installation
+         ;; and graphical install.
+         (installer-step
+          (id 'welcome)
+          (compute (lambda _
+                     ((installer-welcome-page current-installer)
+                      #$(local-file "installer/aux-files/logo.txt")))))
+
+         ;; Ask the user to choose a locale among those supported by the glibc.
+         ;; Install the selected locale right away, so that the user may
+         ;; benefit from any available translation for the installer messages.
+         (installer-step
+          (id 'locale)
+          (description (G_ "Locale selection"))
+          (compute (lambda _
+                     (#$locale-step current-installer))))
+
+         ;; Ask the user to select a timezone under glibc format.
+         (installer-step
+          (id 'timezone)
+          (description (G_ "Timezone selection"))
+          (compute (lambda _
+                     ((installer-timezone-page current-installer)
+                      #$timezone-data))))
+
+         ;; The installer runs in a kmscon virtual terminal where loadkeys
+         ;; won't work. kmscon uses libxkbcommon as a backend for keyboard
+         ;; input. It is possible to update kmscon current keymap by sending it
+         ;; a keyboard model, layout and variant, in a somehow similar way as
+         ;; what is done with setxkbmap utility.
+         ;;
+         ;; So ask for a keyboard model, layout and variant to update the
+         ;; current kmscon keymap.
+         (installer-step
+          (id 'keymap)
+          (description (G_ "Keyboard mapping selection"))
+          (compute (lambda _
+                     (#$keymap-step current-installer))))
+
+         ;; Ask the user to input a hostname for the system.
+         (installer-step
+          (id 'hostname)
+          (description (G_ "Hostname selection"))
+          (compute (lambda _
+                     ((installer-hostname-page current-installer)))))
+
+         ;; Provide an interface above connmanctl, so that the user can select
+         ;; a network susceptible to acces Internet.
+         (installer-step
+          (id 'network)
+          (description (G_ "Network selection"))
+          (compute (lambda _
+                     ((installer-network-page current-installer)))))
+
+         ;; Prompt for users (name, group and home directory).
+         (installer-step
+          (id 'hostname)
+          (description (G_ "User selection"))
+          (compute (lambda _
+                     ((installer-user-page current-installer)))))))))
+
+(define (installer-program)
+  "Return a file-like object that runs the given INSTALLER."
+  (define init-gettext
+    ;; Initialize gettext support, so that installer messages can be
+    ;; translated.
+    #~(begin
+        (bindtextdomain "guix" (string-append #$guix "/share/locale"))
+        (textdomain "guix")))
+
+  (define set-installer-path
+    ;; Add the specified binary to PATH for later use by the installer.
+    #~(let* ((inputs
+              '#$(append (list bash connman shadow)
+                         (map canonical-package (list coreutils)))))
+        (with-output-to-port (%make-void-port "w")
+          (lambda ()
+            (set-path-environment-variable "PATH" '("bin" "sbin") inputs)))))
+
+  (define steps (installer-steps))
+
+  (define installer-builder
+    (with-extensions (list guile-gcrypt guile-newt guile-json)
+      (with-imported-modules `(,@(source-module-closure
+                                  '((gnu installer newt)
+                                    (guix build utils))
+                                  #:select? not-config?)
+                               ((guix config) => ,(make-config.scm)))
+        #~(begin
+            (use-modules (gnu installer record)
+                         (gnu installer keymap)
+                         (gnu installer steps)
+                         (gnu installer locale)
+                         (gnu installer newt)
+                         (guix i18n)
+                         (guix build utils)
+                         (ice-9 match))
+
+            ;; Set the default locale to install unicode support.
+            (setlocale LC_ALL "en_US.utf8")
+
+            ;; Initialize gettext support so that installers can use
+            ;; (guix i18n) module.
+            #$init-gettext
+
+            ;; Add some binaries used by the installers to PATH.
+            #$set-installer-path
+
+            (let ((current-installer newt-installer))
+              ((installer-init current-installer))
+
+              (catch #t
+                (lambda ()
+                  (run-installer-steps
+                   #:rewind-strategy 'menu
+                   #:menu-proc (installer-menu-page current-installer)
+                   #:steps (#$steps current-installer)))
+                (const #f)
+                (lambda (key . args)
+                  ((installer-exit-error current-installer) key args)
+
+                  ;; Be sure to call newt-finish, to restore the terminal into
+                  ;; its original state before printing the error report.
+                  (call-with-output-file "/tmp/error"
+                    (lambda (port)
+                      (display-backtrace (make-stack #t) port)
+                      (print-exception port
+                                       (stack-ref (make-stack #t) 1)
+                                       key args)))
+                  (primitive-exit 1))))
+            ((installer-exit current-installer))))))
+
+  (program-file "installer" installer-builder))

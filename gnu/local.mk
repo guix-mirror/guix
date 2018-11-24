@@ -567,7 +567,7 @@ if ENABLE_INSTALLER
 
 GNU_SYSTEM_MODULES +=                           \
   %D%/installer.scm      			\
-  %D%/installer/build-installer.scm		\
+  %D%/installer/record.scm		        \
   %D%/installer/connman.scm			\
   %D%/installer/keymap.scm			\
   %D%/installer/locale.scm			\
@@ -587,6 +587,11 @@ GNU_SYSTEM_MODULES +=                           \
   %D%/installer/newt/utils.scm			\
   %D%/installer/newt/welcome.scm		\
   %D%/installer/newt/wifi.scm	
+
+installerdir = $(guilemoduledir)/%D%/installer
+dist_installer_DATA =				\
+  %D%/installer/aux-files/logo.txt	        \
+  %D%/installer/aux-files/SUPPORTED
 
 endif ENABLE_INSTALLER
 
