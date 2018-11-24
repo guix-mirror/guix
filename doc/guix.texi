@@ -9727,9 +9727,9 @@ environment variable---in addition to the per-user profiles
 provides all the tools one would expect for basic user and administrator
 tasks---including the GNU Core Utilities, the GNU Networking Utilities,
 the GNU Zile lightweight text editor, @command{find}, @command{grep},
-etc.  The example above adds GNU@tie{}Screen and OpenSSH to those,
-taken from the @code{(gnu packages screen)} and @code{(gnu packages ssh)}
-modules (@pxref{Package Modules}).  The
+etc.  The example above adds GNU@tie{}Screen to those,
+taken from the @code{(gnu packages screen)}
+module (@pxref{Package Modules}).  The
 @code{(list package output)} syntax can be used to add a specific output
 of a package:
 
