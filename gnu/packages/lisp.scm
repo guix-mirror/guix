@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -168,8 +169,7 @@
       (native-inputs
        `(("gcc" ,gcc-4.9)
          ("m4" ,m4)
-         ("texinfo" ,texinfo)
-         ("texlive" ,texlive)))
+         ("texinfo" ,texinfo)))
       (home-page "https://www.gnu.org/software/gcl/")
       (synopsis "A Common Lisp implementation")
       (description "GCL is an implementation of the Common Lisp language.  It
