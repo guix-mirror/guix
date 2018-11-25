@@ -9134,6 +9134,7 @@ graphviz.")
     (build-system python-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
+                  (ice-9 match)
                   (srfi srfi-26)
                   (guix build utils)
                   (guix build python-build-system))
@@ -9161,9 +9162,16 @@ graphviz.")
                       (setenv "LIBEV_EMBED" "false")
                       (setenv "CARES_EMBED" "false")
                       (setenv "EMBED" "false")
-                      (setenv "CPATH"
-                              (string-append (assoc-ref inputs "python-greenlet")
-                                             "/include/python3.7m"))
+
+                      (let ((greenlet (string-append
+                                       (assoc-ref inputs "python-greenlet")
+                                       "/include")))
+                        (match (scandir greenlet
+                                        (lambda (item)
+                                          (string-prefix? "python" item)))
+                          ((python)
+                           (setenv "CPATH"
+                                   (string-append greenlet "/" python)))))
                       #t))
                   (replace 'check
                     (lambda _
@@ -9197,10 +9205,27 @@ graphviz.")
     (description
      "gevent is a coroutine-based Python networking library that uses greenlet
 to provide a high-level synchronous API on top of the libev event loop.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-gevent))))))
 
 (define-public python2-gevent
-  (package-with-python2 python-gevent))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-gevent))))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'check 'skip-timer-test
+               (lambda _
+                 ;; XXX: Skip 'TestTimerResolution', which appears to be
+                 ;; unreliable.
+                 (substitute* "src/greentest/test__core_timer.py"
+                   (("not greentest.RUNNING_ON_CI") "False"))
+                 #t))))))
+      (native-inputs `(,@(package-native-inputs python-gevent)
+                       ("python-mock" ,python2-mock))))))
 
 (define-public python-fastimport
   (package
