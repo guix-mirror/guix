@@ -3658,3 +3658,51 @@ the abstraction and portability layer as thin as possible.")
 
 (define-public ecl-socket
   (sbcl-package->ecl-package sbcl-usocket))
+
+(define-public sbcl-s-xml
+  (package
+    (name "sbcl-s-xml")
+    (version "3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://common-lisp.net/project/s-xml/s-xml.tgz")
+       (sha256
+        (base32
+         "061qcr0dzshsa38s5ma4ay924cwak2nq9gy59dw6v9p0qb58nzjf"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://common-lisp.net/project/s-xml/")
+    (synopsis "Simple XML parser implemented in Common Lisp")
+    (description
+     "S-XML is a simple XML parser implemented in Common Lisp.  This XML
+parser implementation has the following features:
+
+@itemize
+@item It works (handling many common XML usages).
+@item It is very small (the core is about 700 lines of code, including
+comments and whitespace).
+@item It has a core API that is simple, efficient and pure functional, much
+like that from SSAX (see also http://ssax.sourceforge.net).
+@item It supports different DOM models: an XSML-based one, an LXML-based one
+and a classic xml-element struct based one.
+@item It is reasonably time and space efficient (internally avoiding garbage
+generatation as much as possible).
+@item It does support CDATA.
+@item It should support the same character sets as your Common Lisp
+implementation.
+@item It does support XML name spaces.
+@end itemize
+
+This XML parser implementation has the following limitations:
+
+@itemize
+@item It does not support any special tags (like processing instructions).
+@item It is not validating, even skips DTD's all together.
+@end itemize\n")
+    (license license:lgpl3+)))
+
+(define-public cl-s-xml
+  (sbcl-package->cl-source-package sbcl-s-xml))
+
+(define-public ecl-s-xml
+  (sbcl-package->ecl-package sbcl-s-xml))
