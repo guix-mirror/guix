@@ -3530,3 +3530,33 @@ Lisp, featuring:
 
 (define-public ecl-cl-markup
   (sbcl-package->ecl-package sbcl-cl-markup))
+
+(define-public sbcl-cl-css
+  (let ((commit "8fe654c8f0cf95b300718101cce4feb517f78e2f"))
+    (package
+      (name "sbcl-cl-css")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/inaimathi/cl-css/")
+               (commit commit)))
+         (file-name (git-file-name "cl-css" version))
+         (sha256
+          (base32
+           "1lc42zi2sw11fl2589sc19nr5sd2p0wy7wgvgwaggxa5f3ajhsmd"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/inaimathi/cl-css/")
+      (synopsis "Non-validating, inline CSS generator for Common Lisp")
+      (description
+       "This is a dead-simple, non validating, inline CSS generator for Common
+Lisp.  Its goals are axiomatic syntax, simple implementation to support
+portability, and boilerplate reduction in CSS.")
+      (license license:expat))))
+
+(define-public cl-css
+  (sbcl-package->cl-source-package sbcl-cl-css))
+
+(define-public ecl-cl-markup
+  (sbcl-package->ecl-package sbcl-cl-css))
