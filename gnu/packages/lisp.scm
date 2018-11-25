@@ -3623,3 +3623,20 @@ Lisp (from GBBopen project).")
 interface for as many Common Lisp implementations as possible, while keeping
 the abstraction and portability layer as thin as possible.")
       (license license:expat))))
+
+(define-public sbcl-usocket-server
+  (package
+    (inherit sbcl-usocket-boot0)
+    (name "sbcl-usocket-server")
+    (inputs
+     `(("usocket" ,sbcl-usocket-boot0)
+       ("portable-threads" ,sbcl-portable-threads)))
+    (arguments
+     '(#:asd-system-name "usocket-server"))
+    (synopsis "Universal socket library for Common Lisp (server side)")))
+
+(define-public cl-usocket-server
+  (sbcl-package->cl-source-package sbcl-usocket-server))
+
+(define-public ecl-socket-server
+  (sbcl-package->ecl-package sbcl-usocket-server))
