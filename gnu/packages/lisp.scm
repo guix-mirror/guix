@@ -3640,3 +3640,21 @@ the abstraction and portability layer as thin as possible.")
 
 (define-public ecl-socket-server
   (sbcl-package->ecl-package sbcl-usocket-server))
+
+(define-public sbcl-usocket
+  (package
+    (inherit sbcl-usocket-boot0)
+    (name "sbcl-usocket")
+    (arguments
+     ;; FIXME: Tests need network access?
+     `(#:tests? #f))
+    (native-inputs
+     ;; Testing only.
+     `(("usocket-server" ,sbcl-usocket-server)
+       ("rt" ,sbcl-rt)))))
+
+(define-public cl-usocket
+  (sbcl-package->cl-source-package sbcl-usocket))
+
+(define-public ecl-socket
+  (sbcl-package->ecl-package sbcl-usocket))
