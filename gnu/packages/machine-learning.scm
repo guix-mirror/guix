@@ -333,13 +333,15 @@ algorithm.")
        (uri (string-append
              "http://www.imbs-luebeck.de/imbs/sites/default/files/u59/"
              "randomjungle-" version ".tar_.gz"))
+       (patches (search-patches "randomjungle-disable-static-build.patch"))
        (sha256
         (base32
          "12c8rf30cla71swx2mf4ww9mfd8jbdw5lnxd7dxhyw1ygrvg6y4w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-boost="
+       (list "--disable-static"
+             (string-append "--with-boost="
                             (assoc-ref %build-inputs "boost")))
        #:phases
        (modify-phases %standard-phases

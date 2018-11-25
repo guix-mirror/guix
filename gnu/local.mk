@@ -1115,6 +1115,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/quilt-compat-getopt-fix-second-separator.patch	\
   %D%/packages/patches/quilt-compat-getopt-fix-option-with-nondigit-param.patch	\
   %D%/packages/patches/qtwebkit-pbutils-include.patch		\
+  %D%/packages/patches/randomjungle-disable-static-build.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
   %D%/packages/patches/raptor2-heap-overflow.patch		\
   %D%/packages/patches/ratpoison-shell.patch			\
