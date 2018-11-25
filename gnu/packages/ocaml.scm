@@ -59,6 +59,7 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages virtualization)
   #:use-module (gnu packages web-browsers)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -328,7 +329,7 @@ functional, imperative and object-oriented styles of programming.")
 (define-public opam
   (package
     (name "opam")
-    (version "2.0.0")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
               ;; Use the '-full' version, which includes all the dependencies.
@@ -340,7 +341,7 @@ functional, imperative and object-oriented styles of programming.")
                )
               (sha256
                (base32
-                "09gdpxiqmyr6z78l85d7pwhiwrycdi2xi1b2mafqr1sk9z5lzbcx"))))
+                "0z6r9qr4awcdn7wyrl5y5jm34jsjlnzd00py893f1hd0c6vg3xw1"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Sometimes, 'make -jX' would fail right after ./configure with
@@ -361,17 +362,29 @@ functional, imperative and object-oriented styles of programming.")
        #:phases (modify-phases %standard-phases
                  (add-before 'build 'pre-build
                    (lambda* (#:key inputs make-flags #:allow-other-keys)
-                     (let ((bash (assoc-ref inputs "bash")))
+                     (let ((bash (assoc-ref inputs "bash"))
+                           (bwrap (string-append (assoc-ref inputs "bubblewrap")
+                                                 "/bin/bwrap")))
                        (substitute* "src/core/opamSystem.ml"
                          (("\"/bin/sh\"")
-                          (string-append "\"" bash "/bin/sh\"")))
+                          (string-append "\"" bash "/bin/sh\""))
+                         (("getconf")
+                          (which "getconf")))
+                       ;; Use bwrap from the store directly.
+                       (substitute* "src/state/shellscripts/bwrap.sh"
+                         (("-v bwrap") (string-append "-v " bwrap))
+                         (("exec bwrap") (string-append "exec " bwrap)))
+                       (substitute* "src/client/opamInitDefaults.ml"
+                         (("\"bwrap\"") (string-append "\"" bwrap "\"")))
                        ;; Build dependencies
-                       (zero? (apply system* "make" "lib-ext" make-flags)))))
+                       (apply invoke "make" "lib-ext" make-flags)
+                       #t)))
                  (add-before 'check 'pre-check
                    (lambda _
                      (setenv "HOME" (getcwd))
-                     (and (system "git config --global user.email guix@gnu.org")
-                          (system "git config --global user.name Guix")))))))
+                     (invoke "git" "config" "--global" "user.email" "guix@gnu.org")
+                     (invoke "git" "config" "--global" "user.name" "Guix")
+                     #t)))))
     (native-inputs
      `(("git" ,git)                               ;for the tests
        ("python" ,python)                         ;for the tests
@@ -379,7 +392,8 @@ functional, imperative and object-oriented styles of programming.")
     (inputs
      `(("ocaml" ,ocaml)
        ("ncurses" ,ncurses)
-       ("curl" ,curl)))
+       ("curl" ,curl)
+       ("bubblewrap" ,bubblewrap)))
     (home-page "http://opam.ocamlpro.com/")
     (synopsis "Package manager for OCaml")
     (description
