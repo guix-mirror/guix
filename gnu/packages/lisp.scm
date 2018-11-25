@@ -3706,3 +3706,30 @@ This XML parser implementation has the following limitations:
 
 (define-public ecl-s-xml
   (sbcl-package->ecl-package sbcl-s-xml))
+
+(define-public sbcl-s-xml-rpc
+  (package
+    (name "sbcl-s-xml-rpc")
+    (version "7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://common-lisp.net/project/s-xml-rpc/s-xml-rpc.tgz")
+       (sha256
+        (base32
+         "02z7k163d51v0pzk8mn1xb6h5s6x64gjqkslhwm3a5x26k2gfs11"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("s-xml" ,sbcl-s-xml)))
+    (home-page "https://common-lisp.net/project/s-xml-rpc/")
+    (synopsis "Implementation of XML-RPC in Common Lisp for both client and server")
+    (description
+     "S-XML-RPC is an implementation of XML-RPC in Common Lisp for both
+client and server.")
+    (license license:lgpl3+)))
+
+(define-public cl-s-xml-rpc
+  (sbcl-package->cl-source-package sbcl-s-xml-rpc))
+
+(define-public ecl-s-xml-rpc
+  (sbcl-package->ecl-package sbcl-s-xml-rpc))
