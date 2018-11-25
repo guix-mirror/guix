@@ -3494,3 +3494,39 @@ Lisp, featuring:
 
 (define-public ecl-lparallel
   (sbcl-package->ecl-package sbcl-lparallel))
+
+(define-public sbcl-cl-markup
+  (let ((commit "e0eb7debf4bdff98d1f49d0f811321a6a637b390"))
+    (package
+      (name "sbcl-cl-markup")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/arielnetworks/cl-markup/")
+               (commit commit)))
+         (file-name (git-file-name "cl-markup" version))
+         (sha256
+          (base32
+           "10l6k45971dl13fkdmva7zc6i453lmq9j4xax2ci6pjzlc6xjhp7"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/arielnetworks/cl-markup/")
+      (synopsis "Markup generation library for Common Lisp")
+      (description
+       "A modern markup generation library for Common Lisp that features:
+
+@itemize
+@item Fast (even faster through compiling the code)
+@item Safety
+@item Support for multiple document types (markup, xml, html, html5, xhtml)
+@item Output with doctype
+@item Direct output to stream
+@end itemize\n")
+      (license license:lgpl3+))))
+
+(define-public cl-markup
+  (sbcl-package->cl-source-package sbcl-cl-markup))
+
+(define-public ecl-cl-markup
+  (sbcl-package->ecl-package sbcl-cl-markup))
