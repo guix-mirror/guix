@@ -3056,6 +3056,8 @@ include_dirs = ~a/include:~a/include
                            (assoc-ref inputs "openblas")
                            (assoc-ref inputs "lapack"))))
                #t))))))
+    (native-inputs
+     `(("python2-nose" ,python2-nose)))
     (description "NumPy is the fundamental package for scientific computing
 with Python.  It contains among other things: a powerful N-dimensional array
 object, sophisticated (broadcasting) functions, tools for integrating C/C++
