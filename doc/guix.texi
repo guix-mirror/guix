@@ -5060,7 +5060,7 @@ a derivation is the @code{derivation} procedure:
   [#:system (%current-system)] [#:references-graphs #f] @
   [#:allowed-references #f] [#:disallowed-references #f] @
   [#:leaked-env-vars #f] [#:local-build? #f] @
-  [#:substitutable? #t]
+  [#:substitutable? #t] [#:properties '()]
 Build a derivation with the given arguments, and return the resulting
 @code{<derivation>} object.
 
@@ -5097,6 +5097,9 @@ When @var{substitutable?} is false, declare that substitutes of the
 derivation's output should not be used (@pxref{Substitutes}).  This is
 useful, for instance, when building packages that capture details of the
 host CPU instruction set.
+
+@var{properties} must be an association list describing ``properties'' of the
+derivation.  It is kept as-is, uninterpreted, in the derivation.
 @end deffn
 
 @noindent
@@ -5790,7 +5793,8 @@ information about monads.)
        [#:leaked-env-vars #f] @
        [#:script-name (string-append @var{name} "-builder")] @
        [#:deprecation-warnings #f] @
-       [#:local-build? #f] [#:substitutable? #t] [#:guile-for-build #f]
+       [#:local-build? #f] [#:substitutable? #t] @
+       [#:properties '()] [#:guile-for-build #f]
 Return a derivation @var{name} that runs @var{exp} (a gexp) with
 @var{guile-for-build} (a derivation) on @var{system}; @var{exp} is
 stored in a file called @var{script-name}.  When @var{target} is true,

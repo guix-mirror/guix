@@ -631,6 +631,7 @@ names and file names suitable for the #:allowed-references argument to
                            allowed-references disallowed-references
                            leaked-env-vars
                            local-build? (substitutable? #t)
+                           (properties '())
 
                            ;; TODO: This parameter is transitional; it's here
                            ;; to avoid a full rebuild.  Remove it on the next
@@ -800,7 +801,8 @@ The other arguments are as for 'derivation'."
                       #:disallowed-references disallowed
                       #:leaked-env-vars leaked-env-vars
                       #:local-build? local-build?
-                      #:substitutable? substitutable?))))
+                      #:substitutable? substitutable?
+                      #:properties properties))))
 
 (define* (gexp-inputs exp #:key native?)
   "Return the input list for EXP.  When NATIVE? is true, return only native

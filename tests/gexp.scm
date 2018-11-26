@@ -476,7 +476,15 @@
     (return (and (string=? (readlink (string-append out "/foo")) guile)
                  (string=? (readlink out2) file)
                  (equal? refs (list (dirname (dirname guile))))
-                 (equal? refs2 (list file))))))
+                 (equal? refs2 (list file))
+                 (null? (derivation-properties drv))))))
+
+(test-assertm "gexp->derivation properties"
+  (mlet %store-monad ((drv (gexp->derivation "foo"
+                                             #~(mkdir #$output)
+                                             #:properties '((type . test)))))
+    (return (equal? '((type . test))
+                    (derivation-properties drv)))))
 
 (test-assertm "gexp->derivation vs. grafts"
   (mlet* %store-monad ((graft?  (set-grafting #f))
