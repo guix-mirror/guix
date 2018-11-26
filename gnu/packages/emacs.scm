@@ -71,6 +71,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages cmake)
@@ -7976,6 +7977,35 @@ object oriented and highly extensible.  Creating a new polymode typically
 takes only a few lines of code.  Polymode also provides extensible facilities
 for external literate programming tools for exporting, weaving and tangling.")
     (license license:gpl3+)))
+
+(define-public emacs-polymode-ansible
+  (let ((commit "b26094d029e25dc797b94254f797e7807a57e4c8"))
+    (package
+      (name "emacs-polymode-ansible")
+      ;; No upstream version release yet.
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/mavit/poly-ansible")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "055shddqibib3hx2ykwdz910nrqws40cd407mq946l2bf6v87gj6"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ansible-doc" ,emacs-ansible-doc)
+         ("emacs-jinja2-mode" ,emacs-jinja2-mode)
+         ("emacs-polymode" ,emacs-polymode)
+         ("emacs-yaml-mode" ,emacs-yaml-mode)))
+      (properties '((upstream-name . "poly-ansible")))
+      (home-page "https://gitlab.com/mavit/poly-ansible/")
+      (synopsis "Polymode for Ansible - Jinja2 in YAML")
+      (description
+       "Edit YAML files for Ansible containing embedded Jinja2 templating.")
+      (license license:gpl3+))))
 
 (define-public eless
   (package
