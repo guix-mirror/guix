@@ -56,6 +56,7 @@
             open-inferior
             close-inferior
             inferior-eval
+            inferior-eval-with-store
             inferior-object?
 
             inferior-packages
@@ -402,6 +403,48 @@ input/output ports.)"
        (unless (port-closed? client)
          (loop))))))
 
+(define (inferior-eval-with-store inferior store code)
+  "Evaluate CODE in INFERIOR, passing it STORE as its argument.  CODE must
+thus be the code of a one-argument procedure that accepts a store."
+  ;; Create a named socket in /tmp and let INFERIOR connect to it and use it
+  ;; as its store.  This ensures the inferior uses the same store, with the
+  ;; same options, the same per-session GC roots, etc.
+  (call-with-temporary-directory
+   (lambda (directory)
+     (chmod directory #o700)
+     (let* ((name     (string-append directory "/inferior"))
+            (socket   (socket AF_UNIX SOCK_STREAM 0))
+            (major    (nix-server-major-version store))
+            (minor    (nix-server-minor-version store))
+            (proto    (logior major minor)))
+       (bind socket AF_UNIX name)
+       (listen socket 1024)
+       (send-inferior-request
+        `(let ((proc   ,code)
+               (socket (socket AF_UNIX SOCK_STREAM 0)))
+           (connect socket AF_UNIX ,name)
+
+           ;; 'port->connection' appeared in June 2018 and we can hardly
+           ;; emulate it on older versions.  Thus fall back to
+           ;; 'open-connection', at the risk of talking to the wrong daemon or
+           ;; having our build result reclaimed (XXX).
+           (let ((store (if (defined? 'port->connection)
+                            (port->connection socket #:version ,proto)
+                            (open-connection))))
+             (dynamic-wind
+               (const #t)
+               (lambda ()
+                 (proc store))
+               (lambda ()
+                 (close-connection store)
+                 (close-port socket)))))
+        inferior)
+       (match (accept socket)
+         ((client . address)
+          (proxy client (nix-server-socket store))))
+       (close-port socket)
+       (read-inferior-response inferior)))))
+
 (define* (inferior-package-derivation store package
                                       #:optional
                                       (system (%current-system))
@@ -409,48 +452,21 @@ input/output ports.)"
   "Return the derivation for PACKAGE, an inferior package, built for SYSTEM
 and cross-built for TARGET if TARGET is true.  The inferior corresponding to
 PACKAGE must be live."
-  ;; Create a named socket in /tmp and let the inferior of PACKAGE connect to
-  ;; it and use it as its store.  This ensures the inferior uses the same
-  ;; store, with the same options, the same per-session GC roots, etc.
-  (call-with-temporary-directory
-   (lambda (directory)
-     (chmod directory #o700)
-     (let* ((name     (string-append directory "/inferior"))
-            (socket   (socket AF_UNIX SOCK_STREAM 0))
-            (inferior (inferior-package-inferior package))
-            (major    (nix-server-major-version store))
-            (minor    (nix-server-minor-version store))
-            (proto    (logior major minor)))
-       (bind socket AF_UNIX name)
-       (listen socket 1024)
-       (send-inferior-request
-        `(let ((socket (socket AF_UNIX SOCK_STREAM 0)))
-           (connect socket AF_UNIX ,name)
+  (define proc
+    `(lambda (store)
+       (let* ((package (hashv-ref %package-table
+                                  ,(inferior-package-id package)))
+              (drv     ,(if target
+                            `(package-cross-derivation store package
+                                                       ,target
+                                                       ,system)
+                            `(package-derivation store package
+                                                 ,system))))
+         (derivation-file-name drv))))
 
-           ;; 'port->connection' appeared in June 2018 and we can hardly
-           ;; emulate it on older versions.  Thus fall back to
-           ;; 'open-connection', at the risk of talking to the wrong daemon or
-           ;; having our build result reclaimed (XXX).
-           (let* ((store   (if (defined? 'port->connection)
-                               (port->connection socket #:version ,proto)
-                               (open-connection)))
-                  (package (hashv-ref %package-table
-                                      ,(inferior-package-id package)))
-                  (drv     ,(if target
-                                `(package-cross-derivation store package
-                                                           ,target
-                                                           ,system)
-                                `(package-derivation store package
-                                                     ,system))))
-             (close-connection store)
-             (close-port socket)
-             (derivation-file-name drv)))
-        inferior)
-       (match (accept socket)
-         ((client . address)
-          (proxy client (nix-server-socket store))))
-       (close-port socket)
-       (read-derivation-from-file (read-inferior-response inferior))))))
+  (and=> (inferior-eval-with-store (inferior-package-inferior package) store
+                                   proc)
+         read-derivation-from-file))
 
 (define inferior-package->derivation
   (store-lift inferior-package-derivation))

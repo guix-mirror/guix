@@ -157,6 +157,15 @@
     (close-inferior inferior)
     result))
 
+(test-equal "inferior-eval-with-store"
+  (add-text-to-store %store "foo" "Hello, world!")
+  (let* ((inferior (open-inferior %top-builddir
+                                  #:command "scripts/guix")))
+    (inferior-eval-with-store inferior %store
+                              '(lambda (store)
+                                 (add-text-to-store store "foo"
+                                                    "Hello, world!")))))
+
 (test-equal "inferior-package-derivation"
   (map derivation-file-name
        (list (package-derivation %store %bootstrap-guile "x86_64-linux")
