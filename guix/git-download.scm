@@ -60,7 +60,7 @@
 (define (git-package)
   "Return the default Git package."
   (let ((distro (resolve-interface '(gnu packages version-control))))
-    (module-ref distro 'git)))
+    (module-ref distro 'git-minimal)))
 
 (define* (git-fetch ref hash-algo hash
                     #:optional name
