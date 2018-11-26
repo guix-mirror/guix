@@ -39,6 +39,7 @@
   #:use-module (guix build-system r)
   #:use-module (guix git-download)
   #:use-module (gnu packages)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
@@ -60,11 +61,13 @@
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
@@ -1208,3 +1211,41 @@ exec ~a ~a/~a \"$@\"~%"
 based on the Kaldi toolkit and the GStreamer framework and implemented in
 Python.")
       (license license:bsd-2))))
+
+(define-public grpc
+  (package
+    (name "grpc")
+    (version "1.16.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/grpc/grpc.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1jimqz3115f9pli5w6ik9wi7mjc7ix6y7yrq4a1ab9fc3dalj7p2"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; no test target
+       #:configure-flags
+       (list "-DgRPC_ZLIB_PROVIDER=package"
+             "-DgRPC_CARES_PROVIDER=package"
+             "-DgRPC_SSL_PROVIDER=package"
+             "-DgRPC_PROTOBUF_PROVIDER=package")))
+    (inputs
+     `(("c-ares" ,c-ares-next)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("protobuf" ,protobuf-next)
+       ("python" ,python-wrapper)))
+    (home-page "https://grpc.io")
+    (synopsis "High performance universal RPC framework")
+    (description "gRPC is a modern open source high performance @dfn{Remote
+Procedure Call} (RPC) framework that can run in any environment.  It can
+efficiently connect services in and across data centers with pluggable support
+for load balancing, tracing, health checking and authentication.  It is also
+applicable in last mile of distributed computing to connect devices, mobile
+applications and browsers to backend services.")
+    (license license:asl2.0)))
