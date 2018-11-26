@@ -2310,11 +2310,11 @@ follows a traditional multi-track tape recorder control paradigm.")
          (modify-phases %standard-phases
            (add-after 'unpack 'remove-sse-flags
              (lambda* (#:key system #:allow-other-keys)
-               (when (not (or (string-prefix? "x86_64" system)
-                              (string-prefix? "i686" system)))
+               (unless (or (string-prefix? "x86_64" system)
+                              (string-prefix? "i686" system))
                      (substitute* "wscript"
-                       (("'-msse', '-mfpmath=sse', ") ""))
-                     #t))))
+                       (("'-msse', '-mfpmath=sse', ") "")))
+               #t)))
          #:tests? #f)) ; no tests
       (inputs
        `(("lv2" ,lv2)
