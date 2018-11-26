@@ -235,7 +235,26 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
                           (substitute* "lib/Driver/ToolChains.cpp"
                             (("@GLIBC_LIBDIR@")
                              (string-append libc "/lib")))))
-                       #t))))))
+                       #t)))
+                  (add-after 'install 'install-clean-up-/share/clang
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (compl-dir (string-append
+                                         out "/etc/bash_completion.d")))
+                        (with-directory-excursion (string-append out
+                                                                 "/share/clang")
+                          ;; Delete extensions for proprietary text editors.
+                          (delete-file "clang-format-bbedit.applescript")
+                          (delete-file "clang-format-sublime.py")
+                          ;; Delete Emacs extensions: see their respective Emacs
+                          ;; Guix package instead.
+                          (delete-file "clang-rename.el")
+                          (delete-file "clang-format.el")
+                          ;; Install bash completion.
+                          (mkdir-p compl-dir)
+                          (rename-file "bash-autocomplete.sh"
+                                       (string-append compl-dir "/clang"))))
+                      #t)))))
 
     ;; Clang supports the same environment variables as GCC.
     (native-search-paths
