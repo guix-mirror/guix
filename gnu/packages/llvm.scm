@@ -460,3 +460,25 @@ code analysis tools.")
 to fix its formatting.  @code{clang-format} is a tool that formats
 C/C++/Obj-C code according to a set of style options, see
 @url{http://clang.llvm.org/docs/ClangFormatStyleOptions.html}.")))
+
+(define-public emacs-clang-rename
+  (package
+    (inherit clang)
+    (name "emacs-clang-rename")
+    (build-system emacs-build-system)
+    (inputs
+     `(("clang" ,clang)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "clang")))
+               (copy-file "tools/clang-rename/clang-rename.el" "clang-rename.el")
+               (emacs-substitute-variables "clang-rename.el"
+                 ("clang-rename-binary"
+                  (string-append clang "/bin/clang-rename"))))
+             #t)))))
+    (synopsis "Rename every occurrence of a symbol using clang-rename")
+    (description "This package renames every occurrence of a symbol at point
+using @code{clang-rename}.")))
