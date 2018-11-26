@@ -45,6 +45,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
@@ -1621,6 +1622,34 @@ handles configuration management, application deployment, cloud provisioning,
 ad hoc task execution, and multinode orchestration---including trivializing
 things like zero-downtime rolling updates with load balancers.")
     (license license:gpl3+)))
+
+(define-public emacs-ansible-doc
+  (let ((commit "86083a7bb2ed0468ca64e52076b06441a2f8e9e0"))
+    (package
+      (name "emacs-ansible-doc")
+      (version (git-version "0.4" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lunaryorn/ansible-doc.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0lap404ch74w99n3xip176jr42b38xhyzkfnkyqg0g3wk2cd3aq8"))))
+      (build-system emacs-build-system)
+      ;; Unmaintained by upstream.
+      (home-page "https://github.com/lunaryorn/ansible-doc.el")
+      (synopsis "Ansible documentation for Emacs")
+      (description
+       "This package provides an Ansible documentation for GNU Emacs.
+
+@code{ansible-doc} allows you to view the documentation of an Ansible
+module and @code{ansible-doc-mode} minor mode adds documentation
+lookup to YAML Mode.  You could enable the mode with @code{(add-hook
+'yaml-mode-hook #'ansible-doc-mode)}.")
+      (license license:gpl3+))))
 
 (define-public cpulimit
   (package
