@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,7 +51,8 @@
 
 (test-begin "grafts")
 
-(test-assert "graft-derivation, grafted item is a direct dependency"
+(test-equal "graft-derivation, grafted item is a direct dependency"
+  '((type . graft) (graft (count . 2)))
   (let* ((build `(begin
                    (mkdir %output)
                    (chdir %output)
@@ -76,14 +77,16 @@
                                             (origin %mkdir)
                                             (replacement two))))))
     (and (build-derivations %store (list grafted))
-         (let ((two     (derivation->output-path two))
-               (grafted (derivation->output-path grafted)))
+         (let ((properties (derivation-properties grafted))
+               (two        (derivation->output-path two))
+               (grafted    (derivation->output-path grafted)))
            (and (string=? (format #f "foo/~a/bar" two)
                           (call-with-input-file (string-append grafted "/text")
                             get-string-all))
                 (string=? (readlink (string-append grafted "/sh")) one)
                 (string=? (readlink (string-append grafted "/self"))
-                          grafted))))))
+                          grafted)
+                properties)))))
 
 (test-assert "graft-derivation, grafted item uses a different name"
   (let* ((build   `(begin
