@@ -22,6 +22,8 @@
 ;;; arguments and outputs an sexp of the jobs on standard output.
 
 (use-modules (guix store)
+             (guix git-download)
+             ((guix build utils) #:select (with-directory-excursion))
              (srfi srfi-19)
              (ice-9 match)
              (ice-9 pretty-print)
@@ -81,11 +83,6 @@ Otherwise return THING."
    ;; Load FILE, a Scheme file that defines Hydra jobs.
    (let ((port (current-output-port))
          (real-build-things build-things))
-     (save-module-excursion
-      (lambda ()
-        (set-current-module %user-module)
-        (primitive-load file)))
-
      (with-store store
        ;; Make sure we don't resort to substitutes.
        (set-build-options store
@@ -104,23 +101,37 @@ Otherwise return THING."
                    "'build-things' arguments: ~s~%" args)
            (apply real-build-things store args)))
 
-       ;; Call the entry point of FILE and print the resulting job sexp.
-       (pretty-print
-        (match ((module-ref %user-module
-                            (if (equal? cuirass? "cuirass")
-                                'cuirass-jobs
-                                'hydra-jobs))
-                store `((guix
-                         . ((file-name . ,%top-srcdir)))))
-          (((names . thunks) ...)
-           (map (lambda (job thunk)
-                  (format (current-error-port) "evaluating '~a'... " job)
-                  (force-output (current-error-port))
-                  (cons job
-                        (assert-valid-job job
-                                          (call-with-time-display thunk))))
-                names thunks)))
-        port))))
+       ;; Add %TOP-SRCDIR to the store with a proper Git predicate so we work
+       ;; from a clean checkout
+       (let ((source (add-to-store store "guix-source" #t
+                                   "sha256" %top-srcdir
+                                   #:select? (git-predicate %top-srcdir))))
+         (with-directory-excursion source
+           (save-module-excursion
+            (lambda ()
+              (set-current-module %user-module)
+              (format (current-error-port)
+                      "loading '~a' relative to '~a'...~%"
+                      file source)
+              (primitive-load file))))
+
+         ;; Call the entry point of FILE and print the resulting job sexp.
+         (pretty-print
+          (match ((module-ref %user-module
+                              (if (equal? cuirass? "cuirass")
+                                  'cuirass-jobs
+                                  'hydra-jobs))
+                  store `((guix
+                           . ((file-name . ,source)))))
+            (((names . thunks) ...)
+             (map (lambda (job thunk)
+                    (format (current-error-port) "evaluating '~a'... " job)
+                    (force-output (current-error-port))
+                    (cons job
+                          (assert-valid-job job
+                                            (call-with-time-display thunk))))
+                  names thunks)))
+          port)))))
   ((command _ ...)
    (format (current-error-port) "Usage: ~a FILE [cuirass]
 Evaluate the Hydra or Cuirass jobs defined in FILE.~%"
