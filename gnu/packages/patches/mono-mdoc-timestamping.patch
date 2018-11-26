@@ -1,0 +1,15 @@
+--- mono-4.4.1/mcs/class/monodoc/Monodoc/storage/ZipStorage.cs.orig	2018-11-26 22:16:25.008879747 +0100
++++ mono-4.4.1/mcs/class/monodoc/Monodoc/storage/ZipStorage.cs	2018-11-26 22:21:53.969770985 +0100
+@@ -74,6 +74,12 @@
+ 				id = GetNewCode ();
+ 
+ 			ZipEntry entry = new ZipEntry (id);
++			var SOURCE_DATE_EPOCH_string = Environment.GetEnvironmentVariable("SOURCE_DATE_EPOCH");
++			if (SOURCE_DATE_EPOCH_string != null)
++			{
++				var SOURCE_DATE_EPOCH = Convert.ToInt64(SOURCE_DATE_EPOCH_string);
++				entry.DateTime = new DateTime(SOURCE_DATE_EPOCH, DateTimeKind.Utc);
++			}
+ 			zipOutput.PutNextEntry (entry);
+ 		}
+ 
