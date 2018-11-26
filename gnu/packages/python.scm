@@ -9047,7 +9047,7 @@ own code, responding to click events and updating clock every second.")
              (setenv "PYTHONPATH"
                      (string-append (getcwd) "/build/lib:"
                                     (getenv "PYTHONPATH")))
-             (zero? (system* "py.test" "-vv" "tests" "README.rst")))))))
+             (invoke "py.test" "-vv" "tests" "README.rst"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-six" ,python-six)))
