@@ -624,7 +624,8 @@ assumed to be part of MODULES."
 
   (define *cli-modules*
     (scheme-node "guix-cli"
-                 (scheme-modules* source "/guix/scripts")
+                 (append (scheme-modules* source "/guix/scripts")
+                         `((gnu ci)))
                  (list *core-modules* *extra-modules*
                        *core-package-modules* *package-modules*
                        *system-modules*)

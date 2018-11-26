@@ -27,7 +27,8 @@
   #:use-module (guix derivations)
   #:use-module (guix monads)
   #:use-module (guix ui)
-  #:use-module ((guix licenses) #:select (gpl3+))
+  #:use-module ((guix licenses)
+                #:select (gpl3+ license? license-name))
   #:use-module ((guix utils) #:select (%current-system))
   #:use-module ((guix scripts system) #:select (read-operating-system))
   #:use-module ((guix scripts pack)
@@ -69,7 +70,16 @@
                                           #:graft? #f)))
       (description . ,(package-synopsis package))
       (long-description . ,(package-description package))
-      (license . ,(package-license package))
+
+      ;; XXX: Hydra ignores licenses that are not a <license> structure or a
+      ;; list thereof.
+      (license . ,(let loop ((license (package-license package)))
+                    (match license
+                      ((? license?)
+                       (license-name license))
+                      ((lst ...)
+                       (map loop license)))))
+
       (home-page . ,(package-home-page package))
       (maintainers . ("bug-guix@gnu.org"))
       (max-silent-time . ,(or (assoc-ref (package-properties package)
@@ -133,7 +143,7 @@ SYSTEM."
       (description . "Stand-alone QEMU image of the GNU system")
       (long-description . "This is a demo stand-alone QEMU image of the GNU
 system.")
-      (license . ,gpl3+)
+      (license . ,(license-name gpl3+))
       (max-silent-time . 600)
       (timeout . 3600)
       (home-page . ,%guix-home-page-url)
@@ -194,7 +204,7 @@ system.")
         (description . ,(format #f "GuixSD '~a' system test"
                                 (system-test-name test)))
         (long-description . ,(system-test-description test))
-        (license . ,gpl3+)
+        (license . ,(license-name gpl3+))
         (max-silent-time . 600)
         (timeout . 3600)
         (home-page . ,%guix-home-page-url)
@@ -217,7 +227,7 @@ system.")
       (description . "Stand-alone binary Guix tarball")
       (long-description . "This is a tarball containing binaries of Guix and
 all its dependencies, and ready to be installed on non-GuixSD distributions.")
-      (license . ,gpl3+)
+      (license . ,(license-name gpl3+))
       (home-page . ,%guix-home-page-url)
       (maintainers . ("bug-guix@gnu.org"))))
 

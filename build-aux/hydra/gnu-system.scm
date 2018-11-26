@@ -23,39 +23,56 @@
 ;;; tool.
 ;;;
 
-(use-modules (system base compile))
-
-(eval-when (expand load eval)
-
-  ;; Pre-load the compiler so we don't end up auto-compiling it.
-  (compile #t)
-
-  ;; Use our very own Guix modules.
-  (set! %fresh-auto-compile #t)
-
-  ;; Ignore .go files except for Guile's.  This is because our checkout in the
-  ;; store has mtime set to the epoch, and thus .go files look newer, even
-  ;; though they may not correspond.  Use 'reverse' so that /gnu/store/…-guile
-  ;; comes before /run/current-system/profile.
-  (set! %load-compiled-path
-    (list
-     (dirname (dirname (search-path (reverse %load-compiled-path)
-                                    "ice-9/boot-9.go")))))
-
-  (and=> (assoc-ref (current-source-location) 'filename)
-         (lambda (file)
-           (let ((dir (canonicalize-path
-                       (string-append (dirname file) "/../.."))))
-             (format (current-error-port) "prepending ~s to the load path~%"
-                     dir)
-             (set! %load-path (cons dir %load-path))))))
-
-(use-modules (gnu ci))
+(use-modules (guix inferior) (guix channels)
+             (guix)
+             (guix ui)
+             (srfi srfi-1)
+             (ice-9 match))
 
 ;; XXX: Debugging hack: since `hydra-eval-guile-jobs' redirects the output
 ;; port to the bit bucket, let us write to the error port instead.
 (setvbuf (current-error-port) _IOLBF)
 (set-current-output-port (current-error-port))
 
-;; Return the procedure from (gnu ci).
-hydra-jobs
+(define (hydra-jobs store arguments)
+  "Return a list of jobs where each job is a NAME/THUNK pair."
+  (define checkout
+    ;; Extract metadata about the 'guix' checkout.  Its key in ARGUMENTS may
+    ;; vary, so pick up the first one that's neither 'subset' nor 'systems'.
+    (any (match-lambda
+           ((key . value)
+            (and (not (memq key '(systems subset)))
+                 value)))
+         arguments))
+
+  (define commit
+    (assq-ref checkout 'revision))
+
+  (define source
+    (assq-ref checkout 'file-name))
+
+  (define instance
+    (checkout->channel-instance source #:commit commit))
+
+  (define derivation
+    ;; Compute the derivation of Guix for COMMIT.
+    (run-with-store store
+      (channel-instances->derivation (list instance))))
+
+  (show-what-to-build store (list derivation))
+  (build-derivations store (list derivation))
+
+  ;; Open an inferior for the just-built Guix.
+  (let ((inferior (open-inferior (derivation->output-path derivation))))
+    (inferior-eval '(use-modules (gnu ci) (ice-9 match)) inferior)
+
+    (map (match-lambda
+           ((name . fields)
+            ;; Hydra expects a thunk, so here it is.
+            (cons name (lambda () fields))))
+         (inferior-eval-with-store inferior store
+                                   `(lambda (store)
+                                      (map (match-lambda
+                                             ((name . thunk)
+                                              (cons name (thunk))))
+                                           (hydra-jobs store ',arguments)))))))
