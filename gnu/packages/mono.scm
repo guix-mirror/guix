@@ -56,6 +56,13 @@
            (lambda _ ;;* (#:key inputs #:allow-other-keys)
              ;; all tests under mcs/class fail trying to access $HOME
              (setenv "HOME" "/tmp")))
+         (add-after 'unpack 'fix-includes
+           (lambda _
+             ;; makedev is in <sys/sysmacros.h> now.  Include it.
+             (substitute* "mono/io-layer/processes.c"
+              (("#ifdef HAVE_SYS_MKDEV_H") "#if 1")
+              (("sys/mkdev.h") "sys/sysmacros.h"))
+             #t))
          (add-after 'unpack 'patch-tests
            (lambda _  ;;* (#:key inputs #:allow-other-keys)
              (substitute* "mono/tests/Makefile.in"
