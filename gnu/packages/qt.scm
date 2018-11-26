@@ -2175,7 +2175,12 @@ different kinds of sliders, and much more.")
                                "-DUSE_SYSTEM_MALLOC=ON"
                                ;; XXX: relative dir installs to build dir?
                                (string-append "-DECM_MKSPECS_INSTALL_DIR="
-                                              %output "/lib/qt5/mkspecs/modules"))))
+                                              %output "/lib/qt5/mkspecs/modules")
+                               ;; Sacrifice a little speed in order to link
+                               ;; libraries and test executables in a
+                               ;; reasonable amount of memory.
+                               "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,--no-keep-memory"
+                               "-DCMAKE_EXE_LINKER_FLAGS=-Wl,--no-keep-memory")))
     (home-page "https://www.webkit.org")
     (synopsis "Web browser engine and classes to render and interact with web
 content")
