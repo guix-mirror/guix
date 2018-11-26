@@ -163,7 +163,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version "1.1.82.0")
+    (version "1.1.92.0")
     (source
      (origin
        (method url-fetch)
@@ -172,7 +172,7 @@ interpretation of the specifications for these languages.")
              "archive/sdk-" version ".tar.gz"))
        (sha256
         (base32
-         "1rbra47f1dkw5bjzvm0k9s2f89c2x80j904ply4bxks7sl3xlwyz"))))
+         "06bgiz1dnp57597vd26r2smsadpcnr425n9gfdbp6xm4wba4l5l9"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; No tests.
@@ -195,7 +195,7 @@ interpretation of the specifications for these languages.")
              "archive/sdk-" version ".tar.gz"))
        (sha256
         (base32
-         "032vfysb8mi19c2lx08vc6k9mbzxmiy17wp7a22vpgwwv69kxkc6"))))
+         "0vb35h05lyy1df0v6gq68h0scxizxpmjwbc90bjql6ixspmyb2im"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
@@ -251,7 +251,7 @@ and the ICD.")
              "archive/sdk-" version ".tar.gz"))
        (sha256
         (base32
-         "175qhfg9lxxfm5zks6jxaybcxamwd9q5kvjq8ikf2dbmskgybr92"))))
+         "0yd9dgkyradlk9gx0ps65nans7b29jg5c67b4m34ghpmy933dwx6"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)
