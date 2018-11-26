@@ -55,7 +55,8 @@
          (add-after 'unpack 'set-env
            (lambda _ ;;* (#:key inputs #:allow-other-keys)
              ;; all tests under mcs/class fail trying to access $HOME
-             (setenv "HOME" "/tmp")))
+             (setenv "HOME" "/tmp")
+             #t))
          (add-after 'unpack 'fix-includes
            (lambda _
              ;; makedev is in <sys/sysmacros.h> now.  Include it.
