@@ -3848,10 +3848,11 @@ expression.")
     (license license:gpl3+)))
 
 (define-public emacs-ivy-yasnippet
-  (let ((commit "59b32cf8cfb63df906822a17f6f5e8545dac38d4"))
+  (let ((commit "32580b4fd23ebf9ca7dde96704f7d53df6e253cd")
+        (revision "2"))
     (package
       (name "emacs-ivy-yasnippet")
-      (version (git-version "0.1" "1" commit))
+      (version (git-version "0.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -3861,7 +3862,7 @@ expression.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0hghdlxkfwrglvc1nql2ikgp6jj0qdbfwc3yvpb19mrf26hwgp13"))))
+           "1wfg6mmd5gl1qgvayyzpxlkh9s7jgn20y8l1vh1zbj1czvv51xp8"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-ivy" ,emacs-ivy)
