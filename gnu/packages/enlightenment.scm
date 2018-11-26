@@ -139,6 +139,7 @@
     (arguments
      `(#:configure-flags '("--disable-silent-rules"
                            "--disable-systemd"
+                           "--with-profile=release"
                            "--enable-liblz4"
                            "--enable-xinput22"
                            "--enable-image-loader-webp"
