@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2171,7 +2172,10 @@ different kinds of sliders, and much more.")
        #:configure-flags (list ;"-DENABLE_API_TESTS=TRUE"
                                "-DPORT=Qt"
                                "-DUSE_LIBHYPHEN=OFF"
-                               "-DUSE_SYSTEM_MALLOC=ON")))
+                               "-DUSE_SYSTEM_MALLOC=ON"
+                               ;; XXX: relative dir installs to build dir?
+                               (string-append "-DECM_MKSPECS_INSTALL_DIR="
+                                              %output "/lib/qt5/mkspecs/modules"))))
     (home-page "https://www.webkit.org")
     (synopsis "Web browser engine and classes to render and interact with web
 content")
