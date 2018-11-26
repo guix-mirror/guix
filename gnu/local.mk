@@ -551,7 +551,9 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/ssh.scm				\
   %D%/tests/version-control.scm			\
   %D%/tests/virtualization.scm			\
-  %D%/tests/web.scm
+  %D%/tests/web.scm				\
+						\
+  %D%/ci.scm
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
