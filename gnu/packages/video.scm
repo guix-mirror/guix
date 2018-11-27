@@ -412,15 +412,57 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
-       ;; Ensure position independent code for everyone.
-       #:configure-flags '("-DENABLE_PIC=TRUE")
+       #:configure-flags
+         ;; Ensure position independent code for everyone.
+         (list "-DENABLE_PIC=TRUE"
+               (string-append "-DCMAKE_INSTALL_PREFIX="
+                              (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'prepare-build
+         (add-after 'unpack 'prepare-build
            (lambda _
              (delete-file-recursively "build")
              (chdir "source")
-             #t)))))
+             #t))
+         (add-before 'configure 'build-12-bit
+           (lambda* (#:key (configure-flags '()) #:allow-other-keys)
+             (mkdir "../build-12bit")
+             (with-directory-excursion "../build-12bit"
+               (apply invoke
+                 "cmake" "../source"
+                 "-DHIGH_BIT_DEPTH=ON"
+                 "-DEXPORT_C_API=OFF"
+                 "-DENABLE_CLI=OFF"
+                 "-DMAIN12=ON"
+                 configure-flags)
+               (substitute* (cons "cmake_install.cmake"
+                                  (append
+                                    (find-files "CMakeFiles/x265-shared.dir" ".")
+                                    (find-files "CMakeFiles/x265-static.dir" ".")))
+                 (("libx265") "libx265_main12"))
+               (invoke "make"))))
+         (add-before 'configure 'build-10-bit
+           (lambda* (#:key (configure-flags '()) #:allow-other-keys)
+             (mkdir "../build-10bit")
+             (with-directory-excursion "../build-10bit"
+               (apply invoke
+                 "cmake" "../source"
+                 "-DHIGH_BIT_DEPTH=ON"
+                 "-DEXPORT_C_API=OFF"
+                 "-DENABLE_CLI=OFF"
+                 configure-flags)
+               (substitute* (cons "cmake_install.cmake"
+                                  (append
+                                    (find-files "CMakeFiles/x265-shared.dir" ".")
+                                    (find-files "CMakeFiles/x265-static.dir" ".")))
+                 (("libx265") "libx265_main10"))
+               (invoke "make"))))
+         (add-after 'install 'install-more-libs
+           (lambda _
+             (with-directory-excursion "../build-12bit"
+               (invoke "make" "install"))
+             (with-directory-excursion "../build-10bit"
+               (invoke "make" "install")))))))
     (home-page "http://x265.org/")
     (synopsis "Library for encoding h.265/HEVC video streams")
     (description "x265 is a H.265 / HEVC video encoder application library,
