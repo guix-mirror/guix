@@ -396,6 +396,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
   (package
     (name "x265")
     (version "2.9")
+    (outputs '("out" "static"))
     (source
       (origin
         (method url-fetch)
@@ -462,7 +463,20 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
              (with-directory-excursion "../build-12bit"
                (invoke "make" "install"))
              (with-directory-excursion "../build-10bit"
-               (invoke "make" "install")))))))
+               (invoke "make" "install"))))
+         (add-before 'strip 'move-static-libs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (static (assoc-ref outputs "static")))
+               (mkdir-p (string-append static "/lib"))
+               (with-directory-excursion
+                 (string-append out "/lib")
+                 (for-each
+                   (lambda (file)
+                     (rename-file file
+                                  (string-append static "/lib/" file)))
+                   (find-files "." "\\.a$"))))
+             #t)))))
     (home-page "http://x265.org/")
     (synopsis "Library for encoding h.265/HEVC video streams")
     (description "x265 is a H.265 / HEVC video encoder application library,
