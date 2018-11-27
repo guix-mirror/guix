@@ -1321,9 +1321,13 @@ functionality was designed to be as reusable and portable as possible.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       ;; The programmer kindly gives us a hook to turn off deprecation
-       ;; warnings ...
-       '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
+       '(;; We don't need static libraries, plus they don't build reproducibly
+         ;; (non-deterministic ordering of .o files in the archive.)
+         "--disable-static"
+
+         ;; The programmer kindly gives us a hook to turn off deprecation
+         ;; warnings ...
+         "DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
        ;; ... which they then completly ignore !!
        #:phases
        (modify-phases %standard-phases
