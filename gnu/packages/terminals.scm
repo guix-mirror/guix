@@ -240,9 +240,10 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
       (build-system gnu-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'autogen.sh
+                    (replace 'bootstrap
                       (lambda _
-                        (zero? (system* "sh" "autogen.sh"))))
+                        (setenv "NOCONFIGURE" "indeed")
+                        (invoke "sh" "autogen.sh")))
                     ;; Use elogind instead of systemd.
                     (add-before 'configure 'remove-systemd
                       (lambda _
