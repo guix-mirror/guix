@@ -9969,25 +9969,10 @@ hardware-accelerated multitouch applications.")
   (package-with-python2 python-kivy))
 
 (define-public python-kivy-next
-  (let ((commit "a988c5e7a47da56263ff39514264a3de516ef2fe")
-        (revision "1"))
-    (package (inherit python-kivy)
-      (name "python-kivy-next")
-      (version (string-append "1.9.1-" revision "."
-                              (string-take commit 7)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/kivy/kivy")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "0jk92b4a8l7blkvkgkjihk171s0dfnq582cckff5srwc8kal5m0p")))))))
+  (deprecated-package "python-kivy-next" python-kivy))
 
 (define-public python2-kivy-next
-  (package-with-python2 python-kivy-next))
+  (deprecated-package "python2-kivy-next" python2-kivy))
 
 (define-public python-binaryornot
   (package
