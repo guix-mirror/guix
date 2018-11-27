@@ -2902,6 +2902,27 @@ irony-mode do the syntax checking.")
     (home-page "https://github.com/Sarcasm/flycheck-irony")
     (license license:gpl3+)))
 
+(define-public emacs-irony-eldoc
+  (package
+    (name "emacs-irony-eldoc")
+    (version (package-version emacs-irony-mode))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ikirill/irony-eldoc.git")
+             (commit "0df5831eaae264a25422b061eb2792aadde8b3f2")))
+       (sha256 (base32 "1l5qpr66v1l12fb50yh73grb2rr85xxmbj19mm33b5rdrq2bqmmd"))
+       (file-name (string-append name "-" version))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("irony-mode" ,emacs-irony-mode)))
+    (synopsis "Eldoc integration for irony-mode")
+    (description "Irony-eldoc is an eldoc extension that shows documentation
+for the current function or variable in the minibuffer.")
+    (home-page "https://github.com/ikirill/irony-eldoc")
+    (license license:gpl3+)))
+
 (define-public emacs-company-quickhelp
   (package
     (name "emacs-company-quickhelp")
