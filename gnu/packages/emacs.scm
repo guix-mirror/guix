@@ -7924,39 +7924,36 @@ contexts.
     (license license:gpl3+)))
 
 (define-public emacs-polymode
-  ;; There hasn't been a proper release.
-  (let ((commit "0340f5e7e55235832e59673f027cc79a23cbdcd6")
-        (revision "1"))
-    (package
-      (name "emacs-polymode")
-      (version (string-append "1.0-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/vspinu/polymode.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "057cybkq3cy07n5s332k071sjiky3mziy003lza4rh75mgqkwhmh"))))
-      (build-system emacs-build-system)
-      (arguments
-       `(#:include (cons* "^modes/.*\\.el$" %default-include)
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'set-emacs-load-path 'add-modes-subdir-to-load-path
-             (lambda _
-               (setenv "EMACSLOADPATH"
-                       (string-append (getenv "EMACSLOADPATH")
-                                      ":" (getcwd) "/modes" ":")))))))
-      (home-page "https://github.com/vspinu/polymode")
-      (synopsis "Framework for multiple Emacs modes based on indirect buffers")
-      (description "Polymode is an Emacs package that offers generic support
+  (package
+    (name "emacs-polymode")
+    (version "0.1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vspinu/polymode.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0wwphs54jx48a3ca6x1qaz56j3j9bg4mv8g2akkffrzbdcb8sbc7"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:include (cons* "^modes/.*\\.el$" %default-include)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-emacs-load-path 'add-modes-subdir-to-load-path
+           (lambda _
+             (setenv "EMACSLOADPATH"
+                     (string-append (getenv "EMACSLOADPATH")
+                                    ":" (getcwd) "/modes" ":")))))))
+    (home-page "https://github.com/vspinu/polymode")
+    (synopsis "Framework for multiple Emacs modes based on indirect buffers")
+    (description "Polymode is an Emacs package that offers generic support
 for multiple major modes inside a single Emacs buffer.  It is lightweight,
 object oriented and highly extensible.  Creating a new polymode typically
 takes only a few lines of code.  Polymode also provides extensible facilities
 for external literate programming tools for exporting, weaving and tangling.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public eless
   (package
