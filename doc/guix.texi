@@ -6451,6 +6451,33 @@ must be compatible.  If @var{replacement} is somehow incompatible with
 @var{package}, then the resulting package may be unusable.  Use with
 care!
 
+@item --with-branch=@var{package}=@var{branch}
+@cindex Git, using the latest commit
+@cindex latest commit, building
+Build @var{package} from the latest commit of @var{branch}.  The @code{source}
+field of @var{package} must be an origin with the @code{git-fetch} method
+(@pxref{origin Reference}) or a @code{git-checkout} object; the repository URL
+is taken from that @code{source}.
+
+For instance, the following command builds @code{guile-sqlite3} from the
+latest commit of its @code{master} branch, and then builds @code{guix} (which
+depends on it) and @code{cuirass} (which depends on @code{guix}) against this
+specific @code{guile-sqlite3} build:
+
+@example
+guix build --with-branch=guile-sqlite3=master cuirass
+@end example
+
+@cindex continuous integration
+Obviously, since it uses the latest commit of the given branch, the result of
+such a command varies over time.  Nevertheless it is a convenient way to
+rebuild entire software stacks against the latest commit of one or more
+packages.  This is particularly useful in the context of continuous
+integration (CI).
+
+Checkouts are kept in a cache under @file{~/.cache/guix/checkouts} to speed up
+consecutive accesses to the same repository.  You may want to clean it up once
+in a while to save disk space.
 @end table
 
 @node Additional Build Options

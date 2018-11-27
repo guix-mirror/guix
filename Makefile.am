@@ -407,6 +407,7 @@ endif
 
 SH_TESTS =					\
   tests/guix-build.sh				\
+  tests/guix-build-branch.sh			\
   tests/guix-download.sh			\
   tests/guix-gc.sh				\
   tests/guix-hash.sh				\
