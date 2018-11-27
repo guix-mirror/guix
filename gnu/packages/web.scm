@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -5757,7 +5757,7 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
 (define-public rss-bridge
   (package
     (name "rss-bridge")
-    (version "2018-03-11")
+    (version "2018-11-10")
     (source
      (origin
        (method url-fetch)
@@ -5766,7 +5766,7 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1ix15ck45yb659k63mhwxwia6qnm9nn8jw0bga85abrvk1rchjdn"))))
+         "1l9a82smh6k37bjvzbmkdlssxywlmr40ig4cykgsns1iiszwv4ia"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("gzip" ,gzip)
