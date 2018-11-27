@@ -154,6 +154,7 @@ data, respectively [<branch name> | <sha1> | <tag name>]."
 
 (define* (latest-repository-commit store url
                                    #:key
+                                   (log-port (%make-void-port "w"))
                                    (cache-directory
                                     (%repository-cache-directory))
                                    (ref '(branch . "master")))
@@ -164,11 +165,14 @@ REF is pair whose key is [branch | commit | tag] and value the associated
 data, respectively [<branch name> | <sha1> | <tag name>].
 
 Git repositories are kept in the cache directory specified by
-%repository-cache-directory parameter."
+%repository-cache-directory parameter.
+
+Log progress and checkout info to LOG-PORT."
   (define (dot-git? file stat)
     (and (string=? (basename file) ".git")
          (eq? 'directory (stat:type stat))))
 
+  (format log-port "updating checkout of '~a'...~%" url)
   (let*-values
       (((checkout commit)
         (update-cached-checkout url
@@ -177,6 +181,7 @@ Git repositories are kept in the cache directory specified by
                                 (url-cache-directory url cache-directory)))
        ((name)
         (url+commit->name url commit)))
+    (format log-port "retrieved commit ~a~%" commit)
     (values (add-to-store store name #t "sha256" checkout
                           #:select? (negate dot-git?))
             commit)))
