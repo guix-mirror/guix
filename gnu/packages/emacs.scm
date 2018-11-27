@@ -2879,6 +2879,29 @@ with irony-mode using clang-tooling.")
     (home-page "https://github.com/Sarcasm/company-irony")
     (license license:gpl3+)))
 
+(define-public emacs-flycheck-irony
+  (package
+    (name "emacs-flycheck-irony")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Sarcasm/flycheck-irony.git")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "0qa5a8wzvzxwqql92ibc9s43k8sj3vwn7skz9hfr8av0skkhx996"))
+              (file-name (string-append name "-" version))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("irony-mode" ,emacs-irony-mode)
+       ("flycheck-mode" ,emacs-flycheck)
+       ("emacs-company" ,emacs-company)))
+    (synopsis "Live syntax checking frontend for Flycheck using irony-mode")
+    (description "This package provides a frontend for Flycheck that lets
+irony-mode do the syntax checking.")
+    (home-page "https://github.com/Sarcasm/flycheck-irony")
+    (license license:gpl3+)))
+
 (define-public emacs-company-quickhelp
   (package
     (name "emacs-company-quickhelp")
