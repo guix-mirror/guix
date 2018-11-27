@@ -79,6 +79,15 @@
             lookup-directory
             directory-entry-target
 
+            save-reply?
+            save-reply-origin-url
+            save-reply-origin-type
+            save-reply-request-date
+            save-reply-request-status
+            save-reply-task-status
+            save-origin
+            save-origin-status
+
             vault-reply?
             vault-reply-id
             vault-reply-fetch-url
