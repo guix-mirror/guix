@@ -7791,24 +7791,25 @@ through them using @key{C-c C-SPC}.")
     (license license:gpl3+)))
 
 (define-public emacs-slack
-  (let ((commit "d90395482d26175ce38fd935e978c428be8af9a0")
-        (revision "4"))
+  (let ((commit "99a57501629a0329a9ca090c1ea1296462eda02d")
+        (revision "5"))
     (package
       (name "emacs-slack")
-      (version (string-append "0-" revision "." (string-take commit 7)))
+      (version (git-version "0.0.2" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/yuya373/emacs-slack.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name commit))
                 (sha256
                  (base32
-                  "14f6wjcbl09cfd3yngr6m1k1d4nr764im666mbnqbk9nmqf50nib"))))
+                  "0jw1diypfw8pmzkq0napgxmfc0gqka7zcccgnw359604lr30k2z2"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-alert" ,emacs-alert)
          ("emacs-emojify" ,emacs-emojify)
+         ("emacs-helm" ,emacs-helm)
          ("emacs-request" ,emacs-request)
          ("emacs-websocket" ,emacs-websocket)
          ("emacs-oauth2" ,emacs-oauth2)
