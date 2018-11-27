@@ -405,7 +405,8 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
         (sha256
          (base32
           "090hp4216isis8q5gb7bwzia8rfyzni54z21jnwm97x3hiy6ibpb"))
-        (patches (search-patches "x265-detect512-all-arches.patch"))
+        (patches (search-patches "x265-arm-flags.patch"
+                                 "x265-detect512-all-arches.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
                     (delete-file-recursively "source/compat/getopt")
@@ -416,6 +417,10 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
        #:configure-flags
          ;; Ensure position independent code for everyone.
          (list "-DENABLE_PIC=TRUE"
+               ,@(if (string-prefix? "armhf" (or (%current-system)
+                                                 (%current-target-system)))
+                     '("-DENABLE_ASSEMBLY=OFF")
+                     '())
                (string-append "-DCMAKE_INSTALL_PREFIX="
                               (assoc-ref %outputs "out")))
        #:phases
@@ -424,6 +429,9 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
            (lambda _
              (delete-file-recursively "build")
              (chdir "source")
+             ;; recognize armv8 in 32-bit mode as ARM
+             (substitute* "CMakeLists.txt"
+              (("armv6l") "armv8l"))
              #t))
          (add-before 'configure 'build-12-bit
            (lambda* (#:key (configure-flags '()) #:allow-other-keys)
