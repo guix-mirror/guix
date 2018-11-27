@@ -2856,6 +2856,28 @@ described on the homepage.")
     (build-system cmake-build-system)
     (synopsis "Server for the Emacs @dfn{irony mode}")))
 
+(define-public emacs-company-irony
+  (package
+    (name "emacs-company-irony")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Sarcasm/company-irony.git")
+                    (commit (string-append "v" version))))
+              (sha256 (base32
+                       "1qgyam2vyjw90kpxns5cd6bq3qiqjhzpwrlvmi18vyb69qcgqd8a"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("emacs-irony-mode" ,emacs-irony-mode)
+       ("emacs-company" ,emacs-company)))
+    (synopsis "C++ completion backend for Company using irony-mode")
+    (description "This backend for company-mode allows for C++ code completion
+with irony-mode using clang-tooling.")
+    (home-page "https://github.com/Sarcasm/company-irony")
+    (license license:gpl3+)))
+
 (define-public emacs-company-quickhelp
   (package
     (name "emacs-company-quickhelp")
