@@ -25,6 +25,8 @@
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix records)
+  #:use-module (guix gexp)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -33,7 +35,12 @@
   #:use-module (srfi srfi-35)
   #:export (%repository-cache-directory
             update-cached-checkout
-            latest-repository-commit))
+            latest-repository-commit
+
+            git-checkout
+            git-checkout?
+            git-checkout-url
+            git-checkout-branch))
 
 (define %repository-cache-directory
   (make-parameter (string-append (cache-directory #:ensure? #f)
@@ -185,3 +192,28 @@ Log progress and checkout info to LOG-PORT."
     (values (add-to-store store name #t "sha256" checkout
                           #:select? (negate dot-git?))
             commit)))
+
+
+;;;
+;;; Checkouts.
+;;;
+
+;; Representation of the "latest" checkout of a branch.
+(define-record-type* <git-checkout>
+  git-checkout make-git-checkout
+  git-checkout?
+  (url     git-checkout-url)
+  (branch  git-checkout-branch (default "master")))
+
+(define latest-repository-commit*
+  (store-lift latest-repository-commit))
+
+(define-gexp-compiler (git-checkout-compiler (checkout <git-checkout>)
+                                             system target)
+  ;; "Compile" CHECKOUT by updating the local checkout and adding it to the
+  ;; store.
+  (match checkout
+    (($ <git-checkout> url branch)
+     (latest-repository-commit* url
+                                #:ref `(branch . ,branch)
+                                #:log-port (current-error-port)))))
