@@ -1347,7 +1347,8 @@ featuring mature C, C++ and Python bindings.")
     ;; Licence notice is unclear.  The Web page simply say "GPL" without giving
     ;; a version.  SOME of the code files have licence notices for GPLv2+.
     ;; The tarball contains files of the text of GPLv2 and LGPLv2.
-    (license license:gpl2+)))
+    (license license:gpl2+)
+    (properties `((upstream-name . "ORBit2")))))
 
 
 (define-public libbonobo
