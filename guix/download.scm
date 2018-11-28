@@ -373,7 +373,13 @@
   ;; procedure that takes a file name, an algorithm (symbol) and a hash
   ;; (bytevector), and returns a URL or #f.
   '(begin
-     (use-modules (guix base32) (guix base16))
+     (use-modules (guix base32))
+
+     ;; XXX: (guix base16) appeared in March 2017 (and thus 0.13.0) so old
+     ;; installations of the daemon might lack it.  Thus, load it lazily to
+     ;; avoid gratuitous errors.  See <https://bugs.gnu.org/33542>.
+     (module-autoload! (current-module)
+                       '(guix base16) '(bytevector->base16-string))
 
      (list (lambda (file algo hash)
              ;; Files served by 'guix publish' are accessible under a single
