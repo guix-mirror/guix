@@ -9192,7 +9192,7 @@ its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=guixsd-install-@value{VERSION}.x86_64-linux.iso of=/dev/sdX
+dd if=guixsd-install-@value{VERSION}.@var{system}.iso of=/dev/sdX
 sync
 @end example
 
@@ -9217,7 +9217,7 @@ its device name.  Assuming that the DVD drive is known as @file{/dev/srX},
 copy the image with:
 
 @example
-growisofs -dvd-compat -Z /dev/srX=guixsd-install-@value{VERSION}.x86_64.iso
+growisofs -dvd-compat -Z /dev/srX=guixsd-install-@value{VERSION}.@var{system}.iso
 @end example
 
 Access to @file{/dev/srX} usually requires root privileges.
@@ -9577,7 +9577,7 @@ system}).  We recommend doing that regularly so that your system
 includes the latest security updates (@pxref{Security Updates}).
 
 Join us on @code{#guix} on the Freenode IRC network or on
-@file{guix-devel@@gnu.org} to share your experience---good or not so
+@email{guix-devel@@gnu.org} to share your experience---good or not so
 good.
 
 @node Installing GuixSD in a VM
