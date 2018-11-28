@@ -9,7 +9,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020, 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
-;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2021 David Dashyan <mail@davie.li>
 ;;;
@@ -895,3 +895,42 @@ Service (S3) protocol for object storage.")
 Telemetry Transport (MQTT) publish-subscribe messaging protocol.")
     (home-page "https://github.com/awslabs/aws-c-mqtt")
     (license license:asl2.0)))
+
+(define-public utf8-h
+  ;; The latest tag is used as there is no release.
+  (let ((commit "500d4ea9f4c3449e5243c088d8af8700f7189734")
+        (revision "0"))
+    (package
+      (name "utf8-h")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/sheredom/utf8.h")
+                      (commit commit)))
+                (file-name (git-file-name "utf8.h" version))
+                (sha256
+                 (base32
+                  "0x9f7ivww8c7cigf4ck0hfx2bm79qgx6q4ccwzqbzkrmcrl9shfb"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'build)
+           (delete 'configure)
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 (with-directory-excursion "test"
+                   (invoke "cmake" ".")
+                   (invoke "make")))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "utf8.h" (string-append out "/include"))))))))
+      (home-page "https://github.com/sheredom/utf8.h")
+      (synopsis "Single header UTF-8 string functions for C and C++")
+      (description "A simple one header solution to supporting UTF-8 strings in
+C and C++.  The functions it provides are like those from the C header
+string.h, but with a utf8* prefix instead of the str* prefix.")
+      (license license:unlicense))))
