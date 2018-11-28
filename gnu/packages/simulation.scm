@@ -648,6 +648,7 @@ user interface to the FEniCS core components and external libraries.")
                  "'lift-drag', \n"
                  "'elastodynamics', \n"
                  "'dg-advection-diffusion', \n"
+                 "'curl-curl', \n"
                  "'contact-vi-tao', \n"
                  "'contact-vi-snes', \n"
                  "'collision-detection', \n"
