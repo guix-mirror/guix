@@ -1767,6 +1767,7 @@ scientific applications modeled by partial differential equations.")
     (name "petsc-openmpi")
     (inputs
      `(("hdf5" ,hdf5-parallel-openmpi)
+       ("hypre" ,hypre-openmpi)
        ("metis" ,metis)
        ("mumps" ,mumps-openmpi)
        ("openmpi" ,openmpi)
@@ -1776,7 +1777,8 @@ scientific applications modeled by partial differential equations.")
     (arguments
      (substitute-keyword-arguments (package-arguments petsc)
        ((#:configure-flags cf)
-        ``("--with-mpiexec=mpirun"
+        ``("--with-hypre=1"
+           "--with-mpiexec=mpirun"
            "--with-metis=1"
            "--with-mumps=1"
            "--with-scalapack=1"
