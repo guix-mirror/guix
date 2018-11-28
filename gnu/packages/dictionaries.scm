@@ -26,6 +26,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
@@ -34,9 +35,12 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
@@ -314,5 +318,60 @@ translation engines from your terminal.")
 analysis and generation of words.  Analysis is the process of splitting a
 word (e.g. cats) into its lemma \"cat\" and the grammatical information
 @code{<n><pl>}.  Generation is the opposite process.")
+    (license (list license:gpl2 ; main license
+                   license:expat)))) ; utf8/*
+
+(define-public apertium
+  (package
+    (name "apertium")
+    (version "3.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/apertium/apertium/releases/download/v"
+             version "/apertium-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lrx58ipx2kzh1pd3xm1viz05dqyrq38jbnj9dnk92c9ckkwkp4h"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("lttoolbox" ,lttoolbox)
+       ("pcre" ,pcre)))
+    (native-inputs
+     `(("apertium-get"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/apertium/apertium-get")
+                 (commit "692d030e68008fc123089cf2446070fe8c6e3a3b")))
+           (sha256
+            (base32
+             "0kgp68azvds7yjwfz57z8sa5094fyk5yr0qxzblrw7bisrrihnav"))))
+       ("flex" ,flex)
+       ("pkg-config" ,pkg-config)
+       ;; python is only required for running the test suite
+       ("python-minimal" ,python-minimal)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; If apertium-get does not exist in the source tree, the build tries
+         ;; to download it using an svn checkout. To avoid this, copy
+         ;; apertium-get into the source tree.
+         (add-after 'unpack 'unpack-apertium-get
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "apertium-get")
+                               "apertium/apertium-get")
+             #t)))))
+    (home-page "https://www.apertium.org/")
+    (synopsis "Rule based machine translation system")
+    (description "Apertium is a rule based machine translation system
+featuring a shallow-transfer machine translation engine.  The design of the
+system makes translations fast (translating tens of thousands of words per
+second on ordinary desktop computers) and, in spite of the errors, reasonably
+intelligible and easily correctable.")
     (license (list license:gpl2 ; main license
                    license:expat)))) ; utf8/*
