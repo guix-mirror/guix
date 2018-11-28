@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages dictionaries)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -87,7 +88,7 @@
     (description
      "V.E.R.A. (Virtual Entity of Relevant Acronyms) is a list of computing
 acronyms distributed as an info document.")
-    (license fdl1.3+)))
+    (license license:fdl1.3+)))
 
 (define-public gcide
   (package
@@ -125,7 +126,7 @@ acronyms distributed as an info document.")
 be used via the GNU Dico program or accessed online at
 http://gcide.gnu.org.ua/")
     (home-page "http://gcide.gnu.org.ua/")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public diction
   ;; Not quite a dictionary, not quite a spell checker either…
@@ -147,7 +148,7 @@ Diction is used to identify wordy and commonly misused phrases in a
 body of text.  Style instead analyzes surface aspects of a written
 work, such as sentence length and other readability measures.")
     (home-page "https://www.gnu.org/software/diction/")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public ding
   (package
@@ -207,7 +208,7 @@ work, such as sentence length and other readability measures.")
     (description "Ding is a dictionary lookup program for the X window system.
 It comes with a German-English dictionary with approximately 270,000 entries.")
     (home-page  "http://www-user.tu-chemnitz.de/~fri/ding/")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public grammalecte
   (package
@@ -234,7 +235,7 @@ a dubious expression is wrong, it will keep silent.
 
 The package provides the command line interface, along with a server
 and a Python library.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public translate-shell
   (package
@@ -283,4 +284,5 @@ and a Python library.")
 translator powered by Google Translate (default), Bing Translator,
 Yandex.Translate and Apertium.  It gives you easy access to one of these
 translation engines from your terminal.")
-    (license public-domain)))
+    (license license:public-domain)))
+
