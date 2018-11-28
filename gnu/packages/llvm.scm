@@ -243,17 +243,21 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
                                          out "/etc/bash_completion.d")))
                         (with-directory-excursion (string-append out
                                                                  "/share/clang")
-                          ;; Delete extensions for proprietary text editors.
-                          (delete-file "clang-format-bbedit.applescript")
-                          (delete-file "clang-format-sublime.py")
-                          ;; Delete Emacs extensions: see their respective Emacs
-                          ;; Guix package instead.
-                          (delete-file "clang-rename.el")
-                          (delete-file "clang-format.el")
+                          (for-each
+                            (lambda (file)
+                              (when (file-exists? file)
+                                (delete-file file)))
+                            ;; Delete extensions for proprietary text editors.
+                            '("clang-format-bbedit.applescript"
+                              "clang-format-sublime.py"
+                              ;; Delete Emacs extensions: see their respective Emacs
+                              ;; Guix package instead.
+                              "clang-rename.el" "clang-format.el"))
                           ;; Install bash completion.
-                          (mkdir-p compl-dir)
-                          (rename-file "bash-autocomplete.sh"
-                                       (string-append compl-dir "/clang"))))
+                          (when (file-exists?  "bash-autocomplete.sh")
+                            (mkdir-p compl-dir)
+                            (rename-file "bash-autocomplete.sh"
+                                         (string-append compl-dir "/clang")))))
                       #t)))))
 
     ;; Clang supports the same environment variables as GCC.
