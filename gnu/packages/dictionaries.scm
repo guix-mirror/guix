@@ -30,15 +30,18 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages tcl))
+  #:use-module (gnu packages tcl)
+  #:use-module (gnu packages xml))
 
 
 (define-public vera
@@ -286,3 +289,30 @@ Yandex.Translate and Apertium.  It gives you easy access to one of these
 translation engines from your terminal.")
     (license license:public-domain)))
 
+(define-public lttoolbox
+  (package
+    (name "lttoolbox")
+    (version "3.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/apertium/lttoolbox/releases/download/v"
+             version "/lttoolbox-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08y6pf1hl7prwygy1g8h6ndqww18pmb9f3r5988q0pcrp8w6xz6b"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://wiki.apertium.org/wiki/Lttoolbox")
+    (synopsis "Lexical processing toolbox")
+    (description "Lttoolbox is a toolbox for lexical processing, morphological
+analysis and generation of words.  Analysis is the process of splitting a
+word (e.g. cats) into its lemma \"cat\" and the grammatical information
+@code{<n><pl>}.  Generation is the opposite process.")
+    (license (list license:gpl2 ; main license
+                   license:expat)))) ; utf8/*
