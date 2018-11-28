@@ -341,13 +341,14 @@ downloads, download scheduling, download rate limiting.")
     (name "mktorrent")
     (version "1.1")
     (source (origin
-              (method url-fetch)
-              (file-name (string-append name "-" version ".tar.gz"))
-              (uri (string-append "https://github.com/Rudde/mktorrent/archive/v"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Rudde/mktorrent.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1j9qc4fxa9isnaygqk6jazsiklqywl2wcs95b8dx01963407bx6h"))))
+                "17pdc5mandl739f8q26n5is8ga56s83aqcrwhlnnplbxwx2inidr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
