@@ -612,6 +612,7 @@ guix-binary.%.tar.xz:
 
 dist-hook: $(distdir)/ChangeLog gen-AUTHORS gen-tarball-version
 dist-hook: assert-no-store-file-names
+dist-hook: doc-po-update
 
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
