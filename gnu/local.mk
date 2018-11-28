@@ -582,6 +582,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/time.scm				\
   %D%/packages/tls.scm				\
   %D%/packages/tmux.scm				\
+  %D%/packages/toolkits.scm			\
   %D%/packages/tor.scm				\
   %D%/packages/tv.scm				\
   %D%/packages/uglifyjs.scm			\
