@@ -186,7 +186,8 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    (version (package-version vulkan-headers))
+    ;; TODO: Inherit from vulkan-headers when version numbers match again
+    (version "1.1.92.1")
     (source
      (origin
        (method url-fetch)
@@ -195,7 +196,7 @@ interpretation of the specifications for these languages.")
              "archive/sdk-" version ".tar.gz"))
        (sha256
         (base32
-         "0vb35h05lyy1df0v6gq68h0scxizxpmjwbc90bjql6ixspmyb2im"))))
+         "1kx07ypbwnmn6cxv9z0vbngq5l83f1sffzh7wmkzrl69y1cmazi0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
