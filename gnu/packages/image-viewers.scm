@@ -28,6 +28,7 @@
 (define-module (gnu packages image-viewers)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -191,14 +192,14 @@ It is the default image viewer on LXDE desktop environment.")
     (name "sxiv")
     (version "24")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/muennich/sxiv/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/muennich/sxiv.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "044i077li6m4zsz2fswlcdi2m0sbr9mwws1h3k1zjaln29fw87ai"))))
+                "020n1bdxbzqncprh8a4rnjzc4frp335yxbqh5w6dr970f7n5qm8d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
