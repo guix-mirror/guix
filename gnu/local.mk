@@ -935,6 +935,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
+  %D%/packages/patches/lirc-reproducible-build.patch		\
   %D%/packages/patches/llvm-3.5-fix-clang-build-with-gcc5.patch	\
   %D%/packages/patches/llvm-for-extempore.patch			\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
