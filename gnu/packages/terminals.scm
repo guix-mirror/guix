@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -399,13 +399,14 @@ has no notion of what's interesing, but it's very good at that notifying part.")
     (version "1.2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/mauke/unibilium/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mauke/unibilium.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1hbf011d8nzsp7c96fidjiq8yw8zlxf6f1s050ii2yyampvb8ib0"))))
+         "11mbfijdrvbmdlmxs8j4vij78ki0vna89yg3r9n9g1i6j45hiq2r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
