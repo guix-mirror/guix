@@ -1457,13 +1457,14 @@ parsing, viewing, modifying, and saving this metadata.")
     (version "0.5.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/lupoDharkael/flameshot/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lupoDharkael/flameshot.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0kp451bqgssvg8n3sg60s3fifplm9l5kxiij0yxkl864p2mhw8im"))))
+         "13h77np93r796jf289v4r687cmnpqkyqs34dm9gif4akaig74ky0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("qttools" ,qttools)))
