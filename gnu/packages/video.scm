@@ -3126,12 +3126,14 @@ online.")
     (name "vidstab")
     (version "1.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/georgmartius/vid.stab/"
-                                  "archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/georgmartius/vid.stab.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fy03n343djfdi19msac81833v5iivpv635yjzrx9nkfwm9s1lhl"))))
+                "0a3frpm2kdbx7vszhg64p3alisag73bcspl7fp3a2f1kgq7rbh38"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; tests are not run as part of standard build process
