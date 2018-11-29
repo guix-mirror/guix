@@ -1121,13 +1121,14 @@ convert, manipulate, filter and display a wide variety of image formats.")
     (name "jasper")
     (version "2.0.14")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mdadams/jasper/archive/"
-                                  "version-" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mdadams/jasper.git")
+                    (commit (string-append "version-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0yx9y5y0g6jv142vnqp50j3k8k5yqznz3smrblv192wgfbm6w9l5"))))
+                "0aarg8nbik9wrm7fx0451sbm5ypfdfr6i169pxzi354mpdp8gg7f"))))
     (build-system cmake-build-system)
     (inputs `(("libjpeg" ,libjpeg)))
     (synopsis "JPEG-2000 library")
