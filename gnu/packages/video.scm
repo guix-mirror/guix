@@ -890,12 +890,14 @@ audio/video codec library.")
     (name "ffmpegthumbnailer")
     (version "2.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/dirkvdb/"
-                                  name "/archive/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dirkvdb/ffmpegthumbnailer.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "13qs4iwd4l3iiim30s5051n80z0vgsnikym8vsn321cnm9algiwb"))))
+                "0kl8aa547icy9b05njps02a8sw4yn4f8fzs228kig247sn09s4cp"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
