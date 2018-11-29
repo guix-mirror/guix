@@ -487,7 +487,7 @@ syntax of OCaml.")
 (define-public camlp5
   (package
     (name "camlp5")
-    (version "7.06")
+    (version "7.07")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/camlp5/camlp5/archive/rel"
@@ -495,7 +495,7 @@ syntax of OCaml.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08kr0h2rq3jh3kzqh5f6pr589bqw3y76z8k59ad2kdh50fjgp8xy"))))
+                "148r6p93xlxi6v7kbsqv8i70r6av04cyn0109pwss5xj6fw97i52"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
