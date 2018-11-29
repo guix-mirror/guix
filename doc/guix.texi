@@ -16662,6 +16662,147 @@ Bind the web interface to the specified address.
 @end table
 @end deftp
 
+@subsubheading Zabbix server
+@cindex zabbix zabbix-server
+Zabbix provides monitoring metrics, among others network utilization, CPU load
+and disk space consumption:
+
+@itemize
+@item High performance, high capacity (able to monitor hundreds of thousands of devices).
+@item Auto-discovery of servers and network devices and interfaces.
+@item Low-level discovery, allows to automatically start monitoring new items, file systems or network interfaces among others.
+@item Distributed monitoring with centralized web administration.
+@item Native high performance agents.
+@item SLA, and ITIL KPI metrics on reporting.
+@item High-level (business) view of monitored resources through user-defined visual console screens and dashboards.
+@item Remote command execution through Zabbix proxies.
+@end itemize
+
+@c %start of fragment
+
+Available @code{zabbix-server-configuration} fields are:
+
+@deftypevr {@code{zabbix-server-configuration} parameter} package zabbix-server
+The zabbix-server package.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string user
+User who will run the Zabbix server.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} group group
+Group who will run the Zabbix server.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string db-host
+Database host name.
+
+Defaults to @samp{"127.0.0.1"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string db-name
+Database name.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string db-user
+Database user.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string db-password
+Database password.  Please, use @code{include-files} with
+@code{DBPassword=SECRET} inside a specified file instead.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} number db-port
+Database port.
+
+Defaults to @samp{5432}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string log-type
+Specifies where log messages are written to:
+
+@itemize @bullet
+@item
+@code{system} - syslog.
+
+@item
+@code{file} - file specified with @code{log-file} parameter.
+
+@item
+@code{console} - standard output.
+
+@end itemize
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string log-file
+Log file name for @code{log-type} @code{file} parameter.
+
+Defaults to @samp{"/var/log/zabbix/server.log"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string pid-file
+Name of PID file.
+
+Defaults to @samp{"/var/run/zabbix/zabbix_server.pid"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string ssl-ca-location
+The location of certificate authority (CA) files for SSL server
+certificate verification.
+
+Defaults to @samp{"/etc/ssl/certs/ca-certificates.crt"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string ssl-cert-location
+Location of SSL client certificates.
+
+Defaults to @samp{"/etc/ssl/certs"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string extra-options
+Extra options will be appended to Zabbix server configuration file.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} include-files include-files
+You may include individual files or all files in a directory in the
+configuration file.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+
+@c %end of fragment
+
 @node Kerberos Services
 @subsubsection Kerberos Services
 @cindex Kerberos
