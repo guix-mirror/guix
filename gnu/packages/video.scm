@@ -2104,13 +2104,14 @@ be used for realtime video capture via Linux-specific APIs.")
     (name "obs")
     (version "20.1.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/jp9000/obs-studio"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jp9000/obs-studio.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1g5z6z050v25whc7n3xvg6l238wmg5crp7ihvk73qngvzxr8bg28"))))
+                "0qdpa2xxiiw53ksvlrf80jm8gz6kxsn56sffv2v2ijxvy7kw5zcg"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no tests
