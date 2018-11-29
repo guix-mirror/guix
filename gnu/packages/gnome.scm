@@ -1376,7 +1376,14 @@ featuring mature C, C++ and Python bindings.")
            (lambda _
              (substitute* "activation-server/Makefile.in"
                (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
-             #t)))))
+             #t)))
+
+       ;; There's apparently a race condition between the server stub
+       ;; generation and linking of the example under 'samples/echo' that can
+       ;; lead do undefined references when building in parallel, as reported
+       ;; at <https://forums.gentoo.org/viewtopic-t-223376-start-550.html>.
+       ;; Thus, disable parallel builds.
+       #:parallel-build? #f))
     (inputs `(("popt" ,popt)
               ("libxml2" ,libxml2)))
     ;; The following are Required by the .pc file
