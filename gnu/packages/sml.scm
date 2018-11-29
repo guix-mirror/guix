@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
@@ -31,14 +33,15 @@
   (package
     (name "polyml")
     (version "5.7.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/polyml/polyml/archive/v"
-                           version ".tar.gz"))
-       (sha256
-        (base32 "0a3hcv80p9j0fny6726kvgmzjzdmak9xw7f7rv8sxv96nhjdi3fi"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/polyml/polyml.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0j0wv3ijfrjkfngy7dswm4k1dchk3jak9chl5735dl8yrl8mq755"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)
