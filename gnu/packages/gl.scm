@@ -725,13 +725,14 @@ mixed vector/bitmap output.")
     (version "2.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/VirtualGL/virtualgl/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/VirtualGL/virtualgl.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ck1d0w19cgyqvrb9mdlj6l5db90xf18yln71kdninlqxvpgj6h7"))))
+         "0di2igj2bhwb153fndgxks7y57pyhp0gj31n47j93gb7lxc9qcck"))))
     (arguments
      `(#:tests? #f                      ; no tests are available
        #:configure-flags (list
