@@ -16800,6 +16800,109 @@ Defaults to @samp{()}.
 
 @end deftypevr
 
+@c %end of fragment
+
+@subsubheading Zabbix agent
+@cindex zabbix zabbix-agent
+
+Zabbix agent gathers information for Zabbix server.
+
+@c %start of fragment
+
+Available @code{zabbix-agent-configuration} fields are:
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} package zabbix-agent
+The zabbix-agent package.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} string user
+User who will run the Zabbix agent.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} group group
+Group who will run the Zabbix agent.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} string hostname
+Unique, case sensitive hostname which is required for active checks and
+must match hostname as configured on the server.
+
+Defaults to @samp{"Zabbix server"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} string log-type
+Specifies where log messages are written to:
+
+@itemize @bullet
+@item
+@code{system} - syslog.
+
+@item
+@code{file} - file specified with @code{log-file} parameter.
+
+@item
+@code{console} - standard output.
+
+@end itemize
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} string log-file
+Log file name for @code{log-type} @code{file} parameter.
+
+Defaults to @samp{"/var/log/zabbix/agent.log"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} string pid-file
+Name of PID file.
+
+Defaults to @samp{"/var/run/zabbix/zabbix_agent.pid"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} list server
+List of IP addresses, optionally in CIDR notation, or hostnames of
+Zabbix servers and Zabbix proxies.  Incoming connections will be
+accepted only from the hosts listed here.
+
+Defaults to @samp{("127.0.0.1")}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} list server-active
+List of IP:port (or hostname:port) pairs of Zabbix servers and Zabbix
+proxies for active checks.  If port is not specified, default port is
+used.  If this parameter is not specified, active checks are disabled.
+
+Defaults to @samp{("127.0.0.1")}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} string extra-options
+Extra options will be appended to Zabbix server configuration file.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} include-files include-files
+You may include individual files or all files in a directory in the
+configuration file.
+
+Defaults to @samp{()}.
+
+@end deftypevr
 
 @c %end of fragment
 

@@ -235,6 +235,20 @@ zabbix||{}
              '(file-exists? "/var/run/zabbix/zabbix_server.pid")
              marionette))
 
+          ;; Wait for zabbix-agent to be up and running.
+          (test-assert "zabbix-agent running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'zabbix-agent))
+             marionette))
+
+          ;; Make sure the PID file is created.
+          (test-assert "zabbix-agent PID file"
+            (marionette-eval
+             '(file-exists? "/var/run/zabbix/zabbix_agent.pid")
+             marionette))
+
           (test-end)
 
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
@@ -250,7 +264,9 @@ zabbix||{}
           (service zabbix-server-service-type
                    (zabbix-server-configuration
                     (db-password "zabbix")
-                    (log-type "console"))))))
+                    (log-type "console")))
+
+          (service zabbix-agent-service-type))))
     (operating-system
       (inherit base-os)
       (packages (cons* postgresql (operating-system-packages base-os))))))
