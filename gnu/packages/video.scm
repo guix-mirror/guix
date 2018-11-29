@@ -1854,14 +1854,14 @@ capabilities.")
     (name "vapoursynth")
     (version "37")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/vapoursynth/vapoursynth/archive/R"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vapoursynth/vapoursynth.git")
+                    (commit (string-append "R" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1g3hc079jw4mz1cmkv2y28pdb556wqc8ql7iravgh1rg8j3f1zi5"))))
+                "1ma2s7dxk6y6l04qj1jvgwia4xj7999ny3a1yx2vbk5l83giam2p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
