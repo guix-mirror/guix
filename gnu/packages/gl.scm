@@ -192,12 +192,6 @@ Polygon meshes, and Extruded polygon meshes.")
        ("libtool" ,libtool)))
     (inputs
      `(("mesa-headers" ,mesa-headers)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-          (lambda _
-            (zero? (system* "sh" "autogen.sh")))))))
     (home-page "https://github.com/divVerent/s2tc")
     (synopsis "S3 Texture Compression implementation")
     (description
