@@ -617,7 +617,7 @@ the OCaml core distribution.")
 (define-public coq
   (package
     (name "coq")
-    (version "8.8.1")
+    (version "8.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/coq/coq/archive/V"
@@ -625,7 +625,7 @@ the OCaml core distribution.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "13cyvbg8cgqkg9wz0ax7jq03srj9k0lyvny97fcka4ai1zrzwln8"))))
+                "0i2hs0i6rp27cy8zd0mx7jscqw5cx2y0diw0pxgij66s3yr47y7r"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")
