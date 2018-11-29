@@ -713,7 +713,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                                     '("rust-coresimd-doctest.patch"
                                       "rust-bootstrap-stage0-test.patch"
                                       "rust-1.25-accept-more-detailed-gdb-lines.patch"
-                                      "rust-mdbook-support-reproducible-builds-by-forcing-window.search.patch"))))
+                                      "rust-reproducible-builds.patch"))))
     (package
       (inherit base-rust)
       (arguments
@@ -742,7 +742,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                                     '("rust-coresimd-doctest.patch"
                                       "rust-bootstrap-stage0-test.patch"
                                       "rust-1.25-accept-more-detailed-gdb-lines.patch"
-                                      "rust-mdbook-support-reproducible-builds-by-forcing-window.search.patch"))))
+                                      "rust-reproducible-builds.patch"))))
     (package
       (inherit base-rust)
       (inputs
