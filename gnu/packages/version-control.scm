@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2015, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
@@ -2395,3 +2395,49 @@ used to keep a folder in sync between computers.")
 given commit into the specified ref(s).  It has various options that control
 how information about the merge is displayed.")
       (license license:gpl2+))))
+
+(define-public git-imerge
+  (package
+    (name "git-imerge")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/mhagger/git-imerge/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0a6ay8fpgz3yd84jc40w41x0rcfpan6bcq4wd1hxiiqwb51jysb2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; The are only manual test scripts.
+       #:make-flags (list (string-append "DESTDIR=" %output)
+                          "PREFIX=")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'patch-git
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((git (string-append (assoc-ref inputs "git")
+                                       "/bin/git")))
+               (substitute* "git-imerge"
+                 (("'git'") (string-append "'" git "'")))
+               #t)))
+         (add-after 'install 'wrap-script
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/git-imerge")
+               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+             #t)))))
+    (inputs
+     `(("git" ,git)
+       ("python" ,python-wrapper)))
+    (home-page "https://github.com/mhagger/git-imerge")
+    (synopsis "Incremental merge for Git")
+    (description "This Git extension defines a subcommand, @code{imerge},
+which performs an incremental merge between two branches.  Its two primary
+design goals are to reduce the pain of resolving merge conflicts by finding
+the smallest possible conflicts and to allow a merge to be saved, tested,
+interrupted, published, and collaborated on while in progress.")
+    (license license:gpl2+)))
