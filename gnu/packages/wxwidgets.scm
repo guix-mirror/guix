@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
@@ -26,6 +26,7 @@
 (define-module (gnu packages wxwidgets)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
@@ -140,12 +141,14 @@ and many other languages.")
            (version "3.1.0")
            (source
             (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/wxWidgets/wxWidgets/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append "wxwidgets-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wxWidgets/wxWidgets.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "wxwidgets" version))
               (sha256
-               (base32 "1yan5ysjwh6a7xw82sfjd1xn0nsy1dn2s0cx9ac7cw19191blc3y"))))
+               (base32
+                "14kl1rsngm70v3mbyv1mal15iz2b18k97avjx8jn7s81znha1c7f"))))
            (inputs `(("gstreamer" ,gstreamer)
                      ("gst-plugins-base" ,gst-plugins-base)
                      ,@(package-inputs wxwidgets)))
