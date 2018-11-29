@@ -3064,14 +3064,14 @@ save it to the appropriate filename.")
     (name "l-smash")
     (version "2.14.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/" name "/" name "/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/l-smash/l-smash.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0dary0h65kq6sv93iabv25djlvzr5ckdcp3ywagbix44wqfw7xz6"))))
+                "0rcq9727im6kd8da8b7kzzbzxdldvmh5nsljj9pvr4m3lj484b02"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;no tests
