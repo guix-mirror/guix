@@ -1567,13 +1567,14 @@ identical visual appearance.")
     (version "1.0.7")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/cslarsen/jp2a/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cslarsen/jp2a.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0nahpjvrahixcfqqrjj2k4fscc8qs4hqnmj2qgjzsjj3z6xxh2g5"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "12a1z9ba2j16y67f41y8ax5sgv1wdjd71pg7circdxkj263n78ql"))))
     (build-system gnu-build-system)
     (inputs
      `(("libjpeg" ,libjpeg)
