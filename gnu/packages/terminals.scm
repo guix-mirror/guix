@@ -330,14 +330,14 @@ combining, and so on, with a simple interface.")
     (name "picocom")
     (version "2.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/npat-efault/picocom"
-                    "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/npat-efault/picocom.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1knl6dglnrynx1fhy21nylw56i1q3dkizkgxzkq42mb7ilah8f9y"))))
+                "06b2ic34dnxc73cprc5imi3iamlhsv623sbg9vj5h5rvs586dwjx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("CC=gcc")
