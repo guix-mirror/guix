@@ -261,7 +261,7 @@ functional, imperative and object-oriented styles of programming.")
 (define-public ocaml-4.07
   (package
     (inherit ocaml-4.02)
-    (version "4.07.0")
+    (version "4.07.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -270,7 +270,7 @@ functional, imperative and object-oriented styles of programming.")
                     "/ocaml-" version ".tar.xz"))
               (sha256
                (base32
-                "03wzkzv6w4rdiiva20g5amz0n4x75swpjl8d80468p6zm8hgfnzl"))))
+                "1f07hgj5k45cylj1q3k5mk8yi02cwzx849b1fwnwia8xlcfqpr6z"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ocaml-4.02)
        ((#:phases phases)
