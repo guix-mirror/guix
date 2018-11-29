@@ -376,47 +376,47 @@ fast arithmetic.")
 
 (define-public arb
   (package
-   (name "arb")
-   (version "2.14.0")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/fredrik-johansson/arb/archive/"
-                  version ".tar.gz"))
-            (file-name (string-append name "-" version ".tar.gz"))
-            (sha256
-              (base32
-                "0ncr27nd20xxi18nj30cvpa6r52v59nq7gbi34x3l4xym3p8mlmx"))))
-   (build-system gnu-build-system)
-   (propagated-inputs
-    `(("flint" ,flint))) ; flint.h is included by arf.h
-   (inputs
-    `(("gmp" ,gmp)
-      ("mpfr" ,mpfr)))
-   (arguments
-    `(#:phases
-      (modify-phases %standard-phases
-        (replace 'configure
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out"))
-                  (flint (assoc-ref inputs "flint"))
-                  (gmp (assoc-ref inputs "gmp"))
-                  (mpfr (assoc-ref inputs "mpfr")))
-              ;; do not pass "--enable-fast-install", which makes the
-              ;; homebrew configure process fail
-              (invoke "./configure"
-                      (string-append "--prefix=" out)
-                      (string-append "--with-flint=" flint)
-                      (string-append "--with-gmp=" gmp)
-                      (string-append "--with-mpfr=" mpfr))))))))
-   (synopsis "Arbitrary precision floating-point ball arithmetic")
-   (description
-    "Arb is a C library for arbitrary-precision floating-point ball
+    (name "arb")
+    (version "2.14.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fredrik-johansson/arb.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ndxg7h4xvccjgp5l9z2f8b66dsff6fhf86bn5n7f75a1ksd7554"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("flint" ,flint)))               ; flint.h is included by arf.h
+    (inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (flint (assoc-ref inputs "flint"))
+                   (gmp (assoc-ref inputs "gmp"))
+                   (mpfr (assoc-ref inputs "mpfr")))
+               ;; do not pass "--enable-fast-install", which makes the
+               ;; homebrew configure process fail
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--with-flint=" flint)
+                       (string-append "--with-gmp=" gmp)
+                       (string-append "--with-mpfr=" mpfr))))))))
+    (synopsis "Arbitrary precision floating-point ball arithmetic")
+    (description
+     "Arb is a C library for arbitrary-precision floating-point ball
 arithmetic.  It supports efficient high-precision computation with
 polynomials, power series, matrices and special functions over the
 real and complex numbers, with automatic, rigorous error control.")
-   (license license:lgpl2.1+)
-   (home-page "http://fredrikj.net/arb/")))
+    (license license:lgpl2.1+)
+    (home-page "http://fredrikj.net/arb/")))
 
 (define-public ntl
   (package
