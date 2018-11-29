@@ -268,7 +268,7 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
 (define-public kodi
   (package
     (name "kodi")
-    (version "18.0b5")
+    (version "18.0rc1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -277,7 +277,7 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "042qzvhys3sajby6ywgmrsymhji37qk0iqgppznrvm53vrizwsam"))
+                "0xzzp4x8l0ywx8aq93a1323il6wwslmgdbhasv0r8zp3w1c0wqf1"))
               (snippet
                '(begin
                   (use-modules (guix build utils))
