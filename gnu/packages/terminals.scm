@@ -71,12 +71,14 @@
     (name "tilda")
     (version "1.4.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/lanoxx/tilda/archive/"
-                                  "tilda-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/lanoxx/tilda.git")
+                    (commit (string-append "tilda-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0w2hry2bqcqrkik4l100b1a9jlsih6sq8zwhfpl8zzfq20i00lfs"))))
+                "154rsldqjv2m1bddisb930qicb0y35kx7bxq392n2hn68jr2pxkj"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
