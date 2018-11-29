@@ -510,13 +510,13 @@ collection of tools for doing simple manipulations of TIFF images.")
     (version "1.74.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/DanBloomberg/leptonica/archive/" version
-             ".tar.gz"))
-       (file-name (string-append "leptonica-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DanBloomberg/leptonica.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "10pw7pwccd0m0fc9rlrr2m41s7j1qvba2wcrav17pw1gclkf34i0"))))
+        (base32 "0sfg1ky0lghlq7xx0qii5167bim0wwfnnr83dl4skbj9awyvjiwi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gnuplot" ,gnuplot)             ;needed for test suite
