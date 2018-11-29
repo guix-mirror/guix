@@ -875,13 +875,14 @@ per-line fullscreen terminal rendering, and keyboard input event reporting.")
     (version "2.2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/tmate-io/tmate/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tmate-io/tmate.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01f3hhm3x0sd6apyb1ajkjfdfvq5m2759w00yp2slr9fyicsrhnr"))))
+         "0pfl9vrswzim9ydi1n652h3rax2zrmy6sqkp0r09yy3lw83h4y1r"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
