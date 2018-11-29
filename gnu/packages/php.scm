@@ -48,6 +48,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:))
 
 (define-public php
@@ -348,3 +349,12 @@ systems, web content management systems and web frameworks." )
               license:lgpl2.1+                              ; ext/bcmath/libbcmath
               license:bsd-2                                 ; ext/fileinfo/libmagic
               license:expat))))                             ; ext/date/lib
+
+(define-public php-with-bcmath
+  (package
+    (inherit php)
+    (name "php-with-bcmath")
+    (arguments
+     (substitute-keyword-arguments (package-arguments php)
+       ((#:configure-flags flags)
+        `(cons "--enable-bcmath" ,flags))))))
