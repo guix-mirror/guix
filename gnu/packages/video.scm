@@ -2004,13 +2004,14 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
     (name "mlt")
     (version "6.10.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mltframework/mlt/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mltframework/mlt.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zzdj1g3g24q6v8hd0v34lv0pkh37a13fhjpl44h1ffi00mz3577"))
+                "0ki86yslr5ywa6sz8pjrgd9a4rn2rr4mss2zkmqi7pq8prgsm1fr"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; As of glibc 2.26, <xlocale.h> no longer is.
