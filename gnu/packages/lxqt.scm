@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
 
 (define-module (gnu packages lxqt)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -68,14 +70,15 @@
     (version "0.9.3+16.04.20160218-0ubuntu1")
     (source
      (origin
-       (method url-fetch)
-       ;; Download from github rather than launchpad beacuse launchpad trunk
+       (method git-fetch)
+       ;; Download from github rather than launchpad because launchpad trunk
        ;; tarball hash is not deterministic.
-       (uri (string-append "https://github.com/unity8-team/" name
-                           "/archive/" version ".tar.gz"))
+       (uri (git-reference
+             (url "https://github.com/unity8-team/libdbusmenu-qt.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0abwyggnpg50sa9cxphscp5zdkv9nxqnlav55vj21df6q1h3jb5w"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "0b7ii1cvmpcyl79gqal9c3va9m55h055s4hx7fpxkhhqs9463ggg"))))
     (build-system cmake-build-system)
     (arguments
      ;; XXX: Tests require a dbus session and some icons.
