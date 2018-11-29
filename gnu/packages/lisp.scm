@@ -333,7 +333,6 @@ an interpreter, a compiler, a debugger, and much more.")
            #t))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
-    ;; Bootstrap with CLISP.
     (native-inputs
      ;; From INSTALL:
      ;;     Supported build hosts are:
@@ -343,15 +342,20 @@ an interpreter, a compiler, a debugger, and much more.")
      ;;       ABCL (recent versions only)
      ;;       CLISP (only some versions: 2.44.1 is OK, 2.47 is not)
      ;;       XCL
-     ;; CCL seems ideal then.
-     `(("ccl" ,ccl)
+     ;; CCL seems ideal then, but it unfortunately only builds reliably
+     ;; on some architectures.
+     `(,@(match (%current-system)
+           ((or "x86_64-linux" "i686-linux")
+            `(("ccl" ,ccl)))
+           (_
+            `(("clisp" ,clisp))))
        ("which" ,which)
        ("inetutils" ,inetutils)         ;for hostname(1)
        ("ed" ,ed)
        ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
        ("texinfo" ,texinfo)))
     (arguments
-     '(#:modules ((guix build gnu-build-system)
+     `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))
        #:phases
@@ -410,7 +414,11 @@ an interpreter, a compiler, a debugger, and much more.")
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")
-             (invoke "sh" "make.sh" "ccl"
+             (invoke "sh" "make.sh" ,@(match (%current-system)
+                                        ((or "x86_64-linux" "i686-linux")
+                                         `("ccl"))
+                                        (_
+                                         `("clisp")))
                      (string-append "--prefix="
                                     (assoc-ref outputs "out")))))
          (replace 'install
