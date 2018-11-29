@@ -3645,7 +3645,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.4x")
+    (version "10.5")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3656,7 +3656,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "0khk7xqdw4aiw1wnf1xrhmd7fklnzmpdavd7ix4mkm510dr5wklm"))))
+                "04wk50f51xrb9vszwil4ivkfpy7xc6nw3gnp90hbna2zqi2jnvb8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3733,7 +3733,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "1dv3kdv1n5imh3n9900b55rf0wwbjj7243lhsbk7lcjqsqxia39q"))))
+             "0r6xvnr7b56iv27n8z10qmxhsz5h7w6ayhxkz3xinlvch84bk708"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
