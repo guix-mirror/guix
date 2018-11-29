@@ -2789,12 +2789,14 @@ and ITU-T H.222.0.")
     (version "2.23")
     (home-page "https://github.com/FFMS/ffms2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/FFMS/ffms2.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vbkab8vrplxz5xgag8ggzkwp4f7nf285pd0l2a7zy66n6i2m6xh"))))
+                "0dkz5b3gxq5p4xz0qqg6l2sigszrlsinz3skyf0ln4wf3zrvf8m5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
