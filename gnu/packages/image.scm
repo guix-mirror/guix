@@ -1144,13 +1144,14 @@ ISO/IEC 15444-1).")
     (version "2.5")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/sekrit-twc/zimg/archive/"
-                            "release-" version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/sekrit-twc/zimg.git")
+              (commit (string-append "release-" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "0kbq2dy659645fmgxpzg38b6y6x82kwkydhc380kdkaikv2brcjh"))))
+          "05krggiifbl6hyg2j3z8qz2k7si84g1qg9snhsnf1ml7mrhqhhlr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
