@@ -131,14 +131,15 @@ program.")
     (name "xclip")
     (version "0.13")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/astrand/xclip"
-                            "/archive/" version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32
-           "0n7pczk9vv30zf8qfln8ba3hnif9yfdxg0m84djac469wc28hnya"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/astrand/xclip.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0q0hmvcjlv8arhh1pzhja2wglyj6n7z209jnpnzd281kqqv4czcs"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                              ;there is no test suite
