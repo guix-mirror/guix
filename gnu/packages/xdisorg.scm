@@ -496,14 +496,14 @@ of the screen selected by mouse.")
     (name "slop")
     (version "7.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/naelstrof/slop/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/naelstrof/slop.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kpdrikgpjb4fpxalb6pjcih5njv1w9cnrjj5612ywdv1q5mjs48"))))
+                "0fgd8a2dqkg64all0f96sca92sdss9r3pzmv5kck46b99z2325z6"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
