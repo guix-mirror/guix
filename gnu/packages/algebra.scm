@@ -568,13 +568,14 @@ syntax is similar to that of C, so basic usage is familiar.  It also includes
     (name "kiss-fft-for-extempore")
     (version "1.3.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/extemporelang/kiss_fft/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/extemporelang/kiss_fft.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hkp9l6l4c92fb1l2sh6a6zv1hynpvb2s4d03vd8vxyvybc0l4pv"))))
+                "0jasbmqy4wkqrqx3w64s1dfmj34875xmsl72mb26aa4hpyn14bi2"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ; no tests included
     ;; Extempore refuses to build on architectures other than x86_64
