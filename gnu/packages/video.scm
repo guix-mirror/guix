@@ -1189,14 +1189,14 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (name "mpv")
     (version "0.29.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/mpv-player/mpv/archive/v" version
-                    ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mpv-player/mpv.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "08x63hlpj6s8xixmdbx6raff5p5mih7cnk0bcql9f3wrs5hx9ygr"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "138921kx8g6qprim558xin09xximjhsj9ss8b71ifg2m6kclym8m"))))
     (build-system waf-build-system)
     (native-inputs
      `(("perl" ,perl) ; for zsh completion file
