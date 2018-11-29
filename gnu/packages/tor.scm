@@ -165,13 +165,14 @@ networks.")
     (version "0.9.2")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/micahflee/onionshare/archive/v"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/micahflee/onionshare.git")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "02iv7dg15da57gy3zvfchnwwpr21n1gva7mqwpwr958ni2034smk"))))
+          "1nzr6m3jp04p1i8b652s27zv0xhybl3zwcn5r6l9h0f7d7x4iglv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
