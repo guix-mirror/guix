@@ -848,15 +848,15 @@ within a single process.")
   (package
     (name "xcape")
     (version "1.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/alols/" name
-                            "/archive/v" version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32
-            "0898zc3vwxia00h9kfknpf7jygxgwggrx8v5mxc31w4lzn2dhzm2"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alols/xcape.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "09a05cxgrip6nqy1qmwblamp2bhknqnqmxn7i2a1rgxa0nba95dm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
