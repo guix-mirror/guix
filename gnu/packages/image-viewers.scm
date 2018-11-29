@@ -288,13 +288,14 @@ your images.  Among its features are:
     (version "2.4.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/posva/catimg/archive"
-                           "/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/posva/catimg.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rwgbq2imd5l4nql5hrz7rr5f4gz8aad1amlf0j3cxir8slpbd1y"))))
+         "1sk74nfc1aklg784pzknr37dyz4k7h9fck3mifpn43rav5qy2zpy"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
