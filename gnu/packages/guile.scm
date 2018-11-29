@@ -1162,14 +1162,14 @@ Guile's foreign function interface.")
 (define-public haunt
   (package
     (name "haunt")
-    (version "0.2.2")
+    (version "0.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/haunt/haunt-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nm00krmqq4zmqi2irh35dbf2cn6al58s620hijmhfvhgvdqznlp"))))
+                "056z4znikk83nr5mr0x2ac3iinqbywa2bvb37mhr566a1q50isfc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match) (ice-9 ftw)
