@@ -2394,13 +2394,14 @@ Content System specification.")
     (version "0.2.8")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/mps-youtube/mps-youtube/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mps-youtube/mps-youtube.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0x7cmfh199q9j396v7bz81nnvanfllhsg86489i5dw2p3yyc9wnm"))))
+         "1w1jhw9rg3dx7vp97cwrk5fymipkcy2wrbl1jaa38ivcjhqg596y"))))
     (build-system python-build-system)
     (arguments
      ;; Tests need to be disabled until #556 upstream is fixed. It reads as if the
