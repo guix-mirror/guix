@@ -182,21 +182,34 @@ solution (client-side agent)")
   (package
     (inherit zabbix-agentd)
     (name "zabbix-server")
+    (outputs '("out" "front-end" "schema"))
     (arguments
      (substitute-keyword-arguments
          `(#:phases
            (modify-phases %standard-phases
-             (add-after 'install 'install-frontend
+             (add-after 'install 'install-front-end
                (lambda* (#:key outputs #:allow-other-keys)
-                 (let* ((php (string-append (assoc-ref outputs "out")
+                 (let* ((php (string-append (assoc-ref outputs "front-end")
                                             "/share/zabbix/php"))
                         (front-end-conf (string-append php "/conf"))
                         (etc (string-append php "/etc")))
                    (mkdir-p php)
-                   (copy-recursively "./frontends/php" php)
+                   (copy-recursively "frontends/php" php)
+                   ;; Make front-end write config to ‘/etc/zabbix’ directory.
                    (rename-file front-end-conf
                                 (string-append front-end-conf "-example"))
-                   (symlink "/etc/zabbix" front-end-conf)))))
+                   (symlink "/etc/zabbix" front-end-conf))
+                 #t))
+             (add-after 'install 'install-schema
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let ((database-directory
+                        (string-append (assoc-ref outputs "schema")
+                                       "/database")))
+                   (for-each delete-file
+                             (find-files "database" "Makefile\\.in|\\.am$"))
+                   (mkdir-p database-directory)
+                   (copy-recursively "database" database-directory))
+                 #t)))
            ,@(package-arguments zabbix-agentd))
        ((#:configure-flags flags)
         `(cons* "--enable-server"
