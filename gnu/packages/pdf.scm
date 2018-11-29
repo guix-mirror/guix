@@ -872,14 +872,14 @@ the framebuffer.")
     (name "pdf2svg")
     (version "0.2.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/dawbarton/pdf2svg/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dawbarton/pdf2svg.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "12pa1pajirnlrkz2il3h4l30lc2prryk1qr132jk6z9y1c3qdcag"))))
+                "14ffdm4y26imq99wjhkrhy9lp33165xci1l5ndwfia8hz53bl02k"))))
     (build-system gnu-build-system)
     (inputs
      `(("cairo" ,cairo)
