@@ -2267,13 +2267,14 @@ making @dfn{screencasts}.")
     (version "0.3.11")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/MaartenBaert/ssr/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MaartenBaert/ssr.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0l6irdadqpajvv0dj3ngs1231n559l0y1pykhs2h7526qm4w7xal"))))
+         "0n702dnv4qshgn3b90ixvplfafjhgz6040yir5vy8khjdpciysq4"))))
     (build-system cmake-build-system)
     ;; Although libx11, libxfixes, libxext are listed as build dependencies in
     ;; README.md, the program builds and functions properly without them.
