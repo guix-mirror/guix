@@ -16906,6 +16906,81 @@ Defaults to @samp{()}.
 
 @c %end of fragment
 
+@subsubheading Zabbix front-end
+@cindex zabbix zabbix-front-end
+
+This service provides a WEB interface to Zabbix server.
+
+@c %start of fragment
+
+Available @code{zabbix-front-end-configuration} fields are:
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} nginx-server-configuration-list nginx
+NGINX configuration.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-host
+Database host name.
+
+Defaults to @samp{"localhost"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} number db-port
+Database port.
+
+Defaults to @samp{5432}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-name
+Database name.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-user
+Database user.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-password
+Database password.  Please, use @code{db-secret-file} instead.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-secret-file
+Secret file which will be appended to @file{zabbix.conf.php} file.  This
+file contains credentials for use by Zabbix front-end.  You are expected
+to create it manually.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} string zabbix-host
+Zabbix server hostname.
+
+Defaults to @samp{"localhost"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} number zabbix-port
+Zabbix server port.
+
+Defaults to @samp{10051}.
+
+@end deftypevr
+
+
+@c %end of fragment
+
 @node Kerberos Services
 @subsubsection Kerberos Services
 @cindex Kerberos

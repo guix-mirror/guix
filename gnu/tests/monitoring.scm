@@ -20,11 +20,13 @@
 (define-module (gnu tests monitoring)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages monitoring)
+  #:use-module (gnu packages php)
   #:use-module (gnu services)
   #:use-module (gnu services monitoring)
   #:use-module (gnu services networking)
   #:use-module (gnu services databases)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu services web)
   #:use-module (gnu system vm)
   #:use-module (gnu system)
   #:use-module (gnu tests)
@@ -249,6 +251,44 @@ zabbix||{}
              '(file-exists? "/var/run/zabbix/zabbix_agent.pid")
              marionette))
 
+          ;; Wait for php-fpm to be up and running.
+          (test-assert "php-fpm running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'php-fpm))
+             marionette))
+
+          ;; Wait for nginx to be up and running.
+          (test-assert "nginx running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'nginx))
+             marionette))
+
+          ;; Make sure the PID file is created.
+          (test-assert "nginx PID file"
+            (marionette-eval
+             '(file-exists? "/var/run/nginx/pid")
+             marionette))
+
+          ;; Make sure we can access pages that correspond to our repository.
+          (letrec-syntax ((test-url
+                           (syntax-rules ()
+                             ((_ path code)
+                              (test-equal (string-append "GET " path)
+                                code
+                                (let-values (((response body)
+                                              (http-get (string-append
+                                                         "http://localhost:8080"
+                                                         path))))
+                                  (response-code response))))
+                             ((_ path)
+                              (test-url path 200)))))
+            (test-url "/")
+            (test-url "/does-not-exist" 404))
+
           (test-end)
 
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
@@ -261,6 +301,15 @@ zabbix||{}
          (simple-operating-system
           (service dhcp-client-service-type)
           (postgresql-service)
+          (service zabbix-front-end-service-type
+                   (zabbix-front-end-configuration
+                    (db-password "zabbix")))
+
+          (service php-fpm-service-type
+                   (php-fpm-configuration
+                    (timezone "Europe/Paris")
+                    (php php-with-bcmath)))
+
           (service zabbix-server-service-type
                    (zabbix-server-configuration
                     (db-password "zabbix")

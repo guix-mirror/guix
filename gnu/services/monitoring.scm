@@ -22,6 +22,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services configuration)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu services web)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages monitoring)
   #:use-module (gnu system shadow)
@@ -29,6 +30,7 @@
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-26)
   #:export (darkstat-configuration
             prometheus-node-exporter-configuration
@@ -38,7 +40,10 @@
             zabbix-server-configuration
             zabbix-server-service-type
             zabbix-agent-configuration
-            zabbix-agent-service-type))
+            zabbix-agent-service-type
+            zabbix-front-end-configuration
+            zabbix-front-end-service-type
+            %zabbix-front-end-configuration-nginx))
 
 
 ;;;
@@ -178,6 +183,12 @@ prometheus.")
 
 (define (serialize-extra-options field-name val)
   (if (null? val) "" (display val)))
+
+(define (nginx-server-configuration-list? val)
+  (and (list? val) (and-map nginx-server-configuration? val)))
+
+(define (serialize-nginx-server-configuration-list field-name val)
+  "")
 
 (define-configuration zabbix-server-configuration
   (zabbix-server
@@ -356,7 +367,7 @@ the hosts listed here.")
 proxies for active checks.  If port is not specified, default port is used.
 If this parameter is not specified, active checks are disabled.")
   (extra-options
-   (string "")
+   (extra-options "")
    "Extra options will be appended to Zabbix server configuration file.")
   (include-files
    (include-files '())
@@ -445,3 +456,136 @@ configuration file."))
    `((zabbix-agent-configuration
       ,zabbix-agent-configuration-fields))
    'zabbix-agent-configuration))
+
+(define %zabbix-front-end-configuration-nginx
+  (nginx-server-configuration
+   (root #~(string-append #$zabbix-server:front-end "/share/zabbix/php"))
+   (index '("index.php"))
+   (locations
+    (let ((php-location (nginx-php-location)))
+      (list (nginx-location-configuration
+             (inherit php-location)
+             (body (append (nginx-location-configuration-body php-location)
+                           (list "
+fastcgi_param PHP_VALUE \"post_max_size = 16M
+                          max_execution_time = 300\";
+")))))))))
+
+(define-configuration zabbix-front-end-configuration
+  ;; TODO: Specify zabbix front-end package.
+  ;; (zabbix-
+  ;;  (package zabbix-front-end)
+  ;;  "The zabbix-front-end package.")
+  (nginx
+   (nginx-server-configuration-list
+    (list %zabbix-front-end-configuration-nginx))
+   "NGINX configuration.")
+  (db-host
+   (string "localhost")
+   "Database host name.")
+  (db-port
+   (number 5432)
+   "Database port.")
+  (db-name
+   (string "zabbix")
+   "Database name.")
+  (db-user
+   (string "zabbix")
+   "Database user.")
+  (db-password
+   (string "")
+   "Database password.  Please, use @code{db-secret-file} instead.")
+  (db-secret-file
+   (string "")
+   "Secret file which will be appended to @file{zabbix.conf.php} file.  This
+file contains credentials for use by Zabbix front-end.  You are expected to
+create it manually.")
+  (zabbix-host
+   (string "localhost")
+   "Zabbix server hostname.")
+  (zabbix-port
+   (number 10051)
+   "Zabbix server port."))
+
+(define zabbix-front-end-config
+  (match-lambda
+    (($ <zabbix-front-end-configuration>
+        _ db-host db-port db-name db-user db-password db-secret-file
+        zabbix-host zabbix-port)
+     (mixed-text-file "zabbix.conf.php"
+                      "\
+<?php
+// Zabbix GUI configuration file.
+global $DB;
+
+$DB['TYPE']     = 'POSTGRESQL';
+$DB['SERVER']   = '" db-host "';
+$DB['PORT']     = '" (number->string db-port) "';
+$DB['DATABASE'] = '" db-name "';
+$DB['USER']     = '" db-user "';
+$DB['PASSWORD'] = '" (if (string-null? db-password)
+                         (if (string-null? db-secret-file)
+                             (display "Provide a `db-secret-file' \
+or `db-password' field.
+"
+                                      (current-error-port))
+                             (string-trim-both
+                              (with-input-from-file db-secret-file
+                                read-string)))
+                         (begin
+                           (display "
+Hint: Consider use `db-secret-file' instead of `db-password' and unset
+`db-password' for security in `zabbix-front-end-configuration'.
+")
+                           db-password)) "';
+
+// Schema name. Used for IBM DB2 and PostgreSQL.
+$DB['SCHEMA'] = '';
+
+$ZBX_SERVER      = '" zabbix-host "';
+$ZBX_SERVER_PORT = '" (number->string zabbix-port) "';
+$ZBX_SERVER_NAME = '';
+
+$IMAGE_FORMAT_DEFAULT = IMAGE_FORMAT_PNG;
+"))))
+
+(define %maintenance.inc.php
+  ;; Empty php file to allow us move zabbix-frontend configs to ‘/etc/zabbix’
+  ;; directory.  See ‘install-front-end’ phase in
+  ;; (@ (gnu packages monitoring) zabbix-server) package.
+    "\
+<?php
+")
+
+(define (zabbix-front-end-activation config)
+  "Return the activation gexp for CONFIG."
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/etc/zabbix")
+      (call-with-output-file "/etc/zabbix/maintenance.inc.php"
+            (lambda (port)
+              (display #$%maintenance.inc.php port)))
+      (copy-file #$(zabbix-front-end-config config)
+                 "/etc/zabbix/zabbix.conf.php")))
+
+(define zabbix-front-end-service-type
+  (service-type
+   (name 'zabbix-front-end)
+   (extensions
+    (list (service-extension activation-service-type
+                             zabbix-front-end-activation)
+          (service-extension nginx-service-type
+                             zabbix-front-end-configuration-nginx)
+          ;; Make sure php-fpm is instantiated.
+          (service-extension php-fpm-service-type
+                             (const #t))))
+   (default-value (zabbix-front-end-configuration))
+   (description
+    "Run the zabbix-front-end web interface, which allows users to interact
+with Zabbix server.")))
+
+(define (generate-zabbix-front-end-documentation)
+  (generate-documentation
+   `((zabbix-front-end-configuration
+      ,zabbix-front-end-configuration-fields))
+   'zabbix-front-end-configuration))
