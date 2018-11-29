@@ -209,8 +209,13 @@ SRFI-19 time-utc object, as the creation time in metadata."
         ;; the path "/a" into "/".  The presence of "/" in the archive is
         ;; probably benign, but it is definitely safe to remove it, so let's
         ;; do that.  This fails when "/" is not in the archive, so use system*
-        ;; instead of invoke to avoid an exception in that case.
-        (system* "tar" "--delete" "/" "-f" "layer.tar")
+        ;; instead of invoke to avoid an exception in that case, and redirect
+        ;; stderr to the bit bucket to avoid "Exiting with failure status"
+        ;; error messages.
+        (with-error-to-port (%make-void-port "w")
+          (lambda ()
+            (system* "tar" "--delete" "/" "-f" "layer.tar")))
+
         (for-each delete-file-recursively
                   (map (compose topmost-component symlink-source)
                        symlinks))

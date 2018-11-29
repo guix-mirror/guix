@@ -3,6 +3,7 @@
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -609,6 +610,18 @@ please email '~a'~%")
     (squashfs . ,squashfs-image)
     (docker  . ,docker-image)))
 
+(define (show-formats)
+  ;; Print the supported pack formats.
+  (display (G_ "The supported formats for 'guix pack' are:"))
+  (newline)
+  (display (G_ "
+  tarball       Self-contained tarball, ready to run on another machine"))
+  (display (G_ "
+  squashfs      Squashfs image suitable for Singularity"))
+  (display (G_ "
+  docker        Tarball ready for 'docker load'"))
+  (newline))
+
 (define %options
   ;; Specifications of the command-line options.
   (cons* (option '(#\h "help") #f #f
@@ -625,6 +638,10 @@ please email '~a'~%")
          (option '(#\f "format") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'format (string->symbol arg) result)))
+         (option '("list-formats") #f #f
+                 (lambda args
+                   (show-formats)
+                   (exit 0)))
          (option '(#\R "relocatable") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'relocatable? #t result)))
@@ -686,6 +703,8 @@ Create a bundle of PACKAGE.\n"))
   (newline)
   (display (G_ "
   -f, --format=FORMAT    build a pack in the given FORMAT"))
+  (display (G_ "
+      --list-formats     list the formats available"))
   (display (G_ "
   -R, --relocatable      produce relocatable executables"))
   (display (G_ "

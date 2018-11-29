@@ -2750,7 +2750,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.42.0")
+    (version "5.42.1")
     (source
      (origin
        (method url-fetch)
@@ -2758,7 +2758,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0d5pdihvcbwb7r4i4qs5qqgsz46hxlq33qj8is053llrgn9ylpyn"))
+         "1ka0xf70a55ndgmyrq7p5xxbd78pq7bfkqhgxsivaqdw6gn5lmcg"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -2849,16 +2849,17 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "18.10.1")
+    (version "18.11.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/wxMaxima-developers/" name
-                           "/archive/Version-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wxMaxima-developers/wxmaxima.git")
+             (commit (string-append "Version-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0c2blq65r0am509p3rjqpwqk6vl5r2yg1p9nh2jczf80vhi3ldas"))))
+         "1sz8n9v23q442l7yjj67pjh0dk78rl4cbcc3j8m1bm88anlfxl9r"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))

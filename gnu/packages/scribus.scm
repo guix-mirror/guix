@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
@@ -56,7 +56,7 @@
        (sha256
         (base32
          "00ys0p6h3iq77kh72dkl0qrf7qvznq18qdrgiq10gfxja1995034"))
-       (modules '((guix build utils)))))
+       (patches (search-patches "scribus-poppler.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test target

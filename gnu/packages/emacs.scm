@@ -1474,14 +1474,22 @@ current match, total matches and exit status.
     (name "emacs-go-mode")
     (version "1.5.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/dominikh/go-mode.el/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dominikh/go-mode.el.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1adngbjyb8qnwg7n6r2y31djw9j6qf3b9fi63zd85035q7x4ljnm"))))
+                "1nd2h50yb0493wvf1h7fzplq45rmqn2w7kxpgnlxzhkvq99v8vzf"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-writable
+           (lambda _
+             (for-each make-file-writable (find-files "." "\\.el$"))
+             #t)))))
     (home-page "https://github.com/dominikh/go-mode.el")
     (synopsis "Go mode for Emacs")
     (description
@@ -2773,7 +2781,7 @@ build jobs.")
 (define-public emacs-company
   (package
     (name "emacs-company")
-    (version "0.9.6")
+    (version "0.9.7")
     (source
      (origin
        (method url-fetch)
@@ -2782,7 +2790,7 @@ build jobs.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0a7zvmfvxh9w67myvcj2511ayk0fvkm06cdg38y8khnsx63jrr4k"))))
+         "19flv38f2qhxda8lbk2ckywvibd72vbzmn4hchqz6d8acsknh4sb"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -2849,6 +2857,28 @@ described on the homepage.")
                        (string-append "-DCMAKE_INSTALL_PREFIX=" out)) #t))))))
     (build-system cmake-build-system)
     (synopsis "Server for the Emacs @dfn{irony mode}")))
+
+(define-public emacs-company-irony
+  (package
+    (name "emacs-company-irony")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Sarcasm/company-irony.git")
+                    (commit (string-append "v" version))))
+              (sha256 (base32
+                       "1qgyam2vyjw90kpxns5cd6bq3qiqjhzpwrlvmi18vyb69qcgqd8a"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("emacs-irony-mode" ,emacs-irony-mode)
+       ("emacs-company" ,emacs-company)))
+    (synopsis "C++ completion backend for Company using irony-mode")
+    (description "This backend for company-mode allows for C++ code completion
+with irony-mode using clang-tooling.")
+    (home-page "https://github.com/Sarcasm/company-irony")
+    (license license:gpl3+)))
 
 (define-public emacs-company-quickhelp
   (package
@@ -3393,7 +3423,7 @@ organizer.")
 (define-public emacs-zenburn-theme
   (package
     (name "emacs-zenburn-theme")
-    (version "2.5")
+    (version "2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3402,7 +3432,7 @@ organizer.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "03kfhzgbbbl8ivpzzky6qxw4j9mmp452m1sk7wikxmcalfnix0gn"))))
+                "0qc9d1rwq55yzh8shbppyd6izy1grpyr8kqh5zdgm7c5jccngpr4"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/bbatsov/zenburn-emacs")
     (synopsis "Low contrast color theme for Emacs")
@@ -3850,10 +3880,11 @@ expression.")
     (license license:gpl3+)))
 
 (define-public emacs-ivy-yasnippet
-  (let ((commit "59b32cf8cfb63df906822a17f6f5e8545dac38d4"))
+  (let ((commit "32580b4fd23ebf9ca7dde96704f7d53df6e253cd")
+        (revision "2"))
     (package
       (name "emacs-ivy-yasnippet")
-      (version (git-version "0.1" "1" commit))
+      (version (git-version "0.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -3863,7 +3894,7 @@ expression.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0hghdlxkfwrglvc1nql2ikgp6jj0qdbfwc3yvpb19mrf26hwgp13"))))
+           "1wfg6mmd5gl1qgvayyzpxlkh9s7jgn20y8l1vh1zbj1czvv51xp8"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-ivy" ,emacs-ivy)
@@ -7784,24 +7815,25 @@ through them using @key{C-c C-SPC}.")
     (license license:gpl3+)))
 
 (define-public emacs-slack
-  (let ((commit "d90395482d26175ce38fd935e978c428be8af9a0")
-        (revision "4"))
+  (let ((commit "99a57501629a0329a9ca090c1ea1296462eda02d")
+        (revision "5"))
     (package
       (name "emacs-slack")
-      (version (string-append "0-" revision "." (string-take commit 7)))
+      (version (git-version "0.0.2" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/yuya373/emacs-slack.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name commit))
                 (sha256
                  (base32
-                  "14f6wjcbl09cfd3yngr6m1k1d4nr764im666mbnqbk9nmqf50nib"))))
+                  "0jw1diypfw8pmzkq0napgxmfc0gqka7zcccgnw359604lr30k2z2"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-alert" ,emacs-alert)
          ("emacs-emojify" ,emacs-emojify)
+         ("emacs-helm" ,emacs-helm)
          ("emacs-request" ,emacs-request)
          ("emacs-websocket" ,emacs-websocket)
          ("emacs-oauth2" ,emacs-oauth2)
@@ -7916,39 +7948,36 @@ contexts.
     (license license:gpl3+)))
 
 (define-public emacs-polymode
-  ;; There hasn't been a proper release.
-  (let ((commit "0340f5e7e55235832e59673f027cc79a23cbdcd6")
-        (revision "1"))
-    (package
-      (name "emacs-polymode")
-      (version (string-append "1.0-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/vspinu/polymode.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "057cybkq3cy07n5s332k071sjiky3mziy003lza4rh75mgqkwhmh"))))
-      (build-system emacs-build-system)
-      (arguments
-       `(#:include (cons* "^modes/.*\\.el$" %default-include)
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'set-emacs-load-path 'add-modes-subdir-to-load-path
-             (lambda _
-               (setenv "EMACSLOADPATH"
-                       (string-append (getenv "EMACSLOADPATH")
-                                      ":" (getcwd) "/modes" ":")))))))
-      (home-page "https://github.com/vspinu/polymode")
-      (synopsis "Framework for multiple Emacs modes based on indirect buffers")
-      (description "Polymode is an Emacs package that offers generic support
+  (package
+    (name "emacs-polymode")
+    (version "0.1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vspinu/polymode.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0wwphs54jx48a3ca6x1qaz56j3j9bg4mv8g2akkffrzbdcb8sbc7"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:include (cons* "^modes/.*\\.el$" %default-include)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-emacs-load-path 'add-modes-subdir-to-load-path
+           (lambda _
+             (setenv "EMACSLOADPATH"
+                     (string-append (getenv "EMACSLOADPATH")
+                                    ":" (getcwd) "/modes" ":")))))))
+    (home-page "https://github.com/vspinu/polymode")
+    (synopsis "Framework for multiple Emacs modes based on indirect buffers")
+    (description "Polymode is an Emacs package that offers generic support
 for multiple major modes inside a single Emacs buffer.  It is lightweight,
 object oriented and highly extensible.  Creating a new polymode typically
 takes only a few lines of code.  Polymode also provides extensible facilities
 for external literate programming tools for exporting, weaving and tangling.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public eless
   (package
@@ -12533,43 +12562,6 @@ correctly.")
 @item: helm-slime-apropos: Yet another slime-apropos with Helm.
 @item helm-slime-repl-history: Select an input from the SLIME REPL history and insert it.
 @end itemize\n")
-      (license license:gpl3+))))
-
-(define-public emacs-clang-format
-  (let ((commit "5556c31528af2661bed3011bd63ffc0ed44e18a0"))
-    (package
-      (name "emacs-clang-format")
-      (version (git-version "0.0.0" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacsorphanage/clang-format")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0ynvnp3vrcpngmwakb23xv4xn7jbkg43s196q7pg9nkl13x4n2nq"))))
-      (build-system emacs-build-system)
-      (inputs
-       `(("clang" ,clang)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'configure
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((clang (assoc-ref inputs "clang")))
-                 ;; Repo is read-only.
-                 (chmod "clang-format.el" #o644)
-                 (emacs-substitute-variables "clang-format.el"
-                   ("clang-format-executable"
-                    (string-append clang "/bin/clang-format"))))
-               #t)))))
-      (home-page "https://github.com/emacsorphanage/clang-format")
-      (synopsis "Format code using clang-format")
-      (description "This package allows to filter code through clang-format to
-fix its formatting.  @command{clang-format} is a tool that formats C/C++/Obj-C
-code according to a set of style options, see
-@url{http://clang.llvm.org/docs/ClangFormatStyleOptions.html}.")
       (license license:gpl3+))))
 
 (define-public emacs-gtk-look

@@ -400,8 +400,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.19.4")
-(define %linux-libre-hash "0m5k14a89bf5avr3kdh3909qjfnd051fbsb0v7a52d54dkg2nbp6")
+(define %linux-libre-version "4.19.5")
+(define %linux-libre-hash "1ailss05c3p9aw2ysv75kj9j7qk04rc0cn9y9dk6fmjhnbnw9abm")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -412,7 +412,7 @@ It has been modified to remove all non-free binary blobs.")
                 "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
                 "/debian/patches/bugfix/arm/"
                 "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
-          (file-name "linux-libre-4.18-arm-export-__sync_icache_dcache.patch")
+          (file-name "linux-libre-4.19-arm-export-__sync_icache_dcache.patch")
           (sha256
            (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))))
 
@@ -423,8 +423,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.83")
-(define %linux-libre-4.14-hash "0x6r09bqdrcqigyjx922vji3pdv36l24pl0j33xs8b7xawkvii9g")
+(define %linux-libre-4.14-version "4.14.84")
+(define %linux-libre-4.14-hash "0mdf436bxlrsv0jbnzwd5bblpavv9vk5qx7h2x55jp0iy9pvp3n2")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -433,14 +433,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.140"
-                    "12amh7m0khjx5q3bcv8sq59xkanaxa5xnw4m1iql7503nk4pgg9a"
+  (make-linux-libre "4.9.141"
+                    "1cjyni2wf1m9l8nvfl4gcswxlk9rwhpr0q3lvhnlg20761kvixp4"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.164"
-                    "04w4x97bkd2javjws9pzv1shfcrhyn4nf9w8b6qk6zdaj45fzasb"
+  (make-linux-libre "4.4.165"
+                    "1adpj8hbly5z3j7mlnydnm2kx2isi3194n1hszzwxki8gj0xnqk4"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 

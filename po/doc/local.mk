@@ -16,10 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-EXTRA_DIST = \
-  %D%/guix-manual.pot \
+DOC_PO_FILES= \
   %D%/guix-manual.de.po \
   %D%/guix-manual.fr.po
+
+EXTRA_DIST = \
+  %D%/guix-manual.pot \
+  $(DOC_PO_FILES)
 
 POT_OPTIONS = --package-name "guix" --package-version "$(VERSION)" \
 	          --copyright-holder "Ludovic Courtès" \
@@ -58,3 +61,8 @@ doc-pot-update:
 	done
 	msgcat $(addprefix $(srcdir)/po/doc/, $(TMP_POT_FILES)) > $(srcdir)/po/doc/guix-manual.pot
 	rm -f $(addprefix $(srcdir)/po/doc/, $(TMP_POT_FILES))
+
+doc-po-update: doc-pot-update
+	for f in $(DOC_PO_FILES); do \
+		$(MAKE) "$$f"; \
+	done

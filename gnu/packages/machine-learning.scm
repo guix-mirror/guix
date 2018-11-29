@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -331,8 +332,8 @@ algorithm.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://www.imbs-luebeck.de/imbs/sites/default/files/u59/"
-             "randomjungle-" version ".tar_.gz"))
+             "https://www.imbs.uni-luebeck.de/fileadmin/files/Software"
+             "/randomjungle/randomjungle-" version ".tar_.gz"))
        (patches (search-patches "randomjungle-disable-static-build.patch"))
        (sha256
         (base32
@@ -361,7 +362,7 @@ algorithm.")
     ;; Non-portable assembly instructions are used so building fails on
     ;; platforms other than x86_64 or i686.
     (supported-systems '("x86_64-linux" "i686-linux"))
-    (home-page "http://www.imbs-luebeck.de/imbs/de/node/227/")
+    (home-page "https://www.imbs.uni-luebeck.de/forschung/software/details.html#c224")
     (synopsis "Implementation of the Random Forests machine learning method")
     (description
      "Random Jungle is an implementation of Random Forests.  It is supposed to

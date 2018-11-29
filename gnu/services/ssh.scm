@@ -518,7 +518,15 @@ of user-name/file-like tuples."
                        (service-extension activation-service-type
                                           openssh-activation)
                        (service-extension account-service-type
-                                          (const %openssh-accounts))))
+                                          (const %openssh-accounts))
+
+                       ;; Install OpenSSH in the system profile.  That way,
+                       ;; 'scp' is found when someone tries to copy to or from
+                       ;; this machine.
+                       (service-extension profile-service-type
+                                          (lambda (config)
+                                            (list (openssh-configuration-openssh
+                                                   config))))))
                 (compose concatenate)
                 (extend extend-openssh-authorized-keys)
                 (default-value (openssh-configuration))))

@@ -1030,3 +1030,41 @@ maps.")
      "This package provides tools to parse Illumina Sequence Analysis
 Viewer (SAV) files, access data, and generate QC plots.")
     (license license:agpl3+)))
+
+(define-public r-chipexoqual
+  (package
+    (name "r-chipexoqual")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ChIPexoQual" version))
+       (sha256
+        (base32
+         "1773bpiybn4g9jlv46z29x19q4dpcvn7lairr3lq5pdqbqmz5hnp"))))
+    (properties `((upstream-name . "ChIPexoQual")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocparallel" ,r-biocparallel)
+       ("r-biovizbase" ,r-biovizbase)
+       ("r-broom" ,r-broom)
+       ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-hexbin" ,r-hexbin)
+       ("r-iranges" ,r-iranges)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scales" ,r-scales)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://github.com/keleslab/ChIPexoQual")
+    (synopsis "Quality control pipeline for ChIP-exo/nexus data")
+    (description
+     "This package provides a quality control pipeline for ChIP-exo/nexus
+sequencing data.")
+    (license license:gpl2+)))

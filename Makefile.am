@@ -75,6 +75,7 @@ MODULES =					\
   guix/discovery.scm				\
   guix/git-download.scm				\
   guix/hg-download.scm				\
+  guix/swh.scm					\
   guix/monads.scm				\
   guix/monad-repl.scm				\
   guix/gexp.scm					\
@@ -611,6 +612,7 @@ guix-binary.%.tar.xz:
 
 dist-hook: $(distdir)/ChangeLog gen-AUTHORS gen-tarball-version
 dist-hook: assert-no-store-file-names
+dist-hook: doc-po-update
 
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 

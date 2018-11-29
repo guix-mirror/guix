@@ -257,14 +257,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.10.1")
+    (version "1.11.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "182lkbkpd3q3l1x6bvyds90ycp38gyyxhf35ry0d3hwf2n1khjkk"))
+               "1qqhkhlzvjj0iih8vm0wfagv4fzqqy1wnsb4sqsfv7w06ccjdjcj"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -1202,7 +1202,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.2.1")
+    (version "2.3.4")
     (source
      (origin
        (method url-fetch)
@@ -1210,7 +1210,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "0d2ffbicgl3wswbnyjbw6qigz7r1aqzprpchbwp5cynw122i2raa"))))
+                "01ggzf7b3jpl89mjiqr7xbpbs181g2gjf6wzg70qaqfzz3ppc6yr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

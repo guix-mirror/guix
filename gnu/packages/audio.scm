@@ -16,6 +16,7 @@
 ;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3639,3 +3640,38 @@ library supports sample rates up to 96 kHz and up to eight channels (7.1
 surround).")
       (license (license:fsf-free "https://github.com/mstorsjo/fdk-aac/blob/master/NOTICE"
                                  "https://www.gnu.org/licenses/license-list.html#fdk")))))
+
+(define-public libopenshot-audio
+  (package
+    (name "libopenshot-audio")
+    (version "0.1.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OpenShot/libopenshot-audio")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08a8wbi28kwrdz4h0rs1b9vsr28ldfi8g75q54rj676y1vwg3qys"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ;; The following are for JUCE GUI components:
+       ("libx11" ,libx11)
+       ("freetype" ,freetype)
+       ("libxrandr" ,libxrandr)
+       ("libxinerama" ,libxinerama)
+       ("libxcursor" ,libxcursor)))
+    (arguments
+     `(#:tests? #f                      ;there are no tests
+       #:configure-flags
+       (list (string-append "-DCMAKE_CXX_FLAGS=-I"
+                            (assoc-ref %build-inputs "freetype")
+                            "/include/freetype2"))))
+    (home-page "https://openshot.org")
+    (synopsis "Audio editing and playback for OpenShot")
+    (description "OpenShot Audio Library (libopenshot-audio) allows
+high-quality editing and playback of audio, and is based on the JUCE
+library.")
+    (license license:lgpl3+)))

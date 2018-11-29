@@ -631,6 +631,8 @@ names and file names suitable for the #:allowed-references argument to
                            allowed-references disallowed-references
                            leaked-env-vars
                            local-build? (substitutable? #t)
+                           (properties '())
+
                            deprecation-warnings
                            (script-name (string-append name "-builder")))
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
@@ -788,7 +790,8 @@ The other arguments are as for 'derivation'."
                       #:disallowed-references disallowed
                       #:leaked-env-vars leaked-env-vars
                       #:local-build? local-build?
-                      #:substitutable? substitutable?))))
+                      #:substitutable? substitutable?
+                      #:properties properties))))
 
 (define* (gexp-inputs exp #:key native?)
   "Return the input list for EXP.  When NATIVE? is true, return only native

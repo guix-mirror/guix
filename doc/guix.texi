@@ -5060,7 +5060,7 @@ a derivation is the @code{derivation} procedure:
   [#:system (%current-system)] [#:references-graphs #f] @
   [#:allowed-references #f] [#:disallowed-references #f] @
   [#:leaked-env-vars #f] [#:local-build? #f] @
-  [#:substitutable? #t]
+  [#:substitutable? #t] [#:properties '()]
 Build a derivation with the given arguments, and return the resulting
 @code{<derivation>} object.
 
@@ -5097,6 +5097,9 @@ When @var{substitutable?} is false, declare that substitutes of the
 derivation's output should not be used (@pxref{Substitutes}).  This is
 useful, for instance, when building packages that capture details of the
 host CPU instruction set.
+
+@var{properties} must be an association list describing ``properties'' of the
+derivation.  It is kept as-is, uninterpreted, in the derivation.
 @end deffn
 
 @noindent
@@ -5790,7 +5793,8 @@ information about monads.)
        [#:leaked-env-vars #f] @
        [#:script-name (string-append @var{name} "-builder")] @
        [#:deprecation-warnings #f] @
-       [#:local-build? #f] [#:substitutable? #t] [#:guile-for-build #f]
+       [#:local-build? #f] [#:substitutable? #t] @
+       [#:properties '()] [#:guile-for-build #f]
 Return a derivation @var{name} that runs @var{exp} (a gexp) with
 @var{guile-for-build} (a derivation) on @var{system}; @var{exp} is
 stored in a file called @var{script-name}.  When @var{target} is true,
@@ -6228,6 +6232,10 @@ tree is kept under @file{/tmp}, in a directory whose name is shown at
 the end of the build log.  This is useful when debugging build issues.
 @xref{Debugging Build Failures}, for tips and tricks on how to debug
 build issues.
+
+This option has no effect when connecting to a remote daemon with a
+@code{guix://} URI (@pxref{The Store, the @code{GUIX_DAEMON_SOCKET}
+variable}).
 
 @item --keep-going
 @itemx -k
@@ -9723,9 +9731,9 @@ environment variable---in addition to the per-user profiles
 provides all the tools one would expect for basic user and administrator
 tasks---including the GNU Core Utilities, the GNU Networking Utilities,
 the GNU Zile lightweight text editor, @command{find}, @command{grep},
-etc.  The example above adds GNU@tie{}Screen and OpenSSH to those,
-taken from the @code{(gnu packages screen)} and @code{(gnu packages ssh)}
-modules (@pxref{Package Modules}).  The
+etc.  The example above adds GNU@tie{}Screen to those,
+taken from the @code{(gnu packages screen)}
+module (@pxref{Package Modules}).  The
 @code{(list package output)} syntax can be used to add a specific output
 of a package:
 

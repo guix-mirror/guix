@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -112,6 +112,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -128,6 +129,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
@@ -394,6 +396,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
   (package
     (name "x265")
     (version "2.9")
+    (outputs '("out" "static"))
     (source
       (origin
         (method url-fetch)
@@ -402,7 +405,8 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
         (sha256
          (base32
           "090hp4216isis8q5gb7bwzia8rfyzni54z21jnwm97x3hiy6ibpb"))
-        (patches (search-patches "x265-detect512-all-arches.patch"))
+        (patches (search-patches "x265-arm-flags.patch"
+                                 "x265-detect512-all-arches.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
                     (delete-file-recursively "source/compat/getopt")
@@ -410,14 +414,76 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
-       ;; Ensure position independent code for everyone.
-       #:configure-flags '("-DENABLE_PIC=TRUE")
+       #:configure-flags
+         ;; Ensure position independent code for everyone.
+         (list "-DENABLE_PIC=TRUE"
+               ,@(if (string-prefix? "armhf" (or (%current-system)
+                                                 (%current-target-system)))
+                     '("-DENABLE_ASSEMBLY=OFF")
+                     '())
+               (string-append "-DCMAKE_INSTALL_PREFIX="
+                              (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'prepare-build
+         (add-after 'unpack 'prepare-build
            (lambda _
              (delete-file-recursively "build")
              (chdir "source")
+             ;; recognize armv8 in 32-bit mode as ARM
+             (substitute* "CMakeLists.txt"
+              (("armv6l") "armv8l"))
+             #t))
+         (add-before 'configure 'build-12-bit
+           (lambda* (#:key (configure-flags '()) #:allow-other-keys)
+             (mkdir "../build-12bit")
+             (with-directory-excursion "../build-12bit"
+               (apply invoke
+                 "cmake" "../source"
+                 "-DHIGH_BIT_DEPTH=ON"
+                 "-DEXPORT_C_API=OFF"
+                 "-DENABLE_CLI=OFF"
+                 "-DMAIN12=ON"
+                 configure-flags)
+               (substitute* (cons "cmake_install.cmake"
+                                  (append
+                                    (find-files "CMakeFiles/x265-shared.dir" ".")
+                                    (find-files "CMakeFiles/x265-static.dir" ".")))
+                 (("libx265") "libx265_main12"))
+               (invoke "make"))))
+         (add-before 'configure 'build-10-bit
+           (lambda* (#:key (configure-flags '()) #:allow-other-keys)
+             (mkdir "../build-10bit")
+             (with-directory-excursion "../build-10bit"
+               (apply invoke
+                 "cmake" "../source"
+                 "-DHIGH_BIT_DEPTH=ON"
+                 "-DEXPORT_C_API=OFF"
+                 "-DENABLE_CLI=OFF"
+                 configure-flags)
+               (substitute* (cons "cmake_install.cmake"
+                                  (append
+                                    (find-files "CMakeFiles/x265-shared.dir" ".")
+                                    (find-files "CMakeFiles/x265-static.dir" ".")))
+                 (("libx265") "libx265_main10"))
+               (invoke "make"))))
+         (add-after 'install 'install-more-libs
+           (lambda _
+             (with-directory-excursion "../build-12bit"
+               (invoke "make" "install"))
+             (with-directory-excursion "../build-10bit"
+               (invoke "make" "install"))))
+         (add-before 'strip 'move-static-libs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (static (assoc-ref outputs "static")))
+               (mkdir-p (string-append static "/lib"))
+               (with-directory-excursion
+                 (string-append out "/lib")
+                 (for-each
+                   (lambda (file)
+                     (rename-file file
+                                  (string-append static "/lib/" file)))
+                   (find-files "." "\\.a$"))))
              #t)))))
     (home-page "http://x265.org/")
     (synopsis "Library for encoding h.265/HEVC video streams")
@@ -3082,3 +3148,110 @@ as surfing, skiing, riding and walking while shooting videos are especially
 prone to erratic camera shakes.  Vidstab targets these video contents to help
 create smoother and stable videos.")
     (license license:gpl2+)))
+
+(define-public libopenshot
+  (package
+    (name "libopenshot")
+    (version "0.2.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OpenShot/libopenshot")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1x4kv05pdq1pglb6y056aa7llc6iyibyhzg93k7zwj0q08cp5ixd"))
+              (modules '((guix build utils)))
+              (snippet '(begin
+                          ;; Allow overriding of the python installation dir
+                          (substitute* "src/bindings/python/CMakeLists.txt"
+                            (("(SET\\(PYTHON_MODULE_PATH.*)\\)" _ set)
+                             (string-append set " CACHE PATH "
+                                            "\"Python bindings directory\")")))
+                          #t))
+              (patches (search-patches "libopenshot-tests-with-system-libs.patch"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("swig" ,swig)
+       ("unittest++" ,unittest-cpp)))
+    (propagated-inputs                  ;all referenced in installed headers
+     `(("cppzmq" ,cppzmq)
+       ("ffmpeg" ,ffmpeg)
+       ("imagemagick" ,imagemagick)
+       ("jsoncpp" ,jsoncpp)
+       ("libopenshot-audio" ,libopenshot-audio)
+       ("qt" ,qt)       ;widgets, core, gui, multimedia, and multimediawidgets
+       ("zeromq" ,zeromq)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DPYTHON_MODULE_PATH:PATH=" %output "/lib/python"
+                            ,(version-major+minor (package-version python))
+                            "/site-packages")
+             "-DUSE_SYSTEM_JSONCPP:BOOL=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-vars
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "LIBOPENSHOT_AUDIO_DIR"
+                     (assoc-ref inputs "libopenshot-audio"))
+             (setenv "ZMQDIR"
+                     (assoc-ref inputs "zeromq"))
+             (setenv "UNITTEST_DIR"
+                     (string-append (assoc-ref inputs "unittest++")
+                                    "/include/UnitTest++"))
+             #t)))))
+    (home-page "https://openshot.org")
+    (synopsis "Video-editing, animation, and playback library")
+    (description "OpenShot Library (libopenshot) is a powerful C++ video
+editing library with a multi-threaded and feature rich video editing
+API.  It includes bindings for Python, Ruby, and other languages.")
+    (license license:lgpl3+)))
+
+(define-public openshot
+  (package
+    (name "openshot")
+    (version "2.4.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OpenShot/openshot-qt")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1qdw1mli4y9qhrnllnkaf6ydgw5vfvdb90chs4i679k0x0jyb9a2"))))
+    (build-system python-build-system)
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("libopenshot" ,libopenshot)
+       ("python" ,python)
+       ("python-pyqt" ,python-pyqt)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-requests" ,python-requests)
+       ("qtsvg" ,qtsvg)))
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'build)       ;install phase does all the work
+                  (add-before 'install 'set-tmp-home
+                    (lambda _
+                      ;; src/classes/info.py "needs" to create several
+                      ;; directories in $HOME when loaded during build
+                      (setenv "HOME" "/tmp")
+                      #t))
+                  (add-after 'install 'wrap-program
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (wrap-program (string-append (assoc-ref outputs "out")
+                                                   "/bin/openshot-qt")
+                        `("QT_PLUGIN_PATH" prefix
+                          ,(list (string-append (assoc-ref inputs "qtsvg")
+                                                "/lib/qt5/plugins/")))))))))
+    (home-page "https://openshot.org")
+    (synopsis "Video editor")
+    (description "OpenShot takes your videos, photos, and music files and
+helps you create the film you have always dreamed of.  Easily add sub-titles,
+transitions, and effects and then export your film to many common formats.")
+    (license license:gpl3+)))

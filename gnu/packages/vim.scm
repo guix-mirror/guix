@@ -61,7 +61,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.1.0026")
+    (version "8.1.0551")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/vim/vim/archive/v"
@@ -69,7 +69,7 @@
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "14q99dn113czp522j34p71za6g1mkriy04xxwcbm3axnrrpv1y52"))))
+               "1wi6j9w04wg3hxsch3izl2mxb0065vpvxscz19zjn5ypkfypnm8n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -85,12 +85,18 @@
                             "src/testdir/test_terminal.vim")
                (("/bin/sh") (which "sh")))
              #t))
-         (add-before 'check 'patch-failing-test
+         (add-before 'check 'patch-failing-tests
            (lambda _
              ;; XXX A single test fails with “Can't create file /dev/stdout” (at
              ;; Test_writefile_sync_dev_stdout line 5) while /dev/stdout exists.
              (substitute* "src/testdir/test_writefile.vim"
                (("/dev/stdout") "a-regular-file"))
+
+             ;; XXX: This test fails when run in the build container:
+             ;; <https://github.com/vim/vim/issues/3348>.
+             (substitute* "src/testdir/test_search.vim"
+               ((".*'Test_incsearch_substitute_03'.*" all)
+                (string-append "\"" all "\n")))
              #t)))))
     (inputs
      `(("gawk" ,gawk)

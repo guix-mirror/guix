@@ -1980,14 +1980,14 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
 (define-public sqlcipher
   (package
     (name "sqlcipher")
-    (version "3.3.1")
+    (version "3.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/sqlcipher/" name
                            "/archive/v" version ".tar.gz"))
        (sha256
-        (base32 "1gv58dlbpzrmznly52yqbxgvii0ib88zr3aszla1bsypwjr6flff"))
+        (base32 "1nxarwbci8jx99f1d0y1ivxcv25s78l1p7q6qy28lkpkcx8pm2b9"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (inputs

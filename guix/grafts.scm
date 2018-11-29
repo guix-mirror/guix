@@ -123,6 +123,10 @@ are not recursively applied to dependencies of DRV."
   (define add-label
     (cut cons "x" <>))
 
+  (define properties
+    `((type . graft)
+      (graft (count . ,(length grafts)))))
+
   (match grafts
     ((($ <graft> sources source-outputs targets target-outputs) ...)
      (let ((sources (zip sources source-outputs))
@@ -140,7 +144,8 @@ are not recursively applied to dependencies of DRV."
                                                 ,@(append (map add-label sources)
                                                           (map add-label targets)))
                                      #:outputs outputs
-                                     #:local-build? #t)))))
+                                     #:local-build? #t
+                                     #:properties properties)))))
 (define (item->deriver store item)
   "Return two values: the derivation that led to ITEM (a store item), and the
 name of the output of that derivation ITEM corresponds to (for example

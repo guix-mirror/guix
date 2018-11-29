@@ -348,6 +348,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/perl-check.scm			\
   %D%/packages/perl-web.scm			\
   %D%/packages/photo.scm			\
+  %D%/packages/phabricator.scm 			\
   %D%/packages/php.scm				\
   %D%/packages/pkg-config.scm			\
   %D%/packages/plotutils.scm			\
@@ -738,6 +739,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch \
   %D%/packages/patches/ghc-dont-pass-linker-flags-via-response-files.patch	\
+  %D%/packages/patches/ghc-haddock-library-unbundle.patch		\
   %D%/packages/patches/ghostscript-CVE-2018-16509.patch		\
   %D%/packages/patches/ghostscript-bug-699708.patch		\
   %D%/packages/patches/ghostscript-no-header-id.patch		\
@@ -897,6 +899,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
+  %D%/packages/patches/libopenshot-tests-with-system-libs.patch	\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt1.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
@@ -1149,6 +1152,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/scotch-build-parallelism.patch		\
   %D%/packages/patches/scotch-graph-diam-64.patch		\
   %D%/packages/patches/scotch-graph-induce-type-64.patch	\
+  %D%/packages/patches/scribus-poppler.patch			\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/sharutils-CVE-2018-1000097.patch		\
@@ -1251,6 +1255,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wpa-supplicant-fix-zeroed-keys.patch	\
   %D%/packages/patches/wpa-supplicant-fix-nonce-reuse.patch	\
   %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
+  %D%/packages/patches/x265-arm-flags.patch			\
   %D%/packages/patches/x265-detect512-all-arches.patch		\
   %D%/packages/patches/xboing-CVE-2004-0149.patch		\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\

@@ -9,6 +9,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -998,3 +999,58 @@ the image.
 @code{vagrant} command line executable, allowing programmatic control of Vagrant
 virtual machines.")
     (license license:expat)))
+
+(define-public bubblewrap
+  (package
+    (name "bubblewrap")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/projectatomic/bubblewrap/"
+                                  "releases/download/v" version "/bubblewrap-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1y2bdlxnlr84xcbf31lzirc292c5ak9bd2wvcvh4ppsliih6pjny"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Tests try to access /var/tmp, which is not possible in our build
+             ;; environment.  Let's give them another directory.
+             ;; /tmp gets overriden in some tests, so we need another directory.
+             ;; the only possibility is the output directory.
+             (let ((tmp-dir (string-append (assoc-ref outputs "out") "/tmp")))
+               (mkdir-p tmp-dir)
+               (substitute* "tests/test-run.sh"
+                 (("/var/tmp") tmp-dir)
+                 ;; Tests create a temporary python script, so fix its shebang.
+                 (("/usr/bin/env python") (which "python"))
+                 ;; Some tests try to access /usr, but that doesn't exist.
+                 ;; Give them /gnu instead.
+                 (("/usr") "/gnu")
+                 (("  */bin/bash") (which "bash"))
+                 (("/bin/sh") (which "sh"))
+                 (("findmnt") (which "findmnt"))))
+             #t))
+         ;; Remove the directory we gave to tests to have a clean package.
+         (add-after 'check 'remove-tmp-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file-recursively (string-append (assoc-ref outputs "out") "/tmp"))
+             #t)))))
+    (inputs
+     `(("libcap" ,libcap)))
+    (native-inputs
+     `(("python-2" ,python-2)
+       ("util-linux" ,util-linux)))
+    (home-page "https://github.com/projectatomic/bubblewrap")
+    (synopsis "Unprivileged sandboxing tool")
+    (description "Bubblewrap is aimed at running applications in a sandbox,
+where it has restricted access to parts of the operating system or user data
+such as the home directory.  Bubblewrap always creates a new mount namespace,
+and the user can specify exactly what parts of the filesystem should be visible
+in the sandbox.  Any such directories specified is mounted nodev by default,
+and can be made readonly.")
+    (license license:lgpl2.0+)))

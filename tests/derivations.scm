@@ -1132,6 +1132,16 @@
                                     ((p2 . _)
                                      (string<? p1 p2)))))))))))))
 
+(test-equal "derivation-properties"
+  (list '() '((type . test)))
+  (let ((drv1 (build-expression->derivation %store "bar"
+                                            '(mkdir %output)))
+        (drv2 (build-expression->derivation %store "foo"
+                                           '(mkdir %output)
+                                           #:properties '((type . test)))))
+    (list (derivation-properties drv1)
+          (derivation-properties drv2))))
+
 (test-equal "map-derivation"
   "hello"
   (let* ((joke (package-derivation %store guile-1.8))

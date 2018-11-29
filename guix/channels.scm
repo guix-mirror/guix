@@ -47,6 +47,7 @@
             channel-instance-checkout
 
             latest-channel-instances
+            checkout->channel-instance
             latest-channel-derivation
             channel-instances->manifest
             channel-instances->derivation))
@@ -113,6 +114,17 @@ CHANNELS."
                                                         channel))))
            (channel-instance channel commit checkout)))
        channels))
+
+(define* (checkout->channel-instance checkout
+                                     #:key commit
+                                     (url checkout) (name 'guix))
+  "Return a channel instance for CHECKOUT, which is assumed to be a checkout
+of COMMIT at URL.  Use NAME as the channel name."
+  (let* ((commit  (or commit (make-string 40 #\0)))
+         (channel (channel (name name)
+                           (commit commit)
+                           (url url))))
+    (channel-instance channel commit checkout)))
 
 (define %self-build-file
   ;; The file containing code to build Guix.  This serves the same purpose as

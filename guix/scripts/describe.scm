@@ -103,11 +103,11 @@ Display information about the channels currently in use.\n"))
   (format port "url: ~a~%" (channel-url channel))
   (format port "commit: ~a~%" (channel-commit channel)))
 
-(define* (display-checkout-info fmt #:optional directory)
+(define (display-checkout-info fmt)
   "Display information about the current checkout according to FMT, a symbol
 denoting the requested format.  Exit if the current directory does not lie
 within a Git checkout."
-  (let* ((program    (or directory (car (command-line))))
+  (let* ((program    (car (command-line)))
          (directory  (catch 'git-error
                        (lambda ()
                          (repository-discover (dirname program)))

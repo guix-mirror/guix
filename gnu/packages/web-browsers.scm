@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,7 @@
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xorg)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python))
@@ -319,4 +321,41 @@ access.")
     (synopsis "Minimal, keyboard-focused, vim-like web browser")
     (description "qutebrowser is a keyboard-focused browser with a minimal
 GUI.  It is based on PyQt5 and QtWebKit.")
+    (license license:gpl3+)))
+
+(define-public vimb
+  (package
+    (name "vimb")
+    (version "3.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fanglingsu/vimb/")
+             (commit version)))
+       (sha256
+        (base32
+         "1qg18z2gnsli9qgrqfhqfrsi6g9mcgr90w8yab28nxrq4aha6brf"))
+       (file-name (git-file-name name version))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc"
+                          "DESTDIR="
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("glib-networking" ,glib-networking)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("webkitgtk" ,webkitgtk)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://fanglingsu.github.io/vimb/")
+    (synopsis "Fast and lightweight Vim-like web browser")
+    (description "Vimb is a fast and lightweight vim like web browser based on
+the webkit web browser engine and the GTK toolkit.  Vimb is modal like the great
+vim editor and also easily configurable during runtime.  Vimb is mostly keyboard
+driven and does not detract you from your daily work.")
     (license license:gpl3+)))

@@ -373,14 +373,24 @@
   ;; procedure that takes a file name, an algorithm (symbol) and a hash
   ;; (bytevector), and returns a URL or #f.
   '(begin
-     (use-modules (guix base32) (guix base16))
+     (use-modules (guix base32))
 
-     (list (lambda (file algo hash)
-             ;; Files served by 'guix publish' are accessible under a single
-             ;; hash algorithm.
-             (string-append "https://mirror.hydra.gnu.org/file/"
-                            file "/" (symbol->string algo) "/"
-                            (bytevector->nix-base32-string hash)))
+     (define (guix-publish host)
+       (lambda (file algo hash)
+         ;; Files served by 'guix publish' are accessible under a single
+         ;; hash algorithm.
+         (string-append "https://" host "/file/"
+                        file "/" (symbol->string algo) "/"
+                        (bytevector->nix-base32-string hash))))
+
+     ;; XXX: (guix base16) appeared in March 2017 (and thus 0.13.0) so old
+     ;; installations of the daemon might lack it.  Thus, load it lazily to
+     ;; avoid gratuitous errors.  See <https://bugs.gnu.org/33542>.
+     (module-autoload! (current-module)
+                       '(guix base16) '(bytevector->base16-string))
+
+     (list (guix-publish "mirror.hydra.gnu.org")
+           (guix-publish "berlin.guixsd.org")
            (lambda (file algo hash)
              ;; 'tarballs.nixos.org' supports several algorithms.
              (string-append "https://tarballs.nixos.org/"

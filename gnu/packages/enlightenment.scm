@@ -58,7 +58,8 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (ice-9 match))
 
 (define-public efl
   (package
@@ -139,12 +140,16 @@
     (arguments
      `(#:configure-flags '("--disable-silent-rules"
                            "--disable-systemd"
+                           "--with-profile=release"
                            "--enable-liblz4"
                            "--enable-xinput22"
                            "--enable-image-loader-webp"
                            "--enable-multisense"
-                           "--with-opengl=es"
-                           "--enable-egl"
+                           ,@(match (%current-system)
+                               ("armhf-linux"
+                                '("--with-opengl=es" "--with-egl"))
+                               (_
+                                '("--with-opengl=full")))
                            "--enable-harfbuzz"
                            ;; for wayland
                            "--enable-wayland"

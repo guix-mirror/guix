@@ -540,7 +540,7 @@ independent targets.")
 (define-public uncrustify
   (package
     (name "uncrustify")
-    (version "0.67")
+    (version "0.68.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -548,10 +548,11 @@ independent targets.")
                     "uncrustify-" version ".zip"))
               (sha256
                (base32
-                "0n13kq0nsm35fxhdp0f275n4x0w88hdv3bdjy0hgvv42x0dx5zyp"))))
+                "1jb3hmm11m2mgnypapak2lgyyvspnmx9bxd9dxis5swaja2ddxlg"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     `(("unzip" ,unzip)
+       ("python" ,python-wrapper)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

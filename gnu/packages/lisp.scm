@@ -333,7 +333,6 @@ an interpreter, a compiler, a debugger, and much more.")
            #t))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
-    ;; Bootstrap with CLISP.
     (native-inputs
      ;; From INSTALL:
      ;;     Supported build hosts are:
@@ -343,15 +342,20 @@ an interpreter, a compiler, a debugger, and much more.")
      ;;       ABCL (recent versions only)
      ;;       CLISP (only some versions: 2.44.1 is OK, 2.47 is not)
      ;;       XCL
-     ;; CCL seems ideal then.
-     `(("ccl" ,ccl)
+     ;; CCL seems ideal then, but it unfortunately only builds reliably
+     ;; on some architectures.
+     `(,@(match (%current-system)
+           ((or "x86_64-linux" "i686-linux")
+            `(("ccl" ,ccl)))
+           (_
+            `(("clisp" ,clisp))))
        ("which" ,which)
        ("inetutils" ,inetutils)         ;for hostname(1)
        ("ed" ,ed)
        ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
        ("texinfo" ,texinfo)))
     (arguments
-     '(#:modules ((guix build gnu-build-system)
+     `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))
        #:phases
@@ -410,7 +414,11 @@ an interpreter, a compiler, a debugger, and much more.")
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")
-             (invoke "sh" "make.sh" "ccl"
+             (invoke "sh" "make.sh" ,@(match (%current-system)
+                                        ((or "x86_64-linux" "i686-linux")
+                                         `("ccl"))
+                                        (_
+                                         `("clisp")))
                      (string-append "--prefix="
                                     (assoc-ref outputs "out")))))
          (replace 'install
@@ -3494,3 +3502,242 @@ Lisp, featuring:
 
 (define-public ecl-lparallel
   (sbcl-package->ecl-package sbcl-lparallel))
+
+(define-public sbcl-cl-markup
+  (let ((commit "e0eb7debf4bdff98d1f49d0f811321a6a637b390"))
+    (package
+      (name "sbcl-cl-markup")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/arielnetworks/cl-markup/")
+               (commit commit)))
+         (file-name (git-file-name "cl-markup" version))
+         (sha256
+          (base32
+           "10l6k45971dl13fkdmva7zc6i453lmq9j4xax2ci6pjzlc6xjhp7"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/arielnetworks/cl-markup/")
+      (synopsis "Markup generation library for Common Lisp")
+      (description
+       "A modern markup generation library for Common Lisp that features:
+
+@itemize
+@item Fast (even faster through compiling the code)
+@item Safety
+@item Support for multiple document types (markup, xml, html, html5, xhtml)
+@item Output with doctype
+@item Direct output to stream
+@end itemize\n")
+      (license license:lgpl3+))))
+
+(define-public cl-markup
+  (sbcl-package->cl-source-package sbcl-cl-markup))
+
+(define-public ecl-cl-markup
+  (sbcl-package->ecl-package sbcl-cl-markup))
+
+(define-public sbcl-cl-css
+  (let ((commit "8fe654c8f0cf95b300718101cce4feb517f78e2f"))
+    (package
+      (name "sbcl-cl-css")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/inaimathi/cl-css/")
+               (commit commit)))
+         (file-name (git-file-name "cl-css" version))
+         (sha256
+          (base32
+           "1lc42zi2sw11fl2589sc19nr5sd2p0wy7wgvgwaggxa5f3ajhsmd"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/inaimathi/cl-css/")
+      (synopsis "Non-validating, inline CSS generator for Common Lisp")
+      (description
+       "This is a dead-simple, non validating, inline CSS generator for Common
+Lisp.  Its goals are axiomatic syntax, simple implementation to support
+portability, and boilerplate reduction in CSS.")
+      (license license:expat))))
+
+(define-public cl-css
+  (sbcl-package->cl-source-package sbcl-cl-css))
+
+(define-public ecl-cl-markup
+  (sbcl-package->ecl-package sbcl-cl-css))
+
+(define-public sbcl-portable-threads
+  (let ((commit "c0e61a1faeb0583c80fd3f20b16cc4c555226920"))
+    (package
+      (name "sbcl-portable-threads")
+      (version (git-version "2.3" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/binghe/portable-threads/")
+               (commit commit)))
+         (file-name (git-file-name "portable-threads" version))
+         (sha256
+          (base32
+           "03fmxyarc0xf4kavwkfa0a2spkyfrz6hbgbi9y4q7ny5aykdyfaq"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(;; Tests seem broken.
+         #:tests? #f))
+      (home-page "https://github.com/binghe/portable-threads")
+      (synopsis "Portable threads (and scheduled and periodic functions) API for Common Lisp")
+      (description
+       "Portable Threads (and Scheduled and Periodic Functions) API for Common
+Lisp (from GBBopen project).")
+      (license license:asl2.0))))
+
+(define-public cl-portable-threads
+  (sbcl-package->cl-source-package sbcl-portable-threads))
+
+(define-public ecl-portable-threada
+  (sbcl-package->ecl-package sbcl-portable-threads))
+
+(define-public sbcl-usocket-boot0
+  ;; usocket's test rely on usocket-server which depends on usocket itself.
+  ;; We break this cyclic dependency with -boot0 that packages usocket.
+  (let ((commit "86e7efbfe50101931edf4b67cdcfa7e221ecfde9"))
+    (package
+      (name "sbcl-usocket-boot0")
+      (version (git-version "0.7.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/usocket/usocket/")
+               (commit commit)))
+         (file-name (git-file-name "usocket" version))
+         (sha256
+          (base32
+           "1lk6ipakrib7kdgzw44hrgmls9akp5pz4h35yynw0k5zwmmq6374"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("split-sequence" ,sbcl-split-sequence)))
+      (arguments
+       `(#:tests? #f
+         #:asd-system-name "usocket"))
+      (home-page "https://common-lisp.net/project/usocket/")
+      (synopsis "Universal socket library for Common Lisp (server side)")
+      (description
+       "This library strives to provide a portable TCP/IP and UDP/IP socket
+interface for as many Common Lisp implementations as possible, while keeping
+the abstraction and portability layer as thin as possible.")
+      (license license:expat))))
+
+(define-public sbcl-usocket-server
+  (package
+    (inherit sbcl-usocket-boot0)
+    (name "sbcl-usocket-server")
+    (inputs
+     `(("usocket" ,sbcl-usocket-boot0)
+       ("portable-threads" ,sbcl-portable-threads)))
+    (arguments
+     '(#:asd-system-name "usocket-server"))
+    (synopsis "Universal socket library for Common Lisp (server side)")))
+
+(define-public cl-usocket-server
+  (sbcl-package->cl-source-package sbcl-usocket-server))
+
+(define-public ecl-socket-server
+  (sbcl-package->ecl-package sbcl-usocket-server))
+
+(define-public sbcl-usocket
+  (package
+    (inherit sbcl-usocket-boot0)
+    (name "sbcl-usocket")
+    (arguments
+     ;; FIXME: Tests need network access?
+     `(#:tests? #f))
+    (native-inputs
+     ;; Testing only.
+     `(("usocket-server" ,sbcl-usocket-server)
+       ("rt" ,sbcl-rt)))))
+
+(define-public cl-usocket
+  (sbcl-package->cl-source-package sbcl-usocket))
+
+(define-public ecl-socket
+  (sbcl-package->ecl-package sbcl-usocket))
+
+(define-public sbcl-s-xml
+  (package
+    (name "sbcl-s-xml")
+    (version "3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://common-lisp.net/project/s-xml/s-xml.tgz")
+       (sha256
+        (base32
+         "061qcr0dzshsa38s5ma4ay924cwak2nq9gy59dw6v9p0qb58nzjf"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://common-lisp.net/project/s-xml/")
+    (synopsis "Simple XML parser implemented in Common Lisp")
+    (description
+     "S-XML is a simple XML parser implemented in Common Lisp.  This XML
+parser implementation has the following features:
+
+@itemize
+@item It works (handling many common XML usages).
+@item It is very small (the core is about 700 lines of code, including
+comments and whitespace).
+@item It has a core API that is simple, efficient and pure functional, much
+like that from SSAX (see also http://ssax.sourceforge.net).
+@item It supports different DOM models: an XSML-based one, an LXML-based one
+and a classic xml-element struct based one.
+@item It is reasonably time and space efficient (internally avoiding garbage
+generatation as much as possible).
+@item It does support CDATA.
+@item It should support the same character sets as your Common Lisp
+implementation.
+@item It does support XML name spaces.
+@end itemize
+
+This XML parser implementation has the following limitations:
+
+@itemize
+@item It does not support any special tags (like processing instructions).
+@item It is not validating, even skips DTD's all together.
+@end itemize\n")
+    (license license:lgpl3+)))
+
+(define-public cl-s-xml
+  (sbcl-package->cl-source-package sbcl-s-xml))
+
+(define-public ecl-s-xml
+  (sbcl-package->ecl-package sbcl-s-xml))
+
+(define-public sbcl-s-xml-rpc
+  (package
+    (name "sbcl-s-xml-rpc")
+    (version "7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://common-lisp.net/project/s-xml-rpc/s-xml-rpc.tgz")
+       (sha256
+        (base32
+         "02z7k163d51v0pzk8mn1xb6h5s6x64gjqkslhwm3a5x26k2gfs11"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("s-xml" ,sbcl-s-xml)))
+    (home-page "https://common-lisp.net/project/s-xml-rpc/")
+    (synopsis "Implementation of XML-RPC in Common Lisp for both client and server")
+    (description
+     "S-XML-RPC is an implementation of XML-RPC in Common Lisp for both
+client and server.")
+    (license license:lgpl3+)))
+
+(define-public cl-s-xml-rpc
+  (sbcl-package->cl-source-package sbcl-s-xml-rpc))
+
+(define-public ecl-s-xml-rpc
+  (sbcl-package->ecl-package sbcl-s-xml-rpc))
