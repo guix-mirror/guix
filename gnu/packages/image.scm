@@ -1392,12 +1392,14 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
     (name "gpick")
     (version "0.2.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/thezbyg/gpick/archive/"
-                                  name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/thezbyg/gpick.git")
+                    (commit (string-append name "-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mxvxk15xhk2i5vfavjhnkk4j3bnii0gpf8di14rlbpq070hd5rs"))))
+                "0mcj806zagh122qgrdkrg0macpzby97y89xi2sjyn3bh8vmmyxjy"))))
     (build-system scons-build-system)
     (native-inputs
      `(("boost" ,boost)
