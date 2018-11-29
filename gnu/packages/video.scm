@@ -1456,14 +1456,14 @@ other site that youtube-dl supports.")
     (name "you-get")
     (version "0.4.1077")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/soimort/you-get/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/soimort/you-get.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "04vxc91k627qgsqs8dhqajrb6vpj4pw21jlwbha28qakfiz2x11k"))))
+                "1rwkn3wb3r70b8cqj40qdknkg9kqbgzkvi901hbpy2a8s1b7858n"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
