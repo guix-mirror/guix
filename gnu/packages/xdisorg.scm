@@ -530,14 +530,14 @@ selection's dimensions to stdout.")
     (name "maim")
     (version "5.5.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/naelstrof/maim/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/naelstrof/maim.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "14zdhsx1cndg5m8wbv1rqmza7wgknwfj5h0knzxg3p2jkjw66i95"))))
+                "14mfxdm39kc5jk8wysrzx05ag2g4sk9l24i8m5pzqn8j611150v3"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
