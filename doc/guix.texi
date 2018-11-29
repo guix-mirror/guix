@@ -17658,6 +17658,8 @@ Determines whether php errors and warning should be sent to clients
 and displayed in their browsers.
 This is useful for local php development, but a security risk for public sites,
 as error messages can reveal passwords and personal data.
+@item @code{timezone} (default @code{#f})
+Specifies @code{php_admin_value[date.timezone]} parameter.
 @item @code{workers-logfile} (default @code{(string-append "/var/log/php" (version-major (package-version php)) "-fpm.www.log")})
 This file will log the @code{stderr} outputs of php worker processes.
 Can be set to @code{#f} to disable logging.
