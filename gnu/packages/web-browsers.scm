@@ -37,6 +37,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages ncurses)
@@ -53,7 +54,8 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system asdf))
 
 (define-public dillo
   (package
@@ -401,3 +403,68 @@ inspired by Emacs and designed for power users.  The application has familiar
 key-bindings, is fully configurable and extensible in Lisp, and has powerful
 features for productive professionals.")
       (license license:bsd-3))))
+
+(define-public sbcl-next
+  (package
+    (inherit next-gtk-webkit)
+    (name "sbcl-next")
+    (build-system asdf-build-system/sbcl)
+    (outputs '("out" "lib"))
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-platform-port-path
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "source/ports/gtk-webkit.lisp"
+                        (("\"next-gtk-webkit\"")
+                         (string-append "\"" (assoc-ref inputs "next-gtk-webkit")
+                                        "/bin/next-gtk-webkit\"")))))
+                  (add-before 'cleanup 'move-bundle
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (define lib (assoc-ref outputs "lib"))
+                      (define actual-fasl (string-append
+                                           lib
+                                           "/lib/sbcl/next.fasl"))
+                      (define expected-fasl (string-append
+                                             lib
+                                             "/lib/sbcl/next--system.fasl"))
+                      (pk actual-fasl)
+                      (pk expected-fasl)
+                      (copy-file actual-fasl expected-fasl)
+                      #t))
+                  (add-after 'create-symlinks 'build-program
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (build-program
+                       (string-append (assoc-ref outputs "out") "/bin/next")
+                       outputs
+                       #:entry-program '((next:start-with-port) 0))))
+                  (add-before 'build 'install-assets
+                    ;; Since the ASDF build system generates a new .asd with a
+                    ;; possibly suffixed and thus illegal version number, assets
+                    ;; should not be installed after the 'build phase or else
+                    ;; the illegal version will result in NIL in the .desktop
+                    ;; file.
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (invoke "make" "install-assets"
+                              (string-append "PREFIX="
+                                             (assoc-ref outputs "out"))))))))
+    (inputs
+     `(("next-gtk-webkit" ,next-gtk-webkit)
+       ;; Lisp libraries:
+       ("trivial-features" ,sbcl-trivial-features)
+       ("alexandria" ,sbcl-alexandria)
+       ("cl-strings" ,sbcl-cl-strings)
+       ("cl-string-match" ,sbcl-cl-string-match)
+       ("puri" ,sbcl-puri)
+       ("queues.simple-queue" ,sbcl-queues.simple-queue)
+       ("sqlite" ,sbcl-cl-sqlite)
+       ("parenscript" ,sbcl-parenscript)
+       ("cl-json" ,sbcl-cl-json)
+       ("swank" ,sbcl-slime-swank)
+       ("cl-markup" ,sbcl-cl-markup)
+       ("cl-css" ,sbcl-cl-css)
+       ("usocket" ,sbcl-usocket)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("s-xml-rpc" ,sbcl-s-xml-rpc)
+       ("unix-opts" ,sbcl-unix-opts)))
+    (synopsis "Infinitely extensible web-browser (with Lisp development files)")))
