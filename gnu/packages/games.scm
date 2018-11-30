@@ -3336,7 +3336,7 @@ your child be creative.")
 (define-public tuxpaint-stamps
   (package
     (name "tuxpaint-stamps")
-    (version "2014.08.23")
+    (version "2018.09.01")
     (source
      (origin
        (method url-fetch)
@@ -3345,7 +3345,7 @@ your child be creative.")
                            "/tuxpaint-stamps-" version ".tar.gz"))
        (sha256
         (base32
-         "0rhlwrjz44wp269v3rid4p8pi0i615pzifm1ym6va64gn1bms06q"))))
+         "1skr23k27yj3vgwfazpzxp90lb2a278gxrkr3bxw7az6zpkmb3yp"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("tar" ,tar)
