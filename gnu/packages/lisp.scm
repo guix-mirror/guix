@@ -3427,7 +3427,7 @@ is a library for creating graphical user interfaces.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/atlas-engineer/cl-webkit")
+               (url "https://github.com/jmercouris/cl-webkit")
                (commit commit)))
          (file-name (git-file-name "cl-webkit" version))
          (sha256
@@ -3449,7 +3449,7 @@ is a library for creating graphical user interfaces.")
                  (("libwebkit2gtk" all)
                   (string-append
                    (assoc-ref inputs "webkitgtk") "/lib/" all))))))))
-      (home-page "https://github.com/atlas-engineer/cl-webkit")
+      (home-page "https://github.com/jmercouris/cl-webkit")
       (synopsis "Binding to WebKitGTK+ for Common Lisp")
       (description
        "@command{cl-webkit} is a binding to WebKitGTK+ for Common Lisp,
