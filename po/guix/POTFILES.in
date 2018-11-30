@@ -43,4 +43,5 @@ guix/http-client.scm
 guix/nar.scm
 guix/channels.scm
 guix/profiles.scm
+guix/git.scm
 nix/nix-daemon/guix-daemon.cc

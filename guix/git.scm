@@ -20,6 +20,7 @@
 (define-module (guix git)
   #:use-module (git)
   #:use-module (git object)
+  #:use-module (guix i18n)
   #:use-module (guix base32)
   #:use-module (gcrypt hash)
   #:use-module ((guix build utils) #:select (mkdir-p))
@@ -206,8 +207,31 @@ Log progress and checkout info to LOG-PORT."
   (branch  git-checkout-branch (default "master"))
   (commit  git-checkout-commit (default #f)))
 
-(define latest-repository-commit*
-  (store-lift latest-repository-commit))
+(define* (latest-repository-commit* url #:key ref log-port)
+  ;; Monadic variant of 'latest-repository-commit'.
+  (lambda (store)
+    ;; The caller--e.g., (guix scripts build)--may not handle 'git-error' so
+    ;; translate it into '&message' conditions that we know will be properly
+    ;; handled.
+    (catch 'git-error
+      (lambda ()
+        (values (latest-repository-commit store url
+                                          #:ref ref #:log-port log-port)
+                store))
+      (lambda (key error . _)
+        (raise (condition
+                (&message
+                 (message
+                  (match ref
+                    (('commit . commit)
+                     (format #f (G_ "cannot fetch commit ~a from ~a: ~a")
+                             commit url (git-error-message error)))
+                    (('branch . branch)
+                     (format #f (G_ "cannot fetch branch '~a' from ~a: ~a")
+                             branch url (git-error-message error)))
+                    (_
+                     (format #f (G_ "Git failure while fetching ~a: ~a")
+                             url (git-error-message error))))))))))))
 
 (define-gexp-compiler (git-checkout-compiler (checkout <git-checkout>)
                                              system target)
