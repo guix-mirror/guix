@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
@@ -3259,7 +3259,7 @@ safety of the Chromium vessel.")
 (define-public tuxpaint
   (package
     (name "tuxpaint")
-    (version "0.9.22")                  ;keep VER_DATE below in sync
+    (version "0.9.23")                  ;keep VER_DATE below in sync
     (source
      (origin
        (method url-fetch)
@@ -3267,7 +3267,7 @@ safety of the Chromium vessel.")
                            version "/tuxpaint-" version ".tar.gz"))
        (sha256
         (base32
-         "1qrbrdck9yxpcg3si6jb9i11w8lw9h4hqad0pfaxgyiniqpr7gca"))
+         "09k9pxi88r3dx6dyjwf9h85d4qpva4i29qz63dc558hg9v21k69l"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3295,7 +3295,7 @@ safety of the Chromium vessel.")
        ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-ttf sdl-image)))))
     ;; TODO: Use system fonts rather than those in data/fonts
     (arguments
-     `(#:make-flags `("VER_DATE=2014-08-23"
+     `(#:make-flags `("VER_DATE=2018-09-02"
                       "GPERF=gperf" "CC=gcc"
                       "SDL_PCNAME=sdl SDL_image SDL_mixer SDL_ttf"
                       ,(string-append "PREFIX=" %output)
