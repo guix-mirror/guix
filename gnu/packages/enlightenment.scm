@@ -183,7 +183,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.2.1")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -191,10 +191,9 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "1ii8332bl88l8md3gvz5dhi9bjpm6shyf14ck9kfyy7d56hp71mc"))
+                "07vw28inkimi9avp16j0rqcfqjq16081554qsv29pcqhz18xp59r"))
               (modules '((guix build utils)))
               ;; Remove the bundled fonts.
-              ;; TODO: Remove bundled lz4.
               (snippet
                '(begin
                   (delete-file-recursively "data/fonts")
