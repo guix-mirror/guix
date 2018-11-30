@@ -1026,7 +1026,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
   %D%/packages/patches/patchelf-page-size.patch			\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
-  %D%/packages/patches/patchutils-xfail-gendiff-tests.patch	\
+  %D%/packages/patches/patchutils-test-perms.patch		\
   %D%/packages/patches/patch-hurd-path-max.patch		\
   %D%/packages/patches/perf-gcc-ice.patch			\
   %D%/packages/patches/perl-archive-tar-CVE-2018-12015.patch	\
