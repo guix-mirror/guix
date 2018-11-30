@@ -3976,7 +3976,11 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
               "1gasrfqi7qrzdq1idh29r0n6ikkqjb6pbp7a8k5krfz5hkhyfin0"))))
    (build-system meson-build-system)
    (arguments
-    `(#:phases
+    `(#:configure-flags
+      ;; Otherwise, the RUNPATH will lack the final 'eog' path component.
+      (list (string-append "-Dc_link_args=-Wl,-rpath="
+                           (assoc-ref %outputs "out") "/lib/eog"))
+      #:phases
       (modify-phases %standard-phases
         (add-after 'install 'wrap-eog
           (lambda* (#:key outputs #:allow-other-keys)
