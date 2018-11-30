@@ -652,7 +652,7 @@ are detected, the user is notified.")))
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.2.0")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
@@ -661,12 +661,13 @@ are detected, the user is notified.")))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1db27zm6cldm1aw0570vii1bxc16a34x8lissl1h9rizsbwn7qkj"))))
+         "08mdffcw4k503bccm1plq8r7hjx4w61w5jyfdj80fr079hnkjpmw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)
                   (guix build cmake-build-system)
                   (guix build utils))
+       #:configure-flags '("-DPREFER_LUA:BOOL=YES")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-lua-paths
