@@ -151,7 +151,7 @@ etc. via a Web interface.  Features include:
 (define-public zabbix-agentd
   (package
     (name "zabbix-agentd")
-    (version "3.4.11")
+    (version "4.0.2")
     (source
      (origin
        (method url-fetch)
@@ -160,7 +160,7 @@ etc. via a Web interface.  Features include:
              "/zabbix-" version ".tar.gz"))
        (sha256
         (base32
-         "0qxgf6hx7ibhjmxd2sxizkjc8df4c9d31wz5hhql409ws98qf173"))))
+         "033qb4b9y02jp2ijj8ny0a0yk1mzj0a8ihxrv11h7ln8kpl55vqw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -220,6 +220,8 @@ solution (client-side agent)")
                 (string-append "--with-gnutls="
                                (assoc-ref %build-inputs "gnutls"))
                 "--with-libcurl"
+                (string-append "--with-zlib="
+                               (assoc-ref %build-inputs "zlib"))
                 ,flags))))
     (inputs
      `(("curl" ,curl)
