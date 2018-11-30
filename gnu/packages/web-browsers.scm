@@ -7,6 +7,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -359,3 +360,44 @@ the webkit web browser engine and the GTK toolkit.  Vimb is modal like the great
 vim editor and also easily configurable during runtime.  Vimb is mostly keyboard
 driven and does not detract you from your daily work.")
     (license license:gpl3+)))
+
+(define-public next-gtk-webkit
+  (let ((commit "b8899341bbdefd0a33412608fbb0b1f92f818c65"))
+    (package
+      (name "next-gtk-webkit")
+      (version (git-version "1.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://source.atlas.engineer/public/next")
+               (commit commit)))
+         (sha256
+          (base32
+           "12jmf1b9qr85il9h15mb9vpsfh1wzcln9x9xpn4lps0kkccnpkz9"))
+         (file-name (git-file-name "next" version))))
+      (build-system glib-or-gtk-build-system)
+      (arguments
+       `(#:tests? #f                    ; no tests
+         #:make-flags (list "gtk-webkit"
+                            "CC=gcc"
+                            (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key (make-flags '()) #:allow-other-keys)
+               (apply invoke "make" "install-gtk-webkit" make-flags))))))
+      (inputs
+       `(("glib-networking" ,glib-networking)
+         ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+         ("webkitgtk" ,webkitgtk)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (home-page "https://next.atlas.engineer")
+      (synopsis "Infinitely extensible web-browser (user interface only)")
+      (description "Next is a keyboard-oriented, extensible web-browser
+inspired by Emacs and designed for power users.  The application has familiar
+key-bindings, is fully configurable and extensible in Lisp, and has powerful
+features for productive professionals.")
+      (license license:bsd-3))))
