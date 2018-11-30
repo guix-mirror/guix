@@ -542,13 +542,14 @@ independent targets.")
     (name "uncrustify")
     (version "0.68.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/uncrustify/uncrustify/archive/"
-                    "uncrustify-" version ".zip"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/uncrustify/uncrustify/")
+                    (commit (string-append name "-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jb3hmm11m2mgnypapak2lgyyvspnmx9bxd9dxis5swaja2ddxlg"))))
+                "0gf6vjcfy8pl7idvwsd500ffj9hri62q0n79kpb6cnfprrqpbgf4"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)
