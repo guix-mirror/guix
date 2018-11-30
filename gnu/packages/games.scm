@@ -3374,7 +3374,7 @@ with the \"Stamp\" tool within Tux Paint.")
 (define-public tuxpaint-config
   (package
     (name "tuxpaint-config")
-    (version "0.0.13")                  ;keep VER_DATE below in sync
+    (version "0.0.14")                  ;keep VER_DATE below in sync
     (source
      (origin
        (method url-fetch)
@@ -3382,7 +3382,7 @@ with the \"Stamp\" tool within Tux Paint.")
                            version "/tuxpaint-config-" version ".tar.gz"))
        (sha256
         (base32
-         "1z12s46mvy87qs3vgq9m0ki9pp21zqc52mmgphahpihw3s7haf6v"))))
+         "0zkgxk436nqcp43zghkfmh397c7dvh5bwn2as7gwvv208bzyij6g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -3394,7 +3394,7 @@ with the \"Stamp\" tool within Tux Paint.")
        ("libxft" ,libxft)
        ("mesa" ,mesa)))
     (arguments
-     `(#:make-flags `("VER_DATE=2014-08-23"
+     `(#:make-flags `("VER_DATE=2018-09-01"
                       "CONFDIR=/etc/tuxpaint" ;don't write to store
                       ,(string-append "PREFIX=" %output)
                       "GNOME_PREFIX=$(PREFIX)")
