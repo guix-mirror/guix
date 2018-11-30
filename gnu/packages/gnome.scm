@@ -3184,7 +3184,11 @@ services for numerous locations.")
        #:configure-flags
        (list (string-append "-Dudev_dir="
                             (assoc-ref %outputs "out")
-                            "/lib/udev/rules.d/"))
+                            "/lib/udev/rules.d/")
+             ;; Otherwise, the RUNPATH will lack the final path component.
+             (string-append "-Dc_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out")
+                            "/lib/gnome-settings-daemon-3.0"))
        ;; Color management test can't reach the colord system service.
        #:tests? #f))
     (native-inputs
