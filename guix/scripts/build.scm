@@ -272,16 +272,17 @@ current 'gnutls' package, after which version 3.5.4 is grafted onto them."
           (rewrite obj)
           obj))))
 
-(define (evaluate-git-replacement-specs specs)
+(define (evaluate-git-replacement-specs specs proc)
   "Parse SPECS, a list of strings like \"guile=stable-2.2\", and return a list
-of package pairs.  Raise an error if an element of SPECS uses invalid syntax,
-or if a package it refers to could not be found."
+of package pairs, where (PROC PACKAGE URL BRANCH-OR-COMMIT) returns the
+replacement package.  Raise an error if an element of SPECS uses invalid
+syntax, or if a package it refers to could not be found."
   (define not-equal
     (char-set-complement (char-set #\=)))
 
   (map (lambda (spec)
          (match (string-tokenize spec not-equal)
-           ((name branch)
+           ((name branch-or-commit)
             (let* ((old    (specification->package name))
                    (source (package-source old))
                    (url    (cond ((and (origin? source)
@@ -293,11 +294,7 @@ or if a package it refers to could not be found."
                                   (leave (G_ "the source of ~a is not a Git \
 reference~%")
                                          (package-full-name old))))))
-              (cons old
-                    (package
-                      (inherit old)
-                      (version (string-append "git." branch))
-                      (source (git-checkout (url url) (branch branch)))))))
+              (cons old (proc old url branch-or-commit))))
            (x
             (leave (G_ "invalid replacement specification: ~s~%") spec))))
        specs))
@@ -307,7 +304,36 @@ reference~%")
 dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
 strings like \"guile-next=stable-3.0\" meaning that packages are built using
 'guile-next' from the latest commit on its 'stable-3.0' branch."
-  (let* ((replacements (evaluate-git-replacement-specs replacement-specs))
+  (define (replace old url branch)
+    (package
+      (inherit old)
+      (version (string-append "git." branch))
+      (source (git-checkout (url url) (branch branch)))))
+
+  (let* ((replacements (evaluate-git-replacement-specs replacement-specs
+                                                       replace))
+         (rewrite      (package-input-rewriting replacements)))
+    (lambda (store obj)
+      (if (package? obj)
+          (rewrite obj)
+          obj))))
+
+(define (transform-package-source-commit replacement-specs)
+  "Return a procedure that, when passed a package, replaces its direct
+dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
+strings like \"guile-next=cabba9e\" meaning that packages are built using
+'guile-next' from commit 'cabba9e'."
+  (define (replace old url commit)
+    (package
+      (inherit old)
+      (version (string-append "git."
+                              (if (< (string-length commit) 7)
+                                  commit
+                                  (string-take commit 7))))
+      (source (git-checkout (url url) (commit commit)))))
+
+  (let* ((replacements (evaluate-git-replacement-specs replacement-specs
+                                                       replace))
          (rewrite      (package-input-rewriting replacements)))
     (lambda (store obj)
       (if (package? obj)
@@ -322,7 +348,8 @@ strings like \"guile-next=stable-3.0\" meaning that packages are built using
   `((with-source . ,transform-package-source)
     (with-input  . ,transform-package-inputs)
     (with-graft  . ,transform-package-inputs/graft)
-    (with-branch . ,transform-package-source-branch)))
+    (with-branch . ,transform-package-source-branch)
+    (with-commit . ,transform-package-source-commit)))
 
 (define %transformation-options
   ;; The command-line interface to the above transformations.
@@ -338,7 +365,9 @@ strings like \"guile-next=stable-3.0\" meaning that packages are built using
           (option '("with-graft") #t #f
                   (parser 'with-graft))
           (option '("with-branch") #t #f
-                  (parser 'with-branch)))))
+                  (parser 'with-branch))
+          (option '("with-commit") #t #f
+                  (parser 'with-commit)))))
 
 (define (show-transformation-options-help)
   (display (G_ "
@@ -350,9 +379,12 @@ strings like \"guile-next=stable-3.0\" meaning that packages are built using
   (display (G_ "
       --with-graft=PACKAGE=REPLACEMENT
                          graft REPLACEMENT on packages that refer to PACKAGE"))
-    (display (G_ "
+  (display (G_ "
       --with-branch=PACKAGE=BRANCH
-                         build PACKAGE from the latest commit of BRANCH")))
+                         build PACKAGE from the latest commit of BRANCH"))
+  (display (G_ "
+      --with-commit=PACKAGE=COMMIT
+                         build PACKAGE from COMMIT")))
 
 
 (define (options->transformation opts)

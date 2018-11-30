@@ -46,3 +46,8 @@ orig_drv="`guix build guix -d`"
 latest_drv="`guix build guix --with-branch=guile-gcrypt=master -d`"
 guix gc -R "$latest_drv" | grep guile-gcrypt-git.master
 test "$orig_drv" != "$latest_drv"
+
+v0_1_0_drv="`guix build guix --with-commit=guile-gcrypt=9e3eacdec1d -d`"
+guix gc -R "$v0_1_0_drv" | grep guile-gcrypt-git.9e3eacd
+test "$v0_1_0_drv" != "$latest_drv"
+test "$v0_1_0_drv" != "$orig_drv"

@@ -198,12 +198,13 @@ Log progress and checkout info to LOG-PORT."
 ;;; Checkouts.
 ;;;
 
-;; Representation of the "latest" checkout of a branch.
+;; Representation of the "latest" checkout of a branch or a specific commit.
 (define-record-type* <git-checkout>
   git-checkout make-git-checkout
   git-checkout?
   (url     git-checkout-url)
-  (branch  git-checkout-branch (default "master")))
+  (branch  git-checkout-branch (default "master"))
+  (commit  git-checkout-commit (default #f)))
 
 (define latest-repository-commit*
   (store-lift latest-repository-commit))
@@ -213,7 +214,9 @@ Log progress and checkout info to LOG-PORT."
   ;; "Compile" CHECKOUT by updating the local checkout and adding it to the
   ;; store.
   (match checkout
-    (($ <git-checkout> url branch)
+    (($ <git-checkout> url branch commit)
      (latest-repository-commit* url
-                                #:ref `(branch . ,branch)
+                                #:ref (if commit
+                                          `(commit . ,commit)
+                                          `(branch . ,branch))
                                 #:log-port (current-error-port)))))
