@@ -1340,25 +1340,30 @@ system is under heavy load.")
 (define-public detox
   (package
     (name "detox")
-    (version "1.2.0")
+    (version "1.3.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/detox/detox/" version
-                                  "/detox-" version ".tar.bz2"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dharple/detox.git")
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "1y6vvjqsg54kl49cry73jbfhr04s7wjs779vrr9zrq6kww7dkymb"))))
+                "1dd608c7g65s5lj02cddvani3q9kzirddgkjqa22ap9d4f8b9xgr"))))
     (build-system gnu-build-system)
-    ;; Both flex and popt are used in this case for their runtime libraries
-    ;; (libfl and libpopt).
-    (inputs
-     `(("flex" ,flex)
-       ("popt" ,popt)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("flex" ,flex)))
     (arguments
-     `(#:configure-flags `(,(string-append "--with-popt="
-                                           (assoc-ref %build-inputs "popt")))
-       #:tests? #f))                    ;no 'check' target
-    (home-page "http://detox.sourceforge.net")
+     `(#:tests? #f                    ;no 'check' target
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'delete-configure
+                    ;; The "configure" script is present, but otherwise the
+                    ;; project is not bootstrapped: missing install-sh and
+                    ;; Makefile.in, so delete it so the bootstrap phase will
+                    ;; take over.
+                    (lambda _ (delete-file "configure") #t)))))
+    (home-page "https://github.com/dharple/detox")
     (synopsis "Clean up file names")
     (description
      "Detox is a program that renames files to make them easier to work with
