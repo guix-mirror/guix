@@ -68,22 +68,17 @@
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
-    (version "3.1.3")
+    (version "3.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
         (base32
-         "1b888lggmyf2d08rfayq9khszzc0pav1z70ssc0b4d9kkr4g1klz"))))
+         "1ykm6kdjkrg556j0zd7dx2l1rsrbh0d9g27ivr6dmaahz9pyrbsi"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))                    ;FIXME: 2 errors, 2084 passed
-    (native-inputs
-     `(("python-async-generator" ,python-async-generator)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-capturelog" ,python-pytest-capturelog)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     `(#:tests? #f))                    ;missing pytest-timeout
     (propagated-inputs
      `(("python-aiodns" ,python-aiodns)
        ("python-async-timeout" ,python-async-timeout)
