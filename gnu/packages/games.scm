@@ -3299,12 +3299,18 @@ safety of the Chromium vessel.")
                       "GPERF=gperf" "CC=gcc"
                       "SDL_PCNAME=sdl SDL_image SDL_mixer SDL_ttf"
                       ,(string-append "PREFIX=" %output)
-                      "GNOME_PREFIX=$(PREFIX)"
+                      "KDE_PREFIX=$(PREFIX)/share/applications"
+                      "KDE_ICON_PREFIX=$(PREFIX)/share/icons/"
                       "COMPLETIONDIR=$(PREFIX)/etc/bash_completion.d")
        #:parallel-build? #f             ;fails on some systems
        #:tests? #f                      ;No tests
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ;no configure phase
+                  (add-before 'install 'no-sys-cache
+                    (lambda _           ;do not rebuild system conf cache
+                      (substitute* "Makefile"
+                        (("kbuildsycoca4") ""))
+                      #t))
                   (add-after 'install 'fix-import
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
