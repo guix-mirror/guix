@@ -2426,22 +2426,27 @@ supported players in addition to this package.")
 (define-public handbrake
   (package
     (name "handbrake")
-    (version "0.10.5")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://handbrake.fr/rotation.php?file="
-                                  "HandBrake-" version ".tar.bz2"))
-              (file-name (string-append "handbrake-" version ".tar.bz2"))
+              (uri (string-append "https://download.handbrake.fr/releases/"
+                                  version "/HandBrake-" version "-source.tar.bz2"))
               (sha256
                (base32
-                "1w720y3bplkz187wgvy4a4xm0vpppg45mlni55l6yi8v2bfk14pv"))
-              (patches (search-patches "handbrake-pkg-config-path.patch"))
+                "0bny0hwlr55g2c69rsamv0xvwmfh1s4a582b9vq20xv5ly84m6ms"))
               (modules '((guix build utils)))
               (snippet
-               ;; Remove bundled libraries and source not necessary for
-               ;; running under a GNU environment.
+               ;; Remove "contrib" and source not necessary for
+               ;; building/running under a GNU environment.
                '(begin
-                  (for-each delete-file-recursively '("contrib" "macosx" "win"))
+                  (for-each delete-file-recursively
+                            '("contrib" "macosx" "win"))
+                  (substitute* "make/include/main.defs"
+                    ;; Disable unconditional inclusion of "contrib" libraries
+                    ;; (ffmpeg, libvpx, libdvdread, libdvdnav, and libbluray),
+                    ;; which would lead to fetching and building of these
+                    ;; libraries.  Use our own instead.
+                    (("MODULES \\+= contrib") "# MODULES += contrib"))
                   #t))))
     (build-system  glib-or-gtk-build-system)
     (native-inputs
@@ -2455,13 +2460,14 @@ supported players in addition to this package.")
     (inputs
      `(("bzip2" ,bzip2)
        ("dbus-glib" ,dbus-glib)
-       ("ffmpeg" ,ffmpeg-3.4)           ;compilation errors with ffmpeg-4
+       ("ffmpeg" ,ffmpeg)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glib" ,glib)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+" ,gtk+)
+       ("jansson" ,jansson)
        ("lame" ,lame)
        ("libass" ,libass)
        ("libbluray" ,libbluray)
@@ -2471,6 +2477,7 @@ supported players in addition to this package.")
        ("libmpeg2" ,libmpeg2)
        ("libnotify" ,libnotify)
        ("libogg" ,libogg)
+       ("libopus" ,opus)
        ("libsamplerate" ,libsamplerate)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
@@ -2481,6 +2488,11 @@ supported players in addition to this package.")
        ("zlib" ,zlib)))
     (arguments
      `(#:tests? #f             ;tests require Ruby and claim to be unsupported
+       #:configure-flags
+       (list (string-append "CPPFLAGS=-I"
+                            (assoc-ref %build-inputs "libxml2")
+                            "/include/libxml2")
+             "LDFLAGS=-lx265")
        #:phases
        (modify-phases %standard-phases
          (replace 'bootstrap
@@ -2492,21 +2504,6 @@ supported players in addition to this package.")
              (substitute* "gtk/module.rules"
                ((".*autogen\\.sh.*") ""))
              (invoke "sh" "./gtk/autogen.sh")))
-         (add-before 'configure 'disable-contrib
-           (lambda _
-             (substitute* "make/include/main.defs"
-               ;; Disable unconditional inclusion of some "contrib"
-               ;; libraries (ffmpeg, libvpx, libdvdread, libdvdnav,
-               ;; and libbluray), which would lead to fetching and
-               ;; building of these libraries.  Use our own instead.
-               (("MODULES \\+= contrib") "# MODULES += contrib"))
-             #t))
-         (add-before 'configure 'fix-x265-linking
-           (lambda _
-             (substitute* "test/module.defs"
-               ;; Fix missing library during linking error
-               (("TEST.GCC.l =") "TEST.GCC.l = x265"))
-             #t))
          (replace 'configure
            (lambda* (#:key outputs configure-flags #:allow-other-keys)
              ;; 'configure' is not an autoconf-generated script, and
@@ -2523,8 +2520,9 @@ supported players in addition to this package.")
     (description
      "HandBrake is a tool for converting video from any format to a selection
 of modern, widely supported codecs.")
-    ;; Most under GPL version 2 or later, and portions under BSD 3 Clause
-    (license (list license:gpl2+ license:bsd-3))))
+    ;; Some under GPLv2+, some under LGPLv2.1+, and portions under BSD3.
+    ;; Combination under GPLv2.  See LICENSE.
+    (license license:gpl2)))
 
 (define-public openh264
   (package
