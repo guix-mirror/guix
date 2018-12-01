@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
 (define-module (gnu packages sync)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -32,6 +34,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages perl)
@@ -243,3 +246,48 @@ over the Internet in an HTTP and CDN friendly way;
 @item An efficient backup system.
 @end itemize\n")
     (license license:lgpl2.1+)))
+
+(define-public rclone
+  (package
+    (name "rclone")
+    (version "1.45")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ncw/rclone.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06xg0ibv9pnrnmabh1kblvxx1pk8h5rmkr9mjbymv497sx3zgz26"))))
+    ;; FIXME: Rclone bundles some libraries Guix already provides.  Need to
+    ;; un-bundle them.
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/ncw/rclone"
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         ;; Fix failure during "check" phase: "mkdir /homeless-shelter:
+         ;; permission denied".
+         (add-after 'unpack 'set-home-directory
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
+    (synopsis "@code{rsync} for cloud storage")
+    (description "@code{Rclone} is a command line program to sync files and
+directories to and from different cloud storage providers.
+
+Features include:
+@itemize
+@item MD5/SHA1 hashes checked at all times for file integrity
+@item Timestamps preserved on files
+@item Partial syncs supported on a whole file basis
+@item Copy mode to just copy new/changed files
+@item Sync (one way) mode to make a directory identical
+@item Check mode to check for file hash equality
+@item Can sync to and from network, e.g., two different cloud accounts
+@item Optional encryption (Crypt)
+@item Optional cache (Cache)
+@item Optional FUSE mount (rclone mount)
+@end itemize")
+    (home-page "https://rclone.org/")
+    (license license:expat)))
