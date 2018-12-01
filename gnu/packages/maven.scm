@@ -675,13 +675,13 @@ gets and puts artifacts through HTTP(S) using Apache HttpClient-4.x.")))
 (define-public maven-artifact
   (package
     (name "maven-artifact")
-    (version "3.5.4")
+    (version "3.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.apache.org/dist/maven/"
                                   "maven-3/" version "/source/"
                                   "apache-maven-" version "-src.tar.gz"))
-              (sha256 (base32 "1xg20g87svzzscbn7m92c2njvrr61va1dija2x2w7m5v4hdizfpk"))
+              (sha256 (base32 "17jrqfqwn569jgnv8m4pqc27csssb0rf6mznpq61l5bnbd6hl75k"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -915,8 +915,8 @@ inheritance, interpolation, @dots{}")))
        ("java-asm" ,java-asm)
        ("sisu-inject" ,java-eclipse-sisu-inject)
        ("javax-inject" ,java-javax-inject)
-       ("xmlunit" ,java-xmlunit)
-       ("xmlunit" ,java-xmlunit-legacy)
+       ("java-xmlunit" ,java-xmlunit)
+       ("java-xmlunit-matchers" ,java-xmlunit-matchers)
        ("xbean" ,java-geronimo-xbean-reflect)
        ("classworlds" ,java-plexus-classworlds)))
     (description "Apache Maven is a software project management and comprehension
