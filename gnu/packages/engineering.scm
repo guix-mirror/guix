@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1853,3 +1854,55 @@ The S letter indicates SPICE.  The purpose of the Qucs-S subproject is to use
 free SPICE circuit simulation kernels with the Qucs GUI.  It provides the
 simulator backends @code{Qucsator}, @code{ngspice} and @code{Xyce}.")
     (license license:gpl2+)))
+
+(define-public librepcb
+  (package
+    (name "librepcb")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.librepcb.org/releases/0.1.0/librepcb-"
+                           version "-source.zip"))
+       (sha256
+        (base32
+         "0affvwwgs1j2wx6bb3zfa2jbfxpckklr8cka2nkswca0p82wd3dv"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("qttools" ,qttools) ; for lrelease
+       ("unzip" ,unzip)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (mkdir-p "build")
+             (chdir "build")
+             (let ((lrelease (string-append (assoc-ref inputs "qttools")
+                                            "/bin/lrelease"))
+                   (out (assoc-ref outputs "out")))
+               (invoke "qmake"
+                       (string-append "QMAKE_LRELEASE=" lrelease)
+                       (string-append "PREFIX=" out)
+                       "../librepcb.pro")))))))
+    (home-page "https://librepcb.org/")
+    (synopsis "Electronic Design Automation tool")
+    (description "LibrePCB is @dfn{Electronic Design Automation} (EDA)
+software to develop printed circuit boards.  It features human readable file
+formats and complete project management with library, schematic and board
+editors.")
+    (license (list license:gpl3+
+                   license:boost1.0 ; libs/clipper,
+                                    ; libs/optional/tests/catch.hpp,
+                                    ; libs/sexpresso/tests/catch.hpp
+                   license:expat ; libs/delaunay-triangulation,
+                                 ; libs/parseagle, libs/type_safe
+                   license:asl2.0 ; libs/fontobene, libs/googletest,
+                                  ; libs/parseagle
+                   license:isc ; libs/hoedown
+                   license:cc0 ; libs/optional, libs/sexpresso
+                   license:bsd-2 ; libs/optional/tests/catch.hpp
+                   license:lgpl2.1+)))) ; libs/quazip
