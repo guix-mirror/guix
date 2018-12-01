@@ -875,7 +875,7 @@ main features are:
 (define-public silkaj
   (package
     (name "silkaj")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method git-fetch)
@@ -885,30 +885,10 @@ main features are:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0xy25lpgz04nxikjvxlnlckrc9xmsxyiz2qm0bsiid8cnbdqcn12"))))
+         "02n028rz1pshgh7w0af3b291r8lwvhzskm1q98d991gr8rscvad2"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f                      ;no test
-       #:phases
-       (modify-phases %standard-phases
-         ;; The program is just a bunch of Python files in "src/" directory.
-         ;; Many phases are useless.  However, `python-build-system' correctly
-         ;; sets PYTHONPATH and patches Python scripts.
-         (delete 'configure)
-         (delete 'build)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (share (string-append out "/share/silkaj"))
-                    (executable (string-append share "/silkaj.py"))
-                    (bin (string-append out "/bin")))
-               ;; Install data.
-               (copy-recursively "src" share)
-               ;; Install executable.
-               (mkdir-p bin)
-               (with-directory-excursion bin
-                 (symlink executable "silkaj")))
-             #t)))))
+     `(#:tests? #f))                    ;no test
     (inputs
      `(("python-commandlines" ,python-commandlines)
        ("python-ipaddress" ,python-ipaddress)
