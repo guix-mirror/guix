@@ -12040,7 +12040,7 @@ objects}).
 @cindex NTP (Network Time Protocol), service
 @cindex real time clock
 @defvr {Scheme Variable} ntp-service-type
-This is the type of the service running the the @uref{http://www.ntp.org,
+This is the type of the service running the @uref{http://www.ntp.org,
 Network Time Protocol (NTP)} daemon, @command{ntpd}.  The daemon will keep the
 system clock synchronized with that of the specified NTP servers.
 
