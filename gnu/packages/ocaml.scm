@@ -256,7 +256,8 @@ functional, imperative and object-oriented styles of programming.")
                          "make"
                          "all"
                          (string-append
-                          "TOPDIR=" (getcwd) "/.."))))))))))))
+                          "TOPDIR=" (getcwd) "/.."))))))))))
+    (supported-systems (delete "aarch64-linux" %supported-systems))))
 
 (define-public ocaml-4.07
   (package
