@@ -9670,6 +9670,37 @@ against expected outcomes.")
     (native-inputs
      `(("java-mockito-1" ,java-mockito-1)))))
 
+(define-public java-xmlunit-matchers
+  (package
+    (inherit java-xmlunit)
+    (name "java-xmlunit-matchers")
+    (arguments
+     `(#:jar-name "java-xmlunit-matchers.jar"
+       #:source-dir "xmlunit-matchers/src/main/java"
+       #:test-dir "xmlunit-matchers/src/test"
+       #:test-exclude
+       ;; Cannot open xsd for http://www.xmlunit.org/test-support/Book.xsd
+       (list "**/ValidationMatcherTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-test-class
+           (lambda _
+             (copy-file "xmlunit-core/src/test/java/org/xmlunit/TestResources.java"
+                        "xmlunit-matchers/src/test/java/org/xmlunit/TestResources.java")
+             #t))
+         (add-before 'build 'fix-test-resources-path
+           (lambda _
+             (substitute* (find-files "xmlunit-matchers/src/test" ".*.java")
+               (("../test-resources") "test-resources"))
+             #t))
+         (add-before 'check 'copy-test-resources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "resources") "test-resources")
+             #t)))))
+    (inputs
+     `(("java-xmlunit" ,java-xmlunit)
+       ("java-junit" ,java-junit)))))
+
 (define-public java-openchart2
   (package
     (name "java-openchart2")
