@@ -27,8 +27,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages wget))
+  #:use-module (gnu packages perl))
 
 (define-public debian-archive-keyring
   (package
@@ -137,46 +136,57 @@ contains the archive keys used for that.")
          (add-after 'unpack 'patch-source
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out    (assoc-ref outputs "out"))
-                   (coreutils (assoc-ref inputs "coreutils"))
-                   (wget   (assoc-ref inputs "wget"))
+                   (tzdata (assoc-ref inputs "tzdata"))
                    (debian (assoc-ref inputs "debian-keyring"))
                    (ubuntu (assoc-ref inputs "ubuntu-keyring")))
                (substitute* "Makefile"
                  (("/usr") "")
                  (("-o root -g root") "")
                  (("chown root.*") "\n"))
-               (substitute* "scripts/sid"
+               (substitute* '("scripts/etch"
+                              "scripts/potato"
+                              "scripts/sarge"
+                              "scripts/sid"
+                              "scripts/woody"
+                              "scripts/woody.buildd")
                  (("/usr") debian))
                (substitute* "scripts/gutsy"
                  (("/usr") ubuntu))
                (substitute* "debootstrap"
-                 (("chroot ") (string-append coreutils "/bin/chroot "))
                  (("=/usr") (string-append "=" out)))
-               (substitute* "functions"
-                 (("wget ") (string-append wget "/bin/wget ")))
+               (substitute* (find-files "scripts" ".")
+                 (("/usr/share/zoneinfo") (string-append tzdata "/share/zoneinfo")))
                #t)))
          (add-after 'install 'install-man-file
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (install-file "debootstrap.8"
                              (string-append out "/share/man/man8"))
+               #t)))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((debootstrap (string-append (assoc-ref outputs "out")
+                                               "/sbin/debootstrap"))
+                   (path        (getenv "PATH")))
+               (wrap-program debootstrap
+                             `("PATH" ":" prefix (,path)))
                #t))))
        #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
        #:tests? #f)) ; no tests
     (inputs
-     `(("coreutils" ,coreutils)
-       ("debian-keyring" ,debian-archive-keyring)
+     `(("debian-keyring" ,debian-archive-keyring)
        ("ubuntu-keyring" ,ubuntu-keyring)
-       ("wget" ,wget)))
-    ;; The following are required for debootstrap to work correctly
-    (propagated-inputs
-     `(("binutils" ,binutils)
-       ("gnupg" ,gnupg)
-       ("perl" ,perl)))
+       ("tzdata" ,tzdata)))
+    (native-inputs
+     `(("perl" ,perl)))
     (home-page "https://tracker.debian.org/pkg/debootstrap")
     (synopsis "Bootstrap a basic Debian system")
     (description "Debootstrap is used to create a Debian base system from
 scratch, without requiring the availability of @code{dpkg} or @code{apt}.
 It does this by downloading .deb files from a mirror site, and carefully
-unpacking them into a directory which can eventually be chrooted into.")
+unpacking them into a directory which can eventually be chrooted into.
+
+It is recommended to run @code{debootstrap --foreign --arch=...} and then
+@code{chroot} into the directory, set the PATH and run @code{debootstrap
+--second-stage} after.")
     (license license:gpl2)))
