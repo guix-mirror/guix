@@ -576,8 +576,20 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  #t)))))))))
 
 (define-public rust-1.22
-  (rust-bootstrapped-package rust-1.21 "1.22.1"
-                             "1lrzzp0nh7s61wgfs2h6ilaqi6iq89f1pd1yaf65l87bssyl4ylb"))
+  (let ((base-rust (rust-bootstrapped-package rust-1.21 "1.22.1"
+                    "1lrzzp0nh7s61wgfs2h6ilaqi6iq89f1pd1yaf65l87bssyl4ylb")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'remove-flaky-test
+               (lambda _
+                 ;; See <https://github.com/rust-lang/rust/issues/43402>.
+                 (when (file-exists? "src/test/run-make/issue-26092")
+                   (delete-file-recursively "src/test/run-make/issue-26092"))
+                 #t)))))))))
 
 (define-public rust-1.23
   (let ((base-rust (rust-bootstrapped-package rust-1.22 "1.23.0"
