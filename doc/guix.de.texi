@@ -18,6 +18,7 @@
 
 @c Identifier of the OpenPGP key used to sign tarballs and such.
 @set OPENPGP-SIGNING-KEY-ID 3CE464558A84FDC69DB40CFB090B11993D9AEBB5
+@set KEY-SERVER pool.sks-keyservers.net
 
 @copying
 Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic
@@ -33,7 +34,7 @@ Efraim Flashner@* Copyright @copyright{} 2016 John Darrington@* Copyright
 @copyright{} 2016, 2017 Nils Gillmann@* Copyright @copyright{} 2016, 2017,
 2018 Jan Nieuwenhuizen@* Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@* Copyright @copyright{} 2017,
-2018 Clément Lassieur@* Copyright @copyright{} 2017 Mathieu Othacehe@*
+2018 Clément Lassieur@* Copyright @copyright{} 2017, 2018 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@* Copyright @copyright{} 2017,
 2018 Carlo Zancanaro@* Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@* Copyright @copyright{} 2017
@@ -46,7 +47,8 @@ Andy Wingo@* Copyright @copyright{} 2017, 2018 Arun Isaac@* Copyright
 Copyright @copyright{} 2018 Oleg Pykhalov@* Copyright @copyright{} 2018 Mike
 Gerwitz@* Copyright @copyright{} 2018 Pierre-Antoine Rouby@* Copyright
 @copyright{} 2018 Gábor Boskovits@* Copyright @copyright{} 2018 Florian
-Pelz@*
+Pelz@* Copyright @copyright{} 2018 Laura Lazzati@* Copyright @copyright{}
+2018 Alex Vong@*
 
 Es ist Ihnen gestattet, dieses Dokument zu vervielfältigen, weiterzugeben
 und/oder zu verändern, unter den Bedingungen der GNU Free Documentation
@@ -109,8 +111,9 @@ wurde.
 @c how to join your own translation team and how to report issues with the
 @c translation.
 This manual is also available in French (@pxref{Top,,, guix.fr, Manuel de
-référence de GNU Guix}).  If you would like to translate it in your native
-language, consider joining the
+référence de GNU Guix}) and German (@pxref{Top,,, guix.de, Referenzhandbuch
+zu GNU Guix}).  If you would like to translate it in your native language,
+consider joining the
 @uref{https://translationproject.org/domain/guix-manual.html, Translation
 Project}.
 
@@ -274,22 +277,20 @@ Systemkonfiguration
 
 
 
-* Das Konfigurationssystems nutzen::  Ihr GNU-System anpassen
+* Das Konfigurationssystem nutzen::  Ihr GNU-System anpassen.
 * „operating-system“-Referenz::  Details der 
                                        Betriebssystem-Deklarationen.
 * Dateisysteme::             Die Dateisystemeinbindungen konfigurieren.
-* Abgebildete Geräte::      Zusatzverarbeitungsschritte für blockbasierte 
-                               Geräte.
+* Abgebildete Geräte::      Näheres zu blockorientierten Speichermedien.
 * Benutzerkonten::           Benutzerkonten festlegen.
-* Locales::                  Sprach- und kulturelle 
-                               Konventionseinstellungen.
+* Locales::                  Sprache und kulturelle Konventionen.
 * Dienste::                  Systemdienste festlegen.
-* Setuid-Programme::         Programme mit Administratorrechten ausführen
+* Setuid-Programme::         Mit Administratorrechten startende Programme.
 * X.509-Zertifikate::        HTTPS-Server authentifizieren.
 * Name Service Switch::      Den Name Service Switch von libc konfigurieren.
 * Initiale RAM-Disk::        Linux-libre hochfahren.
 * Bootloader-Konfiguration::  Den Bootloader konfigurieren.
-* Aufruf von guix system::   Instanzierung einer Systemkonfiguration
+* Aufruf von guix system::   Instanzierung einer Systemkonfiguration.
 * GuixSD in einer VM starten::  Wie man GuixSD in einer virtuellen Maschine 
                                   startet.
 * Dienste definieren::       Neue Dienstdefinitionen hinzufügen.
@@ -298,7 +299,7 @@ Dienste
 
 
 
-* Basisdienste::             Essenzielle Systemdienste
+* Basisdienste::             Essenzielle Systemdienste.
 * Geplante Auftragsausführung::  Der mcron-Dienst.
 * Log-Rotation::             Der rottlog-Dienst.
 * Netzwerkdienste::          Netzwerkeinrichtung, SSH-Daemon etc.
@@ -306,7 +307,7 @@ Dienste
 * Druckdienste::             Unterstützung für lokale und entfernte 
                                Drucker.
 * Desktop-Dienste::          D-Bus- und Desktop-Dienste.
-* Tondienste::               Dienste für ALSA und Pulseaudio.
+* Sound Services::           ALSA and Pulseaudio services.
 * Datenbankdienste::         SQL-Datenbanken, Schlüssel-Wert-Speicher etc.
 * Mail-Dienste::             IMAP, POP3, SMTP und so weiter.
 * Kurznachrichtendienste::   Dienste für Kurznachrichten.
@@ -318,7 +319,7 @@ Dienste
 * DNS-Dienste::              DNS-Daemons.
 * VPN-Dienste::              VPN-Daemons.
 * Network File System::      Dienste mit Bezug zum Netzwerkdateisystem.
-* Kontinuierliche Integration::  Der Cuirass-Dienst
+* Kontinuierliche Integration::  Der Cuirass-Dienst.
 * Power Management Services::  Extending battery life.
 * Audio-Dienste::            Der MPD.
 * Virtualisierungsdienste::  Dienste für virtuelle Maschinen.
@@ -332,7 +333,7 @@ Dienste definieren
 
 * Dienstkompositionen::      Wie Dienste zusammengestellt werden.
 * Diensttypen und Dienste::  Typen und Dienste.
-* Service-Referenz::         Referenz zur Programmierschnittstelle
+* Service-Referenz::         Referenz zur Programmierschnittstelle.
 * Shepherd-Dienste::         Eine spezielle Art von Dienst.
 
 Paketrichtlinien
@@ -386,7 +387,7 @@ Pakete aus ihrem Quellcode heraus zu erstellen und hilft allgemein bei der
 Schöpfung und Wartung von Software-Umgebungen.
 
 @cindex Benutzeroberflächen
-Guix bietet eine kommandozeilenbasierte Paketverwaltungsschnittstelle
+Guix bietet eine befehlszeilenbasierte Paketverwaltungsschnittstelle
 (@pxref{Aufruf von guix package}), einen Satz Befehlszeilenwerkzeuge
 (@pxref{Zubehör}) sowie Schnittstellen zur Programmierung in Scheme
 (@pxref{Programmierschnittstelle}).
@@ -414,10 +415,11 @@ es die bereits verfügbaren Werkzeuge ergänzt, ohne zu stören
 @dfn{Guix System Distribution}, kurz GuixSD (@pxref{GNU-Distribution}),
 verwenden. Mit GNU@tie{}GuixSD @emph{deklarieren} Sie alle Aspekte der
 Betriebssystemkonfiguration und Guix kümmert sich darum, die Konfiguration
-oft transaktionsbasierte, reproduzierbare und zustandslose Weise zu
+auf transaktionsbasierte, reproduzierbare und zustandslose Weise zu
 instanzieren (@pxref{Systemkonfiguration}).
 
 @cindex funktionale Paketverwaltung
+@cindex isolation
 Intern implementiert Guix die Disziplin der @dfn{funktionalen
 Paketverwaltung}, zu der Nix schon die Pionierarbeit geleistet hat
 (@pxref{Danksagungen}). In Guix wird der Prozess, ein Paket zu erstellen
@@ -454,6 +456,7 @@ Garbage Collection für Pakete (@pxref{Funktionalitäten}).
 @chapter Installation
 
 @cindex Guix installieren
+@cindex official website
 GNU Guix kann von seiner Webseite unter
 @url{http://www.gnu.org/software/guix/} heruntergeladen werden. Dieser
 Abschnitt beschreibt die Software-Voraussetzungen von Guix und wie man es
@@ -466,6 +469,8 @@ GNU-Betriebssystem installieren möchten, werfen Sie einen Blick in den
 Abschnitt @pxref{Systeminstallation}.
 
 @cindex Fremddistribution
+@cindex directories related to foreign distro
+
 Wenn es auf ein bestehendes GNU/Linux-System installiert wird — im Folgenden
 als @dfn{Fremddistribution} bezeichnet —, ergänzt GNU@tie{}Guix die
 verfügbaren Werkzeuge, ohne dass sie sich gegenseitig stören. Guix’ Daten
@@ -491,12 +496,13 @@ aktualisiert werden (@pxref{Aufruf von guix pull}).
 @section Aus Binärdatei installieren
 
 @cindex Guix aus Binärdateien installieren
+@cindex installer script
 Dieser Abschnitt beschreibt, wie sich Guix auf einem beliebigen System aus
 einem alle Komponenten umfassenden Tarball installieren lässt, der
 Binärdateien für Guix und all seine Abhängigkeiten liefert. Dies geht in der
-Regel schneller, als Guix aus seinen Quelldateien zu installieren, was im
-nächsten Abschnitt beschrieben wird. Vorausgesetzt wird hier lediglich, dass
-GNU@tie{}tar und Xz verfügbar sind.
+Regel schneller, als Guix aus seinen Quelldateien zu installieren, was in
+den nächsten Abschnitten beschrieben wird. Vorausgesetzt wird hier
+lediglich, dass GNU@tie{}tar und Xz verfügbar sind.
 
 Wir bieten ein
 @uref{https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh,
@@ -528,7 +534,8 @@ Falls dieser Befehl fehlschlägt, weil Sie nicht über den nötigen
 importieren:
 
 @example
-$ gpg --keyserver pgp.mit.edu --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
+$ gpg --keyserver @value{KEY-SERVER} \
+      --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
 @end example
 
 @noindent
@@ -548,8 +555,8 @@ ausführen. Danach führen Sie als @code{root}-Nutzer aus:
 @end example
 
 Dadurch wird @file{/gnu/store} (@pxref{Der Store}) und @file{/var/guix}
-erzeugt. Letzteres enthält ein Profil, welches bereit zur Nutzung durch
-@code{root} ist (wie im nächsten Schritt beschrieben).
+erzeugt. Letzteres enthält ein fertiges Guix-Profil für den
+Administratornutzer @code{root} (wie im nächsten Schritt beschrieben).
 
 Entpacken Sie den Tarball @emph{nicht} auf einem schon funktionierenden
 Guix-System, denn es würde seine eigenen essenziellen Dateien überschreiben.
@@ -557,25 +564,26 @@ Guix-System, denn es würde seine eigenen essenziellen Dateien überschreiben.
 Die Befehlszeilenoption @code{--warning=no-timestamp} stellt sicher, dass
 GNU@tie{}tar nicht vor »unplausibel alten Zeitstempeln« warnt (solche
 Warnungen traten bei GNU@tie{}tar 1.26 und älter auf, neue Versionen machen
-keine Probleme). Sie kommen daher, dass alle Dateien im Archiv als
+keine Probleme). Sie treten auf, weil alle Dateien im Archiv als
 Änderungszeitpunkt null eingetragen bekommen haben (das bezeichnet den
 1. Januar 1970). Das ist Absicht, damit der Inhalt des Archivs nicht davon
 abhängt, wann es erstellt wurde, und es somit reproduzierbar wird.
 
 @item
-Machen Sie das Profil von @code{root} verfügbar als
-@file{~root/.guix-profile}:
+Make the profile available under @file{~root/.config/guix/current}, which is
+where @command{guix pull} will install updates (@pxref{Aufruf von guix pull}):
 
 @example
-# ln -sf /var/guix/profiles/per-user/root/guix-profile \
-         ~root/.guix-profile
+# mkdir -p ~root/.config/guix
+# ln -sf /var/guix/profiles/per-user/root/current-guix \
+         ~root/.config/guix/current
 @end example
 
 »Sourcen« Sie @file{etc/profile}, um @code{PATH} und andere relevante
 Umgebungsvariable zu ergänzen:
 
 @example
-# GUIX_PROFILE="`echo ~root`/.guix-profile" ; \
+# GUIX_PROFILE="`echo ~root`/.config/guix/current" ; \
   source $GUIX_PROFILE/etc/profile
 @end example
 
@@ -598,8 +606,8 @@ das mit folgenden Befehlen veranlassen:
 @c http://lists.gnu.org/archive/html/guix-devel/2017-01/msg01199.html
 
 @example
-# cp ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
-        /etc/systemd/system/
+# cp ~root/.config/guix/current/lib/systemd/system/guix-daemon.service \
+     /etc/systemd/system/
 # systemctl start guix-daemon && systemctl enable guix-daemon
 @end example
 
@@ -607,14 +615,16 @@ Wenn Ihre Wirts-Distribution als »init«-System Upstart verwendet:
 
 @example
 # initctl reload-configuration
-# cp ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
+# cp ~root/.config/guix/current/lib/upstart/system/guix-daemon.conf \
+     /etc/init/
 # start guix-daemon
 @end example
 
 Andernfalls können Sie den Daemon immer noch manuell starten, mit:
 
 @example
-# ~root/.guix-profile/bin/guix-daemon --build-users-group=guixbuild
+# ~root/.config/guix/current/bin/guix-daemon \
+       --build-users-group=guixbuild
 @end example
 
 @item
@@ -624,7 +634,7 @@ zur Verfügung, zum Beispiel so:
 @example
 # mkdir -p /usr/local/bin
 # cd /usr/local/bin
-# ln -s /var/guix/profiles/per-user/root/guix-profile/bin/guix
+# ln -s /var/guix/profiles/per-user/root/current-guix/bin/guix
 @end example
 
 Es ist auch eine gute Idee, die Info-Version dieses Handbuchs ebenso
@@ -633,7 +643,7 @@ verfügbar zu machen:
 @example
 # mkdir -p /usr/local/share/info
 # cd /usr/local/share/info
-# for i in /var/guix/profiles/per-user/root/guix-profile/share/info/* ;
+# for i in /var/guix/profiles/per-user/root/current-guix/share/info/* ;
   do ln -s $i ; done
 @end example
 
@@ -649,7 +659,8 @@ Um Substitute von @code{hydra.gnu.org} oder einem Spiegelserver davon zu
 benutzen (@pxref{Substitute}), müssen sie erst autorisiert werden:
 
 @example
-# guix archive --authorize < ~root/.guix-profile/share/guix/hydra.gnu.org.pub
+# guix archive --authorize < \
+     ~root/.config/guix/current/share/guix/hydra.gnu.org.pub
 @end example
 
 @item
@@ -657,7 +668,7 @@ Alle Nutzer müssen womöglich ein paar zusätzliche Schritte ausführen, damit
 ihre Guix-Umgebung genutzt werden kann, siehe @pxref{Anwendungen einrichten}.
 @end enumerate
 
-Voilà, die installation ist fertig!
+Voilà, die Installation ist fertig!
 
 Sie können nachprüfen, dass Guix funktioniert, indem Sie ein Beispielpaket
 in das root-Profil installieren:
@@ -681,10 +692,11 @@ make guix-binary.@var{system}.tar.xz
 @end example
 
 @noindent
-…was wiederum dies ausführt:
+...@: which, in turn, runs:
 
 @example
-guix pack -s @var{system} --localstatedir guix
+guix pack -s @var{system} --localstatedir \
+  --profile-name=current-guix guix
 @end example
 
 Siehe @xref{Aufruf von guix pack} für weitere Informationen zu diesem
@@ -711,8 +723,8 @@ neuer, einschließlich 2.2.x,
 (@pxref{Guile Preparations, how to install the GnuTLS bindings for Guile,,
 gnutls-guile, GnuTLS-Guile}),
 @item
-@uref{https://notabug.org/civodul/guile-sqlite3, Guile-SQLite3}, version
-0.1.0 or later;
+@uref{https://notabug.org/guile-sqlite3/guile-sqlite3, Guile-SQLite3},
+version 0.1.0 or later;
 @item
 @c FIXME: Specify a version number once a release has been made.
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, vom August 2017
@@ -765,7 +777,7 @@ Ihren Store verfälschen (@pxref{Der Store}).
 Wenn eine funktionierende Installation of @url{http://nixos.org/nix/, the
 Nix package manager} verfügbar ist, können Sie Guix stattdessen mit
 @code{--disable-daemon} konfigurieren. In diesem Fall ersetzt Nix die drei
-obengenannten Abhängigkeiten.
+oben genannten Abhängigkeiten.
 
 Guix ist mit Nix kompatibel, daher ist es möglich, denselben Store für beide
 zu verwenden. Dazu müssen Sie an @command{configure} nicht nur denselben
@@ -816,10 +828,11 @@ jedes einzelnen Testfalls zu sehen, können Sie wie in diesem Beispiel die
 make check TESTS="tests/base64.scm" SCM_LOG_DRIVER_FLAGS="--brief=no"
 @end example
 
-Kommt es zum Fehlschlag, senden Sie bitte eine E-mail an
+Kommt es zum Fehlschlag, senden Sie bitte eine E-Mail an
 @email{bug-guix@@gnu.org} und fügen Sie die Datei @file{test-suite.log} als
-Anhang bei. Bitte geben Sie dabei in Ihrer Nachricht die benutze Version von
-Guix an sowie die Versionsnummern der Abhängigkeiten (@pxref{Voraussetzungen}).
+Anhang bei. Bitte geben Sie dabei in Ihrer Nachricht die benutzte Version
+von Guix an sowie die Versionsnummern der Abhängigkeiten
+(@pxref{Voraussetzungen}).
 
 Guix wird auch mit einem Testkatalog für das ganze System ausgeliefert, der
 vollständige Instanzen des GuixSD-Betriebssystems testet. Er kann nur auf
@@ -855,12 +868,12 @@ Auch hier gilt: Falls Testfehler auftreten, senden Sie bitte alle Details an
 @cindex Daemon
 Operationen wie das Erstellen eines Pakets oder Laufenlassen des
 Müllsammlers werden alle durch einen spezialisierten Prozess durchgeführt,
-den @dfn{Erstellungs-Daemon}, im Auftrag seiner Kunden (Clients). Nur der
-Daemon darf auf den Store und seine zugehörige Datenbank zugreifen. Daher
-wird jede den Store verändernde Operation durch den Daemon durchgeführt. Zum
-Beispiel kommunizieren Befehlszeilenwerkzeuge wie @command{guix package} und
-@command{guix build} mit dem Daemon (mittels entfernter Prozeduraufrufe), um
-ihm Anweisungen zu geben, was er tun soll.
+den @dfn{Erstellungs-Daemon}, im Auftrag seiner Kunden (den Clients). Nur
+der Daemon darf auf den Store und seine zugehörige Datenbank
+zugreifen. Daher wird jede den Store verändernde Operation durch den Daemon
+durchgeführt. Zum Beispiel kommunizieren Befehlszeilenwerkzeuge wie
+@command{guix package} und @command{guix build} mit dem Daemon (mittels
+entfernter Prozeduraufrufe), um ihm Anweisungen zu geben, was er tun soll.
 
 Folgende Abschnitte beschreiben, wie Sie die Umgebung des
 Erstellungs-Daemons ausstatten sollten. Siehe auch @ref{Substitute} für
@@ -923,7 +936,7 @@ erzeugt werden (mit Bash-Syntax und den Befehlen von @code{shadow}):
 @noindent
 Die Anzahl der Erstellungsbenutzer entscheidet, wieviele Erstellungsaufträge
 parallel ausgeführt werden können, wie es mit der Befehlszeilenoption
-@option{--max-jobs} vorgeben werden kann (@pxref{Aufruf des guix-daemon,
+@option{--max-jobs} vorgegeben werden kann (@pxref{Aufruf des guix-daemon,
 @option{--max-jobs}}). Um @command{guix system vm} und ähnliche Befehle
 nutzen zu können, müssen Sie die Erstellungsbenutzer unter Umständen zur
 @code{kvm}-Benutzergruppe hinzufügen, damit sie Zugriff auf @file{/dev/kvm}
@@ -999,7 +1012,7 @@ dennoch möglich, @command{guix-daemon} auszuführen, sofern Sie
 dann nicht voneinander und vom Rest des Systems isoliert werden. Daher
 können sich Erstellungsprozesse gegenseitig stören und auf Programme,
 Bibliotheken und andere Dateien zugreifen, die dem restlichen System zur
-Verfügung stehen — was es deutlich schwerer macht, die als @emph{reine}
+Verfügung stehen — was es deutlich schwerer macht, sie als @emph{reine}
 Funktionen aufzufassen.
 
 
@@ -1072,9 +1085,9 @@ Der Systemtyp der entfernten Maschine — z.B. @code{"x86_64-linux"}.
 
 @item user
 Das Benutzerkonto, mit dem eine Verbindung zur entfernten Maschine über SSH
-aufgebaut werden soll. Beachten Sie, dass das SSH-Schlüsselpaart
-@emph{nicht} durch eine Passphrase geschützt sein darf, damit
-nicht-interaktive Anmeldungen möglich sind.
+aufgebaut werden soll. Beachten Sie, dass das SSH-Schlüsselpaar @emph{nicht}
+durch eine Passphrase geschützt sein darf, damit nicht-interaktive
+Anmeldungen möglich sind.
 
 @item host-key
 Dies muss der @dfn{öffentliche SSH-Host-Schlüssel} der Maschine im
@@ -1268,7 +1281,7 @@ notwendigen Operationen gestattet.
 @cindex SELinux, Einschränkungen
 
 Diese Richtlinie ist nicht perfekt. Im Folgenden finden Sie eine Liste von
-Einschränkungen oder merkwürdiger Verhaltensweisen, die bedacht werden
+Einschränkungen oder merkwürdigen Verhaltensweisen, die bedacht werden
 sollten, wenn man die mitgelieferte SELinux-Richtlinie für den Guix-Daemon
 einspielt.
 
@@ -1301,8 +1314,8 @@ weil SELinux Netzwerk-Sockets anders behandelt als Dateien.
 @item
 Derzeit wird allen Dateien mit einem Namen, der zum regulären Ausdruck
 @code{/gnu/store/.+-(guix-.+|profile)/bin/guix-daemon} passt, die
-Kennzeichnung @code{guix_daemon_exec_t} zugewiesen, wodurch @emph{jedee
-beliebigee} Datei mit diesem Namen in irgendeinem Profil gestatttet wäre, in
+Kennzeichnung @code{guix_daemon_exec_t} zugewiesen, wodurch @emph{jede
+beliebige} Datei mit diesem Namen in irgendeinem Profil gestattet wäre, in
 der Domäne @code{guix_daemon_t} ausgeführt zu werden. Das ist nicht
 ideal. Ein Angreifer könnte ein Paket erstellen, dass solch eine ausführbare
 Datei enthält, und den Nutzer überzeugen, es zu installieren und
@@ -1356,12 +1369,9 @@ reproduzierbare Erstellungen zu garantieren (@pxref{Funktionalitäten}).
 
 When the daemon performs a build on behalf of the user, it creates a build
 directory under @file{/tmp} or under the directory specified by its
-@code{TMPDIR} environment variable; this directory is shared with the
-container for the duration of the build.  Be aware that using a directory
-other than @file{/tmp} can affect build results---for example, with a longer
-directory name, a build process that uses Unix-domain sockets might hit the
-name length limitation for @code{sun_path}, which it would otherwise not
-hit.
+@code{TMPDIR} environment variable.  This directory is shared with the
+container for the duration of the build, though within the container, the
+build tree is always called @file{/tmp/guix-build-@var{name}.drv-0}.
 
 Nach Abschluss der Erstellung wird das Erstellungsverzeichnis automatisch
 entfernt, außer wenn die Erstellung fehlgeschlagen ist und der Client
@@ -1487,7 +1497,7 @@ Füge das @var{Verzeichnis} zum chroot von Erstellungen hinzu.
 Dadurch kann sich das Ergebnis von Erstellungsprozessen ändern — zum
 Beispiel, wenn diese optionale Abhängigkeiten aus dem @var{Verzeichnis}
 verwenden, wenn sie verfügbar sind, und nicht, wenn es fehlt. Deshalb ist es
-nicht empfohlen, dass Sie diese Befehlszeilenoption besser verwenden, besser
+nicht empfohlen, dass Sie diese Befehlszeilenoption verwenden, besser
 sollten Sie dafür sorgen, dass jede Ableitung alle von ihr benötigten
 Eingabgen deklariert.
 
@@ -1677,7 +1687,7 @@ stärkstens}, dass Sie den @dfn{Name Service Cache Daemon} der
 GNU-C-Bibliothek, @command{nscd}, laufen lassen, welcher auf dem Socket
 @file{/var/run/nscd/socket} lauschen sollte. Wenn Sie das nicht tun, könnten
 mit Guix installierte Anwendungen Probleme beim Auflösen von Hostnamen oder
-Benutzerkonten haben, oder sogar abstürzen. Die nächsten Absätze erklären,
+Benutzerkonten haben, oder sogar abstürzen. Die nächsten Absätze erklären
 warum.
 
 @cindex @file{nsswitch.conf}
@@ -1803,7 +1813,7 @@ benutzen. Das Emacs-Paketsystem organisiert die Dateistruktur ähnlich
 (@pxref{Package Files,,, emacs, The GNU Emacs Manual}).
 
 Standardmäßig »weiß« Emacs (wenn er mit Guix installiert wurde), wo diese
-Pakete liegen, sie müssen also nichts selbst konfigurieren. Wenn Sie aber
+Pakete liegen, Sie müssen also nichts selbst konfigurieren. Wenn Sie aber
 aus irgendeinem Grund mit Guix installierte Pakete nicht automatisch laden
 lassen möchten, können Sie Emacs mit der Befehlszeilenoption
 @code{--no-site-file} starten (@pxref{Init File,,, emacs, The GNU Emacs
@@ -1888,7 +1898,7 @@ Nutzers gespeichert als @code{$HOME/.guix-profile}.
 Zum Beispiel installiert @code{alice} GCC 4.7.2. Dadurch zeigt dann
 @file{/home/alice/.guix-profile/bin/gcc} auf
 @file{/gnu/store/@dots{}-gcc-4.7.2/bin/gcc}. Auf demselben Rechner hat
-@code{bob} bbereits GCC 4.8.0 installiert. Das Profil von @code{bob} zeigt
+@code{bob} bereits GCC 4.8.0 installiert. Das Profil von @code{bob} zeigt
 dann einfach weiterhin auf @file{/gnu/store/@dots{}-gcc-4.8.0/bin/gcc} —
 d.h. beide Versionen von GCC koexistieren auf demselben System, ohne sich zu
 stören.
@@ -1908,12 +1918,12 @@ Stromausfall während der Transaktion kommt, dann bleibt der alte, nutzbare
 Zustands des Nutzerprofils erhalten.
 
 Zudem kann jede Pakettransaktion @emph{zurückgesetzt} werden
-(Rollback). Wenn also zum Beispiel durch eine Aktualisierung eine neue
+(Rollback). Wird also zum Beispiel durch eine Aktualisierung eine neue
 Version eines Pakets installiert, die einen schwerwiegenden Fehler zur Folge
 hat, können Nutzer ihr Profil einfach auf die vorherige Profilinstanz
 zurücksetzen, von der sie wissen, dass sie gut lief. Ebenso unterliegt auf
 GuixSD auch die globale Systemkonfiguration transaktionellen
-Aktualisierungen und Rücksetzungen (@pxref{Das Konfigurationssystems nutzen}).
+Aktualisierungen und Rücksetzungen (@pxref{Das Konfigurationssystem nutzen}).
 
 Alle Pakete im Paket-Store können vom @emph{Müllsammler} (Garbage Collector)
 gelöscht werden. Guix ist in der Lage, festzustellen, welche Pakete noch
@@ -2171,7 +2181,7 @@ auflösen, zum Beispiel so:
 @cindex rücksetzen
 @cindex Zurücksetzen von Transaktionen
 @cindex Transaktionen, zurücksetzen
-Wechselt zur vorherigen @dfn{Generation} des Profils zurück — d.h. mache die
+Wechselt zur vorherigen @dfn{Generation} des Profils zurück — d.h. macht die
 letzte Transaktion rückgängig.
 
 In Verbindung mit Befehlszeilenoptionen wie @code{--install} wird zuerst
@@ -2278,7 +2288,7 @@ Verfügbarkeit von Paketen nachzulesen:
 @item --search=@var{Regexp}
 @itemx -s @var{Regexp}
 @cindex Suche nach Paketen
-Führt alle verfügbaren Pakete aus, deren Name, Zusammenfassung oder
+Führt alle verfügbaren Pakete auf, deren Name, Zusammenfassung oder
 Beschreibung zum regulären Ausdruck @var{Regexp} passt, sortiert nach ihrer
 Relevanz. Alle Metadaten passender Pakete werden im @code{recutils}-Format
 geliefert (@pxref{Top, GNU recutils databases,, recutils, GNU recutils
@@ -2510,7 +2520,7 @@ könnte, ob Ihr System über noch nicht behobene Sicherheitsschwachstellen
 verfügt.
 
 Substitute von der offiziellen Build-Farm sind standardmäßig erlaubt, wenn
-Sie die Guix System Distribution verwenden (@pxref{GNU-Distribution}). Auf
+Sie die Guix-System-Distribution verwenden (@pxref{GNU-Distribution}). Auf
 Fremddistributionen sind sie allerdings standardmäßig ausgeschaltet, solange
 Sie sie nicht ausdrücklich in einem der empfohlenen Installationsschritte
 erlaubt haben (@pxref{Installation}). Die folgenden Absätze beschreiben, wie
@@ -2561,7 +2571,7 @@ Sobald es eingerichtet wurde, sollte sich die Ausgabe eines Befehls wie
 
 @example
 $ guix build emacs --dry-run
-The following derivations would be built:
+Folgende Ableitungen würden erstellt:
    /gnu/store/yr7bnx8xwcayd6j95r2clmkdl1qh688w-emacs-24.3.drv
    /gnu/store/x8qsh1hlhgjx6cwsjyvybnfv2i37z23w-dbus-1.6.4.tar.gz.drv
    /gnu/store/1ixwp12fl950d15h2cj11c73733jay0z-alsa-lib-1.0.27.1.tar.bz2.drv
@@ -2574,7 +2584,7 @@ in so etwas verwandeln:
 
 @example
 $ guix build emacs --dry-run
-112.3 MB would be downloaded:
+112.3 MB würden heruntergeladen:
    /gnu/store/pk3n22lbq6ydamyymqkkz7i69wiwjiwi-emacs-24.3
    /gnu/store/2ygn4ncnhrpr61rssa6z0d9x22si0va3-libjpeg-8d
    /gnu/store/71yz6lgx4dazma9dwn2mcjxaah9w77jq-cairo-1.12.16
@@ -2584,7 +2594,7 @@ $ guix build emacs --dry-run
 
 @noindent
 Das zeigt an, dass Substitute von @code{hydra.gnu.org} nutzbar sind und für
-zukünftige Erstellungen heruntergeladen, wann immer es möglich ist.
+zukünftige Erstellungen heruntergeladen werden, wann immer es möglich ist.
 
 @cindex Substitute, wie man sie ausschaltet
 Der Substitutsmechanismus kann global ausgeschaltet werden, indem Sie dem
@@ -2603,10 +2613,10 @@ einen Fehler. Ebenso werden Substitute ignoriert, die nich signiert sind,
 oder nicht mit einem in der ACL aufgelisteten Schlüssel signiert sind.
 
 Es gibt nur eine Ausnahme: Wenn ein unautorisierter Server Substitute
-anbietet, die @emph{Bit für Bit identisch} mit denen von einem
-authorisierten Server sind, können sie auch vom unautorisierten Server
-heruntergeladen werden. Zum Beispiel, angenommen wir haben zwei
-Substitutserver mit dieser Befehlszeilenoption ausgewählt:
+anbietet, die @emph{Bit für Bit identisch} mit denen von einem autorisierten
+Server sind, können sie auch vom unautorisierten Server heruntergeladen
+werden. Zum Beispiel, angenommen wir haben zwei Substitutserver mit dieser
+Befehlszeilenoption ausgewählt:
 
 @example
 --substitute-urls="https://a.example.org https://b.example.org"
@@ -2673,9 +2683,9 @@ einem Server verfügbaren Substitute steht.
 
 @cindex Vertrauen, gegenüber vorerstellten Binärdateien
 Derzeit hängt die Kontrolle jedes Individuums über seine Rechner von
-Institutionen, Unternehmen undsolchen Gruppierungen ab, die über genug Macht
-und Entschlusskraft verfügen, die Rechnerinfrastruktur zu sabotieren und
-ihre Schwachstellen auszunutzen. Auch wenn es bequem ist, Substitute von
+Institutionen, Unternehmen und solchen Gruppierungen ab, die über genug
+Macht und Entschlusskraft verfügen, die Rechnerinfrastruktur zu sabotieren
+und ihre Schwachstellen auszunutzen. Auch wenn es bequem ist, Substitute von
 @code{hydra.gnu.org} zu benutzen, ermuntern wir Nutzer, auch selbst
 Erstellungen durchzuführen oder gar ihre eigene Build-Farm zu betreiben,
 damit @code{hydra.gnu.org} ein weniger interessantes Ziel wird. Eine Art,
@@ -2689,14 +2699,15 @@ unabhängige Erstellungen eines bestimmten Pakets zu bitweise identischen
 Ergebnissen führen. Wir können also mit Hilfe einer vielschichtigen Menge an
 unabhängigen Paketerstellungen die Integrität unseres Systems besser
 gewährleisten. Der Befehl @command{guix challenge} hat das Ziel, Nutzern zu
-ermöglichen, Substitutserver zu beurteilen, und Entwicklern zu ermöglichen,
-nichtdeterministische Paketerstellungen zu finden (@pxref{Aufruf von guix challenge}). Ebenso ermöglicht es die Befehlszeilenoption @option{--check}
-von @command{guix build}, dass Nutzer bereits installierte Substitute auf
-Echtheit zu prüfen, indem sie lokal nachgebaut werden (@pxref{build-check,
-@command{guix build --check}}).
+ermöglichen, Substitutserver zu beurteilen, und Entwickler dabei zu
+unterstützen, nichtdeterministische Paketerstellungen zu finden
+(@pxref{Aufruf von guix challenge}). Ebenso ermöglicht es die
+Befehlszeilenoption @option{--check} von @command{guix build}, dass Nutzer
+bereits installierte Substitute auf Echtheit zu prüfen, indem sie lokal
+nachgebaut werden (@pxref{build-check, @command{guix build --check}}).
 
-In Zukunft wollen wir, dass Guix Binärdateien an und von Nutzern in einem
-Peer-to-Peer veröffentlichen kann. Wenn Sie mit uns dieses Projekt
+In Zukunft wollen wir, dass Guix Binärdateien an und von Nutzern
+peer-to-peer veröffentlichen kann. Wenn Sie mit uns dieses Projekt
 diskuttieren möchten, kommen Sie auf unsere Mailing-Liste
 @email{guix-devel@@gnu.org}.
 
@@ -2775,7 +2786,7 @@ Store irreparabel beschädigen!
 Der Müllsammler kennt eine Reihe von @dfn{Wurzeln}: Jede Datei in
 @file{/gnu/store}, die von einer Wurzel aus erreichbar ist, gilt als
 @dfn{lebendig} und kann nicht entfernt werden; jede andere Datei gilt als
-@dfn{tot} und ist ein Kandidat, gelöscht zu werden. Die Reihe der
+@dfn{tot} und ist ein Kandidat, gelöscht zu werden. Die Menge der
 Müllsammlerwurzeln (kurz auch »GC-Wurzeln«, von englisch »Garbage
 Collector«) umfasst Standard-Benutzerprofile; standardmäßig werden diese
 Müllsammlerwurzeln durch symbolische Verknüpfungen in
@@ -2789,7 +2800,7 @@ dazu @code{guix package --delete-generations} aus (@pxref{Aufruf von guix packag
 
 Unsere Empfehlung ist, dass Sie den Müllsammler regelmäßig laufen lassen und
 wenn Sie wenig freien Speicherplatz zur Verfügung haben. Um zum Beispiel
-sicherzustellen, dass Sie mindestens 5@tie{}GB are auf Ihrer Platte zur
+sicherzustellen, dass Sie mindestens 5@tie{}GB auf Ihrer Platte zur
 Verfügung haben, benutzen Sie einfach:
 
 @example
@@ -2802,7 +2813,7 @@ Erklärung, wie man das in GuixSD tun kann). @command{guix gc} ohne
 Befehlszeilenargumente auszuführen, lässt so viel Müll wie möglich sammeln,
 aber das ist oft nicht, was man will, denn so muss man unter Umständen
 Software erneut erstellen oder erneut herunterladen, weil der Müllsammler
-sie als »tot« ansieht, sie aber zur Erstellung anderer Software wiedeer
+sie als »tot« ansieht, sie aber zur Erstellung anderer Software wieder
 gebraucht wird — das trifft zum Beispiel auf die Compiler-Toolchain zu.
 
 Der Befehl @command{guix gc} hat drei Arbeitsmodi: Er kann benutzt werden,
@@ -2886,7 +2897,7 @@ Liste ist der @dfn{transitive Abschluss} dieser Store-Dateien.
 
 Der Abschnitt @xref{Aufruf von guix size} erklärt ein Werkzeug, um den
 Speicherbedarf des Abschlusses eines Elements zu ermitteln. Siehe
-@xref{Aufruf von guix graph} für ein Werkzeug, um den Referenzgraph zu
+@xref{Aufruf von guix graph} für ein Werkzeug, um den Referenzgraphen zu
 veranschaulichen.
 
 @item --derivers
@@ -2978,27 +2989,23 @@ alle Guix-Befehle und Scheme-Module werden aus der neuesten Version von Guix
 kommen. Neue @command{guix}-Unterbefehle, die durch die Aktualisierung
 hinzugekommen sind, werden also auch verfügbar.
 
-Jeder Nutzer kann seine Kopie von Guix mittels @command{guix pull}
-aktualisieren, wodurch sich nur für den Nutzer etwas verändert, der
-@command{guix pull} ausgeführt hat. Wenn also zum Beispiel der
-Administratornutzer @code{root} den Befehl @command{guix pull} ausführt, hat
-das keine Auswirkungen, auf die für den Benutzer @code{alice} sichtbare
-Guix-Version, und umgekehrt.
+Any user can update their Guix copy using @command{guix pull}, and the
+effect is limited to the user who run @command{guix pull}.  For instance,
+when user @code{root} runs @command{guix pull}, this has no effect on the
+version of Guix that user @code{alice} sees, and vice versa.
 
-Das Ergebnis von @command{guix pull} ist ein als
-@file{~/.config/guix/current} verfügbares @dfn{Profil} mit dem neuesten
-Guix. Stellen Sie sicher, dass es am Anfang Ihres Suchpfades steht, damit
-Sie auch wirklich das neueste Guix und sein Info-Handbuch sehen
-(@pxref{Dokumentation}):
+The result of running @command{guix pull} is a @dfn{profile} available under
+@file{~/.config/guix/current} containing the latest Guix.  Thus, make sure
+to add it to the beginning of your search path so that you use the latest
+version, and similarly for the Info manual (@pxref{Dokumentation}):
 
 @example
 export PATH="$HOME/.config/guix/current/bin:$PATH"
 export INFOPATH="$HOME/.config/guix/current/share/info:$INFOPATH"
 @end example
 
-Die Befehlszeilenoption @code{--list-generations} oder kurz @code{-l} listet
-ältere von @command{guix pull} erzeugte Generationen auf, zusammen mit
-Informationen zu deren Provenienz.
+The @code{--list-generations} or @code{-l} option lists past generations
+produced by @command{guix pull}, along with details about their provenance:
 
 @example
 $ guix pull -l
@@ -3030,10 +3037,10 @@ Generation 3	Jun 13 2018 23:31:07	(current)
 @ref{Invoking guix describe, @command{guix describe}}, for other ways to
 describe the current status of Guix.
 
-Das Profil @code{~/.config/guix/current} verhält sich genau wie jedes andere
-Profil, das von @command{guix package} erzeugt wurde (@pxref{Aufruf von guix package}). Das bedeutet, Sie können seine Generationen auflisten und es auf
-die vorherige Generation — also das vorherige Guix — zurücksetzen und so
-weiter:
+This @code{~/.config/guix/current} profile works like any other profile
+created by @command{guix package} (@pxref{Aufruf von guix package}).  That is,
+you can list generations, roll back to the previous generation---i.e., the
+previous Guix---and so on:
 
 @example
 $ guix package -p ~/.config/guix/current --roll-back
@@ -3046,10 +3053,6 @@ Der Befehl @command{guix pull} wird in der Regel ohne Befehlszeilenargumente
 aufgerufen, aber er versteht auch folgende Befehlszeilenoptionen:
 
 @table @code
-@item --verbose
-Ausführliche Informationen ausgeben und Erstellungsprotokolle auf der
-Standardfehlerausgabe ausgeben.
-
 @item --url=@var{URL}
 @itemx --commit=@var{Commit}
 @itemx --branch=@var{Branch}
@@ -3082,6 +3085,15 @@ current generation only.
 @item --profile=@var{Profil}
 @itemx -p @var{Profil}
 Use @var{profile} instead of @file{~/.config/guix/current}.
+
+@item --dry-run
+@itemx -n
+Show which channel commit(s) would be used and what would be built or
+substituted but do not actually do it.
+
+@item --verbose
+Ausführliche Informationen ausgeben und Erstellungsprotokolle auf der
+Standardfehlerausgabe ausgeben.
 
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
@@ -3201,8 +3213,8 @@ channel(s):
 @end lisp
 
 @noindent
-Note that the snippet above is (as always!) Scheme code; we use @code{cons}
-to add a channel the list of channels that the variable
+Note that the snippet above is (as always!)@: Scheme code; we use
+@code{cons} to add a channel the list of channels that the variable
 @code{%default-channels} is bound to (@pxref{Pairs, @code{cons} and lists,,
 guile, GNU Guile Reference Manual}).  With this file in place, @command{guix
 pull} builds not only Guix but also the package modules from your own
@@ -3466,8 +3478,17 @@ Produce output in the specified @var{format}, one of:
 produce human-readable output;
 @item channels
 produce a list of channel specifications that can be passed to @command{guix
-pull -C} or installed as @file{~/.config/guix/channels.scm} (@pxref{Aufruf von guix pull}).
+pull -C} or installed as @file{~/.config/guix/channels.scm} (@pxref{Aufruf von guix pull});
+@item json
+@cindex JSON
+produce a list of channel specifications in JSON format;
+@item recutils
+produce a list of channel specifications in Recutils format.
 @end table
+
+@item --profile=@var{Profil}
+@itemx -p @var{Profil}
+Display information about @var{profile}.
 @end table
 
 @node Aufruf von guix pack
@@ -3599,8 +3620,8 @@ guix pack -R -S /mybin=bin bash
 @end example
 
 @noindent
-... you can copy that pack to a machine that lacks Guix, and from your home
-directory as a normal user, run:
+...@: you can copy that pack to a machine that lacks Guix, and from your
+home directory as a normal user, run:
 
 @example
 tar xf pack.tar.gz
@@ -3668,8 +3689,11 @@ For instance, @code{-S /opt/gnu/bin=bin} creates a @file{/opt/gnu/bin}
 symlink pointing to the @file{bin} sub-directory of the profile.
 
 @item --localstatedir
+@itemx --profile-name=@var{name}
 Include the ``local state directory'', @file{/var/guix}, in the resulting
-pack.
+pack, and notably the @file{/var/guix/profiles/per-user/root/@var{name}}
+profile---by default @var{name} is @code{guix-profile}, which corresponds to
+@file{~root/.guix-profile}.
 
 @file{/var/guix} contains the store database (@pxref{Der Store}) as well as
 garbage-collector roots (@pxref{Aufruf von guix gc}).  Providing it in the
@@ -4559,6 +4583,65 @@ The @code{install} phase installs the binaries, and it also installs the
 source code and @file{Cargo.toml} file.
 @end defvr
 
+@cindex Clojure (programming language)
+@cindex simple Clojure build system
+@defvr {Scheme Variable} clojure-build-system
+This variable is exported by @code{(guix build-system clojure)}.  It
+implements a simple build procedure for @uref{https://clojure.org/, Clojure}
+packages using plain old @code{compile} in Clojure.  Cross-compilation is
+not supported yet.
+
+It adds @code{clojure}, @code{icedtea} and @code{zip} to the set of inputs.
+Different packages can be specified with the @code{#:clojure}, @code{#:jdk}
+and @code{#:zip} parameters, respectively.
+
+A list of source directories, test directories and jar names can be
+specified with the @code{#:source-dirs}, @code{#:test-dirs} and
+@code{#:jar-names} parameters, respectively.  Compile directory and main
+class can be specified with the @code{#:compile-dir} and @code{#:main-class}
+parameters, respectively.  Other parameters are documented below.
+
+This build system is an extension of @var{ant-build-system}, but with the
+following phases changed:
+
+@table @code
+
+@item build
+This phase calls @code{compile} in Clojure to compile source files and runs
+@command{jar} to create jars from both source files and compiled files
+according to the include list and exclude list specified in
+@code{#:aot-include} and @code{#:aot-exclude}, respectively.  The exclude
+list has priority over the include list.  These lists consist of symbols
+representing Clojure libraries or the special keyword @code{#:all}
+representing all Clojure libraries found under the source directories.  The
+parameter @code{#:omit-source?} decides if source should be included into
+the jars.
+
+@item check
+This phase runs tests according to the include list and exclude list
+specified in @code{#:test-include} and @code{#:test-exclude}, respectively.
+Their meanings are analogous to that of @code{#:aot-include} and
+@code{#:aot-exclude}, except that the special keyword @code{#:all} now
+stands for all Clojure libraries found under the test directories.  The
+parameter @code{#:tests?} decides if tests should be run.
+
+@item install
+This phase installs all jars built previously.
+@end table
+
+Apart from the above, this build system also contains an additional phase:
+
+@table @code
+
+@item install-doc
+This phase installs all top-level files with base name matching
+@var{%doc-regex}.  A different regex can be specified with the
+@code{#:doc-regex} parameter.  All files (recursively) inside the
+documentation directories specified in @code{#:doc-dirs} are installed as
+well.
+@end table
+@end defvr
+
 @defvr {Scheme Variable} cmake-build-system
 This variable is exported by @code{(guix build-system cmake)}.  It
 implements the build procedure for packages using the
@@ -4861,7 +4944,7 @@ its own directory under @file{share/emacs/site-lisp/guix.d}.
 @defvr {Scheme Variable} font-build-system
 This variable is exported by @code{(guix build-system font)}.  It implements
 an installation procedure for font packages where upstream provides
-pre-compiled TrueType, OpenType, etc. font files that merely need to be
+pre-compiled TrueType, OpenType, etc.@: font files that merely need to be
 copied into place.  It copies font files to standard locations in the output
 directory.
 @end defvr
@@ -5137,8 +5220,8 @@ is the @code{derivation} procedure:
 #f] [#:inputs '()] [#:env-vars '()] @ [#:system (%current-system)]
 [#:references-graphs #f] @ [#:allowed-references #f]
 [#:disallowed-references #f] @ [#:leaked-env-vars #f] [#:local-build? #f] @
-[#:substitutable? #t] Build a derivation with the given arguments, and
-return the resulting @code{<derivation>} object.
+[#:substitutable? #t] [#:properties '()] Build a derivation with the given
+arguments, and return the resulting @code{<derivation>} object.
 
 When @var{hash} and @var{hash-algo} are given, a @dfn{fixed-output
 derivation} is created---i.e., one whose result is known in advance, such as
@@ -5171,6 +5254,9 @@ When @var{substitutable?} is false, declare that substitutes of the
 derivation's output should not be used (@pxref{Substitute}).  This is
 useful, for instance, when building packages that capture details of the
 host CPU instruction set.
+
+@var{properties} must be an association list describing ``properties'' of
+the derivation.  It is kept as-is, uninterpreted, in the derivation.
 @end deffn
 
 @noindent
@@ -5843,11 +5929,12 @@ monads.)
 [#:references-graphs #f] [#:allowed-references #f] @
 [#:disallowed-references #f] @ [#:leaked-env-vars #f] @ [#:script-name
 (string-append @var{name} "-builder")] @ [#:deprecation-warnings #f] @
-[#:local-build? #f] [#:substitutable? #t] [#:guile-for-build #f] Return a
-derivation @var{name} that runs @var{exp} (a gexp) with
-@var{guile-for-build} (a derivation) on @var{system}; @var{exp} is stored in
-a file called @var{script-name}.  When @var{target} is true, it is used as
-the cross-compilation target triplet for packages referred to by @var{exp}.
+[#:local-build? #f] [#:substitutable? #t] @ [#:properties '()]
+[#:guile-for-build #f] Return a derivation @var{name} that runs @var{exp} (a
+gexp) with @var{guile-for-build} (a derivation) on @var{system}; @var{exp}
+is stored in a file called @var{script-name}.  When @var{target} is true, it
+is used as the cross-compilation target triplet for packages referred to by
+@var{exp}.
 
 @var{modules} is deprecated in favor of @code{with-imported-modules}.  Its
 meaning is to make @var{modules} available in the evaluation context of
@@ -6279,6 +6366,10 @@ end of the build log.  This is useful when debugging build issues.
 @xref{Fehlschläge beim Erstellen untersuchen}, for tips and tricks on how to debug build
 issues.
 
+This option has no effect when connecting to a remote daemon with a
+@code{guix://} URI (@pxref{Der Store, the @code{GUIX_DAEMON_SOCKET}
+variable}).
+
 @item --keep-going
 @itemx -k
 Keep going when some of the derivations fail to build; return only once all
@@ -6487,6 +6578,38 @@ library, the application binary interface (ABI) of those libraries must be
 compatible.  If @var{replacement} is somehow incompatible with
 @var{package}, then the resulting package may be unusable.  Use with care!
 
+@item --with-branch=@var{package}=@var{branch}
+@cindex Git, using the latest commit
+@cindex latest commit, building
+Build @var{package} from the latest commit of @var{branch}.  The
+@code{source} field of @var{package} must be an origin with the
+@code{git-fetch} method (@pxref{„origin“-Referenz}) or a @code{git-checkout}
+object; the repository URL is taken from that @code{source}.
+
+For instance, the following command builds @code{guile-sqlite3} from the
+latest commit of its @code{master} branch, and then builds @code{guix}
+(which depends on it) and @code{cuirass} (which depends on @code{guix})
+against this specific @code{guile-sqlite3} build:
+
+@example
+guix build --with-branch=guile-sqlite3=master cuirass
+@end example
+
+@cindex continuous integration
+Obviously, since it uses the latest commit of the given branch, the result
+of such a command varies over time.  Nevertheless it is a convenient way to
+rebuild entire software stacks against the latest commit of one or more
+packages.  This is particularly useful in the context of continuous
+integration (CI).
+
+Checkouts are kept in a cache under @file{~/.cache/guix/checkouts} to speed
+up consecutive accesses to the same repository.  You may want to clean it up
+once in a while to save disk space.
+
+@item --with-commit=@var{package}=@var{commit}
+This is similar to @code{--with-branch}, except that it builds from
+@var{commit} rather than the tip of a branch.  @var{commit} must be a valid
+Git commit SHA1 identifier.
 @end table
 
 @node Zusätzliche Erstellungsoptionen
@@ -6568,7 +6691,7 @@ The following derivations will be built:
 
 @item transitive
 Build the source derivations of all packages, as well of all transitive
-inputs to the packages.  This can be used e.g. to prefetch package source
+inputs to the packages.  This can be used e.g.@: to prefetch package source
 for later offline building.
 
 @example
@@ -7565,7 +7688,7 @@ Use @var{host} as the OpenPGP key server when importing a public key.
 @end table
 
 The @code{github} updater uses the @uref{https://developer.github.com/v3/,
-GitHub API} to query for new releases.  When used repeatedly e.g. when
+GitHub API} to query for new releases.  When used repeatedly e.g.@: when
 refreshing all packages, GitHub will eventually refuse to answer any further
 API requests.  By default 60 API requests per hour are allowed, and a full
 refresh on all GitHub packages in Guix requires more than this.
@@ -7601,7 +7724,7 @@ Identify inputs that should most likely be native inputs.
 @itemx source-file-name
 Probe @code{home-page} and @code{source} URLs and report those that are
 invalid.  Suggest a @code{mirror://} URL when applicable.  Check that the
-source file name is meaningful, e.g. is not just a version number or
+source file name is meaningful, e.g.@: is not just a version number or
 ``git-checkout'', without a declared @code{file-name} (@pxref{„origin“-Referenz}).
 
 @item cve
@@ -7858,7 +7981,7 @@ This shows the @emph{reverse} DAG of packages.  For example:
 guix graph --type=reverse-package ocaml
 @end example
 
-... yields the graph of packages that depend on OCaml.
+...@: yields the graph of packages that depend on OCaml.
 
 Note that for core packages this can yield huge graphs.  If all you want is
 to know the number of packages that depend on a given package, use
@@ -7874,7 +7997,7 @@ For instance, the following command:
 guix graph --type=bag-emerged coreutils | dot -Tpdf > dag.pdf
 @end example
 
-... yields this bigger graph:
+...@: yields this bigger graph:
 
 @image{images/coreutils-bag-graph,,5in,Detailed dependency graph of the GNU
 Coreutils}
@@ -8044,7 +8167,7 @@ fi
 @end example
 
 @noindent
-... or to browse the profile:
+...@: or to browse the profile:
 
 @example
 $ ls "$GUIX_ENVIRONMENT/bin"
@@ -9112,7 +9235,8 @@ Falls dieser Befehl fehlschlägt, weil Sie nicht über den nötigen
 importieren:
 
 @example
-$ gpg --keyserver pgp.mit.edu --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
+$ gpg --keyserver @value{KEY-SERVER} \
+      --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
 @end example
 
 @noindent
@@ -9455,7 +9579,7 @@ target root file system, say, as @file{/mnt/etc/config.scm}.  Failing to do
 that, you will have lost your configuration file once you have rebooted into
 the newly-installed system.
 
-@xref{Das Konfigurationssystems nutzen}, for an overview of the configuration
+@xref{Das Konfigurationssystem nutzen}, for an overview of the configuration
 file.  The example configurations discussed in that section are available
 under @file{/etc/configuration} in the installation image.  Thus, to get
 started with a system configuration providing a graphical display server (a
@@ -9632,29 +9756,27 @@ instantiated.  Then we show how this mechanism can be extended, for instance
 to support new system services.
 
 @menu
-* Das Konfigurationssystems nutzen::  Ihr GNU-System anpassen
+* Das Konfigurationssystem nutzen::  Ihr GNU-System anpassen.
 * „operating-system“-Referenz::  Details der 
                                        Betriebssystem-Deklarationen.
 * Dateisysteme::             Die Dateisystemeinbindungen konfigurieren.
-* Abgebildete Geräte::      Zusatzverarbeitungsschritte für blockbasierte 
-                               Geräte.
+* Abgebildete Geräte::      Näheres zu blockorientierten Speichermedien.
 * Benutzerkonten::           Benutzerkonten festlegen.
-* Locales::                  Sprach- und kulturelle 
-                               Konventionseinstellungen.
+* Locales::                  Sprache und kulturelle Konventionen.
 * Dienste::                  Systemdienste festlegen.
-* Setuid-Programme::         Programme mit Administratorrechten ausführen
+* Setuid-Programme::         Mit Administratorrechten startende Programme.
 * X.509-Zertifikate::        HTTPS-Server authentifizieren.
 * Name Service Switch::      Den Name Service Switch von libc konfigurieren.
 * Initiale RAM-Disk::        Linux-libre hochfahren.
 * Bootloader-Konfiguration::  Den Bootloader konfigurieren.
-* Aufruf von guix system::   Instanzierung einer Systemkonfiguration
+* Aufruf von guix system::   Instanzierung einer Systemkonfiguration.
 * GuixSD in einer VM starten::  Wie man GuixSD in einer virtuellen Maschine 
                                   startet.
 * Dienste definieren::       Neue Dienstdefinitionen hinzufügen.
 @end menu
 
-@node Das Konfigurationssystems nutzen
-@subsection Das Konfigurationssystems nutzen
+@node Das Konfigurationssystem nutzen
+@subsection Das Konfigurationssystem nutzen
 
 The operating system is configured by providing an @code{operating-system}
 declaration in a file that can then be passed to the @command{guix system}
@@ -9708,10 +9830,9 @@ environment variable---in addition to the per-user profiles (@pxref{Aufruf von g
 one would expect for basic user and administrator tasks---including the GNU
 Core Utilities, the GNU Networking Utilities, the GNU Zile lightweight text
 editor, @command{find}, @command{grep}, etc.  The example above adds
-GNU@tie{}Screen and OpenSSH to those, taken from the @code{(gnu packages
-screen)} and @code{(gnu packages ssh)} modules (@pxref{Paketmodule}).
-The @code{(list package output)} syntax can be used to add a specific output
-of a package:
+GNU@tie{}Screen to those, taken from the @code{(gnu packages screen)} module
+(@pxref{Paketmodule}).  The @code{(list package output)} syntax can be
+used to add a specific output of a package:
 
 @lisp
 (use-modules (gnu packages))
@@ -9885,12 +10006,12 @@ GuixSD.  Make sure to visit it!
 @subsection @code{operating-system} Reference
 
 This section summarizes all the options available in @code{operating-system}
-declarations (@pxref{Das Konfigurationssystems nutzen}).
+declarations (@pxref{Das Konfigurationssystem nutzen}).
 
 @deftp {Data Type} operating-system
 This is the data type representing an operating system configuration.  By
 that, we mean all the global system configuration, not per-user
-configuration (@pxref{Das Konfigurationssystems nutzen}).
+configuration (@pxref{Das Konfigurationssystem nutzen}).
 
 @table @asis
 @item @code{kernel} (default: @var{linux-libre})
@@ -9912,9 +10033,9 @@ The list of Linux kernel modules that need to be available in the initial
 RAM disk.  @xref{Initiale RAM-Disk}.
 
 @item @code{initrd} (default: @code{base-initrd})
-A monadic procedure that returns an initial RAM disk for the Linux kernel.
-This field is provided to support low-level customization and should rarely
-be needed for casual use.  @xref{Initiale RAM-Disk}.
+A procedure that returns an initial RAM disk for the Linux kernel.  This
+field is provided to support low-level customization and should rarely be
+needed for casual use.  @xref{Initiale RAM-Disk}.
 
 @item @code{firmware} (default: @var{%base-firmware})
 @cindex firmware
@@ -10035,7 +10156,7 @@ that only @code{root} and members of the @code{wheel} group may use
 @subsection Dateisysteme
 
 The list of file systems to be mounted is specified in the
-@code{file-systems} field of the operating system declaration (@pxref{Das Konfigurationssystems nutzen}).  Each file system is declared using the
+@code{file-systems} field of the operating system declaration (@pxref{Das Konfigurationssystem nutzen}).  Each file system is declared using the
 @code{file-system} form, like this:
 
 @example
@@ -10577,7 +10698,7 @@ libc 2.21 and the current version of libc in
 
 @cindex system services
 An important part of preparing an @code{operating-system} declaration is
-listing @dfn{system services} and their configuration (@pxref{Das Konfigurationssystems nutzen}).  System services are typically daemons launched when
+listing @dfn{system services} and their configuration (@pxref{Das Konfigurationssystem nutzen}).  System services are typically daemons launched when
 the system boots, or other actions needed at that time---e.g., configuring
 network access.
 
@@ -10593,11 +10714,14 @@ Manual}).  For example:
 
 The above command, run as @code{root}, lists the currently defined
 services.  The @command{herd doc} command shows a synopsis of the given
-service:
+service and its associated actions:
 
 @example
 # herd doc nscd
 Run libc's name service cache daemon (nscd).
+
+# herd doc nscd action invalidate
+invalidate: Invalidate the given cache--e.g., 'hosts' for host name lookups.
 @end example
 
 The @command{start}, @command{stop}, and @command{restart} sub-commands have
@@ -10616,7 +10740,7 @@ The following sections document the available services, starting with the
 core services, that may be used in an @code{operating-system} declaration.
 
 @menu
-* Basisdienste::             Essenzielle Systemdienste
+* Basisdienste::             Essenzielle Systemdienste.
 * Geplante Auftragsausführung::  Der mcron-Dienst.
 * Log-Rotation::             Der rottlog-Dienst.
 * Netzwerkdienste::          Netzwerkeinrichtung, SSH-Daemon etc.
@@ -10624,7 +10748,7 @@ core services, that may be used in an @code{operating-system} declaration.
 * Druckdienste::             Unterstützung für lokale und entfernte 
                                Drucker.
 * Desktop-Dienste::          D-Bus- und Desktop-Dienste.
-* Tondienste::               Dienste für ALSA und Pulseaudio.
+* Sound Services::           ALSA and Pulseaudio services.
 * Datenbankdienste::         SQL-Datenbanken, Schlüssel-Wert-Speicher etc.
 * Mail-Dienste::             IMAP, POP3, SMTP und so weiter.
 * Kurznachrichtendienste::   Dienste für Kurznachrichten.
@@ -10636,7 +10760,7 @@ core services, that may be used in an @code{operating-system} declaration.
 * DNS-Dienste::              DNS-Daemons.
 * VPN-Dienste::              VPN-Daemons.
 * Network File System::      Dienste mit Bezug zum Netzwerkdateisystem.
-* Kontinuierliche Integration::  Der Cuirass-Dienst
+* Kontinuierliche Integration::  Der Cuirass-Dienst.
 * Power Management Services::  Extending battery life.
 * Audio-Dienste::            Der MPD.
 * Virtualisierungsdienste::  Dienste für virtuelle Maschinen.
@@ -10795,7 +10919,7 @@ the Linux command line, agetty will extract the device name of the serial
 port from it and use that.
 
 In both cases, agetty will leave the other serial device settings (baud rate
-etc.) alone---in the hope that Linux pinned them to the correct values.
+etc.)@: alone---in the hope that Linux pinned them to the correct values.
 
 @item @code{baud-rate} (default: @code{#f})
 A string containing a comma-separated list of one or more baud rates, in
@@ -10964,6 +11088,10 @@ is @command{login} from the Shadow tool suite.
 @item @code{login-arguments} (default: @code{'("-p")})
 A list of arguments to pass to @command{login}.
 
+@item @code{auto-login} (default: @code{#f})
+When passed a login name, as a string, the specified user will be logged in
+automatically without prompting for their login name or password.
+
 @item @code{hardware-acceleration?} (default: #f)
 Whether to use hardware acceleration.
 
@@ -10979,6 +11107,28 @@ The Kmscon package to use.
                 [#:name-services '()] Return a service that runs the libc name service cache
 daemon (nscd) with the given @var{config}---an @code{<nscd-configuration>}
 object.  @xref{Name Service Switch}, for an example.
+
+For convenience, the Shepherd service for nscd provides the following
+actions:
+
+@table @code
+@item invalidate
+@cindex cache invalidation, nscd
+@cindex nscd, cache invalidation
+This invalidate the given cache.  For instance, running:
+
+@example
+herd invalidate nscd hosts
+@end example
+
+@noindent
+invalidates the host name lookup cache of nscd.
+
+@item statistics
+Running @command{herd statistics nscd} displays information about nscd usage
+and caches.
+@end table
+
 @end deffn
 
 @defvr {Scheme Variable} %nscd-default-configuration
@@ -11808,7 +11958,7 @@ Data Type representing the configuration of connman.
 The connman package to use.
 
 @item @code{disable-vpn?} (default: @code{#f})
-When true, enable connman's vpn plugin.
+When true, disable connman's vpn plugin.
 @end table
 @end deftp
 
@@ -11848,7 +11998,7 @@ List of additional command-line arguments to pass to the daemon.
 
 @cindex iptables
 @defvr {Scheme Variable} iptables-service-type
-This is the service type to set up an iptables configuration. iptables is a
+This is the service type to set up an iptables configuration.  iptables is a
 packet filtering framework supported by the Linux kernel.  This service
 supports configuring iptables for both IPv4 and IPv6.  A simple example
 configuration rejecting all incoming connections except those to the ssh
@@ -11897,7 +12047,7 @@ objects}).
 @cindex NTP (Network Time Protocol), service
 @cindex real time clock
 @defvr {Scheme Variable} ntp-service-type
-This is the type of the service running the the @uref{http://www.ntp.org,
+This is the type of the service running the @uref{http://www.ntp.org,
 Network Time Protocol (NTP)} daemon, @command{ntpd}.  The daemon will keep
 the system clock synchronized with that of the specified NTP servers.
 
@@ -12057,14 +12207,14 @@ to new service requests.
 @item @code{user}
 A string containing the user (and, optionally, group) name of the user as
 whom the server should run.  The group name can be specified in a suffix,
-separated by a colon or period, i.e. @code{"user"}, @code{"user:group"} or
+separated by a colon or period, i.e.@: @code{"user"}, @code{"user:group"} or
 @code{"user.group"}.
 @item @code{program} (default: @code{"internal"})
 The server program which will serve the requests, or @code{"internal"} if
 @command{inetd} should use a built-in service.
 @item @code{arguments} (default: @code{'()})
 A list strings or file-like objects, which are the server program's
-arguments, starting with the zeroth argument, i.e. the name of the program
+arguments, starting with the zeroth argument, i.e.@: the name of the program
 itself.  For @command{inetd}'s internal services, this entry must be
 @code{'()} or @code{'("internal")}.
 @end table
@@ -12325,7 +12475,7 @@ Whether to allow TCP forwarding.
 Whether to allow gateway ports.
 
 @item @code{challenge-response-authentication?} (default: @code{#f})
-Specifies whether challenge response authentication is allowed (e.g. via
+Specifies whether challenge response authentication is allowed (e.g.@: via
 PAM).
 
 @item @code{use-pam?} (default: @code{#t})
@@ -12345,7 +12495,7 @@ Specifies whether @command{sshd} should print the date and time of the last
 user login when a user logs in interactively.
 
 @item @code{subsystems} (default: @code{'(("sftp" "internal-sftp"))})
-Configures external subsystems (e.g. file transfer daemon).
+Configures external subsystems (e.g.@: file transfer daemon).
 
 This is a list of two-element lists, each of which containing the subsystem
 name and a command (with optional arguments) to execute upon subsystem
@@ -13928,15 +14078,15 @@ keyboard or mouse.
 Users need to be in the @code{lp} group to access the D-Bus service.
 @end deffn
 
-@node Tondienste
-@subsubsection Tondienste
+@node Sound Services
+@subsubsection Sound Services
 
 @cindex sound support
 @cindex ALSA
 @cindex PulseAudio, sound support
 
 The @code{(gnu services sound)} module provides a service to configure the
-Advanced Linux Sound Architecture (ALSA) system, which making PulseAudio the
+Advanced Linux Sound Architecture (ALSA) system, which makes PulseAudio the
 preferred ALSA output driver.
 
 @deffn {Scheme Variable} alsa-service-type
@@ -14304,10 +14454,29 @@ Whether to use SSL for this service; @samp{yes}, @samp{no}, or
 
 @end deftypevr
 
+@deftypevr {@code{service-configuration} parameter} non-negative-integer client-limit
+Maximum number of simultaneous client connections per process.  Once this
+number of connections is received, the next incoming connection will prompt
+Dovecot to spawn another process.  If set to 0, @code{default-client-limit}
+is used instead.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
 @deftypevr {@code{service-configuration} parameter} non-negative-integer service-count
 Number of connections to handle before starting a new process.  Typically
 the only useful values are 0 (unlimited) or 1.  1 is more secure, but 0 is
 faster.  <doc/wiki/LoginProcess.txt>.  Defaults to @samp{1}.
+
+@end deftypevr
+
+@deftypevr {@code{service-configuration} parameter} non-negative-integer process-limit
+Maximum number of processes that can exist for this service.  If set to 0,
+@code{default-process-limit} is used instead.
+
+Defaults to @samp{0}.
+
 @end deftypevr
 
 @deftypevr {@code{service-configuration} parameter} non-negative-integer process-min-avail
@@ -14481,13 +14650,13 @@ Typically you would specify your IMAP proxy servers here.  Defaults to
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} space-separated-string-list login-access-sockets
-List of login access check sockets (e.g. tcpwrap).  Defaults to @samp{()}.
+List of login access check sockets (e.g.@: tcpwrap).  Defaults to @samp{()}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean verbose-proctitle?
 Show more verbose process titles (in ps).  Currently shows user name and IP
-address.  Useful for seeing who is actually using the IMAP processes
-(e.g. shared mailboxes or if the same uid is used for multiple accounts).
+address.  Useful for seeing who is actually using the IMAP processes (e.g.@:
+shared mailboxes or if the same uid is used for multiple accounts).
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -14495,7 +14664,7 @@ Defaults to @samp{#f}.
 Should all processes be killed when Dovecot master process shuts down.
 Setting this to @code{#f} means that Dovecot can be upgraded without forcing
 existing client connections to close (although that could also be a problem
-if the upgrade is e.g. due to a security fix).  Defaults to @samp{#t}.
+if the upgrade is e.g.@: due to a security fix).  Defaults to @samp{#t}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} non-negative-integer doveadm-worker-count
@@ -14517,13 +14686,13 @@ pairs to always set specific settings.
 @deftypevr {@code{dovecot-configuration} parameter} boolean disable-plaintext-auth?
 Disable LOGIN command and all other plaintext authentications unless SSL/TLS
 is used (LOGINDISABLED capability).  Note that if the remote IP matches the
-local IP (i.e. you're connecting from the same computer), the connection is
-considered secure and plaintext authentication is allowed.  See also
+local IP (i.e.@: you're connecting from the same computer), the connection
+is considered secure and plaintext authentication is allowed.  See also
 ssl=required setting.  Defaults to @samp{#t}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} non-negative-integer auth-cache-size
-Authentication cache size (e.g. @samp{#e10e6}).  0 means it's disabled.
+Authentication cache size (e.g.@: @samp{#e10e6}).  0 means it's disabled.
 Note that bsdauth, PAM and vpopmail require @samp{cache-key} to be set for
 caching to be used.  Defaults to @samp{0}.
 @end deftypevr
@@ -14573,7 +14742,7 @@ Defaults to @samp{""}.
 
 @deftypevr {@code{dovecot-configuration} parameter} string auth-username-format
 Username formatting before it's looked up from databases.  You can use the
-standard variables here, e.g. %Lu would lowercase the username, %n would
+standard variables here, e.g.@: %Lu would lowercase the username, %n would
 drop away the domain if it was given, or @samp{%n-AT-%d} would change the
 @samp{@@} into @samp{-AT-}.  This translation is done after
 @samp{auth-username-translation} changes.  Defaults to @samp{"%Lu"}.
@@ -14581,10 +14750,11 @@ drop away the domain if it was given, or @samp{%n-AT-%d} would change the
 
 @deftypevr {@code{dovecot-configuration} parameter} string auth-master-user-separator
 If you want to allow master users to log in by specifying the master
-username within the normal username string (i.e. not using SASL mechanism's
-support for it), you can specify the separator character here.  The format
-is then <username><separator><master username>.  UW-IMAP uses @samp{*} as
-the separator, so that could be a good choice.  Defaults to @samp{""}.
+username within the normal username string (i.e.@: not using SASL
+mechanism's support for it), you can specify the separator character here.
+The format is then <username><separator><master username>.  UW-IMAP uses
+@samp{*} as the separator, so that could be a good choice.  Defaults to
+@samp{""}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string auth-anonymous-username
@@ -14594,7 +14764,7 @@ Defaults to @samp{"anonymous"}.
 
 @deftypevr {@code{dovecot-configuration} parameter} non-negative-integer auth-worker-max-count
 Maximum number of dovecot-auth worker processes.  They're used to execute
-blocking passdb and userdb queries (e.g. MySQL and PAM).  They're
+blocking passdb and userdb queries (e.g.@: MySQL and PAM).  They're
 automatically created and destroyed as needed.  Defaults to @samp{30}.
 @end deftypevr
 
@@ -14698,8 +14868,8 @@ Defaults to @samp{#f}.
 In case of password mismatches, log the attempted password.  Valid values
 are no, plain and sha1.  sha1 can be useful for detecting brute force
 password attempts vs.  user simply trying the same password over and over
-again.  You can also truncate the value to n chars by appending ":n"
-(e.g. sha1:6).  Defaults to @samp{#f}.
+again.  You can also truncate the value to n chars by appending ":n" (e.g.@:
+sha1:6).  Defaults to @samp{#f}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean auth-debug?
@@ -14747,7 +14917,7 @@ possible variables you can use.  Defaults to
 Format to use for logging mail deliveries.  You can use variables:
 @table @code
 @item %$
-Delivery status message (e.g. @samp{saved to INBOX})
+Delivery status message (e.g.@: @samp{saved to INBOX})
 @item %m
 Message-ID
 @item %s
@@ -14768,7 +14938,7 @@ Dovecot tries to find the mailboxes automatically.  This won't work if the
 user doesn't yet have any mail, so you should explicitly tell Dovecot the
 full location.
 
-If you're using mbox, giving a path to the INBOX file (e.g. /var/mail/%u)
+If you're using mbox, giving a path to the INBOX file (e.g.@: /var/mail/%u)
 isn't enough.  You'll also need to tell Dovecot where the other mailboxes
 are kept.  This is called the "root mail directory", and it must be the
 first path given in the @samp{mail-location} setting.
@@ -14816,8 +14986,8 @@ Typically this is set to "mail" to give access to /var/mail.  Defaults to
 @deftypevr {@code{dovecot-configuration} parameter} string mail-access-groups
 Grant access to these supplementary groups for mail processes.  Typically
 these are used to set up access to shared mailboxes.  Note that it may be
-dangerous to set these if users can create symlinks (e.g. if "mail" group is
-set here, ln -s /var/mail ~/mail/var could allow a user to delete others'
+dangerous to set these if users can create symlinks (e.g.@: if "mail" group
+is set here, ln -s /var/mail ~/mail/var could allow a user to delete others'
 mailboxes, or ln -s /secret/shared/box ~/mail/mybox would allow reading
 it).  Defaults to @samp{""}.
 @end deftypevr
@@ -14825,8 +14995,8 @@ it).  Defaults to @samp{""}.
 @deftypevr {@code{dovecot-configuration} parameter} boolean mail-full-filesystem-access?
 Allow full file system access to clients.  There's no access checks other
 than what the operating system does for the active UID/GID.  It works with
-both maildir and mboxes, allowing you to prefix mailboxes names with
-e.g. /path/ or ~user/.  Defaults to @samp{#f}.
+both maildir and mboxes, allowing you to prefix mailboxes names with e.g.@:
+/path/ or ~user/.  Defaults to @samp{#f}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mmap-disable?
@@ -14846,7 +15016,7 @@ When to use fsync() or fdatasync() calls:
 @item optimized
 Whenever necessary to avoid losing important data
 @item always
-Useful with e.g. NFS when write()s are delayed
+Useful with e.g.@: NFS when write()s are delayed
 @item never
 Never use it (best performance, but crashes can lose data).
 @end table
@@ -14907,7 +15077,7 @@ to create new keywords.  Defaults to @samp{50}.
 
 @deftypevr {@code{dovecot-configuration} parameter} colon-separated-file-name-list valid-chroot-dirs
 List of directories under which chrooting is allowed for mail processes
-(i.e. /var/mail will allow chrooting to /var/mail/foo/bar too).  This
+(i.e.@: /var/mail will allow chrooting to /var/mail/foo/bar too).  This
 setting doesn't affect @samp{login-chroot} @samp{mail-chroot} or auth chroot
 settings.  If this setting is empty, "/./" in home dirs are ignored.
 WARNING: Never add directories here which local users can modify, that may
@@ -14918,10 +15088,10 @@ shell access for users.  <doc/wiki/Chrooting.txt>.  Defaults to @samp{()}.
 @deftypevr {@code{dovecot-configuration} parameter} string mail-chroot
 Default chroot directory for mail processes.  This can be overridden for
 specific users in user database by giving /./ in user's home directory
-(e.g. /home/./user chroots into /home).  Note that usually there is no real
-need to do chrooting, Dovecot doesn't allow users to access files outside
-their mail directory anyway.  If your home directories are prefixed with the
-chroot directory, append "/." to @samp{mail-chroot}.
+(e.g.@: /home/./user chroots into /home).  Note that usually there is no
+real need to do chrooting, Dovecot doesn't allow users to access files
+outside their mail directory anyway.  If your home directories are prefixed
+with the chroot directory, append "/."@: to @samp{mail-chroot}.
 <doc/wiki/Chrooting.txt>.  Defaults to @samp{""}.
 @end deftypevr
 
@@ -14938,7 +15108,7 @@ Directory where to look up mail plugins.  Defaults to
 
 @deftypevr {@code{dovecot-configuration} parameter} space-separated-string-list mail-plugins
 List of plugins to load for all services.  Plugins specific to IMAP, LDA,
-etc. are added to this list in their own .conf files.  Defaults to
+etc.@: are added to this list in their own .conf files.  Defaults to
 @samp{()}.
 @end deftypevr
 
@@ -15049,9 +15219,9 @@ aren't immediately visible to other MUAs.  Defaults to @samp{#t}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} non-negative-integer mbox-min-index-size
-If mbox size is smaller than this (e.g. 100k), don't write index files.  If
-an index file already exists it's still read, just not updated.  Defaults to
-@samp{0}.
+If mbox size is smaller than this (e.g.@: 100k), don't write index files.
+If an index file already exists it's still read, just not updated.  Defaults
+to @samp{0}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} non-negative-integer mdbox-rotate-size
@@ -15104,8 +15274,8 @@ Defaults to @samp{"sis posix"}.
 Hash format to use in attachment filenames.  You can add any text and
 variables: @code{%@{md4@}}, @code{%@{md5@}}, @code{%@{sha1@}},
 @code{%@{sha256@}}, @code{%@{sha512@}}, @code{%@{size@}}.  Variables can be
-truncated, e.g. @code{%@{sha256:80@}} returns only first 80 bits.  Defaults
-to @samp{"%@{sha1@}"}.
+truncated, e.g.@: @code{%@{sha256:80@}} returns only first 80 bits.
+Defaults to @samp{"%@{sha1@}"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} non-negative-integer default-process-limit
@@ -15162,7 +15332,7 @@ Defaults to @samp{""}.
 @deftypevr {@code{dovecot-configuration} parameter} string ssl-ca
 PEM encoded trusted certificate authority.  Set this only if you intend to
 use @samp{ssl-verify-client-cert? #t}.  The file should contain the CA
-certificate(s) followed by the matching CRL(s).  (e.g. @samp{ssl-ca
+certificate(s) followed by the matching CRL(s).  (e.g.@: @samp{ssl-ca
 </etc/ssl/certs/ca.pem}).  Defaults to @samp{""}.
 @end deftypevr
 
@@ -15203,9 +15373,9 @@ domain.  Defaults to @samp{"postmaster@@%d"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string hostname
-Hostname to use in various parts of sent mails (e.g. in Message-Id)  and in
-LMTP replies.  Default is the system's real hostname@@domain.  Defaults to
-@samp{""}.
+Hostname to use in various parts of sent mails (e.g.@: in Message-Id)  and
+in LMTP replies.  Default is the system's real hostname@@domain.  Defaults
+to @samp{""}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean quota-full-tempfail?
@@ -15289,7 +15459,7 @@ body_bytes=%@{fetch_body_bytes@}"}.
 
 @deftypevr {@code{dovecot-configuration} parameter} string imap-capability
 Override the IMAP CAPABILITY response.  If the value begins with '+', add
-the given capabilities on top of the defaults (e.g. +XFOO XBAR).  Defaults
+the given capabilities on top of the defaults (e.g.@: +XFOO XBAR).  Defaults
 to @samp{""}.
 @end deftypevr
 
@@ -15327,7 +15497,7 @@ extra @samp{/} suffixes to mailbox names.  This option causes Dovecot to
 ignore the extra @samp{/} instead of treating it as invalid mailbox name.
 
 @item tb-lsub-flags
-Show \Noselect flags for LSUB replies with LAYOUT=fs (e.g. mbox).  This
+Show \Noselect flags for LSUB replies with LAYOUT=fs (e.g.@: mbox).  This
 makes Thunderbird realize they aren't selectable and show them greyed out,
 instead of only later giving "not selectable" popup error.
 @end table
@@ -15826,10 +15996,10 @@ The name to return in service discovery responses.  Defaults to
 @deftypevr {@code{mod-muc-configuration} parameter} string-or-boolean restrict-room-creation
 If @samp{#t}, this will only allow admins to create new chatrooms.
 Otherwise anyone can create a room.  The value @samp{"local"} restricts room
-creation to users on the service's parent domain.
-E.g. @samp{user@@example.com} can create rooms on @samp{rooms.example.com}.
-The value @samp{"admin"} restricts to service administrators only.  Defaults
-to @samp{#f}.
+creation to users on the service's parent domain.  E.g.@:
+@samp{user@@example.com} can create rooms on @samp{rooms.example.com}.  The
+value @samp{"admin"} restricts to service administrators only.  Defaults to
+@samp{#f}.
 @end deftypevr
 
 @deftypevr {@code{mod-muc-configuration} parameter} non-negative-integer max-history-messages
@@ -16036,11 +16206,11 @@ opus audio codec.
 How deep channels can be nested at maximum.
 
 @item @code{channelname-regex} (default: @code{#f})
-A string in from of a Qt regular expression that channel names must conform
+A string in form of a Qt regular expression that channel names must conform
 to.
 
 @item @code{username-regex} (default: @code{#f})
-A string in from of a Qt regular expression that user names must conform to.
+A string in form of a Qt regular expression that user names must conform to.
 
 @item @code{text-message-length} (default: @code{5000})
 Maximum size in bytes that a user can send in one text chat message.
@@ -16053,7 +16223,7 @@ If it is set to @code{#t} clients that use weak password authentification
 will not be accepted. Users must have completed the certificate wizard to
 join.
 
-@item @code{remember-channel?} (defualt @code{#f})
+@item @code{remember-channel?} (default: @code{#f})
 Should murmur remember the last channel each user was in when they
 disconnected and put them into the remembered channel when they rejoin.
 
@@ -16080,7 +16250,7 @@ Murmur also stores logs in the database, which are accessible via RPC.  The
 default is 31 days of months, but you can set this setting to 0 to keep logs
 forever, or -1 to disable logging to the database.
 
-@item @code{obfuscate-ips?} (default @code{#t})
+@item @code{obfuscate-ips?} (default: @code{#t})
 Should logged ips be obfuscated to protect the privacy of users.
 
 @item @code{ssl-cert} (default: @code{#f})
@@ -16477,7 +16647,7 @@ nginx web server, and also a fastcgi wrapper daemon.
 @deffn {Scheme Variable} httpd-service-type
 Service type for the @uref{https://httpd.apache.org/,Apache HTTP} server
 (@dfn{httpd}).  The value for this service type is a
-@code{https-configuration} record.
+@code{httpd-configuration} record.
 
 A simple example configuration is given below.
 
@@ -16836,10 +17006,10 @@ Name for this group of servers.
 
 @item @code{servers}
 Specify the addresses of the servers in the group.  The address can be
-specified as a IP address (e.g. @samp{127.0.0.1}), domain name
-(e.g. @samp{backend1.example.com}) or a path to a UNIX socket using the
-prefix @samp{unix:}.  For addresses using an IP address or domain name, the
-default port is 80, and a different port can be specified explicitly.
+specified as a IP address (e.g.@: @samp{127.0.0.1}), domain name (e.g.@:
+@samp{backend1.example.com}) or a path to a UNIX socket using the prefix
+@samp{unix:}.  For addresses using an IP address or domain name, the default
+port is 80, and a different port can be specified explicitly.
 
 @end table
 @end deftp
@@ -16907,7 +17077,7 @@ name starts with a forward slash, it is interpreted as an absolute directory
 name.
 
 Pass the @code{-n} argument to other Varnish programs to connect to the
-named instance, e.g. @command{varnishncsa -n default}.
+named instance, e.g.@: @command{varnishncsa -n default}.
 
 @item @code{backend} (default: @code{"localhost:8080"})
 The backend to use.  This option has no effect if @code{vcl} is set.
@@ -17028,7 +17198,7 @@ and different php.ini (replaces safe_mode)
 a special function to finish request & flush all data while continuing to do
 something time-consuming (video converting, stats processing, etc.)
 @end itemize
-... and much more.
+...@: and much more.
 
 @defvr {Scheme Variable} php-fpm-service-type
 A Service type for @code{php-fpm}.
@@ -17274,7 +17444,8 @@ The certbot service automates this process: the initial key generation, the
 initial certification request to the Let's Encrypt service, the web server
 challenge/response integration, writing the certificate to disk, the
 automated periodic renewals, and the deployment tasks associated with the
-renewal (e.g. reloading services, copying keys with different permissions).
+renewal (e.g.@: reloading services, copying keys with different
+permissions).
 
 Certbot is run twice a day, at a random minute within the hour.  It won't do
 anything until your certificates are due for renewal or revoked, but running
@@ -18506,6 +18677,11 @@ Cuirass jobs.
 @item @code{database} (default: @code{"/var/lib/cuirass/cuirass.db"})
 Location of sqlite database which contains the build results and previously
 added specifications.
+
+@item @code{ttl} (default: @code{(* 30 24 3600)})
+Specifies the time-to-live (TTL) in seconds of garbage collector roots that
+are registered for build results.  This means that build results are
+protected from garbage collection for at least @var{ttl} seconds.
 
 @item @code{port} (default: @code{8081})
 Port number used by the HTTP server.
@@ -20348,8 +20524,8 @@ Defaults to @samp{"/favicon.ico"}.
 
 @deftypevr {@code{cgit-configuration} parameter} string footer
 The content of the file specified with this option will be included verbatim
-at the bottom of all pages (i.e.  it replaces the standard "generated by..."
-message).
+at the bottom of all pages (i.e.@: it replaces the standard "generated
+by..."@: message).
 
 Defaults to @samp{""}.
 
@@ -21336,7 +21512,7 @@ be setuid root.
 
 The @code{setuid-programs} field of an @code{operating-system} declaration
 contains a list of G-expressions denoting the names of programs to be
-setuid-root (@pxref{Das Konfigurationssystems nutzen}).  For instance, the
+setuid-root (@pxref{Das Konfigurationssystem nutzen}).  For instance, the
 @command{passwd} program, which is part of the Shadow package, can be
 designated by this G-expression (@pxref{G-Ausdrücke}):
 
@@ -21660,11 +21836,11 @@ customize it further.
 
 @cindex initrd
 @cindex initial RAM disk
-@deffn {Monadic Procedure} raw-initrd @var{file-systems} @
+@deffn {Scheme Procedure} raw-initrd @var{file-systems} @
        [#:linux-modules '()] [#:mapped-devices '()] @ [#:helper-packages '()]
-[#:qemu-networking? #f] [#:volatile-root? #f] Return a monadic derivation
-that builds a raw initrd.  @var{file-systems} is a list of file systems to
-be mounted by the initrd, possibly in addition to the root file system
+[#:qemu-networking? #f] [#:volatile-root? #f] Return a derivation that
+builds a raw initrd.  @var{file-systems} is a list of file systems to be
+mounted by the initrd, possibly in addition to the root file system
 specified on the kernel command line via @code{--root}.  @var{linux-modules}
 is a list of kernel modules to be loaded at boot time.  @var{mapped-devices}
 is a list of device mappings to realize before @var{file-systems} are
@@ -21681,14 +21857,14 @@ When @var{volatile-root?} is true, the root file system is writable but any
 changes to it are lost.
 @end deffn
 
-@deffn {Monadic Procedure} base-initrd @var{file-systems} @
+@deffn {Scheme Procedure} base-initrd @var{file-systems} @
        [#:mapped-devices '()] [#:qemu-networking? #f] [#:volatile-root? #f]@
-[#:linux-modules '()] Return a monadic derivation that builds a generic
-initrd, with kernel modules taken from @var{linux}.  @var{file-systems} is a
-list of file-systems to be mounted by the initrd, possibly in addition to
-the root file system specified on the kernel command line via
-@code{--root}.  @var{mapped-devices} is a list of device mappings to realize
-before @var{file-systems} are mounted.
+[#:linux-modules '()] Return as a file-like object a generic initrd, with
+kernel modules taken from @var{linux}.  @var{file-systems} is a list of
+file-systems to be mounted by the initrd, possibly in addition to the root
+file system specified on the kernel command line via @code{--root}.
+@var{mapped-devices} is a list of device mappings to realize before
+@var{file-systems} are mounted.
 
 @var{qemu-networking?} and @var{volatile-root?} behaves as in
 @code{raw-initrd}.
@@ -21704,11 +21880,12 @@ Guile, and the initialization program is a Guile program.  That gives a lot
 of flexibility.  The @code{expression->initrd} procedure builds such an
 initrd, given the program to run in that initrd.
 
-@deffn {Monadic Procedure} expression->initrd @var{exp} @
-       [#:guile %guile-static-stripped] [#:name "guile-initrd"] Return a derivation
-that builds a Linux initrd (a gzipped cpio archive)  containing @var{guile}
-and that evaluates @var{exp}, a G-expression, upon booting.  All the
-derivations referenced by @var{exp} are automatically copied to the initrd.
+@deffn {Scheme Procedure} expression->initrd @var{exp} @
+       [#:guile %guile-static-stripped] [#:name "guile-initrd"] Return as a
+file-like object a Linux initrd (a gzipped cpio archive)  containing
+@var{guile} and that evaluates @var{exp}, a G-expression, upon booting.  All
+the derivations referenced by @var{exp} are automatically copied to the
+initrd.
 @end deffn
 
 @node Bootloader-Konfiguration
@@ -21951,7 +22128,7 @@ This effects all the configuration specified in @var{file}: user accounts,
 system services, global package list, setuid programs, etc.  The command
 starts system services specified in @var{file} that are not currently
 running; if a service is currently running this command will arrange for it
-to be upgraded the next time it is stopped (eg. by @code{herd stop X} or
+to be upgraded the next time it is stopped (e.g.@: by @code{herd stop X} or
 @code{herd restart X}).
 
 This command creates a new generation whose number is one greater than the
@@ -22416,7 +22593,7 @@ in the first place? And what is a service anyway?
 @menu
 * Dienstkompositionen::      Wie Dienste zusammengestellt werden.
 * Diensttypen und Dienste::  Typen und Dienste.
-* Service-Referenz::         Referenz zur Programmierschnittstelle
+* Service-Referenz::         Referenz zur Programmierschnittstelle.
 * Shepherd-Dienste::         Eine spezielle Art von Dienst.
 @end menu
 
@@ -22702,7 +22879,7 @@ created using @code{define-record-type*}, you can write a succinct
 @var{body} that evaluates to the new service parameters by using the
 @code{inherit} feature that @code{define-record-type*} provides.
 
-@xref{Das Konfigurationssystems nutzen}, for example usage.
+@xref{Das Konfigurationssystem nutzen}, for example usage.
 
 @end deffn
 
@@ -22842,7 +23019,7 @@ as PID@tie{}1 (@pxref{Einführung,,, shepherd, The GNU Shepherd Manual}).
 Services in the Shepherd can depend on each other.  For instance, the SSH
 daemon may need to be started after the syslog daemon has been started,
 which in turn can only happen once all the file systems have been mounted.
-The simple operating system defined earlier (@pxref{Das Konfigurationssystems nutzen}) results in a service graph like this:
+The simple operating system defined earlier (@pxref{Das Konfigurationssystem nutzen}) results in a service graph like this:
 
 @image{images/shepherd-graph,,5in,Typical shepherd service graph.}
 
@@ -23585,7 +23762,7 @@ packages with the corresponding names.
 If a project already contains the word @code{python}, we drop this; for
 instance, the module python-dateutil is packaged under the names
 @code{python-dateutil} and @code{python2-dateutil}.  If the project name
-starts with @code{py} (e.g. @code{pytz}), we keep it and prefix it as
+starts with @code{py} (e.g.@: @code{pytz}), we keep it and prefix it as
 described above.
 
 @subsubsection Specifying Dependencies
@@ -23918,7 +24095,7 @@ updated to refer to these binaries on the target platform.  That is, the
 hashes and URLs of the bootstrap tarballs for the new platform must be added
 alongside those of the currently supported platforms.  The bootstrap Guile
 tarball is treated specially: it is expected to be available locally, and
-@file{gnu/local.mk} has rules do download it for the supported
+@file{gnu/local.mk} has rules to download it for the supported
 architectures; a rule for the new platform must be added as well.
 
 In practice, there may be some complications.  First, it may be that the
