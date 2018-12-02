@@ -1413,9 +1413,9 @@ can solve two kinds of problems:
 
 ;; For a fully featured Octave, users are strongly recommended also to install
 ;; the following packages: less, ghostscript, gnuplot.
-(define-public octave
+(define-public octave-cli
   (package
-    (name "octave")
+    (name "octave-cli")
     (version "4.4.1")
     (source
      (origin
@@ -1498,20 +1498,20 @@ script files.")
     (license license:gpl3+)))
 
 (define-public qtoctave
-  (package (inherit octave)
+  (package (inherit octave-cli)
     (name "qtoctave")
     (source (origin
-              (inherit (package-source octave))))
+              (inherit (package-source octave-cli))))
     (inputs
      `(("qscintilla" ,qscintilla)
        ("qt" ,qtbase)
-       ,@(package-inputs octave)))
+       ,@(package-inputs octave-cli)))
     (native-inputs
      `(("qttools" , qttools) ;for lrelease
        ("texlive" ,texlive) ;for texi2dvi
-       ,@(package-native-inputs octave)))
+       ,@(package-native-inputs octave-cli)))
     (arguments
-     (substitute-keyword-arguments (package-arguments octave)
+     (substitute-keyword-arguments (package-arguments octave-cli)
        ((#:phases phases)
         `(modify-phases ,phases
            (add-before 'configure 'patch-qscintilla-library-name
@@ -3580,7 +3580,7 @@ in finite element programs.")
      `(("unzip" ,unzip)))
     (inputs
      `(("hdf5" ,hdf5)
-       ("octave" ,octave)
+       ("octave" ,octave-cli)
        ("python" ,python-2) ; print syntax
        ;; ("python2-numpy" ,python2-numpy) ; only required for the tests
        ("zlib" ,zlib)))
