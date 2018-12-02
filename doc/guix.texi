@@ -7588,7 +7588,7 @@ Use @var{host} as the OpenPGP key server when importing a public key.
 
 The @code{github} updater uses the
 @uref{https://developer.github.com/v3/, GitHub API} to query for new
-releases.  When used repeatedly e.g. when refreshing all packages,
+releases.  When used repeatedly e.g.@: when refreshing all packages,
 GitHub will eventually refuse to answer any further API requests.  By
 default 60 API requests per hour are allowed, and a full refresh on all
 GitHub packages in Guix requires more than this.  Authentication with
