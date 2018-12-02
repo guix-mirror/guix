@@ -618,7 +618,7 @@ make guix-binary.@var{system}.tar.xz
 @end example
 
 @noindent
-... which, in turn, runs:
+...@: which, in turn, runs:
 
 @example
 guix pack -s @var{system} --localstatedir \
@@ -3422,7 +3422,7 @@ guix pack -R -S /mybin=bin bash
 @end example
 
 @noindent
-... you can copy that pack to a machine that lacks Guix, and from your
+...@: you can copy that pack to a machine that lacks Guix, and from your
 home directory as a normal user, run:
 
 @example
@@ -4779,7 +4779,7 @@ package is installed in its own directory under
 @defvr {Scheme Variable} font-build-system
 This variable is exported by @code{(guix build-system font)}.  It
 implements an installation procedure for font packages where upstream
-provides pre-compiled TrueType, OpenType, etc. font files that merely
+provides pre-compiled TrueType, OpenType, etc.@: font files that merely
 need to be copied into place.  It copies font files to standard
 locations in the output directory.
 @end defvr
@@ -7887,7 +7887,7 @@ This shows the @emph{reverse} DAG of packages.  For example:
 guix graph --type=reverse-package ocaml
 @end example
 
-... yields the graph of packages that depend on OCaml.
+...@: yields the graph of packages that depend on OCaml.
 
 Note that for core packages this can yield huge graphs.  If all you want
 is to know the number of packages that depend on a given package, use
@@ -7903,7 +7903,7 @@ For instance, the following command:
 guix graph --type=bag-emerged coreutils | dot -Tpdf > dag.pdf
 @end example
 
-... yields this bigger graph:
+...@: yields this bigger graph:
 
 @image{images/coreutils-bag-graph,,5in,Detailed dependency graph of the GNU Coreutils}
 
@@ -8074,7 +8074,7 @@ fi
 @end example
 
 @noindent
-... or to browse the profile:
+...@: or to browse the profile:
 
 @example
 $ ls "$GUIX_ENVIRONMENT/bin"
@@ -11991,7 +11991,7 @@ List of additional command-line arguments to pass to the daemon.
 
 @cindex iptables
 @defvr {Scheme Variable} iptables-service-type
-This is the service type to set up an iptables configuration. iptables is a
+This is the service type to set up an iptables configuration.  iptables is a
 packet filtering framework supported by the Linux kernel.  This service
 supports configuring iptables for both IPv4 and IPv6.  A simple example
 configuration rejecting all incoming connections except those to the ssh port
@@ -15217,7 +15217,7 @@ Defaults to @samp{"/usr/lib/dovecot"}.
 
 @deftypevr {@code{dovecot-configuration} parameter} space-separated-string-list mail-plugins
 List of plugins to load for all services.  Plugins specific to IMAP,
-LDA, etc. are added to this list in their own .conf files.
+LDA, etc.@: are added to this list in their own .conf files.
 Defaults to @samp{()}.
 @end deftypevr
 
@@ -17349,7 +17349,7 @@ and different php.ini (replaces safe_mode)
 a special function to finish request & flush all data while continuing to do
 something time-consuming (video converting, stats processing, etc.)
 @end itemize
-... and much more.
+...@: and much more.
 
 @defvr {Scheme Variable} php-fpm-service-type
 A Service type for @code{php-fpm}.
@@ -22332,7 +22332,7 @@ This effects all the configuration specified in @var{file}: user
 accounts, system services, global package list, setuid programs, etc.
 The command starts system services specified in @var{file} that are not
 currently running; if a service is currently running this command will
-arrange for it to be upgraded the next time it is stopped (eg. by
+arrange for it to be upgraded the next time it is stopped (e.g.@: by
 @code{herd stop X} or @code{herd restart X}).
 
 This command creates a new generation whose number is one greater than
