@@ -273,6 +273,10 @@ DOMAIN, a gettext domain."
     (module-ref (resolve-interface '(gnu packages graphviz))
                 'graphviz))
 
+  (define glibc-utf8-locales
+    (module-ref (resolve-interface '(gnu packages base))
+                'glibc-utf8-locales))
+
   (define documentation
     (file-append* source "doc"))
 
@@ -335,6 +339,10 @@ DOMAIN, a gettext domain."
                             #:log (%make-void-port "w"))
           (delete-file-recursively "images")
           (symlink (string-append #$output "/images") "images")
+
+          ;; Provide UTF-8 locales needed by the 'xspara.c' code in makeinfo.
+          (setenv "GUIX_LOCPATH"
+                  #+(file-append glibc-utf8-locales "/lib/locale"))
 
           (for-each (lambda (texi)
                       (unless (string=? "guix.texi" texi)
