@@ -4170,6 +4170,49 @@ a front-end for C compilers or analysis tools.")
 (define-public python2-pycparser
   (package-with-python2 python-pycparser))
 
+(define-public python-pywavelets
+  (package
+    (name "python-pywavelets")
+    (version "1.0.1")
+    (home-page "https://github.com/PyWavelets/pywt")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "PyWavelets" version))
+              (sha256
+               (base32
+                "1p3qv2v66ghnqrb1f98wyyhp9dz71jwcd6kfpsax65sfdpiyqp1w"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:modules ((ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (let ((cwd (getcwd))
+                            (libdir (find (cut string-prefix? "lib." <>)
+                                          (scandir "build"))))
+                      (with-directory-excursion (string-append cwd "/build/" libdir)
+                        (invoke "nosetests" "-v" "."))))))))
+    (native-inputs
+     `(("python-matplotlib" ,python-matplotlib)          ;for tests
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (synopsis "Wavelet transforms in Python")
+    (description
+     "PyWavelets is a library for wavelet transforms in Python.  Wavelets are
+mathematical basis functions that are localized in both time and frequency.
+Wavelet transforms are time-frequency transforms employing wavelets.  They are
+similar to Fourier transforms, the difference being that Fourier transforms are
+localized only in frequency instead of in time and frequency.")
+    (license license:expat)))
+
+(define-public python2-pywavelets
+  (package-with-python2 python-pywavelets))
+
 (define-public python-xcffib
   (package
     (name "python-xcffib")
