@@ -14636,3 +14636,21 @@ RFC 8265 and RFC 8266.")
 @url{https://www.wikidata.org/, Wikidata}.")
     (properties '((upstream-name . "Wikidata")))
     (license license:gpl3+)))
+
+(define-public python-attr
+  (package
+    (name "python-attr")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "attr" version))
+       (sha256
+        (base32
+         "0pbpskvxp5hzdvcaf766ljwpckshir8sf7z6jqji6zyib20594ch"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/denis-ryzhkov/attr")
+    (synopsis "Decorator for attributes of target function or class")
+    (description "Simple decorator to set attributes of target function or
+class in a @acronym{DRY, Don't Repeat Yourself} way.")
+    (license license:expat)))
