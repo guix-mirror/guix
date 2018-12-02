@@ -249,6 +249,17 @@ functional, imperative and object-oriented styles of programming.")
              (lambda _
                ;; Specifying '-j' at all causes the build to fail.
                (zero? (system* "make" "world.opt"))))
+           ,@(if (string=? "aarch64-linux" (%current-system))
+               ;; Custom configure script doesn't recongnize aarch64.
+               '((replace 'configure
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (mandir (string-append out "/share/man")))
+                      (invoke "./configure"
+                              "--prefix" out
+                              "--mandir" mandir
+                              "-host" "armv8l-unknown-linux-gnu")))))
+               '())
            (replace 'check
              (lambda _
                (with-directory-excursion "testsuite"
@@ -256,8 +267,7 @@ functional, imperative and object-oriented styles of programming.")
                          "make"
                          "all"
                          (string-append
-                          "TOPDIR=" (getcwd) "/.."))))))))))
-    (supported-systems (delete "aarch64-linux" %supported-systems))))
+                          "TOPDIR=" (getcwd) "/.."))))))))))))
 
 (define-public ocaml-4.07
   (package
