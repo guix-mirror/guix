@@ -1361,7 +1361,7 @@ a set of simplified face specifications and a user-supplied color palette")
                            (guix build emacs-utils))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'rename-lispdir 'make-autoloads
+         (add-after 'install 'make-autoloads
            (assoc-ref emacs:%standard-phases 'make-autoloads)))))
     (home-page "http://howm.osdn.jp/")
     (synopsis "Note-taking tool for Emacs")
