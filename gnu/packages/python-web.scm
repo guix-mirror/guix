@@ -1765,7 +1765,10 @@ library.")
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (invoke "py.test" "src/geventhttpclient/tests" "-v")
+             (invoke "py.test"  "src/geventhttpclient/tests" "-v"
+                     ;; Append the test modules to sys.path to avoid
+                     ;; namespace conflict which breaks SSL tests.
+                     "--import-mode=append")
              #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
