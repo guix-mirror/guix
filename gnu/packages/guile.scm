@@ -929,16 +929,13 @@ for Guile\".")
     (home-page "https://github.com/aconchillo/guile-json")
     (source (origin
               (method url-fetch)
-              (uri (string-append home-page "/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "https://download.savannah.nongnu.org/releases/"
+                                  name "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "02kqv0q98fmchn7i4y7ycmrjlh4b2c93ij0z7k036qwpp204w4gh"))))
+                "15gnb84d7hpazqhskkf3g9z4r6knw54wfj4ch5270kakz1lp70c9"))))
     (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("pkg-config" ,pkg-config)
+    (native-inputs `(("pkg-config" ,pkg-config)
                      ("guile" ,guile-2.2)))
     (inputs `(("guile" ,guile-2.2)))
     (synopsis "JSON module for Guile")
