@@ -717,6 +717,13 @@ language.")
                "-DBUILD_GITHUB_PLUGIN=OFF")
          #:phases
          (modify-phases %standard-phases
+           (add-after 'unpack 'adjust-boost-include
+             (lambda _
+               ;; The location of this header changed in Boost 1.66.
+               (substitute* "3d-viewer/3d_cache/3d_cache.cpp"
+                 (("boost/uuid/sha1\\.hpp")
+                  "boost/uuid/detail/sha1.hpp"))
+               #t))
            (add-after 'install 'wrap-program
              ;; Ensure correct Python at runtime.
              (lambda* (#:key inputs outputs #:allow-other-keys)
