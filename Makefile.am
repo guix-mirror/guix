@@ -62,7 +62,9 @@ MODULES =					\
   guix/base16.scm				\
   guix/base32.scm				\
   guix/base64.scm				\
+  guix/ci.scm					\
   guix/cpio.scm					\
+  guix/docker.scm	   			\
   guix/records.scm				\
   guix/pki.scm					\
   guix/progress.scm				\
@@ -186,15 +188,24 @@ MODULES =					\
   guix/build/make-bootstrap.scm			\
   guix/search-paths.scm				\
   guix/packages.scm				\
-  guix/import/print.scm				\
-  guix/import/utils.scm				\
-  guix/import/gnu.scm				\
-  guix/import/snix.scm				\
   guix/import/cabal.scm				\
+  guix/import/cpan.scm				\
   guix/import/cran.scm				\
-  guix/import/hackage.scm			\
+  guix/import/crate.scm				\
   guix/import/elpa.scm   			\
+  guix/import/gem.scm				\
+  guix/import/github.scm   			\
+  guix/import/gnome.scm				\
+  guix/import/gnu.scm				\
+  guix/import/hackage.scm			\
+  guix/import/json.scm				\
+  guix/import/opam.scm				\
+  guix/import/print.scm				\
+  guix/import/pypi.scm				\
+  guix/import/snix.scm				\
+  guix/import/stackage.scm			\
   guix/import/texlive.scm   			\
+  guix/import/utils.scm				\
   guix/scripts.scm				\
   guix/scripts/download.scm			\
   guix/scripts/perform-download.scm		\
@@ -216,45 +227,28 @@ MODULES =					\
   guix/scripts/system/search.scm		\
   guix/scripts/lint.scm				\
   guix/scripts/challenge.scm			\
+  guix/scripts/import/crate.scm			\
   guix/scripts/import/cran.scm			\
-  guix/scripts/import/gnu.scm			\
-  guix/scripts/import/nix.scm			\
-  guix/scripts/import/hackage.scm		\
   guix/scripts/import/elpa.scm  		\
+  guix/scripts/import/gem.scm			\
+  guix/scripts/import/gnu.scm			\
+  guix/scripts/import/hackage.scm		\
+  guix/scripts/import/json.scm  		\
+  guix/scripts/import/nix.scm			\
+  guix/scripts/import/opam.scm			\
+  guix/scripts/import/pypi.scm			\
+  guix/scripts/import/stackage.scm		\
   guix/scripts/import/texlive.scm  		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
   guix/scripts/edit.scm				\
   guix/scripts/size.scm				\
   guix/scripts/graph.scm			\
+  guix/scripts/weather.scm			\
   guix/scripts/container.scm			\
   guix/scripts/container/exec.scm		\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
-
-if HAVE_GUILE_JSON
-
-MODULES +=					\
-  guix/ci.scm					\
-  guix/docker.scm	   			\
-  guix/import/cpan.scm				\
-  guix/import/crate.scm				\
-  guix/import/gem.scm				\
-  guix/import/github.scm   			\
-  guix/import/gnome.scm				\
-  guix/import/json.scm				\
-  guix/import/opam.scm				\
-  guix/import/pypi.scm				\
-  guix/import/stackage.scm			\
-  guix/scripts/import/crate.scm			\
-  guix/scripts/import/gem.scm			\
-  guix/scripts/import/json.scm  		\
-  guix/scripts/import/opam.scm			\
-  guix/scripts/import/pypi.scm			\
-  guix/scripts/import/stackage.scm		\
-  guix/scripts/weather.scm
-
-endif
 
 if HAVE_GUILE_SSH
 
@@ -335,7 +329,10 @@ SCM_TESTS =					\
   tests/base16.scm				\
   tests/base32.scm				\
   tests/base64.scm				\
+  tests/cpan.scm				\
   tests/cpio.scm				\
+  tests/crate.scm				\
+  tests/gem.scm					\
   tests/pki.scm					\
   tests/print.scm				\
   tests/sets.scm				\
@@ -389,21 +386,12 @@ SCM_TESTS =					\
   tests/services.scm				\
   tests/scripts-build.scm			\
   tests/containers.scm				\
+  tests/opam.scm				\
   tests/pack.scm				\
+  tests/pypi.scm				\
   tests/import-utils.scm			\
   tests/store-database.scm			\
   tests/store-deduplication.scm
-
-if HAVE_GUILE_JSON
-
-SCM_TESTS += 					\
-  tests/pypi.scm				\
-  tests/opam.scm				\
-  tests/cpan.scm				\
-  tests/gem.scm					\
-  tests/crate.scm
-
-endif
 
 SH_TESTS =					\
   tests/guix-build.sh				\

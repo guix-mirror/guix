@@ -122,9 +122,11 @@ if test "x$have_guile_git" != "xyes"; then
   AC_MSG_ERROR([Guile-Git is missing; please install it.])
 fi
 
-dnl Guile-JSON is used in various places.
+dnl Check for Guile-JSON.
 GUILE_MODULE_AVAILABLE([have_guile_json], [(json)])
-AM_CONDITIONAL([HAVE_GUILE_JSON], [test "x$have_guile_json" = "xyes"])
+if test "x$have_guile_json" != "xyes"; then
+  AC_MSG_ERROR([Guile-JSON is missing; please install it.])
+fi
 
 dnl Guile-Sqlite3 is used by the (guix store ...) modules.
 GUIX_CHECK_GUILE_SQLITE3

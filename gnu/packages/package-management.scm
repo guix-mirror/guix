@@ -389,7 +389,7 @@ the Nix package manager.")
        (propagated-inputs
         (fold alist-delete
               (package-propagated-inputs guix)
-              '("guile-json" "guile-ssh")))))))
+              '("guile-ssh")))))))
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical
