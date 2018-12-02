@@ -1497,9 +1497,9 @@ Work may be performed both at the interactive command-line as well as via
 script files.")
     (license license:gpl3+)))
 
-(define-public qtoctave
+(define-public octave
   (package (inherit octave-cli)
-    (name "qtoctave")
+    (name "octave")
     (source (origin
               (inherit (package-source octave-cli))))
     (inputs
@@ -1524,6 +1524,9 @@ script files.")
                  (("qscintilla2-qt5")
                   "qscintilla2_qt5"))
                #t))))))))
+
+(define-public qtoctave
+  (deprecated-package "qtoctave" octave))
 
 (define-public opencascade-oce
   (package
