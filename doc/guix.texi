@@ -3015,7 +3015,7 @@ channel(s):
 @end lisp
 
 @noindent
-Note that the snippet above is (as always!) Scheme code; we use @code{cons} to
+Note that the snippet above is (as always!)@: Scheme code; we use @code{cons} to
 add a channel the list of channels that the variable @code{%default-channels}
 is bound to (@pxref{Pairs, @code{cons} and lists,, guile, GNU Guile Reference
 Manual}).  With this file in place, @command{guix pull} builds not only Guix
@@ -6566,7 +6566,7 @@ The following derivations will be built:
 
 @item transitive
 Build the source derivations of all packages, as well of all transitive
-inputs to the packages.  This can be used e.g. to
+inputs to the packages.  This can be used e.g.@: to
 prefetch package source for later offline building.
 
 @example
@@ -7624,7 +7624,7 @@ Identify inputs that should most likely be native inputs.
 @itemx source-file-name
 Probe @code{home-page} and @code{source} URLs and report those that are
 invalid.  Suggest a @code{mirror://} URL when applicable.  Check that
-the source file name is meaningful, e.g. is not
+the source file name is meaningful, e.g.@: is not
 just a version number or ``git-checkout'', without a declared
 @code{file-name} (@pxref{origin Reference}).
 
@@ -10893,7 +10893,7 @@ the Linux command line, agetty will extract the device name of the
 serial port from it and use that.
 
 In both cases, agetty will leave the other serial device settings
-(baud rate etc.) alone---in the hope that Linux pinned them to the
+(baud rate etc.)@: alone---in the hope that Linux pinned them to the
 correct values.
 
 @item @code{baud-rate} (default: @code{#f})
@@ -12200,14 +12200,14 @@ listening to new service requests.
 @item @code{user}
 A string containing the user (and, optionally, group) name of the user
 as whom the server should run.  The group name can be specified in a
-suffix, separated by a colon or period, i.e. @code{"user"},
+suffix, separated by a colon or period, i.e.@: @code{"user"},
 @code{"user:group"} or @code{"user.group"}.
 @item @code{program} (default: @code{"internal"})
 The server program which will serve the requests, or @code{"internal"}
 if @command{inetd} should use a built-in service.
 @item @code{arguments} (default: @code{'()})
 A list strings or file-like objects, which are the server program's
-arguments, starting with the zeroth argument, i.e. the name of the
+arguments, starting with the zeroth argument, i.e.@: the name of the
 program itself.  For @command{inetd}'s internal services, this entry
 must be @code{'()} or @code{'("internal")}.
 @end table
@@ -12473,7 +12473,7 @@ Whether to allow TCP forwarding.
 Whether to allow gateway ports.
 
 @item @code{challenge-response-authentication?} (default: @code{#f})
-Specifies whether challenge response authentication is allowed (e.g. via
+Specifies whether challenge response authentication is allowed (e.g.@: via
 PAM).
 
 @item @code{use-pam?} (default: @code{#t})
@@ -12493,7 +12493,7 @@ Specifies whether @command{sshd} should print the date and time of the
 last user login when a user logs in interactively.
 
 @item @code{subsystems} (default: @code{'(("sftp" "internal-sftp"))})
-Configures external subsystems (e.g. file transfer daemon).
+Configures external subsystems (e.g.@: file transfer daemon).
 
 This is a list of two-element lists, each of which containing the
 subsystem name and a command (with optional arguments) to execute upon
@@ -14706,14 +14706,14 @@ Defaults to @samp{()}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} space-separated-string-list login-access-sockets
-List of login access check sockets (e.g. tcpwrap).
+List of login access check sockets (e.g.@: tcpwrap).
 Defaults to @samp{()}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean verbose-proctitle?
 Show more verbose process titles (in ps).  Currently shows user name
 and IP address.  Useful for seeing who is actually using the IMAP
-processes (e.g. shared mailboxes or if the same uid is used for multiple
+processes (e.g.@: shared mailboxes or if the same uid is used for multiple
 accounts).
 Defaults to @samp{#f}.
 @end deftypevr
@@ -14722,7 +14722,7 @@ Defaults to @samp{#f}.
 Should all processes be killed when Dovecot master process shuts down.
 Setting this to @code{#f} means that Dovecot can be upgraded without
 forcing existing client connections to close (although that could also
-be a problem if the upgrade is e.g. due to a security fix).
+be a problem if the upgrade is e.g.@: due to a security fix).
 Defaults to @samp{#t}.
 @end deftypevr
 
@@ -14746,14 +14746,14 @@ key=value pairs to always set specific settings.
 @deftypevr {@code{dovecot-configuration} parameter} boolean disable-plaintext-auth?
 Disable LOGIN command and all other plaintext authentications unless
 SSL/TLS is used (LOGINDISABLED capability).  Note that if the remote IP
-matches the local IP (i.e. you're connecting from the same computer),
+matches the local IP (i.e.@: you're connecting from the same computer),
 the connection is considered secure and plaintext authentication is
 allowed.  See also ssl=required setting.
 Defaults to @samp{#t}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} non-negative-integer auth-cache-size
-Authentication cache size (e.g. @samp{#e10e6}).  0 means it's disabled.
+Authentication cache size (e.g.@: @samp{#e10e6}).  0 means it's disabled.
 Note that bsdauth, PAM and vpopmail require @samp{cache-key} to be set
 for caching to be used.
 Defaults to @samp{0}.
@@ -14809,7 +14809,7 @@ Defaults to @samp{""}.
 
 @deftypevr {@code{dovecot-configuration} parameter} string auth-username-format
 Username formatting before it's looked up from databases.  You can
-use the standard variables here, e.g. %Lu would lowercase the username,
+use the standard variables here, e.g.@: %Lu would lowercase the username,
 %n would drop away the domain if it was given, or @samp{%n-AT-%d} would
 change the @samp{@@} into @samp{-AT-}.  This translation is done after
 @samp{auth-username-translation} changes.
@@ -14818,7 +14818,7 @@ Defaults to @samp{"%Lu"}.
 
 @deftypevr {@code{dovecot-configuration} parameter} string auth-master-user-separator
 If you want to allow master users to log in by specifying the master
-username within the normal username string (i.e. not using SASL
+username within the normal username string (i.e.@: not using SASL
 mechanism's support for it), you can specify the separator character
 here.  The format is then <username><separator><master username>.
 UW-IMAP uses @samp{*} as the separator, so that could be a good
@@ -14834,7 +14834,7 @@ Defaults to @samp{"anonymous"}.
 
 @deftypevr {@code{dovecot-configuration} parameter} non-negative-integer auth-worker-max-count
 Maximum number of dovecot-auth worker processes.  They're used to
-execute blocking passdb and userdb queries (e.g. MySQL and PAM).
+execute blocking passdb and userdb queries (e.g.@: MySQL and PAM).
 They're automatically created and destroyed as needed.
 Defaults to @samp{30}.
 @end deftypevr
@@ -14954,7 +14954,7 @@ In case of password mismatches, log the attempted password.  Valid
 values are no, plain and sha1.  sha1 can be useful for detecting brute
 force password attempts vs.  user simply trying the same password over
 and over again.  You can also truncate the value to n chars by appending
-":n" (e.g. sha1:6).
+":n" (e.g.@: sha1:6).
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -15010,7 +15010,7 @@ Defaults to @samp{"\"%s(%u)<%@{pid@}><%@{session@}>: \""}.
 Format to use for logging mail deliveries.  You can use variables:
 @table @code
 @item %$
-Delivery status message (e.g. @samp{saved to INBOX})
+Delivery status message (e.g.@: @samp{saved to INBOX})
 @item %m
 Message-ID
 @item %s
@@ -15032,7 +15032,7 @@ if the user doesn't yet have any mail, so you should explicitly tell
 Dovecot the full location.
 
 If you're using mbox, giving a path to the INBOX
-file (e.g. /var/mail/%u) isn't enough.  You'll also need to tell Dovecot
+file (e.g.@: /var/mail/%u) isn't enough.  You'll also need to tell Dovecot
 where the other mailboxes are kept.  This is called the "root mail
 directory", and it must be the first path given in the
 @samp{mail-location} setting.
@@ -15083,7 +15083,7 @@ Defaults to @samp{""}.
 Grant access to these supplementary groups for mail processes.
 Typically these are used to set up access to shared mailboxes.  Note
 that it may be dangerous to set these if users can create
-symlinks (e.g. if "mail" group is set here, ln -s /var/mail ~/mail/var
+symlinks (e.g.@: if "mail" group is set here, ln -s /var/mail ~/mail/var
 could allow a user to delete others' mailboxes, or ln -s
 /secret/shared/box ~/mail/mybox would allow reading it).
 Defaults to @samp{""}.
@@ -15093,7 +15093,7 @@ Defaults to @samp{""}.
 Allow full file system access to clients.  There's no access checks
 other than what the operating system does for the active UID/GID.  It
 works with both maildir and mboxes, allowing you to prefix mailboxes
-names with e.g. /path/ or ~user/.
+names with e.g.@: /path/ or ~user/.
 Defaults to @samp{#f}.
 @end deftypevr
 
@@ -15116,7 +15116,7 @@ When to use fsync() or fdatasync() calls:
 @item optimized
 Whenever necessary to avoid losing important data
 @item always
-Useful with e.g. NFS when write()s are delayed
+Useful with e.g.@: NFS when write()s are delayed
 @item never
 Never use it (best performance, but crashes can lose data).
 @end table
@@ -15183,7 +15183,7 @@ Defaults to @samp{50}.
 
 @deftypevr {@code{dovecot-configuration} parameter} colon-separated-file-name-list valid-chroot-dirs
 List of directories under which chrooting is allowed for mail
-processes (i.e. /var/mail will allow chrooting to /var/mail/foo/bar
+processes (i.e.@: /var/mail will allow chrooting to /var/mail/foo/bar
 too).  This setting doesn't affect @samp{login-chroot}
 @samp{mail-chroot} or auth chroot settings.  If this setting is empty,
 "/./" in home dirs are ignored.  WARNING: Never add directories here
@@ -15196,10 +15196,10 @@ Defaults to @samp{()}.
 @deftypevr {@code{dovecot-configuration} parameter} string mail-chroot
 Default chroot directory for mail processes.  This can be overridden
 for specific users in user database by giving /./ in user's home
-directory (e.g. /home/./user chroots into /home).  Note that usually
+directory (e.g.@: /home/./user chroots into /home).  Note that usually
 there is no real need to do chrooting, Dovecot doesn't allow users to
 access files outside their mail directory anyway.  If your home
-directories are prefixed with the chroot directory, append "/." to
+directories are prefixed with the chroot directory, append "/."@: to
 @samp{mail-chroot}.  <doc/wiki/Chrooting.txt>.
 Defaults to @samp{""}.
 @end deftypevr
@@ -15340,7 +15340,7 @@ Defaults to @samp{#t}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} non-negative-integer mbox-min-index-size
-If mbox size is smaller than this (e.g. 100k), don't write index
+If mbox size is smaller than this (e.g.@: 100k), don't write index
 files.  If an index file already exists it's still read, just not
 updated.
 Defaults to @samp{0}.
@@ -15400,7 +15400,7 @@ Defaults to @samp{"sis posix"}.
 Hash format to use in attachment filenames.  You can add any text and
 variables: @code{%@{md4@}}, @code{%@{md5@}}, @code{%@{sha1@}},
 @code{%@{sha256@}}, @code{%@{sha512@}}, @code{%@{size@}}.  Variables can be
-truncated, e.g. @code{%@{sha256:80@}} returns only first 80 bits.
+truncated, e.g.@: @code{%@{sha256:80@}} returns only first 80 bits.
 Defaults to @samp{"%@{sha1@}"}.
 @end deftypevr
 
@@ -15464,7 +15464,7 @@ Defaults to @samp{""}.
 PEM encoded trusted certificate authority.  Set this only if you
 intend to use @samp{ssl-verify-client-cert? #t}.  The file should
 contain the CA certificate(s) followed by the matching
-CRL(s).  (e.g. @samp{ssl-ca </etc/ssl/certs/ca.pem}).
+CRL(s).  (e.g.@: @samp{ssl-ca </etc/ssl/certs/ca.pem}).
 Defaults to @samp{""}.
 @end deftypevr
 
@@ -15508,7 +15508,7 @@ Defaults to @samp{"postmaster@@%d"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string hostname
-Hostname to use in various parts of sent mails (e.g. in Message-Id)
+Hostname to use in various parts of sent mails (e.g.@: in Message-Id)
 and in LMTP replies.  Default is the system's real hostname@@domain.
 Defaults to @samp{""}.
 @end deftypevr
@@ -15601,7 +15601,7 @@ Defaults to @samp{"in=%i out=%o deleted=%@{deleted@} expunged=%@{expunged@} tras
 
 @deftypevr {@code{dovecot-configuration} parameter} string imap-capability
 Override the IMAP CAPABILITY response.  If the value begins with '+',
-add the given capabilities on top of the defaults (e.g. +XFOO XBAR).
+add the given capabilities on top of the defaults (e.g.@: +XFOO XBAR).
 Defaults to @samp{""}.
 @end deftypevr
 
@@ -15642,7 +15642,7 @@ adds extra @samp{/} suffixes to mailbox names.  This option causes Dovecot to
 ignore the extra @samp{/} instead of treating it as invalid mailbox name.
 
 @item tb-lsub-flags
-Show \Noselect flags for LSUB replies with LAYOUT=fs (e.g. mbox).
+Show \Noselect flags for LSUB replies with LAYOUT=fs (e.g.@: mbox).
 This makes Thunderbird realize they aren't selectable and show them
 greyed out, instead of only later giving "not selectable" popup error.
 @end table
@@ -16134,7 +16134,7 @@ Defaults to @samp{"Prosody Chatrooms"}.
 @deftypevr {@code{mod-muc-configuration} parameter} string-or-boolean restrict-room-creation
 If @samp{#t}, this will only allow admins to create new chatrooms.
 Otherwise anyone can create a room.  The value @samp{"local"} restricts room
-creation to users on the service's parent domain.  E.g. @samp{user@@example.com}
+creation to users on the service's parent domain.  E.g.@: @samp{user@@example.com}
 can create rooms on @samp{rooms.example.com}.  The value @samp{"admin"}
 restricts to service administrators only.
 Defaults to @samp{#f}.
@@ -17152,8 +17152,8 @@ Name for this group of servers.
 
 @item @code{servers}
 Specify the addresses of the servers in the group.  The address can be
-specified as a IP address (e.g. @samp{127.0.0.1}), domain name
-(e.g. @samp{backend1.example.com}) or a path to a UNIX socket using the
+specified as a IP address (e.g.@: @samp{127.0.0.1}), domain name
+(e.g.@: @samp{backend1.example.com}) or a path to a UNIX socket using the
 prefix @samp{unix:}.  For addresses using an IP address or domain name,
 the default port is 80, and a different port can be specified
 explicitly.
@@ -17226,7 +17226,7 @@ the name starts with a forward slash, it is interpreted as an absolute
 directory name.
 
 Pass the @code{-n} argument to other Varnish programs to connect to the
-named instance, e.g. @command{varnishncsa -n default}.
+named instance, e.g.@: @command{varnishncsa -n default}.
 
 @item @code{backend} (default: @code{"localhost:8080"})
 The backend to use.  This option has no effect if @code{vcl} is set.
@@ -17600,7 +17600,7 @@ The certbot service automates this process: the initial key
 generation, the initial certification request to the Let's Encrypt
 service, the web server challenge/response integration, writing the
 certificate to disk, the automated periodic renewals, and the deployment
-tasks associated with the renewal (e.g. reloading services, copying keys
+tasks associated with the renewal (e.g.@: reloading services, copying keys
 with different permissions).
 
 Certbot is run twice a day, at a random minute within the hour.  It
@@ -20706,8 +20706,8 @@ Defaults to @samp{"/favicon.ico"}.
 
 @deftypevr {@code{cgit-configuration} parameter} string footer
 The content of the file specified with this option will be included
-verbatim at the bottom of all pages (i.e.  it replaces the standard
-"generated by..." message).
+verbatim at the bottom of all pages (i.e.@: it replaces the standard
+"generated by..."@: message).
 
 Defaults to @samp{""}.
 
@@ -24013,7 +24013,7 @@ packages with the corresponding names.
 If a project already contains the word @code{python}, we drop this;
 for instance, the module python-dateutil is packaged under the names
 @code{python-dateutil} and @code{python2-dateutil}.  If the project name
-starts with @code{py} (e.g. @code{pytz}), we keep it and prefix it as
+starts with @code{py} (e.g.@: @code{pytz}), we keep it and prefix it as
 described above.
 
 @subsubsection Specifying Dependencies
