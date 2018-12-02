@@ -1373,7 +1373,7 @@ searches.  Unlike code@{emacs-wiki.el}, it can be combined with any format.")
 (define-public emacs-calfw
   (package
     (name "emacs-calfw")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
@@ -1383,7 +1383,7 @@ searches.  Unlike code@{emacs-wiki.el}, it can be combined with any format.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "17ssg8gx66yp63nhygjq2r6kgl4h45cacmrxsxs9f0lrfcx37k0l"))))
+         "1zr91xr0f1xfcv78yxka8vs5ximmq2ixmqf2pkb57kwwnxlypq4i"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-howm" ,emacs-howm)))
