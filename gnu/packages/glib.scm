@@ -28,6 +28,7 @@
 
 (define-module (gnu packages glib)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
@@ -335,32 +336,44 @@ dynamic loading, and an object system.")
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.56.1")
+    (version "1.58.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "0jx2kryjd7l0vl5gb3qp1qjfy3cjiizvcd1snsm7pzwrzz67aa2v"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 (substitute* "tools/g-ir-tool-template.in"
-                   (("#!/usr/bin/env @PYTHON@") "#!@PYTHON@"))
-                 #t))
+              (base32 "12fzs3044047icdfs7cb2lsmnfi6w6fyhkci3m2rbvf5llgnhm29"))
              (patches (search-patches
                        "gobject-introspection-cc.patch"
                        "gobject-introspection-girepository.patch"
                        "gobject-introspection-absolute-shlib-path.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(;; The build system has at least one race condition involving Gio-2.0.gir
+       ;; which causes intermittent failures, as of 1.56.0.
+       #:parallel-build? #f
+       ;; The patch 'gobject-introspection-absolute-shlib-path.patch' causes
+       ;; some tests to fail.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-use-/usr/bin/env
+           (lambda _
+             (substitute* "tools/g-ir-tool-template.in"
+               (("#!@PYTHON_CMD@")
+                (string-append "#!" (which "python3"))))
+             #t)))))
     (inputs
      `(("bison" ,bison)
        ("flex" ,flex)
        ("glib" ,glib)
-       ("python-2" ,python-2)))
+       ("python" ,python-wrapper)
+       ("zlib" ,zlib)))
     (native-inputs
-     `(("glib" ,glib "bin")
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(;; In practice, GIR users will need libffi when using
@@ -371,13 +384,6 @@ dynamic loading, and an object system.")
             (variable "GI_TYPELIB_PATH")
             (files '("lib/girepository-1.0")))))
     (search-paths native-search-paths)
-    (arguments
-     `(;; The build system has at least one race condition involving Gio-2.0.gir
-       ;; which causes intermittent failures, as of 1.56.0.
-       #:parallel-build? #f
-       ;; The patch 'gobject-introspection-absolute-shlib-path.patch' causes
-       ;; some tests to fail.
-       #:tests? #f))
     (home-page "https://wiki.gnome.org/GObjectIntrospection")
     (synopsis "Generate interface introspection data for GObject libraries")
     (description
