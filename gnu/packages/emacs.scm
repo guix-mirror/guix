@@ -11578,10 +11578,10 @@ on-line service.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-company
-  (let ((commit "acc9c7901e094c1591327a0db1ec7a439f67a84d"))
+  (let ((commit "d3fc093a0e833b4dee6561c00d6df3d62aa50f3f"))
     (package
       (name "emacs-helm-company")
-      (version (git-version "0.2.2" "1" commit))
+      (version (git-version "0.2.3" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -11591,7 +11591,7 @@ on-line service.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "1d4q9clp0q56br80c21a4wz1gc4jw3mdy97z9mq07x9i8rhlppzs"))))
+           "1ciirsanhajdqm5iwl8k9ywf4jha1wdv4sc4d9kslyrfr9zn4q6k"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
