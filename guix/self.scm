@@ -428,6 +428,9 @@ load path."
                    ,(file-append* source
                                   "/etc/substitutes/hydra.gnu.org.pub"))
                   ("share/guix/berlin.guixsd.org.pub"
+                   ,(file-append* source
+                                  "/etc/substitutes/berlin.guixsd.org.pub"))
+                  ("share/guix/ci.guix.info.pub"  ;alias
                    ,(file-append* source "/etc/substitutes/berlin.guixsd.org.pub")))))
 
 (define* (whole-package name modules dependencies
