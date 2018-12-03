@@ -2839,13 +2839,13 @@ and is very extensible.")
        ("python-dask" ,python-dask)
        ("python-matplotlib" ,python-matplotlib)
        ("python-networkx" ,python-networkx)
+       ("python-numpy" ,python-numpy)
        ("python-pillow" ,python-pillow)
        ("python-pywavelets" ,python-pywavelets)
-       ("python-scipy" ,python-scipy)))
-    (native-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-cython" ,python-cython)
+       ("python-scipy" ,python-scipy)
        ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-cython" ,python-cython)))
     (home-page "http://scikit-image.org/")
     (synopsis "Image processing in Python")
     (description
