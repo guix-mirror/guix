@@ -32,7 +32,7 @@
   #:use-module (guix modules)
   #:use-module (guix scripts pack)
   #:use-module (guix utils)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module ((guix self) #:select (make-config.scm))
 
@@ -43,7 +43,7 @@
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages guile)
-  #:autoload   (gnu packages gnupg) (libgcrypt)
+  #:autoload   (gnu packages gnupg) (guile-gcrypt)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages less)
@@ -99,21 +99,28 @@
           (device "store")
           (type "9p")
           (needed-for-boot? #t)
-          (options "trans=virtio")
+          (flags '(read-only))
+          (options "trans=virtio,cache=loose")
           (check? #f))
+
+        ;; The 9p documentation says that cache=loose is "intended for
+        ;; exclusive, read-only mounts", without additional details.  In
+        ;; practice it seems to work well for these, and it's much faster than
+        ;; the default cache=none, especially when copying and registering
+        ;; store items.
         (file-system
           (mount-point "/xchg")
           (device "xchg")
           (type "9p")
           (needed-for-boot? #t)
-          (options "trans=virtio")
+          (options "trans=virtio,cache=loose")
           (check? #f))
         (file-system
           (mount-point "/tmp")
           (device "tmp")
           (type "9p")
           (needed-for-boot? #t)
-          (options "trans=virtio")
+          (options "trans=virtio,cache=loose")
           (check? #f))))
 
 (define not-config?
@@ -124,10 +131,12 @@
     (('gnu rest ...) #t)
     (rest #f)))
 
-(define guile-sqlite3&co
-  ;; Guile-SQLite3 and its propagated inputs.
-  (cons guile-sqlite3
-        (package-transitive-propagated-inputs guile-sqlite3)))
+(define gcrypt-sqlite3&co
+  ;; Guile-Gcrypt, Guile-SQLite3, and their propagated inputs.
+  (append-map (lambda (package)
+                (cons package
+                      (package-transitive-propagated-inputs package)))
+              (list guile-gcrypt guile-sqlite3)))
 
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
@@ -164,10 +173,6 @@ based on the size of the closure of REFERENCES-GRAPHS.
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs, as for `derivation'.  The files containing the reference graphs are
 made available under the /xchg CIFS share."
-  (define config
-    ;; (guix config) module for consumption by (guix gcrypt).
-    (make-config.scm #:libgcrypt libgcrypt))
-
   (define user-builder
     (program-file "builder-in-linux-vm" exp))
 
@@ -184,23 +189,23 @@ made available under the /xchg CIFS share."
                   #~(when (zero? (system* #$user-builder))
                       (reboot))))
 
-  (mlet* %store-monad
-      ((initrd       (if initrd                   ; use the default initrd?
-                         (return initrd)
-                         (base-initrd file-systems
-                                      #:on-error 'backtrace
-                                      #:linux linux
-                                      #:linux-modules %base-initrd-modules
-                                      #:qemu-networking? #t))))
+  (let ((initrd (or initrd
+                    (base-initrd file-systems
+                                 #:on-error 'backtrace
+                                 #:linux linux
+                                 #:linux-modules %base-initrd-modules
+                                 #:qemu-networking? #t))))
 
     (define builder
       ;; Code that launches the VM that evaluates EXP.
-      (with-extensions guile-sqlite3&co
+      (with-extensions gcrypt-sqlite3&co
         (with-imported-modules `(,@(source-module-closure
                                     '((guix build utils)
                                       (gnu build vm))
                                     #:select? not-config?)
-                                 ((guix config) => ,config))
+
+                                 ;; For consumption by (gnu store database).
+                                 ((guix config) => ,(make-config.scm)))
           #~(begin
               (use-modules (guix build utils)
                            (gnu build vm))
@@ -208,7 +213,7 @@ made available under the /xchg CIFS share."
               (let* ((inputs  '#$(list qemu (canonical-package coreutils)))
                      (linux   (string-append #$linux "/"
                                              #$(system-linux-image-file-name)))
-                     (initrd  (string-append #$initrd "/initrd"))
+                     (initrd  #$initrd)
                      (loader  #$loader)
                      (graphs  '#$(match references-graphs
                                    (((graph-files . _) ...) graph-files)
@@ -247,7 +252,7 @@ made available under the /xchg CIFS share."
                         file-system-uuid
                         (system (%current-system))
                         (qemu qemu-minimal)
-                        os-drv
+                        os
                         bootcfg-drv
                         bootloader
                         register-closures?
@@ -255,9 +260,6 @@ made available under the /xchg CIFS share."
   "Return a bootable, stand-alone iso9660 image.
 
 INPUTS is a list of inputs (as for packages)."
-  (define config
-    (make-config.scm #:libgcrypt libgcrypt))
-
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -265,12 +267,12 @@ INPUTS is a list of inputs (as for packages)."
 
   (expression->derivation-in-linux-vm
    name
-   (with-extensions guile-sqlite3&co
+   (with-extensions gcrypt-sqlite3&co
      (with-imported-modules `(,@(source-module-closure '((gnu build vm)
                                                          (guix store database)
                                                          (guix build utils))
                                                        #:select? not-config?)
-                              ((guix config) => ,config))
+                              ((guix config) => ,(make-config.scm)))
        #~(begin
            (use-modules (gnu build vm)
                         (guix store database)
@@ -298,7 +300,7 @@ INPUTS is a list of inputs (as for packages)."
              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
              (make-iso9660-image #$(bootloader-package bootloader)
                                  #$bootcfg-drv
-                                 #$os-drv
+                                 #$os
                                  "/xchg/guixsd.iso"
                                  #:register-closures? #$register-closures?
                                  #:closures graphs
@@ -327,7 +329,7 @@ INPUTS is a list of inputs (as for packages)."
                      (file-system-type "ext4")
                      file-system-label
                      file-system-uuid
-                     os-drv
+                     os
                      bootcfg-drv
                      bootloader
                      (register-closures? #t)
@@ -347,9 +349,6 @@ INPUTS is a list of inputs (as for packages).  When COPY-INPUTS? is true, copy
 all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
 register INPUTS in the store database of the image so that Guix can be used in
 the image."
-  (define config
-    (make-config.scm #:libgcrypt libgcrypt))
-
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -357,13 +356,13 @@ the image."
 
   (expression->derivation-in-linux-vm
    name
-   (with-extensions guile-sqlite3&co
+   (with-extensions gcrypt-sqlite3&co
      (with-imported-modules `(,@(source-module-closure '((gnu build vm)
                                                          (gnu build bootloader)
                                                          (guix store database)
                                                          (guix build utils))
                                                        #:select? not-config?)
-                              ((guix config) => ,config))
+                              ((guix config) => ,(make-config.scm)))
        #~(begin
            (use-modules (gnu build bootloader)
                         (gnu build vm)
@@ -396,7 +395,12 @@ the image."
                                  #:closures graphs
                                  #:copy-closures? #$copy-inputs?
                                  #:register-closures? #$register-closures?
-                                 #:system-directory #$os-drv))
+                                 #:system-directory #$os
+
+                                 ;; Disable deduplication to speed things up,
+                                 ;; and because it doesn't help much for a
+                                 ;; single system generation.
+                                 #:deduplicate? #f))
                     (root-size  #$(if (eq? 'guess disk-image-size)
                                       #~(max
                                          ;; Minimum 20 MiB root size
@@ -462,10 +466,6 @@ makes sense when you want to build a GuixSD Docker image that has Guix
 installed inside of it.  If you don't need Guix (e.g., your GuixSD Docker
 image just contains a web server that is started by the Shepherd), then you
 should set REGISTER-CLOSURES? to #f."
-  (define config
-    ;; (guix config) module for consumption by (guix gcrypt).
-    (make-config.scm #:libgcrypt libgcrypt))
-
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -475,8 +475,8 @@ should set REGISTER-CLOSURES? to #f."
                       (name -> (string-append name ".tar.gz"))
                       (graph -> "system-graph"))
     (define build
-      (with-extensions (cons guile-json          ;for (guix docker)
-                             guile-sqlite3&co)   ;for (guix store database)
+      (with-extensions (cons guile-json           ;for (guix docker)
+                             gcrypt-sqlite3&co)   ;for (guix store database)
         (with-imported-modules `(,@(source-module-closure
                                     '((guix docker)
                                       (guix store database)
@@ -484,7 +484,7 @@ should set REGISTER-CLOSURES? to #f."
                                       (guix build store-copy)
                                       (gnu build vm))
                                     #:select? not-config?)
-                                 ((guix config) => ,config))
+                                 ((guix config) => ,(make-config.scm)))
           #~(begin
               (use-modules (guix docker)
                            (guix build utils)
@@ -539,17 +539,42 @@ should set REGISTER-CLOSURES? to #f."
 (define* (operating-system-uuid os #:optional (type 'dce))
   "Compute UUID object with a deterministic \"UUID\" for OS, of the given
 TYPE (one of 'iso9660 or 'dce).  Return a UUID object."
+  ;; Note: For this to be deterministic, we must not hash things that contains
+  ;; (directly or indirectly) procedures, for example.  That rules out
+  ;; anything that contains gexps, thunk or delayed record fields, etc.
+
+  (define service-name
+    (compose service-type-name service-kind))
+
+  (define (file-system-digest fs)
+    ;; Return a hashable digest that does not contain 'dependencies' since
+    ;; this field can contain procedures.
+    (let ((device (file-system-device fs)))
+      (list (file-system-mount-point fs)
+            (file-system-type fs)
+            (cond ((file-system-label? device)
+                   (file-system-label->string device))
+                  ((uuid? device)
+                   (uuid->string device))
+                  ((string? device)
+                   device)
+                  (else #f))
+            (file-system-options fs))))
+
   (if (eq? type 'iso9660)
       (let ((pad (compose (cut string-pad <> 2 #\0)
                           number->string))
-            (h   (hash (operating-system-services os) 3600)))
+            (h   (hash (map service-name (operating-system-services os))
+                       3600)))
         (bytevector->uuid
          (string->iso9660-uuid
           (string-append "1970-01-01-"
                          (pad (hash (operating-system-host-name os) 24)) "-"
                          (pad (quotient h 60)) "-"
                          (pad (modulo h 60)) "-"
-                         (pad (hash (operating-system-file-systems os) 100))))
+                         (pad (hash (map file-system-digest
+                                         (operating-system-file-systems os))
+                                    100))))
          'iso9660))
       (bytevector->uuid
        (uint-list->bytevector
@@ -557,9 +582,9 @@ TYPE (one of 'iso9660 or 'dce).  Return a UUID object."
                     (- (expt 2 32) 1))
               (hash (operating-system-host-name os)
                     (- (expt 2 32) 1))
-              (hash (operating-system-services os)
+              (hash (map service-name (operating-system-services os))
                     (- (expt 2 32) 1))
-              (hash (operating-system-file-systems os)
+              (hash (map file-system-digest (operating-system-file-systems os))
                     (- (expt 2 32) 1)))
         (endianness little)
         4)
@@ -600,56 +625,54 @@ to USB sticks meant to be read-only."
               (string=? (file-system-mount-point fs) "/"))
             (operating-system-file-systems os)))
 
-  (let ((os (operating-system (inherit os)
-              ;; Since this is meant to be used on real hardware, don't
-              ;; install QEMU networking or anything like that.  Assume USB
-              ;; mass storage devices (usb-storage.ko) are available.
-              (initrd (lambda (file-systems . rest)
-                        (apply (operating-system-initrd os)
-                               file-systems
-                               #:volatile-root? #t
-                               rest)))
+  (let* ((os (operating-system (inherit os)
+               ;; Since this is meant to be used on real hardware, don't
+               ;; install QEMU networking or anything like that.  Assume USB
+               ;; mass storage devices (usb-storage.ko) are available.
+               (initrd (lambda (file-systems . rest)
+                         (apply (operating-system-initrd os)
+                                file-systems
+                                #:volatile-root? #t
+                                rest)))
 
-              (bootloader (if (string=? "iso9660" file-system-type)
-                              (bootloader-configuration
-                                (inherit (operating-system-bootloader os))
-                                (bootloader grub-mkrescue-bootloader))
-                              (operating-system-bootloader os)))
+               (bootloader (if (string=? "iso9660" file-system-type)
+                               (bootloader-configuration
+                                 (inherit (operating-system-bootloader os))
+                                 (bootloader grub-mkrescue-bootloader))
+                               (operating-system-bootloader os)))
 
-              ;; Force our own root file system.
-              (file-systems (cons (file-system
-                                    (mount-point "/")
-                                    (device root-uuid)
-                                    (type file-system-type))
-                                  file-systems-to-keep)))))
-
-    (mlet* %store-monad ((os-drv   (operating-system-derivation os))
-                         (bootcfg  (operating-system-bootcfg os)))
-      (if (string=? "iso9660" file-system-type)
-          (iso9660-image #:name name
-                         #:file-system-label root-label
-                         #:file-system-uuid root-uuid
-                         #:os-drv os-drv
-                         #:register-closures? #t
-                         #:bootcfg-drv bootcfg
-                         #:bootloader (bootloader-configuration-bootloader
-                                        (operating-system-bootloader os))
-                         #:inputs `(("system" ,os-drv)
-                                    ("bootcfg" ,bootcfg)))
-          (qemu-image #:name name
-                      #:os-drv os-drv
-                      #:bootcfg-drv bootcfg
-                      #:bootloader (bootloader-configuration-bootloader
-                                    (operating-system-bootloader os))
-                      #:disk-image-size disk-image-size
-                      #:disk-image-format "raw"
-                      #:file-system-type file-system-type
-                      #:file-system-label root-label
-                      #:file-system-uuid root-uuid
-                      #:copy-inputs? #t
-                      #:register-closures? #t
-                      #:inputs `(("system" ,os-drv)
-                                 ("bootcfg" ,bootcfg)))))))
+               ;; Force our own root file system.
+               (file-systems (cons (file-system
+                                     (mount-point "/")
+                                     (device root-uuid)
+                                     (type file-system-type))
+                                   file-systems-to-keep))))
+        (bootcfg (operating-system-bootcfg os)))
+    (if (string=? "iso9660" file-system-type)
+        (iso9660-image #:name name
+                       #:file-system-label root-label
+                       #:file-system-uuid root-uuid
+                       #:os os
+                       #:register-closures? #t
+                       #:bootcfg-drv bootcfg
+                       #:bootloader (bootloader-configuration-bootloader
+                                     (operating-system-bootloader os))
+                       #:inputs `(("system" ,os)
+                                  ("bootcfg" ,bootcfg)))
+        (qemu-image #:name name
+                    #:os os
+                    #:bootcfg-drv bootcfg
+                    #:bootloader (bootloader-configuration-bootloader
+                                  (operating-system-bootloader os))
+                    #:disk-image-size disk-image-size
+                    #:disk-image-format "raw"
+                    #:file-system-type file-system-type
+                    #:file-system-label root-label
+                    #:file-system-uuid root-uuid
+                    #:copy-inputs? #t
+                    #:register-closures? #t
+                    #:inputs `(("system" ,os)
+                               ("bootcfg" ,bootcfg))))))
 
 (define* (system-qemu-image os
                             #:key
@@ -675,30 +698,28 @@ of the GNU system as described by OS."
                                'dce)))
 
 
-  (let ((os (operating-system (inherit os)
-              ;; Assume we have an initrd with the whole QEMU shebang.
+  (let* ((os (operating-system (inherit os)
+               ;; Assume we have an initrd with the whole QEMU shebang.
 
-              ;; Force our own root file system.  Refer to it by UUID so that
-              ;; it works regardless of how the image is used ("qemu -hda",
-              ;; Xen, etc.).
-              (file-systems (cons (file-system
-                                    (mount-point "/")
-                                    (device root-uuid)
-                                    (type file-system-type))
-                                  file-systems-to-keep)))))
-    (mlet* %store-monad
-        ((os-drv      (operating-system-derivation os))
-         (bootcfg     (operating-system-bootcfg os)))
-      (qemu-image  #:os-drv os-drv
-                   #:bootcfg-drv bootcfg
-                   #:bootloader (bootloader-configuration-bootloader
-                                 (operating-system-bootloader os))
-                   #:disk-image-size disk-image-size
-                   #:file-system-type file-system-type
-                   #:file-system-uuid root-uuid
-                   #:inputs `(("system" ,os-drv)
-                              ("bootcfg" ,bootcfg))
-                   #:copy-inputs? #t))))
+               ;; Force our own root file system.  Refer to it by UUID so that
+               ;; it works regardless of how the image is used ("qemu -hda",
+               ;; Xen, etc.).
+               (file-systems (cons (file-system
+                                     (mount-point "/")
+                                     (device root-uuid)
+                                     (type file-system-type))
+                                   file-systems-to-keep))))
+         (bootcfg (operating-system-bootcfg os)))
+    (qemu-image  #:os os
+                 #:bootcfg-drv bootcfg
+                 #:bootloader (bootloader-configuration-bootloader
+                               (operating-system-bootloader os))
+                 #:disk-image-size disk-image-size
+                 #:file-system-type file-system-type
+                 #:file-system-uuid root-uuid
+                 #:inputs `(("system" ,os)
+                            ("bootcfg" ,bootcfg))
+                 #:copy-inputs? #t)))
 
 
 ;;;
@@ -802,25 +823,26 @@ bootloader refers to: OS kernel, initrd, bootloader data, etc."
     ;; Use a fixed UUID to improve determinism.
     (operating-system-uuid os 'dce))
 
-  (mlet* %store-monad ((os-drv   (operating-system-derivation os))
-                       (bootcfg  (operating-system-bootcfg os)))
-    ;; XXX: When FULL-BOOT? is true, we end up creating an image that contains
-    ;; BOOTCFG and all its dependencies, including the output of OS-DRV.
-    ;; This is more than needed (we only need the kernel, initrd, GRUB for its
-    ;; font, and the background image), but it's hard to filter that.
-    (qemu-image #:os-drv os-drv
-                #:bootcfg-drv bootcfg
-                #:bootloader (bootloader-configuration-bootloader
-                              (operating-system-bootloader os))
-                #:disk-image-size disk-image-size
-                #:file-system-uuid root-uuid
-                #:inputs (if full-boot?
-                             `(("bootcfg" ,bootcfg))
-                             '())
+  (define bootcfg
+    (operating-system-bootcfg os))
 
-                ;; XXX: Passing #t here is too slow, so let it off by default.
-                #:register-closures? #f
-                #:copy-inputs? full-boot?)))
+  ;; XXX: When FULL-BOOT? is true, we end up creating an image that contains
+  ;; BOOTCFG and all its dependencies, including the output of OS.
+  ;; This is more than needed (we only need the kernel, initrd, GRUB for its
+  ;; font, and the background image), but it's hard to filter that.
+  (qemu-image #:os os
+              #:bootcfg-drv bootcfg
+              #:bootloader (bootloader-configuration-bootloader
+                            (operating-system-bootloader os))
+              #:disk-image-size disk-image-size
+              #:file-system-uuid root-uuid
+              #:inputs (if full-boot?
+                           `(("bootcfg" ,bootcfg))
+                           '())
+
+              ;; XXX: Passing #t here is too slow, so let it off by default.
+              #:register-closures? #f
+              #:copy-inputs? full-boot?))
 
 (define* (common-qemu-options image shared-fs)
   "Return the a string-value gexp with the common QEMU options to boot IMAGE,
@@ -870,21 +892,20 @@ bootloader; otherwise it directly starts the operating system kernel.  The
 DISK-IMAGE-SIZE parameter specifies the size in bytes of the root disk image;
 it is mostly useful when FULL-BOOT?  is true."
   (mlet* %store-monad ((os ->  (virtualized-operating-system os mappings full-boot?))
-                       (os-drv (operating-system-derivation os))
                        (image  (system-qemu-image/shared-store
                                 os
                                 #:full-boot? full-boot?
                                 #:disk-image-size disk-image-size)))
     (define kernel-arguments
       #~(list #$@(if graphic? #~() #~("console=ttyS0"))
-              #+@(operating-system-kernel-arguments os os-drv "/dev/vda1")))
+              #+@(operating-system-kernel-arguments os "/dev/vda1")))
 
     (define qemu-exec
       #~(list (string-append #$qemu "/bin/" #$(qemu-command (%current-system)))
               #$@(if full-boot?
                      #~()
                      #~("-kernel" #$(operating-system-kernel-file os)
-                        "-initrd" #$(file-append os-drv "/initrd")
+                        "-initrd" #$(file-append os "/initrd")
                         (format #f "-append ~s"
                                 (string-join #$kernel-arguments " "))))
               #$@(common-qemu-options image

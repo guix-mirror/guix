@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,12 +58,13 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (ice-9 match))
 
 (define-public efl
   (package
     (name "efl")
-    (version "1.20.7")
+    (version "1.21.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -70,7 +72,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1zkn5ix81xck3n84dxvkjh4alwc6zj8x989d0zqi5c6ppijvgadh"))))
+                "0a5907h896pvpix7a6idc2fspzy6d78xrzf84k8y9fyvnd14nxs4"))))
     (outputs '("out"       ; 49 MB
                "include")) ; 17 MB
     (build-system gnu-build-system)
@@ -138,12 +140,16 @@
     (arguments
      `(#:configure-flags '("--disable-silent-rules"
                            "--disable-systemd"
+                           "--with-profile=release"
                            "--enable-liblz4"
                            "--enable-xinput22"
                            "--enable-image-loader-webp"
                            "--enable-multisense"
-                           "--with-opengl=es"
-                           "--enable-egl"
+                           ,@(match (%current-system)
+                               ("armhf-linux"
+                                '("--with-opengl=es" "--with-egl"))
+                               (_
+                                '("--with-opengl=full")))
                            "--enable-harfbuzz"
                            ;; for wayland
                            "--enable-wayland"
@@ -177,7 +183,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.2.1")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -185,10 +191,9 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "1ii8332bl88l8md3gvz5dhi9bjpm6shyf14ck9kfyy7d56hp71mc"))
+                "07vw28inkimi9avp16j0rqcfqjq16081554qsv29pcqhz18xp59r"))
               (modules '((guix build utils)))
               ;; Remove the bundled fonts.
-              ;; TODO: Remove bundled lz4.
               (snippet
                '(begin
                   (delete-file-recursively "data/fonts")
@@ -251,7 +256,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.22.3")
+    (version "0.22.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -259,7 +264,7 @@ Libraries with some extra bells and whistles.")
                               name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "16zydv7z94aw3rywmb9gr8ya85k7b75h22wng95lfx1x0y1yb0ad"))
+                "0ygy891rrw5c7lhk539nhif77j88phvz2h0fhx172iaridy9kx2r"))
               (patches (search-patches "enlightenment-fix-setuid-path.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -268,13 +273,23 @@ Libraries with some extra bells and whistles.")
          (add-before 'configure 'set-system-actions
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((xkeyboard (assoc-ref inputs "xkeyboard-config"))
-                   (utils     (assoc-ref inputs "util-linux")))
+                   (setxkbmap (assoc-ref inputs "setxkbmap"))
+                   (utils     (assoc-ref inputs "util-linux"))
+                   (libc      (assoc-ref inputs "libc")))
                ;; We need to patch the path to 'base.lst' to be able
                ;; to switch the keyboard layout in E.
-               (substitute* "src/modules/xkbswitch/e_mod_parse.c"
+               (substitute* (list "src/modules/xkbswitch/e_mod_parse.c"
+                                  "src/modules/wizard/page_011.c")
                  (("/usr/share/X11/xkb/rules/xorg.lst")
                   (string-append xkeyboard
                                  "/share/X11/xkb/rules/base.lst")))
+               (substitute* "src/bin/e_xkb.c"
+                 (("\"setxkbmap \"")
+                  (string-append "\"" setxkbmap "/bin/setxkbmap \"")))
+               (substitute* (list "src/bin/e_intl.c"
+                                  "src/modules/conf_intl/e_int_config_intl.c"
+                                  "src/modules/wizard/page_010.c")
+                 (("locale -a") (string-append libc "/bin/locale -a")))
                (substitute* "src/modules/everything/evry_plug_apps.c"
                  (("/usr/bin/") ""))
                (substitute* "configure"
@@ -298,6 +313,7 @@ Libraries with some extra bells and whistles.")
        ("libxcb" ,libxcb)
        ("libxext" ,libxext)
        ("linux-pam" ,linux-pam)
+       ("setxkbmap" ,setxkbmap)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xkeyboard-config" ,xkeyboard-config)))
     (home-page "https://www.enlightenment.org/about-enlightenment")
@@ -312,35 +328,36 @@ embedded systems.")
 (define-public python-efl
   (package
     (name "python-efl")
-    (version "1.20.0")
+    (version "1.21.0")
     (source
       (origin
         (method url-fetch)
-        (uri (list
-               (pypi-uri "python-efl" version)
-               (string-append "http://download.enlightenment.org/rel/bindings/"
-                              "python/python-efl-" version ".tar.gz")))
+        (uri (string-append "http://download.enlightenment.org/rel/bindings/"
+                            "python/python-efl-" version ".tar.xz"))
         (sha256
          (base32
-          "1680pgpf501nhbc9arm0nfj6rpcw17aryh0pgmmmszxlgpifpdzy"))))
+          "08x2cv8hnf004c3711250wrax21ffj5y8951pvk77h98als4pq47"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-        (replace 'build
-          (lambda _
-            (zero?
-              (system* "env" "ENABLE_CYTHON=1" "python" "setup.py" "build"))))
+         (replace 'build
+           (lambda _
+             (setenv "ENABLE_CYTHON" "1")
+             (invoke "python" "setup.py" "build")))
         (add-before 'build 'set-flags
-         (lambda _
-           (setenv "CFLAGS"
-                   (string-append "-I" (assoc-ref %build-inputs "python-dbus")
-                                  "/include/dbus-1.0"))
-           #t))
+          (lambda _
+            (setenv "CFLAGS"
+                    (string-append "-I" (assoc-ref %build-inputs "python-dbus")
+                                   "/include/dbus-1.0"))
+            #t))
         (add-before 'check 'set-environment
           (lambda _
             ;; Some tests require write access to HOME.
             (setenv "HOME" "/tmp")
+            ;; These tests try to connect to the internet.
+            (delete-file "tests/ecore/test_09_file_download.py")
+            (delete-file "tests/ecore/test_11_con.py")
             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -421,3 +438,53 @@ and in creating applications based on the Enlightenment Foundation Library suite
      "Simple PDF viewer based on the Enlightenment Foundation Libraries.")
     (home-page "https://github.com/kaihu/lekha")
     (license license:gpl3+)))
+
+(define-public ephoto
+  (package
+    (name "ephoto")
+    (version "1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (list (string-append "http://www.smhouston.us/stuff/ephoto-"
+                                  version ".tar.xz")
+                   (string-append "https://download.enlightenment.org/rel/"
+                                  "apps/ephoto/ephoto-" version ".tar.xz")))
+        (sha256
+         (base32
+          "04kli43sfsy6s660g13pjc0kjmgdcmq8m4qh02vvpcwv60mf9mgz"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-home-directory
+           ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
+    (native-inputs
+     `(("check" ,check)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("efl" ,efl)))
+    (home-page "http://smhouston.us/ephoto/")
+    (synopsis "EFL image viewer/editor/manipulator/slideshow creator")
+    (description "Ephoto is an image viewer and editor written using the
+@dfn{Enlightenment Foundation Libraries} (EFL).  It focuses on simplicity and
+ease of use, while taking advantage of the speed and small footprint the EFL
+provide.
+
+Ephoto’s features include:
+@enumerate
+@item Browsing the file system and displaying images in an easy-to-use grid view.
+@item Browsing images in a single image view format.
+@item Viewing images in a slideshow.
+@item Editing your image with features such as cropping, auto enhance,
+blurring, sharpening, brightness/contrast/gamma adjustments, hue/saturation/value
+adjustments, and color level adjustment.
+@item Applying artistic filters to your image such as black and white and old
+photo.
+@item Drag And Drop along with file operations to easily maintain your photo
+directories.
+@end enumerate\n")
+    (license (list
+               license:bsd-2 ; Ephoto's thumbnailing code
+               license:bsd-3))))

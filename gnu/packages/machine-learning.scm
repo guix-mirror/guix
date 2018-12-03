@@ -8,6 +8,8 @@
 ;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -300,7 +302,9 @@ networks) based on simulation of (stochastic) flow in graphs.")
          "1l5jbhwjpsj38x8b9698hfpkv75h8hn3kj0gihjhn8ym2cwwv110"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:phases
+     `(#:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-paths
            (lambda _
@@ -328,15 +332,17 @@ algorithm.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://www.imbs-luebeck.de/imbs/sites/default/files/u59/"
-             "randomjungle-" version ".tar_.gz"))
+             "https://www.imbs.uni-luebeck.de/fileadmin/files/Software"
+             "/randomjungle/randomjungle-" version ".tar_.gz"))
+       (patches (search-patches "randomjungle-disable-static-build.patch"))
        (sha256
         (base32
          "12c8rf30cla71swx2mf4ww9mfd8jbdw5lnxd7dxhyw1ygrvg6y4w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-boost="
+       (list "--disable-static"
+             (string-append "--with-boost="
                             (assoc-ref %build-inputs "boost")))
        #:phases
        (modify-phases %standard-phases
@@ -356,7 +362,7 @@ algorithm.")
     ;; Non-portable assembly instructions are used so building fails on
     ;; platforms other than x86_64 or i686.
     (supported-systems '("x86_64-linux" "i686-linux"))
-    (home-page "http://www.imbs-luebeck.de/imbs/de/node/227/")
+    (home-page "https://www.imbs.uni-luebeck.de/forschung/software/details.html#c224")
     (synopsis "Implementation of the Random Forests machine learning method")
     (description
      "Random Jungle is an implementation of Random Forests.  It is supposed to
@@ -560,13 +566,13 @@ I/O.")
 (define-public r-adaptivesparsity
   (package
     (name "r-adaptivesparsity")
-    (version "1.4")
+    (version "1.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "AdaptiveSparsity" version))
               (sha256
                (base32
-                "1az7isvalf3kmdiycrfl6s9k9xqk22k1mc6rh8v0jmcz402qyq8z"))))
+                "0imr5m8mll9j6n4icsv6z9rl5kbnwsp9wvzrg7n90nnmcxq2cz91"))))
     (properties
      `((upstream-name . "AdaptiveSparsity")))
     (build-system r-build-system)
@@ -579,7 +585,9 @@ I/O.")
                (("PKG_LIBS=" prefix)
                 (string-append prefix "-larmadillo"))))))))
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)
+     `(("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
        ("r-rcpparmadillo" ,r-rcpparmadillo)))
     (inputs
      `(("armadillo" ,armadillo)))
@@ -594,14 +602,14 @@ geometric models.")
 (define-public r-kernlab
   (package
     (name "r-kernlab")
-    (version "0.9-26")
+    (version "0.9-27")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "kernlab" version))
        (sha256
         (base32
-         "0xv0slf3ggw3sswsi34416lb1g3h1pqkrr2h7r1n1kvgii3l0jcm"))))
+         "1m0xqf6gyvwayz7w3c83y32ayvnlz0jicj8ijk808zq9sh7dbbgn"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/kernlab")
     (synopsis "Kernel-based machine learning tools")
@@ -701,40 +709,39 @@ computing environments.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.19.1")
+    (version "0.20.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/scikit-learn/scikit-learn/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/scikit-learn/scikit-learn.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "18n8775kyfwbvcjjjzda9c5sqy4737c0hrmj6qj1ps2jmlqzair9"))
-       (patches (search-patches
-                "python-scikit-learn-fix-test-non-determinism.patch"))))
+         "0fkhwg3xn1s7ln9q1szq6kwc4jhwvjh8w4kmv9wcrqy7cq3lbv0d"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'check)
-         (add-after 'install 'check
-           ;; Running tests from the source directory requires
-           ;; an "inplace" build with paths relative to CWD.
-           ;; http://scikit-learn.org/stable/developers/advanced_installation.html#testing
-           ;; Use the installed version instead.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             ;; some tests require access to "$HOME"
+         (add-after 'build 'build-ext
+           (lambda _ (invoke "python" "setup.py" "build_ext" "--inplace") #t))
+         (replace 'check
+           (lambda _
+             ;; Restrict OpenBLAS threads to prevent segfaults while testing!
+             (setenv "OPENBLAS_NUM_THREADS" "1")
+
+             ;; Some tests require write access to $HOME.
              (setenv "HOME" "/tmp")
-             ;; Step out of the source directory just to be sure.
-             (chdir "..")
-             (invoke "nosetests" "-v" "sklearn"))))))
+
+             (invoke "pytest" "sklearn" "-m" "not network")))
+         ;; FIXME: This fails with permission denied
+         (delete 'reset-gzip-timestamps))))
     (inputs
      `(("openblas" ,openblas)))
     (native-inputs
-     `(("python-nose" ,python-nose)
+     `(("python-pytest" ,python-pytest)
+       ("python-pandas" ,python-pandas) ;for tests
        ("python-cython" ,python-cython)))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
@@ -742,8 +749,8 @@ computing environments.")
     (home-page "http://scikit-learn.org/")
     (synopsis "Machine Learning in Python")
     (description
-     "Scikit-learn provides simple and efficient tools for data
-mining and data analysis.")
+     "Scikit-learn provides simple and efficient tools for data mining and
+data analysis.")
     (license license:bsd-3)))
 
 (define-public python2-scikit-learn

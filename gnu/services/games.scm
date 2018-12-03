@@ -65,7 +65,8 @@
         (modules '((gnu build shepherd)))
         (start #~(make-forkexec-constructor/container
                   (list #$(file-append package "/bin/wesnothd")
-                        "-p" #$(number->string port))))
+                        "-p" #$(number->string port))
+                  #:user "wesnothd" #:group "wesnothd"))
         (stop #~(make-kill-destructor)))))))
 
 (define wesnothd-service-type

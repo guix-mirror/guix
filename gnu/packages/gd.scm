@@ -51,7 +51,10 @@
              (sha256
               (base32
                "0lfy5f241sbv8s3splm2zqiaxv7lxrcshh875xryryk7yk5jqc4c"))
-             (patches (search-patches "gd-fix-tests-on-i686.patch"
+
+             (patches (search-patches "gd-CVE-2018-5711.patch"
+                                      "gd-CVE-2018-1000222.patch"
+                                      "gd-fix-tests-on-i686.patch"
                                       "gd-freetype-test-failure.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -94,7 +97,7 @@ most common applications of GD involve website development.")
 (define-public perl-gd
   (package
     (name "perl-gd")
-    (version "2.68")
+    (version "2.69")
     (source
      (origin
        (method url-fetch)
@@ -102,7 +105,7 @@ most common applications of GD involve website development.")
                            "GD-" version ".tar.gz"))
        (sha256
         (base32
-         "0p2ya641nl5cvcqgw829xgabh835qijfd6vq2ba12862946xx8va"))))
+         "0palmq7l42fibqxhrabnjm7di4q8kciq9323902d717x3i4jvc6x"))))
     (build-system perl-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -139,7 +142,7 @@ you can create PNG images on the fly or modify existing files.")
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-env
-           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1"))))))
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs

@@ -35,7 +35,7 @@
   #:use-module (guix memoization)
   #:use-module (guix combinators)
   #:use-module (guix monads)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module (guix records)
   #:use-module (guix sets)
@@ -80,6 +80,7 @@
             substitutable-derivation?
             substitution-oracle
             derivation-hash
+            derivation-properties
 
             read-derivation
             read-derivation-from-file
@@ -681,7 +682,8 @@ name of each input with that input's hash."
                      references-graphs
                      allowed-references disallowed-references
                      leaked-env-vars local-build?
-                     (substitutable? #t))
+                     (substitutable? #t)
+                     (properties '()))
   "Build a derivation with the given arguments, and return the resulting
 <derivation> object.  When HASH and HASH-ALGO are given, a
 fixed-output derivation is created---i.e., one whose result is known in
@@ -708,7 +710,10 @@ for offloading and should rather be built locally.  This is the case for small
 derivations where the costs of data transfers would outweigh the benefits.
 
 When SUBSTITUTABLE? is false, declare that substitutes of the derivation's
-output should not be used."
+output should not be used.
+
+PROPERTIES must be an association list describing \"properties\" of the
+derivation.  It is kept as-is, uninterpreted, in the derivation."
   (define (add-output-paths drv)
     ;; Return DRV with an actual store path for each of its output and the
     ;; corresponding environment variable.
@@ -763,6 +768,10 @@ output should not be used."
                             `(("impureEnvVars"
                                . ,(string-join leaked-env-vars)))
                             '())
+                      ,@(match properties
+                          (() '())
+                          (lst `(("guix properties"
+                                  . ,(object->string properties)))))
                       ,@env-vars)))
       (match references-graphs
         (((file . path) ...)
@@ -850,6 +859,14 @@ long-running processes that know what they're doing.  Use with care!"
   (invalidate-memoization! derivation->bytevector)
   (invalidate-memoization! derivation-path->base16-hash)
   (hash-clear! %derivation-cache))
+
+(define derivation-properties
+  (mlambdaq (drv)
+    "Return the property alist associated with DRV."
+    (match (assoc "guix properties"
+                  (derivation-builder-environment-vars drv))
+      ((_ . str) (call-with-input-string str read))
+      (#f        '()))))
 
 (define* (map-derivation store drv mapping
                          #:key (system (%current-system)))
@@ -1129,7 +1146,8 @@ they can refer to each other."
                                        references-graphs
                                        allowed-references
                                        disallowed-references
-                                       local-build? (substitutable? #t))
+                                       local-build? (substitutable? #t)
+                                       (properties '()))
   "Return a derivation that executes Scheme expression EXP as a builder
 for derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV)
 tuples; when SUB-DRV is omitted, \"out\" is assumed.  MODULES is a list
@@ -1149,7 +1167,8 @@ EXP is built using GUILE-FOR-BUILD (a derivation).  When GUILE-FOR-BUILD is
 omitted or is #f, the value of the `%guile-for-build' fluid is used instead.
 
 See the `derivation' procedure for the meaning of REFERENCES-GRAPHS,
-ALLOWED-REFERENCES, DISALLOWED-REFERENCES, LOCAL-BUILD?, and SUBSTITUTABLE?."
+ALLOWED-REFERENCES, DISALLOWED-REFERENCES, LOCAL-BUILD?, SUBSTITUTABLE?,
+and PROPERTIES."
   (define guile-drv
     (or guile-for-build (%guile-for-build)))
 
@@ -1277,7 +1296,8 @@ ALLOWED-REFERENCES, DISALLOWED-REFERENCES, LOCAL-BUILD?, and SUBSTITUTABLE?."
                 #:allowed-references allowed-references
                 #:disallowed-references disallowed-references
                 #:local-build? local-build?
-                #:substitutable? substitutable?)))
+                #:substitutable? substitutable?
+                #:properties properties)))
 
 
 ;;;

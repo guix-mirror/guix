@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Coypright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -112,15 +113,16 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.14.10")
+   (version "1.14.12")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "02banr0wxckq62nbhc3mqidfdh2q956i2r7w2hd9bjgjb238g1vy"))
-            (patches (search-patches "cairo-CVE-2016-9082.patch"))))
+              "05mzyxkvsfc1annjw2dja8vka01ampp9pp93lg09j8hba06g144c"))
+            (patches (search-patches "cairo-CVE-2016-9082.patch"
+                                     "cairo-setjmp-wrapper.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("fontconfig" ,fontconfig)
@@ -178,7 +180,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.7.6")
+   (version "1.8.8")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -186,7 +188,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "16rf7qwgy1gza74v2ws79zdwwb1lpvgz2abwwm8ws9j82cwysyys"))))
+               "1ag3scnm1fcviqgx2p4858y433mr0ndqw6zccnccrqcr9mpcird8"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -217,7 +219,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.42.0")
+   (version "1.42.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
@@ -225,18 +227,18 @@ affine transformation (scale, rotation, shear, etc.).")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0illn78nfwpa8y5knh9ir74wa1skc2hi8f3ny19zgpyf7n5dh94r"))))
+              "17bwb7dgbncrfsmchlib03k9n3xaalirb39g3yb43gg8cg6p8aqx"))))
    (build-system gnu-build-system)
    (propagated-inputs
     ;; These are all in Requires or Requires.private of the '.pc' files.
     `(("cairo" ,cairo)
+      ("fribidi" ,fribidi)
       ("fontconfig" ,fontconfig)
       ("freetype" ,freetype)
       ("glib" ,glib)
       ("harfbuzz" ,harfbuzz)))
    (inputs
-    `(("fribidi" ,fribidi)
-      ("zlib" ,zlib)
+    `(("zlib" ,zlib)
 
       ;; Some packages, such as Openbox, expect Pango to be built with the
       ;; optional libxft support.
@@ -303,6 +305,7 @@ functions which were removed.")
                      (string-append "-Wl,-rpath="
                                     (assoc-ref outputs "out") "/lib"))
              #t)))
+       #:python ,python-2 ;XXX: The bundled waf fails with Python 3.7.0.
        #:tests? #f)) ; no check target
     (inputs
      `(("gtk" ,gtk+-2)
@@ -442,7 +445,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.36.12")
+   (version "2.38.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -450,26 +453,39 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0d534ysa6n9prd17wwzisq7mj6qkhwh8wcf8qgin1ar3hbs5ry7z"))))
-   (build-system gnu-build-system)
+              "0ixfmnxjylx06mjaw116apymwi1a8rnkmkbbvqaxxg2pfwy9fl6x"))))
+   (build-system meson-build-system)
    (arguments
-    '(#:configure-flags '("--with-x11")
+    '(#:configure-flags '("-Dinstalled-tests=false")
       #:phases
       (modify-phases %standard-phases
         (add-after
          'unpack 'disable-failing-tests
          (lambda _
-           (substitute* "tests/Makefile.in"
+           (substitute* "tests/meson.build"
              ;; XXX FIXME: This test fails on armhf machines with:
              ;; SKIP Not enough memory to load bitmap image
              ;; ERROR: cve-2015-4491 - too few tests run (expected 4, got 2)
-             (("cve-2015-4491\\$\\(EXEEXT\\) ") "")
+             ((".*'cve-2015-4491'.*") "")
              ;; XXX FIXME: This test fails with:
              ;; ERROR:pixbuf-jpeg.c:74:test_type9_rotation_exif_tag:
              ;; assertion failed (error == NULL): Data differ
              ;; (gdk-pixbuf-error-quark, 0)
-             (("pixbuf-jpeg\\$\\(EXEEXT\\) ") ""))
-           #t)))))
+             ((".*'pixbuf-jpeg'.*") "")
+             ;; Extend the timeout of the test suite.
+             ;; TODO: Check upstreaming effort:
+             ;; https://gitlab.gnome.org/GNOME/gdk-pixbuf/merge_requests/21
+             (("300") "1800"))
+           #t))
+        (add-before 'configure 'aid-install-script
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; "build-aux/post-install.sh" invokes `gdk-pixbuf-query-loaders`
+            ;; for updating loader.cache, but it's not on PATH.  Make it use
+            ;; the one we're installing.  XXX: Won't work when cross-compiling.
+            (substitute* "build-aux/post-install.sh"
+              (("gdk-pixbuf-query-loaders" match)
+               (string-append (assoc-ref outputs "out") "/bin/" match)))
+            #t)))))
    (propagated-inputs
     `(;; Required by gdk-pixbuf-2.0.pc
       ("glib" ,glib)
@@ -482,6 +498,7 @@ highlighting and other features typical of a source code editor.")
       ("libx11"  ,libx11)))
    (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME image loading and manipulation library")
@@ -501,7 +518,7 @@ in the GNOME project.")
      `(("librsvg" ,librsvg)
        ,@(package-inputs gdk-pixbuf)))
     (arguments
-     '(#:configure-flags '("--with-x11")
+     '(#:configure-flags '("-Dinstalled-tests=false")
        #:tests? #f ; tested by the gdk-pixbuf package already
        #:phases
        (modify-phases %standard-phases
@@ -671,7 +688,7 @@ application suites.")
    (name "gtk+")
    ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
    ;;       mate.scm will also need to be updated.
-   (version "3.22.30")
+   (version "3.24.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -679,7 +696,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0rv5k8fyi2i19k4zncai6vf429s6zy3kncr8vb6f3m034z0sb951"))
+              "1a1jbsh9fg5ykmwrcl3svy7xfvx0b87d314qsx9n483pj8w93s82"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
@@ -715,9 +732,9 @@ application suites.")
       ("python-wrapper" ,python-wrapper)
       ;; By using a special xorg-server for GTK+'s tests, we reduce the impact
       ;; of updating xorg-server directly on the master branch.
-      ("xorg-server" ,xorg-server-1.19.3)))
+      ("xorg-server" ,xorg-server-for-tests)))
    (arguments
-    `(#:disallowed-references (,xorg-server-1.19.3)
+    `(#:disallowed-references (,xorg-server-for-tests)
       ;; 47 MiB goes to "out" (24 of which is locale data!), and 26 MiB goes
       ;; to "doc".
       #:configure-flags (list (string-append "--with-html-dir="
@@ -763,54 +780,26 @@ application suites.")
 (define-public guile-cairo
   (package
     (name "guile-cairo")
-    (version "1.4.1")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://download.gna.org/guile-cairo/guile-cairo-"
-                    version
-                    ".tar.gz"))
+              (uri (string-append "mirror://savannah/guile-cairo/guile-cairo-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1f5nd9n46n6cwfl1byjml02q3y2hgn7nkx98km1czgwarxl7ws3x"))))
+                "0p6xrhf2k6n5dybn88050za7h90gnd7534n62l53vsca187pwgdf"))
+              (modules '((guix build utils)))
+              (snippet
+               (begin
+                 '(begin
+                    ;; Install Scheme files in …/guile/site/X.Y.
+                    (substitute* (find-files "." "^Makefile\\.in$")
+                      (("^(.*)dir = (.*)/guile/site(.*)" _ name prefix suffix)
+                       (string-append name "dir = " prefix
+                                      "/guile/site/@GUILE_EFFECTIVE_VERSION@"
+                                      suffix)))
+                    #t)))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:modules ((guix build utils)
-                  (guix build gnu-build-system)
-                  (ice-9 popen)
-                  (ice-9 rdelim))
-
-       #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'set-module-directory
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Install modules under $out/share/guile/site/2.0.
-                      (let ((out (assoc-ref outputs "out"))
-                            (effective
-                             (read-line
-                              (open-pipe* OPEN_READ "guile" "-c"
-                                          "(display (effective-version))"))))
-                        (substitute* "Makefile.in"
-                          (("scmdir = ([[:graph:]]+).*" _ value)
-                           (string-append "scmdir = " value "/" effective "\n")))
-                        (substitute* "cairo/Makefile.in"
-                          (("moduledir = ([[:graph:]]+).*" _ value)
-                           (string-append "moduledir = "
-                                          "$(prefix)/share/guile/site/"
-                                          effective "/cairo\n'")))
-                        #t)))
-                  (add-after 'install 'install-missing-file
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; By default 'vector-types.scm' is not installed, so do
-                      ;; it here.
-                      (let ((out (assoc-ref outputs "out"))
-                            (effective
-                             (read-line
-                              (open-pipe* OPEN_READ "guile" "-c"
-                                          "(display (effective-version))"))))
-                        (install-file "cairo/vector-types.scm"
-                                      (string-append out "/share/guile/site/"
-                                                     effective "/cairo"))
-                        #t))))))
     (inputs
      `(("guile-lib" ,guile-lib)
        ("expat" ,expat)
@@ -889,14 +878,7 @@ images onto Cairo surfaces.")
               (sha256
                (base32
                 "1qam447m05sxxv6x8dlzg7qnyfc4dh8apjw1idpfhpns671gfr6m"))
-              (patches (search-patches "guile-present-coding.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "Makefile.in"
-                    (("godir = .*$")
-                     "godir = $(moddir)\n"))
-                  #t))))
+              (patches (search-patches "guile-present-coding.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1081,7 +1063,7 @@ toolkit.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")        ;for 'glib-compile-resources'
-                     ("xorg-server" ,xorg-server-1.19.3)))
+                     ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
@@ -1092,7 +1074,7 @@ toolkit.")
      `(;; XXX: Tests require C++14 or later.  Remove this when the default
        ;; compiler is >= GCC6.
        #:configure-flags '("CXXFLAGS=-std=gnu++14")
-       #:disallowed-references (,xorg-server-1.19.3)
+       #:disallowed-references (,xorg-server-for-tests)
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'run-xvfb
                     (lambda* (#:key inputs #:allow-other-keys)
@@ -1173,7 +1155,7 @@ printing and other features typical of a source code editor.")
 (define-public python-pycairo
   (package
     (name "python-pycairo")
-    (version "1.16.3")
+    (version "1.17.1")
     (source
      (origin
       (method url-fetch)
@@ -1181,7 +1163,7 @@ printing and other features typical of a source code editor.")
                           version "/pycairo-" version ".tar.gz"))
       (sha256
        (base32
-        "1xq1bwhyi5imca5kvd28szh2rdzi8g0kaspwaqgsbczqskjj3csv"))))
+        "165n0g7gp2a0qi8558snvfans17x83jv2lv7bx4vr1rxjbn3a2hg"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1376,7 +1358,7 @@ and routines to assist in editing internationalized text.")
                      ("check" ,check)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")
-                     ("xorg-server" ,xorg-server-1.19.3)))
+                     ("xorg-server" ,xorg-server-for-tests)))
     ;; Listed in 'Requires.private' of 'girara.pc'.
     (propagated-inputs `(("gtk+" ,gtk+)))
     (arguments
@@ -1432,7 +1414,12 @@ information.")
                (string-append (assoc-ref inputs "docbook-xsl")
                               "/xml/xsl/docbook-xsl-"
                               ,(package-version docbook-xsl)
-                              "/html/chunk.xsl")))
+                              "/html/chunk.xsl"))
+              (("http://docbook.sourceforge.net/release/xsl/current/common/en.xml")
+               (string-append (assoc-ref inputs "docbook-xsl")
+                              "/xml/xsl/docbook-xsl-"
+                              ,(package-version docbook-xsl)
+                              "/common/en.xml")))
              #t))
          (add-after 'patch-gtk-doc-scan 'patch-test-out
            (lambda _
@@ -1575,12 +1562,11 @@ glass artworks done by Venicians glass blowers.")
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("enchant" ,enchant)
-       ("gobject-introspection" ,gobject-introspection)
+     `(("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+)
        ("pango" ,pango)))
     (propagated-inputs
-     `(("enchant" ,enchant))) ; gtkspell3-3.0.pc refers to it.
+     `(("enchant" ,enchant-1.6)))          ;gtkspell3-3.0.pc refers to it
     (home-page "http://gtkspell.sourceforge.net")
     (synopsis "Spell-checking addon for GTK's TextView widget")
     (description
@@ -1651,3 +1637,73 @@ Parcellite and adds bugfixes and features.")
 it does not deal with windowing system surfaces, drawing, scene graphs, or
 input.")
     (license license:expat)))
+
+(define-public spread-sheet-widget
+  (package
+    (name "spread-sheet-widget")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://alpha.gnu.org/gnu/ssw/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1h93yyh2by6yrmkwqg38nd5knids05k5nqzcihc1hdwgzg3c4b8y"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib" ,glib "bin") ; for glib-genmarshal, etc.
+       ("pkg-config" ,pkg-config)))
+    ;; In 'Requires' of spread-sheet-widget.pc.
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)))
+    (home-page "https://www.gnu.org/software/ssw/")
+    (synopsis "Gtk+ widget for dealing with 2-D tabular data")
+    (description
+     "GNU Spread Sheet Widget is a library for Gtk+ which provides a widget for
+viewing and manipulating 2 dimensional tabular data in a manner similar to many
+popular spread sheet programs.")
+    (license license:gpl3+)))
+
+(define-public yad
+  (package
+    (name "yad")
+    (version "0.40.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/v1cont/yad.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vpgbjbkkbk5plicyklzpf65j1vlig4n4bi3qpvrz5bb09ic5alw"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       '("--with-gtk=gtk3"
+         "--enable-html"
+         "--enable-gio"
+         "--enable-spell"
+         "--enable-icon-browser")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _
+             (invoke "autoreconf" "-vif")
+             (invoke "intltoolize" "--force" "--automake")
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://sourceforge.net/projects/yad-dialog/")
+    (synopsis "GTK+ dialog boxes for shell scripts")
+    (description
+     "This program allows you to display GTK+ dialog boxes from command line or
+shell scripts.  Example of how to use @code{yad} can be consulted at
+@url{https://sourceforge.net/p/yad-dialog/wiki/browse_pages/}.")
+    (license license:gpl3+)))

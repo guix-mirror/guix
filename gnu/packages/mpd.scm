@@ -33,6 +33,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -46,6 +47,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages pulseaudio)
@@ -56,7 +58,7 @@
 (define-public libmpdclient
   (package
     (name "libmpdclient")
-    (version "2.14")
+    (version "2.16")
     (source (origin
               (method url-fetch)
               (uri
@@ -65,7 +67,7 @@
                               "/libmpdclient-" version ".tar.xz"))
               (sha256
                (base32
-                "0whk0qw0lsd3kaimdznz0c45bfym0p4885zf4b7pfc7y3dwy510a"))))
+                "0r24cl3i9nvs6a47mvwaxk1kb5wmnhkhrw1q5cq9010fgjvdlszs"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -88,7 +90,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.20.21")
+    (version "0.20.23")
     (source (origin
               (method url-fetch)
               (uri
@@ -97,7 +99,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "1p2qrhdb1gzfv3y5dvvbc9s2wwmhg3azvzf8r02hzhk5q96pc8l3"))))
+                "1smg6hab4kwrzsw1k7vlpya3ampdk8psnmkrzxlgb43j4fgmygjh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -163,7 +165,7 @@ protocol.")
 (define-public mpd-mpc
   (package
     (name "mpd-mpc")
-    (version "0.30")
+    (version "0.31")
     (source (origin
               (method url-fetch)
               (uri
@@ -172,10 +174,12 @@ protocol.")
                               "/mpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1kkzhrypkp0v6xv4d6db415pd0h6jqki29kfpsnfkvrhhh55pz35"))))
+                "0b9bsn4sl26xc6wdcms51x9yxznkxkppaycn8gnv4rd1m21kwdv2"))))
     (build-system meson-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)))
     (synopsis "Music Player Daemon client")
     (description "MPC is a minimalist command line interface to MPD, the music
 player daemon.")
@@ -185,7 +189,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.29")
+    (version "0.32")
     (source (origin
               (method url-fetch)
               (uri
@@ -194,16 +198,32 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "04jzv1hfdvgbn391523jb2h3yhq9a40pjrg41sl3wf3jf6vajs7g"))))
+                "1b01q1pcaw5yyhvmlffc3h0r3w8qy7rhn55a7xj4qkcfqvs8ap08"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list "-Dcurses=ncurses")))
-    (inputs `(("glib" ,glib)
+       ;; Otherwise, they are installed incorrectly, in
+       ;; '$out/share/man/man/man1'.
+       (list (string-append "-Dmandir=" (assoc-ref %outputs "out")
+                            "/share"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'expand-C++-include-path
+           ;; Make <gcc>/include/c++/ext/string_conversions.h find <stdlib.h>.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((path "CPLUS_INCLUDE_PATH")
+                    (gcc  (assoc-ref inputs "gcc"))
+                    (c++  (string-append gcc "/include/c++")))
+               (setenv path (string-append c++ ":" (getenv path)))
+               #t))))))
+    (inputs `(("gcc", gcc-8)            ; for its C++14 support
+              ("boost" ,boost)
+              ("pcre" ,pcre)
               ("libmpdclient" ,libmpdclient)
               ("ncurses" ,ncurses)))
     (native-inputs `(("gettext" ,gettext-minimal) ; for xgettext
-                     ("pkg-config" ,pkg-config)))
+                     ("pkg-config" ,pkg-config)
+                     ("python-sphinx" ,python-sphinx)))
     (synopsis "Curses Music Player Daemon client")
     (description "ncmpc is a fully featured MPD client, which runs in a
 terminal using ncurses.")

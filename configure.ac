@@ -87,7 +87,9 @@ dnl We require pkg.m4 (from pkg-config) and guile.m4 (from Guile.)
 dnl Make sure they are available.
 m4_pattern_forbid([PKG_CHECK_MODULES])
 m4_pattern_forbid([GUILE_MODULE_AVAILABLE])
-m4_pattern_forbid([^GUILE_P$])
+m4_pattern_forbid([^GUILE_P])
+m4_pattern_allow([^GUILE_PKG_ERRORS])
+m4_pattern_forbid([^GUIX_])
 
 dnl Search for 'guile' and 'guild'.  This macro defines
 dnl 'GUILE_EFFECTIVE_VERSION'.
@@ -120,14 +122,21 @@ if test "x$have_guile_git" != "xyes"; then
   AC_MSG_ERROR([Guile-Git is missing; please install it.])
 fi
 
-dnl Guile-JSON is used in various places.
+dnl Check for Guile-JSON.
 GUILE_MODULE_AVAILABLE([have_guile_json], [(json)])
-AM_CONDITIONAL([HAVE_GUILE_JSON], [test "x$have_guile_json" = "xyes"])
+if test "x$have_guile_json" != "xyes"; then
+  AC_MSG_ERROR([Guile-JSON is missing; please install it.])
+fi
 
 dnl Guile-Sqlite3 is used by the (guix store ...) modules.
 GUIX_CHECK_GUILE_SQLITE3
 if test "x$guix_cv_have_recent_guile_sqlite3" != "xyes"; then
   AC_MSG_ERROR([A recent Guile-SQLite3 could not be found; please install it.])
+fi
+
+GUILE_MODULE_AVAILABLE([have_guile_gcrypt], [(gcrypt hash)])
+if test "x$have_guile_gcrypt" != "xyes"; then
+  AC_MSG_ERROR([Guile-Gcrypt could not be found; please install it.])
 fi
 
 dnl Make sure we have a full-fledged Guile.
@@ -213,16 +222,10 @@ AC_ARG_WITH([libgcrypt-libdir],
    esac])
 
 dnl If none of the --with-libgcrypt-* options was used, try to determine the
-dnl absolute file name of libgcrypt.so.
+dnl the library directory.
 case "x$LIBGCRYPT_PREFIX$LIBGCRYPT_LIBDIR" in
   xnono)
     GUIX_LIBGCRYPT_LIBDIR([LIBGCRYPT_LIBDIR])
-    if test "x$LIBGCRYPT_LIBDIR" != x; then
-      LIBGCRYPT="$LIBGCRYPT_LIBDIR/libgcrypt"
-    else
-      dnl 'config-daemon.ac' expects "no" in this case.
-      LIBGCRYPT_LIBDIR="no"
-    fi
     ;;
 esac
 
@@ -232,8 +235,6 @@ AC_MSG_RESULT([$LIBGCRYPT])
 AC_SUBST([LIBGCRYPT])
 AC_SUBST([LIBGCRYPT_PREFIX])
 AC_SUBST([LIBGCRYPT_LIBDIR])
-
-GUIX_ASSERT_LIBGCRYPT_USABLE
 
 dnl Library name of zlib suitable for 'dynamic-link'.
 GUIX_LIBZ_LIBDIR([libz_libdir])

@@ -27,7 +27,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (json)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix base32)

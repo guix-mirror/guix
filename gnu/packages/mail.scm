@@ -6,7 +6,7 @@
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
@@ -110,7 +110,9 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages docbook)
   #:use-module ((guix licenses)
-                #:select (fdl1.1+ gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
+                #:select (fdl1.1+
+                           agpl3+
+                           gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
                            non-copyleft (expat . license:expat) bsd-3
                            public-domain bsd-4 isc (openssl . license:openssl)
                            bsd-2 x11-style agpl3 asl2.0 perl-license))
@@ -119,6 +121,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system guile)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial))
@@ -126,24 +129,14 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.4")
+    (version "3.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
-                                 version ".tar.bz2"))
+                                 version ".tar.xz"))
              (sha256
               (base32
-               "1dn71p85wlyisnwsb485sk3q5v393k3dizsa9fmimskdwjwgk3ch"))
-             (patches
-              (search-patches "mailutils-uninitialized-memory.patch"))
-             (snippet
-              ;; For a rebuild of the Flex/Bison byproducts touched by the
-              ;; patch above.
-              '(begin
-                 (for-each delete-file
-                           '("mh/mh_alias_lex.c"
-                             "libmailutils/cfg/parser.c"))
-                 #t))))
+               "1wx275w38fwni2abc8g7g3irbk332vr34byxd72zqfdiznsqgims"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -194,19 +187,22 @@
 
              #t)))
        ;; TODO: Add `--with-sql'.
-       #:configure-flags '("--sysconfdir=/etc")
+       #:configure-flags (list "--sysconfdir=/etc"
+
+                               ;; Add "/2.2" to the installation directory.
+                               (string-append "--with-guile-site-dir="
+                                              (assoc-ref %outputs "out")
+                                              "/share/guile/site/2.2"))
+
        #:parallel-tests? #f))
     (native-inputs
-     ;; Note: Bison and Flex needed due to
-     ;; 'mailutils-uninitialized-memory.patch'.
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("perl" ,perl)))                           ;for 'gylwrap'
+     `(("perl" ,perl)))                           ;for 'gylwrap'
     (inputs
      `(("dejagnu" ,dejagnu)
        ("m4" ,m4)
        ("texinfo" ,texinfo)
-       ("guile" ,guile-2.0)
+       ("guile" ,guile-2.2)
+       ("gsasl" ,gsasl)
        ("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
        ("readline" ,readline)
@@ -261,14 +257,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.10.1")
+    (version "1.11.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "182lkbkpd3q3l1x6bvyds90ycp38gyyxhf35ry0d3hwf2n1khjkk"))
+               "1qqhkhlzvjj0iih8vm0wfagv4fzqqy1wnsb4sqsfv7w06ccjdjcj"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -706,9 +702,9 @@ attachments, create new maildirs, and so on.")
        ("python2-pygpgme" ,python2-pygpgme)
        ("python2-notmuch" ,python2-notmuch)))
     (home-page "https://github.com/pazz/alot")
-    (synopsis "Commandline MUA using notmuch")
+    (synopsis "Command-line MUA using @code{notmuch}")
     (description
-     "Alot is an experimental terminal mail user agent (MUA) based on
+     "Alot is an experimental terminal mail user agent (@dfn{MUA}) based on
 @code{notmuch} mail.  It is written in Python using the @code{urwid} toolkit.")
     (license gpl3+)))
 
@@ -763,14 +759,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.27")
+    (version "0.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0xh8vq2sa7r07xb3n13drc6gdiqhcgl0pj0za5xj43qkiwpikls0"))))
+                "0dqarmjc8544m2w7bqrqmvsfy55fw82707z3lz9cql8nr777bjmc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -947,14 +943,15 @@ useful features.")
 (define-public libetpan
   (package
     (name "libetpan")
-    (version "1.8")
+    (version "1.9.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/dinhviethoa/" name
-                   "/archive/" version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url  "https://github.com/dinhviethoa/libetpan.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
              (sha256
-               (base32 "1sxnaglp5hb0z78sgnfzva4x8m4flqhicvm1dz0krkxdmfsafrsf"))))
+               (base32 "1628lb1qvxixl64ifvjjr839hmirpx532klhv2mr7m6gmn7nlci5"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
@@ -978,7 +975,7 @@ useful features.")
               (invoke "sh" "autogen.sh"))))
         #:configure-flags
         '("--disable-static" "--disable-db")))
-    (home-page "http://www.etpan.org/libetpan.html")
+    (home-page "https://www.etpan.org/libetpan.html")
     (synopsis "Portable middleware for email access")
     (description
      "The purpose of this mail library is to provide a portable, efficient
@@ -1011,7 +1008,7 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.17.0")
+    (version "3.17.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1019,7 +1016,7 @@ compresses it.")
                     ".tar.xz"))
               (sha256
                (base32
-                "119y6q9p8zwm2xqlbkgqd119a529kjqlyldmb4h940z6c2qyjhqm"))))
+                "1wknxbwyzm5xjh3cqmddcxmvp1rkp301qga5n5rgfi7vcd0myyvm"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
@@ -1071,7 +1068,7 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.6.8")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
@@ -1079,11 +1076,10 @@ which can add many functionalities to the base client.")
                            "/msmtp-" version ".tar.xz"))
        (sha256
         (base32
-         "1ysrnshvwhzwmvb2walw5i9jdzlvmckj7inr0xnvb26q0jirbzsm"))))
+         "1k9wwlapkxk9ql3xq05y6vwn6ziqk9b1v8lyhj1866qd02zhqwxx"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libidn" ,libidn)
-       ("libsecret" ,libsecret)
+     `(("libsecret" ,libsecret)
        ("gnutls" ,gnutls)
        ("zlib" ,zlib)
        ("gsasl" ,gsasl)))
@@ -1206,7 +1202,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.2.1")
+    (version "2.3.4")
     (source
      (origin
        (method url-fetch)
@@ -1214,7 +1210,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "0d2ffbicgl3wswbnyjbw6qigz7r1aqzprpchbwp5cynw122i2raa"))))
+                "01ggzf7b3jpl89mjiqr7xbpbs181g2gjf6wzg70qaqfzz3ppc6yr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1857,7 +1853,7 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.2.8")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
@@ -1865,7 +1861,7 @@ converts them to maildir format directories.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1skrda7lbks5h0v03ab8bhpg6ma1b63if8x9x3kb2fv70x2pkhqn"))))
+         "14xsvpm5bc1wycisq882gqrnamnyi1q4rlk6anlw8ihzvwgm4h2j"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
@@ -2556,17 +2552,16 @@ PGP handling, multiple servers, and secure connections.")
 (define-public imapfilter
   (package
     (name "imapfilter")
-    (version "2.6.11")
+    (version "2.6.12")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/lefcha/imapfilter/archive/"
-                       "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lefcha/imapfilter.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1yslvwr3w5fnl06gfrp0lim8zdlasx3cvgd2fsqi0695xnb9bsms"))))
+        (base32 "0vzpc54fjf5vb5vx5w0fl20xvx1k9cg6a3hbl86mm8kwsqf3wrab"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -2596,3 +2591,102 @@ processes mailboxes based on the results.  It can be used to delete, copy,
 move, flag, etc. messages residing in mailboxes at the same or different mail
 servers.  The 4rev1 and 4 versions of IMAP are supported.")
     (license license:expat)))
+
+(define-public urlscan
+  (package
+    (name "urlscan")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "urlscan" version))
+        (sha256
+         (base32
+          "133f28bisr4xj0nihpwpil8dyadss62mp8qgqdyzd676hg9xjfyc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-urwid" ,python-urwid)))
+    (home-page "https://github.com/firecat53/urlscan")
+    (synopsis "View/select the URLs in an email message or file")
+    (description
+     "Urlscan is a small program that is designed to integrate with the
+@code{mutt} mailreader to allow you to easily launch a Web browser for URLs
+contained in email messages.  It parses an email message or file and scans it
+for URLs and email addresses.  It then displays the URLs and their context
+within the message, and allows you to choose one or more URLs to send to your
+Web browser.  Alternatively, it send a list of all URLs to stdout.  It is a
+replacement for the @code{urlview} program.")
+    (license gpl2)))
+
+(define-public tnef
+  (package
+    (name "tnef")
+    (version "1.4.17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/verdammelt/tnef.git")
+             (commit version)))
+       (sha256
+        (base32
+         "0cq2xh5wd74qn6k2nnw5rayxgqhjl3jbzf4zlc4babcwxrv32ldh"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (arguments `(#:parallel-tests? #f)) ;tests are side-effect'y
+    (home-page "https://github.com/verdammelt/tnef")
+    (synopsis "Unpack @code{application/ms-tnef} attachments")
+    (description
+     "TNEF is a tar-like program that unpacks MIME attachments of type
+@code{application/ms-tnef}.")
+    (license gpl2+)))
+
+(define-public mumi
+  (let ((commit "bfd96ce76b4600ae232e6548b26c9365095fd174")
+        (revision "2"))
+    (package
+      (name "mumi")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.elephly.net/software/mumi.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "05miwfi1bh0v9x2gvn15bwkb3gn4xy53z506ysjzns2y497zkc5h"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-executable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (scm (string-append out "/share/guile/site/2.2"))
+                      (go  (string-append out "/lib/guile/2.2/site-ccache")))
+                 (wrap-program (string-append bin "/mumi")
+                   `("GUILE_LOAD_PATH" ":" prefix
+                     (,scm ,(getenv "GUILE_LOAD_PATH")))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                     (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))
+                 #t))))))
+      (inputs
+       `(("guile-debbugs" ,guile-debbugs-next)
+         ("guile-email" ,guile-email)
+         ("guile-fibers" ,guile-fibers)
+         ("guile-json" ,guile-json)
+         ("guile-syntax-highlight" ,guile-syntax-highlight)
+         ("guile" ,guile-2.2)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://git.elephly.net/software/mumi.git")
+      (synopsis "Debbugs web interface")
+      (description "Mumi is a Debbugs web interface.")
+      (license agpl3+))))

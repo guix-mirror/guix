@@ -28,7 +28,8 @@
   #:use-module ((guix config) #:select (%state-directory))
   #:use-module ((guix utils) #:hide (package-name->name+version))
   #:use-module ((guix build utils)
-                #:select (package-name->name+version))
+                #:select (package-name->name+version mkdir-p))
+  #:use-module (guix i18n)
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix derivations)
@@ -55,7 +56,7 @@
             profile-error-profile
             &profile-not-found-error
             profile-not-found-error?
-            &profile-collistion-error
+            &profile-collision-error
             profile-collision-error?
             profile-collision-error-entry
             profile-collision-error-conflict
@@ -127,6 +128,7 @@
             %user-profile-directory
             %profile-directory
             %current-profile
+            ensure-profile-directory
             canonicalize-profile
             user-friendly-profile))
 
@@ -286,7 +288,8 @@ file name."
            (manifest-transitive-entries manifest))))
 
 (define* (package->manifest-entry package #:optional (output "out")
-                                  #:key (parent (delay #f)))
+                                  #:key (parent (delay #f))
+                                  (properties '()))
   "Return a manifest entry for the OUTPUT of package PACKAGE."
   ;; For each dependency, keep a promise pointing to its "parent" entry.
   (letrec* ((deps  (map (match-lambda
@@ -305,19 +308,39 @@ file name."
                      (dependencies (delete-duplicates deps))
                      (search-paths
                       (package-transitive-native-search-paths package))
-                     (parent parent))))
+                     (parent parent)
+                     (properties properties))))
     entry))
 
 (define (packages->manifest packages)
   "Return a list of manifest entries, one for each item listed in PACKAGES.
 Elements of PACKAGES can be either package objects or package/string tuples
 denoting a specific output of a package."
+  (define inferiors-loaded?
+    ;; This hack allows us to provide seamless integration for inferior
+    ;; packages while not having a hard dependency on (guix inferior).
+    (resolve-module '(guix inferior) #f #f #:ensure #f))
+
+  (define (inferior->entry)
+    (module-ref (resolve-interface '(guix inferior))
+                'inferior-package->manifest-entry))
+
   (manifest
    (map (match-lambda
-         ((package output)
-          (package->manifest-entry package output))
-         ((? package? package)
-          (package->manifest-entry package)))
+          ((package output)
+           (package->manifest-entry package output))
+          ((? package? package)
+           (package->manifest-entry package))
+          ((thing output)
+           (if inferiors-loaded?
+               ((inferior->entry) thing output)
+               (throw 'wrong-type-arg 'packages->manifest
+                      "Wrong package object: ~S" (list thing) (list thing))))
+          (thing
+           (if inferiors-loaded?
+               ((inferior->entry) thing)
+               (throw 'wrong-type-arg 'packages->manifest
+                      "Wrong package object: ~S" (list thing) (list thing)))))
         packages)))
 
 (define (manifest->gexp manifest)
@@ -1228,7 +1251,7 @@ the entries in MANIFEST."
   (define config.scm
     (scheme-file "config.scm"
                  #~(begin
-                     (define-module (guix config)
+                     (define-module #$'(guix config) ;placate Geiser
                        #:export (%libz))
 
                      (define %libz
@@ -1589,28 +1612,73 @@ because the NUMBER is zero.)"
   ;; coexist with Nix profiles.
   (string-append %profile-directory "/guix-profile"))
 
-(define (canonicalize-profile profile)
-  "If PROFILE is %USER-PROFILE-DIRECTORY, return %CURRENT-PROFILE.  Otherwise
-return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
-'-p' was omitted."                           ; see <http://bugs.gnu.org/17939>
+(define (ensure-profile-directory)
+  "Attempt to create /…/profiles/per-user/$USER if needed."
+  (let ((s (stat %profile-directory #f)))
+    (unless (and s (eq? 'directory (stat:type s)))
+      (catch 'system-error
+        (lambda ()
+          (mkdir-p %profile-directory))
+        (lambda args
+          ;; Often, we cannot create %PROFILE-DIRECTORY because its
+          ;; parent directory is root-owned and we're running
+          ;; unprivileged.
+          (raise (condition
+                  (&message
+                   (message
+                    (format #f
+                            (G_ "while creating directory `~a': ~a")
+                            %profile-directory
+                            (strerror (system-error-errno args)))))
+                  (&fix-hint
+                   (hint
+                    (format #f (G_ "Please create the @file{~a} directory, \
+with you as the owner.")
+                            %profile-directory))))))))
 
-  ;; Trim trailing slashes so that the basename comparison below works as
-  ;; intended.
+    ;; Bail out if it's not owned by the user.
+    (unless (or (not s) (= (stat:uid s) (getuid)))
+      (raise (condition
+              (&message
+               (message
+                (format #f (G_ "directory `~a' is not owned by you")
+                        %profile-directory)))
+              (&fix-hint
+               (hint
+                (format #f (G_ "Please change the owner of @file{~a} \
+to user ~s.")
+                        %profile-directory (or (getenv "USER")
+                                               (getenv "LOGNAME")
+                                               (getuid))))))))))
+
+(define (canonicalize-profile profile)
+  "If PROFILE points to a profile in %PROFILE-DIRECTORY, return that.
+Otherwise return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile'
+as if '-p' was omitted."  ; see <http://bugs.gnu.org/17939>
+  ;; Trim trailing slashes so 'readlink' can do its job.
   (let ((profile (string-trim-right profile #\/)))
-    (if (and %user-profile-directory
-             (string=? (canonicalize-path (dirname profile))
-                       (dirname %user-profile-directory))
-             (string=? (basename profile) (basename %user-profile-directory)))
-        %current-profile
-        profile)))
+    (catch 'system-error
+      (lambda ()
+        (let ((target (readlink profile)))
+          (if (string=? (dirname target) %profile-directory)
+              target
+              profile)))
+      (const profile))))
+
+(define %known-shorthand-profiles
+  ;; Known shorthand forms for profiles that the user manipulates.
+  (list (string-append (config-directory #:ensure? #f) "/current")
+        %user-profile-directory))
 
 (define (user-friendly-profile profile)
-  "Return either ~/.guix-profile if that's what PROFILE refers to, directly or
-indirectly, or PROFILE."
-  (if (and %user-profile-directory
-           (false-if-exception
-            (string=? (readlink %user-profile-directory) profile)))
-      %user-profile-directory
+  "Return either ~/.guix-profile or ~/.config/guix/current if that's what
+PROFILE refers to, directly or indirectly, or PROFILE."
+  (or (find (lambda (shorthand)
+              (and shorthand
+                   (let ((target (false-if-exception
+                                  (readlink shorthand))))
+                     (and target (string=? target profile)))))
+            %known-shorthand-profiles)
       profile))
 
 ;;; profiles.scm ends here

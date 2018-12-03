@@ -1,0 +1,70 @@
+From 31a4ac4d79d75baeede3edfa95515fd4169ef502 Mon Sep 17 00:00:00 2001
+From: Vasily Khoruzhick <anarsoul@gmail.com>
+Date: Mon, 5 Nov 2018 20:24:30 -0800
+Subject: [PATCH 09/13] sun50i: A64: add support for R_I2C controller
+
+Allwinner A64 has a I2C controller, which is in the R_ MMIO zone and has
+two groups of pinmuxes on PL bank, so it's called R_I2C.
+
+Add support for this I2C controller and the pinmux which doesn't conflict
+with RSB.
+
+Signed-off-by: Vasily Khoruzhick <anarsoul@gmail.com>
+Acked-by: Maxime Ripard <maxime.ripard@bootlin.com>
+Tested-by: Maxime Ripard <maxime.ripard@bootlin.com>
+Cc: Vagrant Cascadian <vagrant@debian.org>
+Acked-by: Jagan Teki <jagan@openedev.com>
+---
+ arch/arm/include/asm/arch-sunxi/gpio.h | 1 +
+ arch/arm/mach-sunxi/Kconfig            | 1 +
+ board/sunxi/board.c                    | 6 ++++++
+ 3 files changed, 8 insertions(+)
+
+diff --git a/arch/arm/include/asm/arch-sunxi/gpio.h b/arch/arm/include/asm/arch-sunxi/gpio.h
+index 6a5eafc3d3..2daf23f6f5 100644
+--- a/arch/arm/include/asm/arch-sunxi/gpio.h
++++ b/arch/arm/include/asm/arch-sunxi/gpio.h
+@@ -211,6 +211,7 @@ enum sunxi_gpio_number {
+ #define SUN8I_H3_GPL_R_TWI	2
+ #define SUN8I_A23_GPL_R_TWI	3
+ #define SUN8I_GPL_R_UART	2
++#define SUN50I_GPL_R_TWI	2
+ 
+ #define SUN9I_GPN_R_RSB		3
+ 
+diff --git a/arch/arm/mach-sunxi/Kconfig b/arch/arm/mach-sunxi/Kconfig
+index 6277abc3cc..560dc9b25d 100644
+--- a/arch/arm/mach-sunxi/Kconfig
++++ b/arch/arm/mach-sunxi/Kconfig
+@@ -278,6 +278,7 @@ config MACH_SUN50I
+ 	select ARM64
+ 	select DM_I2C
+ 	select PHY_SUN4I_USB
++	select SUN6I_PRCM
+ 	select SUNXI_DE2
+ 	select SUNXI_GEN_SUN6I
+ 	select SUPPORT_SPL
+diff --git a/board/sunxi/board.c b/board/sunxi/board.c
+index b196d48674..64ccbc7245 100644
+--- a/board/sunxi/board.c
++++ b/board/sunxi/board.c
+@@ -168,10 +168,16 @@ void i2c_init_board(void)
+ #endif
+ 
+ #ifdef CONFIG_R_I2C_ENABLE
++#ifdef CONFIG_MACH_SUN50I
++	clock_twi_onoff(5, 1);
++	sunxi_gpio_set_cfgpin(SUNXI_GPL(8), SUN50I_GPL_R_TWI);
++	sunxi_gpio_set_cfgpin(SUNXI_GPL(9), SUN50I_GPL_R_TWI);
++#else
+ 	clock_twi_onoff(5, 1);
+ 	sunxi_gpio_set_cfgpin(SUNXI_GPL(0), SUN8I_H3_GPL_R_TWI);
+ 	sunxi_gpio_set_cfgpin(SUNXI_GPL(1), SUN8I_H3_GPL_R_TWI);
+ #endif
++#endif
+ }
+ 
+ #if defined(CONFIG_ENV_IS_IN_MMC) && defined(CONFIG_ENV_IS_IN_FAT)
+-- 
+2.11.0
+

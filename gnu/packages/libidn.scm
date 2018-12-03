@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,26 +33,18 @@
 (define-public libidn
   (package
    (name "libidn")
-   (version "1.34")
+   (version "1.35")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libidn/libidn-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "0g3fzypp0xjcgr90c5cyj57apx1cmy0c6y9lvw2qdcigbyby469p"))
-            (modules '((guix build utils)))
-            (snippet
-             '(begin
-                ;; The gnulib test-lock test is prone to writer starvation
-                ;; with our glibc@2.25, which prefers readers, so disable it.
-                ;; The gnulib commit b20e8afb0b2 should fix this once
-                ;; incorporated here.
-                (substitute* "lib/gltests/Makefile.in"
-                  (("test-lock\\$\\(EXEEXT\\) ") ""))
-                #t))))
+              "07pyy0afqikfq51z5kbzbj9ldbd12mri0zvx0mfv3ds6bc0g26pi"))))
    (build-system gnu-build-system)
-;; FIXME: No Java and C# libraries are currently built.
+   ;; FIXME: No Java and C# libraries are currently built.
+   (arguments
+    `(#:configure-flags '("--disable-static")))
    (synopsis "Internationalized string processing library")
    (description
      "libidn is a library implementing of the Stringprep, Punycode and IDNA
@@ -66,19 +59,21 @@ Java libraries.")
 (define-public libidn2
   (package
     (name "libidn2")
-    (version "2.0.4")
+    (version "2.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/libidn/" name "-" version
                                   ".tar.lz"))
               (sha256
                (base32
-                "00f2fyw5kwr9is3cdn5h9arzxp0lnvg0z9bb9zyfs0dq81gaqim4"))))
+                "0s4nkazy1xbs6bbq4farby1xhmhzk5bdclbil5gqdwyzxsgabxqg"))))
     (native-inputs
      `(("lzip" ,lzip)))
     (inputs
      `(("libunistring" ,libunistring)))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (synopsis "Internationalized domain name library for IDNA2008")
     (description "Libidn2 is an internationalized domain library implementing
 the IDNA2008 specifications.   Libidn2 is believed to be a complete IDNA2008

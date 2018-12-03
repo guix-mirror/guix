@@ -397,15 +397,16 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.1.6")
+    (version "1.2.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/bjorn/tiled/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bjorn/tiled.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "194ciw8688mikndvxivzb8ql5vm405pkwnn4srzm7ymwfc4xygb0"))))
+                "1dl06k2p0r7l20ghxcq5sn7j0jl2l8q4m27vmfs2qfgvldjll2h3"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -440,18 +441,19 @@ clone.")
 (define-public sfml
   (package
     (name "sfml")
-    (version "2.5.0")
+    (version "2.5.1")
     (source (origin
-              (method url-fetch)
+              (method git-fetch)
               ;; Do not fetch the archives from
               ;; http://mirror0.sfml-dev.org/files/ because files there seem
               ;; to be changed in place.
-              (uri (string-append "https://github.com/SFML/SFML/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (git-reference
+                    (url "https://github.com/SFML/SFML.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1x3yvhdrln5b6h4g5r4mds76gq8zsxw6icxqpwqkmxsqcq5yviab"))
+                "0abr8ri2ssfy9ylpgjrr43m6rhrjy03wbj9bn509zqymifvq5pay"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1037,23 +1039,18 @@ of use.")
     (license license:expat)))
 
 (define-public openmw
-  ;; XXX The current version does not support qt 5.11, but the upcoming
-  ;; version (0.44) will do.
-  (let ((commit "5bc073603e8c7887e015a0ef41b4cefd6e688aaf")
-        (revision "1"))
   (package
     (name "openmw")
-    (version (git-version "0.43" revision commit))
+    (version "0.44.0")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://gitlab.com/OpenMW/openmw.git")
-             (commit commit)))
-       (file-name (string-append name "-" version "-checkout"))
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/OpenMW/openmw/archive/"
+                       name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1sp4n3f1syvv0iz7n72wh226fyc0jh98cg8bvs574jvvqx6qn851"))))
+         "03fgm2f2r7y0aqlgp038pdlnllgvm3jimrp968p4nhz1sffvjzcy"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
@@ -1080,12 +1077,12 @@ the 2002 open-world RPG Morrowind.  The engine comes with its own editor,
 called OpenMW-CS which allows the user to edit or create their own original
 games.")
     (home-page "https://openmw.org")
-    (license license:gpl3))))
+    (license license:gpl3)))
 
 (define-public godot
   (package
     (name "godot")
-    (version "3.0.4")
+    (version "3.0.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1094,7 +1091,7 @@ games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0i4ssfb6igga9zwvsmahrnasx9cyqrsd6mlmssjgc482fy9q2kz4"))
+                "0g64h0x8dlv6aa9ggfcidk2mknkfl5li7z1phcav8aqp9srj8avf"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1261,17 +1258,24 @@ a 2D editor view.")
 (define-public guile-chickadee
   (package
     (name "guile-chickadee")
-    (version "0.2.0")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/chickadee/"
                                   "chickadee-" version ".tar.gz"))
               (sha256
                (base32
-                "10qx0ha5gsayybd186r1my7vc7rf5fbzp9jvmc4xg9a8wz8rqhah"))))
+                "0jl223dybsj5gvs7z4q60gnafj1b7kgi5mx0kj58m5knrp8qwg5h"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-godir
+           (lambda _
+             ;; Install compiled '.go' files into the site directory.
+             (substitute* "Makefile.in"
+               (("/ccache") "/site-ccache")))))))
     (propagated-inputs
      `(("guile-opengl" ,guile-opengl)
        ("guile-sdl2" ,guile-sdl2)))

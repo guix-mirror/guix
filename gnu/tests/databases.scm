@@ -35,7 +35,7 @@
 
 (define %memcached-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service memcached-service-type)))
 
 (define* (run-memcached-test #:optional (port 11211))
@@ -130,7 +130,7 @@
   (operating-system
     (inherit
      (simple-operating-system
-      (dhcp-client-service)
+      (service dhcp-client-service-type)
       (service mongodb-service-type)))
     (packages (cons* mongodb
                      %base-packages))))

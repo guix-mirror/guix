@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
@@ -92,7 +94,7 @@ communication, encryption, decryption, signatures, etc.")
 (define-public libmd
   (package
     (name "libmd")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
             (method url-fetch)
             (uri
@@ -103,7 +105,7 @@ communication, encryption, decryption, signatures, etc.")
                              version ".tar.xz")))
             (sha256
              (base32
-              "1iv45npzv0gncjgcpx5m081861zdqxw667ysghqb8721yrlyl6pj"))))
+              "0waclg2d5qin3r26gy5jvy4584ik60njc8pqbzwk0lzq3j9ynkp1"))))
     (build-system gnu-build-system)
     (synopsis "Message Digest functions from BSD systems")
     (description
@@ -125,7 +127,7 @@ communication, encryption, decryption, signatures, etc.")
 (define-public signify
   (package
     (name "signify")
-    (version "23")
+    (version "24")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/aperezdc/signify/"
@@ -133,7 +135,7 @@ communication, encryption, decryption, signatures, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0c70mzawgahsvmsv4xdrass4pgyynd67ipd9lij0fgi8wkq0ns8w"))))
+                "0594vyvkq176xxzaz9xbq8qs0xdnr8s9gkd1prblwpdvnzmw0xvc"))))
     (build-system gnu-build-system)
     ;; TODO Build with libwaive (described in README.md), to implement something
     ;; like OpenBSD's pledge().
@@ -162,34 +164,31 @@ OpenBSD tool of the same name.")
                                           "See base64.c in the distribution for
                                            the license from IBM.")))))
 
-
 (define-public opendht
   (package
     (name "opendht")
     (version "0.6.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append
-         "https://github.com/savoirfairelinux/" name
-         "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (delete-file-recursively "src/argon2")
-           (substitute* "src/Makefile.am"
-             (("./argon2/libargon2.la") "")
-             (("SUBDIRS = argon2") ""))
-           (substitute* "src/crypto.cpp"
-             (("argon2/argon2.h") "argon2.h"))
-           (substitute* "configure.ac"
-             (("src/argon2/Makefile") ""))
-           #t))
-       (sha256
-        (base32
-         "09yvkmbqbym3b5md4n96qc1s9sf2n8ji404hagih45rmsj49599x"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/savoirfairelinux/opendht.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "src/argon2")
+                  (substitute* "src/Makefile.am"
+                    (("./argon2/libargon2.la") "")
+                    (("SUBDIRS = argon2") ""))
+                  (substitute* "src/crypto.cpp"
+                    (("argon2/argon2.h") "argon2.h"))
+                  (substitute* "configure.ac"
+                    (("src/argon2/Makefile") ""))
+                  #t))
+              (sha256
+               (base32
+                "1akk613f18rc8kqs0cxdm34iq7wwc9kffhgp5rng09arwlw8gw3w"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
@@ -204,11 +203,7 @@ OpenBSD tool of the same name.")
        ("automake" ,automake)
        ("libtool" ,libtool)))
     (arguments
-     `(#:configure-flags '("--disable-tools" "--disable-python")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autoconf
-                    (lambda _
-                      (zero? (system* "autoreconf" "-vfi")))))))
+     `(#:configure-flags '("--disable-tools" "--disable-python")))
     (home-page "https://github.com/savoirfairelinux/opendht/")
     (synopsis "Distributed Hash Table (DHT) library")
     (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may
@@ -277,7 +272,7 @@ the wrong hands.")
 (define-public keyutils
   (package
     (name "keyutils")
-    (version "1.5.10")
+    (version "1.5.11")
     (source
      (origin
        (method url-fetch)
@@ -286,9 +281,9 @@ the wrong hands.")
                        version ".tar.bz2"))
        (sha256
         (base32
-         "1dmgjcf7mnwc6h72xkvpaqpzxw8vmlnsmzz0s27pg0giwzm3sp0i"))
+         "1ddig6j5xjyk6g9l2wlqc7k1cgvryxdqbsv3c9rk1p3f42448n0i"))
        (modules '((guix build utils)))
-       ;; Create relative symbolic links instead of absolute ones to /lib/*
+       ;; Create relative symbolic links instead of absolute ones to /lib/*.
        (snippet '(begin
                    (substitute* "Makefile" (("\\$\\(LNS\\) \\$\\(LIBDIR\\)/")
                                             "$(LNS) "))
@@ -306,6 +301,8 @@ the wrong hands.")
                           "MANDIR=/share/man"
                           "SHAREDIR=/share/keyutils")
        #:test-target "test"))
+    (inputs
+     `(("mit-krb5" ,mit-krb5)))
     (home-page "https://people.redhat.com/dhowells/keyutils/")
     (synopsis "Linux key management utilities")
     (description
@@ -813,3 +810,74 @@ which is also used in the Advanced Encryption Standard (AES, see
 @url{http://www.nist.gov/aes}).  This cipher is believed to provide very strong
 security.")
     (license license:gpl2)))
+
+(define-public asignify
+  (let ((commit "f58e7977a599f040797975d649ed318e25cbd2d5")
+        (revision "0"))
+    (package
+      (name "asignify")
+      (version (git-version "1.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/vstakhov/asignify.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1zl68qq6js6fdahxzyhvhrpyrwlv8c2zhdplycnfxyr1ckkhq8dw"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags
+         (list "--enable-openssl"
+               (string-append "--with-openssl="
+                              (assoc-ref %build-inputs "openssl")))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      (inputs
+       `(("openssl" ,openssl-next)))
+      (home-page "https://github.com/vstakhov/asignify")
+      (synopsis "Cryptographic authentication and encryption tool and library")
+      (description "Asignify offers public cryptographic signatures and
+encryption with a library or a command-line tool.  The tool is heavily inspired
+by signify as used in OpenBSD.  The main goal of this project is to define a
+high level API for signing files, validating signatures and encrypting using
+public-key cryptography.  Asignify is designed to be portable and self-contained
+with zero external dependencies.  Asignify can verify OpenBSD signatures, but it
+cannot sign messages in OpenBSD format yet.")
+      (license license:bsd-2))))
+
+(define-public enchive
+  (package
+    (name "enchive")
+    (version "3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/skeeto/" name "/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "17hrxpp4cpn10bk48sfvfjc8hghky34agsnypam1v9f36kbalqfk"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; no check target         '
+       #:make-flags (list "CC=gcc" "PREFIX=$(out)")
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'install 'post-install
+                    (lambda _
+                      (let* ((out (assoc-ref %outputs "out"))
+                             (lisp (string-append out "/share/emacs/site-lisp")))
+                        (install-file "enchive-mode.el" lisp)
+                        #t))))))
+    (synopsis "Encrypted personal archives")
+    (description
+     "Enchive is a tool to encrypt files to yourself for long-term
+archival.  It's a focused, simple alternative to more complex solutions such as
+GnuPG or encrypted filesystems.  Enchive has no external dependencies and is
+trivial to build for local use.  Portability is emphasized over performance.")
+    (home-page "https://github.com/skeeto/enchive")
+    (license license:unlicense)))

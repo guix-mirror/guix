@@ -61,7 +61,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.1.0026")
+    (version "8.1.0551")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/vim/vim/archive/v"
@@ -69,7 +69,7 @@
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "14q99dn113czp522j34p71za6g1mkriy04xxwcbm3axnrrpv1y52"))))
+               "1wi6j9w04wg3hxsch3izl2mxb0065vpvxscz19zjn5ypkfypnm8n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -85,12 +85,18 @@
                             "src/testdir/test_terminal.vim")
                (("/bin/sh") (which "sh")))
              #t))
-         (add-before 'check 'patch-failing-test
+         (add-before 'check 'patch-failing-tests
            (lambda _
              ;; XXX A single test fails with “Can't create file /dev/stdout” (at
              ;; Test_writefile_sync_dev_stdout line 5) while /dev/stdout exists.
              (substitute* "src/testdir/test_writefile.vim"
                (("/dev/stdout") "a-regular-file"))
+
+             ;; XXX: This test fails when run in the build container:
+             ;; <https://github.com/vim/vim/issues/3348>.
+             (substitute* "src/testdir/test_search.vim"
+               ((".*'Test_incsearch_substitute_03'.*" all)
+                (string-append "\"" all "\n")))
              #t)))))
     (inputs
      `(("gawk" ,gawk)
@@ -453,7 +459,7 @@ trouble using them, because you do not have to remember each snippet name.")
 (define-public vim-fugitive
   (package
     (name "vim-fugitive")
-    (version "2.3")
+    (version "2.5")
     (source
       (origin
         (method git-fetch)
@@ -463,7 +469,7 @@ trouble using them, because you do not have to remember each snippet name.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "17s94a8g5z0lrs7yy4nyqyvp9ykys5ws2ar3m3c0bjsn0iazd7m3"))))
+          "17yz7gxn7a49jzndr4z5vnk1y4a6c22qss3mwxzmq4m46fni0k8q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -475,9 +481,13 @@ trouble using them, because you do not have to remember each snippet name.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (vimfiles (string-append out "/share/vim/vimfiles"))
+                    (autoload (string-append vimfiles "/autoload"))
                     (doc (string-append vimfiles "/doc"))
+                    (ftdetect (string-append vimfiles "/ftdetect"))
                     (plugin (string-append vimfiles "/plugin")))
+               (copy-recursively "autoload" autoload)
                (copy-recursively "doc" doc)
+               (copy-recursively "ftdetect" ftdetect)
                (copy-recursively "plugin" plugin)
                #t))))))
     (home-page "https://github.com/tpope/vim-fugitive")
@@ -646,7 +656,7 @@ are detected, the user is notified.")))
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.2.0")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
@@ -655,12 +665,13 @@ are detected, the user is notified.")))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1db27zm6cldm1aw0570vii1bxc16a34x8lissl1h9rizsbwn7qkj"))))
+         "08mdffcw4k503bccm1plq8r7hjx4w61w5jyfdj80fr079hnkjpmw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)
                   (guix build cmake-build-system)
                   (guix build utils))
+       #:configure-flags '("-DPREFER_LUA:BOOL=YES")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-lua-paths
@@ -718,7 +729,7 @@ refactor Vim in order to:
 (define-public vifm
   (package
     (name "vifm")
-    (version "0.9.1")
+    (version "0.10")
     (source
       (origin
         (method url-fetch)
@@ -729,7 +740,7 @@ refactor Vim in order to:
                               "vifm-" version ".tar.bz2")))
         (sha256
          (base32
-          "1cz7vjjmghgdxd1lvsdwv85gvx4kz8idq14qijpwkpfrf2va9f98"))))
+          "1f380xcyjnm4xmcdazs6dj064bwddhywvn3mgm36k7r7b2gnjnp0"))))
     (build-system gnu-build-system)
     (arguments
     '(#:configure-flags '("--disable-build-timestamp")

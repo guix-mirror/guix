@@ -1,12 +1,14 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,15 +28,18 @@
 (define-module (gnu services web)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu services admin)
   #:use-module (gnu system pam)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages web)
   #:use-module (gnu packages php)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages logging)
   #:use-module (guix records)
   #:use-module (guix modules)
   #:use-module (guix gexp)
+  #:use-module ((guix store) #:select (text-file))
   #:use-module ((guix utils) #:select (version-major))
   #:use-module ((guix packages) #:select (package-version))
   #:use-module (srfi srfi-1)
@@ -64,6 +69,11 @@
             httpd-config-file-error-log
             httpd-config-file-user
             httpd-config-file-group
+
+            <httpd-module>
+            httpd-module
+            httpd-module?
+            %default-httpd-modules
 
             httpd-service-type
 
@@ -164,7 +174,43 @@
 
             hpcguix-web-configuration
             hpcguix-web-configuration?
-            hpcguix-web-service-type))
+            hpcguix-web-service-type
+
+            <tailon-configuration-file>
+            tailon-configuration-file
+            tailon-configuration-file?
+            tailon-configuration-file-files
+            tailon-configuration-file-bind
+            tailon-configuration-file-relative-root
+            tailon-configuration-file-allow-transfers?
+            tailon-configuration-file-follow-names?
+            tailon-configuration-file-tail-lines
+            tailon-configuration-file-allowed-commands
+            tailon-configuration-file-debug?
+            tailon-configuration-file-http-auth
+            tailon-configuration-file-users
+
+            <tailon-configuration>
+            tailon-configuration
+            tailon-configuration?
+            tailon-configuration-config-file
+            tailon-configuration-package
+
+            tailon-service-type
+
+            <varnish-configuration>
+            varnish-configuration
+            varnish-configuration?
+            varnish-configuration-package
+            varnish-configuration-name
+            varnish-configuration-backend
+            varnish-configuration-vcl
+            varnish-configuration-listen
+            varnish-configuration-storage
+            varnish-configuration-parameters
+            varnish-configuration-extra-options
+
+            varnish-service-type))
 
 ;;; Commentary:
 ;;;
@@ -599,19 +645,31 @@ of index files."
                 <nginx-configuration>
                 (nginx file run-directory)
    (let* ((nginx-binary (file-append nginx "/sbin/nginx"))
+          (pid-file (in-vicinity run-directory "pid"))
           (nginx-action
            (lambda args
              #~(lambda _
                  (invoke #$nginx-binary "-c"
                          #$(or file
                                (default-nginx-config config))
-                         #$@args)))))
+                         #$@args)
+                 (match '#$args
+                   (("-s" . _) #f)
+                   (_
+                    ;; When FILE is true, we cannot be sure that PID-FILE will
+                    ;; be created, so assume it won't show up.  When FILE is
+                    ;; false, read PID-FILE.
+                    #$(if file
+                          #~#t
+                          #~(read-pid-file #$pid-file))))))))
 
      ;; TODO: Add 'reload' action.
      (list (shepherd-service
             (provision '(nginx))
             (documentation "Run the nginx daemon.")
             (requirement '(user-processes loopback))
+            (modules `((ice-9 match)
+                       ,@%default-modules))
             (start (nginx-action "-p" run-directory))
             (stop (nginx-action "-s" "stop")))))))
 
@@ -937,6 +995,14 @@ a webserver.")
         (chown home-dir (passwd:uid user) (passwd:gid user))
         (chmod home-dir #o755))))
 
+(define %hpcguix-web-log-file
+  "/var/log/hpcguix-web.log")
+
+(define %hpcguix-web-log-rotations
+  (list (log-rotation
+         (files (list %hpcguix-web-log-file))
+         (frequency 'weekly))))
+
 (define (hpcguix-web-shepherd-service config)
   (let ((specs       (hpcguix-web-configuration-specs config))
         (hpcguix-web (hpcguix-web-package config)))
@@ -953,7 +1019,9 @@ a webserver.")
                  #:user "hpcguix-web"
                  #:group "hpcguix-web"
                  #:environment-variables
-                 (list "XDG_CACHE_HOME=/var/cache")))
+                 (list "XDG_CACHE_HOME=/var/cache"
+                       "SSL_CERT_DIR=/etc/ssl/certs")
+                 #:log-file #$%hpcguix-web-log-file))
        (stop #~(make-kill-destructor))))))
 
 (define hpcguix-web-service-type
@@ -965,5 +1033,231 @@ a webserver.")
                              (const %hpcguix-web-accounts))
           (service-extension activation-service-type
                              (const %hpcguix-web-activation))
+          (service-extension rottlog-service-type
+                             (const %hpcguix-web-log-rotations))
           (service-extension shepherd-root-service-type
                              (compose list hpcguix-web-shepherd-service))))))
+
+
+;;;
+;;; Tailon
+;;;
+
+(define-record-type* <tailon-configuration-file>
+  tailon-configuration-file make-tailon-configuration-file
+  tailon-configuration-file?
+  (files                   tailon-configuration-file-files
+                           (default '("/var/log")))
+  (bind                    tailon-configuration-file-bind
+                           (default "localhost:8080"))
+  (relative-root           tailon-configuration-file-relative-root
+                           (default #f))
+  (allow-transfers?        tailon-configuration-file-allow-transfers?
+                           (default #t))
+  (follow-names?           tailon-configuration-file-follow-names?
+                           (default #t))
+  (tail-lines              tailon-configuration-file-tail-lines
+                           (default 200))
+  (allowed-commands        tailon-configuration-file-allowed-commands
+                           (default '("tail" "grep" "awk")))
+  (debug?                  tailon-configuration-file-debug?
+                           (default #f))
+  (wrap-lines              tailon-configuration-file-wrap-lines
+                           (default #t))
+  (http-auth               tailon-configuration-file-http-auth
+                           (default #f))
+  (users                   tailon-configuration-file-users
+                           (default #f)))
+
+(define (tailon-configuration-files-string files)
+  (string-append
+   "\n"
+   (string-join
+    (map
+     (lambda (x)
+       (string-append
+        "  - "
+        (cond
+         ((string? x)
+          (simple-format #f "'~A'" x))
+         ((list? x)
+          (string-join
+           (cons (simple-format #f "'~A':" (car x))
+                 (map
+                  (lambda (x) (simple-format #f "      - '~A'" x))
+                  (cdr x)))
+           "\n"))
+         (else (error x)))))
+     files)
+    "\n")))
+
+(define-gexp-compiler (tailon-configuration-file-compiler
+                       (file <tailon-configuration-file>) system target)
+  (match file
+    (($ <tailon-configuration-file> files bind relative-root
+                                    allow-transfers? follow-names?
+                                    tail-lines allowed-commands debug?
+                                    wrap-lines http-auth users)
+     (text-file
+      "tailon-config.yaml"
+      (string-concatenate
+       (filter-map
+        (match-lambda
+         ((key . #f) #f)
+         ((key . value) (string-append key ": " value "\n")))
+
+        `(("files" . ,(tailon-configuration-files-string files))
+          ("bind" . ,bind)
+          ("relative-root" . ,relative-root)
+          ("allow-transfers" . ,(if allow-transfers? "true" "false"))
+          ("follow-names" . ,(if follow-names? "true" "false"))
+          ("tail-lines" . ,(number->string tail-lines))
+          ("commands" . ,(string-append "["
+                                        (string-join allowed-commands ", ")
+                                        "]"))
+          ("debug" . ,(if debug? "true" #f))
+          ("wrap-lines" . ,(if wrap-lines "true" "false"))
+          ("http-auth" . ,http-auth)
+          ("users" . ,(if users
+                          (string-concatenate
+                           (cons "\n"
+                                 (map (match-lambda
+                                       ((user . pass)
+                                        (string-append
+                                         "  " user ":" pass)))
+                                      users)))
+                          #f)))))))))
+
+(define-record-type* <tailon-configuration>
+  tailon-configuration make-tailon-configuration
+  tailon-configuration?
+  (config-file tailon-configuration-config-file
+               (default (tailon-configuration-file)))
+  (package tailon-configuration-package
+           (default tailon)))
+
+(define tailon-shepherd-service
+  (match-lambda
+    (($ <tailon-configuration> config-file package)
+     (list (shepherd-service
+            (provision '(tailon))
+            (documentation "Run the tailon daemon.")
+            (start #~(make-forkexec-constructor
+                      `(,(string-append #$package "/bin/tailon")
+                        "-c" ,#$config-file)
+                      #:user "tailon"
+                      #:group "tailon"))
+            (stop #~(make-kill-destructor)))))))
+
+(define %tailon-accounts
+  (list (user-group (name "tailon") (system? #t))
+        (user-account
+         (name "tailon")
+         (group "tailon")
+         (system? #t)
+         (comment "tailon")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define tailon-service-type
+  (service-type
+   (name 'tailon)
+   (description
+    "Run Tailon, a Web application for monitoring, viewing, and searching log
+files.")
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             tailon-shepherd-service)
+          (service-extension account-service-type
+                             (const %tailon-accounts))))
+   (compose concatenate)
+   (extend (lambda (parameter files)
+             (tailon-configuration
+              (inherit parameter)
+              (config-file
+               (let ((old-config-file
+                      (tailon-configuration-config-file parameter)))
+                 (tailon-configuration-file
+                  (inherit old-config-file)
+                  (files (append (tailon-configuration-file-files old-config-file)
+                                 files))))))))
+   (default-value (tailon-configuration))))
+
+
+;;;
+;;; Varnish
+;;;
+
+(define-record-type* <varnish-configuration>
+  varnish-configuration make-varnish-configuration
+  varnish-configuration?
+  (package             varnish-configuration-package          ;<package>
+                       (default varnish))
+  (name                varnish-configuration-name             ;string
+                       (default "default"))
+  (backend             varnish-configuration-backend          ;string
+                       (default "localhost:8080"))
+  (vcl                 varnish-configuration-vcl              ;#f | <file-like>
+                       (default #f))
+  (listen              varnish-configuration-listen           ;list of strings
+                       (default '("localhost:80")))
+  (storage             varnish-configuration-storage          ;list of strings
+                       (default '("malloc,128m")))
+  (parameters          varnish-configuration-parameters       ;list of string pairs
+                       (default '()))
+  (extra-options       varnish-configuration-extra-options    ;list of strings
+                       (default '())))
+
+(define %varnish-accounts
+  (list (user-group
+         (name "varnish")
+         (system? #t))
+        (user-account
+         (name "varnish")
+         (group "varnish")
+         (system? #t)
+         (comment "Varnish Cache User")
+         (home-directory "/var/varnish")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define varnish-shepherd-service
+  (match-lambda
+    (($ <varnish-configuration> package name backend vcl listen storage
+                                parameters extra-options)
+     (list (shepherd-service
+            (provision (list (symbol-append 'varnish- (string->symbol name))))
+            (documentation (string-append "The Varnish Web Accelerator"
+                                          " (" name ")"))
+            (requirement '(networking))
+            (start #~(make-forkexec-constructor
+                      (list #$(file-append package "/sbin/varnishd")
+                            "-n" #$name
+                            #$@(if vcl
+                                   #~("-f" #$vcl)
+                                   #~("-b" #$backend))
+                            #$@(append-map (lambda (a) (list "-a" a)) listen)
+                            #$@(append-map (lambda (s) (list "-s" s)) storage)
+                            #$@(append-map (lambda (p)
+                                             (list "-p" (format #f "~a=~a"
+                                                                (car p) (cdr p))))
+                                           parameters)
+                            #$@extra-options)
+                      ;; Varnish will drop privileges to the "varnish" user when
+                      ;; it exists.  Not passing #:user here allows the service
+                      ;; to bind to ports < 1024.
+                      #:pid-file (if (string-prefix? "/" #$name)
+                                     (string-append #$name "/_.pid")
+                                     (string-append "/var/varnish/" #$name "/_.pid"))))
+            (stop #~(make-kill-destructor)))))))
+
+(define varnish-service-type
+  (service-type
+   (name 'varnish)
+   (description "Run the Varnish cache server.")
+   (extensions
+    (list (service-extension account-service-type
+                             (const %varnish-accounts))
+          (service-extension shepherd-root-service-type
+                             varnish-shepherd-service)))
+   (default-value
+     (varnish-configuration))))

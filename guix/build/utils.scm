@@ -1057,11 +1057,11 @@ with definitions for VARS."
        (format #f "export ~a=\"~a\""
                var (string-join rest sep)))
       ((var sep 'prefix rest)
-       (format #f "export ~a=\"~a${~a~a+~a}$~a\""
-               var (string-join rest sep) var sep sep var))
+       (format #f "export ~a=\"~a${~a:+~a}$~a\""
+               var (string-join rest sep) var sep var))
       ((var sep 'suffix rest)
-       (format #f "export ~a=\"$~a${~a~a+~a}~a\""
-               var var var sep sep (string-join rest sep)))
+       (format #f "export ~a=\"$~a${~a+~a}~a\""
+               var var var sep (string-join rest sep)))
       ((var '= rest)
        (format #f "export ~a=\"~a\""
                var (string-join rest ":")))

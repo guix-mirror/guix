@@ -3,6 +3,7 @@
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix store)
+  #:use-module (guix status)
   #:use-module (guix grafts)
   #:use-module (guix monads)
   #:use-module (guix modules)
@@ -37,11 +39,11 @@
   #:use-module ((guix self) #:select (make-config.scm))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
-  #:use-module (gnu packages compression)
+  #:use-module ((gnu packages compression) #:hide (zip))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages base)
   #:autoload   (gnu packages package-management) (guix)
-  #:autoload   (gnu packages gnupg) (libgcrypt)
+  #:autoload   (gnu packages gnupg) (guile-gcrypt)
   #:autoload   (gnu packages guile) (guile2.0-json guile-json)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -51,6 +53,9 @@
   #:export (compressor?
             lookup-compressor
             self-contained-tarball
+            docker-image
+            squashfs-image
+
             guix-pack))
 
 ;; Type of a compression tool.
@@ -95,13 +100,57 @@ found."
     (('gnu _ ...) #t)
     (_ #f)))
 
-(define guile-sqlite3&co
-  ;; Guile-SQLite3 and its propagated inputs.
-  (cons guile-sqlite3
-        (package-transitive-propagated-inputs guile-sqlite3)))
+(define gcrypt-sqlite3&co
+  ;; Guile-Gcrypt, Guile-SQLite3, and their propagated inputs.
+  (append-map (lambda (package)
+                (cons package
+                      (package-transitive-propagated-inputs package)))
+              (list guile-gcrypt guile-sqlite3)))
+
+(define (store-database items)
+  "Return a directory containing a store database where all of ITEMS and their
+dependencies are registered."
+  (define schema
+    (local-file (search-path %load-path
+                             "guix/store/schema.sql")))
+
+
+  (define labels
+    (map (lambda (n)
+           (string-append "closure" (number->string n)))
+         (iota (length items))))
+
+  (define build
+    (with-extensions gcrypt-sqlite3&co
+      ;; XXX: Adding (gnu build install) just to work around
+      ;; <https://bugs.gnu.org/15602>: that way, (guix build store-copy) is
+      ;; copied last and the 'store-info-XXX' macros are correctly expanded.
+      (with-imported-modules (source-module-closure
+                              '((guix build store-copy)
+                                (guix store database)
+                                (gnu build install)))
+        #~(begin
+            (use-modules (guix store database)
+                         (guix build store-copy)
+                         (srfi srfi-1))
+
+            (define (read-closure closure)
+              (call-with-input-file closure read-reference-graph))
+
+            (let ((items (append-map read-closure '#$labels)))
+              (register-items items
+                              #:state-directory #$output
+                              #:deduplicate? #f
+                              #:reset-timestamps? #f
+                              #:registration-time %epoch
+                              #:schema #$schema))))))
+
+  (computed-file "store-database" build
+                 #:options `(#:references-graphs ,(zip labels items))))
 
 (define* (self-contained-tarball name profile
                                  #:key target
+                                 (profile-name "guix-profile")
                                  deduplicate?
                                  (compressor (first %compressors))
                                  localstatedir?
@@ -114,124 +163,117 @@ with a properly initialized store database.
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
-  (define libgcrypt
-    (module-ref (resolve-interface '(gnu packages gnupg))
-                'libgcrypt))
-
-  (define schema
+  (define database
     (and localstatedir?
-         (local-file (search-path %load-path
-                                  "guix/store/schema.sql"))))
+         (file-append (store-database (list profile))
+                      "/db/db.sqlite")))
 
   (define build
-    (with-imported-modules `(((guix config)
-                              => ,(make-config.scm
-                                   #:libgcrypt libgcrypt))
-                             ,@(source-module-closure
-                                `((guix build utils)
-                                  (guix build union)
-                                  (guix build store-copy)
-                                  (gnu build install))
-                                #:select? not-config?))
-      (with-extensions guile-sqlite3&co
-        #~(begin
-            (use-modules (guix build utils)
-                         ((guix build union) #:select (relative-file-name))
-                         (gnu build install)
-                         (srfi srfi-1)
-                         (srfi srfi-26)
-                         (ice-9 match))
+    (with-imported-modules (source-module-closure
+                            `((guix build utils)
+                              (guix build union)
+                              (gnu build install))
+                            #:select? not-config?)
+      #~(begin
+          (use-modules (guix build utils)
+                       ((guix build union) #:select (relative-file-name))
+                       (gnu build install)
+                       (srfi srfi-1)
+                       (srfi srfi-26)
+                       (ice-9 match))
 
-            (define %root "root")
+          (define %root "root")
 
-            (define symlink->directives
-              ;; Return "populate directives" to make the given symlink and its
-              ;; parent directories.
-              (match-lambda
-                ((source '-> target)
-                 (let ((target (string-append #$profile "/" target))
-                       (parent (dirname source)))
-                   ;; Never add a 'directory' directive for "/" so as to
-                   ;; preserve its ownnership when extracting the archive (see
-                   ;; below), and also because this would lead to adding the
-                   ;; same entries twice in the tarball.
-                   `(,@(if (string=? parent "/")
-                           '()
-                           `((directory ,parent)))
-                     (,source
-                      -> ,(relative-file-name parent target)))))))
+          (define symlink->directives
+            ;; Return "populate directives" to make the given symlink and its
+            ;; parent directories.
+            (match-lambda
+              ((source '-> target)
+               (let ((target (string-append #$profile "/" target))
+                     (parent (dirname source)))
+                 ;; Never add a 'directory' directive for "/" so as to
+                 ;; preserve its ownnership when extracting the archive (see
+                 ;; below), and also because this would lead to adding the
+                 ;; same entries twice in the tarball.
+                 `(,@(if (string=? parent "/")
+                         '()
+                         `((directory ,parent)))
+                   (,source
+                    -> ,(relative-file-name parent target)))))))
 
-            (define directives
-              ;; Fully-qualified symlinks.
-              (append-map symlink->directives '#$symlinks))
+          (define directives
+            ;; Fully-qualified symlinks.
+            (append-map symlink->directives '#$symlinks))
 
-            ;; The --sort option was added to GNU tar in version 1.28, released
-            ;; 2014-07-28.  For testing, we use the bootstrap tar, which is
-            ;; older and doesn't support it.
-            (define tar-supports-sort?
-              (zero? (system* (string-append #+archiver "/bin/tar")
-                              "cf" "/dev/null" "--files-from=/dev/null"
-                              "--sort=name")))
+          ;; The --sort option was added to GNU tar in version 1.28, released
+          ;; 2014-07-28.  For testing, we use the bootstrap tar, which is
+          ;; older and doesn't support it.
+          (define tar-supports-sort?
+            (zero? (system* (string-append #+archiver "/bin/tar")
+                            "cf" "/dev/null" "--files-from=/dev/null"
+                            "--sort=name")))
 
-            ;; Add 'tar' to the search path.
-            (setenv "PATH" #+(file-append archiver "/bin"))
+          ;; Add 'tar' to the search path.
+          (setenv "PATH" #+(file-append archiver "/bin"))
 
-            ;; Note: there is not much to gain here with deduplication and there
-            ;; is the overhead of the '.links' directory, so turn it off.
-            ;; Furthermore GNU tar < 1.30 sometimes fails to extract tarballs
-            ;; with hard links:
-            ;; <http://lists.gnu.org/archive/html/bug-tar/2017-11/msg00009.html>.
-            (populate-single-profile-directory %root
-                                               #:profile #$profile
-                                               #:closure "profile"
-                                               #:deduplicate? #f
-                                               #:register? #$localstatedir?
-                                               #:schema #$schema)
+          ;; Note: there is not much to gain here with deduplication and there
+          ;; is the overhead of the '.links' directory, so turn it off.
+          ;; Furthermore GNU tar < 1.30 sometimes fails to extract tarballs
+          ;; with hard links:
+          ;; <http://lists.gnu.org/archive/html/bug-tar/2017-11/msg00009.html>.
+          (populate-single-profile-directory %root
+                                             #:profile #$profile
+                                             #:profile-name #$profile-name
+                                             #:closure "profile"
+                                             #:database #+database)
 
-            ;; Create SYMLINKS.
-            (for-each (cut evaluate-populate-directive <> %root)
-                      directives)
+          ;; Create SYMLINKS.
+          (for-each (cut evaluate-populate-directive <> %root)
+                    directives)
 
-            ;; Create the tarball.  Use GNU format so there's no file name
-            ;; length limitation.
-            (with-directory-excursion %root
-              (exit
-               (zero? (apply system* "tar"
-                             "-I"
-                             (string-join '#+(compressor-command compressor))
-                             "--format=gnu"
+          ;; Create the tarball.  Use GNU format so there's no file name
+          ;; length limitation.
+          (with-directory-excursion %root
+            (exit
+             (zero? (apply system* "tar"
+                           #+@(if (compressor-command compressor)
+                                  #~("-I"
+                                     (string-join
+                                      '#+(compressor-command compressor)))
+                                  #~())
+                           "--format=gnu"
 
-                             ;; Avoid non-determinism in the archive.  Use
-                             ;; mtime = 1, not zero, because that is what the
-                             ;; daemon does for files in the store (see the
-                             ;; 'mtimeStore' constant in local-store.cc.)
-                             (if tar-supports-sort? "--sort=name" "--mtime=@1")
-                             "--mtime=@1"         ;for files in /var/guix
-                             "--owner=root:0"
-                             "--group=root:0"
+                           ;; Avoid non-determinism in the archive.  Use
+                           ;; mtime = 1, not zero, because that is what the
+                           ;; daemon does for files in the store (see the
+                           ;; 'mtimeStore' constant in local-store.cc.)
+                           (if tar-supports-sort? "--sort=name" "--mtime=@1")
+                           "--mtime=@1"           ;for files in /var/guix
+                           "--owner=root:0"
+                           "--group=root:0"
 
-                             "--check-links"
-                             "-cvf" #$output
-                             ;; Avoid adding / and /var to the tarball, so
-                             ;; that the ownership and permissions of those
-                             ;; directories will not be overwritten when
-                             ;; extracting the archive.  Do not include /root
-                             ;; because the root account might have a
-                             ;; different home directory.
-                             #$@(if localstatedir?
-                                    '("./var/guix")
-                                    '())
+                           "--check-links"
+                           "-cvf" #$output
+                           ;; Avoid adding / and /var to the tarball, so
+                           ;; that the ownership and permissions of those
+                           ;; directories will not be overwritten when
+                           ;; extracting the archive.  Do not include /root
+                           ;; because the root account might have a
+                           ;; different home directory.
+                           #$@(if localstatedir?
+                                  '("./var/guix")
+                                  '())
 
-                             (string-append "." (%store-directory))
+                           (string-append "." (%store-directory))
 
-                             (delete-duplicates
-                              (filter-map (match-lambda
-                                            (('directory directory)
-                                             (string-append "." directory))
-                                            ((source '-> _)
-                                             (string-append "." source))
-                                            (_ #f))
-                                          directives))))))))))
+                           (delete-duplicates
+                            (filter-map (match-lambda
+                                          (('directory directory)
+                                           (string-append "." directory))
+                                          ((source '-> _)
+                                           (string-append "." source))
+                                          (_ #f))
+                                        directives)))))))))
 
   (gexp->derivation (string-append name ".tar"
                                    (compressor-extension compressor))
@@ -240,7 +282,7 @@ added to the pack."
 
 (define* (squashfs-image name profile
                          #:key target
-                         deduplicate?
+                         (profile-name "guix-profile")
                          (compressor (first %compressors))
                          localstatedir?
                          (symlinks '())
@@ -251,83 +293,85 @@ points for virtual file systems (like procfs), and optional symlinks.
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
-  (define libgcrypt
-    ;; XXX: Not strictly needed, but pulled by (guix store database).
-    (module-ref (resolve-interface '(gnu packages gnupg))
-                'libgcrypt))
-
+  (define database
+    (and localstatedir?
+         (file-append (store-database (list profile))
+                      "/db/db.sqlite")))
 
   (define build
-    (with-imported-modules `(((guix config)
-                              => ,(make-config.scm
-                                   #:libgcrypt libgcrypt))
-                             ,@(source-module-closure
-                                '((guix build utils)
-                                  (guix build store-copy)
-                                  (gnu build install))
-                                #:select? not-config?))
-      (with-extensions guile-sqlite3&co
-        #~(begin
-            (use-modules (guix build utils)
-                         (gnu build install)
-                         (guix build store-copy)
-                         (srfi srfi-1)
-                         (srfi srfi-26)
-                         (ice-9 match))
+    (with-imported-modules (source-module-closure
+                            '((guix build utils)
+                              (guix build store-copy)
+                              (gnu build install))
+                            #:select? not-config?)
+      #~(begin
+          (use-modules (guix build utils)
+                       (guix build store-copy)
+                       (gnu build install)
+                       (srfi srfi-1)
+                       (srfi srfi-26)
+                       (ice-9 match))
 
-            (setenv "PATH" (string-append #$archiver "/bin"))
+          (define database #+database)
 
-            ;; We need an empty file in order to have a valid file argument when
-            ;; we reparent the root file system.  Read on for why that's
-            ;; necessary.
-            (with-output-to-file ".empty" (lambda () (display "")))
+          (setenv "PATH" (string-append #$archiver "/bin"))
 
-            ;; Create the squashfs image in several steps.
-            ;; Add all store items.  Unfortunately mksquashfs throws away all
-            ;; ancestor directories and only keeps the basename.  We fix this
-            ;; in the following invocations of mksquashfs.
-            (apply invoke "mksquashfs"
-                   `(,@(map store-info-item
-                            (call-with-input-file "profile"
-                              read-reference-graph))
-                     ,#$output
+          ;; We need an empty file in order to have a valid file argument when
+          ;; we reparent the root file system.  Read on for why that's
+          ;; necessary.
+          (with-output-to-file ".empty" (lambda () (display "")))
 
-                     ;; Do not perform duplicate checking because we
-                     ;; don't have any dupes.
-                     "-no-duplicates"
-                     "-comp"
-                     ,#+(compressor-name compressor)))
+          ;; Create the squashfs image in several steps.
+          ;; Add all store items.  Unfortunately mksquashfs throws away all
+          ;; ancestor directories and only keeps the basename.  We fix this
+          ;; in the following invocations of mksquashfs.
+          (apply invoke "mksquashfs"
+                 `(,@(map store-info-item
+                          (call-with-input-file "profile"
+                            read-reference-graph))
+                   ,#$output
 
-            ;; Here we reparent the store items.  For each sub-directory of
-            ;; the store prefix we need one invocation of "mksquashfs".
-            (for-each (lambda (dir)
-                        (apply invoke "mksquashfs"
-                               `(".empty"
-                                 ,#$output
-                                 "-root-becomes" ,dir)))
-                      (reverse (string-tokenize (%store-directory)
-                                                (char-set-complement (char-set #\/)))))
+                   ;; Do not perform duplicate checking because we
+                   ;; don't have any dupes.
+                   "-no-duplicates"
+                   "-comp"
+                   ,#+(compressor-name compressor)))
 
-            ;; Add symlinks and mount points.
-            (apply invoke "mksquashfs"
-                   `(".empty"
-                     ,#$output
-                     ;; Create SYMLINKS via pseudo file definitions.
-                     ,@(append-map
-                        (match-lambda
-                          ((source '-> target)
-                           (list "-p"
-                                 (string-join
-                                  ;; name s mode uid gid symlink
-                                  (list source
-                                        "s" "777" "0" "0"
-                                        (string-append #$profile "/" target))))))
-                        '#$symlinks)
+          ;; Here we reparent the store items.  For each sub-directory of
+          ;; the store prefix we need one invocation of "mksquashfs".
+          (for-each (lambda (dir)
+                      (apply invoke "mksquashfs"
+                             `(".empty"
+                               ,#$output
+                               "-root-becomes" ,dir)))
+                    (reverse (string-tokenize (%store-directory)
+                                              (char-set-complement (char-set #\/)))))
 
-                     ;; Create empty mount points.
-                     "-p" "/proc d 555 0 0"
-                     "-p" "/sys d 555 0 0"
-                     "-p" "/dev d 555 0 0"))))))
+          ;; Add symlinks and mount points.
+          (apply invoke "mksquashfs"
+                 `(".empty"
+                   ,#$output
+                   ;; Create SYMLINKS via pseudo file definitions.
+                   ,@(append-map
+                      (match-lambda
+                        ((source '-> target)
+                         (list "-p"
+                               (string-join
+                                ;; name s mode uid gid symlink
+                                (list source
+                                      "s" "777" "0" "0"
+                                      (string-append #$profile "/" target))))))
+                      '#$symlinks)
+
+                   ;; Create empty mount points.
+                   "-p" "/proc d 555 0 0"
+                   "-p" "/sys d 555 0 0"
+                   "-p" "/dev d 555 0 0"))
+
+          (when database
+            ;; Initialize /var/guix.
+            (install-database-and-gc-roots "var-etc" database #$profile)
+            (invoke "mksquashfs" "var-etc" #$output)))))
 
   (gexp->derivation (string-append name
                                    (compressor-extension compressor)
@@ -337,7 +381,7 @@ added to the pack."
 
 (define* (docker-image name profile
                        #:key target
-                       deduplicate?
+                       (profile-name "guix-profile")
                        (compressor (first %compressors))
                        localstatedir?
                        (symlinks '())
@@ -347,34 +391,19 @@ image is a tarball conforming to the Docker Image Specification, compressed
 with COMPRESSOR.  It can be passed to 'docker load'.  If TARGET is true, it
 must a be a GNU triplet and it is used to derive the architecture metadata in
 the image."
+  (define database
+    (and localstatedir?
+         (file-append (store-database (list profile))
+                      "/db/db.sqlite")))
+
   (define defmod 'define-module)                  ;trick Geiser
 
-  (define config
-    ;; (guix config) module for consumption by (guix gcrypt).
-    (scheme-file "gcrypt-config.scm"
-                 #~(begin
-                     (#$defmod (guix config)
-                       #:export (%libgcrypt))
-
-                     ;; XXX: Work around <http://bugs.gnu.org/15602>.
-                     (eval-when (expand load eval)
-                       (define %libgcrypt
-                         #+(file-append libgcrypt "/lib/libgcrypt"))))))
-
-  (define json
-    ;; Pick the guile-json package that corresponds to the Guile used to build
-    ;; derivations.
-    (if (string-prefix? "2.0" (package-version (default-guile)))
-        guile2.0-json
-        guile-json))
-
   (define build
-    ;; Guile-JSON is required by (guix docker).
-    (with-extensions (list json)
-      (with-imported-modules `(,@(source-module-closure '((guix docker)
-                                                          (guix build store-copy))
-                                                        #:select? not-config?)
-                               ((guix config) => ,config))
+    ;; Guile-JSON and Guile-Gcrypt are required by (guix docker).
+    (with-extensions (list guile-json guile-gcrypt)
+      (with-imported-modules (source-module-closure '((guix docker)
+                                                      (guix build store-copy))
+                                                    #:select? not-config?)
         #~(begin
             (use-modules (guix docker) (srfi srfi-19) (guix build store-copy))
 
@@ -385,6 +414,7 @@ the image."
                                      (call-with-input-file "profile"
                                        read-reference-graph))
                                 #$profile
+                                #:database #+database
                                 #:system (or #$target (utsname:machine (uname)))
                                 #:symlinks '#$symlinks
                                 #:compressor '#$(compressor-command compressor)
@@ -562,10 +592,14 @@ please email '~a'~%")
 (define %default-options
   ;; Alist of default option values.
   `((format . tarball)
+    (profile-name . "guix-profile")
     (system . ,(%current-system))
     (substitutes? . #t)
     (build-hook? . #t)
     (graft? . #t)
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
     (verbosity . 0)
     (symlinks . ())
     (compressor . ,(first %compressors))))
@@ -575,6 +609,18 @@ please email '~a'~%")
   `((tarball . ,self-contained-tarball)
     (squashfs . ,squashfs-image)
     (docker  . ,docker-image)))
+
+(define (show-formats)
+  ;; Print the supported pack formats.
+  (display (G_ "The supported formats for 'guix pack' are:"))
+  (newline)
+  (display (G_ "
+  tarball       Self-contained tarball, ready to run on another machine"))
+  (display (G_ "
+  squashfs      Squashfs image suitable for Singularity"))
+  (display (G_ "
+  docker        Tarball ready for 'docker load'"))
+  (newline))
 
 (define %options
   ;; Specifications of the command-line options.
@@ -592,6 +638,10 @@ please email '~a'~%")
          (option '(#\f "format") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'format (string->symbol arg) result)))
+         (option '("list-formats") #f #f
+                 (lambda args
+                   (show-formats)
+                   (exit 0)))
          (option '(#\R "relocatable") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'relocatable? #t result)))
@@ -630,6 +680,13 @@ please email '~a'~%")
          (option '("localstatedir") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'localstatedir? #t result)))
+         (option '("profile-name") #t #f
+                 (lambda (opt name arg result)
+                   (match arg
+                     ((or "guix-profile" "current-guix")
+                      (alist-cons 'profile-name arg result))
+                     (_
+                      (leave (G_ "~a: unsupported profile name~%") arg)))))
          (option '("bootstrap") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'bootstrap? #t result)))
@@ -647,6 +704,8 @@ Create a bundle of PACKAGE.\n"))
   (display (G_ "
   -f, --format=FORMAT    build a pack in the given FORMAT"))
   (display (G_ "
+      --list-formats     list the formats available"))
+  (display (G_ "
   -R, --relocatable      produce relocatable executables"))
   (display (G_ "
   -e, --expression=EXPR  consider the package EXPR evaluates to"))
@@ -662,6 +721,9 @@ Create a bundle of PACKAGE.\n"))
   -m, --manifest=FILE    create a pack with the manifest from FILE"))
   (display (G_ "
       --localstatedir    include /var/guix in the resulting pack"))
+  (display (G_ "
+      --profile-name=NAME
+                         populate /var/guix/profiles/.../NAME"))
   (display (G_ "
       --bootstrap        use the bootstrap binaries to build the pack"))
   (newline)
@@ -712,72 +774,76 @@ Create a bundle of PACKAGE.\n"))
 
   (with-error-handling
     (with-store store
-      ;; Set the build options before we do anything else.
-      (set-build-options-from-command-line store opts)
+      (with-status-report print-build-event
+        ;; Set the build options before we do anything else.
+        (set-build-options-from-command-line store opts)
 
-      (parameterize ((%graft? (assoc-ref opts 'graft?))
-                     (%guile-for-build (package-derivation
-                                        store
-                                        (if (assoc-ref opts 'bootstrap?)
-                                            %bootstrap-guile
-                                            (canonical-package guile-2.2))
-                                        (assoc-ref opts 'system)
-                                        #:graft? (assoc-ref opts 'graft?))))
-        (let* ((dry-run?    (assoc-ref opts 'dry-run?))
-               (relocatable? (assoc-ref opts 'relocatable?))
-               (manifest    (let ((manifest (manifest-from-args store opts)))
-                              ;; Note: We cannot honor '--bootstrap' here because
-                              ;; 'glibc-bootstrap' lacks 'libc.a'.
-                              (if relocatable?
-                                  (map-manifest-entries wrapped-package manifest)
-                                  manifest)))
-               (pack-format (assoc-ref opts 'format))
-               (name        (string-append (symbol->string pack-format)
-                                           "-pack"))
-               (target      (assoc-ref opts 'target))
-               (bootstrap?  (assoc-ref opts 'bootstrap?))
-               (compressor  (if bootstrap?
-                                bootstrap-xz
-                                (assoc-ref opts 'compressor)))
-               (archiver    (if (equal? pack-format 'squashfs)
-                                squashfs-tools-next
-                                (if bootstrap?
-                                    %bootstrap-coreutils&co
-                                    tar)))
-               (symlinks    (assoc-ref opts 'symlinks))
-               (build-image (match (assq-ref %formats pack-format)
-                              ((? procedure? proc) proc)
-                              (#f
-                               (leave (G_ "~a: unknown pack format")
-                                      format))))
-               (localstatedir? (assoc-ref opts 'localstatedir?)))
-          (run-with-store store
-            (mlet* %store-monad ((profile (profile-derivation
-                                           manifest
-                                           #:relative-symlinks? relocatable?
-                                           #:hooks (if bootstrap?
-                                                       '()
-                                                       %default-profile-hooks)
-                                           #:locales? (not bootstrap?)
-                                           #:target target))
-                                 (drv (build-image name profile
-                                                   #:target
-                                                   target
-                                                   #:compressor
-                                                   compressor
-                                                   #:symlinks
-                                                   symlinks
-                                                   #:localstatedir?
-                                                   localstatedir?
-                                                   #:archiver
-                                                   archiver)))
-              (mbegin %store-monad
-                (show-what-to-build* (list drv)
-                                     #:use-substitutes?
-                                     (assoc-ref opts 'substitutes?)
-                                     #:dry-run? dry-run?)
-                (munless dry-run?
-                  (built-derivations (list drv))
-                  (return (format #t "~a~%"
-                                  (derivation->output-path drv))))))
-            #:system (assoc-ref opts 'system)))))))
+        (parameterize ((%graft? (assoc-ref opts 'graft?))
+                       (%guile-for-build (package-derivation
+                                          store
+                                          (if (assoc-ref opts 'bootstrap?)
+                                              %bootstrap-guile
+                                              (canonical-package guile-2.2))
+                                          (assoc-ref opts 'system)
+                                          #:graft? (assoc-ref opts 'graft?))))
+          (let* ((dry-run?    (assoc-ref opts 'dry-run?))
+                 (relocatable? (assoc-ref opts 'relocatable?))
+                 (manifest    (let ((manifest (manifest-from-args store opts)))
+                                ;; Note: We cannot honor '--bootstrap' here because
+                                ;; 'glibc-bootstrap' lacks 'libc.a'.
+                                (if relocatable?
+                                    (map-manifest-entries wrapped-package manifest)
+                                    manifest)))
+                 (pack-format (assoc-ref opts 'format))
+                 (name        (string-append (symbol->string pack-format)
+                                             "-pack"))
+                 (target      (assoc-ref opts 'target))
+                 (bootstrap?  (assoc-ref opts 'bootstrap?))
+                 (compressor  (if bootstrap?
+                                  bootstrap-xz
+                                  (assoc-ref opts 'compressor)))
+                 (archiver    (if (equal? pack-format 'squashfs)
+                                  squashfs-tools-next
+                                  (if bootstrap?
+                                      %bootstrap-coreutils&co
+                                      tar)))
+                 (symlinks    (assoc-ref opts 'symlinks))
+                 (build-image (match (assq-ref %formats pack-format)
+                                ((? procedure? proc) proc)
+                                (#f
+                                 (leave (G_ "~a: unknown pack format~%")
+                                        pack-format))))
+                 (localstatedir? (assoc-ref opts 'localstatedir?))
+                 (profile-name   (assoc-ref opts 'profile-name)))
+            (run-with-store store
+              (mlet* %store-monad ((profile (profile-derivation
+                                             manifest
+                                             #:relative-symlinks? relocatable?
+                                             #:hooks (if bootstrap?
+                                                         '()
+                                                         %default-profile-hooks)
+                                             #:locales? (not bootstrap?)
+                                             #:target target))
+                                   (drv (build-image name profile
+                                                     #:target
+                                                     target
+                                                     #:compressor
+                                                     compressor
+                                                     #:symlinks
+                                                     symlinks
+                                                     #:localstatedir?
+                                                     localstatedir?
+                                                     #:profile-name
+                                                     profile-name
+                                                     #:archiver
+                                                     archiver)))
+                (mbegin %store-monad
+                  (show-what-to-build* (list drv)
+                                       #:use-substitutes?
+                                       (assoc-ref opts 'substitutes?)
+                                       #:dry-run? dry-run?)
+                  (munless dry-run?
+                    (built-derivations (list drv))
+                    (return (format #t "~a~%"
+                                    (derivation->output-path drv))))))
+              #:system (assoc-ref opts 'system))))))))

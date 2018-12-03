@@ -1,5 +1,8 @@
+;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;;
+;;; This file is part of GNU Guix.
 ;;;
 ;;; GNU Guix is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
@@ -24,21 +27,22 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages wget))
+  #:use-module (gnu packages perl))
 
 (define-public debian-archive-keyring
   (package
     (name "debian-archive-keyring")
-    (version "2017.7")
+    (version "2018.1")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "mirror://debian/pool/main/d/" name "/"
-                            name "_" version ".tar.xz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://salsa.debian.org/release-team/debian-archive-keyring.git")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "1pdwgipfi0y4svhxlw8arhq792f1g3vlmw4raphizy7sa65vd4ca"))))
+          "136vr5dj7w0dz563qdghsndcfcqm2m8d4j1dyiq9dzx5vd0rcpcw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "verify-results"
@@ -71,7 +75,7 @@ contains the archive keys used for that.")
 (define-public ubuntu-keyring
   (package
     (name "ubuntu-keyring")
-    (version "2018.02.28")
+    (version "2018.09.18.1")
     (source
       (origin
         (method url-fetch)
@@ -79,7 +83,7 @@ contains the archive keys used for that.")
                             "+files/" name "_" version ".tar.gz"))
         (sha256
          (base32
-          "1zj3012cz7rlx9pm39wnwa0lmi1h38n6bkgbz81vnmcsvqsc9a3a"))))
+          "0csx2n62rj9rxjv4y8qhby7l9rbybfwrb0406pc2cjr7f2yk91af"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -113,7 +117,7 @@ contains the archive keys used for that.")
 (define-public debootstrap
   (package
     (name "debootstrap")
-    (version "1.0.106")
+    (version "1.0.111")
     (source
       (origin
         (method git-fetch)
@@ -123,7 +127,7 @@ contains the archive keys used for that.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1fm5bgllcwgwizrqi4sn8p4fpbzhbzgwprrfppfq9hqdzbmlfmnv"))))
+          "1b8s00a2kvaajqhjlms3q2dk3gqv6g4yq9h843jal1pm66zsx19n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -132,46 +136,57 @@ contains the archive keys used for that.")
          (add-after 'unpack 'patch-source
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out    (assoc-ref outputs "out"))
-                   (coreutils (assoc-ref inputs "coreutils"))
-                   (wget   (assoc-ref inputs "wget"))
+                   (tzdata (assoc-ref inputs "tzdata"))
                    (debian (assoc-ref inputs "debian-keyring"))
                    (ubuntu (assoc-ref inputs "ubuntu-keyring")))
                (substitute* "Makefile"
                  (("/usr") "")
                  (("-o root -g root") "")
                  (("chown root.*") "\n"))
-               (substitute* "scripts/sid"
+               (substitute* '("scripts/etch"
+                              "scripts/potato"
+                              "scripts/sarge"
+                              "scripts/sid"
+                              "scripts/woody"
+                              "scripts/woody.buildd")
                  (("/usr") debian))
                (substitute* "scripts/gutsy"
                  (("/usr") ubuntu))
                (substitute* "debootstrap"
-                 (("chroot ") (string-append coreutils "/bin/chroot "))
                  (("=/usr") (string-append "=" out)))
-               (substitute* "functions"
-                 (("wget ") (string-append wget "/bin/wget ")))
+               (substitute* (find-files "scripts" ".")
+                 (("/usr/share/zoneinfo") (string-append tzdata "/share/zoneinfo")))
                #t)))
          (add-after 'install 'install-man-file
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (install-file "debootstrap.8"
                              (string-append out "/share/man/man8"))
+               #t)))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((debootstrap (string-append (assoc-ref outputs "out")
+                                               "/sbin/debootstrap"))
+                   (path        (getenv "PATH")))
+               (wrap-program debootstrap
+                             `("PATH" ":" prefix (,path)))
                #t))))
        #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
        #:tests? #f)) ; no tests
     (inputs
-     `(("coreutils" ,coreutils)
-       ("debian-keyring" ,debian-archive-keyring)
+     `(("debian-keyring" ,debian-archive-keyring)
        ("ubuntu-keyring" ,ubuntu-keyring)
-       ("wget" ,wget)))
-    ;; The following are required for debootstrap to work correctly
-    (propagated-inputs
-     `(("binutils" ,binutils)
-       ("gnupg" ,gnupg)
-       ("perl" ,perl)))
+       ("tzdata" ,tzdata)))
+    (native-inputs
+     `(("perl" ,perl)))
     (home-page "https://tracker.debian.org/pkg/debootstrap")
     (synopsis "Bootstrap a basic Debian system")
     (description "Debootstrap is used to create a Debian base system from
 scratch, without requiring the availability of @code{dpkg} or @code{apt}.
 It does this by downloading .deb files from a mirror site, and carefully
-unpacking them into a directory which can eventually be chrooted into.")
+unpacking them into a directory which can eventually be chrooted into.
+
+It is recommended to run @code{debootstrap --foreign --arch=...} and then
+@code{chroot} into the directory, set the PATH and run @code{debootstrap
+--second-stage} after.")
     (license license:gpl2)))

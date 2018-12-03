@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -290,11 +290,21 @@ the section name.")
    "Listeners for the service.  A listener is either an
 @code{unix-listener-configuration}, a @code{fifo-listener-configuration}, or
 an @code{inet-listener-configuration}.")
+  (client-limit
+   (non-negative-integer 0)
+   "Maximum number of simultaneous client connections per process.  Once this
+number of connections is received, the next incoming connection will prompt
+Dovecot to spawn another process.  If set to 0, @code{default-client-limit} is
+used instead.")
   (service-count
    (non-negative-integer 1)
    "Number of connections to handle before starting a new process.
 Typically the only useful values are 0 (unlimited) or 1.  1 is more
 secure, but 0 is faster.  <doc/wiki/LoginProcess.txt>.")
+  (process-limit
+   (non-negative-integer 0)
+   "Maximum number of processes that can exist for this service.  If set to 0,
+@code{default-process-limit} is used instead.")
   (process-min-avail
    (non-negative-integer 0)
    "Number of processes to always keep waiting for more connections.")
@@ -475,6 +485,8 @@ complex, customize the address and port fields of the
     (list
      (service-configuration
       (kind "imap-login")
+      (client-limit 0)
+      (process-limit 0)
       (listeners
        (list
         (inet-listener-configuration (protocol "imap") (port 143) (ssl? #f))
@@ -487,24 +499,33 @@ complex, customize the address and port fields of the
         (inet-listener-configuration (protocol "pop3s") (port 995) (ssl? #t)))))
      (service-configuration
       (kind "lmtp")
+      (client-limit 1)
+      (process-limit 0)
       (listeners
        (list (unix-listener-configuration (path "lmtp") (mode "0666")))))
-     (service-configuration (kind "imap"))
-     (service-configuration (kind "pop3"))
-     (service-configuration (kind "auth")
-      ;; In what could be taken to be a bug, the default value of 1 for
-      ;; service-count makes it so that a PAM auth worker can't fork off
-      ;; subprocesses for making blocking queries.  The result is that nobody
-      ;; can log in -- very secure, but not very useful!  If we simply omit
-      ;; the service-count, it will default to the value of
-      ;; auth-worker-max-count, which is 30, instead of defaulting to 1, which
-      ;; is the default for all other services.  As a hack, bump this value to
-      ;; 30.
-      (service-count 30)
+     (service-configuration
+      (kind "imap")
+      (client-limit 1)
+      (process-limit 1024))
+     (service-configuration
+      (kind "pop3")
+      (client-limit 1)
+      (process-limit 1024))
+     (service-configuration
+      (kind "auth")
+      (service-count 0)
+      (client-limit 0)
+      (process-limit 1)
       (listeners
        (list (unix-listener-configuration (path "auth-userdb")))))
-     (service-configuration (kind "auth-worker"))
-     (service-configuration (kind "dict")
+     (service-configuration
+      (kind "auth-worker")
+      (client-limit 1)
+      (process-limit 0))
+     (service-configuration
+      (kind "dict")
+      (client-limit 1)
+      (process-limit 0)
       (listeners (list (unix-listener-configuration (path "dict")))))))
    "List of services to enable.  Available services include @samp{imap},
 @samp{imap-login}, @samp{pop3}, @samp{pop3-login}, @samp{auth}, and

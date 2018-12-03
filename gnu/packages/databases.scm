@@ -153,7 +153,7 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'generate-configure
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     ;; http://www.4store.org has been down for a while now.
     (home-page "https://github.com/4store/4store")
     (synopsis "Clustered RDF storage and query engine")
@@ -164,14 +164,14 @@ either single machines or networked clusters.")
 (define-public gdbm
   (package
     (name "gdbm")
-    (version "1.14.1")
+    (version "1.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdbm/gdbm-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0pxwz3jlwvglq2mrbxvrjgr8pa0aj73p3v9sxmdlj570zw0gzknd"))))
+                "1kimnv12bzjjhaqk4c8w2j6chdj9c6bg21lchaf7abcyfss2r0mq"))))
     (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org.ua/software/gdbm")
@@ -207,14 +207,16 @@ and provides interfaces to the traditional file format.")
          (delete 'reset-gzip-timestamps)
          (add-before 'check 'start-mongodb
            (lambda* (#:key tests? #:allow-other-keys)
-             (or (not tests?)
-                 (with-directory-excursion "src/gopkg.in/mgo.v2"
-                   (invoke "make" "startdb")))))
+             (when tests?
+               (with-directory-excursion "src/gopkg.in/mgo.v2"
+                 (invoke "make" "startdb")))
+             #t))
          (add-after 'check 'stop'mongodb
            (lambda* (#:key tests? #:allow-other-keys)
-             (or (not tests?)
-                 (with-directory-excursion "src/gopkg.in/mgo.v2"
-                   (invoke "make" "stopdb"))))))))
+             (when tests?
+               (with-directory-excursion "src/gopkg.in/mgo.v2"
+                 (invoke "make" "stopdb")))
+             #t)))))
     (native-inputs
      `(("go-gopkg.in-check.v1" ,go-gopkg.in-check.v1)
        ("mongodb" ,mongodb)
@@ -503,37 +505,35 @@ applications.")
                #t))
            (replace 'build
              (lambda _
-               (zero? (apply system*
-                             `("scons"
+               (apply invoke `("scons"
                                ,@common-options
-                               "mongod" "mongo" "mongos")))))
+                               "mongod" "mongo" "mongos"))))
            (replace 'check
              (lambda* (#:key tests? inputs #:allow-other-keys)
                (setenv "TZDIR"
                        (string-append (assoc-ref inputs "tzdata")
                                       "/share/zoneinfo"))
-               (or (not tests?)
-                   ;; Note that with the tests, especially the unittests, the
-                   ;; build can take up to ~45GB of space, as many tests are
-                   ;; individual executable files, with some being hundreds of
-                   ;; megabytes in size.
-                   (begin
-                     (apply
-                       invoke `("scons" ,@common-options "dbtest" "unittests"))
-                     (substitute* "build/unittests.txt"
-                       ;; TODO: Don't run the async_stream_test, as it hangs
-                       (("^build\\/opt\\/mongo\\/executor\\/async\\_stream\\_test\n$")
-                        "")
-                       ;; TODO: This test fails
-                       ;; Expected 0UL != disks.size() (0 != 0) @src/mongo/util/procparser_test.cpp:476
-                       (("^build\\/opt\\/mongo\\/util\\/procparser\\_test\n$")
-                        ""))
-                     (invoke "python" "buildscripts/resmoke.py"
-                             "--suites=dbtest,unittests"
-                             (format #f  "--jobs=~a" (parallel-job-count)))))))
+               (when tests?
+                 ;; Note that with the tests, especially the unittests, the
+                 ;; build can take up to ~45GB of space, as many tests are
+                 ;; individual executable files, with some being hundreds of
+                 ;; megabytes in size.
+                 (apply invoke `("scons" ,@common-options "dbtest" "unittests"))
+                 (substitute* "build/unittests.txt"
+                   ;; TODO: Don't run the async_stream_test, as it hangs
+                   (("^build\\/opt\\/mongo\\/executor\\/async\\_stream\\_test\n$")
+                    "")
+                   ;; TODO: This test fails
+                   ;; Expected 0UL != disks.size() (0 != 0) @src/mongo/util/procparser_test.cpp:476
+                   (("^build\\/opt\\/mongo\\/util\\/procparser\\_test\n$")
+                    ""))
+                 (invoke "python" "buildscripts/resmoke.py"
+                         "--suites=dbtest,unittests"
+                         (format #f  "--jobs=~a" (parallel-job-count))))
+               #t))
            (replace 'install
-             (lambda _
-               (let ((bin  (string-append (assoc-ref %outputs "out") "/bin")))
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
                  (install-file "mongod" bin)
                  (install-file "mongos" bin)
                  (install-file "mongo" bin))
@@ -621,7 +621,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.35")
+    (version "10.1.37")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -629,14 +629,20 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0k9walaglwmwdwmkq48ir17g98n83vliyyg5wck22rjgxn2xk4cy"))
-              (patches (search-patches "mariadb-gcc-ice.patch"
-                                       "mariadb-client-test-32bit.patch"))
+                "0ijdmdn9mcciwv361zfmja6b1h6qpbdqgrnnq6kkdapplyq1dmcc"))
+              (patches (search-patches "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Delete bundled snappy and xz.
                   (delete-file-recursively "storage/tokudb/PerconaFT/third_party")
+                  (substitute* "storage/tokudb/PerconaFT/CMakeLists.txt"
+                    ;; This file checks that the bundled sources are present and
+                    ;; declares build procedures for them.
+                    (("^include\\(TokuThirdParty\\)") ""))
+                  (substitute* "storage/tokudb/PerconaFT/ft/CMakeLists.txt"
+                    ;; Don't attempt to use the procedures we just removed.
+                    ((" build_lzma build_snappy") ""))
 
                   ;; Preserve CMakeLists.txt for these.
                   (for-each (lambda (file)
@@ -680,7 +686,7 @@ Language.")
          "-DINSTALL_SHAREDIR=share")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'unbundle
+         (add-after 'unpack 'fix-pcre-detection
            (lambda _
              ;; The bundled PCRE in MariaDB has a patch that was upstreamed
              ;; in version 8.34.  Unfortunately the upstream patch behaves
@@ -689,16 +695,6 @@ Language.")
              ;; XXX: Consider patching PCRE instead.
              (substitute* "cmake/pcre.cmake"
                ((" OR NOT PCRE_STACK_SIZE_OK") ""))
-
-             (substitute* "storage/tokudb/PerconaFT/ft/CMakeLists.txt"
-               ;; Remove dependency on these CMake targets.
-               ((" build_lzma build_snappy") ""))
-
-             (substitute* "storage/tokudb/PerconaFT/CMakeLists.txt"
-               ;; This file checks that the bundled sources are present and
-               ;; declares build procedures for them.  We don't need that.
-               (("^include\\(TokuThirdParty\\)") ""))
-
              #t))
          (add-after 'unpack 'adjust-tests
            (lambda _
@@ -708,6 +704,7 @@ Language.")
                       ;; See <https://jira.mariadb.org/browse/MDEV-7761>.
                       "main.join_cache"
                       "main.explain_non_select"
+                      "main.stat_tables_innodb"
                       "roles.acl_statistics"
 
                       ;; FIXME: This test fails on i686:
@@ -807,14 +804,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.5")
+    (version "10.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "04a07jkvc5s6zgh6jr78149kcjmsxclizsqabjw44ld4j5n633kc"))
+                "0jv26y3f10svrjxzsgqxg956c86b664azyk2wppzpa5x11pjga38"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -853,14 +850,14 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "9.6.9")
+    (version "9.6.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0biy8j69dbvdmrag55pdszpc0702agzqhhcwdx21xp02mzim4ydr"))))))
+                "0c55akrkzqd6p6a8hr0338wk246hl76r9j16p4zn3s51d7f0l99q"))))))
 
 (define-public python-pymysql
   (package
@@ -927,7 +924,23 @@ organized in a hash table or B+ tree.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0cdwa4094x3yx7vn98xykvnlp9rngvd58d19vs3vh5hrvggccg93"))))
+                "0cdwa4094x3yx7vn98xykvnlp9rngvd58d19vs3vh5hrvggccg93"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Adjust the bundled gnulib to work with glibc 2.28.  See e.g.
+                  ;; "m4-gnulib-libio.patch".  This is a phase rather than patch
+                  ;; or snippet to work around <https://bugs.gnu.org/32347>.
+                  (substitute* (find-files "lib" "\\.c$")
+                    (("#if defined _IO_ftrylockfile")
+                     "#if defined _IO_EOF_SEEN"))
+                  (substitute* "lib/stdio-impl.h"
+                    (("^/\\* BSD stdio derived implementations")
+                     (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
+                                    "# define _IO_IN_BACKUP 0x100\n"
+                                    "#endif\n\n"
+                                    "/* BSD stdio derived implementations")))
+                  #t))))
     (build-system gnu-build-system)
 
     ;; Running tests in parallel leads to test failures and crashes in
@@ -977,15 +990,16 @@ types are supported, as is encryption.")
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "5.12.4")
+    (version "5.15.10")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/facebook/rocksdb"
-                                  "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/facebook/rocksdb")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jcwgsjhk4hdfr2wf549blkgb89vwcdb5i2ahhqs6zf3mm20i3bf"))
+                "0q26frbj9pykarcfa0yxgwncxlvsqhjkby0jrbfs1a8srja688r4"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1106,7 +1120,8 @@ data in a single database.  RocksDB is partially based on @code{LevelDB}.")
            (lambda _
              (substitute* "Makefile"
                (("^gitrev :=.*$")
-                (string-append "gitrev = \"v" ,version "\"")))))
+                (string-append "gitrev = \"v" ,version "\"")))
+             #t))
          ;; The install phase of the Makefile assumes $PREFIX/usr/local/bin.
          ;; This replacement does the same thing, except for using $PREFIX/bin
          ;; instead.
@@ -1115,14 +1130,13 @@ data in a single database.  RocksDB is partially based on @code{LevelDB}.")
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
                (install-file "sparql-query" bin)
-               (system* "ln" "--symbolic"
-                        (string-append bin "/sparql-query")
-                        (string-append bin "/sparql-update")))))
+               (symlink (string-append bin "/sparql-query")
+                        (string-append bin "/sparql-update")))
+             #t))
          (replace 'check
            (lambda* (#:key make-flags #:allow-other-keys)
-             (and
-              (zero? (apply system* "make" `(,@make-flags "scan-test")))
-              (zero? (system "./scan-test"))))))))
+             (apply invoke "make" `(,@make-flags "scan-test"))
+             (invoke "./scan-test"))))))
     (home-page "https://github.com/tialaramex/sparql-query/")
     (synopsis "Command-line tool for accessing SPARQL endpoints over HTTP")
     (description "Sparql-query is a command-line tool for accessing SPARQL
@@ -1170,7 +1184,7 @@ changes.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.23.0")
+   (version "3.24.0")
    (source (origin
             (method url-fetch)
             (uri (let ((numeric-version
@@ -1186,7 +1200,7 @@ changes.")
                                   numeric-version ".tar.gz")))
             (sha256
              (base32
-              "0jbf78g3cm5wq77k7sfg8fb6rz44hnp9hs7p5d66fwd000c1lwdp"))))
+              "0jmprv2vpggzhy7ma4ynmv1jzn3pfiwzkld0kkg6hvgvqs44xlfr"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
@@ -1215,6 +1229,18 @@ is in the public domain.")
        ((#:configure-flags flags)
         `(cons "--enable-fts5" ,flags))))))
 
+;; This is used by Qt.
+(define-public sqlite-with-column-metadata
+  (package (inherit sqlite)
+    (name "sqlite-with-column-metadata")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sqlite)
+       ((#:configure-flags flags)
+        `(list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
+                              "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
+                              "-DSQLITE_ENABLE_DBSTAT_VTAB "
+                              "-DSQLITE_ENABLE_COLUMN_METADATA")))))))
+
 (define-public tdb
   (package
     (name "tdb")
@@ -1235,8 +1261,8 @@ is in the public domain.")
              (let ((out (assoc-ref outputs "out")))
                ;; The 'configure' script is a wrapper for Waf and
                ;; doesn't recognize things like '--enable-fast-install'.
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (native-inputs
      `(;; TODO: Build the documentation.
        ;; ("docbook-xsl" ,docbook-xsl)
@@ -1461,18 +1487,32 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-mysql
   (package
     (name "perl-dbd-mysql")
-    (version "4.046")
+    (version "4.048")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/C/CA/CAPTTOFU/"
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MICHIELB/"
                            "DBD-mysql-" version ".tar.gz"))
        (sha256
         (base32
-         "1xziv9w87cl3fbl1mqkdrx28mdqly3gs6gs1ynbmpl2rr4p6arb1"))))
+         "1zqmch6c9gq06z90mkmk1skajk2kaggriw19ym5w04l7wv5gydqp"))))
     (build-system perl-build-system)
-    ;; Tests require running MySQL server
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'skip-library-detection
+           ;; Avoid depencies on perl-devel-checklib, openssl, and zlib.  They
+           ;; are really only needed for the test suite; their absence does not
+           ;; affect the build or the end result.
+           (lambda _
+             (substitute* "Makefile.PL"
+               (("use Devel::CheckLib;" match)
+                (string-append "# " match))
+               (("assert_lib")
+                "print"))
+             #t)))
+       ;; Tests require running MySQL server.
+       #:tests? #f))
     (propagated-inputs
      `(("perl-dbi" ,perl-dbi)
        ("mysql" ,mysql)))
@@ -1757,19 +1797,32 @@ trees (LSM), for sustained throughput under random insert workloads.")
     ;; configure.ac: WiredTiger requires a 64-bit build.
     (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))))
 
+(define-public wiredtiger-3
+  (package
+    (inherit wiredtiger)
+    (name "wiredtiger")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://source.wiredtiger.com/releases/wiredtiger-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "014awypv579ascg4jbx4pndj2wld337m79yyzrzyr7hxrff139jx"))))))
+
 (define-public guile-wiredtiger
   (package
     (name "guile-wiredtiger")
-    (version "0.6.3")
+    (version "0.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://framagit.org/a-guile-mind/guile-wiredtiger.git")
-                    (commit "070ed68139d99c279f058a6c293f00292d35dbd7")))
+                    (commit "340ad4bc2ff4dcc6216a2f5c6f9172ca320ac66b")))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "14rna97wsylajzxfif95wnblq85csgcfc666gh5dl0ssgd7x8llh"))))
+                "15j36bvxxzil7qpwlmh1rffqpva3ynvrcpqhhqbj2c9208ayz595"))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-tests? #f  ;; tests can't be run in parallel, yet.
@@ -1777,21 +1830,19 @@ trees (LSM), for sustained throughput under random insert workloads.")
        (list (string-append "--with-libwiredtiger-prefix="
                             (assoc-ref %build-inputs "wiredtiger")))
        #:make-flags '("GUILE_AUTO_COMPILE=0")))
-    ;; TODO: Remove microkanren.scm when we have a separate package
-    ;; for it.
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("wiredtiger" ,wiredtiger)
+     `(("wiredtiger" ,wiredtiger-3)
        ("guile" ,guile-2.2)))
     (propagated-inputs
-     `(("guile-lib" ,guile-lib)))                 ;for (htmlprag)
+     `(("guile-bytestructures" ,guile-bytestructures)))
     (synopsis "WiredTiger bindings for GNU Guile")
     (description
      "This package provides Guile bindings to the WiredTiger ``NoSQL''
-database.  Various higher level database abstractions.")
+database.")
     (home-page "https://framagit.org/a-guile-mind/guile-wiredtiger")
     (license license:gpl3+)))
 
@@ -1930,14 +1981,14 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
 (define-public sqlcipher
   (package
     (name "sqlcipher")
-    (version "3.3.1")
+    (version "3.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/sqlcipher/" name
                            "/archive/v" version ".tar.gz"))
        (sha256
-        (base32 "1gv58dlbpzrmznly52yqbxgvii0ib88zr3aszla1bsypwjr6flff"))
+        (base32 "1nxarwbci8jx99f1d0y1ivxcv25s78l1p7q6qy28lkpkcx8pm2b9"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (inputs
@@ -1960,8 +2011,7 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
            (assoc-ref %standard-phases 'check))
          (replace 'check
            (lambda _
-             (zero?
-              (system* "./testfixture" "test/crypto.test")))))))
+             (invoke "./testfixture" "test/crypto.test"))))))
     (home-page "https://www.zetetic.net/sqlcipher/")
     (synopsis
      "Library providing transparent encryption of SQLite database files")
@@ -2038,13 +2088,14 @@ for ODBC.")
     (version "0.7.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/brianb/mdbtools/archive/"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/brianb/mdbtools.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "05hbmxcq173kzb899gdi3bz2qcc1vi3n1qbbkwpsvrq7ggf11wyw"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "0gwcpp9y09xhs21g7my2fs8ncb8i6ahlyixcx8jd3q97jbzj441l"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)))
@@ -2055,12 +2106,6 @@ for ODBC.")
        ("pkg-config" ,pkg-config)
        ("txt2man" ,txt2man)
        ("which" ,which)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "http://mdbtools.sourceforge.net/")
     (synopsis "Read Microsoft Access databases")
     (description "MDB Tools is a set of tools and applications to read the
@@ -2290,7 +2335,7 @@ Database API 2.0T.")
 (define-public python-sqlalchemy
   (package
     (name "python-sqlalchemy")
-    (version "1.0.12")
+    (version "1.2.11")
     (source
      (origin
       (method url-fetch)
@@ -2298,7 +2343,7 @@ Database API 2.0T.")
                           "SQLAlchemy/SQLAlchemy-" version ".tar.gz"))
       (sha256
        (base32
-        "1l8qclhd0s90w3pvwhi5mjxdwr5j7gw7cjka2fx6f2vqmq7f4yb6"))))
+        "094mmbs4igrxplfyqd59j90jb83ixpbbzqc0w49yw81m82nnjrgg"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython) ;for c extensions
@@ -2308,7 +2353,7 @@ Database API 2.0T.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (zero? (system* "py.test")))))))
+           (lambda _ (invoke "py.test"))))))
     (home-page "http://www.sqlalchemy.org")
     (synopsis "Database abstraction library")
     (description
@@ -2375,14 +2420,14 @@ You might also want to install the following optional dependencies:
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "0.9.6")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
        (sha256
         (base32
-         "0cm73vabrqj92v7a0wwvldj8j7bc7dwv358kvkk7p87gx7mm2a04"))))
+         "0asqz9mwc4w8bsar1icv3ik9jslxrj3gv3yxgmhc6nc6r9qbkg04"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -2406,13 +2451,13 @@ SQLAlchemy Database Toolkit for Python.")
 (define-public python-pickleshare
   (package
     (name "python-pickleshare")
-    (version "0.7.4")
+    (version "0.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pickleshare" version))
        (sha256
-        (base32 "0yvk14dzxk7g6qpr7iw23vzqbsr0dh4ij4xynkhnzpfz4xr2bac4"))))
+        (base32 "1jmghg3c53yp1i8cm6pcrm280ayi8621rwyav9fac7awjr3kss47"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -2659,12 +2704,14 @@ parsing code in hiredis.  It primarily speeds up parsing of multi bulk replies."
      `(#:tests? #f))
     (home-page "https://github.com/jamesls/fakeredis")
     (synopsis "Fake implementation of redis API for testing purposes")
-    (description "Fakeredis is a pure python implementation of the redis-py
-python client that simulates talking to a redis server.  This was created for a
-single purpose: to write unittests.  Setting up redis is not hard, but many time
- you want to write unittests that do not talk to an external server (such as
-redis).  This module now allows tests to simply use this module as a reasonable
-substitute for redis.")
+    (description
+     "Fakeredis is a pure-Python implementation of the redis-py Python client
+that simulates talking to a redis server.  It was created for a single purpose:
+to write unit tests.
+
+Setting up redis is not hard, but one often wants to write unit tests that don't
+talk to an external server such as redis.  This module can be used as a
+reasonable substitute.")
     (license license:bsd-3)))
 
 (define-public python2-fakeredis
@@ -2698,13 +2745,13 @@ substitute for redis.")
 (define-public python-rq
   (package
     (name "python-rq")
-    (version "0.7.1")
+    (version "0.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rq" version))
        (sha256
-        (base32 "0gaq5pnh0zy46r8jvygi0ifbvz3pq6i7xla78ijcgjw0x77qzsdh"))))
+        (base32 "16d8kni57xlnah2hawy4xgw21xrv3f64j5q5shyp3zxx4yd9iibs"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)
@@ -2759,7 +2806,7 @@ is designed to have a low barrier to entry.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (zero? (system* "py.test")))))))
+           (lambda _ (invoke "py.test"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/andialbrecht/sqlparse")
@@ -2826,41 +2873,46 @@ transforms idiomatic python function calls to well-formed SQL queries.")
            (delete 'install-source)
            (replace 'build
              (lambda _
-               (every (lambda (tool)
-                        (let ((command
-                               `("go" "build"
-                                 ;; This is where the tests expect to find the
-                                 ;; executables
-                                 "-o" ,(string-append
-                                        "src/github.com/mongodb/mongo-tools/bin/"
-                                        tool)
-                                 "-v"
-                                 "-tags=\"ssl sasl\""
-                                 "-ldflags"
-                                 "-extldflags=-Wl,-z,now,-z,relro"
-                                 ,(string-append
-                                   "src/github.com/mongodb/mongo-tools/"
-                                   tool "/main/" tool ".go"))))
-                          (simple-format #t "build: running ~A\n"
-                                         (string-join command))
-                          (apply invoke command)))
-                      all-tools)))
+               (for-each (lambda (tool)
+                           (let ((command
+                                  `("go" "build"
+                                    ;; This is where the tests expect to find the
+                                    ;; executables
+                                    "-o" ,(string-append
+                                           "src/github.com/mongodb/mongo-tools/bin/"
+                                           tool)
+                                    "-v"
+                                    "-tags=\"ssl sasl\""
+                                    "-ldflags"
+                                    "-extldflags=-Wl,-z,now,-z,relro"
+                                    ,(string-append
+                                      "src/github.com/mongodb/mongo-tools/"
+                                      tool "/main/" tool ".go"))))
+                             (simple-format #t "build: running ~A\n"
+                                            (string-join command))
+                             (apply invoke command)))
+                         all-tools)
+               #t))
            (replace 'check
              (lambda _
                (with-directory-excursion "src"
-                 (every (lambda (tool)
-                          (invoke
-                           "go" "test" "-v"
-                           (string-append "github.com/mongodb/mongo-tools/" tool)))
-                        all-tools))))
+                 (for-each (lambda (tool)
+                             (invoke
+                              "go" "test" "-v"
+                              (string-append "github.com/mongodb/mongo-tools/"
+                                             tool)))
+                           all-tools))
+               #t))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (for-each (lambda (tool)
                            (install-file
-                            (string-append "src/github.com/mongodb/mongo-tools/bin/" tool)
+                            (string-append "src/github.com/mongodb/mongo-tools/bin/"
+                                           tool)
                             (string-append (assoc-ref outputs "out")
                                            "/bin")))
-                         all-tools)))))))
+                         all-tools)
+               #t))))))
     (native-inputs
      `(("go-github.com-howeyc-gopass" ,go-github.com-howeyc-gopass)
        ("go-github.com-jessevdk-go-flags" ,go-github.com-jessevdk-go-flags)

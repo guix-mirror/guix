@@ -1,12 +1,14 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +53,7 @@
                static-networking-service-type)
   #:export (%facebook-host-aliases
             dhcp-client-service
+            dhcp-client-service-type
 
             dhcpd-service-type
             dhcpd-configuration
@@ -99,10 +102,27 @@
             modem-manager-configuration
             modem-manager-configuration?
             modem-manager-service-type
+
+            <wpa-supplicant-configuration>
+            wpa-supplicant-configuration
+            wpa-supplicant-configuration?
+            wpa-supplicant-configuration-wpa-supplicant
+            wpa-supplicant-configuration-pid-file
+            wpa-supplicant-configuration-dbus?
+            wpa-supplicant-configuration-interface
+            wpa-supplicant-configuration-config-file
+            wpa-supplicant-configuration-extra-options
             wpa-supplicant-service-type
 
             openvswitch-service-type
-            openvswitch-configuration))
+            openvswitch-configuration
+
+            iptables-configuration
+            iptables-configuration?
+            iptables-configuration-iptables
+            iptables-configuration-ipv4-rules
+            iptables-configuration-ipv6-rules
+            iptables-service-type))
 
 ;;; Commentary:
 ;;;
@@ -182,22 +202,11 @@ fe80::1%lo0 apps.facebook.com\n")
                              (cons* #$dhclient "-nw"
                                     "-pf" #$pid-file ifaces))))
                    (and (zero? (cdr (waitpid pid)))
-                        (let loop ()
-                          (catch 'system-error
-                            (lambda ()
-                              (call-with-input-file #$pid-file read))
-                            (lambda args
-                              ;; 'dhclient' returned before PID-FILE was created,
-                              ;; so try again.
-                              (let ((errno (system-error-errno args)))
-                                (if (= ENOENT errno)
-                                    (begin
-                                      (sleep 1)
-                                      (loop))
-                                    (apply throw args))))))))))
-      (stop #~(make-kill-destructor))))))
+                        (read-pid-file #$pid-file)))))
+      (stop #~(make-kill-destructor))))
+   isc-dhcp))
 
-(define* (dhcp-client-service #:key (dhcp isc-dhcp))
+(define* (dhcp-client-service #:key (dhcp isc-dhcp)) ;deprecated
   "Return a service that runs @var{dhcp}, a Dynamic Host Configuration
 Protocol (DHCP) client, on all the non-loopback network interfaces."
   (service dhcp-client-service-type dhcp))
@@ -288,7 +297,8 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
   ntp-configuration?
   (ntp      ntp-configuration-ntp
             (default ntp))
-  (servers  ntp-configuration-servers)
+  (servers  ntp-configuration-servers
+            (default %ntp-servers))
   (allow-large-adjustment? ntp-allow-large-adjustment?
                            (default #f)))
 
@@ -361,9 +371,10 @@ restrict -6 ::1\n"))
                 (description
                  "Run the @command{ntpd}, the Network Time Protocol (NTP)
 daemon of the @uref{http://www.ntp.org, Network Time Foundation}.  The daemon
-will keep the system clock synchronized with that of the given servers.")))
+will keep the system clock synchronized with that of the given servers.")
+                (default-value (ntp-configuration))))
 
-(define* (ntp-service #:key (ntp ntp)
+(define* (ntp-service #:key (ntp ntp)             ;deprecated
                       (servers %ntp-servers)
                       allow-large-adjustment?)
   "Return a service that runs the daemon from @var{ntp}, the
@@ -576,7 +587,9 @@ demand.")))
   (config-file      tor-configuration-config-file
                     (default (plain-file "empty" "")))
   (hidden-services  tor-configuration-hidden-services
-                    (default '())))
+                    (default '()))
+  (socks-socket-type tor-configuration-socks-socket-type ; 'tcp or 'unix
+                     (default 'tcp)))
 
 (define %tor-accounts
   ;; User account and groups for Tor.
@@ -598,7 +611,7 @@ demand.")))
 (define (tor-configuration->torrc config)
   "Return a 'torrc' file for CONFIG."
   (match config
-    (($ <tor-configuration> tor config-file services)
+    (($ <tor-configuration> tor config-file services socks-socket-type)
      (computed-file
       "torrc"
       (with-imported-modules '((guix build utils))
@@ -612,7 +625,12 @@ demand.")))
 ### These lines were generated from your system configuration:
 User tor
 DataDirectory /var/lib/tor
+PidFile /var/run/tor/tor.pid
 Log notice syslog\n" port)
+                (when (eq? 'unix '#$socks-socket-type)
+                  (display "\
+SocksPort unix:/var/run/tor/socks-sock
+UnixSocksGroupWritable 1\n" port))
 
                 (for-each (match-lambda
                             ((service (ports hosts) ...)
@@ -639,7 +657,7 @@ HiddenServicePort ~a ~a~%"
                 #t))))))))
 
 (define (tor-shepherd-service config)
-  "Return a <shepherd-service> running TOR."
+  "Return a <shepherd-service> running Tor."
   (match config
     (($ <tor-configuration> tor)
      (let ((torrc (tor-configuration->torrc config)))
@@ -665,12 +683,17 @@ HiddenServicePort ~a ~a~%"
                                             (writable? #t))
                                            (file-system-mapping
                                             (source "/dev/log") ;for syslog
-                                            (target source)))))
+                                            (target source))
+                                           (file-system-mapping
+                                            (source "/var/run/tor")
+                                            (target source)
+                                            (writable? #t)))
+                          #:pid-file "/var/run/tor/tor.pid"))
                 (stop #~(make-kill-destructor))
                 (documentation "Run the Tor anonymous network overlay."))))))))
 
-(define (tor-hidden-service-activation config)
-  "Return the activation gexp for SERVICES, a list of hidden services."
+(define (tor-activation config)
+  "Set up directories for Tor and its hidden services, if any."
   #~(begin
       (use-modules (guix build utils))
 
@@ -686,6 +709,15 @@ HiddenServicePort ~a ~a~%"
           ;; The daemon bails out if we give wider permissions.
           (chmod directory #o700)))
 
+      ;; Allow Tor to write its PID file.
+      (mkdir-p "/var/run/tor")
+      (chown "/var/run/tor" (passwd:uid %user) (passwd:gid %user))
+      ;; Set the group permissions to rw so that if the system administrator
+      ;; has specified UnixSocksGroupWritable=1 in their torrc file, members
+      ;; of the "tor" group will be able to use the SOCKS socket.
+      (chmod "/var/run/tor" #o750)
+
+      ;; Allow Tor to access the hidden services' directories.
       (mkdir-p "/var/lib/tor")
       (chown "/var/lib/tor" (passwd:uid %user) (passwd:gid %user))
       (chmod "/var/lib/tor" #o700)
@@ -705,7 +737,7 @@ HiddenServicePort ~a ~a~%"
                        (service-extension account-service-type
                                           (const %tor-accounts))
                        (service-extension activation-service-type
-                                          tor-hidden-service-activation)))
+                                          tor-activation)))
 
                 ;; This can be extended with hidden services.
                 (compose concatenate)
@@ -1001,28 +1033,62 @@ networking."))))
 ;;; WPA supplicant
 ;;;
 
+(define-record-type* <wpa-supplicant-configuration>
+  wpa-supplicant-configuration make-wpa-supplicant-configuration
+  wpa-supplicant-configuration?
+  (wpa-supplicant     wpa-supplicant-configuration-wpa-supplicant ;<package>
+                      (default wpa-supplicant))
+  (pid-file           wpa-supplicant-configuration-pid-file       ;string
+                      (default "/var/run/wpa_supplicant.pid"))
+  (dbus?              wpa-supplicant-configuration-dbus?          ;Boolean
+                      (default #t))
+  (interface          wpa-supplicant-configuration-interface      ;#f | string
+                      (default #f))
+  (config-file        wpa-supplicant-configuration-config-file    ;#f | <file-like>
+                      (default #f))
+  (extra-options      wpa-supplicant-configuration-extra-options  ;list of strings
+                      (default '())))
 
-(define (wpa-supplicant-shepherd-service wpa-supplicant)
-  "Return a shepherd service for wpa_supplicant"
-  (list (shepherd-service
-         (documentation "Run WPA supplicant with dbus interface")
-         (provision '(wpa-supplicant))
-         (requirement '(user-processes dbus-system loopback))
-         (start #~(make-forkexec-constructor
-                   (list (string-append #$wpa-supplicant
-                                        "/sbin/wpa_supplicant")
-                         "-u" "-B" "-P/var/run/wpa_supplicant.pid")
-                   #:pid-file "/var/run/wpa_supplicant.pid"))
-         (stop #~(make-kill-destructor)))))
+(define wpa-supplicant-shepherd-service
+  (match-lambda
+    (($ <wpa-supplicant-configuration> wpa-supplicant pid-file dbus? interface
+                                       config-file extra-options)
+     (list (shepherd-service
+            (documentation "Run the WPA supplicant daemon")
+            (provision '(wpa-supplicant))
+            (requirement '(user-processes dbus-system loopback))
+            (start #~(make-forkexec-constructor
+                      (list (string-append #$wpa-supplicant
+                                           "/sbin/wpa_supplicant")
+                            (string-append "-P" #$pid-file)
+                            "-B"        ;run in background
+                            #$@(if dbus?
+                                   #~("-u")
+                                   #~())
+                            #$@(if interface
+                                   #~((string-append "-i" #$interface))
+                                   #~())
+                            #$@(if config-file
+                                   #~((string-append "-c" #$config-file))
+                                   #~())
+                            #$@extra-options)
+                      #:pid-file #$pid-file))
+            (stop #~(make-kill-destructor)))))))
 
 (define wpa-supplicant-service-type
-  (service-type (name 'wpa-supplicant)
-                (extensions
-                 (list (service-extension shepherd-root-service-type
-                                          wpa-supplicant-shepherd-service)
-                       (service-extension dbus-root-service-type list)
-                       (service-extension profile-service-type list)))
-                (default-value wpa-supplicant)))
+  (let ((config->package
+         (match-lambda
+           (($ <wpa-supplicant-configuration> wpa-supplicant)
+            (list wpa-supplicant)))))
+    (service-type (name 'wpa-supplicant)
+                  (extensions
+                   (list (service-extension shepherd-root-service-type
+                                            wpa-supplicant-shepherd-service)
+                         (service-extension dbus-root-service-type config->package)
+                         (service-extension profile-service-type config->package)))
+                  (description "Run the WPA Supplicant daemon, a service that
+implements authentication, key negotiation and more for wireless networks.")
+                  (default-value (wpa-supplicant-configuration)))))
 
 
 ;;;
@@ -1085,5 +1151,51 @@ networking."))))
     "Run @uref{http://www.openvswitch.org, Open vSwitch}, a multilayer virtual
 switch designed to enable massive network automation through programmatic
 extension.")))
+
+;;;
+;;; iptables
+;;;
+
+(define %iptables-accept-all-rules
+  (plain-file "iptables-accept-all.rules"
+              "*filter
+:INPUT ACCEPT
+:FORWARD ACCEPT
+:OUTPUT ACCEPT
+COMMIT
+"))
+
+(define-record-type* <iptables-configuration>
+  iptables-configuration make-iptables-configuration iptables-configuration?
+  (iptables iptables-configuration-iptables
+            (default iptables))
+  (ipv4-rules iptables-configuration-ipv4-rules
+              (default %iptables-accept-all-rules))
+  (ipv6-rules iptables-configuration-ipv6-rules
+              (default %iptables-accept-all-rules)))
+
+(define iptables-shepherd-service
+  (match-lambda
+    (($ <iptables-configuration> iptables ipv4-rules ipv6-rules)
+     (let ((iptables-restore (file-append iptables "/sbin/iptables-restore"))
+           (ip6tables-restore (file-append iptables "/sbin/ip6tables-restore")))
+       (shepherd-service
+        (documentation "Packet filtering framework")
+        (provision '(iptables))
+        (start #~(lambda _
+                   (invoke #$iptables-restore #$ipv4-rules)
+                   (invoke #$ip6tables-restore #$ipv6-rules)))
+        (stop #~(lambda _
+                  (invoke #$iptables-restore #$%iptables-accept-all-rules)
+                  (invoke #$ip6tables-restore #$%iptables-accept-all-rules))))))))
+
+(define iptables-service-type
+  (service-type
+   (name 'iptables)
+   (description
+    "Run @command{iptables-restore}, setting up the specified rules.")
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             (compose list iptables-shepherd-service))))))
 
 ;;; networking.scm ends here

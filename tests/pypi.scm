@@ -20,7 +20,7 @@
 (define-module (test-pypi)
   #:use-module (guix import pypi)
   #:use-module (guix base32)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix tests)
   #:use-module (guix build-system python)
   #:use-module ((guix build utils) #:select (delete-file-recursively which))
@@ -81,7 +81,7 @@ baz > 13.37")
    (dummy-package "foo"
                   (source (dummy-origin
                            (uri
-                            "https://pypi.io/packages/source/p/psutil/psutil-4.3.0.tar.gz"))))))
+                            "https://pypi.org/packages/source/p/psutil/psutil-4.3.0.tar.gz"))))))
 
 (test-equal "guix-package->pypi-name, new URL style"
   "certbot"

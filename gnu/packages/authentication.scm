@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages authentication)
+  #:use-module (gnu packages)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (guix build-system gnu)
@@ -35,6 +36,7 @@
        (method url-fetch)
        (uri (string-append "https://download.savannah.nongnu.org/releases/"
                            name "/" name "-" version ".tar.gz"))
+       (patches (search-patches "oath-toolkit-glibc-compat.patch"))
        (sha256
         (base32 "182ah8vfbg0yhv6mh1b6ap944d0na6x7lpfkwkmzb6jl9gx4cd5h"))))
     (build-system gnu-build-system)

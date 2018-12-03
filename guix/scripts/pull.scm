@@ -20,6 +20,7 @@
 (define-module (guix scripts pull)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix status)
   #:use-module (guix scripts)
   #:use-module (guix store)
   #:use-module (guix config)
@@ -30,64 +31,26 @@
   #:use-module (guix grafts)
   #:use-module (guix memoization)
   #:use-module (guix monads)
+  #:use-module (guix channels)
   #:autoload   (guix inferior) (open-inferior)
   #:use-module (guix scripts build)
-  #:autoload   (guix self) (whole-package)
+  #:use-module (guix git)
+  #:use-module (git)
   #:use-module (gnu packages)
-  #:autoload   (gnu packages ssh) (guile-ssh)
-  #:autoload   (gnu packages tls) (gnutls)
   #:use-module ((guix scripts package) #:select (build-and-use-profile))
-  #:use-module ((guix build utils)
-                #:select (with-directory-excursion delete-file-recursively))
-  #:use-module ((guix build download)
-                #:select (%x509-certificate-directory))
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap)
                 #:select (%bootstrap-guile))
   #:use-module ((gnu packages certs) #:select (le-certs))
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
-  #:export (guix-pull))
-
-(module-autoload! (resolve-module '(guix scripts pull))
-                  '(git) '(git-error? set-tls-certificate-locations!)
-                  '(guix git) '(latest-repository-commit))
-
-(define (ensure-guile-git!)
-  ;; Previously Guile-Git was not a prerequisite.  Thus, someone running 'guix
-  ;; pull' on an old installation may be lacking Guile-Git.  To address this,
-  ;; we autoload things that depend on Guile-Git and check in the entry point
-  ;; whether Guile-Git is available.
-  ;;
-  ;; TODO: Remove this hack when Guile-Git is widespread or enforced.
-
-  (unless (false-if-exception (resolve-interface '(git)))
-    (leave (G_ "Guile-Git is missing but it is now required by 'guix pull'.
-Install it by running:
-
-  guix package -i ~a
-  export GUILE_LOAD_PATH=$HOME/.guix-profile/share/guile/site/~a:$GUILE_LOAD_PATH
-  export GUILE_LOAD_COMPILED_PATH=$HOME/.guix-profile/lib/guile/~a/site-ccache:$GUILE_LOAD_COMPILED_PATH
-\n")
-           (match (effective-version)
-             ("2.0" "guile2.0-git")
-             (_     "guile-git"))
-           (effective-version)
-           (effective-version)))
-
-  ;; XXX: For unclear reasons this is needed for
-  ;; 'set-tls-certificate-locations!'.
-  (module-use! (resolve-module '(guix scripts pull))
-               (resolve-interface '(git))))
-
-(define %repository-url
-  (or (getenv "GUIX_PULL_URL") "https://git.savannah.gnu.org/git/guix.git"))
+  #:export (display-profile-content
+            guix-pull))
 
 
 ;;;
@@ -96,11 +59,12 @@ Install it by running:
 
 (define %default-options
   ;; Alist of default option values.
-  `((repository-url . ,%repository-url)
-    (ref . (branch . "origin/master"))
-    (system . ,(%current-system))
+  `((system . ,(%current-system))
     (substitutes? . #t)
     (build-hook? . #t)
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
     (graft? . #t)
     (verbosity . 0)))
 
@@ -110,6 +74,8 @@ Download and deploy the latest version of Guix.\n"))
   (display (G_ "
       --verbose          produce verbose output"))
   (display (G_ "
+  -C, --channels=FILE    deploy the channels defined in FILE"))
+  (display (G_ "
       --url=URL          download from the Git repository at URL"))
   (display (G_ "
       --commit=COMMIT    download the specified COMMIT"))
@@ -118,6 +84,10 @@ Download and deploy the latest version of Guix.\n"))
   (display (G_ "
   -l, --list-generations[=PATTERN]
                          list generations matching PATTERN"))
+  (display (G_ "
+  -p, --profile=PROFILE  use PROFILE instead of ~/.config/guix/current"))
+  (display (G_ "
+  -n, --dry-run          show what would be pulled and built"))
   (display (G_ "
       --bootstrap        use the bootstrap Guile to build the new Guix"))
   (newline)
@@ -134,6 +104,9 @@ Download and deploy the latest version of Guix.\n"))
   (cons* (option '("verbose") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'verbose? #t result)))
+         (option '(#\C "channels") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'channel-file arg result)))
          (option '(#\l "list-generations") #f #t
                  (lambda (opt name arg result)
                    (cons `(query list-generations ,(or arg ""))
@@ -148,6 +121,10 @@ Download and deploy the latest version of Guix.\n"))
          (option '("branch") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'ref `(branch . ,(string-append "origin/" arg))
+                               result)))
+         (option '(#\p "profile") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'profile (canonicalize-profile arg)
                                result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
@@ -171,70 +148,6 @@ Download and deploy the latest version of Guix.\n"))
 (define indirect-root-added
   (store-lift add-indirect-root))
 
-(define %self-build-file
-  ;; The file containing code to build Guix.  This serves the same purpose as
-  ;; a makefile, and, similarly, is intended to always keep this name.
-  "build-aux/build-self.scm")
-
-(define %pull-version
-  ;; This is the version of the 'guix pull' protocol.  It specifies what's
-  ;; expected from %SELF-BUILD-FILE.  The initial version ("0") was when we'd
-  ;; place a set of compiled Guile modules in ~/.config/guix/latest.
-  1)
-
-(define* (build-from-source source
-                            #:key verbose? commit)
-  "Return a derivation to build Guix from SOURCE, using the self-build script
-contained therein.  Use COMMIT as the version string."
-  ;; Running the self-build script makes it easier to update the build
-  ;; procedure: the self-build script of the Guix-to-be-installed contains the
-  ;; right dependencies, build procedure, etc., which the Guix-in-use may not
-  ;; be know.
-  (let* ((script (string-append source "/" %self-build-file))
-         (build  (primitive-load script)))
-    ;; BUILD must be a monadic procedure of at least one argument: the source
-    ;; tree.
-    ;;
-    ;; Note: BUILD can return #f if it does not support %PULL-VERSION.  In the
-    ;; future we'll fall back to a previous version of the protocol when that
-    ;; happens.
-    (build source #:verbose? verbose? #:version commit
-           #:pull-version %pull-version)))
-
-(define (whole-package-for-legacy name modules)
-  "Return a full-blown Guix package for MODULES, a derivation that builds Guix
-modules in the old ~/.config/guix/latest style."
-  (whole-package name modules
-
-                 ;; In the "old style", %SELF-BUILD-FILE would simply return a
-                 ;; derivation that builds modules.  We have to infer what the
-                 ;; dependencies of these modules were.
-                 (list guile-json guile-git guile-bytestructures
-                       guile-ssh gnutls)))
-
-(define* (derivation->manifest-entry drv
-                                     #:key url branch commit)
-  "Return a manifest entry for DRV, which represents Guix at COMMIT.  Record
-URL, BRANCH, and COMMIT as a property in the manifest entry."
-  (mbegin %store-monad
-    (what-to-build (list drv))
-    (built-derivations (list drv))
-    (let ((out (derivation->output-path drv)))
-      (return (manifest-entry
-                (name "guix")
-                (version (string-take commit 7))
-                (item (if (file-exists? (string-append out "/bin/guix"))
-                          drv
-                          (whole-package-for-legacy (string-append name "-"
-                                                                   version)
-                                                    drv)))
-                (properties
-                 `((source (repository
-                            (version 0)
-                            (url ,url)
-                            (branch ,branch)
-                            (commit ,commit))))))))))
-
 (define (display-profile-news profile)
   "Display what's up in PROFILE--new packages, and all that."
   (match (memv (generation-number profile)
@@ -252,25 +165,19 @@ URL, BRANCH, and COMMIT as a property in the manifest entry."
                                       #:heading (G_ "New in this revision:\n"))))
     (_ #t)))
 
-(define* (build-and-install source config-dir
-                            #:key verbose? url branch commit)
-  "Build the tool from SOURCE, and install it in CONFIG-DIR."
+(define* (build-and-install instances profile
+                            #:key verbose? dry-run?)
+  "Build the tool from SOURCE, and install it in PROFILE.  When DRY-RUN? is
+true, display what would be built without actually building it."
   (define update-profile
     (store-lift build-and-use-profile))
 
-  (define profile
-    (string-append config-dir "/current"))
-
-  (mlet* %store-monad ((drv   (build-from-source source
-                                                 #:commit commit
-                                                 #:verbose? verbose?))
-                       (entry (derivation->manifest-entry drv
-                                                          #:url url
-                                                          #:branch branch
-                                                          #:commit commit)))
+  (mlet %store-monad ((manifest (channel-instances->manifest instances)))
     (mbegin %store-monad
-      (update-profile profile (manifest (list entry)))
-      (return (display-profile-news profile)))))
+      (update-profile profile manifest
+                      #:dry-run? dry-run?)
+      (munless dry-run?
+        (return (display-profile-news profile))))))
 
 (define (honor-lets-encrypt-certificates! store)
   "Tell Guile-Git to use the Let's Encrypt certificates."
@@ -278,17 +185,34 @@ URL, BRANCH, and COMMIT as a property in the manifest entry."
          (certs (string-append (derivation->output-path drv)
                                "/etc/ssl/certs")))
     (build-derivations store (list drv))
+    (set-tls-certificate-locations! certs)))
 
-    ;; In the past Guile-Git would not provide this procedure.
-    (if (module-defined? (resolve-interface '(git))
-                         'set-tls-certificate-locations!)
-        (set-tls-certificate-locations! certs)
-        (begin
-          ;; In this case we end up using whichever certificates OpenSSL
-          ;; chooses to use: $SSL_CERT_FILE, $SSL_CERT_DIR, or /etc/ssl/certs.
-          (warning (G_ "cannot enforce use of the Let's Encrypt \
-certificates~%"))
-          (warning (G_ "please upgrade Guile-Git~%"))))))
+(define (honor-x509-certificates store)
+  "Use the right X.509 certificates for Git checkouts over HTTPS."
+  ;; On distros such as CentOS 7, /etc/ssl/certs contains only a couple of
+  ;; files (instead of all the certificates) among which "ca-bundle.crt".  On
+  ;; other distros /etc/ssl/certs usually contains the whole set of
+  ;; certificates along with "ca-certificates.crt".  Try to choose the right
+  ;; one.
+  (let ((file      (letrec-syntax ((choose
+                                    (syntax-rules ()
+                                      ((_ file rest ...)
+                                       (let ((f file))
+                                         (if (and f (file-exists? f))
+                                             f
+                                             (choose rest ...))))
+                                      ((_)
+                                       #f))))
+                     (choose (getenv "SSL_CERT_FILE")
+                             "/etc/ssl/certs/ca-certificates.crt"
+                             "/etc/ssl/certs/ca-bundle.crt")))
+        (directory (or (getenv "SSL_CERT_DIR") "/etc/ssl/certs")))
+    (if (or file
+            (and=> (stat directory #f)
+                   (lambda (st)
+                     (> (stat:nlink st) 2))))
+        (set-tls-certificate-locations! directory file)
+        (honor-lets-encrypt-certificates! store))))
 
 (define (report-git-error error)
   "Report the given Guile-Git error."
@@ -306,6 +230,60 @@ certificates~%"))
       body ...)
     (lambda (key err)
       (report-git-error err))))
+
+
+;;;
+;;; Profile.
+;;;
+
+(define %current-profile
+  ;; The "real" profile under /var/guix.
+  (string-append %profile-directory "/current-guix"))
+
+(define %user-profile-directory
+  ;; The user-friendly name of %CURRENT-PROFILE.
+  (string-append (config-directory #:ensure? #f) "/current"))
+
+(define (migrate-generations profile directory)
+  "Migrate the generations of PROFILE to DIRECTORY."
+  (format (current-error-port)
+          (G_ "Migrating profile generations to '~a'...~%")
+          %profile-directory)
+  (let ((current (generation-number profile)))
+    (for-each (lambda (generation)
+                (let ((source (generation-file-name profile generation))
+                      (target (string-append directory "/current-guix-"
+                                             (number->string generation)
+                                             "-link")))
+                  ;; Note: Don't use 'rename-file' as SOURCE and TARGET might
+                  ;; live on different file systems.
+                  (symlink (readlink source) target)
+                  (delete-file source)))
+              (profile-generations profile))
+    (symlink (string-append "current-guix-"
+                            (number->string current) "-link")
+             (string-append directory "/current-guix"))))
+
+(define (ensure-default-profile)
+  (ensure-profile-directory)
+
+  ;; In 0.15.0+ we'd create ~/.config/guix/current-[0-9]*-link symlinks.  Move
+  ;; them to %PROFILE-DIRECTORY.
+  (unless (string=? %profile-directory
+                    (dirname (canonicalize-profile %user-profile-directory)))
+    (migrate-generations %user-profile-directory %profile-directory))
+
+  ;; Make sure ~/.config/guix/current points to /var/guix/profiles/….
+  (let ((link %user-profile-directory))
+    (unless (equal? (false-if-exception (readlink link))
+                    %current-profile)
+      (catch 'system-error
+        (lambda ()
+          (false-if-exception (delete-file link))
+          (symlink %current-profile link))
+        (lambda args
+          (leave (G_ "while creating symlink '~a': ~a~%")
+                 link (strerror (system-error-errno args))))))))
 
 
 ;;;
@@ -335,7 +313,9 @@ way and displaying details about the channel's source code."
             ;; Show most recently installed packages last.
             (reverse
              (manifest-entries
-              (profile-manifest (generation-file-name profile number))))))
+              (profile-manifest (if (zero? number)
+                                    profile
+                                    (generation-file-name profile number)))))))
 
 (define (indented-string str indent)
   "Return STR with each newline preceded by IDENT spaces."
@@ -421,11 +401,8 @@ and ALIST2 differ, display HEADING upfront."
   (display-new/upgraded-packages (package-alist gen1)
                                  (package-alist gen2)))
 
-(define (process-query opts)
-  "Process any query specified by OPTS."
-  (define profile
-    (string-append (config-directory) "/current"))
-
+(define (process-query opts profile)
+  "Process any query on PROFILE specified by OPTS."
   (match (assoc-ref opts 'query)
     (('list-generations pattern)
      (define (list-generations profile numbers)
@@ -455,62 +432,111 @@ and ALIST2 differ, display HEADING upfront."
                ((numbers ...)
                 (list-generations profile numbers)))))))))
 
+(define (channel-list opts)
+  "Return the list of channels to use.  If OPTS specify a channel file,
+channels are read from there; otherwise, if ~/.config/guix/channels.scm
+exists, read it; otherwise %DEFAULT-CHANNELS is used.  Apply channel
+transformations specified in OPTS (resulting from '--url', '--commit', or
+'--branch'), if any."
+  (define file
+    (assoc-ref opts 'channel-file))
+
+  (define default-file
+    (string-append (config-directory) "/channels.scm"))
+
+  (define (load-channels file)
+    (let ((result (load* file (make-user-module '((guix channels))))))
+      (if (and (list? result) (every channel? result))
+          result
+          (leave (G_ "'~a' did not return a list of channels~%") file))))
+
+  (define channels
+    (cond (file
+           (load-channels file))
+          ((file-exists? default-file)
+           (load-channels default-file))
+          (else
+           %default-channels)))
+
+  (define (environment-variable)
+    (match (getenv "GUIX_PULL_URL")
+      (#f #f)
+      (url
+       (warning (G_ "The 'GUIX_PULL_URL' environment variable is deprecated.
+Use '~/.config/guix/channels.scm' instead."))
+       url)))
+
+  (let ((ref (assoc-ref opts 'ref))
+        (url (or (assoc-ref opts 'repository-url)
+                 (environment-variable))))
+    (if (or ref url)
+        (match channels
+          ((one)
+           ;; When there's only one channel, apply '--url', '--commit', and
+           ;; '--branch' to this specific channel.
+           (let ((url (or url (channel-url one))))
+             (list (match ref
+                     (('commit . commit)
+                      (channel (inherit one)
+                               (url url) (commit commit) (branch #f)))
+                     (('branch . branch)
+                      (channel (inherit one)
+                               (url url) (commit #f) (branch branch)))
+                     (#f
+                      (channel (inherit one) (url url)))))))
+          (_
+           ;; Otherwise bail out.
+           (leave
+            (G_ "'--url', '--commit', and '--branch' are not applicable~%"))))
+        channels)))
+
 
 (define (guix-pull . args)
-  (define (use-le-certs? url)
-    (string-prefix? "https://git.savannah.gnu.org/" url))
-
   (with-error-handling
     (with-git-error-handling
-     (let* ((opts  (parse-command-line args %options
-                                       (list %default-options)))
-            (url   (assoc-ref opts 'repository-url))
-            (ref   (assoc-ref opts 'ref))
-            (cache (string-append (cache-directory) "/pull")))
-       (ensure-guile-git!)
-
+     (let* ((opts     (parse-command-line args %options
+                                          (list %default-options)))
+            (cache    (string-append (cache-directory) "/pull"))
+            (channels (channel-list opts))
+            (profile  (or (assoc-ref opts 'profile) %current-profile)))
+       (ensure-default-profile)
        (cond ((assoc-ref opts 'query)
-              (process-query opts))
-             ((assoc-ref opts 'dry-run?)
-              #t)                                 ;XXX: not very useful
+              (process-query opts profile))
              (else
               (with-store store
-                (parameterize ((%graft? (assoc-ref opts 'graft?)))
-                  (set-build-options-from-command-line store opts)
+                (with-status-report print-build-event
+                  (parameterize ((%graft? (assoc-ref opts 'graft?))
+                                 (%repository-cache-directory cache))
+                    (set-build-options-from-command-line store opts)
+                    (honor-x509-certificates store)
 
-                  ;; For reproducibility, always refer to the LE certificates
-                  ;; when we know we're talking to Savannah.
-                  (when (use-le-certs? url)
-                    (honor-lets-encrypt-certificates! store))
-
-                  (format (current-error-port)
-                          (G_ "Updating from Git repository at '~a'...~%")
-                          url)
-
-                  (let-values (((checkout commit)
-                                (latest-repository-commit store url
-                                                          #:ref ref
-                                                          #:cache-directory
-                                                          cache)))
-
-                    (format (current-error-port)
-                            (G_ "Building from Git commit ~a...~%")
-                            commit)
-                    (parameterize ((%guile-for-build
-                                    (package-derivation
-                                     store
-                                     (if (assoc-ref opts 'bootstrap?)
-                                         %bootstrap-guile
-                                         (canonical-package guile-2.2)))))
-                      (run-with-store store
-                        (build-and-install checkout (config-directory)
-                                           #:url url
-                                           #:branch (match ref
-                                                      (('branch . branch)
-                                                       branch)
-                                                      (_ #f))
-                                           #:commit commit
-                                           #:verbose?
-                                           (assoc-ref opts 'verbose?)))))))))))))
+                    (let ((instances (latest-channel-instances store channels)))
+                      (format (current-error-port)
+                              (N_ "Building from this channel:~%"
+                                  "Building from these channels:~%"
+                                  (length instances)))
+                      (for-each (lambda (instance)
+                                  (let ((channel
+                                         (channel-instance-channel instance)))
+                                    (format (current-error-port)
+                                            "  ~10a~a\t~a~%"
+                                            (channel-name channel)
+                                            (channel-url channel)
+                                            (string-take
+                                             (channel-instance-commit instance)
+                                             7))))
+                                instances)
+                      (parameterize ((%guile-for-build
+                                      (package-derivation
+                                       store
+                                       (if (assoc-ref opts 'bootstrap?)
+                                           %bootstrap-guile
+                                           (canonical-package guile-2.2)))))
+                        (run-with-store store
+                          (build-and-install instances profile
+                                             #:dry-run?
+                                             (assoc-ref opts 'dry-run?)
+                                             #:verbose?
+                                             (assoc-ref opts 'verbose?))))))))))))))
 
 ;;; pull.scm ends here

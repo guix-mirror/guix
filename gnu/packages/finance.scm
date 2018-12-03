@@ -165,6 +165,13 @@ line client and a client based on Qt.")
        #:make-flags (list "ARGS=-E BaselineTest_cmd-org")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'boost-compat
+           (lambda _
+             (substitute* "src/utils.h"
+               ;; This library moved in Boost 1.66.  Remove for Ledger
+               ;; versions > 3.1.1.
+               (("boost/uuid/sha1.hpp") "boost/uuid/detail/sha1.hpp"))
+             #t))
          (add-before 'configure 'install-examples
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((examples (string-append (assoc-ref outputs "out")
@@ -335,7 +342,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
   (package
     (inherit electrum)
     (name "electron-cash")
-    (version "3.3")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
@@ -346,7 +353,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
                            ".tar.gz"))
        (sha256
         (base32
-         "1x487hyacdm1qhik1mhfimr4jwcwz7sgsbkh11awrb6j19sxdxym"))
+         "1jdy89rfdwc2jadx3rqj5yvynpcn90cx6482ax9f1cj9gfxp9j2b"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -664,23 +671,38 @@ Ledger Blue/Nano S.")
 (define-public python-trezor
   (package
     (name "python-trezor")
-    (version "0.7.16")
+    (version "0.10.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "trezor" version))
         (sha256
           (base32
-            "055kii56wgwadl5z911s59ya2fnsqzk3n5i19s2hb9sv2by6knvb"))))
+            "138k6zsqqpb46k3rcpyslm9q7yq5i6k4myvr9n425jnkadf4vfjd"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          ;; Default tests run device-specific tests which fail, only run specific tests.
+          (replace 'check
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (invoke "python" "-m" "pytest" "--pyarg" "trezorlib.tests.unit_tests")
+              (invoke "python" "-m" "pytest" "-m" "slow_cosi" "--pyarg" "trezorlib.tests.unit_tests")
+              )))))
     (propagated-inputs
-     `(("python-ecdsa" ,python-ecdsa)
+     `(("python-click" ,python-click)
+       ("python-ecdsa" ,python-ecdsa)
        ("python-hidapi" ,python-hidapi)
+       ("python-libusb1" ,python-libusb1)
        ("python-mnemonic" ,python-mnemonic)
        ("python-protobuf" ,python-protobuf)
-       ("python-requests" ,python-requests)))
+       ("python-pyblake2" ,python-pyblake2)
+       ("python-requests" ,python-requests)
+       ("python-typing" ,python-typing)))
     (native-inputs
-     `(("python-pyqt" ,python-pyqt))) ; Tests
+     `(("python-mock" ,python-mock) ; Tests
+       ("python-pyqt" ,python-pyqt) ; Tests
+       ("python-pytest" ,python-pytest))) ; Tests
     (home-page "https://github.com/trezor/python-trezor")
     (synopsis "Python library for communicating with TREZOR Hardware Wallet")
     (description "@code{trezor} is a Python library for communicating with
@@ -825,7 +847,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.43.7")
+    (version "0.50.0")
     (source
      (origin
        (method git-fetch)
@@ -836,10 +858,14 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "19m36z98361bqxjdb65597j2kxbly491927c6p9z47s1vxc3raaq"))))
+         "0f24ihglmzphy30pgc49w0rxmsjc76mgcggg078cfsz7xrrk13gf"))))
     (build-system python-build-system)
+    (arguments
+     ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
+     `(#:tests? #f))
     (propagated-inputs
      `(("python-aiohttp" ,python-aiohttp)
+       ("python-attr" ,python-attr)
        ("python-base58" ,python-base58)
        ("python-jsonschema" ,python-jsonschema)
        ("python-libnacl" ,python-libnacl)
@@ -860,7 +886,7 @@ main features are:
 (define-public silkaj
   (package
     (name "silkaj")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method git-fetch)
@@ -870,30 +896,10 @@ main features are:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0xy25lpgz04nxikjvxlnlckrc9xmsxyiz2qm0bsiid8cnbdqcn12"))))
+         "02n028rz1pshgh7w0af3b291r8lwvhzskm1q98d991gr8rscvad2"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f                      ;no test
-       #:phases
-       (modify-phases %standard-phases
-         ;; The program is just a bunch of Python files in "src/" directory.
-         ;; Many phases are useless.  However, `python-build-system' correctly
-         ;; sets PYTHONPATH and patches Python scripts.
-         (delete 'configure)
-         (delete 'build)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (share (string-append out "/share/silkaj"))
-                    (executable (string-append share "/silkaj.py"))
-                    (bin (string-append out "/bin")))
-               ;; Install data.
-               (copy-recursively "src" share)
-               ;; Install executable.
-               (mkdir-p bin)
-               (with-directory-excursion bin
-                 (symlink executable "silkaj")))
-             #t)))))
+     `(#:tests? #f))                    ;no test
     (inputs
      `(("python-commandlines" ,python-commandlines)
        ("python-ipaddress" ,python-ipaddress)

@@ -1,0 +1,603 @@
+From 43af3c117b0b3220b15c2fe2895b94bbd83d3a60 Mon Sep 17 00:00:00 2001
+From: Claudio Fernandes <claudiosf.claudio@gmail.com>
+Date: Sun, 15 Jan 2017 21:23:39 -0200
+Subject: [PATCH] Adapt Avogadro to Eigen 3.3
+
+---
+ CMakeLists.txt                                     |  9 +------
+ avogadro/src/mainwindow.cpp                        |  5 ++--
+ libavogadro/src/camera.cpp                         | 10 ++++----
+ libavogadro/src/camera.h                           | 14 +++++------
+ libavogadro/src/engines/wireengine.cpp             |  4 ++--
+ .../crystallography/crystallographyextension.cpp   |  2 +-
+ .../crystallography/ui/ceviewoptionswidget.cpp     |  2 +-
+ .../src/extensions/orca/orcaanalysedialog.cpp      |  1 -
+ .../src/extensions/orca/orcainputdialog.cpp        |  1 -
+ .../src/extensions/qtaim/qtaimmathutilities.cpp    |  1 +
+ .../qtaim/qtaimwavefunctionevaluator.cpp           | 28 +++++++++++-----------
+ .../extensions/surfaces/openqube/gamessukout.cpp   |  1 +
+ .../src/extensions/surfaces/openqube/slaterset.cpp |  6 +++--
+ libavogadro/src/glpainter_p.cpp                    | 14 +++++------
+ libavogadro/src/glwidget.cpp                       |  4 ++--
+ libavogadro/src/molecule.cpp                       | 26 ++++++++++++++++++--
+ libavogadro/src/navigate.cpp                       |  2 +-
+ libavogadro/src/tools/bondcentrictool.cpp          | 28 +++++++++++-----------
+ libavogadro/src/tools/manipulatetool.cpp           | 17 +++++++------
+ libavogadro/src/tools/navigatetool.cpp             |  3 ++-
+ libavogadro/src/tools/skeletontree.cpp             |  7 +++---
+ libavogadro/src/tools/skeletontree.h               |  2 +-
+ 22 files changed, 102 insertions(+), 85 deletions(-)
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -231,14 +231,7 @@ if(NOT Linguist_FOUND)
+   message(WARNING " Qt4 Linguist not found, please install it if you want Avogadro translations")
+ endif()
+ 
+-find_package(Eigen3) # find and setup Eigen3 if available
+-if(NOT EIGEN3_FOUND)
+-   message(STATUS "Cannot find Eigen3, trying Eigen2")
+-   find_package(Eigen2 REQUIRED) # Some version is required
+-else()
+-# Use Stage10 Eigen3 support
+-   set (EIGEN2_SUPPORT_STAGE10_FULL_EIGEN2_API TRUE)
+-endif()
++find_package(Eigen3 REQUIRED) # find and setup Eigen3 if available
+ 
+ find_package(ZLIB REQUIRED)
+ find_package(OpenBabel2 REQUIRED) # find and setup OpenBabel
+--- a/avogadro/src/mainwindow.cpp
++++ b/avogadro/src/mainwindow.cpp
+@@ -115,7 +115,6 @@
+ #include <QDebug>
+ 
+ #include <Eigen/Geometry>
+-#include <Eigen/Array>
+ #define USEQUAT
+ // This is a "hidden" exported Qt function on the Mac for Qt-4.x.
+ #ifdef Q_WS_MAC
+@@ -2775,7 +2774,7 @@ protected:
+     linearGoal.row(1) = linearGoal.row(2).cross(linearGoal.row(0));
+ 
+     // calculate the translation matrix
+-    Transform3d goal(linearGoal);
++    Projective3d goal(linearGoal);
+ 
+     goal.pretranslate(- 3.0 * (d->glWidget->radius() + CAMERA_NEAR_DISTANCE) * Vector3d::UnitZ());
+ 
+@@ -2840,7 +2839,7 @@ protected:
+     Matrix3d linearGoal = Matrix3d::Identity();
+ 
+     // calculate the translation matrix
+-    Transform3d goal(linearGoal);
++    Projective3d goal(linearGoal);
+ 
+     goal.pretranslate(- 3.0 * (d->glWidget->radius() + CAMERA_NEAR_DISTANCE) * Vector3d::UnitZ());
+ 
+--- a/libavogadro/src/camera.cpp
++++ b/libavogadro/src/camera.cpp
+@@ -47,7 +47,7 @@ namespace Avogadro
+ 
+       CameraPrivate() {};
+ 
+-      Eigen::Transform3d modelview, projection;
++      Eigen::Projective3d modelview, projection;
+       const GLWidget *parent;
+       double angleOfViewY;
+       double orthoScale;
+@@ -169,20 +169,20 @@ namespace Avogadro
+ 
+   double Camera::distance(const Eigen::Vector3d & point) const
+   {
+-    return ( d->modelview * point ).norm();
++    return ( d->modelview * point.homogeneous() ).head<3>().norm();
+   }
+ 
+-  void Camera::setModelview(const Eigen::Transform3d &matrix)
++  void Camera::setModelview(const Eigen::Projective3d &matrix)
+   {
+     d->modelview = matrix;
+   }
+ 
+-  const Eigen::Transform3d & Camera::modelview() const
++  const Eigen::Projective3d & Camera::modelview() const
+   {
+     return d->modelview;
+   }
+ 
+-  Eigen::Transform3d & Camera::modelview()
++  Eigen::Projective3d & Camera::modelview()
+   {
+     return d->modelview;
+   }
+--- a/libavogadro/src/camera.h
++++ b/libavogadro/src/camera.h
+@@ -101,16 +101,16 @@ namespace Avogadro {
+       double angleOfViewY() const;
+       /** Sets 4x4 "modelview" matrix representing the camera orientation and position.
+         * @param matrix the matrix to copy from
+-        * @sa Eigen::Transform3d & modelview(), applyModelview() */
+-      void setModelview(const Eigen::Transform3d &matrix);
++        * @sa Eigen::Projective3d & modelview(), applyModelview() */
++      void setModelview(const Eigen::Projective3d &matrix);
+       /** @return a constant reference to the 4x4 "modelview" matrix representing
+         *         the camera orientation and position
+-        * @sa setModelview(), Eigen::Transform3d & modelview() */
+-      const Eigen::Transform3d & modelview() const;
++        * @sa setModelview(), Eigen::Projective3d & modelview() */
++      const Eigen::Projective3d & modelview() const;
+       /** @return a non-constant reference to the 4x4 "modelview" matrix representing
+         *         the camera orientation and position
+-        * @sa setModelview(), const Eigen::Transform3d & modelview() const */
+-      Eigen::Transform3d & modelview();
++        * @sa setModelview(), const Eigen::Projective3d & modelview() const */
++      Eigen::Projective3d & modelview();
+       /** Calls gluPerspective() or glOrtho() with parameters automatically chosen
+         * for rendering the GLWidget's molecule with this camera. Should be called
+         * only in GL_PROJECTION matrix mode. Example code is given
+@@ -342,7 +342,7 @@ namespace Avogadro {
+        * @return {x/w, y/w, z/w} vector
+        */
+       Eigen::Vector3d V4toV3DivW(const Eigen::Vector4d & v4) {
+-        return v4.start<3>()/v4.w();
++        return v4.head<3>()/v4.w();
+       }
+   };
+ 
+--- a/libavogadro/src/engines/wireengine.cpp
++++ b/libavogadro/src/engines/wireengine.cpp
+@@ -109,7 +109,7 @@ namespace Avogadro {
+     const Camera *camera = pd->camera();
+ 
+     // perform a rough form of frustum culling
+-    Eigen::Vector3d transformedPos = pd->camera()->modelview() * v;
++    Eigen::Vector3d transformedPos = (pd->camera()->modelview() * v.homogeneous()).head<3>();
+     double dot = transformedPos.z() / transformedPos.norm();
+     if(dot > -0.8)
+       return true;
+@@ -167,7 +167,7 @@ namespace Avogadro {
+       map = pd->colorMap(); // fall back to global color map
+ 
+     // perform a rough form of frustum culling
+-    Eigen::Vector3d transformedEnd1 = pd->camera()->modelview() * v1;
++    Eigen::Vector3d transformedEnd1 = (pd->camera()->modelview() * v1.homogeneous()).head<3>();
+     double dot = transformedEnd1.z() / transformedEnd1.norm();
+     if(dot > -0.8)
+       return true; // i.e., don't bother rendering
+--- a/libavogadro/src/extensions/crystallography/crystallographyextension.cpp
++++ b/libavogadro/src/extensions/crystallography/crystallographyextension.cpp
+@@ -1989,7 +1989,7 @@ namespace Avogadro
+     // fix coordinates
+     // Apply COB matrix:
+     Eigen::Matrix3d invCob;
+-    cob.computeInverse(&invCob);
++    invCob = cob.inverse();
+     for (QList<Eigen::Vector3d>::iterator
+            it = fcoords.begin(),
+            it_end = fcoords.end();
+--- a/libavogadro/src/extensions/crystallography/ui/ceviewoptionswidget.cpp
++++ b/libavogadro/src/extensions/crystallography/ui/ceviewoptionswidget.cpp
+@@ -139,7 +139,7 @@ namespace Avogadro
+   {
+     // View into a Miller plane
+     Camera *camera = m_glWidget->camera();
+-    Eigen::Transform3d modelView;
++    Eigen::Projective3d modelView;
+     modelView.setIdentity();
+ 
+     // OK, so we want to rotate to look along the normal at the plane
+--- a/libavogadro/src/extensions/orca/orcaanalysedialog.cpp
++++ b/libavogadro/src/extensions/orca/orcaanalysedialog.cpp
+@@ -41,7 +41,6 @@
+ #include <openbabel/mol.h>
+ 
+ #include <Eigen/Geometry>
+-#include <Eigen/LeastSquares>
+ 
+ #include <vector>
+ 
+--- a/libavogadro/src/extensions/orca/orcainputdialog.cpp
++++ b/libavogadro/src/extensions/orca/orcainputdialog.cpp
+@@ -33,7 +33,6 @@
+ #include <openbabel/mol.h>
+ 
+ #include <Eigen/Geometry>
+-#include <Eigen/LeastSquares>
+ 
+ #include <vector>
+ 
+--- a/libavogadro/src/extensions/qtaim/qtaimmathutilities.cpp
++++ b/libavogadro/src/extensions/qtaim/qtaimmathutilities.cpp
+@@ -28,6 +28,7 @@
+ 
+ #include <cmath>
+ #include <Eigen/QR>
++#include <Eigen/Eigenvalues>
+ 
+ namespace Avogadro {
+   namespace QTAIMMathUtilities {
+--- a/libavogadro/src/extensions/qtaim/qtaimwavefunctionevaluator.cpp
++++ b/libavogadro/src/extensions/qtaim/qtaimwavefunctionevaluator.cpp
+@@ -35,21 +35,21 @@ namespace Avogadro
+     m_nprim=wfn.numberOfGaussianPrimitives();
+     m_nnuc=wfn.numberOfNuclei();
+ 
+-    m_nucxcoord=Map<Matrix<qreal,Dynamic,1> >(wfn.xNuclearCoordinates(),m_nnuc);
+-    m_nucycoord=Map<Matrix<qreal,Dynamic,1> >(wfn.yNuclearCoordinates(),m_nnuc);
+-    m_nuczcoord=Map<Matrix<qreal,Dynamic,1> >(wfn.zNuclearCoordinates(),m_nnuc);
+-    m_nucz=Map<Matrix<qint64,Dynamic,1> >(wfn.nuclearCharges(),m_nnuc);
+-    m_X0=Map<Matrix<qreal,Dynamic,1> >(wfn.xGaussianPrimitiveCenterCoordinates(),m_nprim,1);
+-    m_Y0=Map<Matrix<qreal,Dynamic,1> >(wfn.yGaussianPrimitiveCenterCoordinates(),m_nprim,1);
+-    m_Z0=Map<Matrix<qreal,Dynamic,1> >(wfn.zGaussianPrimitiveCenterCoordinates(),m_nprim,1);
+-    m_xamom=Map<Matrix<qint64,Dynamic,1> >(wfn.xGaussianPrimitiveAngularMomenta(),m_nprim,1);
+-    m_yamom=Map<Matrix<qint64,Dynamic,1> >(wfn.yGaussianPrimitiveAngularMomenta(),m_nprim,1);
+-    m_zamom=Map<Matrix<qint64,Dynamic,1> >(wfn.zGaussianPrimitiveAngularMomenta(),m_nprim,1);
+-    m_alpha=Map<Matrix<qreal,Dynamic,1> >(wfn.gaussianPrimitiveExponentCoefficients(),m_nprim,1);
++    m_nucxcoord=Map<Matrix<qreal,Dynamic,1> >(const_cast<qreal*>(wfn.xNuclearCoordinates()),m_nnuc);
++    m_nucycoord=Map<Matrix<qreal,Dynamic,1> >(const_cast<qreal*>(wfn.yNuclearCoordinates()),m_nnuc);
++    m_nuczcoord=Map<Matrix<qreal,Dynamic,1> >(const_cast<qreal*>(wfn.zNuclearCoordinates()),m_nnuc);
++    m_nucz=Map<Matrix<qint64,Dynamic,1> >(const_cast<qint64*>(wfn.nuclearCharges()),m_nnuc);
++    m_X0=Map<Matrix<qreal,Dynamic,1> >(const_cast<qreal*>(wfn.xGaussianPrimitiveCenterCoordinates()),m_nprim,1);
++    m_Y0=Map<Matrix<qreal,Dynamic,1> >(const_cast<qreal*>(wfn.yGaussianPrimitiveCenterCoordinates()),m_nprim,1);
++    m_Z0=Map<Matrix<qreal,Dynamic,1> >(const_cast<qreal*>(wfn.zGaussianPrimitiveCenterCoordinates()),m_nprim,1);
++    m_xamom=Map<Matrix<qint64,Dynamic,1> >(const_cast<qint64*>(wfn.xGaussianPrimitiveAngularMomenta()),m_nprim,1);
++    m_yamom=Map<Matrix<qint64,Dynamic,1> >(const_cast<qint64*>(wfn.yGaussianPrimitiveAngularMomenta()),m_nprim,1);
++    m_zamom=Map<Matrix<qint64,Dynamic,1> >(const_cast<qint64*>(wfn.zGaussianPrimitiveAngularMomenta()),m_nprim,1);
++    m_alpha=Map<Matrix<qreal,Dynamic,1> >(const_cast<qreal*>(wfn.gaussianPrimitiveExponentCoefficients()),m_nprim,1);
+     // TODO Implement screening for unoccupied molecular orbitals.
+-    m_occno=Map<Matrix<qreal,Dynamic,1> >(wfn.molecularOrbitalOccupationNumbers(),m_nmo,1);
+-    m_orbe=Map<Matrix<qreal,Dynamic,1> >(wfn.molecularOrbitalEigenvalues(),m_nmo,1);
+-    m_coef=Map<Matrix<qreal,Dynamic,Dynamic,RowMajor> >(wfn.molecularOrbitalCoefficients(),m_nmo,m_nprim);
++    m_occno=Map<Matrix<qreal,Dynamic,1> >(const_cast<qreal*>(wfn.molecularOrbitalOccupationNumbers()),m_nmo,1);
++    m_orbe=Map<Matrix<qreal,Dynamic,1> >(const_cast<qreal*>(wfn.molecularOrbitalEigenvalues()),m_nmo,1);
++    m_coef=Map<Matrix<qreal,Dynamic,Dynamic,RowMajor> >(const_cast<qreal*>(wfn.molecularOrbitalCoefficients()),m_nmo,m_nprim);
+     m_totalEnergy=wfn.totalEnergy();
+     m_virialRatio=wfn.virialRatio();
+ 
+--- a/libavogadro/src/extensions/surfaces/openqube/gamessukout.cpp
++++ b/libavogadro/src/extensions/surfaces/openqube/gamessukout.cpp
+@@ -19,6 +19,7 @@
+ using Eigen::Vector3d;
+ using std::vector;
+ 
++#include <iostream>
+ #include <fstream>
+ 
+ namespace OpenQube
+--- a/libavogadro/src/extensions/surfaces/openqube/slaterset.cpp
++++ b/libavogadro/src/extensions/surfaces/openqube/slaterset.cpp
+@@ -25,9 +25,9 @@
+ 
+ #include "cube.h"
+ 
+-#include <Eigen/Array>
+ #include <Eigen/LU>
+ #include <Eigen/QR>
++#include <Eigen/Eigenvalues>
+ 
+ #include <cmath>
+ 
+@@ -250,7 +250,9 @@ bool SlaterSet::initialize()
+ 
+   SelfAdjointEigenSolver<MatrixXd> s(m_overlap);
+   MatrixXd p = s.eigenvectors();
+-  MatrixXd m = p * s.eigenvalues().cwise().inverse().cwise().sqrt().asDiagonal() * p.inverse();
++  // TODO check if this is correct
++  MatrixXd m1 = (s.eigenvalues().array().inverse().sqrt());
++  MatrixXd m = p.array()*(m1.diagonal().array())*p.inverse().array();
+   m_normalized = m * m_eigenVectors;
+ 
+   if (!(m_overlap*m*m).isIdentity())
+--- a/libavogadro/src/glpainter_p.cpp
++++ b/libavogadro/src/glpainter_p.cpp
+@@ -789,13 +789,13 @@ namespace Avogadro
+         } else {
+           points[theta-1] = Eigen::AngleAxisd(theta * (M_PI / 180.0) / 2, n) * u;
+         }
+-        points[theta-1] = d->widget->camera()->modelview() * (origin + points[theta-1]);
++        points[theta-1] = (d->widget->camera()->modelview() * (origin + points[theta-1]).homogeneous()).head<3>();
+       }
+ 
+     // Get vectors representing the points' positions in terms of the model view.
+-    Eigen::Vector3d _origin = d->widget->camera()->modelview() * origin;
+-    Eigen::Vector3d _direction1 = d->widget->camera()->modelview() * (origin+u);
+-    Eigen::Vector3d _direction2 = d->widget->camera()->modelview() * (origin+v);
++    Eigen::Vector3d _origin = (d->widget->camera()->modelview() * origin.homogeneous()).head<3>();
++    Eigen::Vector3d _direction1 = (d->widget->camera()->modelview() * (origin+u).homogeneous()).head<3>();
++    Eigen::Vector3d _direction2 = (d->widget->camera()->modelview() * (origin+v).homogeneous()).head<3>();
+ 
+     glPushAttrib(GL_ALL_ATTRIB_BITS);
+     glPushMatrix();
+@@ -880,12 +880,12 @@ namespace Avogadro
+         } else {
+           points[theta-1] = Eigen::AngleAxisd(theta * (M_PI / 180.0) / 2, n) * u;
+         }
+-        points[theta-1] = d->widget->camera()->modelview() * (origin + points[theta-1]);
++        points[theta-1] = (d->widget->camera()->modelview() * (origin + points[theta-1]).homogeneous()).head<3>();
+       }
+ 
+     // Get vectors representing the points' positions in terms of the model view.
+-    Eigen::Vector3d _direction1 = d->widget->camera()->modelview() * (origin + u);
+-    Eigen::Vector3d _direction2 = d->widget->camera()->modelview() * (origin + v);
++    Eigen::Vector3d _direction1 = (d->widget->camera()->modelview() * (origin + u).homogeneous()).head<3>();
++    Eigen::Vector3d _direction2 = (d->widget->camera()->modelview() * (origin + v).homogeneous()).head<3>();
+ 
+     glPushAttrib(GL_ALL_ATTRIB_BITS);
+     glPushMatrix();
+--- a/libavogadro/src/glwidget.cpp
++++ b/libavogadro/src/glwidget.cpp
+@@ -765,7 +765,7 @@ namespace Avogadro {
+       GLfloat fogColor[4]= {static_cast<GLfloat>(d->background.redF()), static_cast<GLfloat>(d->background.greenF()),
+                             static_cast<GLfloat>(d->background.blueF()), static_cast<GLfloat>(d->background.alphaF())};
+       glFogfv(GL_FOG_COLOR, fogColor);
+-      Vector3d distance = camera()->modelview() * d->center;
++      Vector3d distance = (camera()->modelview() * d->center.homogeneous()).head<3>();
+       double distanceToCenter = distance.norm();
+       glFogf(GL_FOG_DENSITY, 1.0);
+       glHint(GL_FOG_HINT, GL_NICEST);
+@@ -1711,7 +1711,7 @@ namespace Avogadro {
+ 
+       if (d->renderModelViewDebug) {
+         // Model view matrix:
+-        const Eigen::Transform3d &modelview = d->camera->modelview();
++        const Eigen::Projective3d &modelview = d->camera->modelview();
+         y += d->pd->painter()->drawText
+             (x, y, tr("ModelView row 1: %L1 %L2 %L3 %L4")
+              .arg(modelview(0, 0), 6, 'f', 2, ' ')
+--- a/libavogadro/src/molecule.cpp
++++ b/libavogadro/src/molecule.cpp
+@@ -38,7 +38,7 @@
+ #include "zmatrix.h"
+ 
+ #include <Eigen/Geometry>
+-#include <Eigen/LeastSquares>
++#include <Eigen/Eigenvalues>
+ 
+ #include <vector>
+ 
+@@ -1907,7 +1907,29 @@ namespace Avogadro{
+         }
+         d->center /= static_cast<double>(nAtoms);
+         Eigen::Hyperplane<double, 3> planeCoeffs;
+-        Eigen::fitHyperplane(numAtoms(), atomPositions, &planeCoeffs);
++        //Eigen::fitHyperplane(numAtoms(), atomPositions, &planeCoeffs);
++
++        // TODO check if this is OK
++        /************************/
++        typedef Eigen::Matrix<double,3,3> CovMatrixType;
++        typedef Eigen::Vector3d VectorType;
++        
++        VectorType mean = d->center;
++        int size=3;
++        int numPoints=numAtoms();
++        VectorType ** points=atomPositions;
++        CovMatrixType covMat = CovMatrixType::Zero(size, size);
++        VectorType remean = VectorType::Zero(size);
++        for(int i = 0; i < numPoints; ++i)
++        {
++          VectorType diff = (*(points[i]) - mean).conjugate();
++          covMat += diff * diff.adjoint();
++        }
++        Eigen::SelfAdjointEigenSolver<CovMatrixType> eig(covMat);
++        planeCoeffs.normal() = eig.eigenvectors().col(0);
++        /************************/
++
++
+         delete[] atomPositions;
+         d->normalVector = planeCoeffs.normal();
+       }
+--- a/libavogadro/src/navigate.cpp
++++ b/libavogadro/src/navigate.cpp
+@@ -40,7 +40,7 @@ namespace Avogadro {
+   void Navigate::zoom(GLWidget *widget, const Eigen::Vector3d &goal,
+                       double delta)
+   {
+-    Vector3d transformedGoal = widget->camera()->modelview() * goal;
++    Vector3d transformedGoal = (widget->camera()->modelview() * goal.homogeneous()).head<3>();
+     double distanceToGoal = transformedGoal.norm();
+ 
+     double t = ZOOM_SPEED * delta;
+--- a/libavogadro/src/tools/bondcentrictool.cpp
++++ b/libavogadro/src/tools/bondcentrictool.cpp
+@@ -578,8 +578,8 @@ namespace Avogadro {
+ 
+           Vector3d clicked = *m_clickedAtom->pos();
+ 
+-          Vector3d axis = Vector3d(0, 0, ((widget->camera()->modelview() * other).z() >=
+-                (widget->camera()->modelview() * center).z() ? -1 : 1));
++          Vector3d axis = Vector3d(0, 0, ((widget->camera()->modelview() * other.homogeneous()).z() >=
++                (widget->camera()->modelview() * center.homogeneous()).z() ? -1 : 1));
+ 
+           Vector3d centerProj = widget->camera()->project(center);
+           centerProj -= Vector3d(0,0,centerProj.z());
+@@ -673,8 +673,8 @@ namespace Avogadro {
+ 
+           Vector3d clicked = *m_clickedAtom->pos();
+ 
+-          Vector3d axis = Vector3d(0, 0, ((widget->camera()->modelview() * other).z() >=
+-                (widget->camera()->modelview() * center).z() ? -1 : 1));
++          Vector3d axis = Vector3d(0, 0, ((widget->camera()->modelview() * other.homogeneous()).z() >=
++                (widget->camera()->modelview() * center.homogeneous()).z() ? -1 : 1));
+ 
+           Vector3d centerProj = widget->camera()->project(center);
+           centerProj -= Vector3d(0,0,centerProj.z());
+@@ -1362,10 +1362,10 @@ namespace Avogadro {
+ 
+     planeVec = length * (planeVec / planeVec.norm());
+ 
+-    Vector3d topLeft = widget->camera()->modelview() * (left + planeVec);
+-    Vector3d topRight = widget->camera()->modelview() * (right + planeVec);
+-    Vector3d botRight = widget->camera()->modelview() * (right - planeVec);
+-    Vector3d botLeft = widget->camera()->modelview() * (left - planeVec);
++    Vector3d topLeft = (widget->camera()->modelview() * (left + planeVec).homogeneous()).head<3>();
++    Vector3d topRight = (widget->camera()->modelview() * (right + planeVec).homogeneous()).head<3>();
++    Vector3d botRight = (widget->camera()->modelview() * (right - planeVec).homogeneous()).head<3>();
++    Vector3d botLeft = (widget->camera()->modelview() * (left - planeVec).homogeneous()).head<3>();
+ 
+     float alpha = 0.4;
+     double lineWidth = 1.5;
+@@ -1444,10 +1444,10 @@ namespace Avogadro {
+       C = D + ((C-D).normalized() * minWidth);
+     }
+ 
+-    Vector3d topLeft = widget->camera()->modelview() * D;
+-    Vector3d topRight = widget->camera()->modelview() * C;
+-    Vector3d botRight = widget->camera()->modelview() * B;
+-    Vector3d botLeft = widget->camera()->modelview() * A;
++    Vector3d topLeft = (widget->camera()->modelview() * D.homogeneous()).head<3>();
++    Vector3d topRight = (widget->camera()->modelview() * C.homogeneous()).head<3>();
++    Vector3d botRight = (widget->camera()->modelview() * B.homogeneous()).head<3>();
++    Vector3d botLeft = (widget->camera()->modelview() * A.homogeneous()).head<3>();
+ 
+     float alpha = 0.4;
+     double lineWidth = 1.5;
+@@ -1506,12 +1506,12 @@ namespace Avogadro {
+       Vector3d positionVector)
+   {
+     //Rotate skeleton around a particular axis and center point
+-    Eigen::Transform3d rotation;
++    Eigen::Projective3d rotation;
+     rotation = Eigen::AngleAxisd(angle, rotationVector);
+     rotation.pretranslate(centerVector);
+     rotation.translate(-centerVector);
+ 
+-    return rotation*positionVector;
++    return (rotation*positionVector.homogeneous()).head<3>();
+   }
+ 
+   // ##########  showAnglesChanged  ##########
+--- a/libavogadro/src/tools/manipulatetool.cpp
++++ b/libavogadro/src/tools/manipulatetool.cpp
+@@ -40,7 +40,6 @@
+ #include <QAbstractButton>
+ 
+ using Eigen::Vector3d;
+-using Eigen::Transform3d;
+ using Eigen::AngleAxisd;
+ 
+ namespace Avogadro {
+@@ -138,7 +137,7 @@ namespace Avogadro {
+     double yRotate = m_settingsWidget->yRotateSpinBox->value() * DEG_TO_RAD;
+     double zRotate = m_settingsWidget->zRotateSpinBox->value() * DEG_TO_RAD;
+ 
+-    Eigen::Transform3d rotation;
++    Eigen::Projective3d rotation;
+     rotation.matrix().setIdentity();
+     rotation.translation() = center;
+     rotation.rotate(AngleAxisd(xRotate, Vector3d::UnitX())
+@@ -152,12 +151,12 @@ namespace Avogadro {
+         if (p->type() == Primitive::AtomType) {
+           Atom *atom = static_cast<Atom*>(p);
+           tempPos = translate + *(atom->pos());
+-          atom->setPos(rotation * tempPos);
++          atom->setPos((rotation * tempPos.homogeneous()).head<3>());
+         }
+     } else {
+       foreach(Atom *atom, widget->molecule()->atoms()) {
+         tempPos = translate + *(atom->pos());
+-        atom->setPos(rotation * tempPos);
++        atom->setPos((rotation * tempPos.homogeneous()).head<3>());
+       }
+     }
+ 
+@@ -199,7 +198,7 @@ namespace Avogadro {
+     widget->setCursor(Qt::SizeVerCursor);
+ 
+     // Move the selected atom(s) in to or out of the screen
+-    Vector3d transformedGoal = widget->camera()->modelview() * *goal;
++    Vector3d transformedGoal = (widget->camera()->modelview() * goal->homogeneous()).head<3>();
+     double distanceToGoal = transformedGoal.norm();
+ 
+     double t = ZOOM_SPEED * delta;
+@@ -255,7 +254,7 @@ namespace Avogadro {
+ 
+     // Rotate the selected atoms about the center
+     // rotate only selected primitives
+-    Transform3d fragmentRotation;
++    Eigen::Projective3d fragmentRotation;
+     fragmentRotation.matrix().setIdentity();
+     fragmentRotation.translation() = *center;
+     fragmentRotation.rotate(
+@@ -266,7 +265,7 @@ namespace Avogadro {
+ 
+     foreach(Primitive *p, widget->selectedPrimitives())
+       if (p->type() == Primitive::AtomType)
+-        static_cast<Atom *>(p)->setPos(fragmentRotation * *static_cast<Atom *>(p)->pos());
++        static_cast<Atom *>(p)->setPos((fragmentRotation * static_cast<Atom *>(p)->pos()->homogeneous()).head<3>());
+     widget->molecule()->update();
+   }
+ 
+@@ -274,7 +273,7 @@ namespace Avogadro {
+                             double delta) const
+   {
+     // Tilt the selected atoms about the center
+-    Transform3d fragmentRotation;
++    Eigen::Projective3d fragmentRotation;
+     fragmentRotation.matrix().setIdentity();
+     fragmentRotation.translation() = *center;
+     fragmentRotation.rotate(AngleAxisd(delta * ROTATION_SPEED, widget->camera()->backTransformedZAxis()));
+@@ -282,7 +281,7 @@ namespace Avogadro {
+ 
+     foreach(Primitive *p, widget->selectedPrimitives())
+       if (p->type() == Primitive::AtomType)
+-        static_cast<Atom *>(p)->setPos(fragmentRotation * *static_cast<Atom *>(p)->pos());
++        static_cast<Atom *>(p)->setPos((fragmentRotation * static_cast<Atom *>(p)->pos()->homogeneous()).head<3>());
+     widget->molecule()->update();
+   }
+ 
+--- a/libavogadro/src/tools/navigatetool.cpp
++++ b/libavogadro/src/tools/navigatetool.cpp
+@@ -92,7 +92,8 @@ namespace Avogadro {
+       double sumOfWeights = 0.;
+       QList<Atom*> atoms = widget->molecule()->atoms();
+       foreach (Atom *atom, atoms) {
+-        Vector3d transformedAtomPos = widget->camera()->modelview() * *atom->pos();
++        Vector3d transformedAtomPos = (widget->camera()->modelview() *
++                                       atom->pos()->homogeneous()).head<3>();
+         double atomDistance = transformedAtomPos.norm();
+         double dot = transformedAtomPos.z() / atomDistance;
+         double weight = exp(-30. * (1. + dot));
+--- a/libavogadro/src/tools/skeletontree.cpp
++++ b/libavogadro/src/tools/skeletontree.cpp
+@@ -29,6 +29,7 @@
+ #include <avogadro/atom.h>
+ #include <avogadro/bond.h>
+ #include <avogadro/molecule.h>
++#include <iostream>
+ 
+ using namespace Eigen;
+ using namespace std;
+@@ -221,7 +222,7 @@ namespace Avogadro {
+   {
+     if (m_rootNode) {
+       //Rotate skeleton around a particular axis and center point
+-      Eigen::Transform3d rotation;
++      Eigen::Projective3d rotation;
+       rotation = Eigen::AngleAxisd(angle, rotationAxis);
+       rotation.pretranslate(centerVector);
+       rotation.translate(-centerVector);
+@@ -248,11 +249,11 @@ namespace Avogadro {
+   // ##########  recursiveRotate  ##########
+ 
+   void SkeletonTree::recursiveRotate(Node* n,
+-                                     const Eigen::Transform3d &rotationMatrix)
++                                     const Eigen::Projective3d &rotationMatrix)
+   {
+     // Update the root node with the new position
+     Atom* a = n->atom();
+-    a->setPos(rotationMatrix * (*a->pos()));
++    a->setPos((rotationMatrix * (*a->pos()).homogeneous()).head<3>());
+     a->update();
+ 
+     // Now update the children
+--- a/libavogadro/src/tools/skeletontree.h
++++ b/libavogadro/src/tools/skeletontree.h
+@@ -230,6 +230,6 @@ namespace Avogadro {
+        * @param centerVector Center location to rotate around.
+        */
+       void recursiveRotate(Node* n,
+-                           const Eigen::Transform3d &rotationMatrix);
++                           const Eigen::Projective3d &rotationMatrix);
+ 
+   };
+ } // End namespace Avogadro

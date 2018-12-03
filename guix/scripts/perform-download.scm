@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,7 +41,8 @@
     (module-use! module (resolve-interface '(guix base32)))
     module))
 
-(define* (perform-download drv #:optional output)
+(define* (perform-download drv #:optional output
+                           #:key print-build-trace?)
   "Perform the download described by DRV, a fixed-output derivation, to
 OUTPUT.
 
@@ -67,6 +68,7 @@ actual output is different from that when we're doing a 'bmCheck' or
 
       ;; We're invoked by the daemon, which gives us write access to OUTPUT.
       (when (url-fetch url output
+                       #:print-build-trace? print-build-trace?
                        #:mirrors (if mirrors
                                      (call-with-input-file mirrors read)
                                      '())
@@ -98,6 +100,11 @@ allows us to sidestep bootstrapping problems, such downloading the source code
 of GnuTLS over HTTPS, before we have built GnuTLS.  See
 <http://bugs.gnu.org/22774>."
 
+  (define print-build-trace?
+    (match (getenv "_NIX_OPTIONS")
+      (#f #f)
+      (str (string-contains str "print-extended-build-trace=1"))))
+
   ;; This program must be invoked by guix-daemon under an unprivileged UID to
   ;; prevent things downloading from 'file:///etc/shadow' or arbitrary code
   ;; execution via the content-addressed mirror procedures.  (That means we
@@ -107,10 +114,12 @@ of GnuTLS over HTTPS, before we have built GnuTLS.  See
       (((? derivation-path? drv) (? store-path? output))
        (assert-low-privileges)
        (perform-download (read-derivation-from-file drv)
-                         output))
+                         output
+                         #:print-build-trace? print-build-trace?))
       (((? derivation-path? drv))                 ;backward compatibility
        (assert-low-privileges)
-       (perform-download (read-derivation-from-file drv)))
+       (perform-download (read-derivation-from-file drv)
+                         #:print-build-trace? print-build-trace?))
       (("--version")
        (show-version-and-exit))
       (x

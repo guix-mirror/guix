@@ -1,0 +1,14 @@
+Need to mark one of the tests as PHONY to get permissions set correctly on
+built scripts.
+
+--- a/Makefile.in	2011-02-10 09:44:43.000000000 -0600
++++ b/Makefile.in	2018-11-29 21:52:05.000000000 -0600
+@@ -1106,5 +1108,6 @@
+ 	rm -f $(DESTDIR)$(bindir)/"`echo lsdiff|sed '$(transform)'`"
+ 	rm -f $(DESTDIR)$(bindir)/"`echo grepdiff|sed '$(transform)'`"
+ 
++.PHONY: tests/newline1/run-test
+ tests/newline1/run-test: src/combinediff$(EXEEXT) src/flipdiff$(EXEEXT) \
+ 		src/lsdiff$(EXEEXT) src/grepdiff$(EXEEXT) \
+		scripts/splitdiff
+

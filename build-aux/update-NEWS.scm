@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -128,11 +128,10 @@ paragraph."
 (define (main . args)
   (match args
     ((news-file data-directory)
-     ;; Don't browse things listed in the user's $GUIX_PACKAGE_PATH.  Here we
-     ;; assume that the last item in (%package-module-path) is the distro
-     ;; directory.
+     ;; Don't browse things listed in the user's $GUIX_PACKAGE_PATH and
+     ;; in external channels.
      (parameterize ((%package-module-path
-                     (list (last (%package-module-path)))))
+                     %default-package-module-path))
        (define (package-file version)
          (string-append data-directory "/packages-"
                         version ".txt"))

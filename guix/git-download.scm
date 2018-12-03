@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;;
@@ -19,7 +19,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix git-download)
-  #:use-module (guix build utils)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -27,9 +26,8 @@
   #:use-module (guix packages)
   #:use-module (guix modules)
   #:autoload   (guix build-system gnu) (standard-packages)
+  #:use-module (git)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 popen)
-  #:use-module (ice-9 rdelim)
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:export (git-reference
@@ -62,7 +60,7 @@
 (define (git-package)
   "Return the default Git package."
   (let ((distro (resolve-interface '(gnu packages version-control))))
-    (module-ref distro 'git)))
+    (module-ref distro 'git-minimal)))
 
 (define* (git-fetch ref hash-algo hash
                     #:optional name
@@ -76,10 +74,21 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
     ;; available so that 'git submodule' works.
     (if (git-reference-recursive? ref)
         (standard-packages)
-        '()))
+
+        ;; The 'swh-download' procedure requires tar and gzip.
+        `(("gzip" ,(module-ref (resolve-interface '(gnu packages compression))
+                               'gzip))
+          ("tar" ,(module-ref (resolve-interface '(gnu packages base))
+                              'tar)))))
 
   (define zlib
     (module-ref (resolve-interface '(gnu packages compression)) 'zlib))
+
+  (define guile-json
+    (module-ref (resolve-interface '(gnu packages guile)) 'guile-json))
+
+  (define gnutls
+    (module-ref (resolve-interface '(gnu packages tls)) 'gnutls))
 
   (define config.scm
     (scheme-file "config.scm"
@@ -95,30 +104,43 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
           (delete '(guix config)
                   (source-module-closure '((guix build git)
                                            (guix build utils)
-                                           (guix build download-nar))))))
+                                           (guix build download-nar)
+                                           (guix swh))))))
 
   (define build
     (with-imported-modules modules
-      #~(begin
-          (use-modules (guix build git)
-                       (guix build utils)
-                       (guix build download-nar)
-                       (ice-9 match))
+      (with-extensions (list guile-json gnutls)   ;for (guix swh)
+        #~(begin
+            (use-modules (guix build git)
+                         (guix build utils)
+                         (guix build download-nar)
+                         (guix swh)
+                         (ice-9 match))
 
-          ;; The 'git submodule' commands expects Coreutils, sed,
-          ;; grep, etc. to be in $PATH.
-          (set-path-environment-variable "PATH" '("bin")
-                                         (match '#+inputs
-                                           (((names dirs outputs ...) ...)
-                                            dirs)))
+            (define recursive?
+              (call-with-input-string (getenv "git recursive?") read))
 
-          (or (git-fetch (getenv "git url") (getenv "git commit")
-                         #$output
-                         #:recursive? (call-with-input-string
-                                          (getenv "git recursive?")
-                                        read)
-                         #:git-command (string-append #+git "/bin/git"))
-              (download-nar #$output)))))
+            ;; The 'git submodule' commands expects Coreutils, sed,
+            ;; grep, etc. to be in $PATH.
+            (set-path-environment-variable "PATH" '("bin")
+                                           (match '#+inputs
+                                             (((names dirs outputs ...) ...)
+                                              dirs)))
+
+            (setvbuf (current-output-port) 'line)
+            (setvbuf (current-error-port) 'line)
+
+            (or (git-fetch (getenv "git url") (getenv "git commit")
+                           #$output
+                           #:recursive? recursive?
+                           #:git-command (string-append #+git "/bin/git"))
+                (download-nar #$output)
+
+                ;; As a last resort, attempt to download from Software Heritage.
+                ;; XXX: Currently recursive checkouts are not supported.
+                (and (not recursive?)
+                     (swh-download (getenv "git url") (getenv "git commit")
+                                   #$output)))))))
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "git-checkout") build
@@ -153,85 +175,57 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
 ;;; 'git-predicate'.
 ;;;
 
-(define (files->directory-tree files)
-  "Return a tree of vhashes representing the directory listed in FILES, a list
-like '(\"a/b\" \"b/c/d\")."
-  (fold (lambda (file result)
-          (let loop ((file (string-split file #\/))
-                     (result result))
-            (match file
-              ((_)
-               result)
-              ((directory children ...)
-               (match (vhash-assoc directory result)
-                 (#f
-                  (vhash-cons directory (loop children vlist-null)
-                              result))
-                 ((_ . previous)
-                  ;; XXX: 'vhash-delete' is O(n).
-                  (vhash-cons directory (loop children previous)
-                              (vhash-delete directory result)))))
-              (()
-               result))))
-        vlist-null
-        files))
-
-(define (directory-in-tree? tree directory)
-  "Return true if DIRECTORY, a string like \"a/b\", denotes a directory listed
-in TREE."
-  (let loop ((directory (string-split directory #\/))
-             (tree       tree))
-    (match directory
-      (()
-       #t)
-      ((head . tail)
-       (match (vhash-assoc head tree)
-         ((_ . sub-tree) (loop tail sub-tree))
-         (#f #f))))))
+(define (git-file-list directory)
+  "Return the list of files checked in in the Git repository at DIRECTORY.
+The result is similar to that of the 'git ls-files' command, except that it
+also includes directories, not just regular files.  The returned file names
+are relative to DIRECTORY, which is not necessarily the root of the checkout."
+  (let* (;; 'repository-working-directory' always returns a trailing "/",
+         ;; so add one here to ease the comparisons below.
+         (directory  (string-append (canonicalize-path directory) "/"))
+         (dot-git    (repository-discover directory))
+         (repository (repository-open dot-git))
+         ;; XXX: This procedure is mistakenly private in Guile-Git 0.1.0.
+         (workdir    ((@@ (git repository) repository-working-directory)
+                      repository))
+         (head       (repository-head repository))
+         (oid        (reference-target head))
+         (commit     (commit-lookup repository oid))
+         (tree       (commit-tree commit))
+         (files      (tree-list tree)))
+    (repository-close! repository)
+    (if (string=? workdir directory)
+        files
+        (let ((relative (string-drop directory (string-length workdir))))
+          (filter-map (lambda (file)
+                        (and (string-prefix? relative file)
+                             (string-drop file (string-length relative))))
+                      files)))))
 
 (define (git-predicate directory)
   "Return a predicate that returns true if a file is part of the Git checkout
-living at DIRECTORY.  Upon Git failure, return #f instead of a predicate.
+living at DIRECTORY.  If DIRECTORY does not lie within a Git checkout, and
+upon Git errors, return #f instead of a predicate.
 
 The returned predicate takes two arguments FILE and STAT where FILE is an
 absolute file name and STAT is the result of 'lstat'."
-  (let* ((pipe           (with-directory-excursion directory
-                           (open-pipe* OPEN_READ "git" "ls-files")))
-         (files          (let loop ((lines '()))
-                           (match (read-line pipe)
-                             ((? eof-object?)
-                              (reverse lines))
-                             (line
-                              (loop (cons line lines))))))
-         (directory-tree (files->directory-tree files))
-         (inodes         (fold (lambda (file result)
-                                 (let ((stat
-                                        (lstat (string-append directory "/"
-                                                              file))))
-                                   (vhash-consv (stat:ino stat) (stat:dev stat)
-                                                result)))
-                               vlist-null
-                               files))
-
-         ;; Note: For this to work we must *not* call 'canonicalize-path' on
-         ;; DIRECTORY or we would get discrepancies of the returned lambda is
-         ;; called with a non-canonical file name.
-         (prefix-length  (+ 1 (string-length directory)))
-
-         (status         (close-pipe pipe)))
-    (and (zero? status)
-         (lambda (file stat)
-           (match (stat:type stat)
-             ('directory
-              (directory-in-tree? directory-tree
-                                  (string-drop file prefix-length)))
-             ((or 'regular 'symlink)
-              ;; Comparing file names is always tricky business so we rely on
-              ;; inode numbers instead
-              (match (vhash-assv (stat:ino stat) inodes)
-                ((_ . dev) (= dev (stat:dev stat)))
-                (#f        #f)))
-             (_
-              #f))))))
+  (catch 'git-error
+    (lambda ()
+      (let* ((files  (git-file-list directory))
+             (inodes (fold (lambda (file result)
+                             (let ((stat
+                                    (lstat (string-append directory "/"
+                                                          file))))
+                               (vhash-consv (stat:ino stat) (stat:dev stat)
+                                            result)))
+                           vlist-null
+                           files)))
+        (lambda (file stat)
+          ;; Comparing file names is always tricky business so we rely on inode
+          ;; numbers instead.
+          (match (vhash-assv (stat:ino stat) inodes)
+            ((_ . dev) (= dev (stat:dev stat)))
+            (#f        #f)))))
+    (const #f)))
 
 ;;; git-download.scm ends here

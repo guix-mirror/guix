@@ -11,6 +11,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
 
 (define-module (gnu packages cdrom)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:select (lgpl2.1+ gpl2 gpl2+ gpl3+ cddl1.0))
   #:use-module (guix build-system cmake)
@@ -152,14 +154,14 @@ libcdio.")
 (define-public xorriso
   (package
     (name "xorriso")
-    (version "1.4.8")
+    (version "1.5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/xorriso/xorriso-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "10c44yr3dpmwxa7rf23mwfsy1bahny3jpcg9ig0xjv090jg0d0pc"))))
+               "0aq6lvlwlkxz56l5sbvgycr6j5c82ch2bv6zrnc2345ibfpafgx9"))))
     (build-system gnu-build-system)
     (inputs
      `(("acl" ,acl)
@@ -291,17 +293,26 @@ images.")
      `(#:tests? #f ; No tests.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-glibc-compatability
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; We use sed --in-place because substitute* cannot handle the
+             ;; character encoding used by growisofs.c.
+             (invoke "sed" "-i" "-e"
+                     (string-append
+                       "s,<sys/stat.h>,"
+                       "<sys/stat.h>\\\n#include <sys/sysmacros.h>,")
+                     "growisofs.c")))
          (replace 'configure
            (lambda _ (setenv "prefix" (assoc-ref %outputs "out")) #t))
          (add-before 'build 'embed-mkisofs
-           (lambda*  (#:key inputs #:allow-other-keys)
+           (lambda* (#:key inputs #:allow-other-keys)
              ;; We use sed --in-place because substitute* cannot handle the
              ;; character encoding used by growisofs.c.
-             (zero? (system* "sed" "-i" "-e"
-                             (string-append
-                              "s,\"mkisofs\","
-                              "\"" (which "mkisofs") "\",")
-                             "growisofs.c")))))))
+             (invoke "sed" "-i" "-e"
+                     (string-append
+                       "s,\"mkisofs\","
+                       "\"" (which "mkisofs") "\",")
+                     "growisofs.c"))))))
     (home-page "http://fy.chalmers.se/~appro/linux/DVD+RW/")
     (synopsis "DVD and Blu-ray Disc burning tools")
     (description "dvd+rw-tools, mostly known for its command
@@ -421,14 +432,14 @@ graphical interface.")
     (name "libcue")
     (version "2.2.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/lipnitsk/libcue/archive/v"
-                   version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/lipnitsk/libcue.git")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "000j5xqp7cc7njwlixr9byahz9kn8pcfdgm76afwv4p8nbmw6yzj"))))
+               "1iqw4n01rv2jyk9lksagyxj8ml0kcfwk67n79zy1r6zv1xfp5ywm"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
@@ -727,14 +738,14 @@ laid out on the image.")
 (define-public libburn
   (package
     (name "libburn")
-    (version "1.4.8")
+    (version "1.5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://files.libburnia-project.org/releases/"
                                  "libburn-" version ".tar.gz"))
              (sha256
               (base32
-               "19lxnzn8bz70glrrrn2hs43gf5g7gfbcka9rcbckhv1pb7is509y"))))
+               "1gg2kgnqvaa2fwghai62prxz6slpak1f6bvgjh8m4dn16v114asq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -749,14 +760,14 @@ DVD-RW, DVD-R, DVD-R/DL, BD-R, and BD-RE.")
 (define-public libisofs
   (package
     (name "libisofs")
-    (version "1.4.8")
+    (version "1.5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://files.libburnia-project.org/releases/"
                                  "libisofs-" version ".tar.gz"))
              (sha256
               (base32
-               "0scvqb72qq24wcg814p1iw1dknldl21hr1hxsc1wy9vc6vgyk7fw"))))
+               "001l3akf3wb6msl9man776w560iqyvsbwwzs7d7y7msx13irspys"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)

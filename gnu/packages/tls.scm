@@ -80,6 +80,8 @@
        (base32
         "1jlc1iahj8k3haz28j55nzg7sgni5h41vqy461i1bpbx6668wlky"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (native-inputs `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/libtasn1/")
     (synopsis "ASN.1 library")
@@ -120,7 +122,7 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.13")
+    (version "0.23.14")
     (source
      (origin
       (method url-fetch)
@@ -128,7 +130,7 @@ in intelligent transportation networks.")
                           "download/" version "/p11-kit-" version ".tar.gz"))
       (sha256
        (base32
-        "1w92k6p4bhg8p24igfb6ifc6vixr2zdjh3x6gjhsphy778z40rda"))))
+        "0w0dkq9388grbbn4bv2p55vy1j51f7nd9hzlc9gz4fbm4dnzmf8w"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -260,8 +262,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (replacement openssl/fixed)
-   (version "1.0.2o")
+   (version "1.0.2p")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -273,7 +274,7 @@ required structures.")
                                        "/" name "-" version ".tar.gz")))
              (sha256
               (base32
-               "0kcy13l701054nhpbd901mz32v1kn4g311z0nifd83xs2jbmqgzc"))
+               "003xh9f898i56344vpvpxxxzmikivxig4xwlm7vbi7m8n43qxaah"))
              (patches (search-patches "openssl-runpath.patch"
                                       "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
@@ -316,15 +317,7 @@ required structures.")
                      (string-append "--openssldir=" out
                                     "/share/openssl-" ,version)
 
-                     (string-append "--prefix=" out)
-
-                     ;; XXX FIXME: Work around a code generation bug in GCC
-                     ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
-                     ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
-                     ,@(if (and (not (%current-target-system))
-                                (string-prefix? "armhf" (%current-system)))
-                           '("-mfpu=vfpv3")
-                           '())))))
+                     (string-append "--prefix=" out)))))
         (add-after
          'install 'make-libraries-writable
          (lambda* (#:key outputs #:allow-other-keys)
@@ -397,20 +390,11 @@ required structures.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
 
-(define openssl/fixed
-  (package
-    (inherit openssl)
-    (source (origin
-              (inherit (package-source openssl))
-              (patches (append (origin-patches (package-source openssl))
-                               (search-patches "openssl-1.0.2-CVE-2018-0495.patch"
-                                               "openssl-1.0.2-CVE-2018-0732.patch")))))))
-
 (define-public openssl-next
   (package
     (inherit openssl)
     (name "openssl")
-    (version "1.1.0i")
+    (version "1.1.1")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -420,13 +404,13 @@ required structures.")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
                                        "/" name "-" version ".tar.gz")))
-              (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
+              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
               (sha256
                (base32
-                "16fgaf113p6s5ixw227sycvihh3zx6f6rf0hvjjhxk68m12cigzb"))))
+                "0gbab2fjgms1kx5xjvqx8bxhr98k4r8l2fa8vw7kvh491xd8fdi8"))))
     (outputs '("out"
-               "doc"        ; 1.3MiB of man3 pages
-               "static"))   ; 5.5MiB of .a files
+               "doc"        ; 6.7 MiB of man3 pages and full HTML documentation
+               "static"))   ; 6.4 MiB of .a files
     (arguments
      (substitute-keyword-arguments (package-arguments openssl)
        ((#:phases phases)
@@ -439,6 +423,11 @@ required structures.")
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (lib (string-append out "/lib")))
+                 ;; It's not a shebang so patch-source-shebangs misses it.
+                 (substitute* "config"
+                   (("/usr/bin/env")
+                    (string-append (assoc-ref %build-inputs "coreutils")
+                                   "/bin/env")))
                  (invoke "./config"
                          "shared"       ;build shared libraries
                          "--libdir=lib"
@@ -460,6 +449,21 @@ required structures.")
                                '("-mfpu=vfpv3")
                                '())))))
 
+           (delete 'move-man3-pages)
+           (add-after 'install 'move-extra-documentation
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Move man3 pages and full HTML documentation to "doc".
+               (let* ((out    (assoc-ref outputs "out"))
+                      (man3   (string-append out "/share/man/man3"))
+                      (html (string-append out "/share/doc/openssl"))
+                      (doc    (assoc-ref outputs "doc"))
+                      (man-target (string-append doc "/share/man/man3"))
+                      (html-target (string-append doc "/share/doc/openssl")))
+                 (copy-recursively man3 man-target)
+                 (delete-file-recursively man3)
+                 (copy-recursively html html-target)
+                 (delete-file-recursively html)
+                 #t)))
            ;; XXX: Duplicate this phase to make sure 'version' evaluates
            ;; in the current scope and not the inherited one.
            (replace 'remove-miscellany
@@ -518,20 +522,20 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.26.1")
+    (version "0.28.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "1glhwqj6yyb11820lspgd0gl5dqdfljn43kcy4ar5caccpsbbrw6"))))
+                "11dvcbdifn5d02p4k5li8r6r39bl3p5ap9p3zjwvasm24hf2yz5z"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-documentation
            (lambda _
-             (zero? (system* "make" "-C" "docs" "man" "info"))))
+             (invoke "make" "-C" "docs" "man" "info")))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -575,7 +579,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0rnayqhdabm0rljxh76blqd11h51dqnwlwvql0j6xwzpccym30s9"))))
+                "02h959qkq7z0s13ivgf7jyl3gnc55wcck6n546k0kh155bpf5qri"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -661,7 +665,7 @@ servers or clients for more complicated applications.")
 (define-public perl-crypt-openssl-rsa
  (package
   (name "perl-crypt-openssl-rsa")
-  (version "0.30")
+  (version "0.31")
   (source
     (origin
       (method url-fetch)
@@ -671,7 +675,7 @@ servers or clients for more complicated applications.")
              ".tar.gz"))
       (sha256
         (base32
-          "1b19kaaw4wda8dy6kjiwqa2prpbs2dqcyjyj9zdh5wbs74qkbq93"))))
+          "0djl5i6kibl7862b6ih29q8dhg5zpwzq77q9j8hp6xngshx40ws1"))))
   (build-system perl-build-system)
   (native-inputs
    `(("perl-crypt-openssl-guess" ,perl-crypt-openssl-guess)))
@@ -822,7 +826,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.7.5")
+    (version "2.14.0")
     (source
      (origin
        (method url-fetch)
@@ -832,13 +836,14 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "0h4vks2z68bkwzg093mn0a7aqsva8rxr4m971n4bkasa17cjlc51"))))
+         "0bf8mf8w5dyikbwpckcxgdi0l086adk7pailqds10bkzrcg59y42"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
        (list "-DUSE_SHARED_MBEDTLS_LIBRARY=ON")))
     (native-inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("python" ,python)))
     (synopsis "Small TLS library")
     (description
      "@code{mbed TLS}, formerly known as PolarSSL, makes it trivially easy
@@ -848,21 +853,38 @@ coding footprint.")
     (home-page "https://tls.mbed.org")
     (license license:asl2.0)))
 
+;; The Hiawatha Web server requires some specific features to be enabled.
+(define-public mbedtls-for-hiawatha
+  (hidden-package
+   (package
+     (inherit mbedtls-apache)
+     (arguments
+      (substitute-keyword-arguments
+          `(#:phases
+            (modify-phases %standard-phases
+              (add-after 'configure 'configure-extra-features
+                (lambda _
+                  (for-each (lambda (feature)
+                              (invoke "scripts/config.pl" "set" feature))
+                            (list "MBEDTLS_THREADING_C"
+                                  "MBEDTLS_THREADING_PTHREAD"))
+                  #t)))
+            ,@(package-arguments mbedtls-apache)))))))
+
 (define-public ghc-tls
   (package
     (name "ghc-tls")
-    (version "1.3.8")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "tls/tls-" version ".tar.gz"))
               (sha256
                (base32
-                "1rdidf18i781c0vdvy9yn79yh08hmcacf6fp3sgghyiy3h0wyh5l"))))
+                "1y083724mym28n6xfaz7pcc7zqxdhjpaxpbvzxfbs25qq2px3smv"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-mtl" ,ghc-mtl)
-       ("ghc-cereal" ,ghc-cereal)
+     `(("ghc-cereal" ,ghc-cereal)
        ("ghc-data-default-class" ,ghc-data-default-class)
        ("ghc-memory" ,ghc-memory)
        ("ghc-cryptonite" ,ghc-cryptonite)

@@ -60,7 +60,7 @@ to take care of the OS-specific details when writing software that uses serial p
 (define-public libsigrokdecode
   (package
     (name "libsigrokdecode")
-    (version "0.5.1")
+    (version "0.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -68,7 +68,7 @@ to take care of the OS-specific details when writing software that uses serial p
                     version ".tar.gz"))
               (sha256
                (base32
-                "07mmb6s62ncqqgsc6szilj2yxixf6gg99ggbzsjlbhp4b9aqnga9"))))
+                "1w434nl1syjkvwl08lji3r9sr60lbxp1nqys8hqwzv2lgiwrx3g0"))))
     (outputs '("out" "doc"))
     (arguments
      `(#:phases
@@ -123,7 +123,7 @@ as simple logic analyzer and/or oscilloscope hardware.")
 (define-public libsigrok
   (package
     (name "libsigrok")
-    (version "0.5.0")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -131,19 +131,17 @@ as simple logic analyzer and/or oscilloscope hardware.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "197kr5ip98lxn7rv10zs35d1w0j7265s0xvckx0mq2l8kdvqd32c"))))
+                "171b553dir5gn6w4f7n37waqk62nq2kf1jykx4ifjacdz5xdw3z4"))))
     (outputs '("out" "doc"))
     (arguments
-     `(#:tests? #f ; tests need usb access
+     `(#:tests? #f                      ; tests need USB access
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'change-udev-group
            (lambda _
-             (let ((file "contrib/z60_libsigrok.rules"))
-               (substitute* file
-                 (("plugdev") "dialout"))
-               (rename-file file "contrib/60-libsigrok.rules")
-               #t)))
+             (substitute* (find-files "contrib" "\\.rules$")
+               (("plugdev") "dialout"))
+             #t))
          (add-after 'build 'build-doc
            (lambda _
              (invoke "doxygen")))
@@ -155,11 +153,12 @@ as simple logic analyzer and/or oscilloscope hardware.")
              #t))
          (add-after 'install-doc 'install-udev-rules
            (lambda* (#:key outputs #:allow-other-keys)
-             (install-file "contrib/60-libsigrok.rules"
-                           (string-append
-                            (assoc-ref outputs "out")
-                            "/lib/udev/rules.d/"))
-             #t))
+             (let* ((out   (assoc-ref outputs "out"))
+                    (rules (string-append out "/lib/udev/rules.d/")))
+               (for-each (lambda (file)
+                           (install-file file rules))
+                         (find-files "contrib" "\\.rules$"))
+               #t)))
          (add-after 'install-udev-rules 'install-fw
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((fx2lafw (assoc-ref inputs "sigrok-firmware-fx2lafw"))
@@ -167,7 +166,6 @@ as simple logic analyzer and/or oscilloscope hardware.")
                     (dir-suffix "/share/sigrok-firmware/")
                     (input-dir (string-append fx2lafw dir-suffix))
                     (output-dir (string-append out dir-suffix)))
-               (mkdir-p output-dir)
                (for-each
                 (lambda (file)
                   (install-file file output-dir))
@@ -204,7 +202,7 @@ format support.")
 (define-public sigrok-cli
   (package
     (name "sigrok-cli")
-    (version "0.7.0")
+    (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -212,7 +210,7 @@ format support.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "072ylscp0ppgii1k5j07hhv7dfmni4vyhxnsvxmgqgfyq9ldjsan"))))
+                "15vpn1psriadcbl6v9swwgws7dva85ld03yv6g1mgm27kx11697m"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -228,7 +226,7 @@ format support.")
 (define-public pulseview
   (package
     (name "pulseview")
-    (version "0.4.0")
+    (version "0.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -236,9 +234,20 @@ format support.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1f8f2342d5yam98mmcb8f9g2vslcwv486bmi4x45pxn68l82ky3q"))))
+                "0bvgmkgz37n2bi9niskpl05hf7rsj1lj972fbrgnlz25s4ywxrwy"))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DCMAKE_CXX_FLAGS=-fext-numeric-literals")))
+     `(#:configure-flags '("-DENABLE_TESTS=y")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'remove-empty-doc-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion (string-append out "/share")
+                 ;; Use RMDIR to never risk silently deleting files.
+                 (rmdir "doc/pulseview")
+                 (rmdir "doc"))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -249,7 +258,6 @@ format support.")
        ("libsigrokdecode" ,libsigrokdecode)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
-    (build-system cmake-build-system)
     (home-page "https://www.sigrok.org/wiki/PulseView")
     (synopsis "Qt based logic analyzer, oscilloscope and MSO GUI for sigrok")
     (description "PulseView is a Qt based logic analyzer, oscilloscope and MSO GUI

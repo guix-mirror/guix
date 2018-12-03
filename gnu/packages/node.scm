@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,6 +87,14 @@
        (modify-phases %standard-phases
          (add-before 'configure 'patch-files
            (lambda* (#:key inputs #:allow-other-keys)
+
+             ;; This phase is inherited by Node LTS, which does not have all
+             ;; the files listed here.  Use this helper for convenience.
+             (define (delete-if-exists file)
+               (if (file-exists? file)
+                   (delete-file file)
+                   '()))
+
              ;; Fix hardcoded /bin/sh references.
              (substitute* '("lib/child_process.js"
                             "lib/internal/v8_prof_polyfill.js"
@@ -103,7 +112,7 @@
 
              ;; FIXME: These tests depend on being able to install eslint.
              ;; See https://github.com/nodejs/node/issues/17098.
-             (for-each delete-file
+             (for-each delete-if-exists
                        '("test/parallel/test-eslint-alphabetize-errors.js"
                          "test/parallel/test-eslint-buffer-constructor.js"
                          "test/parallel/test-eslint-documented-errors.js"
@@ -111,7 +120,7 @@
 
              ;; FIXME: These tests fail in the build container, but they don't
              ;; seem to be indicative of real problems in practice.
-             (for-each delete-file
+             (for-each delete-if-exists
                        '("test/async-hooks/test-ttywrap.readstream.js"
                          "test/parallel/test-util-inspect.js"
                          "test/parallel/test-v8-serdes.js"
@@ -125,6 +134,14 @@
                          "test/sequential/test-child-process-emfile.js"
                          "test/sequential/test-benchmark-child-process.js"
                          "test/sequential/test-http-regr-gh-2928.js"))
+
+             ;; These tests have an expiry date: they depend on the validity of
+             ;; TLS certificates that are bundled with the source.  We want this
+             ;; package to be reproducible forever, so remove those.
+             ;; TODO: Regenerate certs instead.
+             (for-each delete-if-exists
+                       '("test/parallel/test-tls-passphrase.js"
+                         "test/parallel/test-tls-server-verify.js"))
              #t))
          (replace 'configure
            ;; Node's configure script is actually a python script, so we can't
@@ -167,7 +184,7 @@
      `(("c-ares" ,c-ares)
        ("http-parser" ,http-parser)
        ("icu4c" ,icu4c)
-       ("libuv" ,libuv)
+       ("libuv" ,libuv-1.19)
        ("nghttp2" ,nghttp2 "lib")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
@@ -180,3 +197,16 @@ devices.")
     (home-page "https://nodejs.org/")
     (license expat)
     (properties '((timeout . 3600))))) ; 1 h
+
+(define-public node-lts
+  (package
+    (inherit node)
+    (name "node-lts")
+    (version "8.12.0")
+    (source (origin
+              (inherit (package-source node))
+              (uri (string-append "https://nodejs.org/dist/v" version
+                                  "/node-v" version ".tar.xz"))
+              (sha256
+               (base32
+                "16j1rrxkhmvpcw689ndw1raql1gz4jqn7n82z55zn63c05cgz7as"))))))

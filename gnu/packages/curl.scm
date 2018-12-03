@@ -50,15 +50,15 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.59.0")
-   (replacement curl-7.61.0)
+   (version "7.61.1")
+   (replacement curl-7.62.0)
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1z310hrjm2vmbcpkyp81dcmj9rk127zkjyawpy2pah0nz6yslkp4"))))
+              "148qv1f32290r9pwg07mccawihz4srznkzsdwdl2xllvlgb16n9x"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -85,7 +85,8 @@
            (separator #f)                         ;single entry
            (files '("etc/ssl/certs/ca-certificates.crt")))))
    (arguments
-    `(#:configure-flags '("--with-gnutls" "--with-gssapi")
+    `(#:configure-flags '("--with-gnutls" "--with-gssapi"
+                          "--disable-static")
       ;; Add a phase to patch '/bin/sh' occurances in tests/runtests.pl
       #:phases
       (modify-phases %standard-phases
@@ -141,10 +142,10 @@ tunneling, and so on.")
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
 
-(define-public curl-7.61.0
+(define-public curl-7.62.0
   (package
     (inherit curl)
-    (version "7.61.0")
+    (version "7.62.0")
     (source
       (origin
         (method url-fetch)
@@ -152,7 +153,7 @@ tunneling, and so on.")
                             version ".tar.xz"))
         (sha256
          (base32
-          "080p9r2kln8cbfj0rqfn6wqp5kdn9k5wp720nirkcw845lcmavpg"))))))
+          "1hbm29r3pirhn4gkcnd94ylc4jzgn3v3v7qbay9awxg7bwx69dfs"))))))
 
 (define-public kurly
   (package

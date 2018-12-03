@@ -23,6 +23,7 @@
   #:use-module (guix serialization)
   #:use-module (guix store deduplication)
   #:use-module (guix base16)
+  #:use-module (guix progress)
   #:use-module (guix build syscalls)
   #:use-module ((guix build utils)
                 #:select (mkdir-p executable-file?))
@@ -35,7 +36,9 @@
   #:use-module (ice-9 match)
   #:use-module (system foreign)
   #:export (sql-schema
+            %default-database-file
             with-database
+            path-id
             sqlite-register
             register-path
             register-items
@@ -50,7 +53,7 @@
 
 (define sqlite-exec
   ;; XXX: This is was missing from guile-sqlite3 until
-  ;; <https://notabug.org/civodul/guile-sqlite3/commit/b87302f9bcd18a286fed57b2ea521845eb1131d7>.
+  ;; <https://notabug.org/guile-sqlite3/guile-sqlite3/commit/b87302f9bcd18a286fed57b2ea521845eb1131d7>.
   (let ((exec (pointer->procedure
                int
                (dynamic-func "sqlite3_exec" (@@ (sqlite3) libsqlite3))
@@ -83,6 +86,10 @@ create it and initialize it as a new database."
                     (proc db))
                   (lambda ()
                     (sqlite-close db)))))
+
+(define %default-database-file
+  ;; Default location of the store database.
+  (string-append %store-database-directory "/db.sqlite"))
 
 (define-syntax-rule (with-database file db exp ...)
   "Open DB from FILE and close it when the dynamic extent of EXP... is left.
@@ -234,7 +241,8 @@ be used internally by the daemon's build hook."
                   #:prefix prefix #:state-directory state-directory
                   #:deduplicate? deduplicate?
                   #:reset-timestamps? reset-timestamps?
-                  #:schema schema))
+                  #:schema schema
+                  #:log-port (%make-void-port "w")))
 
 (define %epoch
   ;; When it all began.
@@ -245,12 +253,14 @@ be used internally by the daemon's build hook."
                          (deduplicate? #t)
                          (reset-timestamps? #t)
                          registration-time
-                         (schema (sql-schema)))
+                         (schema (sql-schema))
+                         (log-port (current-error-port)))
   "Register all of ITEMS, a list of <store-info> records as returned by
 'read-reference-graph', in the database under PREFIX/STATE-DIRECTORY.  ITEMS
 must be in topological order (with leaves first.)  If the database is
 initially empty, apply SCHEMA to initialize it.  REGISTRATION-TIME must be the
-registration time to be recorded in the database; #f means \"now\"."
+registration time to be recorded in the database; #f means \"now\".
+Write a progress report to LOG-PORT."
 
   ;; Priority for options: first what is given, then environment variables,
   ;; then defaults. %state-directory, %store-directory, and
@@ -286,20 +296,32 @@ registration time to be recorded in the database; #f means \"now\"."
     (define real-file-name
       (string-append store-dir "/" (basename (store-info-item item))))
 
-    (let-values (((hash nar-size) (nar-sha256 real-file-name)))
+    ;; When TO-REGISTER is already registered, skip it.  This makes a
+    ;; significant differences when 'register-closures' is called
+    ;; consecutively for overlapping closures such as 'system' and 'bootcfg'.
+    (unless (path-id db to-register)
       (when reset-timestamps?
         (reset-timestamps real-file-name))
-      (sqlite-register db #:path to-register
-                       #:references (store-info-references item)
-                       #:deriver (store-info-deriver item)
-                       #:hash (string-append "sha256:"
-                                             (bytevector->base16-string hash))
-                       #:nar-size nar-size
-                       #:time registration-time)
-      (when deduplicate?
-        (deduplicate real-file-name hash #:store store-dir))))
+      (let-values (((hash nar-size) (nar-sha256 real-file-name)))
+        (sqlite-register db #:path to-register
+                         #:references (store-info-references item)
+                         #:deriver (store-info-deriver item)
+                         #:hash (string-append "sha256:"
+                                               (bytevector->base16-string hash))
+                         #:nar-size nar-size
+                         #:time registration-time)
+        (when deduplicate?
+          (deduplicate real-file-name hash #:store store-dir)))))
 
   (mkdir-p db-dir)
   (parameterize ((sql-schema schema))
     (with-database (string-append db-dir "/db.sqlite") db
-      (for-each (cut register db <>) items))))
+      (let* ((prefix   (format #f "registering ~a items" (length items)))
+             (progress (progress-reporter/bar (length items)
+                                              prefix log-port)))
+        (call-with-progress-reporter progress
+          (lambda (report)
+            (for-each (lambda (item)
+                        (register db item)
+                        (report))
+                      items)))))))

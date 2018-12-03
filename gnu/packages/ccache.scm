@@ -30,7 +30,7 @@
 (define-public ccache
   (package
     (name "ccache")
-    (version "3.4.2")
+    (version "3.5")
     (source
      (origin
       (method url-fetch)
@@ -38,9 +38,9 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "1qpy6k9f06kpr6bxy26ncdxcszqv1skcncvczcvksgfncx1v3a0q"))))
+        "04n0xram2416pv98qrd7pi5lfsk0bjqyz7zgvvia41j5mrr4pm5x"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)     ; for test.sh
+    (native-inputs `(("perl" ,perl)     ; for test/run
                      ("which" ,(@ (gnu packages base) which))))
     (inputs `(("zlib" ,zlib)))
     (arguments
@@ -49,13 +49,6 @@
                    (lambda _
                      (substitute* '("unittest/test_hashutil.c" "test/suites/base.bash")
                        (("#!/bin/sh") (string-append "#!" (which "sh"))))
-                     #t))
-                 (add-before 'check 'munge-failing-test
-                   (lambda _
-                     ;; XXX The new ‘Multiple -fdebug-prefix-map’ test added in
-                     ;; 3.3.5 fails (why?).  Force it to report success instead.
-                     (substitute* "test/suites/debug_prefix_map.bash"
-                       (("grep \"name\"") "true"))
                      #t)))))
     (home-page "https://ccache.samba.org/")
     (synopsis "Compiler cache")

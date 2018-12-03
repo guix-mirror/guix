@@ -15,7 +15,7 @@ and <https://bugs.gnu.org/30395>.
 
 --- gcc-5.3.0/gcc/builtins.c	2016-10-18 10:50:46.080616285 +0200
 +++ gcc-5.3.0/gcc/builtins.c	2016-11-09 15:26:43.693042737 +0100
-@@ -3192,6 +3192,54 @@ determine_block_size (tree len, rtx len_
+@@ -3192,6 +3192,58 @@ determine_block_size (tree len, rtx len_
  			  GET_MODE_MASK (GET_MODE (len_rtx)));
  }
  
@@ -35,9 +35,13 @@ and <https://bugs.gnu.org/30395>.
 +  if (TREE_CODE (str) == VAR_DECL
 +      && TREE_STATIC (str)
 +      && TREE_READONLY (str))
-+    /* STR may be a 'static const' variable whose initial value
-+       is a string constant.  See <https://bugs.gnu.org/30395>.  */
-+    str = DECL_INITIAL (str);
++    {
++      /* STR may be a 'static const' variable whose initial value
++         is a string constant.  See <https://bugs.gnu.org/30395>.  */
++      str = DECL_INITIAL (str);
++      if (str == NULL_TREE)
++        return false;
++    }
 +
 +  if (TREE_CODE (str) != STRING_CST)
 +    return false;

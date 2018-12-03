@@ -211,7 +211,12 @@ OBJ must be an object that has an associated gexp compiler, such as a
     (#f
      (raise (condition (&gexp-input-error (input obj)))))
     (lower
-     (lower obj system target))))
+     ;; Cache in STORE the result of lowering OBJ.
+     (mlet %store-monad ((graft? (grafting?)))
+       (mcached (let ((lower (lookup-compiler obj)))
+                  (lower obj system target))
+                obj
+                system target graft?)))))
 
 (define-syntax define-gexp-compiler
   (syntax-rules (=> compiler expander)
@@ -438,6 +443,14 @@ This is the declarative counterpart of 'gexp->file'."
   (base   file-append-base)                    ;<package> | <derivation> | ...
   (suffix file-append-suffix))                 ;list of strings
 
+(define (write-file-append file port)
+  (match file
+    (($ <file-append> base suffix)
+     (format port "#<file-append ~s ~s>" base
+             (string-join suffix)))))
+
+(set-record-type-printer! <file-append> write-file-append)
+
 (define (file-append base . suffix)
   "Return a <file-append> object that expands to the concatenation of BASE and
 SUFFIX."
@@ -498,9 +511,10 @@ whether this should be considered a \"native\" input or not."
 
 (set-record-type-printer! <gexp-output> write-gexp-output)
 
-(define (gexp-attribute gexp self-attribute)
+(define* (gexp-attribute gexp self-attribute #:optional (equal? equal?))
   "Recurse on GEXP and the expressions it refers to, summing the items
-returned by SELF-ATTRIBUTE, a procedure that takes a gexp."
+returned by SELF-ATTRIBUTE, a procedure that takes a gexp.  Use EQUAL? as the
+second argument to 'delete-duplicates'."
   (if (gexp? gexp)
       (delete-duplicates
        (append (self-attribute gexp)
@@ -516,13 +530,29 @@ returned by SELF-ATTRIBUTE, a procedure that takes a gexp."
                                           lst))
                              (_
                               '()))
-                           (gexp-references gexp))))
+                           (gexp-references gexp)))
+       equal?)
       '()))                                       ;plain Scheme data type
 
 (define (gexp-modules gexp)
   "Return the list of Guile module names GEXP relies on.  If (gexp? GEXP) is
 false, meaning that GEXP is a plain Scheme object, return the empty list."
-  (gexp-attribute gexp gexp-self-modules))
+  (define (module=? m1 m2)
+    ;; Return #t when M1 equals M2.  Special-case '=>' specs because their
+    ;; right-hand side may not be comparable with 'equal?': it's typically a
+    ;; file-like object that embeds a gexp, which in turn embeds closure;
+    ;; those closures may be 'eq?' when running compiled code but are unlikely
+    ;; to be 'eq?' when running on 'eval'.  Ignore the right-hand side to
+    ;; avoid this discrepancy.
+    (match m1
+      (((name1 ...) '=> _)
+       (match m2
+         (((name2 ...) '=> _) (equal? name1 name2))
+         (_ #f)))
+      (_
+       (equal? m1 m2))))
+
+  (gexp-attribute gexp gexp-self-modules module=?))
 
 (define (gexp-extensions gexp)
   "Return the list of Guile extensions (packages) GEXP relies on.  If (gexp?
@@ -601,11 +631,7 @@ names and file names suitable for the #:allowed-references argument to
                            allowed-references disallowed-references
                            leaked-env-vars
                            local-build? (substitutable? #t)
-
-                           ;; TODO: This parameter is transitional; it's here
-                           ;; to avoid a full rebuild.  Remove it on the next
-                           ;; rebuild cycle.
-                           import-creates-derivation?
+                           (properties '())
 
                            deprecation-warnings
                            (script-name (string-append name "-builder")))
@@ -701,18 +727,12 @@ The other arguments are as for 'derivation'."
                                        extensions))
                        (modules  (if (pair? %modules)
                                      (imported-modules %modules
-                                                       #:derivation?
-                                                       import-creates-derivation?
                                                        #:system system
                                                        #:module-path module-path
-                                                       #:guile guile-for-build
-                                                       #:deprecation-warnings
-                                                       deprecation-warnings)
+                                                       #:guile guile-for-build)
                                      (return #f)))
                        (compiled (if (pair? %modules)
                                      (compiled-modules %modules
-                                                       #:derivation?
-                                                       import-creates-derivation?
                                                        #:system system
                                                        #:module-path module-path
                                                        #:extensions extensions
@@ -770,7 +790,8 @@ The other arguments are as for 'derivation'."
                       #:disallowed-references disallowed
                       #:leaked-env-vars leaked-env-vars
                       #:local-build? local-build?
-                      #:substitutable? substitutable?))))
+                      #:substitutable? substitutable?
+                      #:properties properties))))
 
 (define* (gexp-inputs exp #:key native?)
   "Return the input list for EXP.  When NATIVE? is true, return only native
@@ -1080,15 +1101,7 @@ to a tree suitable for 'interned-file-tree'."
                                     #:key (name "file-import")
                                     (symlink? #f)
                                     (system (%current-system))
-                                    (guile (%guile-for-build))
-
-                                    ;; XXX: The only reason we have
-                                    ;; #:deprecation-warnings is because (guix
-                                    ;; build utils), which we use here, relies
-                                    ;; on _IO*, which is deprecated in 2.2.  On
-                                    ;; the next full-rebuild cycle, we should
-                                    ;; disable such warnings unconditionally.
-                                    (deprecation-warnings #f))
+                                    (guile (%guile-for-build)))
   "Return a derivation that imports FILES into STORE.  FILES must be a list
 of (FINAL-PATH . FILE) pairs.  Each FILE is mapped to FINAL-PATH in the
 resulting store path.  FILE can be either a file name, or a file-like object,
@@ -1128,54 +1141,38 @@ to the source files instead of copying them."
                       #:guile-for-build guile
                       #:local-build? #t
 
-                      ;; TODO: On the next rebuild cycle, set to "no"
-                      ;; unconditionally.
+                      ;; Avoid deprecation warnings about the use of the _IO*
+                      ;; constants in (guix build utils).
                       #:env-vars
-                      (case deprecation-warnings
-                        ((#f)
-                         '(("GUILE_WARN_DEPRECATED" . "no")))
-                        ((detailed)
-                         '(("GUILE_WARN_DEPRECATED" . "detailed")))
-                        (else
-                         '())))))
+                      '(("GUILE_WARN_DEPRECATED" . "no")))))
 
 (define* (imported-files files
                          #:key (name "file-import")
-
-                         ;; TODO: Remove this parameter on the next rebuild
-                         ;; cycle.
-                         (derivation? #f)
-
                          ;; The following parameters make sense when creating
                          ;; an actual derivation.
                          (system (%current-system))
-                         (guile (%guile-for-build))
-                         (deprecation-warnings #f))
+                         (guile (%guile-for-build)))
   "Import FILES into the store and return the resulting derivation or store
 file name (a derivation is created if and only if some elements of FILES are
 file-like objects and not local file names.)  FILES must be a list
 of (FINAL-PATH . FILE) pairs.  Each FILE is mapped to FINAL-PATH in the
 resulting store path.  FILE can be either a file name, or a file-like object,
 as returned by 'local-file' for example."
-  (if (or derivation?
-          (any (match-lambda
-                 ((_ . (? struct? source)) #t)
-                 (_ #f))
-               files))
+  (if (any (match-lambda
+             ((_ . (? struct? source)) #t)
+             (_ #f))
+           files)
       (imported-files/derivation files #:name name
                                  #:symlink? derivation?
-                                 #:system system #:guile guile
-                                 #:deprecation-warnings deprecation-warnings)
+                                 #:system system #:guile guile)
       (interned-file-tree `(,name directory
                                   ,@(file-mapping->tree files)))))
 
 (define* (imported-modules modules
                            #:key (name "module-import")
-                           (derivation? #f)      ;TODO: remove on next rebuild
                            (system (%current-system))
                            (guile (%guile-for-build))
-                           (module-path %load-path)
-                           (deprecation-warnings #f))
+                           (module-path %load-path))
   "Return a derivation that contains the source files of MODULES, a list of
 module names such as `(ice-9 q)'.  All of MODULES must be either names of
 modules to be found in the MODULE-PATH search path, or a module name followed
@@ -1196,14 +1193,11 @@ last one is created from the given <scheme-file> object."
                          (cons f (search-path* module-path f)))))
                     modules)))
     (imported-files files #:name name
-                    #:derivation? derivation?
                     #:system system
-                    #:guile guile
-                    #:deprecation-warnings deprecation-warnings)))
+                    #:guile guile)))
 
 (define* (compiled-modules modules
                            #:key (name "module-import-compiled")
-                           (derivation? #f)      ;TODO: remove on next rebuild
                            (system (%current-system))
                            (guile (%guile-for-build))
                            (module-path %load-path)
@@ -1214,22 +1208,11 @@ corresponding to MODULES.  All the MODULES are built in a context where
 they can refer to each other."
   (define total (length modules))
 
-  (define build-utils-hack?
-    ;; To avoid a full rebuild, we limit the fix below to the case where
-    ;; MODULE-PATH is different from %LOAD-PATH.  This happens when building
-    ;; modules for 'compute-guix-derivation' upon 'guix pull'.  TODO: Make
-    ;; this unconditional on the next rebuild cycle.
-    (and (member '(guix build utils) modules)
-         (not (equal? module-path %load-path))))
-
   (mlet %store-monad ((modules (imported-modules modules
-                                                 #:derivation? derivation?
                                                  #:system system
                                                  #:guile guile
                                                  #:module-path
-                                                 module-path
-                                                 #:deprecation-warnings
-                                                 deprecation-warnings)))
+                                                 module-path)))
     (define build
       (gexp
        (begin
@@ -1268,46 +1251,34 @@ they can refer to each other."
          (setvbuf (current-output-port)
                   (cond-expand (guile-2.2 'line) (else _IOLBF)))
 
-         (ungexp-splicing
-          (if build-utils-hack?
-              (gexp ((define mkdir-p
-                       ;; Capture 'mkdir-p'.
-                       (@ (guix build utils) mkdir-p))))
-              '()))
+         (define mkdir-p
+           ;; Capture 'mkdir-p'.
+           (@ (guix build utils) mkdir-p))
 
          ;; Add EXTENSIONS to the search path.
-         ;; TODO: Remove the outer 'ungexp-splicing' on the next rebuild cycle.
-         (ungexp-splicing
-          (if (null? extensions)
-              '()
-              (gexp ((set! %load-path
-                       (append (map (lambda (extension)
-                                      (string-append extension
-                                                     "/share/guile/site/"
-                                                     (effective-version)))
-                                    '((ungexp-native-splicing extensions)))
-                               %load-path))
-                     (set! %load-compiled-path
-                       (append (map (lambda (extension)
-                                      (string-append extension "/lib/guile/"
-                                                     (effective-version)
-                                                     "/site-ccache"))
-                                    '((ungexp-native-splicing extensions)))
-                               %load-compiled-path))))))
+         (set! %load-path
+           (append (map (lambda (extension)
+                          (string-append extension
+                                         "/share/guile/site/"
+                                         (effective-version)))
+                        '((ungexp-native-splicing extensions)))
+                   %load-path))
+         (set! %load-compiled-path
+           (append (map (lambda (extension)
+                          (string-append extension "/lib/guile/"
+                                         (effective-version)
+                                         "/site-ccache"))
+                        '((ungexp-native-splicing extensions)))
+                   %load-compiled-path))
 
          (set! %load-path (cons (ungexp modules) %load-path))
 
-         (ungexp-splicing
-          (if build-utils-hack?
-              ;; Above we loaded our own (guix build utils) but now we may
-              ;; need to load a compile a different one.  Thus, force a
-              ;; reload.
-              (gexp ((let ((utils (ungexp
-                                   (file-append modules
-                                                "/guix/build/utils.scm"))))
-                       (when (file-exists? utils)
-                         (load utils)))))
-              '()))
+         ;; Above we loaded our own (guix build utils) but now we may need to
+         ;; load a compile a different one.  Thus, force a reload.
+         (let ((utils (string-append (ungexp modules)
+                                     "/guix/build/utils.scm")))
+           (when (file-exists? utils)
+             (load utils)))
 
          (mkdir (ungexp output))
          (chdir (ungexp modules))
@@ -1479,26 +1450,31 @@ denoting the target file.  Here's an example:
               `((\"hosts\" ,(plain-file \"hosts\"
                                         \"127.0.0.1 localhost\"))
                 (\"bashrc\" ,(plain-file \"bashrc\"
-                                         \"alias ls='ls --color'\"))))
+                                         \"alias ls='ls --color'\"))
+                (\"libvirt/qemu.conf\" ,(plain-file \"qemu.conf\" \"\"))))
 
 This yields an 'etc' directory containing these two files."
   (computed-file name
-                 (gexp
-                  (begin
-                    (mkdir (ungexp output))
-                    (chdir (ungexp output))
-                    (ungexp-splicing
-                     (map (match-lambda
-                            ((target source)
-                             (gexp
-                              (begin
-                                ;; Stat the source to abort early if it does
-                                ;; not exist.
-                                (stat (ungexp source))
+                 (with-imported-modules '((guix build utils))
+                   (gexp
+                    (begin
+                      (use-modules (guix build utils))
 
-                                (symlink (ungexp source)
-                                         (ungexp target))))))
-                          files))))))
+                      (mkdir (ungexp output))
+                      (chdir (ungexp output))
+                      (ungexp-splicing
+                       (map (match-lambda
+                              ((target source)
+                               (gexp
+                                (begin
+                                  ;; Stat the source to abort early if it does
+                                  ;; not exist.
+                                  (stat (ungexp source))
+
+                                  (mkdir-p (dirname (ungexp target)))
+                                  (symlink (ungexp source)
+                                           (ungexp target))))))
+                            files)))))))
 
 (define* (directory-union name things
                           #:key (copy? #f) (quiet? #f)

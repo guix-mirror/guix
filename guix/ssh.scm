@@ -161,7 +161,7 @@ Throw an error on failure."
                                     "/var/guix/daemon-socket/socket"))
   "Connect to the remote build daemon listening on SOCKET-NAME over SESSION,
 an SSH session.  Return a <nix-server> object."
-  (open-connection #:port (remote-daemon-channel session)))
+  (open-connection #:port (remote-daemon-channel session socket-name)))
 
 
 (define (store-import-channel session)
@@ -297,9 +297,11 @@ Return the list of store items actually sent."
     (channel-send-eof port)
 
     ;; Wait for completion of the remote process and read the status sexp from
-    ;; PORT.
+    ;; PORT.  Wait for the exit status only when 'read' completed; otherwise,
+    ;; we might wait forever if the other end is stuck.
     (let* ((result (false-if-exception (read port)))
-           (status (zero? (channel-get-exit-status port))))
+           (status (and result
+                        (zero? (channel-get-exit-status port)))))
       (close-port port)
       (match result
         (('success . _)

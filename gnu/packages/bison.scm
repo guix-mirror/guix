@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,7 @@
 (define-public bison
   (package
     (name "bison")
-    (version "3.0.4")
+    (version "3.0.5")
     (source
      (origin
       (method url-fetch)
@@ -37,10 +38,10 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "1qbgf6q1n2z17k8g33444m0q68kf3fbiq65q7jlrzpvvj73jh957"))))
+        "0f7kjygrckkx8vas2nm673592jif0a9mw5g8207f6hj6h4pfyp07"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
-                     ;; m4 is not present in PATH when cross-building
+                     ;; m4 is not present in PATH when cross-building.
                      ("m4" ,m4)))
     (inputs `(("flex" ,flex)))
     (propagated-inputs `(("m4" ,m4)))
@@ -52,15 +53,3 @@ deterministic or generalized LR parser from an annotated, context-free
 grammar.  It is versatile enough to have many applications, from parsers for
 simple tools through complex programming languages.")
     (license gpl3+)))
-
-(define-public bison-2.7
-  (package (inherit bison)
-    (version "2.7")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/bison/bison-"
-                          version ".tar.xz"))
-      (sha256
-       (base32
-        "1zd77ilmpv5mi3kr55jrj6ncqlcnyhpianhrwzak2q28cv2cbn23"))))))

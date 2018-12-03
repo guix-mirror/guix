@@ -1,0 +1,46 @@
+From d9d97cac3702b99a00cd113de98c41eb535d47ed Mon Sep 17 00:00:00 2001
+From: Efraim Flashner <efraim@flashner.co.il>
+Date: Sun, 14 Oct 2018 12:11:30 +0300
+Subject: [PATCH] patch modified from the gcc patch series, also dealing with
+ ustat.
+
+---
+ .../sanitizer_platform_limits_posix.cc            | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/lib/sanitizer_common/sanitizer_platform_limits_posix.cc b/lib/sanitizer_common/sanitizer_platform_limits_posix.cc
+index 29fea6e..570b9a5 100644
+--- a/lib/sanitizer_common/sanitizer_platform_limits_posix.cc
++++ b/lib/sanitizer_common/sanitizer_platform_limits_posix.cc
+@@ -129,7 +129,6 @@
+ #include <sys/statvfs.h>
+ #include <sys/timex.h>
+ #include <sys/user.h>
+-#include <sys/ustat.h>
+ #include <linux/cyclades.h>
+ #include <linux/if_eql.h>
+ #include <linux/if_plip.h>
+@@ -222,7 +221,19 @@ namespace __sanitizer {
+ #endif  // SANITIZER_LINUX || SANITIZER_FREEBSD
+ 
+ #if SANITIZER_LINUX && !SANITIZER_ANDROID
+-  unsigned struct_ustat_sz = sizeof(struct ustat);
++  // Use pre-computed size of struct ustat to avoid <sys/ustat.h> which
++  // has been removed from glibc 2.28.
++#if defined(__aarch64__) || defined(__s390x__) || defined (__mips64) \
++  || defined(__powerpc64__) || defined(__arch64__) || defined(__sparcv9) \
++  || defined(__x86_64__)
++#define SIZEOF_STRUCT_USTAT 32
++#elif defined(__arm__) || defined(__i386__) || defined(__mips__) \
++  || defined(__powerpc__) || defined(__s390__)
++#define SIZEOF_STRUCT_USTAT 20
++#else
++#error Unknown size of struct ustat
++#endif
++  unsigned struct_ustat_sz = SIZEOF_STRUCT_USTAT;
+   unsigned struct_rlimit64_sz = sizeof(struct rlimit64);
+   unsigned struct_statvfs64_sz = sizeof(struct statvfs64);
+ #endif  // SANITIZER_LINUX && !SANITIZER_ANDROID
+-- 
+2.19.1
+

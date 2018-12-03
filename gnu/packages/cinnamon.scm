@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,13 +51,10 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
+         (add-before 'bootstrap 'skip-premature-configure
            (lambda _
-             (mkdir-p "m4")
-             (zero?
-              (and (system* "glib-gettextize" "--force" "--copy")
-                   (system* "intltoolize" "--force" "--copy" "--automake")
-                   (system* "autoreconf" "--verbose" "--force" "--install"))))))))
+             (setenv "NOCONFIGURE" "set")
+             #t)))))
     ;; TODO: package 'libgsystem'.
     (inputs
      `(("accountsservice" ,accountsservice)

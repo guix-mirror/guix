@@ -37,26 +37,34 @@
 (define-public slang
   (package
     (name "slang")
-    (version "2.3.1a")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.jedsoft.org/releases/slang/slang-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0dlcy0hn0j6cj9qj5x6hpb0axifnvzzmv5jqq0wq14fygw0c7w2l"))
+                "06p379fqn6w38rdpqi98irxi2bf4llb0rja3dlgkqz7nqh7kp7pw"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   (substitute* "src/Makefile.in"
                     (("/bin/ln") "ln"))
-                  (substitute* "configure"
-                    (("-ltermcap") ""))
                   #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-tests? #f
-       #:parallel-build? #f)) ; there's at least one race
+       #:parallel-build? #f  ; there's at least one race
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'substitute-before-config
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ncurses (assoc-ref inputs "ncurses")))
+               (substitute* "configure"
+                 (("MISC_TERMINFO_DIRS=\"\"")
+                  (string-append "MISC_TERMINFO_DIRS="
+                                 "\"" ncurses "/share/terminfo" "\"")))
+               #t))))))
     (inputs
      `(("readline" ,readline)
        ("zlib" ,zlib)

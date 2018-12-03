@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -76,42 +76,41 @@
 (define texlive-extra-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2017/texlive-20170524-extra.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2018/texlive-20180414-extra.tar.xz")
     (sha256 (base32
-              "0zvd2zskk78ig114mfj24g15qys41hzqv59fmqpirdbgq9c9gr5g"))))
+             "0a83kymxc8zmlxjb0y1gf6mx7qnf0hxffwkivwh5yh138y2rfhsv"))))
 
 (define texlive-texmf-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2017/texlive-20170524-texmf.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2018/texlive-20180414-texmf.tar.xz")
     (sha256 (base32
-              "1v69y3kgkbk24f7s4dfkknwd317mqmck5jgpyb35wqgqfy5p0qrz"))))
+             "1b8zigzg8raxkhhzphcmynf84rbdbj2ym2qkz24v8n0qx82zmqms"))))
 
 (define-public texlive-bin
   (package
    (name "texlive-bin")
-   (version "20170524")
+   (version "20180414")
    (source
     (origin
-     (method url-fetch)
-      (uri (string-append "ftp://tug.org/historic/systems/texlive/2017/"
+      (method url-fetch)
+      (uri (string-append "ftp://tug.org/historic/systems/texlive/2018/"
                           "texlive-" version "-source.tar.xz"))
+      (sha256
+       (base32
+        "0khyi6h015r2zfqgg0a44a2j7vmr1cy42knw7jbss237yvakc07y"))
       (patches
        (list
-        ;; This is required for compatibility with Poppler >= 0.58.
-        ;; See <http://tutex.tug.org/pipermail/tex-k/2017-September/002809.html>
-        ;; and <https://bugs.archlinux.org/task/55720> for some discussion.
+        ;; This is required for compatibility with Poppler 0.64.0 and to fix a
+        ;; segmentation fault in dvipdfm-x from XeTeX.
         (origin
           (method url-fetch)
-          (uri (string-append "https://git.archlinux.org/svntogit/packages.git/plain"
-                              "/trunk/texlive-poppler-0.59.patch?h=packages/texlive-bin"
-                              "&id=ba2de374e2b21ecc4b85cc9777f2f15c4d356c61"))
+          (uri (string-append "http://www.linuxfromscratch.org/patches/blfs/"
+                              "svn/texlive-" version "-source-upstream_fixes-1.patch"))
           (file-name "texlive-poppler-compat.patch")
           (sha256
            (base32
-            "1c4ikq4kxw48bi3i33bzpabrjvbk01fwjr2lz20gkc9kv8l0bg3n")))))
-      (sha256 (base32
-               "1amjrxyasplv4alfwcxwnw4nrx7dz2ydmddkq16k6hg90i9njq81"))))
+            "0f8vhyj167y4xj0jx47vkybrcacfpxw0wdn1b777yq3xmhlahhlg")))))))
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)
@@ -175,47 +174,62 @@
                   (not (or (string-prefix? "aarch64" s)
                            (string-prefix? "mips64" s))))
       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'configure-ghostscript-executable
-           ;; ps2eps.pl uses the "gswin32c" ghostscript executable on Windows,
-           ;; and the "gs" ghostscript executable on Unix. It detects Unix by
-           ;; checking for the existence of the /usr/bin directory. Since
-           ;; GuixSD does not have /usr/bin, it is also detected as Windows.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "utils/ps2eps/ps2eps-src/bin/ps2eps.pl"
-               (("gswin32c") "gs"))
-             (substitute* "texk/texlive/linked_scripts/epstopdf/epstopdf.pl"
-               (("\"gs\"")
-                (string-append "\"" (assoc-ref inputs "ghostscript") "/bin/gs\"")))
-             #t))
-         (add-after 'install 'postint
-           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
-             (let* ((out (assoc-ref outputs "out"))
-                    (share (string-append out "/share"))
-                    (texlive-extra (assoc-ref inputs "texlive-extra-src"))
-                    (unpack (assoc-ref %standard-phases 'unpack))
-                    (patch-source-shebangs
-                      (assoc-ref %standard-phases 'patch-source-shebangs)))
-               ;; Create symbolic links for the latex variants and their
-               ;; man pages.
-               (with-directory-excursion (string-append out "/bin/")
-                 (for-each symlink
-                 '("pdftex" "pdftex"   "xetex"   "luatex")
-                 '("latex"  "pdflatex" "xelatex" "lualatex")))
-               (with-directory-excursion (string-append share "/man/man1/")
-                 (symlink "luatex.1" "lualatex.1"))
-               ;; Unpack texlive-extra and install tlpkg.
-               (mkdir "texlive-extra")
-               (with-directory-excursion "texlive-extra"
-                 (apply unpack (list #:source texlive-extra))
-                 (apply patch-source-shebangs (list #:source texlive-extra))
-                 (invoke "mv" "tlpkg" share))
-               ;; texlua shebangs are not patched by the patch-source-shebangs
-               ;; phase because the texlua executable does not exist at that
-               ;; time.
-               (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin"))
-               (with-directory-excursion out
-                 (patch-source-shebangs))))))))
+      (modify-phases %standard-phases
+        (add-after 'unpack 'configure-ghostscript-executable
+          ;; ps2eps.pl uses the "gswin32c" ghostscript executable on Windows,
+          ;; and the "gs" ghostscript executable on Unix. It detects Unix by
+          ;; checking for the existence of the /usr/bin directory. Since
+          ;; GuixSD does not have /usr/bin, it is also detected as Windows.
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "utils/ps2eps/ps2eps-src/bin/ps2eps.pl"
+              (("gswin32c") "gs"))
+            (substitute* "texk/texlive/linked_scripts/epstopdf/epstopdf.pl"
+              (("\"gs\"")
+               (string-append "\"" (assoc-ref inputs "ghostscript") "/bin/gs\"")))
+            #t))
+        (add-after 'unpack 'use-code-for-new-poppler
+          (lambda _
+            (copy-file "texk/web2c/pdftexdir/pdftoepdf-newpoppler.cc"
+                       "texk/web2c/pdftexdir/pdftoepdf.cc")
+            (copy-file "texk/web2c/pdftexdir/pdftosrc-newpoppler.cc"
+                       "texk/web2c/pdftexdir/pdftosrc.cc")
+            #t))
+        (add-after 'unpack 'disable-failing-test
+          (lambda _
+            ;; FIXME: This test fails on 32-bit architectures since Glibc 2.28:
+            ;; <https://bugzilla.redhat.com/show_bug.cgi?id=1631847>.
+            (substitute* "texk/web2c/omegafonts/check.test"
+              (("^\\./omfonts -ofm2opl \\$srcdir/tests/check tests/xcheck \\|\\| exit 1")
+               "./omfonts -ofm2opl $srcdir/tests/check tests/xcheck || exit 77"))
+            #t))
+        (add-after 'install 'postint
+          (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+            (let* ((out (assoc-ref outputs "out"))
+                   (share (string-append out "/share"))
+                   (texlive-extra (assoc-ref inputs "texlive-extra-src"))
+                   (unpack (assoc-ref %standard-phases 'unpack))
+                   (patch-source-shebangs
+                    (assoc-ref %standard-phases 'patch-source-shebangs)))
+              ;; Create symbolic links for the latex variants and their
+              ;; man pages.
+              (with-directory-excursion (string-append out "/bin/")
+                (for-each symlink
+                          '("pdftex" "pdftex"   "xetex"   "luatex")
+                          '("latex"  "pdflatex" "xelatex" "lualatex")))
+              (with-directory-excursion (string-append share "/man/man1/")
+                (symlink "luatex.1" "lualatex.1"))
+              ;; Unpack texlive-extra and install tlpkg.
+              (mkdir "texlive-extra")
+              (with-directory-excursion "texlive-extra"
+                (apply unpack (list #:source texlive-extra))
+                (apply patch-source-shebangs (list #:source texlive-extra))
+                (invoke "mv" "tlpkg" share))
+              ;; texlua shebangs are not patched by the patch-source-shebangs
+              ;; phase because the texlua executable does not exist at that
+              ;; time.
+              (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin"))
+              (with-directory-excursion out
+                (patch-source-shebangs))))))))
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
     "TeX Live provides a comprehensive TeX document production system.
@@ -2274,6 +2288,44 @@ space-stripped macros.")
 to something that's not a float.")
     (license license:lppl)))
 
+(define-public texlive-latex-doi
+  (package
+    (name "texlive-latex-doi")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/doi"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0378rdmrgr2lzbfi4qqy4dfpj5im20diyd8z8b9m4mlg05r7wgnb"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/doi")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/doi")
+    (synopsis "Create correct hyperlinks for DOI numbers")
+    (description
+     "You can hyperlink DOI numbers to doi.org.  However, some publishers have
+elected to use nasty characters in their DOI numbering scheme (@code{<},
+@code{>}, @code{_} and @code{;} have all been spotted).  This will either
+upset LaTeX, or your PDF reader.  This package contains a single user-level
+command @code{\\doi{}}, which takes a DOI number, and creates a correct
+hyperlink to the target of the DOI.")
+    ;; Any version of the LPPL.
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-etoolbox
   (package
     (name "texlive-latex-etoolbox")
@@ -3957,7 +4009,7 @@ directly generate PDF documents instead of DVI.")
 (define texlive-texmf
   (package
    (name "texlive-texmf")
-   (version "2017")
+   (version "20180414")
    (source texlive-texmf-src)
    (build-system gnu-build-system)
    (inputs
@@ -4029,7 +4081,7 @@ This package contains the complete tree of texmf-dist data.")
 (define-public texlive
   (package
    (name "texlive")
-   (version "2017")
+   (version "20180414")
    (source #f)
    (build-system trivial-build-system)
    (inputs `(("bash" ,bash) ; for wrap-program
@@ -4244,14 +4296,14 @@ PDF documents.")
 (define-public texmaker
   (package
     (name "texmaker")
-    (version "4.5")
+    (version "5.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.xm1math.net/texmaker/texmaker-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "056njk6j8wma23mlp7xa3rgfaxx0q8ynwx8wkmj7iy0b85p9ds9c"))))
+                "0y81mjm89b99pr9svcwpaf4iz2q9pc9hjas5kiwd1pbgl5vqskm9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -4262,9 +4314,9 @@ PDF documents.")
              (let ((out (assoc-ref outputs "out")))
                (invoke "qmake"
                        (string-append "PREFIX=" out)
-                       (string-append "DESKTOPDIR=" out
-                                      "/share/applications")
+                       (string-append "DESKTOPDIR=" out "/share/applications")
                        (string-append "ICONDIR=" out "/share/pixmaps")
+                       (string-append "METAINFODIR=" out "/share/metainfo")
                        "texmaker.pro")))))))
     (inputs
      `(("poppler-qt5" ,poppler-qt5)
@@ -4492,3 +4544,399 @@ including:
 
 It also ensures compatibility with the @code{media9} and @code{animate} packages.")
     (license license:lppl)))
+
+(define-public texlive-latex-ms
+  (package
+    (name "texlive-latex-ms")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "ms"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0m4wx3yjb5al1qsv995z8fii8xxy96mcfihbnlx43lpgayiwz35s"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/ms"
+       #:tex-format "latex"))
+    (home-page "https://ctan.org/pkg/ms")
+    (synopsis "Various LATEX packages by Martin Schröder")
+    (description
+     "A bundle of LATEX packages by Martin Schröder; the collection comprises:
+
+@itemize
+@item @command{count1to}, make use of fixed TEX counters;
+@item @command{everysel}, set commands to execute every time a font is selected;
+@item @command{everyshi}, set commands to execute whenever a page is shipped out;
+@item @command{multitoc}, typeset the table of contents in multiple columns;
+@item @command{prelim2e}, mark typeset pages as preliminary; and
+@item @command{ragged2e}, typeset ragged text and allow hyphenation.
+@end itemize\n")
+    (license license:lppl1.3c+)))
+
+(define-public texlive-latex-needspace
+  (package
+    (name "texlive-latex-needspace")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "needspace"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0kw80f5jh4gdpa2ka815abza3gr5z8b929w0745vrlc59pl0017y"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/needspace"
+       #:tex-format "latex"))
+    (inputs
+     `(("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+    (home-page "https://www.ctan.org/pkg/needspace")
+    (synopsis "Insert pagebreak if not enough space")
+    (description
+     "Provides commands to disable pagebreaking within a given vertical
+space.  If there is not enough space between the command and the bottom of the
+page, a new page will be started.")
+    (license license:lppl)))
+
+(define-public texlive-latex-eukdate
+  (package
+    (name "texlive-latex-eukdate")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "svn://www.tug.org/texlive/tags/"
+                                 %texlive-tag "/Master/texmf-dist/"
+                                 "/tex/latex/eukdate"))
+             (revision %texlive-revision)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "18xan116l8w47v560bkw6nbhkrml7g04xrlzk3jrpc7qsyf3n5fz"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/eukdate")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/eukdate")
+    (synopsis "UK format dates, with weekday")
+    (description
+     "The package is used to change the format of @code{\\today}’s date,
+including the weekday, e.g., \"Saturday, 26 June 2008\", the 'UK format', which
+is preferred in many parts of the world, as distinct from that which is used in
+@code{\\maketitle} of the article class, \"June 26, 2008\", the 'US format'.")
+    (license license:lppl)))
+
+(define-public texlive-generic-ulem
+  (package
+    (name "texlive-generic-ulem")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "svn://www.tug.org/texlive/tags/"
+                                 %texlive-tag "/Master/texmf-dist/"
+                                 "/tex/generic/ulem"))
+             (revision %texlive-revision)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1rzdniqq9zk39w8ch8ylx3ywh2mj87s4ivchrsk2b8nx06jyn797"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/ulem")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/ulem")
+    (synopsis "Underline text in TeX")
+    (description
+     "The package provides an @code{\\ul} (underline) command which will break
+over line ends; this technique may be used to replace @code{\\em} (both in that
+form and as the @code{\\emph} command), so as to make output look as if it comes
+from a typewriter.  The package also offers double and wavy underlining, and
+striking out (line through words) and crossing out (/// over words).")
+    (license license:lppl1.3c+)))
+
+(define-public texlive-latex-pgf
+  (package
+    (name "texlive-latex-pgf")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "svn://www.tug.org/texlive/tags/"
+                                 %texlive-tag "/Master/texmf-dist/"
+                                 "/tex/latex/pgf"))
+             (revision %texlive-revision)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1dq8p10pz8wn0vx412m7d7d5gj1syxly3yqdqvf7lv2xl8zndn5h"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("texlive-latex-pgf-generic"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+             (url (string-append "svn://www.tug.org/texlive/tags/"
+                                 %texlive-tag "/Master/texmf-dist/"
+                                 "/tex/generic/pgf"))
+             (revision %texlive-revision)))
+           (file-name (string-append "texlive-latex-pgf-generic" version "-checkout"))
+           (sha256
+            (base32
+             "0xkxw26sjzr5npjpzpr28yygwdbhzpdd0hsk80gjpidhcxmz393i"))))))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target-generic (string-append (assoc-ref %outputs "out")
+                                              "/share/texmf-dist/tex/generic/pgf"))
+               (target-latex (string-append (assoc-ref %outputs "out")
+                                            "/share/texmf-dist/tex/latex/pgf")))
+           (mkdir-p target-generic)
+           (mkdir-p target-latex)
+           (copy-recursively (assoc-ref %build-inputs "texlive-latex-pgf-generic") target-generic)
+           (copy-recursively (assoc-ref %build-inputs "source") target-latex)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/tikz")
+    (synopsis "Create PostScript and PDF graphics in TeX")
+    (description
+     "PGF is a macro package for creating graphics.  It is platform- and
+format-independent and works together with the most important TeX backend
+drivers, including pdfTeX and dvips.  It comes with a user-friendly syntax layer
+called TikZ.
+
+Its usage is similar to pstricks and the standard picture environment.  PGF
+works with plain (pdf-)TeX, (pdf-)LaTeX, and ConTeXt.  Unlike pstricks, it can
+produce either PostScript or PDF output.")
+    (license license:lppl1.3c+)))
+
+(define-public texlive-latex-koma-script
+  (package
+    (name "texlive-latex-koma-script")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/koma-script"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1g8qg796hc6s092islnybaxs115ldsqwp2vxkk3gpy6vh7wc9r50"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source" . "tex/latex/koma-script"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/koma-script")
+    (synopsis "Bundle of versatile classes and packages")
+    (description
+     "The KOMA-Script bundle provides replacements for the article, report, and
+book classes with emphasis on typography and versatility.  There is also a
+letter class.
+
+The bundle also offers:
+
+@itemize
+@item a package for calculating type areas in the way laid down by the
+typographer Jan Tschichold,
+@item packages for easily changing and defining page styles,
+@item a package scrdate for getting not only the current date but also the name
+of the day, and
+@item a package scrtime for getting the current time.
+@end itemize
+
+All these packages may be used not only with KOMA-Script classes but also with
+the standard classes.
+
+Since every package has its own version number, the version number quoted only
+refers to the version of scrbook, scrreprt, scrartcl, scrlttr2 and
+typearea (which are the main parts of the bundle).")
+    (license license:lppl1.3+)))
+
+(define-public texlive-generic-listofitems
+  (package
+    (name "texlive-generic-listofitems")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/generic/listofitems"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1k50z6ixgwwzy84mi0dr5vcjah5p7wvgq66y45bilm91a4m8sgla"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/listofitems")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/listofitems")
+    (synopsis "Grab items in lists using user-specified seperation character")
+    (description
+     "This package allows one to capture all the items of a list, for which
+the parsing character has been selected by the user, and to access any of
+these items with a simple syntax.")
+    (license license:lppl1.3c+)))
+
+(define-public texlive-latex-readarray
+  (package
+    (name "texlive-latex-readarray")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/readarray"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0c53k180ivn1n7fz3ngvd2w1i5dw3kxml0n64vhki88xsylz7lxp"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/readarray")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (propagated-inputs
+     `(("texlive-generic-listofitems" ,texlive-generic-listofitems)))
+    (home-page "https://www.ctan.org/pkg/readarray")
+    (synopsis "Read, store and recall array-formatted data")
+    (description
+     "This package allows the user to input formatted data into elements of a
+2-D or 3-D array and to recall that data at will by individual cell number.
+The data can be but need not be numerical in nature.  It can be, for example,
+formatted text.")
+    (license license:lppl1.3)))
+
+(define-public texlive-latex-verbatimbox
+  (package
+    (name "texlive-latex-verbatimbox")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/verbatimbox"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0qh1cgvfs463zsi2pjg490gj0mkjfdpfc381j10cbb5la304psna"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/verbatimbox")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (propagated-inputs
+     `(("texlive-latex-readarray" ,texlive-latex-readarray)))
+    (home-page "https://www.ctan.org/pkg/verbatimbox")
+    (synopsis "Deposit verbatim text in a box")
+    (description
+     "The package provides a @code{verbbox} environment to place its contents
+into a globally available box, or into a box specified by the user.  The
+global box may then be used in a variety of situations (for example, providing
+a replica of the @code{boxedverbatim} environment itself).  A valuable use is
+in places where the standard @code{verbatim} environment (which is based on a
+@code{trivlist}) may not appear.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-examplep
+  (package
+    (name "texlive-latex-examplep")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/examplep"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0fsvvmz68ij0zwfzrny6x13d92grxr4ap59lxgah4smbkccd6s27"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/examplep")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/examplep")
+    (synopsis "Verbatim phrases and listings in LaTeX")
+    (description
+     "Examplep provides sophisticated features for typesetting verbatim source
+code listings, including the display of the source code and its compiled LaTeX
+or METAPOST output side-by-side, with automatic width detection and enabled
+page breaks (in the source), without the need for specifying the source twice.
+Special care is taken that section, page and footnote numbers do not interfere
+with the main document.  For typesetting short verbatim phrases, a replacement
+for the @code{\\verb} command is also provided in the package, which can be
+used inside tables and moving arguments such as footnotes and section
+titles.")
+    ;; No version of the GPL is specified.
+    (license license:gpl3+)))

@@ -85,7 +85,8 @@
                                   "blender-" version ".tar.gz"))
               (sha256
                (base32
-                "1g4kcdqmf67srzhi3hkdnr4z1ph4h9sza1pahz38mrj998q4r52c"))))
+                "1g4kcdqmf67srzhi3hkdnr4z1ph4h9sza1pahz38mrj998q4r52c"))
+              (patches (search-patches "blender-newer-ffmpeg.patch"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -141,7 +142,7 @@
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
-       ("ffmpeg-2.8" ,ffmpeg-2.8) ;<https://lists.gnu.org/archive/html/guix-devel/2016-04/msg01019.html>
+       ("ffmpeg" ,ffmpeg)
        ("fftw" ,fftw)
        ("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
@@ -228,14 +229,15 @@ many more.")
 (define-public ilmbase
   (package
     (name "ilmbase")
-    (version "2.2.1")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/openexr/ilmbase-"
+              (uri (string-append "https://github.com/openexr/openexr/releases"
+                                  "/download/v" version "/ilmbase-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "17k0hq19wplx9s029kjrq6c51x2ryrfmaavcappkd0g67gk0dhna"))
+                "0qiq5bqq9rxhqjiym2k36sx4vq8adgrz6xf6qwizi9bqm78phsa5"))
               (patches (search-patches "ilmbase-fix-tests.patch"))))
     (build-system gnu-build-system)
     (home-page "http://www.openexr.com/")
@@ -319,29 +321,22 @@ graphics.")
 (define-public openexr
   (package
     (name "openexr")
-    (version "2.2.1")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/openexr/openexr-"
+              (uri (string-append "https://github.com/openexr/openexr/releases"
+                                  "/download/v" version "/openexr-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1kdf2gqznsdinbd5vcmqnif442nyhdf9l7ckc51410qm2gv5m6lg"))
+                "19jywbs9qjvsbkvlvzayzi81s976k53wg53vw4xj66lcgylb6v7x"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   (substitute* (find-files "." "tmpDir\\.h")
                     (("\"/var/tmp/\"")
                      "\"/tmp/\""))
-
-                  ;; Install 'ImfStdIO.h'.  Reported at
-                  ;; <https://lists.nongnu.org/archive/html/openexr-devel/2016-06/msg00001.html>
-                  ;; and <https://github.com/openexr/openexr/pull/184>.
-                  (substitute* "IlmImf/Makefile.in"
-                    (("ImfIO\\.h")
-                     "ImfIO.h ImfStdIO.h"))
-                  #t))
-              (patches (search-patches "openexr-missing-samples.patch"))))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -412,7 +407,7 @@ visual effects work for film.")
 (define-public openscenegraph
   (package
     (name "openscenegraph")
-    (version "3.6.2")
+    (version "3.6.3")
     (source
      (origin
        (method git-fetch)
@@ -421,8 +416,8 @@ visual effects work for film.")
              (commit (string-append "OpenSceneGraph-" version))))
        (sha256
         (base32
-         "03jk6lclyd4biniaw04w7j0z1spkm69f1c19i37b8v9x3zv1p1id"))
-       (file-name (string-append name "-" version "-checkout"))))
+         "0h32z15sa8sbq276j0iib0n707m8bs4p5ji9z2ah411446paad9q"))
+       (file-name (git-file-name name version))))
     (properties
      `((upstream-name . "OpenSceneGraph")))
     (build-system cmake-build-system)
@@ -443,8 +438,6 @@ visual effects work for film.")
        ("jasper" ,jasper)
        ("librsvg" ,librsvg)
        ("libxrandr" ,libxrandr)
-       ("pth" ,pth)
-       ("qtbase" ,qtbase)
        ("ffmpeg" ,ffmpeg)
        ("mesa" ,mesa)))
     (synopsis "High performance real-time graphics toolkit")
@@ -713,20 +706,20 @@ and understanding different BRDFs (and other component functions).")
        (list (string-append "--x-includes=" (assoc-ref %build-inputs "libx11")
                             "/include")
              (string-append "--x-libraries=" (assoc-ref %build-inputs "libx11")
-                            "/lib"))
+                            "/lib")
+             "--disable-examples")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
+         (replace 'bootstrap
            (lambda _
              ;; let's call configure from configure phase and not now
              (substitute* "autogen.sh" (("./configure") "# ./configure"))
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("libtool" ,libtool)
        ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("bash" ,bash)))
+       ("automake" ,automake)))
     (inputs
      `(("libx11" ,libx11)
        ("freetype" ,freetype)

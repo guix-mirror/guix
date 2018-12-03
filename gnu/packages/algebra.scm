@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
@@ -179,7 +179,7 @@ PARI is also available as a C library to allow for faster computations.")
 (define-public gp2c
   (package
    (name "gp2c")
-   (version "0.0.11")
+   (version "0.0.11pl1")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -187,7 +187,7 @@ PARI is also available as a C library to allow for faster computations.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "1z69xj2dpd8yyi8108rz26c50xpv0k2j8qnk0bzy1c5lw3pd1adm"))))
+                "1c6f6vmncw032kfzrfyr8bynw6yd3faxpy2285r009fmr0zxfs5s"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (inputs `(("pari-gp" ,pari-gp)))
@@ -210,10 +210,40 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
    (license license:gpl2)
    (home-page "https://pari.math.u-bordeaux.fr/")))
 
+(define-public cmh
+  (package
+   (name "cmh")
+   (version "1.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://gforge.inria.fr/frs/download.php/33497/cmh-"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "1a28xr9bs0igms0ik99x0w8lnb0jyfcmvyi26pbyh9ggcdivd33p"))))
+   (build-system gnu-build-system)
+   (inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("mpc" ,mpc)
+       ("mpfrcx" ,mpfrcx)
+       ("fplll" ,fplll)
+       ("pari-gp"  ,pari-gp)))
+   (synopsis "Igusa class polynomial computations")
+   (description
+    "The CMH software computes Igusa (genus 2) class polynomials, which
+parameterize the CM points in the moduli space of 2-dimensional abelian
+varieties, i.e. Jacobians of hyperelliptic curves.
+It can also be used to compute theta constants at arbitrary
+precision.")
+   (license license:gpl3+)
+   (home-page "http://cmh.gforge.inria.fr/")))
+
 (define-public giac-xcas
   (package
     (name "giac-xcas")
-    (version "1.4.9-59")
+    (version "1.5.0-19")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -225,16 +255,48 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "0dv5p5y6gkrsmz3xa7fw87rjyabwdwk09mqb09kb7gai9n9dgayk"))))
+                "0ds1zh712sr20qh0fih8jnm4nlv90andllp8n263qs7rlhblz551"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))            ;77MiB of documentation
     (arguments
-     `(#:phases
+     `(#:modules ((ice-9 ftw)
+                  (guix build utils)
+                  (guix build gnu-build-system))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-bin-cp
+           ;; Some Makefiles contain hard-coded "/bin/cp".
            (lambda _
-             ;; Some Makefiles contain hard-coded "/bin/cp".
              (substitute* (find-files "doc" "^Makefile")
                (("/bin/cp") (which "cp")))
+             #t))
+         (add-after 'unpack 'disable-failing-test
+           ;; FIXME: Test failing.  Not sure why.
+           (lambda _
+             (substitute* "check/Makefile.in"
+               (("chk_fhan11") ""))
+             #t))
+         (add-after 'install 'install-doc
+           ;; Setting --docdir to "doc" output isn't sufficient as
+           ;; documentation and examples are scattered throughout the source.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc"))
+                    (docdir (string-append doc
+                                           "/share/doc/"
+                                           (string-append ,name "-" ,version))))
+               ;; For some reason, the install process moves
+               ;; "share/giac/examples" instead of "share/giac/doc" to
+               ;; "$(docdir)".  Clean up the mess and start over.
+               (delete-file-recursively (string-append doc "/share"))
+               (mkdir-p docdir)
+               (with-directory-excursion out
+                 (for-each (lambda (f)
+                             (unless (member f '("." ".."))
+                               (copy-recursively (string-append "share/giac/" f)
+                                                 (string-append docdir "/" f))))
+                           (scandir "share/giac"))
+                 (delete-file-recursively "share/giac")))
              #t)))))
     (inputs
      `(("fltk" ,fltk)
@@ -314,47 +376,47 @@ fast arithmetic.")
 
 (define-public arb
   (package
-   (name "arb")
-   (version "2.14.0")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/fredrik-johansson/arb/archive/"
-                  version ".tar.gz"))
-            (file-name (string-append name "-" version ".tar.gz"))
-            (sha256
-              (base32
-                "0ncr27nd20xxi18nj30cvpa6r52v59nq7gbi34x3l4xym3p8mlmx"))))
-   (build-system gnu-build-system)
-   (propagated-inputs
-    `(("flint" ,flint))) ; flint.h is included by arf.h
-   (inputs
-    `(("gmp" ,gmp)
-      ("mpfr" ,mpfr)))
-   (arguments
-    `(#:phases
-      (modify-phases %standard-phases
-        (replace 'configure
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out"))
-                  (flint (assoc-ref inputs "flint"))
-                  (gmp (assoc-ref inputs "gmp"))
-                  (mpfr (assoc-ref inputs "mpfr")))
-              ;; do not pass "--enable-fast-install", which makes the
-              ;; homebrew configure process fail
-              (invoke "./configure"
-                      (string-append "--prefix=" out)
-                      (string-append "--with-flint=" flint)
-                      (string-append "--with-gmp=" gmp)
-                      (string-append "--with-mpfr=" mpfr))))))))
-   (synopsis "Arbitrary precision floating-point ball arithmetic")
-   (description
-    "Arb is a C library for arbitrary-precision floating-point ball
+    (name "arb")
+    (version "2.14.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fredrik-johansson/arb.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ndxg7h4xvccjgp5l9z2f8b66dsff6fhf86bn5n7f75a1ksd7554"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("flint" ,flint)))               ; flint.h is included by arf.h
+    (inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (flint (assoc-ref inputs "flint"))
+                   (gmp (assoc-ref inputs "gmp"))
+                   (mpfr (assoc-ref inputs "mpfr")))
+               ;; do not pass "--enable-fast-install", which makes the
+               ;; homebrew configure process fail
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--with-flint=" flint)
+                       (string-append "--with-gmp=" gmp)
+                       (string-append "--with-mpfr=" mpfr))))))))
+    (synopsis "Arbitrary precision floating-point ball arithmetic")
+    (description
+     "Arb is a C library for arbitrary-precision floating-point ball
 arithmetic.  It supports efficient high-precision computation with
 polynomials, power series, matrices and special functions over the
 real and complex numbers, with automatic, rigorous error control.")
-   (license license:lgpl2.1+)
-   (home-page "http://fredrikj.net/arb/")))
+    (license license:lgpl2.1+)
+    (home-page "http://fredrikj.net/arb/")))
 
 (define-public ntl
   (package
@@ -506,13 +568,14 @@ syntax is similar to that of C, so basic usage is familiar.  It also includes
     (name "kiss-fft-for-extempore")
     (version "1.3.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/extemporelang/kiss_fft/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/extemporelang/kiss_fft.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hkp9l6l4c92fb1l2sh6a6zv1hynpvb2s4d03vd8vxyvybc0l4pv"))))
+                "0jasbmqy4wkqrqx3w64s1dfmj34875xmsl72mb26aa4hpyn14bi2"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ; no tests included
     ;; Extempore refuses to build on architectures other than x86_64

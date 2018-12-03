@@ -21,7 +21,7 @@
 ;;; timestamps, deduplicating, etc.
 
 (define-module (guix store deduplication)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix build utils)
   #:use-module (guix base16)
   #:use-module (srfi srfi-11)
@@ -102,11 +102,17 @@ LINK-PREFIX."
 SWAP-DIRECTORY as the directory to store temporary hard links.
 
 Note: TARGET, TO-REPLACE, and SWAP-DIRECTORY must be on the same file system."
-  (let ((temp-link (get-temp-link target swap-directory)))
-    (make-file-writable (dirname to-replace))
+  (let* ((temp-link (get-temp-link target swap-directory))
+         (parent    (dirname to-replace))
+         (stat      (stat parent)))
+    (make-file-writable parent)
     (catch 'system-error
       (lambda ()
-        (rename-file temp-link to-replace))
+        (rename-file temp-link to-replace)
+
+        ;; Restore PARENT's mtime and permissions.
+        (set-file-time parent stat)
+        (chmod parent (stat:mode stat)))
       (lambda args
         (delete-file temp-link)
         (unless (= EMLINK (system-error-errno args))

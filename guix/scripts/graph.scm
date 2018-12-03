@@ -439,6 +439,10 @@ package modules, while attempting to retain user package modules."
         (option '(#\e "expression") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'expression arg result)))
+        (option '(#\s "system") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'system arg
+                              (alist-delete 'system result eq?))))
         (option '(#\h "help") #f #f
                 (lambda args
                   (show-help)
@@ -462,6 +466,8 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
       --list-types       list the available graph types"))
   (display (G_ "
   -e, --expression=EXPR  consider the package EXPR evaluates to"))
+  (display (G_ "
+  -s, --system=SYSTEM    consider the graph for SYSTEM--e.g., \"i686-linux\""))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
@@ -472,7 +478,8 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
 
 (define %default-options
   `((node-type . ,%package-node-type)
-    (backend   . ,%graphviz-backend)))
+    (backend   . ,%graphviz-backend)
+    (system    . ,(%current-system))))
 
 
 ;;;
@@ -508,7 +515,8 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
               (export-graph (concatenate nodes)
                             (current-output-port)
                             #:node-type type
-                            #:backend backend)))))))
+                            #:backend backend))
+            #:system (assq-ref opts 'system))))))
   #t)
 
 ;;; graph.scm ends here

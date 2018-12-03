@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,12 +28,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages libreoffice)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module ((guix licenses)
                 #:select (gpl2+ lgpl2.1+ lgpl3+ mpl1.1 mpl2.0
-                          non-copyleft x11-style))
+                          non-copyleft x11-style bsd-3))
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
@@ -79,7 +81,7 @@
 (define-public ixion
   (package
     (name "ixion")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
@@ -87,7 +89,7 @@
                            version ".tar.xz"))
        (sha256
         (base32
-         "1rf76drzg593jzswwnh8kr2jangp8ylizqjspx57rld25g2n1qss"))))
+         "14gdd6div4l22vnz3jn2qjxgjly98ck6p8c1v7386c41rx7kilba"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -105,7 +107,7 @@ their dependencies automatically upon calculation.")
 (define-public orcus
   (package
     (name "orcus")
-    (version "0.13.4")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
@@ -113,7 +115,7 @@ their dependencies automatically upon calculation.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1r42waglxwmvvwl20fy49vzgfp1sis4j703f81iswzdyzqalq75p"))))
+         "1ays13a1x15j81dsrq0d3697v1bbqd3bfz3ajn6kb9d61y2drlgj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -316,7 +318,16 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
           ;; During configure, the boost headers are found, but linking
           ;; fails without the following flag.
           (string-append "--with-boost="
-                         (assoc-ref %build-inputs "boost")))))
+                         (assoc-ref %build-inputs "boost")))
+        #:phases (modify-phases %standard-phases
+                   (add-before 'build 'fix-boost-include
+                     (lambda _
+                       ;; This library moved in Boost and the compatibility
+                       ;; redirect is no longer available since version 1.68.0.
+                       (substitute* "src/libcmis/xml-utils.cxx"
+                         (("boost/uuid/sha1.hpp")
+                          "boost/uuid/detail/sha1.hpp"))
+                       #t)))))
     (home-page "https://github.com/tdf/libcmis")
     (synopsis "CMIS client library")
     (description "LibCMIS is a C++ client library for the CMIS interface.  It
@@ -400,7 +411,16 @@ CorelDRAW documents of all versions.")
                "0bfq9rwm040xhh7b3v0gsdavwvnrz4hkwnhpggarxk70mr3j7jcx"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-mdds=1.2")))
+     `(#:configure-flags '("--with-mdds=1.4")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'support-mdds-1.4
+                    (lambda _
+                      ;; This package already works fine with mdds 1.4, but the
+                      ;; configure check is too strict.  Taken from upstream.
+                      (substitute* "configure"
+                        (("mdds=1\\.2") "mdds=1.4")
+                        (("mdds=\"1\\.2\"") "mdds=\"1.4\""))
+                      #t)))))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
@@ -524,6 +544,35 @@ Aldus/Macromedia/Adobe FreeHand documents.")
 Microsoft Publisher documents of all versions.")
     (license mpl2.0)))
 
+(define-public libnumbertext
+  (package
+    (name "libnumbertext")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/numbertext/" name
+                           "/archive/" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wnsn4911fdd2na8jxkcvmk04a6xw6qlviic9w4qwg9fcym6866v"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/Numbertext/libnumbertext")
+    (synopsis "Language-neutral @code{NUMBERTEXT} and @code{MONEYTEXT} functions")
+    (description
+     "The libnumbertext library provides language-neutral @code{NUMBERTEXT}
+and @code{MONEYTEXT} functions for LibreOffice Calc, available for C++ and
+Java.")
+    (license (list lgpl3+ bsd-3))))
+
 (define-public libpagemaker
   (package
     (name "libpagemaker")
@@ -615,19 +664,19 @@ text documents, vector drawings, presentations and spreadsheets.")
 (define-public libmwaw
   (package
     (name "libmwaw")
-    (version "0.3.12")
+    (version "0.3.14")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/" name "-"
                           version "/" name "-" version ".tar.xz"))
       (sha256 (base32
-               "1ryi1v38lgy5kv84fzjqkawidrg30y4hlqrz1v262792wzkad4bn"))))
+               "1s9wyf8pyh3fbazq2d2b6fgi7s7bid60viw2xbdkmn2ywlfbza5c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
-    (propagated-inputs ; in Requires field of .pkg
+    (propagated-inputs                  ; in Requires field of .pkg
      `(("librevenge" ,librevenge)))
     (inputs
      `(("boost" ,boost)
@@ -637,7 +686,7 @@ text documents, vector drawings, presentations and spreadsheets.")
     (description "Libmwaw contains some import filters for old Macintosh
 text documents (MacWrite, ClarisWorks, ... ) and for some graphics and
 spreadsheet documents.")
-    (license (list mpl2.0 lgpl2.1+)))) ; dual license
+    (license (list mpl2.0 lgpl2.1+))))  ; dual license
 
 (define-public libstaroffice
   (package
@@ -665,19 +714,19 @@ from the old StarOffice (.sdc, .sdw, ...).")
 (define-public libwps
   (package
     (name "libwps")
-    (version "0.4.9")
+    (version "0.4.10")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/"
                           name "-" version "/" name "-" version ".tar.xz"))
       (sha256 (base32
-               "08j9nxnrzxsnq35d9l824ad8w8az42fivaxn8ajl85dv6g3v1ghk"))))
+               "1ji9zd4wxmas03g8jyx0ih0amrqfazm5874a2v9rd7va50sf088l"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
-    (propagated-inputs ; in Requires field of .pkg
+    (propagated-inputs                  ; in Requires field of .pkg
      `(("librevenge" ,librevenge)))
     (inputs
      `(("boost" ,boost)
@@ -686,7 +735,7 @@ from the old StarOffice (.sdc, .sdw, ...).")
     (synopsis "Import library for Microsoft Works text documents")
     (description "Libwps is a library for importing files in the Microsoft
 Works word processor file format.")
-    (license (list mpl2.0 lgpl2.1+)))) ; dual license
+    (license (list mpl2.0 lgpl2.1+))))  ; dual license
 
 (define-public libzmf
   (package
@@ -700,6 +749,9 @@ Works word processor file format.")
       (sha256 (base32
                "08mg5kmkjrmqrd8j5rkzw9vdqlvibhb1ynp6bmfxnzq5rcq1l197"))))
    (build-system gnu-build-system)
+   (arguments
+    ;; A harmless 'sign-compare' error pops up on i686 so disable '-Werror'.
+    '(#:configure-flags '("--disable-werror")))
    (inputs
     `(("boost" ,boost)
       ("icu4c" ,icu4c)
@@ -896,20 +948,46 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "6.0.6.2")
+    (version "6.1.3.2")
     (source
      (origin
-      (method url-fetch)
-      (uri
+       (method url-fetch)
+       (uri
         (string-append
-          "https://download.documentfoundation.org/libreoffice/src/"
-          (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
-      (sha256
-       (base32
-        "13kaikaz65xw9a3hxbh245cnydjpy58np22c7s0s65pnmcq68rpi"))
-      (patches (search-patches "libreoffice-icu.patch"
-                               "libreoffice-glm.patch"))))
-    (build-system gnu-build-system)
+         "https://download.documentfoundation.org/libreoffice/src/"
+         (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0i4gf3qi16fg7dxq2l4vhkwh4f5lx7xd1ilpzcw26vccqkv3hvyl"))
+       (patches
+        (append (list (origin
+                        ;; Support newer versions of Orcus and MDDS.  These patches
+                        ;; are taken from upstream, but we use the patches from Arch
+                        ;; because they are adapted for the release tarball.
+                        ;; Note: remove the related substitutions below when these
+                        ;; are no longer needed.
+                        (method url-fetch)
+                        (uri (string-append "https://git.archlinux.org/svntogit"
+                                            "/packages.git/plain/trunk/"
+                                            "0001-Update-orcus-to-0.14.0.patch?&id="
+                                            "4002fa927f2a143bd2ec008a0c400b2ce9f2c8a7"))
+                        (file-name "libreoffice-orcus.patch")
+                        (sha256
+                         (base32
+                          "0v1knblrmfzkb4g9pm5mdnrmjib59bznvca1ygbwlap2ln1h4mk0")))
+                      (origin
+                        (method url-fetch)
+                        (uri (string-append "https://git.archlinux.org/svntogit"
+                                            "/packages.git/plain/trunk/"
+                                            "0001-Update-mdds-to-1.4.1.patch?&id="
+                                            "4002fa927f2a143bd2ec008a0c400b2ce9f2c8a7"))
+                        (file-name "libreoffice-mdds.patch")
+                        (sha256
+                         (base32
+                          "0apbmammmp4pk473xiv5vk50r4c5gjvqzf9jkficksvz58q6114f"))))
+                (search-patches "libreoffice-icu.patch"
+                                "libreoffice-glm.patch")))))
+    (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("bison" ,bison)
        ("cppunit" ,cppunit-1.14)
@@ -949,6 +1027,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("libltdl" ,libltdl)
        ("libmspub" ,libmspub)
        ("libmwaw" ,libmwaw)
+       ("libnumbertext" ,libnumbertext)
        ("libodfgen" ,libodfgen)
        ("libpagemaker" ,libpagemaker)
        ("libqxp" ,libqxp)
@@ -975,6 +1054,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("poppler" ,poppler)
        ("postgresql" ,postgresql)
        ("python" ,python)
+       ("python-lxml" ,python-lxml)
        ("redland" ,redland)
        ("sane-backends" ,sane-backends)
        ("unixodbc" ,unixodbc)
@@ -994,6 +1074,13 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
                          "solenv/gbuild/gbuild.mk"
                          "solenv/gbuild/platform/unxgcc.mk")
                  (("/bin/sh") (which "sh")))
+
+               ;; XXX: Adjust the checks for MDDS and liborcus to avoid having
+               ;; to re-bootstrap the whole thing.  Remove this with the related
+               ;; patches above.
+               (substitute* "configure"
+                 (("mdds-1.2 >= 1.2.3") "mdds-1.4 >= 1.4.1")
+                 (("liborcus-0.13 >= 0.13.3") "liborcus-0.14 >= 0.14.0"))
 
                ;; GPGME++ headers are installed in a gpgme++ subdirectory, but
                ;; files in "xmlsecurity/source/gpg/" and elsewhere expect to
@@ -1060,6 +1147,8 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
         (list
           "--enable-release-build"
           "--enable-verbose"
+          ;; Avoid using all cpu cores by default
+          (format #f "--with-parallelism=~d" (parallel-job-count))
           "--disable-fetch-external" ; disable downloads
           "--with-system-libs" ; enable all --with-system-* flags
           (string-append "--with-boost-libdir="

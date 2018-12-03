@@ -117,8 +117,8 @@
 
 ;; Building from recent Git because the official 5.0 release no longer builds.
 (define-public dolphin-emu
-  (let ((commit "806c1ee8f0ed824008185212bfab2658d400b576")
-        (revision "2"))
+  (let ((commit "22ddd11573fd8d3e43a879804e7a64e50928435d")
+        (revision "4"))
     (package
       (name "dolphin-emu")
       (version (git-version "5.0" revision commit))
@@ -144,7 +144,7 @@
              #t))
          (sha256
           (base32
-           "1sdc7rh6z7gjx4kxg18jrv7srfpx1vgf936zg5y43radnlscrh1j"))))
+           "01l6r8spaslqc73m3y7hfb2jx5a4848vdkman6x6w2arpb8bywzl"))))
       (build-system cmake-build-system)
       (arguments
        '(#:tests? #f
@@ -153,7 +153,8 @@
            (add-before 'configure 'fixgcc7
              (lambda _
                (unsetenv "C_INCLUDE_PATH")
-               (unsetenv "CPLUS_INCLUDE_PATH")))
+               (unsetenv "CPLUS_INCLUDE_PATH")
+               #t))
            (add-before 'configure 'generate-fonts&hardcore-libvulkan-path
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((fontfile
@@ -195,7 +196,7 @@
          ("bluez" ,bluez)
          ("curl" ,curl)
          ("eudev" ,eudev)
-         ("ffmpeg" ,ffmpeg-3.4)
+         ("ffmpeg" ,ffmpeg)
          ("font-wqy-microhei" ,font-wqy-microhei)
          ("freetype" ,freetype)
          ("glew" ,glew)
@@ -1055,18 +1056,19 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.3")
+    (version "1.7.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/libretro/RetroArch/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libretro/RetroArch.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1si78dbwbsq4i0r42q94nmlpaxdyqch113nxavdprf4vc1224356"))))
+        (base32 "1jfpgl34jjxn3dvxd1kd564swkw7v98hnn562v998b7vllz3dxdm"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -1079,12 +1081,21 @@ emulation community.  It provides highly accurate emulation.")
                  (("libvulkan.so") (string-append vulkan "/lib/libvulkan.so")))
                (substitute* "qb/qb.libs.sh"
                  (("/bin/true") (which "true")))
+               ;; Use shared zlib.
+               (substitute* '("libretro-common/file/archive_file_zlib.c"
+                              "libretro-common/streams/trans_stream_zlib.c"
+                              "network/httpserver/httpserver.c")
+                 (("<compat/zlib.h>") "<zlib.h>"))
                ;; The configure script does not yet accept the extra arguments
                ;; (like ‘CONFIG_SHELL=’) passed by the default configure phase.
-               (zero? (system*
-                       "./configure"
-                       (string-append "--prefix=" out)
-                       (string-append "--global-config-dir=" etc)))))))))
+               (invoke
+                 "./configure"
+                 ,@(if (string-prefix? "armhf" (or (%current-target-system)
+                                                  (%current-system)))
+                       '("--enable-neon" "--enable-floathard")
+                       '())
+                 (string-append "--prefix=" out)
+                 (string-append "--global-config-dir=" etc))))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("ffmpeg" ,ffmpeg)
@@ -1175,7 +1186,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.200")
+    (version "0.203")
     (source
      (origin
        (method git-fetch)
@@ -1185,7 +1196,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ddw8635hdm21lgpf13k1vhfywy3460rwciv93vrqmpkq2dvpmib"))
+         "19ccqc00024fbjyk0k5d9xljhwq7wsrp7phwm2jmn0h77mgdj844"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1211,17 +1222,6 @@ play them on systems for which they were never designed!")
        #:tests? #f                      ;no test in regular release
        #:phases
        (modify-phases %standard-phases
-         ;; Add missing include lines for "fmin" and "ceil" functions.
-         ;; Reported upstream.  Will be fixed in 0.201.
-         (add-after 'unpack 'add-missing-include
-           (lambda _
-             (substitute* "src/devices/cpu/mips/mips3.cpp"
-               (("#include \"ps2vu.h\"" all)
-                (string-append all "\n#include <cmath>")))
-             (substitute* "src/devices/cpu/mips/ps2vif1.cpp"
-               (("#include \"ps2vif1.h\"" all)
-                (string-append all "\n#include <cmath>")))
-             #t))
          (delete 'configure)
          (add-after 'build 'build-documentation
            (lambda _ (invoke "make" "-C" "docs" "man" "info")))

@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,12 +50,14 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:autoload   (gnu packages protobuf) (protobuf)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -62,40 +65,36 @@
   #:use-module (srfi srfi-1))
 
 (define-public libssh
-  ;; This commit from the 'v0-7' branch contains 7 memory-management-related
-  ;; bug fixes that we'd rather have.
-  (let ((commit "239d0f75b5f909174c2ef7fb08d23bcfa6b20ba0")
-        (revision "0"))
-    (package
-      (name "libssh")
-      (version (git-version "0.7.5" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.libssh.org/projects/libssh.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "01w72w1jsgs9ilj3n1gp6qkmdxr9n74i5h2nipi3x1vzm7bv8na1"))
-                (patches (search-patches "libssh-hostname-parser-bug.patch"))
-                (file-name (git-file-name name version))))
-      (build-system cmake-build-system)
-      (outputs '("out" "debug"))
-      (arguments
-       '(#:configure-flags '("-DWITH_GCRYPT=ON")
+  (package
+    (name "libssh")
+    (version "0.7.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://git.libssh.org/projects/libssh.git")
+                     (commit (string-append "libssh-" version))))
+              (patches (search-patches "libssh-hostname-parser-bug.patch"))
+              (sha256
+               (base32
+                "07adxvhmnaq2l7sq7sn4sjlikbm1zdicq8lavq5yfila6jbx9z1y"))
+              (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (outputs '("out" "debug"))
+    (arguments
+     '(#:configure-flags '("-DWITH_GCRYPT=ON")
 
-         ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test suite.
-         #:tests? #f))
-      (inputs `(("zlib" ,zlib)
-                ("libgcrypt" ,libgcrypt)))
-      (synopsis "SSH client library")
-      (description
-       "libssh is a C library implementing the SSHv2 and SSHv1 protocol for
-client and server implementations.  With libssh, you can remotely execute
-programs, transfer files, and use a secure and transparent tunnel for your
-remote applications.")
-      (home-page "https://www.libssh.org")
-      (license license:lgpl2.1+))))
+       ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test suite.
+       #:tests? #f))
+    (inputs `(("zlib" ,zlib)
+              ("libgcrypt" ,libgcrypt)))
+    (synopsis "SSH client library")
+    (description
+     "libssh is a C library implementing the SSHv2 and SSHv1 protocol for client
+and server implementations.  With libssh, you can remotely execute programs,
+transfer files, and use a secure and transparent tunnel for your remote
+applications.")
+    (home-page "https://www.libssh.org")
+    (license license:lgpl2.1+)))
 
 (define-public libssh2
   (package
@@ -117,23 +116,10 @@ remote applications.")
    (propagated-inputs `(("libgcrypt" ,libgcrypt)
                         ("zlib" ,zlib)))
    (arguments `(#:configure-flags `("--with-libgcrypt")
-                #:phases
-                ;; FIXME: In the next core-updates cycle, replace the entire
-                ;; following ,(...) form with its first 'modify-phases'
-                ;; subform.  The change made here is only strictly needed on
-                ;; MIPS, but should work on any system.  For now, we apply it
-                ;; only to MIPS to avoid forcing thousands of rebuilds on
-                ;; other systems.
-                ,(if (string-prefix? "mips" (or (%current-target-system)
-                                                (%current-system)))
-                     '(modify-phases %standard-phases
-                        (replace 'bootstrap
-                          (lambda _
-                            (invoke "autoreconf" "-v"))))
-                     '(modify-phases %standard-phases
-                        (add-before 'configure 'autoreconf
-                          (lambda _
-                            (invoke "autoreconf" "-v")))))))
+                #:phases (modify-phases %standard-phases
+                           (replace 'bootstrap
+                             (lambda _
+                               (invoke "autoreconf" "-v"))))))
    (native-inputs `(("autoconf" ,autoconf)
                     ("automake" ,automake)))
    (synopsis "Client-side C library implementing the SSH2 protocol")
@@ -148,14 +134,14 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "7.8p1")
+   (version "7.9p1")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1jj4f586r9lhakp2w0zv7j616d6x62m15q8l4nxq7haja6qlnj0s"))))
+               "1b8sy6v0b8v4ggmknwcqx3y1rjcpsll0f1f8f4vyv11x4ni3njvb"))))
    (build-system gnu-build-system)
    (native-inputs `(("groff" ,groff)))
    (inputs `(("openssl" ,openssl)
@@ -440,6 +426,7 @@ TCP, not the SSH protocol.")
               (uri (string-append
                     "https://matt.ucc.asn.au/" name "/releases/"
                     name "-" version ".tar.bz2"))
+              (patches (search-patches "dropbear-CVE-2018-15599.patch"))
               (sha256
                (base32
                 "0rgavbzw7jrs5wslxm0dnwx2m409yzxd9hazd92r7kx8xikr3yzj"))))
@@ -694,3 +681,41 @@ which executes commands on multiple remote hosts in parallel.  Pdsh implements
 dynamically loadable modules for extended functionality such as new remote
 shell services and remote host selection.")
     (license license:gpl2+)))
+
+(define-public clustershell
+  (package
+    (name "clustershell")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cea-hpc/clustershell/archive/v"
+                           version
+                           ".tar.gz"))
+       (sha256
+        (base32 "1qyf6zp5ikk8rk7zvx5ssbgr9si2bqv3a3415590kd07s7i16nmd"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (inputs `(("openssh" ,openssh)))
+    (propagated-inputs `(("python-pyyaml" ,python-pyyaml)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'record-openssh-file-name
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((ssh (assoc-ref inputs "openssh")))
+                        (substitute* "lib/ClusterShell/Worker/Ssh.py"
+                          (("info\\(\"ssh_path\"\\) or \"ssh\"")
+                           (string-append "info(\"ssh_path\") or \""
+                                          ssh "/bin/ssh\"")))
+                        #t))))))
+    (home-page "https://cea-hpc.github.io/clustershell/")
+    (synopsis "Scalable event-driven Python framework for cluster administration")
+    (description
+     "ClusterShell is an event-driven Python framework, designed to run local
+or distant commands in parallel on server farms or on large GNU/Linux
+clusters.  It will take care of common issues encountered on HPC clusters,
+such as operating on groups of nodes, running distributed commands using
+optimized execution algorithms, as well as gathering results and merging
+identical outputs, or retrieving return codes.  ClusterShell takes advantage
+of existing remote shell facilities such as SSH.")
+    (license license:lgpl2.1+)))

@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,8 +29,13 @@
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:select (gpl3+ lgpl3+ lgpl2.0+))
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages m4)
-  #:use-module (gnu packages compression))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages xml))
 
 (define-public elfutils
   (package
@@ -83,6 +89,70 @@ Executable and Linkable Format (@dfn{ELF}).  This includes @command{ld},
 @command{ar}, @command{objdump}, @command{addr2line}, and more.")
 
     ;; Libraries are dual-licensed LGPLv3.0+ | GPLv2, and programs are GPLv3+.
+    (license lgpl3+)))
+
+(define-public libabigail
+  (package
+    (name "libabigail")
+    (home-page "https://sourceware.org/libabigail/")
+    (version "1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://sourceware.org/pub/" name
+                                  "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0srfnkbm386sl2n85686nl28da6ksbs7jgnfks9k0n61c772aas4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static"
+                           "--enable-bash-completion"
+                           "--enable-manual")
+       #:make-flags '("V=1")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-source
+                    (lambda _
+                      (substitute* "build-aux/ltmain.sh"
+                        ;; Don't add -specs=/usr/lib/rpm/redhat/redhat-hardened-ld
+                        ;; to the GCC command line.
+                        (("compiler_flags=\"-specs=.*")
+                         "compiler_flags=\n"))
+                      #t))
+                  (add-after 'build 'build-documentation
+                    (lambda _
+                      (invoke "make" "-C" "doc/manuals" "html-doc" "man" "info")))
+                  (add-before 'check 'set-test-environment
+                    (lambda _
+                      (setenv "XDG_CACHE_HOME" "/tmp")
+                      #t))
+                  (add-after 'install 'install-documentation
+                    (lambda _
+                      (invoke "make" "-C" "doc/manuals"
+                              "install-man-and-info-doc")))
+                  (add-after 'install-documentation 'install-bash-completion
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (for-each (lambda (file)
+                                  (install-file
+                                   file (string-append (assoc-ref outputs "out")
+                                                       "/share/bash-completion"
+                                                       "/completions")))
+                                (find-files "bash-completion" ".*abi.*"))
+                      #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("makeinfo" ,texinfo)
+       ("python-sphinx" ,python-sphinx)
+       ("python" ,python)))             ;for tests
+    (propagated-inputs
+     `(("elfutils" ,elfutils)           ;libabigail.la says -lelf
+       ("libxml2" ,libxml2)))           ;in Requires.private of libabigail.pc
+    (synopsis "Analyze application binary interfaces (ABIs)")
+    (description
+     "@dfn{ABIGAIL} stands for the Application Binary Interface Generic
+Analysis and Instrumentation Library.  It is a framework which aims at
+helping developers and software distributors to spot ABI-related issues
+like interface incompatibility in ELF shared libraries by performing a
+static analysis of the ELF binaries at hand.")
     (license lgpl3+)))
 
 (define-public libelf

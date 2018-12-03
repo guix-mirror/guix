@@ -45,6 +45,11 @@
   #:use-module (srfi srfi-37)
   #:autoload   (gnu packages) (specification->package %package-module-path)
   #:autoload   (guix download) (download-to-store)
+  #:autoload   (guix git-download) (git-reference?)
+  #:autoload   (guix git) (git-checkout?)
+  #:use-module (guix status)
+  #:use-module ((guix progress) #:select (current-terminal-columns))
+  #:use-module ((guix build syscalls) #:select (terminal-columns))
   #:export (%standard-build-options
             set-build-options-from-command-line
             set-build-options-from-command-line*
@@ -267,6 +272,74 @@ current 'gnutls' package, after which version 3.5.4 is grafted onto them."
           (rewrite obj)
           obj))))
 
+(define (evaluate-git-replacement-specs specs proc)
+  "Parse SPECS, a list of strings like \"guile=stable-2.2\", and return a list
+of package pairs, where (PROC PACKAGE URL BRANCH-OR-COMMIT) returns the
+replacement package.  Raise an error if an element of SPECS uses invalid
+syntax, or if a package it refers to could not be found."
+  (define not-equal
+    (char-set-complement (char-set #\=)))
+
+  (map (lambda (spec)
+         (match (string-tokenize spec not-equal)
+           ((name branch-or-commit)
+            (let* ((old    (specification->package name))
+                   (source (package-source old))
+                   (url    (cond ((and (origin? source)
+                                       (git-reference? (origin-uri source)))
+                                  (git-reference-url (origin-uri source)))
+                                 ((git-checkout? source)
+                                  (git-checkout-url source))
+                                 (else
+                                  (leave (G_ "the source of ~a is not a Git \
+reference~%")
+                                         (package-full-name old))))))
+              (cons old (proc old url branch-or-commit))))
+           (x
+            (leave (G_ "invalid replacement specification: ~s~%") spec))))
+       specs))
+
+(define (transform-package-source-branch replacement-specs)
+  "Return a procedure that, when passed a package, replaces its direct
+dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
+strings like \"guile-next=stable-3.0\" meaning that packages are built using
+'guile-next' from the latest commit on its 'stable-3.0' branch."
+  (define (replace old url branch)
+    (package
+      (inherit old)
+      (version (string-append "git." branch))
+      (source (git-checkout (url url) (branch branch)))))
+
+  (let* ((replacements (evaluate-git-replacement-specs replacement-specs
+                                                       replace))
+         (rewrite      (package-input-rewriting replacements)))
+    (lambda (store obj)
+      (if (package? obj)
+          (rewrite obj)
+          obj))))
+
+(define (transform-package-source-commit replacement-specs)
+  "Return a procedure that, when passed a package, replaces its direct
+dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
+strings like \"guile-next=cabba9e\" meaning that packages are built using
+'guile-next' from commit 'cabba9e'."
+  (define (replace old url commit)
+    (package
+      (inherit old)
+      (version (string-append "git."
+                              (if (< (string-length commit) 7)
+                                  commit
+                                  (string-take commit 7))))
+      (source (git-checkout (url url) (commit commit)))))
+
+  (let* ((replacements (evaluate-git-replacement-specs replacement-specs
+                                                       replace))
+         (rewrite      (package-input-rewriting replacements)))
+    (lambda (store obj)
+      (if (package? obj)
+          (rewrite obj)
+          obj))))
+
 (define %transformations
   ;; Transformations that can be applied to things to build.  The car is the
   ;; key used in the option alist, and the cdr is the transformation
@@ -274,7 +347,9 @@ current 'gnutls' package, after which version 3.5.4 is grafted onto them."
   ;; things to build.
   `((with-source . ,transform-package-source)
     (with-input  . ,transform-package-inputs)
-    (with-graft  . ,transform-package-inputs/graft)))
+    (with-graft  . ,transform-package-inputs/graft)
+    (with-branch . ,transform-package-source-branch)
+    (with-commit . ,transform-package-source-commit)))
 
 (define %transformation-options
   ;; The command-line interface to the above transformations.
@@ -288,7 +363,11 @@ current 'gnutls' package, after which version 3.5.4 is grafted onto them."
           (option '("with-input") #t #f
                   (parser 'with-input))
           (option '("with-graft") #t #f
-                  (parser 'with-graft)))))
+                  (parser 'with-graft))
+          (option '("with-branch") #t #f
+                  (parser 'with-branch))
+          (option '("with-commit") #t #f
+                  (parser 'with-commit)))))
 
 (define (show-transformation-options-help)
   (display (G_ "
@@ -299,7 +378,13 @@ current 'gnutls' package, after which version 3.5.4 is grafted onto them."
                          replace dependency PACKAGE by REPLACEMENT"))
   (display (G_ "
       --with-graft=PACKAGE=REPLACEMENT
-                         graft REPLACEMENT on packages that refer to PACKAGE")))
+                         graft REPLACEMENT on packages that refer to PACKAGE"))
+  (display (G_ "
+      --with-branch=PACKAGE=BRANCH
+                         build PACKAGE from the latest commit of BRANCH"))
+  (display (G_ "
+      --with-commit=PACKAGE=COMMIT
+                         build PACKAGE from COMMIT")))
 
 
 (define (options->transformation opts)
@@ -390,6 +475,10 @@ options handled by 'set-build-options-from-command-line', and listed in
                      #:max-silent-time (assoc-ref opts 'max-silent-time)
                      #:timeout (assoc-ref opts 'timeout)
                      #:print-build-trace (assoc-ref opts 'print-build-trace?)
+                     #:print-extended-build-trace?
+                     (assoc-ref opts 'print-extended-build-trace?)
+                     #:multiplexed-build-output?
+                     (assoc-ref opts 'multiplexed-build-output?)
                      #:verbosity (assoc-ref opts 'verbosity)))
 
 (define set-build-options-from-command-line*
@@ -499,6 +588,8 @@ options handled by 'set-build-options-from-command-line', and listed in
     (substitutes? . #t)
     (build-hook? . #t)
     (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
     (verbosity . 0)))
 
 (define (show-help)
@@ -617,7 +708,7 @@ must be one of 'package', 'all', or 'transitive'~%")
   "Read the arguments from OPTS and return a list of high-level objects to
 build---packages, gexps, derivations, and so on."
   (define (validate-type x)
-    (unless (or (package? x) (derivation? x) (gexp? x) (procedure? x))
+    (unless (or (derivation? x) (file-like? x) (gexp? x) (procedure? x))
       (leave (G_ "~s: not something we can build~%") x)))
 
   (define (ensure-list x)
@@ -694,6 +785,10 @@ package '~a' has no source~%")
                               (set-guile-for-build (default-guile))
                               (proc))
                             #:system system)))
+                   ((? file-like? obj)
+                    (list (run-with-store store
+                            (lower-object obj system
+                                          #:target (assoc-ref opts 'target)))))
                    ((? gexp? gexp)
                     (list (run-with-store store
                             (mbegin %store-monad
@@ -733,9 +828,12 @@ needed."
         ;; Set the build options before we do anything else.
         (set-build-options-from-command-line store opts)
 
-        (parameterize ((current-build-output-port (if quiet?
-                                                      (%make-void-port "w")
-                                                      (current-error-port))))
+        (parameterize ((current-terminal-columns (terminal-columns))
+                       (current-build-output-port
+                        (if quiet?
+                            (%make-void-port "w")
+                            (build-event-output-port
+                             (build-status-updater print-build-event)))))
           (let* ((mode  (assoc-ref opts 'build-mode))
                  (drv   (options->derivations store opts))
                  (urls  (map (cut string-append <> "/log")

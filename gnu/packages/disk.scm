@@ -12,7 +12,7 @@
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,22 +30,24 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages disk)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix git-download)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix build-system trivial)
-  #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -53,20 +55,18 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages guile)
-  #:use-module (gnu packages compression)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages w3m)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages cryptsetup)
-  #:use-module (gnu packages gnuzilla)
-  #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages swig)
-  #:use-module (gnu packages autotools)
   #:use-module (gnu packages web)
-  #:use-module (gnu packages documentation)
-  #:use-module (gnu packages bash)
-  #:use-module (gnu packages c))
+  #:use-module (gnu packages xml)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages))
 
 (define-public parted
   (package
@@ -76,6 +76,7 @@
               (method url-fetch)
               (uri (string-append "mirror://gnu/parted/parted-"
                                   version ".tar.xz"))
+              (patches (search-patches "parted-glibc-compat.patch"))
               (sha256
                (base32
                 "1r3qpg3bhz37mgvp9chsaa3k0csby3vayfvz8ggsqz194af5i2w5"))))
@@ -336,14 +337,14 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
 (define-public gparted
   (package
     (name "gparted")
-    (version "0.31.0")
+    (version "0.32.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/gparted/gparted/gparted-"
                            version "/gparted-" version ".tar.gz"))
        (sha256
-        (base32 "1fh7rpgb4xxdhgyjsirb83zvjfc5mfngb8a1pjbv7r6r6jj4jyrv"))))
+        (base32 "1fjp4c8jc0kjbbih1x1vs9v40d9lncma642kflnmy0bixxnvh7df"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; tests require a network connection
@@ -517,24 +518,25 @@ Duperemove can also take input from the @command{fdupes} program.")
 (define-public ranger
   (package
     (name "ranger")
-    (version "1.9.1")
+    (version "1.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ranger.github.io/"
                                   "ranger-" version ".tar.gz"))
               (sha256
                (base32
-                "1lnzkrxcnlwnyi3z0v8ybyp8d5rm26qm35rr68kbs2lbs06inha0"))))
+                "12kbsqakbxs09y0x8hy66mmaf72rk0p850x7ryk2ghkq7wfin78f"))))
     (build-system python-build-system)
     (inputs
      `(("w3m" ,w3m)))
-    (native-inputs                      ;for tests
-     `(("python-pytest" ,python-pytest)
-       ("python-pylint" ,python-pylint)
-       ("python-flake8" ,python-flake8)
-       ("which" ,which)))
+    (native-inputs
+     `(("which" ,which)
+
+       ;; For tests.
+       ("python-pytest" ,python-pytest)))
     (arguments
-     '(#:test-target "test"
+     '( ;; The 'test' target runs developer tools like pylint, which fail.
+       #:test-target "test_pytest"
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'wrap-program
@@ -547,7 +549,11 @@ Duperemove can also take input from the @command{fdupes} program.")
                                    "/libexec/w3m/w3mimgdisplay")))
                (wrap-program ranger
                  `("W3MIMGDISPLAY_PATH" ":" prefix (,w3mimgdisplay)))
-               #t))))))
+               #t)))
+         (replace 'check
+           ;; The default check phase simply prints 'Ran 0 tests in 0.000s'.
+           (lambda* (#:key test-target #:allow-other-keys)
+             (invoke "make" test-target))))))
     (home-page "https://ranger.github.io/")
     (synopsis "Console file manager")
     (description "ranger is a console file manager with Vi key bindings.  It
@@ -559,28 +565,28 @@ automatically finding out which program to use for what file type.")
 (define-public volume-key
   (package
     (name "volume-key")
-    (version "0.3.11")
+    (version "0.3.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/volume_key/volume_key-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0vaz15rcgdkh5z4yxc22x76wi44gh50jxnrqz5avaxz4bb17kcp6"))))
+                "16rhfz6sjwxlmss1plb2wv2i3jq6wza02rmz1d2jrlnsq67p98vc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("util-linux" ,util-linux)
        ("swig" ,swig)
-       ("python" ,python-3)))           ; Used to generate the Python bindings.
+       ("python" ,python-3)))           ; used to generate the Python bindings
     (inputs
      `(("cryptsetup" ,cryptsetup)
        ("nss" ,nss)
-       ("lvm2" ,lvm2)                   ; For "-ldevmapper".
+       ("lvm2" ,lvm2)                   ; for "-ldevmapper"
        ("glib" ,glib)
        ("gpgme" ,gpgme)))
     (arguments
-     `(#:tests? #f ; Not sure how tests are supposed to pass, even when run manually.
+     `(#:tests? #f ; not sure how tests are supposed to pass, even when run manually
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-python.h-path
@@ -600,27 +606,28 @@ passphrases.")
 (define-public ndctl
   (package
     (name "ndctl")
-    (version "61.2")
+    (version "63")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/pmem/ndctl")
+                    (url "https://github.com/pmem/ndctl.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0vid78jzhmzh505bpwn8mvlamfhcvl6rlfjc29y4yn7zslpydxl7"))))
+                "060nsza8xic769bxj3pvl70a9885bwrc0myw16l095i3z6w7yzwq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
        ("automake" ,automake)
        ("autoconf" ,autoconf)
+       ("bash-completion" ,bash-completion)
        ("docbook-xsl" ,docbook-xsl)
        ("libtool" ,libtool)
        ("libxml2" ,libxml2)
        ("pkg-config" ,pkg-config)
        ("xmlto" ,xmlto)
-       ;; Required for offline docbook generation:
+       ;; Required for offline docbook generation.
        ("which" ,which)))
     (inputs
      `(("eudev" ,eudev)
@@ -628,16 +635,18 @@ passphrases.")
        ("kmod" ,kmod)
        ("util-linux" ,util-linux)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "--disable-asciidoctor"    ; use docbook-xsl instead
+             "--without-systemd")
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
+         (add-after 'unpack 'patch-FHS-file-names
            (lambda _
-             (substitute* "autogen.sh"
-               (("/bin/sh") (which "sh")))
              (substitute* "git-version-gen"
                (("/bin/sh") (which "sh")))
              (substitute* "git-version"
-               (("/bin/bash") (which "bash"))))))
+               (("/bin/bash") (which "bash")))
+             #t)))
        #:make-flags
        (let ((out (assoc-ref %outputs "out")))
          (list (string-append "BASH_COMPLETION_DIR=" out
@@ -697,14 +706,15 @@ to create devices with respective mappings for the ATARAID sets discovered.")
 (define-public libblockdev
   (package
     (name "libblockdev")
-    (version "2.18")
+    (version "2.20")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/storaged-project/libblockdev/releases/download/"
+              (uri (string-append "https://github.com/storaged-project/"
+                                  "libblockdev/releases/download/"
                                   version "-1/libblockdev-" version ".tar.gz"))
               (sha256
                (base32
-                "1a3kpdr9s6g7nfibazi92i27wbv692b5gm2r24gimis6l6jq4pbh"))))
+                "092snk5jyv48na4d46v1ckiy859zwpb3r0ivnxv3km5vzsp76y7q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -737,6 +747,4 @@ manipulation of block devices.  It has a plugin-based architecture where each
 technology (like LVM, Btrfs, MD RAID, Swap...) is implemented in a separate
 plugin, possibly with multiple implementations (e.g. using LVM CLI or the new
 LVM D-Bus API).")
-    ;; XXX: Copying says LGPL2.1, but the source files with license
-    ;; information are GPL2+.
-    (license license:gpl2+)))
+    (license license:lgpl2.1+)))

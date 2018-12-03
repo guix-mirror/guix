@@ -32,6 +32,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
@@ -185,8 +186,8 @@ their dependencies.")
       (license l:gpl3+))))
 
 (define-public cuirass
-  (let ((commit "4db99f647b3677086a2007763726d05a59b0cdcb")
-        (revision "18"))
+  (let ((commit "0b40dca734468e8b12b3ff58e3e779679f17d38e")
+        (revision "21"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -198,7 +199,7 @@ their dependencies.")
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "1lg3w0xjg6b806y8gfxj2dq1g0djm5pyk886j8g7n5n9ljlhjzxj"))))
+                  "1kdxs8dzdyldfs4wsz5hb64hprkbrnq5ljdll631f3bj8pbvvvc1"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -223,39 +224,42 @@ their dependencies.")
              (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Wrap the 'cuirass' command to refer to the right modules.
                (let* ((out    (assoc-ref outputs "out"))
+                      (gcrypt (assoc-ref inputs "guile-gcrypt"))
                       (json   (assoc-ref inputs "guile-json"))
                       (sqlite (assoc-ref inputs "guile-sqlite3"))
                       (git    (assoc-ref inputs "guile-git"))
                       (bytes  (assoc-ref inputs "guile-bytestructures"))
                       (fibers (assoc-ref inputs "guile-fibers"))
                       (guix   (assoc-ref inputs "guix"))
+                      (deps   (list gcrypt json sqlite git bytes fibers guix))
                       (guile  (assoc-ref %build-inputs "guile"))
                       (effective (read-line
                                   (open-pipe* OPEN_READ
                                               (string-append guile "/bin/guile")
                                               "-c" "(display (effective-version))")))
-                      (mods   (string-append json "/share/guile/site/"
-                                             effective ":"
-                                             git "/share/guile/site/"
-                                             effective ":"
-                                             bytes "/share/guile/site/"
-                                             effective ":"
-                                             sqlite "/share/guile/site/"
-                                             effective ":"
-                                             fibers "/share/guile/site/"
-                                             effective ":"
-                                             guix "/share/guile/site/"
-                                             effective)))
+                      (mods   (string-drop-right  ;drop trailing colon
+                               (string-join deps
+                                            (string-append "/share/guile/site/"
+                                                           effective ":")
+                                            'suffix)
+                               1))
+                      (objs   (string-drop-right
+                               (string-join deps
+                                            (string-append "/lib/guile/" effective
+                                                           "/site-ccache:")
+                                            'suffix)
+                               1)))
                  ;; Make sure 'cuirass' can find the 'evaluate' command, as
                  ;; well as the relevant Guile modules.
                  (wrap-program (string-append out "/bin/cuirass")
                    `("PATH" ":" prefix (,(string-append out "/bin")))
                    `("GUILE_LOAD_PATH" ":" prefix (,mods))
-                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,mods)))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,objs)))
                  #t))))))
       (inputs
        `(("guile" ,guile-2.2)
          ("guile-fibers" ,guile-fibers)
+         ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-git" ,guile-git)

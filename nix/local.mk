@@ -113,7 +113,6 @@ libstore_a_CPPFLAGS =				\
   -DGUIX_CONFIGURATION_DIRECTORY=\"$(sysconfdir)/guix\"		\
   -DNIX_LIBEXEC_DIR=\"$(libexecdir)\"		\
   -DNIX_BIN_DIR=\"$(bindir)\"			\
-  -DOPENSSL_PATH="\"guix-authenticate\""	\
   -DDEFAULT_CHROOT_DIRS="\"\""
 
 libstore_a_CXXFLAGS = $(AM_CXXFLAGS)		\
@@ -168,10 +167,8 @@ nodist_pkglibexec_SCRIPTS +=			\
 
 endif BUILD_DAEMON_OFFLOAD
 
-
-# XXX: It'd be better to hide it in $(pkglibexecdir).
-nodist_libexec_SCRIPTS =			\
-  %D%/scripts/guix-authenticate
+nodist_pkglibexec_SCRIPTS +=			\
+  %D%/scripts/authenticate
 
 # The '.service' files for systemd.
 systemdservicedir = $(libdir)/systemd/system

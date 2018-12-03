@@ -4,6 +4,7 @@
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,18 +30,27 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix utils)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages image)
   #:use-module (gnu packages mail)
+  #:use-module (gnu packages networking)
+  #:use-module (gnu packages libevent)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
-  #:use-module (gnu packages time))
+  #:use-module (gnu packages time)
+  #:use-module (gnu packages tls))
 
 (define-public nagios
   (package
@@ -137,6 +147,79 @@ etc. via a Web interface.  Features include:
   notification and problem history, log file, etc.
 @end itemize\n")
     (license license:gpl2)))
+
+(define-public zabbix-agentd
+  (package
+    (name "zabbix-agentd")
+    (version "3.4.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/zabbix/ZABBIX%20Latest%20Stable/" version
+             "/zabbix-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qxgf6hx7ibhjmxd2sxizkjc8df4c9d31wz5hhql409ws98qf173"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-agent"
+             (string-append "--with-iconv="
+                            (assoc-ref %build-inputs "libiconv"))
+             (string-append "--with-libpcre="
+                            (assoc-ref %build-inputs "pcre")))))
+    (inputs
+     `(("libiconv" ,libiconv)
+       ("pcre" ,pcre)))
+    (home-page "https://www.zabbix.com/")
+    (synopsis "Distributed monitoring solution (client-side agent)")
+    (description "This package provides a distributed monitoring
+solution (client-side agent)")
+    (license license:gpl2)))
+
+(define-public zabbix-server
+  (package
+    (inherit zabbix-agentd)
+    (name "zabbix-server")
+    (arguments
+     (substitute-keyword-arguments
+         `(#:phases
+           (modify-phases %standard-phases
+             (add-after 'install 'install-frontend
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let* ((php (string-append (assoc-ref outputs "out")
+                                            "/share/zabbix/php"))
+                        (front-end-conf (string-append php "/conf"))
+                        (etc (string-append php "/etc")))
+                   (mkdir-p php)
+                   (copy-recursively "./frontends/php" php)
+                   (rename-file front-end-conf
+                                (string-append front-end-conf "-example"))
+                   (symlink "/etc/zabbix" front-end-conf)))))
+           ,@(package-arguments zabbix-agentd))
+       ((#:configure-flags flags)
+        `(cons* "--enable-server"
+                "--with-postgresql"
+                (string-append "--with-libevent="
+                               (assoc-ref %build-inputs "libevent"))
+                "--with-net-snmp"
+                (string-append "--with-gnutls="
+                               (assoc-ref %build-inputs "gnutls"))
+                "--with-libcurl"
+                ,flags))))
+    (inputs
+     `(("curl" ,curl)
+       ("libevent" ,libevent)
+       ("gnutls" ,gnutls)
+       ("postgresql" ,postgresql)
+       ("zlib" ,zlib)
+       ("net-snmp" ,net-snmp)
+       ("curl" ,curl)
+       ,@(package-inputs zabbix-agentd)))
+    (synopsis "Distributed monitoring solution (server-side)")
+    (description "This package provides a distributed monitoring
+solution (server-side)")))
 
 (define-public darkstat
   (package
@@ -322,3 +405,27 @@ WSGI and the node exporter textfile collector.")
 written in Go with pluggable metric collectors.")
       (home-page "https://github.com/prometheus/node_exporter")
       (license license:asl2.0))))
+
+(define-public fswatch
+  (package
+    (name "fswatch")
+    (version "1.13.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                      (url "https://github.com/emcrisostomo/fswatch.git")
+                      (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0r9m3rysqa1kdgghv2i6sv4zrd0v8idsbrp627ys642dl39svir3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)))
+    (synopsis "File system monitor")
+    (description "This package provides a file system monitor.")
+    (home-page "https://github.com/emcrisostomo/fswatch")
+    (license license:gpl3+)))

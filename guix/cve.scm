@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,7 +61,7 @@
 (define (yearly-feed-uri year)
   "Return the URI for the CVE feed for YEAR."
   (string->uri
-   (string-append "https://static.nvd.nist.gov/feeds/xml/cve/nvdcve-2.0-"
+   (string-append "https://nvd.nist.gov/feeds/xml/cve/nvdcve-2.0-"
                   (number->string year) ".xml.gz")))
 
 (define %current-year-ttl

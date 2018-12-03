@@ -20,23 +20,19 @@
 (define-module (gnu bootloader u-boot)
   #:use-module (gnu bootloader extlinux)
   #:use-module (gnu bootloader)
-  #:use-module (gnu system)
-  #:use-module (gnu build bootloader)
   #:use-module (gnu packages bootloaders)
   #:use-module (guix gexp)
-  #:use-module (guix monads)
-  #:use-module (guix records)
-  #:use-module (guix utils)
   #:export (u-boot-bootloader
             u-boot-a20-olinuxino-lime-bootloader
             u-boot-a20-olinuxino-lime2-bootloader
             u-boot-a20-olinuxino-micro-bootloader
-            u-boot-banana-pi-m2-ultra-bootloader
+            u-boot-bananapi-m2-ultra-bootloader
             u-boot-beaglebone-black-bootloader
             u-boot-mx6cuboxi-bootloader
             u-boot-nintendo-nes-classic-edition-bootloader
             u-boot-novena-bootloader
             u-boot-pine64-plus-bootloader
+            u-boot-pinebook-bootloader
             u-boot-puma-rk3399-bootloader
             u-boot-wandboard-bootloader))
 
@@ -148,10 +144,10 @@
    (inherit u-boot-allwinner-bootloader)
    (package u-boot-a20-olinuxino-micro)))
 
-(define u-boot-banana-pi-m2-ultra-bootloader
+(define u-boot-bananapi-m2-ultra-bootloader
   (bootloader
    (inherit u-boot-allwinner-bootloader)
-   (package u-boot-banana-pi-m2-ultra)))
+   (package u-boot-bananapi-m2-ultra)))
 
 (define u-boot-mx6cuboxi-bootloader
   (bootloader
@@ -172,6 +168,11 @@
   (bootloader
    (inherit u-boot-allwinner64-bootloader)
    (package u-boot-pine64-plus)))
+
+(define u-boot-pinebook-bootloader
+  (bootloader
+   (inherit u-boot-allwinner64-bootloader)
+   (package u-boot-pinebook)))
 
 (define u-boot-puma-rk3399-bootloader
   (bootloader

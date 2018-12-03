@@ -121,14 +121,15 @@ For synthesis, the compiler generates netlists in the desired format.")
     (name "yosys")
     (version "0.7")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/cliffordwolf/yosys/archive/"
-                              name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cliffordwolf/yosys.git")
+                    (commit (string-append "yosys-" version))
+                    (recursive? #t))) ; for the ‘iverilog’ submodule
               (sha256
                 (base32
-                   "0vkfdn4phvkjqlnpqlr6q5f97bgjc3312vj5jf0vf85zqv88dy9x"))
-              (file-name (string-append name "-" version "-checkout.tar.gz"))
+                   "1ssrpgw0j9qlm52g1hsbb9fsww4vnwi0l7zvvky7a8w7wamddky0"))
+              (file-name (git-file-name name version))
               (modules '((guix build utils)))
               (snippet
                '(begin

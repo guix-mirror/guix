@@ -12,7 +12,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -44,6 +44,27 @@
 ;;;
 
 
+(define-public perl-mock-config
+  (package
+    (name "perl-mock-config")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/Mock-Config-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "06q0xkg5cwdwafzmb9rkaa305ddv7vli9gpm6n9jnkyaaxbk9f55"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Mock-Config")
+    (synopsis "Temporarily set Config or XSConfig values")
+    (description
+     "The @code{Mock::Config} Perl module allows temporarily setting and
+overriding @code{Config} values, even for the readonly @code{XSConfig}
+implementation as used in cperl.  It does not store the mocked overrides
+lexically, just dynamically.")
+    (license artistic2.0)))
+
 (define-public perl-test2-bundle-extended
   (package
     (name "perl-test2-bundle-extended")
@@ -61,7 +82,7 @@
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-env
-           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1"))))))
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (propagated-inputs
      `(("perl-importer" ,perl-importer)
        ("perl-term-table" ,perl-term-table)

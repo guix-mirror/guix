@@ -62,11 +62,6 @@
                                      #:target target)
                   #:guile-for-build (%guile-for-build)))
 
-(define-syntax-rule (test-assertm name exp)
-  (test-assert name
-    (run-with-store %store exp
-                    #:guile-for-build (%guile-for-build))))
-
 (define %extension-package
   ;; Example of a package to use when testing 'with-extensions'.
   (dummy-package "extension"
@@ -481,7 +476,15 @@
     (return (and (string=? (readlink (string-append out "/foo")) guile)
                  (string=? (readlink out2) file)
                  (equal? refs (list (dirname (dirname guile))))
-                 (equal? refs2 (list file))))))
+                 (equal? refs2 (list file))
+                 (null? (derivation-properties drv))))))
+
+(test-assertm "gexp->derivation properties"
+  (mlet %store-monad ((drv (gexp->derivation "foo"
+                                             #~(mkdir #$output)
+                                             #:properties '((type . test)))))
+    (return (equal? '((type . test))
+                    (derivation-properties drv)))))
 
 (test-assertm "gexp->derivation vs. grafts"
   (mlet* %store-monad ((graft?  (set-grafting #f))
@@ -615,6 +618,8 @@
                                                 `(("graph" ,two))
                                                 #:modules
                                                 '((guix build store-copy)
+                                                  (guix progress)
+                                                  (guix records)
                                                   (guix sets)
                                                   (guix build utils))))
                          (ok? (built-derivations (list drv)))
@@ -654,11 +659,11 @@
                        (drv      (imported-files files)))
     (define (file=? file1 file2)
       ;; Assume deduplication is in place.
-      (= (stat:ino (lstat file1))
-         (stat:ino (lstat file2))))
+      (= (stat:ino (stat file1))
+         (stat:ino (stat file2))))
 
     (mbegin %store-monad
-      (built-derivations (list drv))
+      (built-derivations (list (pk 'drv drv)))
       (mlet %store-monad ((dir -> (derivation->output-path drv))
                           (plain* (text-file "foo" "bar!"))
                           (q-scm* (interned-file q-scm "c")))
@@ -677,6 +682,22 @@
   ((@@ (guix gexp) gexp-modules)
    #~(foo #$@(list (with-imported-modules '((foo)) #~+)
                    (with-imported-modules '((bar)) #~-)))))
+
+(test-assert "gexp-modules deletes duplicates"   ;<https://bugs.gnu.org/32966>
+  (let ((make-file (lambda ()
+                     ;; Use 'eval' to make sure we get an object that's not
+                     ;; 'eq?' nor 'equal?' due to the closures it embeds.
+                     (eval '(scheme-file "bar.scm" #~(define-module (bar)))
+                           (current-module)))))
+    (define result
+      ((@@ (guix gexp) gexp-modules)
+       (with-imported-modules `(((bar) => ,(make-file))
+                                ((bar) => ,(make-file))
+                                (foo) (foo))
+         #~+)))
+
+    (match result
+      (((('bar) '=> (? scheme-file?)) ('foo)) #t))))
 
 (test-equal "gexp-modules and literal Scheme object"
   '()
@@ -817,6 +838,8 @@
        (two (gexp->derivation "two"
                               #~(symlink #$one #$output:chbouib)))
        (build -> (with-imported-modules '((guix build store-copy)
+                                          (guix progress)
+                                          (guix records)
                                           (guix sets)
                                           (guix build utils))
                    #~(begin
@@ -1092,6 +1115,24 @@
         (return (and (string=? (string-append "export PATH=" guile "/bin")
                                (call-with-input-file out get-string-all))
                      (equal? refs (list guile))))))))
+
+(test-assertm "file-union"
+  (mlet* %store-monad ((union -> (file-union "union"
+                                             `(("a" ,(plain-file "a" "1"))
+                                               ("b/c/d" ,(plain-file "d" "2"))
+                                               ("e" ,(plain-file "e" "3")))))
+                       (drv      (lower-object union))
+                       (out ->   (derivation->output-path drv)))
+    (define (contents=? file str)
+      (string=? (call-with-input-file (string-append out "/" file)
+                  get-string-all)
+                str))
+
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (return (and (contents=? "a" "1")
+                   (contents=? "b/c/d" "2")
+                   (contents=? "e" "3"))))))
 
 (test-assert "gexp->derivation vs. %current-target-system"
   (let ((mval (gexp->derivation "foo"

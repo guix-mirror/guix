@@ -12,7 +12,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,16 +67,14 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
-  #:use-module (gnu packages polkit)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
-  #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
 
@@ -148,14 +146,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.11.3")
+    (version "1.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "01nb1shnl871d939wgfd7nc9svclcnfjfhlq64b4yns2dvcr24gk"))))
+                "14l6bvgq76ls63qc9c448r435q9xiig0rv8ilx6rnjvlgg64h32p"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=false")))
@@ -349,7 +347,7 @@ of a the system to know what users are logged in, and where.")
 (define-public packagekit
   (package
     (name "packagekit")
-    (version "1.1.10")
+    (version "1.1.11")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -358,7 +356,7 @@ of a the system to know what users are logged in, and where.")
                    "PackageKit-" version ".tar.xz"))
              (sha256
               (base32
-               "1msfmb22cm4s3l6vsbr86b8s0v897sy6gcga3qg87z7640a0di2b"))))
+               "0fi6wn54y03zh5sn92nmmxkh4cd8yn44cyk0l8phw60ivfwmkh1q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -495,7 +493,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public weston
   (package
     (name "weston")
-    (version "4.0.0")
+    (version "5.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -503,7 +501,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                     "weston-" version ".tar.xz"))
               (sha256
                (base32
-                "0n2big8xw6g6n46zm1jyf00dv9r4d84visdz5b8vxpw3xzkhmz50"))))
+                "1bsc9ry566mpk6fdwkqpvwq2j7m79d9cvh7d3lgf6igsphik98hm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

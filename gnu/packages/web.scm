@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -28,6 +28,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -124,14 +125,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.34")
+    (version "2.4.35")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1w1q2smdgf6ln0x741lk5pv5r0gzrxj2iza1vslhifzy65bcjlzs"))))
+               "0mlvwsm7hmpc7db6lfc2nx3v4cll3qljjxhjhgsw6aniskywc1r6"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -195,14 +196,14 @@ Interface} specification.")
     (name "nginx")
     ;; Consider updating the nginx-documentation package if the nginx package is
     ;; updated.
-    (version "1.14.0")
+    (version "1.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1d9c0avfpbwvzyg53b59ks8shpnrxnbnshcd7ziizflsyv5vw5ax"))))
+                "19542jxcjf4dvrqvgb5vr36mhbzcjrxc3v0xh451rm60610rf2dz"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -508,7 +509,7 @@ libraries for working with JNLP applets.")
 (define-public jansson
   (package
     (name "jansson")
-    (version "2.10")
+    (version "2.11")
     (source (origin
              (method url-fetch)
              (uri
@@ -516,7 +517,7 @@ libraries for working with JNLP applets.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "0iv4rxsnamqm3ldpg7dyhjq0x9cp023nc7ac820jdd3pwb8ml8bq"))))
+               "1x5jllzzqamq6kahx9d9a5mrarm9m3f30vfxvcqpi6p4mcnz91bf"))))
     (build-system gnu-build-system)
     (home-page "http://www.digip.org/jansson/")
     (synopsis "JSON C library")
@@ -581,6 +582,37 @@ It aims to conform to RFC 7159.")
                  (substitute* (find-files "." "Makefile\\.in")
                    (("-Werror") ""))
                  #t))))))
+
+(define-public json-parser
+  (package
+    (name "json-parser")
+    (version "1.1.0")
+    (source (origin
+              ;; do not use auto-generated tarballs
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/udp/json-parser.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ls7z4fx0sq633s5bc0j1gh36sv087gmrgr7rza22wjq2d4606yf"))))
+    ;; FIXME: we should build the python bindings in a separate package
+    (build-system gnu-build-system)
+    ;; the tests are written for the python bindings which are not built here
+    (arguments '(#:tests? #f))
+    (home-page "https://github.com/udp/json-parser")
+    (synopsis "JSON parser written in ANSI C")
+    (description "This package provides a very low footprint JSON parser
+written in portable ANSI C.
+
+@itemize
+@item BSD licensed with no dependencies (i.e. just drop the C file into your
+project)
+@item Never recurses or allocates more memory than it needs
+@item Very simple API with operator sugar for C++
+@end itemize")
+    (license l:bsd-2)))
 
 (define-public qjson
   (package
@@ -889,7 +921,7 @@ used to validate and fix HTML data.")
 (define-public tinyproxy
   (package
     (name "tinyproxy")
-    (version "1.8.4")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tinyproxy/tinyproxy/"
@@ -897,7 +929,7 @@ used to validate and fix HTML data.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "002hi97687czhfkwsjkr174yvlp10224qi6gd5s53z230bgls7x4"))))
+                "10jnk6y2swld25mm47mjc0nkffyzsfysnsxwr7cs0ns1kil8ggjr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -912,9 +944,6 @@ used to validate and fix HTML data.")
              ;; (substitute* "docs/man5/Makefile" (("a2x") "a2x -v"))
              ;; (setenv "XML_DEBUG_CATALOG" "1")
              #t)))))
-    ;; All of the below are used to generate the documentation
-    ;; (Should they be propagated inputs of asciidoc ??)
-    (native-inputs `(("asciidoc" ,asciidoc)))
     (home-page "https://tinyproxy.github.io/")
     (synopsis "Light-weight HTTP/HTTPS proxy daemon")
     (description "Tinyproxy is a light-weight HTTP/HTTPS proxy
@@ -1865,15 +1894,15 @@ MIME type directly to the browser, without being processed through Catalyst.")
 (define-public perl-catalyst-runtime
   (package
     (name "perl-catalyst-runtime")
-    (version "5.90118")
+    (version "5.90119")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Catalyst-Runtime-" version ".tar.gz"))
        (sha256
         (base32
-         "0cws3szx3vvh0372qdx8fypgv6qphcc3v81rbq30sl1ghby7ksd3"))))
+         "1iw7x9rqk3sz2hm1bw01blz5vwm7zlljdf4xj3r8vz54f1yggzqr"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)))
@@ -3700,7 +3729,7 @@ library.")
 (define-public perl-www-mechanize
   (package
     (name "perl-www-mechanize")
-    (version "1.88")
+    (version "1.89")
     (source
      (origin
        (method url-fetch)
@@ -3708,7 +3737,7 @@ library.")
                            "WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
-         "0yd8a1zsfpbv5wr79x3iqmik9gvcd10iam9dfrdan4dri9vpxn9n"))))
+         "1mxx362vqiniw8vi6k3j7v9b1s7012irhfcblcz1p6jz9cjqi7mh"))))
     (build-system perl-build-system)
     (native-inputs                      ;only for tests
      `(("perl-cgi" ,perl-cgi)
@@ -3823,15 +3852,17 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.4.4.1")
+    (version "1.4.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "12kwq10xa8glrip7rai9xb4hnpysng00g2l0rw7swfzq5lk4z966"))))
+                "1ddpcarzf694h0gy5pdz7l5glqfv4hr9dmxb4vw7yqd0bga174gi"))))
     (build-system r-build-system)
-    (native-inputs `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("r-bh" ,r-bh)
        ("r-later" ,r-later)
@@ -3875,13 +3906,13 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.10")
+    (version "0.11")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "0yz3igqsiyqnjj1ngh199zicg3spx4kbmvl0wc8i8xahk6l9g06v"))))
+                "0yj3p1risf269n25dd56lqv82dsxv6a0aq4bcc1ddn9wv7h2xdfi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
@@ -3933,13 +3964,13 @@ directory.")
 (define-public r-htmlwidgets
   (package
     (name "r-htmlwidgets")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmlwidgets" version))
               (sha256
                (base32
-                "04c4d0mfcy3dkdlbxnaccpdgxvyxfdwfmmh5djim6v9hyg0j2z8s"))))
+                "04jsdh14l2zifbjpbbh23w7bxz1wpsas0zb2gy2zwv4yqamzzr7i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -4167,19 +4198,15 @@ It uses the uwsgi protocol for all the networking/interprocess communications.")
 (define-public jq
   (package
     (name "jq")
-    (version "1.5")
+    (version "1.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/stedolan/" name
-                                  "/releases/download/" name "-" version
-                                  "/" name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/stedolan/jq"
+                                  "/releases/download/jq-" version
+                                  "/jq-" version ".tar.gz"))
               (sha256
                (base32
-                "0g29kyz4ykasdcrb0zmbrp2jqs9kv1wz9swx849i2d1ncknbzln4"))
-              ;; This patch has been pushed and the vulnerability will be
-              ;; fixed in the next release after 1.5.
-              ;; https://github.com/stedolan/jq/issues/995
-              (patches (search-patches "jq-CVE-2015-8863.patch"))))
+                "1a76f46a652i2g333kfvrl6mp2w7whf6h1yly519izg4y967h9cn"))))
     (inputs
      `(("oniguruma" ,oniguruma)))
     (native-inputs
@@ -4275,7 +4302,7 @@ tools they trust (e.g. wget).")
 (define netsurf-buildsystem
   (package
     (name "netsurf-buildsystem")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
@@ -4283,7 +4310,7 @@ tools they trust (e.g. wget).")
                            "buildsystem-" version ".tar.gz"))
        (sha256
         (base32
-         "0p5k708lcq8dip9xxck6hml32bjrbyipprm22bbsvdnsc0pqm71x"))))
+         "1q23aaycv35ma5471l1gxib8lfq2s9kprrkaqgfc926d04rlbmhw"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments
@@ -4314,7 +4341,7 @@ libraries.")
 (define-public libparserutils
   (package
     (name "libparserutils")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
@@ -4322,7 +4349,7 @@ libraries.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "01gzlsabgl6x0icd8758d9jqs8rrf9574bdkjainn04w3fs3znf5"))))
+         "1n2794y2l0c8nv8z2pxwfnbn882987ifmxjv60zdxkhcndhswarj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4339,7 +4366,7 @@ C.  It is developed as part of the NetSurf project.")
 (define-public hubbub
   (package
     (name "hubbub")
-    (version "0.3.4")
+    (version "0.3.5")
     (source
      (origin
        (method url-fetch)
@@ -4347,7 +4374,7 @@ C.  It is developed as part of the NetSurf project.")
                            "lib" name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1shi4hv8drn9zy8f2f6yhnz2dqnpg5jkybvqhzggfjx1q35fbxz3"))
+         "13yq1k96a7972x4r71i9bcsz9yiglj0yx7lj0ziq5r94w5my70ma"))
        (patches (search-patches "hubbub-sort-entities.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -4453,7 +4480,7 @@ commenting.")
 (define-public libwapcaplet
   (package
     (name "libwapcaplet")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
@@ -4461,7 +4488,7 @@ commenting.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "15yr0pl6qa6biy36qkmd949ydbjzpqiaccpx3sprh4jknabsk1vv"))))
+         "134pljlm8kby1yy49826f0ixnpig8iqak6xpyl3aivagnsjnxzy8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4479,7 +4506,7 @@ developed as part of the Netsurf project.")
 (define-public libcss
   (package
     (name "libcss")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
@@ -4487,7 +4514,7 @@ developed as part of the Netsurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "16mns3h8vj7iw8myvgnw58q84irvbjlvfkxh8mdw6fbkjvaa7cnz"))))
+         "0pxdqbxn6brj03nv57bsvac5n70k4scn3r5msaw0jgn2k06lk81m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4507,7 +4534,7 @@ written in C.  It is developed as part of the NetSurf project.")
 (define-public libdom
   (package
     (name "libdom")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
@@ -4515,7 +4542,7 @@ written in C.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1zb7x2qwm6p11lph6j2vcyp4a0a8i1klkqilnk5vb4qmlzzpcv7i"))))
+         "1919757mdl3gii2pl6kzm8b1cal0h06r5nqd2y0kny6hc5yrhsp0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4543,7 +4570,7 @@ developed as part of the NetSurf project.")
 (define-public libsvgtiny
   (package
     (name "libsvgtiny")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
@@ -4551,7 +4578,7 @@ developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "12ppy2r7m21ykrjgbf067cgi6dn48fkj7i4b7m64xl4dc13y0ah6"))))
+         "10bpkmvfpydj74im3r6kqm9vnvgib6afy0alx71q5n0w5yawy39c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4574,7 +4601,7 @@ project.")
 (define-public libnsbmp
   (package
     (name "libnsbmp")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
@@ -4582,7 +4609,7 @@ project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0y4a0gn4l6lq4z9183wix0mdsgalqyw24k19k8jr8sz4h3lb7jrb"))))
+         "0lib2m07d1i0k80m4blkwnj0g7rha4jbm5vrgd0wwbkyfa0hvk35"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
@@ -4597,7 +4624,7 @@ written in C.  It is developed as part of the NetSurf project.")
 (define-public libnsgif
   (package
     (name "libnsgif")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -4605,7 +4632,7 @@ written in C.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1phwf0m24m6nd7096fw14hanl4f8gr9bcppi834lbik04agxk38a"))))
+         "0jwshypgmx16xlsbx3d8njk8a5khazlplca5mxd3rdbhrlsabbly"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
@@ -4620,7 +4647,7 @@ C.  It is developed as part of the NetSurf project.")
 (define-public libnsutils
   (package
     (name "libnsutils")
-    (version "0.0.3")
+    (version "0.0.5")
     (source
      (origin
        (method url-fetch)
@@ -4628,7 +4655,7 @@ C.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0wrxn4rcn7xrfnkmf60jafqn3n1kicgsdpnakd821q56bmqvzf0m"))))
+         "09w1rixps1iiq6wirjwxmd6h87llvjzvw565rahjb3rlyhcplfqf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
@@ -4643,7 +4670,7 @@ developed as part of the NetSurf project.")
 (define-public libnspsl
   (package
     (name "libnspsl")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
@@ -4651,7 +4678,7 @@ developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0wim5hwzwrfrvvap096whf79m2mnfivbqhqlh03ci9d89xb1w0y9"))))
+         "1rsk1k2a495axxgv8060s0p1phhhcxrv75252kllbkvr8id5kqld"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
@@ -4666,7 +4693,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
 (define-public nsgenbind
   (package
     (name "nsgenbind")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
@@ -4674,7 +4701,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1iwjpdaan0njlhb9ir6a2q5vpxfmkqfldkvnqszqdz50b44vd1jv"))))
+         "0v1cb1rz5fix9ql31nzmglj7sybya6d12b2fkaypm1avcca59xwj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4694,7 +4721,7 @@ w3c webidl files and a binding configuration file.")
 (define-public netsurf
   (package
     (name "netsurf")
-    (version "3.7")
+    (version "3.8")
     (source
      (origin
        (method url-fetch)
@@ -4702,10 +4729,11 @@ w3c webidl files and a binding configuration file.")
                            "releases/source/netsurf-" version "-src.tar.gz"))
        (sha256
         (base32
-         "05kynfzzwd4fc03vbqdjpghh5xnk2yrh43w7vikak89vla30mhpg"))
+         "0hjm1h4m1i913y4mhkl7yqdifn8k70fwi58zdh6faypawzryc3m0"))
        (patches (search-patches "netsurf-system-utf8proc.patch"
                                 "netsurf-y2038-tests.patch"
-                                "netsurf-longer-test-timeout.patch"))))
+                                "netsurf-longer-test-timeout.patch"
+                                "netsurf-message-timestamp.patch"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -5019,12 +5047,14 @@ deployments.")
                                "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-/bin/sh
+         (add-after 'unpack 'use-absolute-file-names
            (lambda _
              (substitute* '("bin/varnishtest/vtc_varnish.c"
                             "bin/varnishtest/vtc_process.c"
                             "bin/varnishd/mgt/mgt_vcc.c")
                (("/bin/sh") (which "sh")))
+             (substitute* "bin/varnishd/mgt/mgt_shmem.c"
+               (("rm -rf") (string-append (which "rm") " -rf")))
              #t))
          (add-before 'install 'patch-Makefile
            (lambda _
@@ -5171,7 +5201,7 @@ functions of Tidy.")
 (define-public hiawatha
   (package
     (name "hiawatha")
-    (version "10.7")
+    (version "10.8.3")
     (source
      (origin
        (method url-fetch)
@@ -5179,28 +5209,34 @@ functions of Tidy.")
                            "hiawatha-" version ".tar.gz"))
        (modules '((guix build utils)))
        (snippet '(begin
-                   ;; We use our packaged mbedtls, so delete the included copy.
-                   (delete-file-recursively "mbedtls")
+                   ;; We use packaged libraries, so delete the bundled copies.
+                   (for-each delete-file-recursively
+                             (list "nghttp2" "mbedtls"))
                    #t))
        (sha256
         (base32
-         "0x2zfc8kc6c7rl4gwymwmg13w1c60biv6c6c9fvzpnl59bc9jgin"))))
+         "0w7047pwijhsbvvv1qjynp7gvn0nil56w82f7ax0gabrg7ddzk6s"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; No tests included
+     `(#:tests? #f                      ; no tests included
        #:configure-flags (list (string-append "-DUSE_SYSTEM_MBEDTLS=on")
+                               (string-append "-DENABLE_HTTP2=on")
+                               (string-append "-DUSE_SYSTEM_NGHTTP2=on")
                                (string-append "-DENABLE_TOMAHAWK=on")
+                               (string-append "-DLOG_DIR=/var/log/hiawatha")
+                               (string-append "-DPID_DIR=/run")
                                (string-append "-DWEBROOT_DIR="
                                               (assoc-ref %outputs "out")
-                                              "/share/hiawatha/html"))
+                                              "/share/hiawatha/html")
+                               (string-append "-DWORK_DIR=/var/lib/hiawatha"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'remove-empty-dirs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
-               ;; The directories in "var" are empty, remove them.
-               (delete-file-recursively (string-append out "/var"))
-               #t)))
+         (add-after 'unpack 'install-no-empty-directories
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("install\\(DIRECTORY DESTINATION" match)
+                (string-append "#" match)))
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Make sure 'hiawatha' finds 'mbedtls'.
@@ -5210,11 +5246,12 @@ functions of Tidy.")
                (wrap-program (string-append sbin "/hiawatha")
                  `("PATH" ":" prefix (,mbed)))))))))
     (inputs
-     ;; TODO: package "hiawatha-monitor", an optional dependency of "hiawatha"
-     `(("mbedtls-apache" ,mbedtls-apache) ;Hiawatha includes this version.
-       ("zlib" ,zlib)
-       ("libxslt" ,libxslt)
-       ("libxml2" ,libxml2)))
+     ;; TODO: package "hiawatha-monitor", an optional dependency of "hiawatha".
+     `(("libxslt" ,libxslt)
+       ("libxml2" ,libxml2)
+       ("mbedtls-apache" ,mbedtls-for-hiawatha)
+       ("nghttp2" ,nghttp2 "lib")
+       ("zlib" ,zlib)))
     (home-page "https://www.hiawatha-webserver.org")
     (synopsis "Webserver with focus on security")
     (description
@@ -5598,13 +5635,13 @@ responsive, and powerful applications with minimal effort.")
 (define-public r-shinydashboard
   (package
     (name "r-shinydashboard")
-    (version "0.7.0")
+    (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "shinydashboard" version))
               (sha256
                (base32
-                "10yqcqqcxgfqwkmscqwvvgr710im583qsqnsqkfpisjvkqp10yqb"))))
+                "0khac8b27q3swdw07kl609hm0fjfjsjv591b388q99mqqr2rk92i"))))
     (build-system r-build-system)
     ;; The directory inst/AdminLTE/ contains a minified JavaScript file.
     ;; Regenerate it from the included sources.
@@ -5624,6 +5661,7 @@ responsive, and powerful applications with minimal effort.")
                      (dump-port minified port))))))))))
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
+       ("r-promises" ,r-promises)
        ("r-shiny" ,r-shiny)))
     (native-inputs
      `(("uglify-js" ,uglify-js)))
@@ -5634,6 +5672,35 @@ application framework for R, making it easy to create attractive dashboards.")
     ;; This package includes software that was released under the Expat
     ;; license, but the whole package is released under GPL version 2 or
     ;; later.
+    (license l:gpl2+)))
+
+(define-public r-shinyfiles
+  (package
+    (name "r-shinyfiles")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinyFiles" version))
+       (sha256
+        (base32
+         "0dlcjrw96x72grg6j915070x8x98l7629pn86gf148iknflm7gd5"))))
+    (properties `((upstream-name . "shinyFiles")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fs" ,r-fs)
+       ("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-shiny" ,r-shiny)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/thomasp85/shinyFiles")
+    (synopsis "Server-side file system viewer for Shiny")
+    (description
+     "This package provides functionality for client-side navigation of the
+server side file system in shiny apps.  In case the app is running locally
+this gives the user direct access to the file system without the need to
+\"download\" files to a temporary location.  Both file and folder selection as
+well as file saving is available.")
     (license l:gpl2+)))
 
 (define-public r-crosstalk
@@ -5690,7 +5757,7 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
 (define-public rss-bridge
   (package
     (name "rss-bridge")
-    (version "2018-03-11")
+    (version "2018-11-10")
     (source
      (origin
        (method url-fetch)
@@ -5699,7 +5766,7 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1ix15ck45yb659k63mhwxwia6qnm9nn8jw0bga85abrvk1rchjdn"))))
+         "1l9a82smh6k37bjvzbmkdlssxywlmr40ig4cykgsns1iiszwv4ia"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("gzip" ,gzip)
@@ -5736,6 +5803,7 @@ Instagram and YouTube.")
        (uri (git-reference
              (url "https://github.com/linkchecker/linkchecker")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "03ihjmc4bqxxqv71bb43r2f23sx0xnbq1k2fsg9fw05qa5s9x187"))))
@@ -6626,7 +6694,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
 (define-public nghttp2
   (package
     (name "nghttp2")
-    (version "1.31.1")
+    (version "1.32.0")
     (source
      (origin
        (method url-fetch)
@@ -6635,7 +6703,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "00z1687m4wi2gbgkijbv099l9hs1sjlyzbhh8jhn0xssx4xcifb5"))))
+         "0zbgp8f80h2zlfn8cd2ldrmgl81jzcdh1141n71aqmfckzaqj2kh"))))
     (build-system gnu-build-system)
     (outputs (list "out"
                    "lib"))              ; only libnghttp2
@@ -6705,10 +6773,11 @@ compressed JSON header blocks.
     (license l:expat)))
 
 (define-public hpcguix-web
-  (let ((commit "87cb51611c0f1fd3863b830614ab1364599cf1ca"))
+  (let ((commit "53e09ea59ec0380b41a4cbda32df8bdb9a10004d")
+        (revision "3"))
     (package
       (name "hpcguix-web")
-      (version (git-version "0.0.1" "1" commit))
+      (version (git-version "0.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -6717,7 +6786,7 @@ compressed JSON header blocks.
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0p66fl8r3v73v13fqg9rbqbzbdzvyznchxbq2s1jwq6qfsn2w3gr"))))
+                  "1ah4pn9697vazhbvd45n4b1rrkx2nbhnw384cr0b941q3sz1dfyc"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -6725,23 +6794,26 @@ compressed JSON header blocks.
                     (srfi srfi-26)
                     (ice-9 popen)
                     (ice-9 rdelim))
-
          #:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'autoconf
+           (add-before 'configure 'set-variables
              (lambda _
+               ;; This prevents a few warnings
                (setenv "GUILE_AUTO_COMPILE" "0")
                (setenv "XDG_CACHE_HOME" (getcwd))
-               (invoke "autoreconf" "-vif")))
+               #t))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out      (assoc-ref outputs "out"))
                       (guix     (assoc-ref inputs "guix"))
                       (guile    (assoc-ref inputs "guile"))
+                      (gcrypt   (assoc-ref inputs "guile-gcrypt"))
+                      (git      (assoc-ref inputs "guile-git"))
+                      (bs       (assoc-ref inputs "guile-bytestructures"))
                       (json     (assoc-ref inputs "guile-json"))
                       (guile-cm (assoc-ref inputs
                                            "guile-commonmark"))
-                      (deps (list guile guile-cm guix json))
+                      (deps (list guile gcrypt git bs guile-cm guix json))
                       (effective
                        (read-line
                         (open-pipe* OPEN_READ

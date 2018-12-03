@@ -48,7 +48,7 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20180822")
+    (version "20181122")
     (source
      (origin
       (method url-fetch)
@@ -56,7 +56,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0jjs7fpvdjjb5v0j39a6k7hq9h5ap3db1j7vg1r2dq4swk23h9bm"))))
+        "1mcqymf6vg8jhnjv71sswcz5xrwpq2h2ishi8m1hz8rwhc65h1ig"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -66,7 +66,7 @@
              (for-each
               (lambda (file)
                 (substitute* file
-                  ;; Patch hard coded '/bin/sh' in the lin ending in:
+                  ;; Patch hard coded '/bin/sh' in the line ending in:
                   ;; $Global::shell = $ENV{'PARALLEL_SHELL'} ||
                   ;;  parent_shell($$) || $ENV{'SHELL'} || "/bin/sh";
                   (("/bin/sh\\\";\n$") (string-append (which "sh") "\";\n"))))

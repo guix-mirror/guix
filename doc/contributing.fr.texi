@@ -111,13 +111,14 @@ distinguer votre rôle « d'utilisateur final » de celui parfois haut en
 couleur de « développeur ».
 
 Pour cela, tous les outils en ligne de commande sont utilisables même sans
-avoir lancé @code{make install}.  Vous devez pour cela préfixer chaque
-commande par @command{./pre-inst-env} (le script @file{pre-inst-env} se
-trouve dans le répertoire de plus haut niveau de l'arborescence des sources
-de Guix) comme cela@footnote{L'option @option{-E} de @command{sudo} garantie
-que @code{GUILE_LOAD_PATH} est bien paramétré pour @command{guix-daemon} et
-les outils qu'il utilise puissent trouver les modules Guile dont ils ont
-besoin.} :
+avoir lancé @code{make install}.  Pour cela, vous devez d'abord avoir un
+environnement avec toutes les dépendances disponibles (@pxref{Construire depuis Git}), puis préfixer chaque commande par @command{./pre-inst-env} (le script
+@file{pre-inst-env} se trouve dans le répertoire de plus haut niveau de
+l'arborescence des sources de Guix ; il est généré par
+@command{./configure}) comme cela@footnote{L'option @option{-E} de
+@command{sudo} garantie que @code{GUILE_LOAD_PATH} est bien paramétré pour
+@command{guix-daemon} et pour que les outils qu'il utilise puissent trouver
+les modules Guile dont ils ont besoin.} :
 
 @example
 $ sudo -E ./pre-inst-env guix-daemon --build-users-group=guixbuild
@@ -217,7 +218,9 @@ Les extraits de messages de commit dépendent de @url{https://magit.vc/,
 Magit} pour afficher les fichiers sélectionnés.  Lors de la modification
 d'un message de commit, tapez @code{add} suivi de @kbd{TAB} pour insérer un
 modèle de message de commit pour ajouter un paquet ; tapez @code{update}
-suivi de @kbd{TAB} pour insérer un modèle pour la mise à jour d'un paquet.
+suivi de @kbd{TAB} pour insérer un modèle pour la mise à jour d'un paquet ;
+tapez @code{https} suivi de @kbd{TAB} pour insérer un modèle pour le
+changement à HTTPS de l'URI de la page d'accueil.
 
 L'extrait principal pour @code{scheme-mode} est lancé en tapant
 @code{package…} suivi par @kbd{TAB}.  Cet extrait insère aussi la chaîne de
@@ -485,6 +488,13 @@ dans ce paquet sont des exemples de changements sans rapport.
 Suivez nos règles de formatage de code, éventuellement en lançant le script
 @command{et/indent-code.el} pour le faire automatiquement (@pxref{Formatage
 du code}).
+
+@item
+Si possible, utilisez des miroirs dans l'URL des sources (@pxref{Invoquer guix download}).  Utilisez des URL stable, pas des URL générées.  Par
+exemple, les archives GitHub ne sont pas nécessairement identiques d'une
+génération à la suivante, donc il vaut mieux dans ce cas cloner le dépôt.
+N'utilisez pas le champ @command{name} dans l'URL : ce n'est pas très utile
+et si le nom change, l'URL sera probablement erronée.
 
 @end enumerate
 

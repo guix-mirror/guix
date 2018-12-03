@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
@@ -37,6 +37,7 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ragel)
@@ -128,7 +129,7 @@ a focus on simplicity and productivity.")
 (define-public ruby-2.3
   (package
     (inherit ruby)
-    (version "2.3.7")
+    (version "2.3.8")
     (source
      (origin
        (method url-fetch)
@@ -137,7 +138,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "1nwfaifq5624p1ml56qq5dy5w38z37x22r0qgrbgbzrzklmqy7y6"))
+         "1zhxbjff08pvbnxvn58krns6q0p6g4977q6ykfn823gxhifn63wi"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -281,16 +282,17 @@ packaging native C and Java extensions in Ruby.")
 (define-public ruby-i18n
   (package
     (name "ruby-i18n")
-    (version "0.7.0")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "i18n" version))
               (sha256
                (base32
-                "1i5z1ykl8zhszsxcs8mzl8d0dxgs3ylz8qlzrw74jb0gplkx6758"))))
+                "0ppvmla21hssvrfm8g1n2fnb4lxn4yhy9qmmba0imanflgldrjmr"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
+    (propagated-inputs `(("concurrent-ruby" ,ruby-concurrent)))
     (synopsis "Internationalization library for Ruby")
     (description "Ruby i18n is an internationalization and localization
 solution for Ruby programs.  It features translation and localization,
@@ -1112,7 +1114,7 @@ and inspect the environment.")
             #t))
          (replace 'check
           (lambda _
-            (zero? (system* "ruby" "-Ilib" "test/test.rb")))))))
+            (invoke "ruby" "-Ilib" "test/test.rb"))))))
     (synopsis "Library to perform operations with sequence permutations")
     (description "This package provides a Ruby library to perform different
 operations with permutations of sequences, such as strings and arrays.")
@@ -1209,12 +1211,15 @@ standard output stream.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-tests
-          (lambda _
-            (substitute* "Rakefile"
-              (("system \"shindo") "system \"./bin/shindo")
-              ;; This test doesn't work, so we disable it.
-              (("fail \"The build_error test should fail") "#"))
-            #t)))))
+           (lambda _
+             (substitute* "tests/tests_helper.rb"
+               (("-rubygems") ""))
+             (substitute* "Rakefile"
+               (("system \"shindo") "system \"./bin/shindo")
+               ;; This test doesn't work, so we disable it.
+               (("fail \"The build_error test should fail") "#")
+               ((" -rubygems") ""))
+             #t)))))
     (propagated-inputs
      `(("ruby-formatador" ,ruby-formatador)))
     (synopsis "Simple depth first Ruby testing")
@@ -1616,7 +1621,7 @@ objects.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-          (lambda _ (zero? (system* "rspec" "spec/")))))))
+          (lambda _ (invoke "rspec" "spec/"))))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-rspec" ,ruby-rspec)))
@@ -2026,7 +2031,7 @@ is to be run.")
          (modify-phases %standard-phases
            (replace 'check
              (lambda _
-               (zero? (system* "script/test")))))))
+               (invoke "script/test"))))))
       (native-inputs
        `(("bundler" ,bundler)
          ("ruby-turn" ,ruby-turn)))
@@ -2287,23 +2292,66 @@ net/http library.")
 (define-public ruby-multi-json
   (package
     (name "ruby-multi-json")
-    (version "1.12.2")
+    (version "1.13.1")
     (source
      (origin
        (method url-fetch)
-       (uri (rubygems-uri "multi_json" version))
+       ;; Tests are not distributed at rubygems.org so download from GitHub
+       ;; instead.
+       (uri (string-append "https://github.com/intridea/multi_json/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1raim9ddjh672m32psaa9niw67ywzjbxbdb8iijx3wv9k5b0pk2x"))))
+         "1s64xqvrnrxmb59v6b2kchnisawg5ai9ky1w60dy6z6ws9la1xv4"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f)) ;; No testsuite included in the gem.
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-signing-key-reference
+           (lambda _
+             (substitute* "multi_json.gemspec"
+               ((".*spec.signing_key.*") ""))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-json-pure" ,ruby-json-pure)
+       ("ruby-oj" ,ruby-oj)
+       ("ruby-yajl-ruby" ,ruby-yajl-ruby)))
     (synopsis "Common interface to multiple JSON libraries for Ruby")
     (description
      "This package provides a common interface to multiple JSON libraries,
 including Oj, Yajl, the JSON gem (with C-extensions), the pure-Ruby JSON gem,
 NSJSONSerialization, gson.rb, JrJackson, and OkJson.")
-    (home-page "http://github.com/intridea/multi_json")
+    (home-page "https://github.com/intridea/multi_json")
+    (license license:expat)))
+
+(define-public ruby-multi-test
+  (package
+    (name "ruby-multi-test")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "multi_test" version))
+       (sha256
+        (base32
+         "1sx356q81plr67hg16jfwz9hcqvnk03bd9n75pmdw8pfxjfy1yxd"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; Tests require different sets of specific gem versions to be available,
+       ;; and there is no gemfile that specifies the newest versions of
+       ;; dependencies to be tested.
+       #:tests? #f))
+    (synopsis
+     "Interface to testing libraries loaded into a running Ruby process")
+    (description
+     "@code{multi_test} provides a uniform interface onto whatever testing
+libraries that have been loaded into a running Ruby process to help control
+rogue test/unit/autorun requires.")
+    (home-page "https://github.com/cucumber/multi_test")
     (license license:expat)))
 
 (define-public ruby-arel
@@ -2558,7 +2606,7 @@ invocation, and source and documentation browsing.")
             #t))
          (replace 'build
           (lambda _
-            (zero? (system* "gem" "build" "guard.gemspec")))))))
+            (invoke "gem" "build" "guard.gemspec"))))))
     (propagated-inputs
      `(("ruby-formatador" ,ruby-formatador)
        ("ruby-listen" ,ruby-listen)
@@ -2673,7 +2721,7 @@ IANA Time Zone database packaged as Ruby modules for use with @code{TZInfo}.")
          ;; list of files.
          (replace 'build
           (lambda _
-            (zero? (system* "gem" "build" "rb-inotify.gemspec")))))))
+            (invoke "gem" "build" "rb-inotify.gemspec"))))))
     (propagated-inputs
      `(("ruby-ffi" ,ruby-ffi)))
     (native-inputs
@@ -2766,7 +2814,7 @@ documentation for Ruby code.")
             ;; causes an error.
             (substitute* "tins.gemspec"
               (("\"lib/spruz\", ") ""))
-            (zero? (system* "gem" "build" "tins.gemspec")))))))
+            (invoke "gem" "build" "tins.gemspec"))))))
     (synopsis "Assorted tools for Ruby")
     (description "Tins is a Ruby library providing assorted tools.")
     (home-page "https://github.com/flori/tins")
@@ -2791,7 +2839,7 @@ documentation for Ruby code.")
        (modify-phases %standard-phases
          (replace 'build
           (lambda _
-            (zero? (system* "gem" "build" "gem_hadar.gemspec")))))))
+            (invoke "gem" "build" "gem_hadar.gemspec"))))))
     (propagated-inputs
      `(("git" ,git)
        ("ruby-tins" ,ruby-tins)
@@ -2866,9 +2914,14 @@ Ruby's large and slower test/unit.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test
+           (lambda -
+             (substitute* "tests/hsl_triple_test.rb"
+               (("0\\\\\\.0%")
+                "0\\.?0?%"))))
          (replace 'build
           (lambda _
-            (zero? (system* "gem" "build" "term-ansicolor.gemspec")))))))
+            (invoke "gem" "build" "term-ansicolor.gemspec"))))))
     (propagated-inputs
      `(("ruby-tins" ,ruby-tins)))
     (native-inputs
@@ -2976,7 +3029,7 @@ a native C extension.")
            (lambda _
              ;; Regenerate gemspec so loosened dependency constraints are
              ;; propagated.
-             (zero? (system* "rake" "gemspec")))))))
+             (invoke "rake" "gemspec"))))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ragel" ,ragel)
@@ -3032,25 +3085,36 @@ you about the changes.")
     (home-page "https://github.com/guard/listen")
     (license license:expat)))
 
+(define-public ruby-listen-3.0
+  (package
+    (inherit ruby-listen)
+    (version "3.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "listen" version))
+              (sha256
+               (base32
+                "1l0y7hbyfiwpvk172r28hsdqsifq1ls39hsfmzi1vy4ll0smd14i"))))))
+
 (define-public ruby-activesupport
   (package
     (name "ruby-activesupport")
-    (version "5.1.4")
+    (version "5.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activesupport" version))
        (sha256
         (base32
-         "0sgf4rsfr7jcaqsx0wwzx4l4k9xsjlwv0mzl08pxiyp1qzyx8scr"))))
+         "0ziy6xk31k4fs115cdkba1ys4i8nzcyri7a2jig7nx7k5h7li6l2"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             ;; There is no tests, instead attempt to load the library.
-             (zero? (system* "ruby" "-Ilib" "-r" "active_support")))))))
+             ;; There are no tests, instead attempt to load the library.
+             (invoke "ruby" "-Ilib" "-r" "active_support"))))))
     (propagated-inputs
      `(("ruby-concurrent" ,ruby-concurrent)
        ("ruby-i18n" ,ruby-i18n)
@@ -3180,6 +3244,43 @@ unacceptable HTML and/or CSS from a string.")
     (home-page "https://github.com/rgrove/sanitize/")
     (license license:expat)))
 
+(define-public ruby-oj
+  (package
+    (name "ruby-oj")
+    (version "3.6.7")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Version on rubygems.org does not contain Rakefile, so download from
+       ;; GitHub instead.
+       (uri (string-append "https://github.com/ohler55/oj/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x28ga72jxlnmsd8g8c0fw81vlh54r0qgagw2lxsd3x3la091g2h"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "test_all"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-bundler
+           (lambda _
+             (substitute* "Rakefile"
+               (("Bundler\\.with_clean_env") "1.times")
+               (("bundle exec ") "")))))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "JSON parser for Ruby optimized for speed")
+    (description
+     "Oj is a JSON parser and generator for Ruby, where the encoding and
+decoding of JSON is implemented as a C extension to Ruby.")
+    (home-page "http://www.ohler.com/oj")
+    (license (list license:expat     ; Ruby code
+                   license:bsd-3)))) ; extension code
+
 (define-public ruby-ox
   (package
     (name "ruby-ox")
@@ -3223,7 +3324,7 @@ alternative to Marshal for Object serialization. ")
          ;; existing gemspec.
          (replace 'build
           (lambda _
-            (zero? (system* "gem" "build" "redcloth.gemspec")))))))
+            (invoke "gem" "build" "redcloth.gemspec"))))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-diff-lcs" ,ruby-diff-lcs)
@@ -3301,9 +3402,9 @@ other things and it comes with a command line interface.")
            ;; There is no Rakefile and minitest can only run one file at once,
            ;; so we have to iterate over all test files.
            (lambda _
-             (and (map (lambda (file)
-                         (zero? (system* "ruby" "-Itest" file)))
-                       (find-files "./test" "test_.*\\.rb"))))))))
+             (map (lambda (file)
+                    (invoke "ruby" "-Itest" file))
+                  (find-files "./test" "test_.*\\.rb")))))))
     (native-inputs
      `(("ruby-minitest" ,ruby-minitest)))
     (synopsis "Library to read and update netrc files")
@@ -3328,7 +3429,7 @@ including comments and whitespace.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-ext
-           (lambda _ (zero? (system* "rake" "compile:unf_ext")))))))
+           (lambda _ (invoke "rake" "compile:unf_ext"))))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-rake-compiler" ,ruby-rake-compiler)
@@ -3399,7 +3500,7 @@ differences (added or removed nodes) between two XML/HTML documents.")
 (define-public ruby-rack
   (package
     (name "ruby-rack")
-    (version "2.0.5")
+    (version "2.0.6")
     (source
      (origin
        (method url-fetch)
@@ -3411,7 +3512,7 @@ differences (added or removed nodes) between two XML/HTML documents.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1k1k4wk10l6bxx46pw58j2p3nmyzjqnr65hbjjqydd6517fmxgib"))
+         "0pb3g5ymvbf07xaxcn51dpqv3djlxavckp3qkxsjdxiqznb0d9p1"))
        ;; Ignore test which fails inside the build environment but works
        ;; outside.
        (patches (search-patches "ruby-rack-ignore-failing-test.patch"))))
@@ -3645,10 +3746,46 @@ features such as filtering and fine grained logging.")
     (home-page "https://github.com/pjotrp/bioruby-logger-plugin")
     (license license:expat)))
 
+(define-public ruby-yajl-ruby
+  (package
+    (name "ruby-yajl-ruby")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "yajl-ruby" version))
+       (sha256
+        (base32
+         "16v0w5749qjp13xhjgr2gcsvjv6mf35br7iqwycix1n2h7kfcckf"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-test-to-update-load-path
+           (lambda _
+             (substitute* "spec/parsing/large_number_spec.rb"
+               (("require \"yajl\"")
+                "$LOAD_PATH << 'lib'; require 'yajl'"))
+             #t)))))
+     (native-inputs
+      `(("ruby-rake-compiler" ,ruby-rake-compiler)
+        ("ruby-rspec" ,ruby-rspec)))
+     (synopsis "Streaming JSON parsing and encoding library for Ruby")
+     (description
+      "Ruby C bindings to the Yajl JSON stream-based parser library.  The API
+is compatible with the JSON gem, so yajl-ruby can act as a drop in
+replacement.
+
+A modified copy of yajl is used, and included in the package.")
+     (home-page "https://github.com/brianmario/yajl-ruby")
+     (license (list license:expat     ; Ruby code, yajl_ext.c and yajl_ext.h
+                    license:bsd-3)))) ; Included, modified copy of yajl
+
 (define-public ruby-yard
   (package
     (name "ruby-yard")
-    (version "0.9.6")
+    (version "0.9.16")
     (source
      (origin
        (method url-fetch)
@@ -3658,7 +3795,7 @@ features such as filtering and fine grained logging.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0rsz4bghgx7fryzyhlz8wlnd2m9xgyvf1xhrq58mnzfrrfm41bdg"))))
+         "0sqpbayy9sb406jh0zqg6qha1xds863qz9531dh6vp58hc00clfq"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -3668,7 +3805,7 @@ features such as filtering and fine grained logging.")
              ;; $HOME needs to be set to somewhere writeable for tests to run
              (setenv "HOME" "/tmp")
              ;; Run tests without using 'rake' to avoid dependencies.
-             (zero? (system* "rspec")))))))
+             (invoke "rspec"))))))
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
        ("ruby-rack" ,ruby-rack)))
@@ -3855,7 +3992,7 @@ name and provides query methods such as @{RubyEngine.mri?}.")
          ;; without issue.
          (replace 'check
            (lambda _
-             (zero? (system* "ruby" "-Ilib" "bin/turn" "-h")))))))
+             (invoke "ruby" "-Ilib" "bin/turn" "-h"))))))
     (propagated-inputs
      `(("ruby-ansi" ,ruby-ansi)
        ("ruby-minitest" ,ruby-minitest-4)))
@@ -3995,7 +4132,7 @@ neither too verbose nor too minimal.")
              #t))
          (add-before 'check 'add-gemtest-file
            ;; This file exists in the repository but is not distributed.
-           (lambda _ (zero? (system* "touch" ".gemtest")))))))
+           (lambda _ (invoke "touch" ".gemtest"))))))
     (inputs
      `(("sqlite" ,sqlite)))
     (native-inputs
@@ -4029,7 +4166,7 @@ engine.")
            (lambda _
              ;; Do not run tests to avoid circular dependence with rails.
              ;; Instead just import the library to test.
-             (zero? (system* "ruby" "-Ilib" "-r" "shoulda-context")))))))
+             (invoke "ruby" "-Ilib" "-r" "shoulda-context"))))))
     (synopsis "Test::Unit context framework extracted from Shoulda")
     (description
      "@code{shoulda-context} is the context framework extracted from Shoulda.
@@ -4058,7 +4195,7 @@ names.")
            (lambda _
              ;; Do not run tests to avoid circular dependence with rails.  Instead
              ;; just import the library to test.
-             (zero? (system* "ruby" "-Ilib" "-r" "shoulda-matchers")))))))
+             (invoke "ruby" "-Ilib" "-r" "shoulda-matchers"))))))
     (propagated-inputs
      `(("ruby-activesupport" ,ruby-activesupport)))
     (synopsis "Collection of testing matchers extracted from Shoulda")
@@ -4098,7 +4235,7 @@ more complex, and error-prone.")
          (replace 'check
            ;; Don't run tests to avoid circular dependence with rails.  Instead
            ;; just import the library to test.
-           (lambda _ (zero? (system* "ruby" "-Ilib" "-r" "shoulda")))))))
+           (lambda _ (invoke "ruby" "-Ilib" "-r" "shoulda"))))))
     (propagated-inputs
      `(("ruby-shoulda-context" ,ruby-shoulda-context)
        ("ruby-shoulda-matchers" ,ruby-shoulda-matchers-2)))
@@ -4251,10 +4388,9 @@ It has built-in support for the legacy @code{cookies.txt} and
          (replace 'check
            (lambda* (#:key tests? #:allow-other-keys)
              (if tests?
-                 (zero?
-                  (system* "ruby"
-                           "-Ilib"
-                           "test/runner.rb"))
+                 (invoke "ruby"
+                         "-Ilib"
+                         "test/runner.rb")
                  #t))))))
     (native-inputs
      `(("ruby-rack" ,ruby-rack)))
@@ -4293,7 +4429,7 @@ requests either using arguments or with an interactive prompt.")
          ;; be require'd.
          (replace 'check
            (lambda _
-             (zero? (system* "ruby" "-Ilib" "-r" "ansi"))))
+             (invoke "ruby" "-Ilib" "-r" "ansi")))
          (add-before 'validate-runpath 'replace-broken-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -4364,7 +4500,7 @@ subprocess.")
            ;; Run test without calling 'rake' so that jeweler is
            ;; not required as an input.
            (lambda _
-             (zero? (system* "rspec" "spec/bio-commandeer_spec.rb")))))))
+             (invoke "rspec" "spec/bio-commandeer_spec.rb"))))))
     (propagated-inputs
      `(("ruby-bio-logger" ,ruby-bio-logger)
        ("ruby-systemu" ,ruby-systemu)))
@@ -4401,7 +4537,7 @@ detail to ease debugging.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "ruby" "-Ilib" "-r" "rubytest")))))))
+             (invoke "ruby" "-Ilib" "-r" "rubytest"))))))
     (propagated-inputs
      `(("ruby-ansi" ,ruby-ansi)))
     (synopsis "Universal test harness for Ruby")
@@ -4431,7 +4567,7 @@ single pass.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "ruby" "-Ilib" "-r" "brass")))))))
+             (invoke "ruby" "-Ilib" "-r" "brass"))))))
     (synopsis "Basic foundational assertions framework")
     (description
      "BRASS (Bare-Metal Ruby Assertion System Standard) is a basic
@@ -4459,7 +4595,7 @@ make use of.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "ruby" "-Ilib" "bin/qed" "--copyright")))))))
+             (invoke "ruby" "-Ilib" "bin/qed" "--copyright"))))))
     (propagated-inputs
      `(("ruby-ansi" ,ruby-ansi)
        ("ruby-brass" ,ruby-brass)))
@@ -4493,7 +4629,7 @@ requirement specifications systems like Cucumber.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (zero? (system* "qed"))))
+           (lambda _ (invoke "qed")))
          (add-before 'validate-runpath 'replace-broken-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -4531,7 +4667,7 @@ for reuse by other test frameworks.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _ (zero? (system* "qed")))))))
+         (replace 'check (lambda _ (invoke "qed"))))))
     (propagated-inputs
      `(("ruby-ae" ,ruby-ae)
        ("ruby-ansi" ,ruby-ansi)
@@ -4587,8 +4723,8 @@ Rubytest-based test frameworks.  It provides the @code{rubytest} executable.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (and (zero? (system* "qed"))
-                  (zero? (system* "rubytest" "-Ilib" "-Itest" "test/"))))))))
+             (invoke "qed")
+             (invoke "rubytest" "-Ilib" "-Itest" "test/"))))))
     (native-inputs
      `(("ruby-rubytest-cli" ,ruby-rubytest-cli)
        ("ruby-qed" ,ruby-qed)
@@ -4622,7 +4758,7 @@ specific use case.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "rspec" "spec/rc4_spec.rb")))))))
+             (invoke "rspec" "spec/rc4_spec.rb"))))))
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec-2)))
     (synopsis "Implementation of the RC4 algorithm")
@@ -4677,7 +4813,7 @@ binary-to-text encoding.  The main modern use of Ascii85 is in PostScript and
 (define-public ruby-ttfunk
   (package
     (name "ruby-ttfunk")
-    (version "1.4.0")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
@@ -4688,12 +4824,18 @@ binary-to-text encoding.  The main modern use of Ascii85 is in PostScript and
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1izq84pnm9niyvkzp8k0vl232q9zj41hwmp9na9fzycfh1pbnsl6"))))
+         "1ymcn12n5iws401yz03zsj8rr653fdqq13czsrciq09phgh9jzc5"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'remove-ssh
+           (lambda _
+             ;; remove dependency on an ssh key pair that doesn't exist
+             (substitute* "ttfunk.gemspec"
+               (("spec.signing_key.*") ""))
+             #t))
          (add-before 'check 'remove-rubocop
            (lambda _
              ;; remove rubocop as a dependency as not needed for testing
@@ -4701,10 +4843,11 @@ binary-to-text encoding.  The main modern use of Ascii85 is in PostScript and
                (("spec.add_development_dependency\\('rubocop'.*") ""))
              (substitute* "Rakefile"
                (("require 'rubocop/rake_task'") "")
-               (("Rubocop::RakeTask.new") ""))
+               (("RuboCop::RakeTask.new") ""))
              #t)))))
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-yard" ,ruby-yard)
        ("bundler" ,bundler)))
     (synopsis "Font metrics parser for the Prawn PDF generator")
     (description
@@ -4869,7 +5012,7 @@ call.")
          (add-before 'check 'rake-compile
            ;; Fix the test error described at
            ;; https://github.com/ruby-concurrency/concurrent-ruby/pull/408
-           (lambda _ (zero? (system* "rake" "compile"))))
+           (lambda _ (invoke "rake" "compile")))
          (add-before 'check 'remove-timecop-dependency
            ;; Remove timecop-dependent tests as having timecop as a depedency
            ;; causes circular depedencies.
@@ -4964,6 +5107,29 @@ really opens up the email messages you are parsing, if you know what you
 are doing, you can fiddle with every last bit of your email directly.")
     (home-page "https://github.com/mikel/mail")
     (license license:expat)))
+
+(define-public ruby-mathn
+  (package
+    (name "ruby-mathn")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mathn" version))
+       (sha256
+        (base32
+         "1wn812llln9jzgybz2d7536q39z3gi99i6fi0j1dapcpzvhgrr0p"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "Extends math operations for increased precision")
+    (description
+     "This gem makes mathematical operations more precise in Ruby and
+integrates other mathematical standard libraries.  Prior to Ruby 2.5,
+@code{mathn} was part of the Ruby standard library.")
+    (home-page "https://github.com/ruby/mathn")
+    (license license:bsd-2)))
 
 (define-public ruby-code-statistics
   (package
@@ -5089,3 +5255,809 @@ programs running in the background, in Ruby.")
        (sha256
         (base32
          "0a61922kmvcxyj5l70fycapr87gz1dzzlkfpq85rfqk5vdh3d28p"))))))
+
+(define-public ruby-public-suffix
+  (package
+    (name "ruby-public-suffix")
+    (version "3.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "public_suffix" version))
+              (sha256
+               (base32
+                "08q64b5br692dd3v0a9wq9q5dvycc6kmiqmjbdxkxbfizggsvx6l"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; Tests require network
+     `(#:tests? #f))
+    (home-page "https://simonecarletti.com/code/publicsuffix-ruby/")
+    (synopsis "Domain name parser")
+    (description "The gem @code{public_suffix} is a domain name parser,
+written in Ruby, and based on the @dfn{Public Suffix List}.  A public suffix
+is one under which Internet users can (or historically could) directly
+register names.  Some examples of public suffixes are @code{.com},
+@code{.co.uk} and @code{pvt.k12.ma.us}.  The Public Suffix List is a list of
+all known public suffixes.")
+    (license license:expat)))
+
+(define-public ruby-addressable
+  (package
+    (name "ruby-addressable")
+    (version "2.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "addressable" version))
+              (sha256
+               (base32
+                "0viqszpkggqi8hq87pqp0xykhvz60g99nwmkwsb0v45kc2liwxvk"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-public-suffix" ,ruby-public-suffix)))
+    (arguments
+     ;; No test target
+     `(#:tests? #f))
+    (home-page "https://github.com/sporkmonger/addressable")
+    (synopsis "Alternative URI implementation")
+    (description "Addressable is a replacement for the URI implementation that
+is part of Ruby's standard library.  It more closely conforms to RFC 3986,
+RFC 3987, and RFC 6570 (level 4), providing support for IRIs and URI templates.")
+    (license license:asl2.0)))
+
+(define-public ruby-colorator
+  (package
+    (name "ruby-colorator")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "colorator" version))
+              (sha256
+               (base32
+                "0f7wvpam948cglrciyqd798gdc6z3cfijciavd0dfixgaypmvy72"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No test target
+     `(#:tests? #f))
+    (home-page "http://octopress.org/colorator/")
+    (synopsis "Terminal color library")
+    (description "Colorator is a Ruby gem that helps you colorize your text
+for the terminal.")
+    (license license:expat)))
+
+(define-public ruby-command-line-reporter
+  (package
+    (name "ruby-command-line-reporter")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "command_line_reporter" version))
+              (sha256
+               (base32
+                "1qma35xrb772whxwy1rs9bicb9d6lvz0s2dd2dnn4fr6zcbcxc0a"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No Rakefile
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-dependencies
+           (lambda _
+             (substitute* ".gemspec"
+               ;; colored is unmaintained
+               (("colored") "colorator")
+               ;; colorator version
+               (("= 1.2") "= 1.1"))
+             #t)))))
+    (propagated-inputs `(("ruby-colorator" ,ruby-colorator)))
+    (home-page "https://github.com/wbailey/command_line_reporter")
+    (synopsis "Report production while executing Ruby scripts")
+    (description "This gem provides a DSL that makes it easy to write reports
+of various types in ruby.  It eliminates the need to litter your source with
+puts statements, instead providing a more readable, expressive interface to
+your application.")
+    (license license:asl2.0)))
+
+(define-public ruby-command-line-reporter-3
+  (package
+    (inherit ruby-command-line-reporter)
+    (version "3.3.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "command_line_reporter" version))
+              (sha256
+               (base32
+                "1h39zqqxp3k4qk49ajpx0jps1vmvxgkh43mqkb6znk583bl0fv71"))))))
+
+(define-public ruby-rdoc
+  (package
+    (name "ruby-rdoc")
+    (version "6.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "rdoc" version))
+        (sha256
+          (base32
+            "0anv42cqcdc6g4n386mrva7mgav5i0c2ry3yzvzzc6z6hymkmcr7"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (home-page "https://ruby.github.io/rdoc/")
+    (synopsis "HTML and command-line documentation utility")
+    (description "RDoc produces HTML and command-line documentation for Ruby
+projects.  RDoc includes the +rdoc+ and +ri+ tools for generating and displaying
+documentation from the command-line.")
+    (license license:gpl2+)))
+
+(define-public ruby-sass-listen
+  (package
+    (name "ruby-sass-listen")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "sass-listen" version))
+              (sha256
+               (base32
+                "0xw3q46cmahkgyldid5hwyiwacp590zj2vmswlll68ryvmvcp7df"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No test target
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-rb-fsevent" ,ruby-rb-fsevent)
+       ("ruby-rb-inotify" ,ruby-rb-inotify)))
+    (home-page "https://github.com/sass/listen")
+    (synopsis "File modification notification library")
+    (description "The Listen gem listens to file modifications and notifies you
+about the changes.")
+    (license license:expat)))
+
+(define-public ruby-terminfo
+  (package
+    (name "ruby-terminfo")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "ruby-terminfo" version))
+        (sha256
+          (base32
+            "0rl4ic5pzvrpgd42z0c1s2n3j39c9znksblxxvmhkzrc0ckyg2cm"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "test"
+       ;; Rakefile requires old packages and would need modification to
+       ;; work with current software.
+       #:tests? #f))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (native-inputs
+     `(("ruby-rubygems-tasks" ,ruby-rubygems-tasks)
+       ("ruby-rdoc" ,ruby-rdoc)))
+    (home-page "http://www.a-k-r.org/ruby-terminfo/")
+    (synopsis "Terminfo binding for Ruby")
+    (description "Ruby-terminfo provides terminfo binding for Ruby.")
+    (license license:bsd-3)))
+
+(define-public ruby-diffy
+  (package
+    (name "ruby-diffy")
+    (version "3.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "diffy" version))
+        (sha256
+          (base32
+            "119imrkn01agwhx5raxhknsi331y5i4yda7r0ws0an6905ximzjg"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (home-page "https://github.com/samg/diffy")
+    (synopsis "Convenient diffing in ruby")
+    (description "Diffy provides a convenient way to generate a diff from two
+strings or files.")
+    (license license:expat)))
+
+(define-public ruby-sass-spec
+  (package
+    (name "ruby-sass-spec")
+    (version "3.5.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/sass/sass-spec/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0nx8lp7c9qa58w489crgqa3c489xsyarn1a8h4np9mwwfqm1h3rr"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-command-line-reporter-3" ,ruby-command-line-reporter-3)
+       ("ruby-diffy" ,ruby-diffy)
+       ("ruby-terminfo" ,ruby-terminfo)))
+    (arguments
+     `(;; This package contains tests for a sass implementation, and the to
+       ;; avoid any circular dependencies, the tests are not run here
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-test
+           (lambda _
+             (delete-file "spec/values/colors/alpha_hex-3.5/error")
+             (substitute* "spec/values/colors/alpha_hex-3.5/expected_output.css"
+               (("string") "color")))))))
+    (home-page "https://github.com/sass/sass-spec")
+    (synopsis "Test suite for Sass")
+    (description "Sass Spec is a test suite for Sass.  Test cases are all in
+the @file{spec} directory.")
+    (license license:expat)))
+
+(define-public ruby-sass
+  (package
+    (name "ruby-sass")
+    (version "3.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "sass" version))
+              (sha256
+               (base32
+                "18c6prbw9wl8bqhb2435pd9s0lzarl3g7xf8pmyla28zblvwxmyh"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-sass-listen" ,ruby-sass-listen)))
+    (native-inputs
+     `(("ruby-sass-spec" ,ruby-sass-spec)
+       ("ruby-mathn" ,ruby-mathn)))
+    (home-page "http://sass-lang.com/")
+    (synopsis "CSS extension language")
+    (description "Sass is a CSS extension language.  It extends CSS with
+features that don't exist yet like variables, nesting, mixins and inheritance.")
+    (license license:expat)))
+
+(define-public ruby-jekyll-sass-converter
+  (package
+    (name "ruby-jekyll-sass-converter")
+    (version "1.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "jekyll-sass-converter" version))
+              (sha256
+               (base32
+                "008ikh5fk0n6ri54mylcl8jn0mq8p2nfyfqif2q3pp0lwilkcxsk"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-sass" ,ruby-sass)))
+    (arguments
+     ;; No rakefile
+     `(#:tests? #f))
+    (home-page "https://github.com/jekyll/jekyll-sass-converter")
+    (synopsis "Sass converter for Jekyll")
+    (description "This gem provide built-in support for the Sass converter
+in Jekyll.")
+    (license license:expat)))
+
+(define-public ruby-jekyll-watch
+  (package
+    (name "ruby-jekyll-watch")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "jekyll-watch" version))
+              (sha256
+               (base32
+                "0m7scvj3ki8bmyx5v8pzibpg6my10nycnc28lip98dskf8iakprp"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-listen-3.0" ,ruby-listen-3.0)))
+    (arguments
+     ;; No rakefile
+     `(#:tests? #f))
+    (home-page "https://github.com/jekyll/jekyll-watch")
+    (synopsis "Jekyll auto-rebuild support")
+    (description "This gems add the @code{--watch} switch to the jekyll CLI
+interface.  It allows Jekyll to rebuild your site when a file changes.")
+    (license license:expat)))
+
+(define-public ruby-parallel
+  (package
+    (name "ruby-parallel")
+    (version "1.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "parallel" version))
+              (sha256
+               (base32
+                "01hj8v1qnyl5ndrs33g8ld8ibk0rbcqdpkpznr04gkbxd11pqn67"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); No rakefile
+    (home-page "https://github.com/grosser/parallel")
+    (synopsis "Parallel processing in Ruby")
+    (description "Parallel allows you to run any code in parallel Processes
+(to use all CPUs) or Threads(to speedup blocking operations).  It is best
+suited for map-reduce or e.g. parallel downloads/uploads.")
+    (license license:expat)))
+
+(define-public ruby-cane
+  (package
+    (name "ruby-cane")
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "cane" version))
+              (sha256
+               (base32
+                "0yf5za3l7lhrqa3g56sah73wh33lbxy5y3cb7ij0a2bp1b4kwhih"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); No rakefile
+    (home-page "https://github.com/square/cane")
+    (propagated-inputs
+     `(("ruby-parallel" ,ruby-parallel)))
+    (synopsis "Code quality threshold checking")
+    (description "Cane fails your build if code quality thresholds are not met.")
+    (license license:asl2.0)))
+
+(define-public ruby-morecane
+  (package
+    (name "ruby-morecane")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "morecane" version))
+              (sha256
+               (base32
+                "0w70vb8z5bdhvr21h660aa43m5948pv0bd27z7ngai2iwdvqd771"))))
+    (build-system ruby-build-system)
+    (home-page "https://github.com/yob/morecane")
+    (arguments `(#:tests? #f)); No rakefile
+    (propagated-inputs
+     `(("ruby-parallel" ,ruby-parallel)))
+    (synopsis "Extra checks for cane")
+    (description "The cane gem provides a great framework for running quality
+checks over your ruby project as part of continuous integration build.  It
+comes with a few checks out of the box, but also provides an API for loading
+custom checks.  This gem provides a set of additional checks.")
+    (license license:expat)))
+
+(define-public ruby-pdf-reader
+  (package
+    (name "ruby-pdf-reader")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pdf-reader" version))
+              (sha256
+               (base32
+                "1b3ig4wpcgdbqa7yw0ahwbmikkkywn2a22bfmrknl5ls7g066x45"))))
+    (build-system ruby-build-system)
+    (arguments `(#:test-target "spec"))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-cane" ,ruby-cane)
+       ("ruby-morecane" ,ruby-morecane)))
+    (propagated-inputs
+     `(("ruby-afm" ,ruby-afm)
+       ("ruby-ascii85" ,ruby-ascii85)
+       ("ruby-hashery" ,ruby-hashery)
+       ("ruby-rc4" ,ruby-rc4)
+       ("ruby-ttfunk" ,ruby-ttfunk)))
+    (home-page "https://github.com/yob/pdf-reader")
+    (synopsis "PDF parser in Ruby")
+    (description "The PDF::Reader library implements a PDF parser conforming as
+much as possible to the PDF specification from Adobe.  It provides programmatic
+access to the contents of a PDF file with a high degree of flexibility.")
+    (license license:gpl3+)))
+
+(define-public ruby-pdf-inspector
+  (package
+    (name "ruby-pdf-inspector")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pdf-inspector" version))
+              (sha256
+               (base32
+                "1g853az4xzgqxr5xiwhb76g4sqmjg4s79mm35mp676zjsrwpa47w"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-pdf-reader" ,ruby-pdf-reader)))
+    (arguments `(#:tests? #f)); No rakefile
+    (home-page "https://github.com/prawnpdf/pdf-inspector")
+    (synopsis "Analysis classes for inspecting PDF output")
+    (description "This library provides a number of PDF::Reader based tools for
+use in testing PDF output.  Presently, the primary purpose of this tool is to
+support the tests found in Prawn, a pure Ruby PDF generation library.")
+    (license license:gpl3+)))
+
+(define-public ruby-pdf-core
+  (package
+    (name "ruby-pdf-core")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pdf-core" version))
+              (sha256
+               (base32
+                "15d6m99bc8bbzlkcg13qfpjjzphfg5x905pjbfygvpcxsm8gnsvg"))))
+    (build-system ruby-build-system)
+    (arguments
+     ; No test target
+     `(#:tests? #f))
+    (home-page "https://github.com/prawnpdf/pdf-core")
+    (synopsis "Low level PDF features for Prawn")
+    (description "This is an experimental gem that extracts low-level PDF
+functionality from Prawn.")
+    (license license:gpl3+)))
+
+(define-public ruby-prawn
+  (package
+    (name "ruby-prawn")
+    (version "2.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "prawn" version))
+              (sha256
+               (base32
+                "1qdjf1v6sfl44g3rqxlg8k4jrzkwaxgvh2l4xws97a8f3xv4na4m"))))
+    (build-system ruby-build-system)
+    (arguments
+     ; No tests
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-dependencies
+           (lambda _
+             (substitute* "prawn.gemspec"
+               (("~> 0.7.0") "~> 0.7"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-pdf-core" ,ruby-pdf-core)
+       ("ruby-ttfunk" ,ruby-ttfunk)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-pdf-inspector" ,ruby-pdf-inspector)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-yard" ,ruby-yard)))
+    (home-page "http://prawnpdf.org/api-docs/2.0/")
+    (synopsis "PDF generation for Ruby")
+    (description "Prawn is a pure Ruby PDF generation library.")
+    (license license:gpl3+)))
+
+(define-public ruby-prawn-table
+  (package
+    (name "ruby-prawn-table")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "prawn-table" version))
+              (sha256
+               (base32
+                "1nxd6qmxqwl850icp18wjh5k0s3amxcajdrkjyzpfgq0kvilcv9k"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); No rakefile
+    (propagated-inputs
+     `(("ruby-prawn" ,ruby-prawn)))
+    (home-page "https://github.com/prawnpdf/prawn-table")
+    (synopsis "Tables support for Prawn")
+    (description "This gem provides tables support for Prawn.")
+    (license license:gpl3+)))
+
+(define-public ruby-kramdown
+  (package
+    (name "ruby-kramdown")
+    (version "1.17.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "kramdown" version))
+              (sha256
+               (base32
+                "1n1c4jmrh5ig8iv1rw81s4mw4xsp4v97hvf8zkigv4hn5h542qjq"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); FIXME: some test failures
+    (native-inputs
+     `(("ruby-prawn" ,ruby-prawn)
+       ("ruby-prawn-table" ,ruby-prawn-table)))
+    (home-page "https://kramdown.gettalong.org/")
+    (synopsis "Markdown parsing and converting library")
+    (description "Kramdown is a library for parsing and converting a superset
+of Markdown.  It is completely written in Ruby, supports standard Markdown
+(with some minor modifications) and various extensions that have been made
+popular by the PHP @code{Markdown Extra} package and @code{Maruku}.")
+    (license license:expat)))
+
+(define-public ruby-http-parser.rb
+  (package
+    (name "ruby-http-parser.rb")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "http_parser.rb" version))
+        (sha256
+          (base32
+            "15nidriy0v5yqfjsgsra51wmknxci2n2grliz78sf9pga3n0l7gi"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (native-inputs
+     `(("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (home-page "https://github.com/tmm1/http_parser.rb")
+    (synopsis "HTTP parser un Ruby")
+    (description "This gem is a simple callback-based HTTP request/response
+parser for writing http servers, clients and proxies.")
+    (license license:expat)))
+
+(define-public ruby-em-websocket
+  (package
+    (name "ruby-em-websocket")
+    (version "0.5.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "em-websocket" version))
+        (sha256
+          (base32
+            "1bsw8vjz0z267j40nhbmrvfz7dvacq4p0pagvyp17jif6mj6v7n3"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("ruby-eventmachine" ,ruby-eventmachine)
+        ("ruby-http-parser.rb" ,ruby-http-parser.rb)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (home-page "https://github.com/igrigorik/em-websocket")
+    (synopsis "EventMachine based WebSocket server")
+    (description "Em-websocket is an EventMachine based WebSocket server
+implementation.")
+    (license license:expat)))
+
+(define-public ruby-rouge
+  (package
+    (name "ruby-rouge")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rouge" version))
+              (sha256
+               (base32
+                "0h79gn2wmn1wix2d27lgiaimccyj8gvizrllyym500pir408x62f"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); No rakefile
+    (home-page "http://rouge.jneen.net/")
+    (synopsis "Code highlighter")
+    (description "Rouge is a code highlighter written in Ruby.  It supports more
+than 100 languages and outputs HTML or ANSI 256-color text.  Its HTML output
+is compatible with stylesheets designed for pygments.")
+    (license (list
+               ;; rouge is licensed under expat
+               license:expat
+               ;; pygments is licensed under bsd-2
+               license:bsd-2))))
+
+(define-public ruby-rouge-2
+  (package
+    (inherit ruby-rouge)
+    (version "2.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rouge" version))
+              (sha256
+               (base32
+                "02kpahk5nkc33yxnn75649kzxaz073wvazr2zyg491nndykgnvcs"))))))
+
+(define-public ruby-hashie
+  (package
+    (name "ruby-hashie")
+    (version "3.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "hashie" version))
+              (sha256
+               (base32
+                "13bdzfp25c8k51ayzxqkbzag3wj5gc1jd8h7d985nsq6pn57g5xh"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (arguments `(#:tests? #f)); FIXME: Could not locate Gemfile or .bundle/ directory
+    (home-page "https://github.com/intridea/hashie")
+    (synopsis "Extensions to Ruby Hashes")
+    (description "Hashie is a collection of classes and mixins that make Ruby
+hashes more powerful.")
+    (license license:expat)))
+
+(define-public ruby-heredoc-unindent
+  (package
+    (name "ruby-heredoc-unindent")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "heredoc_unindent" version))
+              (sha256
+               (base32
+                "14ijr2fsjwhrkjkcaz81d5xnfa4vvgvcflrff83avqw9klm011yw"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (home-page "https://github.com/adrianomitre/heredoc_unindent")
+    (synopsis "Heredoc indentation cleaner")
+    (description "This gem removes common margin from indented strings, such
+as the ones produced by indented heredocs.  In other words, it strips out
+leading whitespace chars at the beginning of each line, but only as much as
+the line with the smallest margin.
+
+It is acknowledged that many strings defined by heredocs are just code and
+fact is that most parsers are insensitive to indentation.  If, however, the
+strings are to be used otherwise, be it for printing or testing, the extra
+indentation will probably be an issue and hence this gem.")
+    (license license:expat)))
+
+(define-public ruby-safe-yaml
+  (package
+    (name "ruby-safe-yaml")
+    (version "1.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "safe_yaml" version))
+              (sha256
+               (base32
+                "1hly915584hyi9q9vgd968x2nsi5yag9jyf5kq60lwzi5scr7094"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-hashie" ,ruby-hashie)
+       ("ruby-heredoc-unindent" ,ruby-heredoc-unindent)))
+    (arguments `(#:test-target "spec"
+                 #:tests? #f));; FIXME: one failure
+    (home-page "https://github.com/dtao/safe_yaml")
+    (synopsis "YAML parser")
+    (description "The SafeYAML gem provides an alternative implementation of
+YAML.load suitable for accepting user input in Ruby applications.")
+    (license license:expat)))
+
+(define-public ruby-mercenary
+  (package
+    (name "ruby-mercenary")
+    (version "0.3.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "mercenary" version))
+              (sha256
+               (base32
+                "10la0xw82dh5mqab8bl0dk21zld63cqxb1g16fk8cb39ylc4n21a"))))
+    (build-system ruby-build-system)
+    (arguments `(#:test-target "spec"))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (home-page "https://github.com/jekyll/mercenary")
+    (synopsis "Command-line apps library in Ruby")
+    (description "Mercenary is a lightweight and flexible library for writing
+command-line apps in Ruby.")
+    (license license:expat)))
+
+(define-public ruby-liquid
+  (package
+    (name "ruby-liquid")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "liquid" version))
+              (sha256
+               (base32
+                "17fa0jgwm9a935fyvzy8bysz7j5n1vf1x2wzqkdfd5k08dbw3x2y"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); No rakefile
+    (home-page "https://shopify.github.io/liquid/")
+    (synopsis "Template language")
+    (description "Liquid is a template language written in Ruby.  It is used
+to load dynamic content on storefronts.")
+    (license license:expat)))
+
+(define-public ruby-forwardable-extended
+  (package
+    (name "ruby-forwardable-extended")
+    (version "2.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "forwardable-extended" version))
+              (sha256
+               (base32
+                "15zcqfxfvsnprwm8agia85x64vjzr2w0xn9vxfnxzgcv8s699v0v"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); Cyclic dependency on luna-rspec-formatters
+    (home-page "https://github.com/envygeeks/forwardable-extended")
+    (synopsis "Delegation to hashes and instance variables in Forwardable")
+    (description "Forwardable Extended provides more @code{Forwardable}
+methods for your source as @code{Forwardable::Extended}.")
+    (license license:expat)))
+
+(define-public ruby-pathutil
+  (package
+    (name "ruby-pathutil")
+    (version "0.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pathutil" version))
+              (sha256
+               (base32
+                "0wc18ms1rzi44lpjychyw2a96jcmgxqdvy2949r4vvb5f4p0lgvz"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-forwardable-extended" ,ruby-forwardable-extended)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    ;; Fails with: cannot load such file --
+    ;; /tmp/guix-build-ruby-pathutil-0.16.0.drv-0/gem/benchmark/support/task
+    (arguments `(#:tests? #f))
+    (home-page "https://github.com/envygeeks/pathutil")
+    (synopsis "Extended implementation of Pathname")
+    (description "Pathutil tries to be a faster pure Ruby implementation of
+Pathname.")
+    (license license:expat)))
+
+(define-public jekyll
+  (package
+    (name "jekyll")
+    (version "3.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "jekyll" version))
+              (sha256
+               (base32
+                "1iw90wihk9dscgmppf5v6lysg3kjmnx50mjyl4gghkdb4spw97xk"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No rakefile, but a test subdirectory
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-i18n
+           (lambda _
+             (substitute* ".gemspec"
+               (("~> 0.7") ">= 0.7"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-addressable" ,ruby-addressable)
+       ("ruby-colorator" ,ruby-colorator)
+       ("ruby-em-websocket" ,ruby-em-websocket)
+       ("ruby-i18n" ,ruby-i18n)
+       ("ruby-jekyll-sass-converter" ,ruby-jekyll-sass-converter)
+       ("ruby-jekyll-watch" ,ruby-jekyll-watch)
+       ("ruby-kramdown" ,ruby-kramdown)
+       ("ruby-liquid" ,ruby-liquid)
+       ("ruby-mercenary" ,ruby-mercenary)
+       ("ruby-pathutil" ,ruby-pathutil)
+       ("ruby-rouge" ,ruby-rouge-2)
+       ("ruby-safe-yaml" ,ruby-safe-yaml)))
+    (home-page "https://jekyllrb.com/")
+    (synopsis "Static site generator")
+    (description "Jekyll is a simple, blog aware, static site generator.")
+    (license license:expat)))
+
+(define-public ruby-jekyll-paginate-v2
+  (package
+    (name "ruby-jekyll-paginate-v2")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "jekyll-paginate-v2" version))
+              (sha256
+               (base32
+                "154bfpyml6abxww9868hhyfvxasl8qhsc5zy2q30c7dxaj0igdib"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("jekyll" ,jekyll)))
+    (home-page "https://github.com/sverrirs/jekyll-paginate-v2")
+    (synopsis "Pagination Generator for Jekyll 3")
+    (description "The Pagination Generator forms the core of the pagination
+logic in Jekyll.  It calculates and generates the pagination pages.")
+    (license license:expat)))

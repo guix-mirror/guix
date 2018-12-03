@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,10 +74,6 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; The 6.7 tarball is missing ‘install.sh’. Create it.
-         (add-after 'unpack 'autoreconf
-           (lambda _
-             (invoke "autoreconf" "-i")))
          (add-before 'configure 'set-root-sbin
            (lambda _ ; Don't try to install in "/sbin".
              (setenv "ROOTSBINDIR"
@@ -150,14 +147,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.8.4")
+    (version "4.8.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "01jlk8xlawfp3yyhi5migcd1fy7dkavbh56in444m281kqa4s17m"))))
+               "15hawqdm37l6lp9k14c634315p77cllsx89bvbw9h38fg1hj3fbk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -341,14 +338,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.3.3")
+    (version "1.3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "14gsrm7dvyjpbpnc60z75j6fz2p187abm2h353lq95kx2bv70c1b"))
+                "16lkz3gyvsm9als1wyimsl573hclr72xy6454mshwjanncs33lji"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -400,6 +397,18 @@ key-value pair databases and a real LDAP database.")
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ppp/ppp-"
                                   version ".tar.gz"))
+              (patches
+               (list (origin
+                       ;; Use OpenSSL for cryptography instead of the obsolete glibc
+                       ;; crypto functions that were removed in glibc 2.28.
+                       (method url-fetch)
+                       (uri (string-append "https://github.com/paulusmack/ppp/commit/"
+                                           "3c7b86229f7bd2600d74db14b1fe5b3896be3875"
+                                           ".patch"))
+                       (file-name "ppp-use-openssl-crypto.patch")
+                       (sha256
+                        (base32
+                         "0qlbi247lx3injpy8a1gcij9yilik0vfaibkpvdp88k3sa1rs69z")))))
               (sha256
                (base32
                 "0c7vrjxl52pdwi4ckrvfjr08b31lfpgwf3pp0cqy76a77vfs7q02"))))
@@ -412,14 +421,19 @@ key-value pair databases and a real LDAP database.")
          (add-before 'configure 'patch-Makefile
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((libc    (assoc-ref inputs "libc"))
+                   (openssl (assoc-ref inputs "openssl"))
                    (libpcap (assoc-ref inputs "libpcap")))
                (substitute* "pppd/Makefile.linux"
                  (("/usr/include/crypt\\.h")
                   (string-append libc "/include/crypt.h"))
+                 (("/usr/include/openssl")
+                  (string-append openssl "/include/openssl"))
                  (("/usr/include/pcap-bpf.h")
-                  (string-append libpcap "/include/pcap-bpf.h")))))))))
+                  (string-append libpcap "/include/pcap-bpf.h")))
+               #t))))))
     (inputs
-     `(("libpcap" ,libpcap)))
+     `(("libpcap" ,libpcap)
+       ("openssl" ,(@ (gnu packages tls) openssl))))
     (synopsis "Implementation of the Point-to-Point Protocol")
     (home-page "https://ppp.samba.org/")
     (description

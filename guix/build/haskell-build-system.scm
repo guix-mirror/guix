@@ -2,6 +2,8 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +29,7 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
+  #:use-module (ice-9 ftw)
   #:export (%standard-phases
             haskell-build))
 
@@ -76,6 +79,7 @@ and parameters ~s~%"
          (doc (assoc-ref outputs "doc"))
          (lib (assoc-ref outputs "lib"))
          (bin (assoc-ref outputs "bin"))
+         (name-version (strip-store-file-name out))
          (input-dirs (match inputs
                        (((_ . dir) ...)
                         dir)
@@ -86,7 +90,7 @@ and parameters ~s~%"
                          `(,(string-append "--bindir=" (or bin out) "/bin"))
                          `(,(string-append
                              "--docdir=" (or doc out)
-                             "/share/doc/" (package-name-version out)))
+                             "/share/doc/" name-version))
                          '("--libsubdir=$compiler/$pkg-$version")
                          `(,(string-append "--package-db=" %tmp-db-dir))
                          '("--global")
@@ -125,12 +129,6 @@ and parameters ~s~%"
   "Install a given Haskell package."
   (run-setuphs "copy" '()))
 
-(define (package-name-version store-dir)
-  "Given a store directory STORE-DIR return 'name-version' of the package."
-  (let* ((base (basename store-dir)))
-    (string-drop base
-                 (+ 1 (string-index base #\-)))))
-
 (define (grep rx port)
   "Given a regular-expression RX including a group, read from PORT until the
 first match and return the content of the group."
@@ -145,7 +143,7 @@ first match and return the content of the group."
 (define* (setup-compiler #:key system inputs outputs #:allow-other-keys)
   "Setup the compiler environment."
   (let* ((haskell (assoc-ref inputs "haskell"))
-         (name-version (package-name-version haskell)))
+         (name-version (strip-store-file-name haskell)))
     (cond
      ((string-match "ghc" name-version)
       (make-ghc-package-database system inputs outputs))
@@ -162,6 +160,7 @@ first match and return the content of the group."
 (define (make-ghc-package-database system inputs outputs)
   "Generate the GHC package database."
   (let* ((haskell  (assoc-ref inputs "haskell"))
+         (name-version (strip-store-file-name haskell))
          (input-dirs (match inputs
                        (((_ . dir) ...)
                         dir)
@@ -169,7 +168,7 @@ first match and return the content of the group."
          ;; Silence 'find-files' (see 'evaluate-search-paths')
          (conf-dirs (with-null-error-port
                      (search-path-as-list
-                      `(,(string-append "lib/" (package-name-version haskell)))
+                      `(,(string-append "lib/" name-version))
                       input-dirs #:pattern ".*\\.conf.d$")))
          (conf-files (append-map (cut find-files <> "\\.conf$") conf-dirs)))
     (mkdir-p %tmp-db-dir)
@@ -178,9 +177,10 @@ first match and return the content of the group."
                   (unless (file-exists? dest)
                     (copy-file file dest))))
               conf-files)
-    (zero? (system* "ghc-pkg"
-                    (string-append "--package-db=" %tmp-db-dir)
-                    "recache"))))
+    (invoke "ghc-pkg"
+            (string-append "--package-db=" %tmp-db-dir)
+            "recache")
+    #t))
 
 (define* (register #:key name system inputs outputs #:allow-other-keys)
   "Generate the compiler registration and binary package database files for a
@@ -228,9 +228,10 @@ given Haskell package."
 
   (let* ((out (assoc-ref outputs "out"))
          (haskell  (assoc-ref inputs "haskell"))
+         (name-verion (strip-store-file-name haskell))
          (lib (string-append out "/lib"))
-         (config-dir (string-append lib "/"
-                                    (package-name-version haskell)
+         (config-dir (string-append lib
+                                    "/" name-verion
                                     "/" name ".conf.d"))
          (id-rx (make-regexp "^id: *(.*)$"))
          (config-file (string-append out "/" name ".conf"))
@@ -238,35 +239,45 @@ given Haskell package."
           (list (string-append "--gen-pkg-config=" config-file))))
     (run-setuphs "register" params)
     ;; The conf file is created only when there is a library to register.
-    (or (not (file-exists? config-file))
-        (begin
-          (mkdir-p config-dir)
-          (let* ((config-file-name+id
-                  (call-with-ascii-input-file config-file (cut grep id-rx <>))))
-            (install-transitive-deps config-file %tmp-db-dir config-dir)
-            (rename-file config-file
-                         (string-append config-dir "/"
-                                        config-file-name+id ".conf"))
-            (zero? (system* "ghc-pkg"
-                            (string-append "--package-db=" config-dir)
-                            "recache")))))))
+    (when (file-exists? config-file)
+      (mkdir-p config-dir)
+      (let* ((config-file-name+id
+              (call-with-ascii-input-file config-file (cut grep id-rx <>))))
+        (install-transitive-deps config-file %tmp-db-dir config-dir)
+        (rename-file config-file
+                     (string-append config-dir "/"
+                                    config-file-name+id ".conf"))
+        (invoke "ghc-pkg"
+                (string-append "--package-db=" config-dir)
+                "recache")))
+    #t))
 
 (define* (check #:key tests? test-target #:allow-other-keys)
   "Run the test suite of a given Haskell package."
   (if tests?
       (run-setuphs test-target '())
-      (begin
-        (format #t "test suite not run~%")
-        #t)))
+      (format #t "test suite not run~%"))
+  #t)
 
 (define* (haddock #:key outputs haddock? haddock-flags #:allow-other-keys)
   "Run the test suite of a given Haskell package."
-  (if haddock?
-      (run-setuphs "haddock" haddock-flags)
-      #t))
+  (when haddock?
+    (run-setuphs "haddock" haddock-flags))
+  #t)
+
+(define* (patch-cabal-file #:key cabal-revision #:allow-other-keys)
+  (when cabal-revision
+    ;; Cabal requires there to be a single file with the suffix ".cabal".
+    (match (scandir "." (cut string-suffix? ".cabal" <>))
+      ((original)
+       (format #t "replacing ~s with ~s~%" original cabal-revision)
+       (copy-file cabal-revision original))
+      (_ (error "Could not find a Cabal file to patch."))))
+  #t)
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (add-after 'unpack 'patch-cabal-file patch-cabal-file)
     (delete 'bootstrap)
     (add-before 'configure 'setup-compiler setup-compiler)
     (add-before 'install 'haddock haddock)

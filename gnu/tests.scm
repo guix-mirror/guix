@@ -22,6 +22,7 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix records)
+  #:use-module ((guix ui) #:select (warn-about-load-error))
   #:use-module (gnu bootloader)
   #:use-module (gnu bootloader grub)
   #:use-module (gnu system)
@@ -258,7 +259,8 @@ the system under test."
 (define (test-modules)
   "Return the list of modules that define system tests."
   (scheme-modules (dirname (search-path %load-path "guix.scm"))
-                  "gnu/tests"))
+                  "gnu/tests"
+                  #:warn warn-about-load-error))
 
 (define (fold-system-tests proc seed)
   "Invoke PROC on each system test, passing it the test and the previous

@@ -20,6 +20,7 @@
 (define-module (test-profiles)
   #:use-module (guix tests)
   #:use-module (guix profiles)
+  #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix grafts)
@@ -45,17 +46,6 @@
 
 ;; Globally disable grafts because they can trigger early builds.
 (%graft? #f)
-
-(define-syntax-rule (test-assertm name exp)
-  (test-assert name
-    (run-with-store %store exp
-                    #:guile-for-build (%guile-for-build))))
-
-(define-syntax-rule (test-equalm name value exp)
-  (test-equal name
-    value
-    (run-with-store %store exp
-                    #:guile-for-build (%guile-for-build))))
 
 ;; Example manifest entries.
 
@@ -542,6 +532,41 @@
                                  (string-append profile "/etc/bar")
                                get-string-all)
                              "foo!"))))))
+
+(test-assertm "profile-derivation when etc/ is a relative symlink"
+  ;; See <https://bugs.gnu.org/32686>.
+  (mlet* %store-monad
+      ((etc        (gexp->derivation
+                    "etc"
+                    #~(begin
+                        (mkdir #$output)
+                        (call-with-output-file (string-append #$output "/foo")
+                          (lambda (port)
+                            (display "Heya!" port))))))
+       (thing ->   (dummy-package "dummy"
+                     (build-system trivial-build-system)
+                     (inputs
+                      `(("etc" ,etc)))
+                     (arguments
+                      `(#:guile ,%bootstrap-guile
+                        #:builder
+                        (let ((out (assoc-ref %outputs "out"))
+                              (etc (assoc-ref %build-inputs "etc")))
+                          (mkdir out)
+                          (symlink etc (string-append out "/etc"))
+                          #t)))))
+       (entry ->   (package->manifest-entry thing))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:relative-symlinks? #t
+                                       #:hooks '()
+                                       #:locales? #f))
+       (profile -> (derivation->output-path drv)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (return (string=? (call-with-input-file
+                            (string-append profile "/etc/foo")
+                          get-string-all)
+                        "Heya!")))))
 
 (test-equalm "union vs. dangling symlink"        ;<https://bugs.gnu.org/26949>
   "does-not-exist"

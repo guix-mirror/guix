@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,14 +25,17 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -64,11 +68,13 @@
                (base32
                 "147r7an41920zl4x9srdva7fxvw2znjin5ldjkhay1cndv9gih0m"))))
     (build-system cmake-build-system)
+    (outputs '("out" "doc"))
     (arguments
      '(#:tests? #f ; no tests
        #:build-type "Release" ; turn off debugging symbols to save space
        #:configure-flags (list
                           "-DPORT=GTK"
+                          "-DENABLE_GTKDOC=ON" ; No doc by default
                           (string-append ; uses lib64 by default
                            "-DLIB_INSTALL_DIR="
                            (assoc-ref %outputs "out") "/lib")
@@ -88,20 +94,23 @@
                           "-DUSE_WOFF2=OFF")
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'set-paths 'add-gst-plugins-base-include-path
-          (lambda* (#:key inputs #:allow-other-keys)
-            ;; XXX Work around a problem in the build system, which neglects
-            ;; to add -I for gst-plugins-base when compiling
-            ;; Source/WebKit2/UIProcess/WebPageProxy.cpp, apparently assuming
-            ;; that it will be in the same directory as gstreamer's header
-            ;; files.
-            (setenv "CPATH"
-                    (string-append (getenv "C_INCLUDE_PATH")
-                                   ":"
-                                   (assoc-ref inputs "gst-plugins-base")
-                                   "/include/gstreamer-1.0"))
-            #t)))))
+         (add-after 'unpack 'patch-gtk-doc-scan
+           (lambda* (#:key inputs #:allow-other-keys)
+             (for-each (lambda (file)
+                         (substitute* file
+                           (("http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd")
+                            (string-append (assoc-ref inputs "docbook-xml")
+                                           "/xml/dtd/docbook/docbookx.dtd"))))
+                       (find-files "Source" "\\.sgml$"))
+             #t))
+         (add-after 'install 'move-doc-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (rename-file (string-append out "/share/gtk-doc")
+                            (string-append doc "/share/gtk-doc"))
+               #t))))))
     (native-inputs
      `(("bison" ,bison)
        ("gettext" ,gettext-minimal)
@@ -111,6 +120,8 @@
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2) ; incompatible with Python 3 (print syntax)
+       ("gtk-doc" ,gtk-doc) ; For documentation generation
+       ("docbook-xml" ,docbook-xml) ; For documentation generation
        ("ruby" ,ruby)))
     (propagated-inputs
      `(("gtk+" ,gtk+)
@@ -149,3 +160,33 @@ HTML/CSS applications to full-fledged web browsers.")
                    license:lgpl2.1+
                    license:bsd-2
                    license:bsd-3))))
+
+;; This version of webkitgtk needs to be kept separate, because it requires a
+;; newer version of GCC than our default compiler, and this causes problems
+;; when linked with C++ libraries built using our default compiler.  For now,
+;; we use this newer webkitgtk only for selected packages, e.g. epiphany.
+(define-public webkitgtk-2.22
+  (package/inherit webkitgtk
+    (name "webkitgtk")
+    (version "2.22.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.webkitgtk.org/releases/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1f2335hjzsvjxjf6hy5cyypsn65wykpx2pbk1sp548w0hclbxdgs"))))
+    (native-inputs
+     `(("gcc" ,gcc-7)  ; webkitgtk-2.22 requires gcc-6 or newer
+       ,@(package-native-inputs webkitgtk)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments webkitgtk)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'work-around-gcc-7-include-path-issue
+             ;; FIXME: Work around a problem with gcc-7 includes (see
+             ;; <https://bugs.gnu.org/30756>).
+             (lambda _
+               (unsetenv "C_INCLUDE_PATH")
+               (unsetenv "CPLUS_INCLUDE_PATH")
+               #t))))))))

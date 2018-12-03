@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +30,16 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages networking)
   #:use-module (gnu services shepherd)
-  #:export (%test-inetd %test-openvswitch %test-dhcpd))
+  #:use-module (ice-9 match)
+  #:export (%test-inetd %test-openvswitch %test-dhcpd %test-tor %test-iptables))
 
 (define %inetd-os
   ;; Operating system with 2 inetd services.
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service inetd-service-type
             (inetd-configuration
              (entries (list
@@ -339,3 +343,221 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
    (name "dhcpd")
    (description "Test a running DHCP daemon configuration.")
    (value (run-dhcpd-test))))
+
+
+;;;
+;;; Services related to Tor
+;;;
+
+(define %tor-os
+  (simple-operating-system
+   (tor-service)))
+
+(define %tor-os/unix-socks-socket
+  (simple-operating-system
+   (service tor-service-type
+            (tor-configuration
+             (socks-socket-type 'unix)))))
+
+(define (run-tor-test)
+  (define os
+    (marionette-operating-system %tor-os
+                                 #:imported-modules '((gnu services herd))
+                                 #:requirements '(tor)))
+
+  (define os/unix-socks-socket
+    (marionette-operating-system %tor-os/unix-socks-socket
+                                 #:imported-modules '((gnu services herd))
+                                 #:requirements '(tor)))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (ice-9 popen)
+                       (ice-9 rdelim)
+                       (srfi srfi-64))
+
+          (define marionette
+            (make-marionette (list #$(virtual-machine os))))
+
+          (define (tor-is-alive? marionette)
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd)
+                             (srfi srfi-1))
+                (live-service-running
+                 (find (lambda (live)
+                         (memq 'tor
+                               (live-service-provision live)))
+                       (current-services))))
+             marionette))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "tor")
+
+          ;; Test the usual Tor service.
+
+          (test-assert "tor is alive"
+            (tor-is-alive? marionette))
+
+          (test-assert "tor is listening"
+            (let ((default-port 9050))
+              (wait-for-tcp-port default-port marionette)))
+
+          ;; Don't run two VMs at once.
+          (marionette-control "quit" marionette)
+
+          ;; Test the Tor service using a SOCKS socket.
+
+          (let* ((socket-directory "/tmp/more-sockets")
+                 (_ (mkdir socket-directory))
+                 (marionette/unix-socks-socket
+                  (make-marionette
+                   (list #$(virtual-machine os/unix-socks-socket))
+                   ;; We can't use the same socket directory as the first
+                   ;; marionette.
+                   #:socket-directory socket-directory)))
+            (test-assert "tor is alive, even when using a SOCKS socket"
+              (tor-is-alive? marionette/unix-socks-socket))
+
+            (test-assert "tor is listening, even when using a SOCKS socket"
+              (wait-for-unix-socket "/var/run/tor/socks-sock"
+                                    marionette/unix-socks-socket)))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "tor-test" test))
+
+(define %test-tor
+  (system-test
+   (name "tor")
+   (description "Test a running Tor daemon configuration.")
+   (value (run-tor-test))))
+
+(define* (run-iptables-test)
+  "Run tests of 'iptables-service-type'."
+  (define iptables-rules
+    "*filter
+:INPUT ACCEPT
+:FORWARD ACCEPT
+:OUTPUT ACCEPT
+-A INPUT -p tcp -m tcp --dport 7 -j REJECT --reject-with icmp-port-unreachable
+COMMIT
+")
+
+  (define ip6tables-rules
+    "*filter
+:INPUT ACCEPT
+:FORWARD ACCEPT
+:OUTPUT ACCEPT
+-A INPUT -p tcp -m tcp --dport 7 -j REJECT --reject-with icmp6-port-unreachable
+COMMIT
+")
+
+  (define inetd-echo-port 7)
+
+  (define os
+    (marionette-operating-system
+     (simple-operating-system
+      (service dhcp-client-service-type)
+      (service inetd-service-type
+               (inetd-configuration
+                (entries (list
+                          (inetd-entry
+                           (name "echo")
+                           (socket-type 'stream)
+                           (protocol "tcp")
+                           (wait? #f)
+                           (user "root"))))))
+      (service iptables-service-type
+               (iptables-configuration
+                (ipv4-rules (plain-file "iptables.rules" iptables-rules))
+                (ipv6-rules (plain-file "ip6tables.rules" ip6tables-rules)))))
+     #:imported-modules '((gnu services herd))
+     #:requirements '(inetd iptables)))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (srfi srfi-64)
+                       (gnu build marionette))
+          (define marionette
+            (make-marionette (list #$(virtual-machine os))))
+
+          (define (dump-iptables iptables-save marionette)
+            (marionette-eval
+             `(begin
+                (use-modules (ice-9 popen)
+                             (ice-9 rdelim)
+                             (ice-9 regex))
+                (call-with-output-string
+                  (lambda (out)
+                    (call-with-port
+                     (open-pipe* OPEN_READ ,iptables-save)
+                     (lambda (in)
+                       (let loop ((line (read-line in)))
+                         ;; iptables-save does not output rules in the exact
+                         ;; same format we loaded using iptables-restore. It
+                         ;; adds comments, packet counters, etc. We remove
+                         ;; these additions.
+                         (unless (eof-object? line)
+                           (cond
+                            ;; Remove comments
+                            ((string-match "^#" line) #t)
+                            ;; Remove packet counters
+                            ((string-match "^:([A-Z]*) ([A-Z]*) .*" line)
+                             => (lambda (match-record)
+                                  (format out ":~a ~a~%"
+                                          (match:substring match-record 1)
+                                          (match:substring match-record 2))))
+                            ;; Pass other lines without modification
+                            (else (display line out)
+                                  (newline out)))
+                           (loop (read-line in)))))))))
+             marionette))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "iptables")
+
+          (test-equal "iptables-save dumps the same rules that were loaded"
+            (dump-iptables #$(file-append iptables "/sbin/iptables-save")
+                           marionette)
+            #$iptables-rules)
+
+          (test-equal "ip6tables-save dumps the same rules that were loaded"
+            (dump-iptables #$(file-append iptables "/sbin/ip6tables-save")
+                           marionette)
+            #$ip6tables-rules)
+
+          (test-error "iptables firewall blocks access to inetd echo service"
+                      'misc-error
+                      (wait-for-tcp-port inetd-echo-port marionette #:timeout 5))
+
+          ;; TODO: This test freezes up at the login prompt without any
+          ;; relevant messages on the console. Perhaps it is waiting for some
+          ;; timeout. Find and fix this issue.
+          ;; (test-assert "inetd echo service is accessible after iptables firewall is stopped"
+          ;;   (begin
+          ;;     (marionette-eval
+          ;;      '(begin
+          ;;         (use-modules (gnu services herd))
+          ;;         (stop-service 'iptables))
+          ;;      marionette)
+          ;;     (wait-for-tcp-port inetd-echo-port marionette #:timeout 5)))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "iptables" test))
+
+(define %test-iptables
+  (system-test
+   (name "iptables")
+   (description "Test a running iptables daemon.")
+   (value (run-iptables-test))))

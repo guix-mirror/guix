@@ -71,9 +71,4 @@ void parseDump(ParseSink & sink, Source & source);
 
 void restorePath(const Path & path, Source & source);
 
-
-// FIXME: global variables are bad m'kay.
-extern bool useCaseHack;
-
-
 }

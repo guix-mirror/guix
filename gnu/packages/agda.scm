@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Alex ter Weele <alex.ter.weele@gmail.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +32,7 @@
 (define-public agda
   (package
     (name "agda")
-    (version "2.5.3")
+    (version "2.5.4.1")
     (source
      (origin
        (method url-fetch)
@@ -39,7 +41,7 @@
              version ".tar.gz"))
        (sha256
         (base32
-         "0r80vw7vnvbgq47y50v050malv7zvv2p2kg6f47i04r0b2ix855a"))))
+         "0bxpibsk98n9xp42d92ma5vj2fam8rsnl61fbhr3askfjdvalnbp"))))
     (build-system haskell-build-system)
     (inputs
      `(("cpphs" ,cpphs)
@@ -51,14 +53,13 @@
        ("ghc-edisoncore" ,ghc-edisoncore)
        ("ghc-edit-distance" ,ghc-edit-distance)
        ("ghc-equivalence" ,ghc-equivalence)
+       ("ghc-filemanip" ,ghc-filemanip)
        ("ghc-geniplate-mirror" ,ghc-geniplate-mirror)
        ("ghc-gitrev" ,ghc-gitrev)
        ("ghc-happy" ,ghc-happy)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-hashtables" ,ghc-hashtables)
        ("ghc-ieee754" ,ghc-ieee754)
-       ("ghc-monadplus" ,ghc-monadplus)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-murmur-hash" ,ghc-murmur-hash)
        ("ghc-uri-encode" ,ghc-uri-encode)
        ("ghc-parallel" ,ghc-parallel)
@@ -71,9 +72,50 @@
     (arguments
      `(#:modules ((guix build haskell-build-system)
                   (guix build utils)
-                  (srfi srfi-26))
+                  (srfi srfi-26)
+                  (ice-9 match))
        #:phases
        (modify-phases %standard-phases
+         ;; FIXME: This is a copy of the standard configure phase with a tiny
+         ;; difference: this package needs the -package-db flag to be passed
+         ;; to "runhaskell" in addition to the "configure" action, because
+         ;; Setup.hs depends on filemanip.  Without this option the Setup.hs
+         ;; file cannot be evaluated.  The haskell-build-system should be
+         ;; changed to pass "-package-db" to "runhaskell" in any case.
+         (replace 'configure
+           (lambda* (#:key outputs inputs tests? (configure-flags '())
+                     #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (name-version (strip-store-file-name out))
+                    (input-dirs (match inputs
+                                  (((_ . dir) ...)
+                                   dir)
+                                  (_ '())))
+                    (ghc-path (getenv "GHC_PACKAGE_PATH"))
+                    (params (append `(,(string-append "--prefix=" out))
+                                    `(,(string-append "--libdir=" out "/lib"))
+                                    `(,(string-append "--bindir=" out "/bin"))
+                                    `(,(string-append
+                                        "--docdir=" out
+                                        "/share/doc/" name-version))
+                                    '("--libsubdir=$compiler/$pkg-$version")
+                                    '("--package-db=../package.conf.d")
+                                    '("--global")
+                                    `(,@(map
+                                         (cut string-append "--extra-include-dirs=" <>)
+                                         (search-path-as-list '("include") input-dirs)))
+                                    `(,@(map
+                                         (cut string-append "--extra-lib-dirs=" <>)
+                                         (search-path-as-list '("lib") input-dirs)))
+                                    (if tests?
+                                        '("--enable-tests")
+                                        '())
+                                    configure-flags)))
+               (unsetenv "GHC_PACKAGE_PATH")
+               (apply invoke "runhaskell" "-package-db=../package.conf.d"
+                      "Setup.hs" "configure" params)
+               (setenv "GHC_PACKAGE_PATH" ghc-path)
+               #t)))
          (add-after 'compile 'agda-compile
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))

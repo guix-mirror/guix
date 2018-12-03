@@ -5,6 +5,9 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ison111 <ison111@protonmail.com>
+;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,17 +27,21 @@
 (define-module (gnu packages lxde)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image-viewers)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lsof)
   #:use-module (gnu packages openbox)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages text-editors)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -158,7 +165,7 @@ toolkit.  It allows users to monitor and control of running processes.")
 (define-public lxterminal
   (package
     (name "lxterminal")
-    (version "0.3.1")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lxde/LXTerminal"
@@ -166,7 +173,7 @@ toolkit.  It allows users to monitor and control of running processes.")
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0jrc3m0hbxcmcgahwjlm46s2350gh80ggb6a90xy0h6xqa3z73fd"))))
+                "1124pghrhnx6q4391ri8nvi6bsmvbj1dx81an08mird8jf2b2rii"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)
               ("vte"  ,vte/gtk+-2)))
@@ -229,6 +236,48 @@ speed up the access to freedesktop.org defined application menus.")
 with freedesktop.org standard.")
     (home-page "https://lxde.org")
     (license license:gpl2+)))
+
+(define-public spacefm
+  ;; SpaceFM is based on PCManFM.
+  (package
+    (name "spacefm")
+    (version "1.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/IgnorantGuru/spacefm/archive/"
+                    version ".tar.gz"))
+              (sha256
+                (base32
+                  "1jg7xfyr7kihjnalxp8wxyb9qjk8hqf5l36rp3s0lvkpmpyakppy"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("intltool" ,intltool)))
+    (inputs `(("bash" ,bash)
+              ("gtk+" ,gtk+)
+              ("eudev" ,eudev)
+              ("desktop-file-utils" ,desktop-file-utils)
+              ("shared-mime-info" ,shared-mime-info)
+              ("ffmpegthumbnailer" ,ffmpegthumbnailer)
+              ("jmtpfs" ,jmtpfs)
+              ("lsof" ,lsof)
+              ("udisks" ,udisks)))
+    (arguments
+     `(#:configure-flags (list (string-append "--with-bash-path="
+                                              (assoc-ref %build-inputs "bash")
+                                              "/bin/bash")
+                               (string-append "--sysconfdir="
+                                              (assoc-ref %outputs "out")
+                                              "/etc"))))
+    (home-page "http://ignorantguru.github.io/spacefm/")
+    (synopsis "Multi-panel tabbed file manager")
+    (description "SpaceFM is a graphical, multi-panel, tabbed file manager
+based on PCManFM with built-in virtual file system, udev-based device manager,
+customizable menu system, and Bash integration.")
+
+    ;; The combination is GPLv3+ but src/exo is under LGPLv3+.
+    (license license:gpl3+)))
 
 (define-public lxmenu-data
   (package
@@ -371,10 +420,10 @@ in LXDE.")
        (modify-phases %standard-phases
          (add-after 'unpack 'rm-stamp
            (lambda _
-             (for-each delete-file (find-files "." "\\.stamp$"))))
-         (add-after 'rm-stamp 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))))
+             (for-each delete-file (find-files "." "\\.stamp$"))
+             ;; Force regeneration of configure script.
+             (delete-file "configure")
+             #t)))))
     (inputs
      `(("gtk+-2" ,gtk+-2)
        ("polkit" ,polkit)))

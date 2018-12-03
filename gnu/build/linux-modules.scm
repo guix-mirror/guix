@@ -136,7 +136,7 @@ and normalizing it."
 (define (find-module-file directory module)
   "Lookup module NAME under DIRECTORY, and return its absolute file name.
 NAME can be a file name with or without '.ko', or it can be a module name.
-Return #f if it could not be found.
+Raise an error if it could not be found.
 
 Module names can differ from file names in interesting ways; for instance,
 module names usually (always?) use underscores as the inter-word separator,
@@ -162,7 +162,7 @@ whereas file names often, but not always, use hyphens.  Examples:
     ((file)
      file)
     (()
-     #f)
+     (error "kernel module not found" module directory))
     ((_ ...)
      (error "several modules by that name" module directory))))
 

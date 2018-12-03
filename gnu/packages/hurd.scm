@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,16 +25,24 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages base)
   #:use-module (guix git-download)
-  #:export (hurd-triplet?))
+  #:export (hurd-triplet?
+            hurd-target?))
 
 (define (hurd-triplet? triplet)
   (and (string-suffix? "-gnu" triplet)
        (not (string-contains triplet "linux"))))
+
+(define (hurd-target?)
+  "Return true if the cross-compilation target or the current system is
+GNU/Hurd."
+  (or (and=> (%current-target-system) hurd-triplet?)
+      (string-suffix? (%current-system) "-gnu")))
 
 (define (gnumach-source-url version)
   (string-append "mirror://gnu/gnumach/gnumach-"
@@ -42,6 +51,10 @@
 (define (hurd-source-url version)
   (string-append "mirror://gnu/hurd/hurd-"
                  version ".tar.gz"))
+
+(define (patch-url repository commit)
+  (string-append "https://git.savannah.gnu.org/cgit/hurd/" repository
+                 ".git/patch/?id=" commit))
 
 (define-public gnumach-headers
   (package
@@ -53,7 +66,24 @@
       (uri (gnumach-source-url version))
       (sha256
        (base32
-        "02hygsfpd2dljl5lg1vjjg9pizi9jyxd4aiiqzjshz6jax62jm9f"))))
+        "02hygsfpd2dljl5lg1vjjg9pizi9jyxd4aiiqzjshz6jax62jm9f"))
+      (patches (list (origin
+                       ;; This patch adds <mach/vm_wire.h>, which defines the
+                       ;; VM_WIRE_* constants needed by glibc 2.28.
+                       (method url-fetch)
+                       (uri (patch-url "gnumach" "2b0f19f602e08fd9d37268233b962674fd592634"))
+                       (sha256
+                        (base32
+                         "01iajnwsmka0w9hwjkxxijc4xfhwqbvlkw1w8n71hpnhfixd0y28"))
+                       (file-name "gnumach-vm-wire-header.patch"))))
+      (modules '((guix build utils)))
+      (snippet
+       '(begin
+          ;; Actually install vm_wire.h.
+          (substitute* "Makefile.in"
+            (("^include_mach_HEADERS =")
+             "include_mach_HEADERS = include/mach/vm_wire.h"))
+          #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -110,56 +140,71 @@ communication.")
     (license gpl2+)))
 
 (define-public hurd-headers
-  (package
-    (name "hurd-headers")
-    (version "0.9")
-    (source (origin
-              (method url-fetch)
-              (uri (hurd-source-url version))
-              (sha256
-               (base32
-                "1nw9gly0n7pyv3cpfm4mmxy4yccrx4g0lyrvd3vk2vil26jpbggw"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("mig" ,mig)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'install
-           (lambda _
-             (invoke "make" "install-headers" "no_deps=t")))
-         (delete 'build))
+  ;; Resort to a post-0.9 snapshot that provides the 'file_utimens' and
+  ;; 'file_exec_paths' RPCs that glibc 2.28 expects.
+  (let ((revision "0")
+        (commit "98b33905c89b7e5c309c74ae32302a5745901a6e"))
+   (package
+     (name "hurd-headers")
+     (version "0.9")
+     (source (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://git.savannah.gnu.org/git/hurd/hurd.git")
+                     (commit commit)))
+               (sha256
+                (base32
+                 "1mj22sxgscas2675vrbxr477mwbxdj68pqcrh65lbir8qlssrgrf"))
+               (file-name (git-file-name name version))))
+     (build-system gnu-build-system)
+     (native-inputs
+      `(("mig" ,mig)
+        ("autoconf" ,autoconf)
+        ("automake" ,automake)))
+     (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+          (replace 'install
+            (lambda _
+              (invoke "make" "install-headers" "no_deps=t")))
+          (delete 'build))
 
-       #:configure-flags '(;; Pretend we're on GNU/Hurd; 'configure' wants
-                           ;; that.
-                           ,@(if (%current-target-system)
-                                 '()
-                                 '("--host=i586-pc-gnu"))
+        #:configure-flags '( ;; Pretend we're on GNU/Hurd; 'configure' wants
+                            ;; that.
+                            ,@(if (%current-target-system)
+                                  '()
+                                  '("--host=i586-pc-gnu"))
 
-                           ;; Reduce set of dependencies.
-                           "--without-parted"
-                           "--disable-ncursesw"
-                           "--disable-test"
-                           "--without-libbz2"
-                           "--without-libz"
-                           ;; Skip the clnt_create check because it expects
-                           ;; a working glibc causing a circular dependency.
-                           "ac_cv_search_clnt_create=no")
+                            ;; Reduce set of dependencies.
+                            "--without-parted"
+                            "--disable-ncursesw"
+                            "--disable-test"
+                            "--without-libbz2"
+                            "--without-libz"
+                            ;; Skip the clnt_create check because it expects
+                            ;; a working glibc causing a circular dependency.
+                            "ac_cv_search_clnt_create=no"
 
-       #:tests? #f))
-    (home-page "https://www.gnu.org/software/hurd/hurd.html")
-    (synopsis "GNU Hurd headers")
-    (description
-     "This package provides C headers of the GNU Hurd, used to build the GNU C
+                            ;; Annihilate the checks for the 'file_exec_paths'
+                            ;; & co. libc functions to avoid "link tests are
+                            ;; not allowed after AC_NO_EXECUTABLES" error.
+                            "ac_cv_func_file_exec_paths=no"
+                            "ac_cv_func_exec_exec_paths=no"
+                            "ac_cv_func__hurd_exec_paths=no"
+                            "ac_cv_func_file_futimens=no")
+
+        #:tests? #f))
+     (home-page "https://www.gnu.org/software/hurd/hurd.html")
+     (synopsis "GNU Hurd headers")
+     (description
+      "This package provides C headers of the GNU Hurd, used to build the GNU C
 Library and other user programs.")
-    (license gpl2+)))
+     (license gpl2+))))
 
 (define-public hurd-minimal
   (package (inherit hurd-headers)
     (name "hurd-minimal")
     (inputs `(("glibc-hurd-headers" ,glibc/hurd-headers)))
-    (native-inputs
-     `(("mig" ,mig)))
     (arguments
      (substitute-keyword-arguments (package-arguments hurd-headers)
        ((#:phases _)
@@ -178,6 +223,11 @@ Library and other user programs.")
                  #t)))
            (replace 'build
              (lambda _
+               ;; Install <assert-backtrace.h> & co.
+               (invoke "make" "-Clibshouldbeinlibc"
+                       "../include/assert-backtrace.h")
+
+               ;; Build libihash.
                (invoke "make" "-Clibihash" "libihash.a")))))))
     (home-page "https://www.gnu.org/software/hurd/hurd.html")
     (synopsis "GNU Hurd libraries")

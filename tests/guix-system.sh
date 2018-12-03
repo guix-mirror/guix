@@ -153,8 +153,8 @@ cat > "$tmpfile" <<EOF
 
 (operating-system
   $OS_BASE
-  (services (cons* (dhcp-client-service)
-                   (dhcp-client-service) ;twice!
+  (services (cons* (service dhcp-client-service-type)
+                   (service dhcp-client-service-type) ;twice!
                    %base-services)))
 EOF
 
@@ -231,6 +231,14 @@ guix system build "$tmpfile" -d | grep '\.drv$'
 
 guix system vm "$tmpfile" -d	      # succeeds
 guix system vm "$tmpfile" -d | grep '\.drv$'
+
+# Make sure the behavior is deterministic (<https://bugs.gnu.org/32652>).
+drv1="`guix system vm "$tmpfile" -d`"
+drv2="`guix system vm "$tmpfile" -d`"
+test "$drv1" = "$drv2"
+drv1="`guix system disk-image --file-system-type=iso9660 "$tmpfile" -d`"
+drv2="`guix system disk-image --file-system-type=iso9660 "$tmpfile" -d`"
+test "$drv1" = "$drv2"
 
 make_user_config "group-that-does-not-exist" "users"
 if guix system build "$tmpfile" -n 2> "$errorfile"

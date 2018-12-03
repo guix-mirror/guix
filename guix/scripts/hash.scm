@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +21,7 @@
 
 (define-module (guix scripts hash)
   #:use-module (guix base32)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix serialization)
   #:use-module (guix ui)
   #:use-module (guix scripts)

@@ -7,7 +7,7 @@
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
@@ -211,7 +211,7 @@ COCOMO model or user-provided parameters.")
 (define-public cloc
   (package
     (name "cloc")
-    (version "1.76")
+    (version "1.80")
     (source
      (origin
        (method url-fetch)
@@ -220,7 +220,7 @@ COCOMO model or user-provided parameters.")
              "/cloc-" version ".tar.gz"))
        (sha256
         (base32
-         "05srlvzwisr7y7ymvzb5yfdsrspja27ysqdmkwhiiivy84mq2gnl"))))
+         "0rqxnaskg5b736asyzfda1113zvpkajyqjf49vl9wgzf1r9m6bq8"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)
@@ -231,8 +231,8 @@ COCOMO model or user-provided parameters.")
        ("perl-regexp-common" ,perl-regexp-common)))
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (delete 'build)
+                  (delete 'configure)   ; nothing to configure
+                  (delete 'build)       ; nothing to build
                   (replace 'install
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out")))
@@ -403,13 +403,13 @@ functionality such as HTML output.")
   (package
     (name "rtags")
     (version "2.18")
-    (home-page "https://github.com/Andersbakken/rtags")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append home-page "/archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Andersbakken/rtags.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (patches (search-patches "rtags-separate-rct.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -424,7 +424,7 @@ functionality such as HTML output.")
              #t)))
        (sha256
         (base32
-         "0scjbp1z201q8njvrxqz7lk2m9b6k2rxd5q1shrng6532r7ndif2"))))
+         "0raqjbkl1ykga4ahgl9xw49cgh3cyqcf42z36z7d6fz1fw192kg0"))))
     (build-system cmake-build-system)
     (arguments
      '(#:build-type "RelWithDebInfo"
@@ -442,6 +442,7 @@ functionality such as HTML output.")
        ("lua" ,lua)
        ("rct" ,rct)
        ("selene" ,selene)))
+    (home-page "https://github.com/Andersbakken/rtags")
     (synopsis "Indexer for the C language family with Emacs integration")
     (description
      "RTags is a client/server application that indexes C/C++ code and keeps a
@@ -539,18 +540,20 @@ independent targets.")
 (define-public uncrustify
   (package
     (name "uncrustify")
-    (version "0.67")
+    (version "0.68.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/uncrustify/uncrustify/archive/"
-                    "uncrustify-" version ".zip"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/uncrustify/uncrustify/")
+                    (commit (string-append name "-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0n13kq0nsm35fxhdp0f275n4x0w88hdv3bdjy0hgvv42x0dx5zyp"))))
+                "0gf6vjcfy8pl7idvwsd500ffj9hri62q0n79kpb6cnfprrqpbgf4"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     `(("unzip" ,unzip)
+       ("python" ,python-wrapper)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -650,6 +653,19 @@ deal with incomplete or malformed syntax.  GNU indent offers several
 extensions over the standard utility.")
    (license license:gpl3+)
    (home-page "https://www.gnu.org/software/indent/")))
+
+(define-public indent-2.2.12
+  (package
+    (inherit indent)
+    (version "2.2.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/indent/indent-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "12xvcd16cwilzglv9h7sgh4h1qqjd1h8s48ji2dla58m4706hzg7"))))
+    (native-inputs `(("texinfo" ,texinfo)))))
 
 (define-public amalgamate
   (let* ((commit "c91f07eea1133aa184f652b8f1398eaf03586208")

@@ -18,7 +18,7 @@
 
 (define-module (guix pki)
   #:use-module (guix config)
-  #:use-module (guix pk-crypto)
+  #:use-module (gcrypt pk-crypto)
   #:use-module ((guix utils) #:select (with-atomic-file-output))
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (ice-9 match)

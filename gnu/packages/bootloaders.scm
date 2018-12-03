@@ -34,6 +34,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages firmware)
@@ -85,7 +86,9 @@
              (uri (string-append "mirror://gnu/grub/grub-" version ".tar.xz"))
              (sha256
               (base32
-               "03vvdfhdmf16121v7xs8is2krwnv15wpkhkf16a4yf8nsfc3f2w1"))))
+               "03vvdfhdmf16121v7xs8is2krwnv15wpkhkf16a4yf8nsfc3f2w1"))
+             (patches (search-patches "grub-check-error-efibootmgr.patch"
+                                      "grub-binutils-compat.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -303,15 +306,15 @@ menu to select one of the installed operating systems.")
            (delete 'configure)
            (add-before 'build 'set-permissions
              (lambda _
-               (zero? (system* "chmod" "a+w" "utils/isohybrid.in"))))
+               (invoke "chmod" "a+w" "utils/isohybrid.in")))
            (replace 'check
              (lambda _
                (setenv "CC" "gcc")
                (substitute* "tests/unittest/include/unittest/unittest.h"
                  ;; Don't look up headers under /usr.
                  (("/usr/include/") ""))
-               (zero? (system* "make" "unittest")))))))
-      (home-page "http://www.syslinux.org")
+               (invoke "make" "unittest"))))))
+      (home-page "https://www.syslinux.org")
       (synopsis "Lightweight Linux bootloader")
       (description "Syslinux is a lightweight Linux bootloader.")
       (license (list license:gpl2+
@@ -359,7 +362,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2018.07")
+    (version "2018.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -367,12 +370,13 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "1m7nw64mxflpc6sqvnz2kb5fxfkb4mrpy8b1wi15dcwipj4dy44z"))))
+                "0znkwljfwwn4y7j20pzz4ilqw8znphrfxns0x1lwdzh3xbr96z3k"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
        ("dtc" ,dtc)
        ("flex" ,flex)
+       ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("python-2" ,python-2)
        ("python2-coverage" ,python2-coverage)
@@ -380,7 +384,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
        ("sdl" ,sdl)
        ("swig" ,swig)))
     (build-system  gnu-build-system)
-    (home-page "http://www.denx.de/wiki/U-Boot/")
+    (home-page "https://www.denx.de/wiki/U-Boot/")
     (synopsis "ARM bootloader")
     (description "U-Boot is a bootloader used mostly for ARM boards. It
 also initializes the boards (RAM etc).")
@@ -402,6 +406,12 @@ also initializes the boards (RAM etc).")
               (("/bin/false") (which "false")))
              (substitute* "tools/dtoc/fdt_util.py"
               (("'cc'") "'gcc'"))
+             (substitute* "tools/patman/test_util.py"
+              ;; python-coverage is simply called coverage in guix.
+              (("python-coverage") "coverage")
+              ;; XXX Allow for only 99% test coverage.
+              ;; TODO: Find out why that is needed.
+              (("if coverage != '100%':") "if not int(coverage.rstrip('%')) >= 99:"))
              (substitute* "test/run"
               ;; Make it easier to find test failures.
               (("#!/bin/bash") "#!/bin/bash -x")
@@ -416,8 +426,6 @@ also initializes the boards (RAM etc).")
               (("def test_ctrl_c")
                "@pytest.mark.skip(reason='Guix has problems with SIGINT')
 def test_ctrl_c"))
-             (substitute* "tools/binman/binman.py"
-              (("100%") "99%")) ; TODO: Find out why that is needed.
              #t))
          (replace 'configure
            (lambda* (#:key make-flags #:allow-other-keys)
@@ -547,8 +555,8 @@ board-independent tools.")))
 (define-public u-boot-beagle-bone-black
   (make-u-boot-package "am335x_boneblack" "arm-linux-gnueabihf"))
 
-(define-public u-boot-pine64-plus
-  (let ((base (make-u-boot-package "pine64_plus" "aarch64-linux-gnu")))
+(define-public (make-u-boot-sunxi64-package board triplet)
+  (let ((base (make-u-boot-package board triplet)))
     (package
       (inherit base)
       (arguments
@@ -566,10 +574,29 @@ board-independent tools.")))
                     )
                   #t))))))
       (native-inputs
-       `(("firmware" ,arm-trusted-firmware-pine64-plus)
+       `(("firmware" ,arm-trusted-firmware-sun50i-a64)
          ,@(package-native-inputs base))))))
 
-(define-public u-boot-banana-pi-m2-ultra
+(define-public u-boot-pine64-plus
+  (make-u-boot-sunxi64-package "pine64_plus" "aarch64-linux-gnu"))
+
+(define-public u-boot-pinebook
+  (let ((base (make-u-boot-sunxi64-package "pinebook" "aarch64-linux-gnu")))
+    (package
+      (inherit base)
+      (source (origin
+              (inherit (package-source u-boot))
+              (patches (search-patches
+                        ;; Add patches to enable Pinebook support from sunxi
+                        ;; maintainer tree: git://git.denx.de/u-boot-sunxi.git
+                        "u-boot-pinebook-a64-update-dts.patch"
+                        "u-boot-pinebook-syscon-node.patch"
+                        "u-boot-pinebook-mmc-calibration.patch"
+                        "u-boot-pinebook-video-bridge.patch"
+                        "u-boot-pinebook-r_i2c-controller.patch"
+                        "u-boot-pinebook-dts.patch")))))))
+
+(define-public u-boot-bananapi-m2-ultra
   (make-u-boot-package "Bananapi_M2_Ultra" "arm-linux-gnueabihf"))
 
 (define-public u-boot-a20-olinuxino-lime

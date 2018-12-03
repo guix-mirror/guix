@@ -2,6 +2,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix utils)
   #:use-module (gnu packages)
@@ -107,7 +109,7 @@ single file can be mounted.")
 (define-public disorderfs
   (package
     (name "disorderfs")
-    (version "0.5.3")
+    (version "0.5.5")
     (source
      (origin
        (method git-fetch)
@@ -117,7 +119,7 @@ single file can be mounted.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1nmhfvxpvz3xsfxl9wqnh6r2l5m7hjq6n0vpblsl5xdcvwaqcf50"))))
+         "18c32qcdzbxrzg7srnqnw1ls9yqqxyk9b996yxr6w2znw6x6n8v4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -126,7 +128,7 @@ single file can be mounted.")
        ("attr" ,attr)))
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (delete 'configure))
+                  (delete 'configure))  ; no configure script
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "PREFIX=" out)))
        #:test-target "test"
@@ -245,3 +247,50 @@ All of this is accomplished without a centralized metadata server.")
     (description
      "This is a file system client based on the FTP File Transfer Protocol.")
     (license license:gpl2+)))
+
+(define-public apfs-fuse
+  (let ((commit "c7036a3030d128bcecefc1eabc47c039ccfdcec9")
+        (revision "0"))
+    (package
+      (name "apfs-fuse")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/sgan81/apfs-fuse")
+                       (recursive? #t) ; for lzfse
+                       (commit commit)))
+         (sha256
+          (base32
+           "1akd4cx1f9cyq6sfk9ybv4chhjwjlnqi8ic4z5ajnd5x0g76nz3r"))
+         (file-name (git-file-name name version))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f ; No test suite
+         #:phases
+         (modify-phases %standard-phases
+           ;; No 'install' target in CMakeLists.txt
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (lib (string-append out "/lib"))
+                      (doc (string-append out "/share/doc/"
+                                          (string-append ,name "-" ,version))))
+                 (install-file "apfs-dump" bin)
+                 (install-file "apfs-dump-quick" bin)
+                 (install-file "apfs-fuse" bin)
+                 (install-file "libapfs.a" lib)
+                 (install-file "../source/LICENSE" doc)
+                 #t))))))
+      (inputs
+       `(("bzip2" ,bzip2)
+         ("fuse" ,fuse)
+         ("zlib" ,zlib)))
+      (synopsis "Read-only FUSE driver for the APFS filesystem")
+      (description "APFS-FUSE is a read-only FUSE driver for the @dfn{Apple File
+System} (APFS).  It is currently in an experimental state — it may not be able
+to read all files, and it does not support all the compression methods in
+APFS.")
+      (home-page "https://github.com/sgan81/apfs-fuse")
+      (license license:gpl2+))))

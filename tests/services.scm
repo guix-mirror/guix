@@ -138,6 +138,31 @@
          (equal? (list s1 s2)
                  (instantiate-missing-services (list s1 s2))))))
 
+(test-assert "instantiate-missing-services, indirect"
+  (let* ((t1 (service-type (name 't1) (extensions '())
+                           (default-value 'dflt)
+                           (compose concatenate)
+                           (extend cons)))
+         (t2 (service-type (name 't2) (extensions '())
+                           (default-value 'dflt2)
+                           (compose concatenate)
+                           (extend cons)
+                           (extensions
+                            (list (service-extension t1 list)))))
+         (t3 (service-type (name 't3)
+                           (extensions
+                            (list (service-extension t2 list)))))
+         (s1 (service t1))
+         (s2 (service t2))
+         (s3 (service t3 42))
+         (== (cut lset= equal? <...>)))
+    (and (== (list s1 s2 s3)
+             (instantiate-missing-services (list s3)))
+         (== (list s1 s2 s3)
+             (instantiate-missing-services (list s1 s3)))
+         (== (list s1 s2 s3)
+             (instantiate-missing-services (list s2 s3))))))
+
 (test-assert "instantiate-missing-services, no default value"
   (let* ((t1 (service-type (name 't1) (extensions '())))
          (t2 (service-type (name 't2)
@@ -182,13 +207,14 @@
     list))
 
 (test-equal "shepherd-service-upgrade: one unchanged, one upgraded, one new"
-  '(((bar))                                       ;unload
-    ((bar) (baz)))                                ;load
+  '(()                                            ;unload
+    ((foo)))                                      ;restart
   (call-with-values
       (lambda ()
-        ;; Here 'foo' is not upgraded because it is still running, whereas
-        ;; 'bar' is upgraded because it is not currently running.  'baz' is
-        ;; loaded because it's a new service.
+        ;; Here 'foo' is replaced and must be explicitly restarted later
+        ;; because it is still running, whereas 'bar' is upgraded right away
+        ;; because it is not currently running.  'baz' is loaded because it's
+        ;; a new service.
         (shepherd-service-upgrade
          (list (live-service '(foo) '() #t)
                (live-service '(bar) '() #f)
@@ -199,30 +225,31 @@
                                  (start #t))
                (shepherd-service (provision '(baz))
                                  (start #t)))))
-    (lambda (unload load)
+    (lambda (unload restart)
       (list (map live-service-provision unload)
-            (map shepherd-service-provision load)))))
+            (map shepherd-service-provision restart)))))
 
 (test-equal "shepherd-service-upgrade: service depended on is not unloaded"
   '(((baz))                                       ;unload
-    ())                                           ;load
+    ((foo)))                                      ;restart
   (call-with-values
       (lambda ()
         ;; Service 'bar' is not among the target services; yet, it must not be
-        ;; unloaded because 'foo' depends on it.
+        ;; unloaded because 'foo' depends on it.  'foo' gets replaced but it
+        ;; must be restarted manually.
         (shepherd-service-upgrade
          (list (live-service '(foo) '(bar) #t)
                (live-service '(bar) '() #t)       ;still used!
                (live-service '(baz) '() #t))
          (list (shepherd-service (provision '(foo))
                                  (start #t)))))
-    (lambda (unload load)
+    (lambda (unload restart)
       (list (map live-service-provision unload)
-            (map shepherd-service-provision load)))))
+            (map shepherd-service-provision restart)))))
 
 (test-equal "shepherd-service-upgrade: obsolete services that depend on each other"
   '(((foo) (bar) (baz))                           ;unload
-    ((qux)))                                      ;load
+    ())                                           ;restart
   (call-with-values
       (lambda ()
         ;; 'foo', 'bar', and 'baz' depend on each other, but all of them are
@@ -233,9 +260,9 @@
                (live-service '(baz) '() #t))      ;obsolete
          (list (shepherd-service (provision '(qux))
                                  (start #t)))))
-    (lambda (unload load)
+    (lambda (unload restart)
       (list (map live-service-provision unload)
-            (map shepherd-service-provision load)))))
+            (map shepherd-service-provision restart)))))
 
 (test-eq "lookup-service-types"
   system-service-type

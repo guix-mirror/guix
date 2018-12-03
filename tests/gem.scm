@@ -21,7 +21,7 @@
 (define-module (test-gem)
   #:use-module (guix import gem)
   #:use-module (guix base32)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix tests)
   #:use-module ((guix build utils) #:select (delete-file-recursively))
   #:use-module (srfi srfi-41)

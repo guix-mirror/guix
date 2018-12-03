@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,7 +22,6 @@
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
   #:use-module (guix build utils)
-  #:use-module (guix build rpath)
   #:use-module (guix build gremlin)
   #:use-module (guix elf)
   #:use-module (ice-9 match)
@@ -71,48 +71,18 @@
               "1"))
   (if tests?
       (invoke "ninja" test-target)
-      (begin
-        (format #t "test suite not run~%")
-        #t)))
+      (format #t "test suite not run~%"))
+  #t)
 
 (define* (install #:rest args)
   (invoke "ninja" "install"))
 
-(define* (fix-runpath #:key (elf-directories '("lib" "lib64" "libexec"
-                                               "bin" "sbin"))
-                      outputs #:allow-other-keys)
-  "Try to make sure all ELF files in ELF-DIRECTORIES are able to find their
-local dependencies in their RUNPATH, by searching for the needed libraries in
-the directories of the package, and adding them to the RUNPATH if needed.
-Also shrink the RUNPATH to what is needed,
+(define* (shrink-runpath #:key (elf-directories '("lib" "lib64" "libexec"
+                                                  "bin" "sbin"))
+                         outputs #:allow-other-keys)
+  "Go through all ELF files from ELF-DIRECTORIES and shrink the RUNPATH
 since a lot of directories are left over from the build phase of meson,
 for example libraries only needed for the tests."
-
-  ;; Find the directories (if any) that contains DEP-NAME.  The directories
-  ;; searched are the ones that ELF-FILES are in.
-  (define (find-deps dep-name elf-files)
-    (map dirname (filter (lambda (file)
-                           (string=? dep-name (basename file)))
-                         elf-files)))
-
-  ;; Return a list of libraries that FILE needs.
-  (define (file-needed file)
-    (let* ((elf (call-with-input-file file
-                  (compose parse-elf get-bytevector-all)))
-           (dyninfo (elf-dynamic-info elf)))
-      (if dyninfo
-          (elf-dynamic-info-needed dyninfo)
-          '())))
-
-
-  ;; If FILE needs any libs that are part of ELF-FILES, the RUNPATH
-  ;; is modified accordingly.
-  (define (handle-file file elf-files)
-    (let* ((dep-dirs (concatenate (map (lambda (dep-name)
-                                         (find-deps dep-name elf-files))
-                                       (file-needed file)))))
-      (unless (null? dep-dirs)
-        (augment-rpath file (string-join dep-dirs ":")))))
 
   (define handle-output
     (match-lambda
@@ -129,10 +99,7 @@ for example libraries only needed for the tests."
               (elf-list (concatenate (map (lambda (dir)
                                             (find-files dir elf-pred))
                                           existing-elf-dirs))))
-         (for-each (lambda (elf-file)
-                     (invoke "patchelf" "--shrink-rpath" elf-file)
-                     (handle-file elf-file elf-list))
-                   elf-list)))))
+         (for-each strip-runpath elf-list)))))
   (for-each handle-output outputs)
   #t)
 
@@ -144,13 +111,8 @@ for example libraries only needed for the tests."
     (replace 'configure configure)
     (replace 'build build)
     (replace 'check check)
-    ;; XXX: We used to have 'fix-runpath' here, but it appears no longer
-    ;; necessary with newer Meson.  However on 'core-updates' there is a
-    ;; useful 'strip-runpath' procedure to ensure no bogus directories in
-    ;; RUNPATH (remember that we tell Meson to not touch RUNPATH in
-    ;; (@ (gnu packages build-tools) meson-for-build)), so it should be
-    ;; re-added there sans the augment-rpath calls (which are not needed).
-    (replace 'install install)))
+    (replace 'install install)
+    (add-after 'strip 'shrink-runpath shrink-runpath)))
 
 (define* (meson-build #:key inputs phases
                       #:allow-other-keys #:rest args)

@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
 (define-module (gnu packages backup)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
@@ -67,7 +69,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.7.18")
+    (version "0.7.18.1")
     (source
      (origin
       (method url-fetch)
@@ -77,7 +79,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1qlika4l1k1nx8zr657ihcy0yzr1c1cdnjlbs325l5krvc3zbc5b"))))
+        "17c0203y5qz9w8iyhs26l44qf6a1vp26b5ykz1ypdr2kv6g02df9"))))
     (build-system python-build-system)
     (native-inputs
      `(("util-linux" ,util-linux)       ; setsid command, for the tests
@@ -99,20 +101,11 @@
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'patch-source
+         (add-before 'build 'use-store-file-names
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; Embed gpg store name.
              (substitute* "duplicity/gpginterface.py"
                (("self.call = 'gpg'")
                 (string-append "self.call = '" (assoc-ref inputs "gnupg") "/bin/gpg'")))
-
-             ;; This matches up with an unreleased upstream fix, it should be
-             ;; removed when the package is updated.
-             ;; https://bazaar.launchpad.net/~duplicity-team/duplicity/0.8-series/revision/1308
-             (substitute* "duplicity/gpg.py"
-               (("--no-secmem-warning'\\)")
-                "--no-secmem-warning')
-        gnupg.options.extra_args.append('--ignore-mdc-error')"))
 
              (substitute* '("testing/functional/__init__.py"
                             "testing/overrides/bin/lftp")
@@ -141,22 +134,18 @@ spying and/or modification by the server.")
     (name "par2cmdline")
     (version "0.8.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/Parchive/par2cmdline/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Parchive/par2cmdline.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jpshmmcr81mxly0md2rr231qz9c8c680bbvcmhh100dg9i4a6s6"))))
+                "0f1jsd5sw2wynjzi7yjqjaf13yhyjfdid91p8yh0jn32y03kjyrz"))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _ (invoke "autoreconf" "-vfi"))))))
     (synopsis "File verification and repair tools")
     (description "Par2cmdline uses Reed-Solomon error-correcting codes to
 generate and verify PAR2 recovery files.  These files can be distributed
@@ -507,6 +496,7 @@ detection, and lossless compression.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "borgbackup" version))
+       (patches (search-patches "borg-respect-storage-quota.patch"))
        (sha256
         (base32
          "1p3zia62vyg9vadkdjzzkzbj4dmgijr7ix5lmhfbxpwy5q9imdgp"))
@@ -749,12 +739,15 @@ NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
        ("python2-pep8" ,python2-pep8)
        ("python2-pylint" ,python2-pylint)))
     (home-page "https://obnam.org/")
-    (synopsis "Easy and secure backup program")
-    (description "Obnam is an easy, secure backup program.  Features
-include snapshot backups, data de-duplication and encrypted backups
-using GnuPG.  Backups can be stored on local hard disks, or online via
-the SSH SFTP protocol.  The backup server, if used, does not require
-any special software, on top of SSH.")
+    (synopsis "Retired backup program")
+    (description
+     "Warning: @uref{https://blog.liw.fi/posts/2017/08/13/retiring_obnam/,
+the Obnam project is retired}.  You should use another backup solution instead.
+
+Obnam was an easy, secure backup program.  Features included snapshot backups,
+data de-duplication and encrypted backups using GnuPG.  Backups can be stored on
+local hard disks, or online via the SSH SFTP protocol.  The backup server, if
+used, does not require any special software, on top of SSH.")
     (license license:gpl3+)))
 
 (define-public dirvish
@@ -867,7 +860,7 @@ is like a time machine for your data. ")
 (define-public restic
   (package
     (name "restic")
-    (version "0.9.2")
+    (version "0.9.3")
     ;; TODO Try packaging the bundled / vendored dependencies in the 'vendor/'
     ;; directory.
     (source (origin
@@ -878,7 +871,7 @@ is like a time machine for your data. ")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15bwkydxcg4xhrnqxvxji8wacrsndb1a6frj98wggfaijqzfx3lg"))))
+                "1l1ddnf61pfsrry97qwhhdzywin2mgnbrkhcc9pabsdfk602anmr"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/restic/restic"
@@ -892,6 +885,9 @@ is like a time machine for your data. ")
              (with-directory-excursion (string-append
                                         "src/github.com/restic/restic-"
                                         ,version)
+               ;; Disable 'restic self-update'.  It makes little sense in Guix.
+               (substitute* "build.go" (("selfupdate") ""))
+               (setenv "HOME" (getcwd)) ; for $HOME/.cache/go-build
                (invoke "go" "run" "build.go"))))
 
          (replace 'check

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;;
@@ -62,7 +62,7 @@
     (build-system glib-or-gtk-build-system)
     (arguments                   ;; NOTE: rsvg is disabled, since Abiword
       `(#:configure-flags        ;; supports it directly, and its BS is broken.
-        (list
+        (list                    ;; wmf was removed from Guix for security.
           "--enable-clipart"     ;; TODO: The following plugins have unresolved
           "--enable-templates"   ;; dependencies: aiksaurus, grammar, wpg, gda,
           (string-append         ;; wordperfect, psion, mathview.
@@ -73,7 +73,7 @@
               "latex " "loadbindings " "mht " "mif " "mswrite " "opendocument "
               "openwriter " "openxml " "opml " "ots " "paint " "passepartout "
               "pdb " "pdf " "presentation " "s5 " "sdw " "t602 " "urldict "
-              "wikipedia " "wmf " "wml " "xslfo"))
+              "wikipedia " "wml " "xslfo"))
         ;; tests fail with: Gtk-CRITICAL **: gtk_settings_get_for_screen:
         ;;                  assertion 'GDK_IS_SCREEN (screen)' failed
         ;;                  GLib-GObject-CRITICAL **: g_object_get_qdata:

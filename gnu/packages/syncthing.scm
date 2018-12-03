@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.49")
+    (version "0.14.52")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "06mzzj5iwgqw3yva7azrsqs9zpl84srbamza4gm03grp7v9gf3sj"))
+                "1hhn72l74vb9l32i1a54ry2l85ji78cq6isd20lxxdk0bjqc4m29"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -59,7 +59,7 @@
          (add-before 'build 'increase-test-timeout
            (lambda _
              (substitute* "src/github.com/syncthing/syncthing/build.go"
-               (("60s") "999s"))
+               (("120s") "999s"))
              #t))
 
          (replace 'build
@@ -138,6 +138,7 @@
        ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
        ("go-github-com-rcrowley-go-metrics" ,go-github-com-rcrowley-go-metrics)
        ("go-github-com-sasha-s-go-deadlock" ,go-github-com-sasha-s-go-deadlock)
+       ("go-github-com-syncthing-notify" ,go-github-com-syncthing-notify)
        ("go-github-com-syndtr-goleveldb" ,go-github-com-syndtr-goleveldb)
        ("go-github-com-thejerf-suture" ,go-github-com-thejerf-suture)
        ("go-github-com-vitrun-qart" ,(go-github-com-vitrun-qart-union))
@@ -145,7 +146,7 @@
        ("go-golang-org-x-net-union" ,(go-golang-org-x-net-union))
        ("go-golang-org-x-text" ,(go-golang-org-x-text-union))
        ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)
-       ("go-github-com-syncthing-notify" ,go-github-com-syncthing-notify)
+       ("go-gopkg.in-ldap.v2" ,go-gopkg.in-ldap.v2)
        ;; For tests
        ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
     (synopsis "Decentralized continuous file system synchronization")
@@ -297,100 +298,6 @@ structs in the Go programming language.")
       (home-page "https://github.com/gobwas/glob")
       (license expat))))
 
-(define* (go-github-com-gogo-protobuf-union
-           #:optional (packages (list go-github-com-gogo-protobuf
-                                      go-github-com-gogo-protobuf-protoc-gen-gogo)))
-  (package
-    (name "go-github-com-gogo-protobuf-union")
-    (version (package-version go-github-com-gogo-protobuf))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder (begin
-                   (use-modules (ice-9 match)
-                                (guix build union))
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)
-                      #t)))))
-    (inputs (map (lambda (package)
-                   (list (package-name package) package))
-                 packages))
-    (synopsis "Union of Go protobuf libraries")
-    (description "This is a union of Go protobuf libraries")
-    (home-page (package-home-page go-github-com-gogo-protobuf))
-    (license (package-license go-github-com-gogo-protobuf))))
-
-(define-public go-github-com-gogo-protobuf
-  (let ((commit "160de10b2537169b5ae3e7e221d28269ef40d311")
-        (revision "2"))
-    (package
-      (name "go-github-com-gogo-protobuf")
-      (version (git-version "0.5" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/gogo/protobuf")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0hxq28sgxym04rv0q40gpwkh4ni359q21hq3g78wwxwx4qfd4zwm"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/gogo/protobuf/proto"
-         #:unpack-path "github.com/gogo/protobuf"))
-      (propagated-inputs
-       `(("go-github-com-gogo-protobuf-protoc-gen-gogo"
-          ,go-github-com-gogo-protobuf-protoc-gen-gogo)))
-      (synopsis "Protocol Buffers for Go with Gadgets")
-      (description "Gogoprotobuf is a fork of golang/protobuf with extra code
-generation features.  This code generation is used to achieve:
-@itemize
-@item fast marshalling and unmarshalling
-@item more canonical Go structures
-@item goprotobuf compatibility
-@item less typing by optionally generating extra helper code
-@item peace of mind by optionally generating test and benchmark code
-@item other serialization formats
-@end itemize")
-      (home-page "https://github.com/gogo/protobuf")
-      (license bsd-3))))
-
-(define-public go-github-com-gogo-protobuf-protoc-gen-gogo
-  (let ((commit "efccd33a0c20aa078705571d5ddbfa14c8395a63")
-        (revision "0"))
-    (package
-      (name "go-github-com-gogo-protobuf-protoc-gen-gogo")
-      (version (git-version "0.2" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/gogo/protobuf")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "09kfa3aqmhh7p0rc6wd4fw5cjccidsk9vgcy13albv0g8vnbmmgw"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/gogo/protobuf/protoc-gen-gogo"
-         #:unpack-path "github.com/gogo/protobuf"))
-      (synopsis "Protocol Buffers for Go with Gadgets")
-      (description "Gogoprotobuf is a fork of golang/protobuf with extra code
-generation features.  This code generation is used to achieve:
-@itemize
-@item fast marshalling and unmarshalling
-@item more canonical Go structures
-@item goprotobuf compatibility
-@item less typing by optionally generating extra helper code
-@item peace of mind by optionally generating test and benchmark code
-@item other serialization formats
-@end itemize")
-      (home-page "https://github.com/gogo/protobuf")
-      (license bsd-3))))
 
 (define-public go-github-com-golang-groupcache-lru
   (let ((commit "84a468cf14b4376def5d68c722b139b881c450a4")
@@ -678,11 +585,11 @@ database in Go.")
       (license bsd-2))))
 
 (define-public go-github-com-thejerf-suture
-  (let ((commit "3f1fb62fe0a3cc6429122d7dc45588a8b59c5bb6")
+  (let ((commit "bf6ee6a0b047ebbe9ae07d847f750dd18c6a9276")
         (revision "0"))
     (package
       (name "go-github-com-thejerf-suture")
-      (version (git-version "2.0.3" revision commit))
+      (version (git-version "3.0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -691,7 +598,7 @@ database in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0mp7gz6bp6xhggkgmbl33vpmrq3a6n2dkgcxbkb7csnpv4r4d59k"))))
+                  "0rzx9k408vaglwnnpgpcs6y7ff7p65915nbg33rvbaz13hxwkz3y"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/thejerf/suture"))
@@ -820,44 +727,6 @@ inherent errors.  This @code{qart} component, @code{qr}, provides QR code
 generation.")
       (home-page "https://github.com/vitrun/qart")
       (license bsd-3))))
-
-;; Go searches for library modules by looking in the GOPATH environment
-;; variable.  This variable is a list of paths.  However, Go does not
-;; keep searching on GOPATH if it tries and fails to import a module.
-;; So, we use a union for packages sharing a namespace.
-(define* (go-golang-org-x-crypto-union #:optional
-                                    (packages (list go-golang-org-x-crypto-blowfish
-                                                    go-golang-org-x-crypto-bcrypt
-                                                    go-golang-org-x-crypto-tea
-                                                    go-golang-org-x-crypto-xtea
-                                                    go-golang-org-x-crypto-pbkdf2
-                                                    go-golang-org-x-crypto-twofish
-                                                    go-golang-org-x-crypto-cast5
-                                                    go-golang-org-x-crypto-salsa20)))
-  (package
-    (name "go-golang-org-x-crypto")
-    (version (package-version go-golang-org-x-crypto-bcrypt))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder (begin
-                   (use-modules (ice-9 match)
-                                (guix build union))
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)
-                      #t)))))
-    (inputs (map (lambda (package)
-                   (list (package-name package) package))
-                 packages))
-    (synopsis "Union of the Go x crypto libraries")
-    (description "A union of the Golang cryptographic libraries.  A
-union is required because `go build` assumes that all of the headers and
-libraries are in the same directory.")
-    (home-page (package-home-page go-golang-org-x-crypto-bcrypt))
-    (license (package-license go-golang-org-x-crypto-bcrypt))))
 
 (define* (go-golang-org-x-net-union #:optional
                                  (packages (list go-golang-org-x-net-ipv4
@@ -1031,7 +900,16 @@ the current goroutine's ID.")
                   "0bg26pfg25vr16jmczig2m493mja2nxjxyswz3hha7avxw20rpi5"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "github.com/AudriusButkevicius/cli"))
+       '(#:import-path "github.com/AudriusButkevicius/cli"
+         ;; Tests don't pass "vet" on go-1.11.  See
+         ;; https://github.com/AudriusButkevicius/cli/pull/1.
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "test"
+                       "-vet=off"
+                       import-path))))))
       (synopsis "Library for building command-line interfaces in Go")
       (description "This package provides a library for building command-line
 interfaces in Go.")
@@ -1063,8 +941,8 @@ using sh's word-splitting rules.")
       (license expat))))
 
 (define-public go-github-com-syncthing-notify
-  (let ((commit "cdf89c4039d13726e227d0a472053ea19de021b4")
-        (revision "1"))
+  (let ((commit "b76b45868a77e7800dd06cce61101af9c4274bcc")
+        (revision "2"))
     (package
       (name "go-github-com-syncthing-notify")
       (version (git-version "0.0.0" revision commit))
@@ -1076,7 +954,7 @@ using sh's word-splitting rules.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1ra1id9r06i4q8vhrrv1zpybhjxs3361rg35758dxglkyk4pzk6j"))))
+                  "1xxkzaxygxxr51i2kdxsdaqb5i95hqpkw4kcr75wmsp914slw2q9"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/syncthing/notify"))
@@ -1228,7 +1106,14 @@ message streaming.")
                       (string-append (assoc-ref outputs "out")
                                      "/src/github.com/prometheus/common/expfmt/testdata/")
                       ".*\\.gz$"))
-               #t)))))
+               #t))
+           (replace 'check
+             ;; Tests don't pass "vet" on go-1.11.  See
+             ;; https://github.com/syncthing/syncthing/issues/5311.
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "test"
+                       "-vet=off"
+                       import-path))))))
       (propagated-inputs
        `(("go-github-com-golang-protobuf-proto"
           ,go-github-com-golang-protobuf-proto)
@@ -1366,3 +1251,59 @@ Prometheus HTTP API.")
     (description "This is a union of Go Prometheus libraries")
     (home-page (package-home-page go-github-com-client-golang-prometheus))
     (license (package-license go-github-com-client-golang-prometheus))))
+
+(define-public go-gopkg.in-asn1-ber.v1
+  (package
+    (name "go-gopkg.in-asn1-ber.v1")
+    (version "1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gopkg.in/asn1-ber.v1")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1y8bvzbxpw0lfnn7pbcdwzqj4l90qj6xf88dvv9pxd9yl5g6cskx"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/asn1-ber.v1"
+       ;; Tests don't pass "vet" on go-1.11.  See
+       ;; https://github.com/go-asn1-ber/asn1-ber/issues/20.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key import-path #:allow-other-keys)
+             (invoke "go" "test"
+                     "-vet=off"
+                     import-path))))))
+    (synopsis "ASN.1 BER encoding and decoding in Go")
+    (description "This package provides ASN.1 BER encoding and decoding in the
+Go language.")
+    (home-page "https://gopkg.in/asn1-ber.v1")
+    (license expat)))
+
+(define-public go-gopkg.in-ldap.v2
+  (package
+    (name "go-gopkg.in-ldap.v2")
+    (version "2.5.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://gopkg.in/ldap.v2")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wf81wy04nhkqs0dg5zkivr4sh37r83bxrfwjz9vr4jq6vmljr3h"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/ldap.v2"
+       #:tests? #f)) ; the test suite requires network access
+    (propagated-inputs
+     `(("go-gopkg.in-asn1-ber.v1" ,go-gopkg.in-asn1-ber.v1)))
+    (synopsis "LDAP v3 functionality for Go")
+    (description "This package provides basic LDAP v3 functionality in the Go
+language.")
+    (home-page "https://gopkg.in/ldap.v2")
+    (license expat)))

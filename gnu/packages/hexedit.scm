@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,25 +22,33 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ncurses)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu))
 
 (define-public hexedit
   (package
     (name "hexedit")
-    (version "1.2.13")
+    (version "1.4.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "http://rigaux.org/"
-                                  name "-" version ".src.tgz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pixel/hexedit.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mwdp1ikk64cqmagnrrps5jkn3li3n47maiqh2qc1xbp1ains4ka"))))
+                "1xsxa5mip892jkvz9jshj73y6c7j3mgp8y393ciihqlyf2nmfs67"))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f)) ; no check target
-    (inputs `(("ncurses" ,ncurses)))
+    (arguments '(#:tests? #f))          ; no check target
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("ncurses" ,ncurses)))
     (synopsis "View and edit files or devices in hexadecimal or ASCII")
     (description "hexedit shows a file both in ASCII and in hexadecimal.  The
 file can be a device as the file is read a piece at a time.  You can modify

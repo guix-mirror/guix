@@ -43,7 +43,8 @@
               (sha256
                (base32
                 "1whlyifvvc7w04ahq07nnk1h18wc8j7c6wnvlb6mszravxh3qxcb"))
-              (patches (search-patches "lirc-localstatedir.patch"))))
+              (patches (search-patches "lirc-localstatedir.patch"
+                                       "lirc-reproducible-build.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

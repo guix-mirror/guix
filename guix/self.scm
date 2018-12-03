@@ -83,8 +83,8 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("guile-ssh"  (ref '(gnu packages ssh)   'guile-ssh))
       ("guile-git"  (ref '(gnu packages guile) 'guile-git))
       ("guile-sqlite3" (ref '(gnu packages guile) 'guile-sqlite3))
+      ("guile-gcrypt"  (ref '(gnu packages gnupg) 'guile-gcrypt))
       ("gnutls"     (ref '(gnu packages tls) 'gnutls))
-      ("libgcrypt"  (ref '(gnu packages gnupg) 'libgcrypt))
       ("zlib"       (ref '(gnu packages compression) 'zlib))
       ("gzip"       (ref '(gnu packages compression) 'gzip))
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
@@ -206,28 +206,22 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                (local-file file #:recursive? #t)))
        (find-files (string-append directory "/" sub-directory) pred)))
 
-(define (scheme-modules* directory sub-directory)
-  "Return the list of module names found under SUB-DIRECTORY in DIRECTORY."
-  (let ((prefix (string-length directory)))
-    (map (lambda (file)
-           (file-name->module-name (string-drop file prefix)))
-         (scheme-files (string-append directory "/" sub-directory)))))
-
-(define* (sub-directory item sub-directory)
-  "Return SUB-DIRECTORY within ITEM, which may be a file name or a file-like
-object."
+(define* (file-append* item file #:key (recursive? #t))
+  "Return FILE within ITEM, which may be a file name or a file-like object.
+When ITEM is a plain file name (a string), simply return a 'local-file'
+record with the new file name."
   (match item
     ((? string?)
      ;; This is the optimal case: we return a new "source".  Thus, a
      ;; derivation that depends on this sub-directory does not depend on ITEM
      ;; itself.
-     (local-file (string-append item "/" sub-directory)
-                 #:recursive? #t))
+     (local-file (string-append item "/" file)
+                 #:recursive? recursive?))
     ;; TODO: Add 'local-file?' case.
     (_
      ;; In this case, anything that refers to the result also depends on ITEM,
      ;; which isn't great.
-     (file-append item "/" sub-directory))))
+     (file-append item "/" file))))
 
 (define* (locale-data source domain
                       #:optional (directory domain))
@@ -245,7 +239,7 @@ DOMAIN, a gettext domain."
                        (ice-9 match) (ice-9 ftw))
 
           (define po-directory
-            #+(sub-directory source (string-append "po/" directory)))
+            #+(file-append* source (string-append "po/" directory)))
 
           (define (compile language)
             (let ((gmo (string-append #$output "/" language "/LC_MESSAGES/"
@@ -279,11 +273,15 @@ DOMAIN, a gettext domain."
     (module-ref (resolve-interface '(gnu packages graphviz))
                 'graphviz))
 
+  (define glibc-utf8-locales
+    (module-ref (resolve-interface '(gnu packages base))
+                'glibc-utf8-locales))
+
   (define documentation
-    (sub-directory source "doc"))
+    (file-append* source "doc"))
 
   (define examples
-    (sub-directory source "gnu/system/examples"))
+    (file-append* source "gnu/system/examples"))
 
   (define build
     (with-imported-modules '((guix build utils))
@@ -297,7 +295,7 @@ DOMAIN, a gettext domain."
           ;; doesn't change at each commit?
           (call-with-output-file "version.texi"
             (lambda (port)
-              (let ((version "0.0-git)"))
+              (let ((version "0.0-git"))
                 (format port "
 @set UPDATED 1 January 1970
 @set UPDATED-MONTH January 1970
@@ -342,6 +340,10 @@ DOMAIN, a gettext domain."
           (delete-file-recursively "images")
           (symlink (string-append #$output "/images") "images")
 
+          ;; Provide UTF-8 locales needed by the 'xspara.c' code in makeinfo.
+          (setenv "GUIX_LOCPATH"
+                  #+(file-append glibc-utf8-locales "/lib/locale"))
+
           (for-each (lambda (texi)
                       (unless (string=? "guix.texi" texi)
                         ;; Create 'version-LL.texi'.
@@ -367,22 +369,26 @@ DOMAIN, a gettext domain."
                        guile (guile-version (effective-version)))
   "Return the 'guix' command such that it adds MODULES and DEPENDENCIES in its
 load path."
+  (define source-directories
+    (map (lambda (package)
+           (file-append package "/share/guile/site/"
+                        guile-version))
+         dependencies))
+
+  (define object-directories
+    (map (lambda (package)
+           (file-append package "/lib/guile/"
+                        guile-version "/site-ccache"))
+         dependencies))
+
   (program-file "guix-command"
                 #~(begin
                     (set! %load-path
-                      (append '#$(map (lambda (package)
-                                        (file-append package
-                                                     "/share/guile/site/"
-                                                     guile-version))
-                                      dependencies)
+                      (append (filter file-exists? '#$source-directories)
                               %load-path))
 
                     (set! %load-compiled-path
-                      (append '#$(map (lambda (package)
-                                        (file-append package "/lib/guile/"
-                                                     guile-version
-                                                     "/site-ccache"))
-                                      dependencies)
+                      (append (filter file-exists? '#$object-directories)
                               %load-compiled-path))
 
                     (set! %load-path (cons #$modules %load-path))
@@ -407,11 +413,29 @@ load path."
                       (apply guix-main (command-line))))
                 #:guile guile))
 
+(define (miscellaneous-files source)
+  "Return data files taken from SOURCE."
+  (file-mapping "guix-misc"
+                `(("etc/bash_completion.d/guix"
+                   ,(file-append* source "/etc/completion/bash/guix"))
+                  ("etc/bash_completion.d/guix-daemon"
+                   ,(file-append* source "/etc/completion/bash/guix-daemon"))
+                  ("share/zsh/site-functions/_guix"
+                   ,(file-append* source "/etc/completion/zsh/_guix"))
+                  ("share/fish/vendor_completions.d/guix.fish"
+                   ,(file-append* source "/etc/completion/fish/guix.fish"))
+                  ("share/guix/hydra.gnu.org.pub"
+                   ,(file-append* source
+                                  "/etc/substitutes/hydra.gnu.org.pub"))
+                  ("share/guix/berlin.guixsd.org.pub"
+                   ,(file-append* source "/etc/substitutes/berlin.guixsd.org.pub")))))
+
 (define* (whole-package name modules dependencies
                         #:key
                         (guile-version (effective-version))
                         compiled-modules
-                        info daemon guile
+                        info daemon miscellany
+                        guile
                         (command (guix-command modules
                                                #:dependencies dependencies
                                                #:guile guile
@@ -425,6 +449,7 @@ assumed to be part of MODULES."
                  (with-imported-modules '((guix build utils))
                    #~(begin
                        (use-modules (guix build utils))
+
                        (mkdir-p (string-append #$output "/bin"))
                        (symlink #$command
                                 (string-append #$output "/bin/guix"))
@@ -444,6 +469,10 @@ assumed to be part of MODULES."
                                     (string-append #$output
                                                    "/share/info"))))
 
+                       (when #$miscellany
+                         (copy-recursively #$miscellany #$output
+                                           #:log (%make-void-port "w")))
+
                        ;; Object files.
                        (when #$compiled-modules
                          (let ((modules (string-append #$output "/lib/guile/"
@@ -457,7 +486,6 @@ assumed to be part of MODULES."
                         (name (string-append "guix-" version))
                         (guile-version (effective-version))
                         (guile-for-build (guile-for-build guile-version))
-                        (libgcrypt (specification->package "libgcrypt"))
                         (zlib (specification->package "zlib"))
                         (gzip (specification->package "gzip"))
                         (bzip2 (specification->package "bzip2"))
@@ -484,6 +512,10 @@ assumed to be part of MODULES."
                        "guile-sqlite3"
                        "guile2.0-sqlite3"))
 
+  (define guile-gcrypt
+    (package-for-guile guile-version
+                       "guile-gcrypt"))
+
   (define gnutls
     (package-for-guile guile-version
                        "gnutls" "guile2.0-gnutls"))
@@ -492,7 +524,7 @@ assumed to be part of MODULES."
     (match (append-map (lambda (package)
                          (cons (list "x" package)
                                (package-transitive-propagated-inputs package)))
-                       (list gnutls guile-git guile-json
+                       (list guile-gcrypt gnutls guile-git guile-json
                              guile-ssh guile-sqlite3))
       (((labels packages _ ...) ...)
        packages)))
@@ -516,10 +548,7 @@ assumed to be part of MODULES."
                  ;; rebuilt when the version changes, which in turn means we
                  ;; can have substitutes for it.
                  #:extra-modules
-                 `(((guix config)
-                    => ,(make-config.scm #:libgcrypt
-                                         (specification->package
-                                          "libgcrypt"))))
+                 `(((guix config) => ,(make-config.scm)))
 
                  ;; (guix man-db) is needed at build-time by (guix profiles)
                  ;; but we don't need to compile it; not compiling it allows
@@ -529,6 +558,7 @@ assumed to be part of MODULES."
                    ("guix/store/schema.sql"
                     ,(local-file "../guix/store/schema.sql")))
 
+                 #:extensions (list guile-gcrypt)
                  #:guile-for-build guile-for-build))
 
   (define *extra-modules*
@@ -603,8 +633,7 @@ assumed to be part of MODULES."
                  '()
                  #:extra-modules
                  `(((guix config)
-                    => ,(make-config.scm #:libgcrypt libgcrypt
-                                         #:zlib zlib
+                    => ,(make-config.scm #:zlib zlib
                                          #:gzip gzip
                                          #:bzip2 bzip2
                                          #:xz xz
@@ -669,6 +698,7 @@ assumed to be part of MODULES."
                                                'guix-daemon)
 
                           #:info (info-manual source)
+                          #:miscellany (miscellaneous-files source)
                           #:guile-version guile-version)))
         ((= 0 pull-version)
          ;; Legacy 'guix pull': return the .scm and .go files as one
@@ -687,7 +717,7 @@ assumed to be part of MODULES."
 
 (define %dependency-variables
   ;; (guix config) variables corresponding to dependencies.
-  '(%libgcrypt %libz %xz %gzip %bzip2))
+  '(%libz %xz %gzip %bzip2))
 
 (define %persona-variables
   ;; (guix config) variables that define Guix's persona.
@@ -706,7 +736,7 @@ assumed to be part of MODULES."
                                       (variables rest ...))))))
     (variables %localstatedir %storedir %sysconfdir %system)))
 
-(define* (make-config.scm #:key libgcrypt zlib gzip xz bzip2
+(define* (make-config.scm #:key zlib gzip xz bzip2
                           (package-name "GNU Guix")
                           (package-version "0")
                           (bug-report-address "bug-guix@gnu.org")
@@ -726,7 +756,6 @@ assumed to be part of MODULES."
                                %state-directory
                                %store-database-directory
                                %config-directory
-                               %libgcrypt
                                %libz
                                %gzip
                                %bzip2
@@ -769,9 +798,6 @@ assumed to be part of MODULES."
                    (define %xz
                      #+(and xz (file-append xz "/bin/xz")))
 
-                   (define %libgcrypt
-                     #+(and libgcrypt
-                            (file-append libgcrypt "/lib/libgcrypt")))
                    (define %libz
                      #+(and zlib
                             (file-append zlib "/lib/libz"))))
@@ -890,16 +916,9 @@ running Guile."
                 'canonical-package))
 
   (match version
-    ("2.2.2"
-     ;; Gross hack to avoid ABI incompatibilities (see
-     ;; <https://bugs.gnu.org/29570>.)
-     (module-ref (resolve-interface '(gnu packages guile))
-                 'guile-2.2.2))
     ("2.2"
-     ;; Use the latest version, which has fixes for
-     ;; <https://bugs.gnu.org/30602> and VM stack-marking issues.
      (canonical-package (module-ref (resolve-interface '(gnu packages guile))
-                                    'guile-2.2.4)))
+                                    'guile-2.2)))
     ("2.0"
      (module-ref (resolve-interface '(gnu packages guile))
                  'guile-2.0))))
@@ -918,7 +937,11 @@ is not supported."
         version))
 
   (define guile
-    (guile-for-build guile-version))
+    ;; When PULL-VERSION >= 1, produce a self-contained Guix and use Guile 2.2
+    ;; unconditionally.
+    (guile-for-build (if (>= pull-version 1)
+                         "2.2"
+                         guile-version)))
 
   (mbegin %store-monad
     (set-guile-for-build guile)
@@ -927,9 +950,8 @@ is not supported."
                                #:name (string-append "guix-"
                                                      (shorten version))
                                #:pull-version pull-version
-                               #:guile-version (match guile-version
-                                                 ("2.2.2" "2.2")
-                                                 (version version))
+                               #:guile-version (if (>= pull-version 1)
+                                                   "2.2" guile-version)
                                #:guile-for-build guile)))
       (if guix
           (lower-object guix)

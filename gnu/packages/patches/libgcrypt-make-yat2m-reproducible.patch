@@ -1,0 +1,32 @@
+Make yat2m in libgcrypt respect SOURCE_DATE_EPOCH, making
+the build reproducible.
+
+This was already fixed upstream in GnuPG:
+https://dev.gnupg.org/rG139de02b93773615bdd95e04a7f0c1ad73b4f6fb
+
+and in libgpg-error:
+https://dev.gnupg.org/rE5494a5728418938d2e42158bb646b07124184e64
+
+
+--- a/doc/yat2m.c 2017-11-23 19:16:58.000000000 +0100
++++ b/doc/yat2m.c 2017-08-28 12:22:54.000000000 +0200
+@@ -1475,6 +1484,7 @@
+ main (int argc, char **argv)
+ {
+   int last_argc = -1;
++  const char *s;
+ 
+   opt_source = "GNU";
+   opt_release = "";
+@@ -1608,6 +1618,11 @@
+   if (argc > 1)
+     die ("usage: " PGM " [OPTION] [FILE] (try --help for more information)\n");
+ 
++  /* Take care of supplied timestamp for reproducible builds.  See
++   * https://reproducible-builds.org/specs/source-date-epoch/  */
++  if (!opt_date && (s = getenv ("SOURCE_DATE_EPOCH")) && *s)
++    opt_date = s;
++
+   /* Start processing. */
+   if (argc && strcmp (*argv, "-"))
+     {

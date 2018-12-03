@@ -44,7 +44,7 @@
       (unless (zero? code)
         (raise (condition ((@@ (guix build utils) &invoke-error)
                            (program "R")
-                           (arguments (string-append params " " command))
+                           (arguments (cons command params))
                            (exit-status (status:exit-val code))
                            (term-signal (status:term-sig code))
                            (stop-signal (status:stop-sig code)))))))))

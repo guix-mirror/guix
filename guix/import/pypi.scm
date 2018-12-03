@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 receive)
   #:use-module ((ice-9 rdelim) #:select (read-line))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -36,7 +38,8 @@
   #:use-module (guix utils)
   #:use-module ((guix build utils)
                 #:select ((package-name->name+version
-                           . hyphen-package-name->name+version)))
+                           . hyphen-package-name->name+version)
+                          find-files))
   #:use-module (guix import utils)
   #:use-module ((guix download) #:prefix download:)
   #:use-module (guix import json)
@@ -45,6 +48,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system python)
   #:export (guix-package->pypi-name
+            pypi-recursive-import
             pypi->guix-package
             %pypi-updater))
 
@@ -114,9 +118,9 @@ package definition."
      `((propagated-inputs (,'quasiquote ,package-inputs))))))
 
 (define (guess-requirements source-url wheel-url tarball)
-  "Given SOURCE-URL, WHEEL-URL and a TARBALL of the package, return a list of
-the required packages specified in the requirements.txt file. TARBALL will be
-extracted in the current directory, and will be deleted."
+  "Given SOURCE-URL, WHEEL-URL and a TARBALL of the package, return a list
+of the required packages specified in the requirements.txt file.  TARBALL will
+be extracted in a temporary directory."
 
   (define (tarball-directory url)
     ;; Given the URL of the package's tarball, return the name of the directory
@@ -140,8 +144,8 @@ cannot determine package dependencies"))
     ;; file, remove everything other than the actual name of the required
     ;; package, and return it.
     (string-take s
-     (or (string-index s #\space)
-         (string-length s))))
+      (or (string-index s (lambda (chr) (member chr '(#\space #\> #\= #\<))))
+          (string-length s))))
 
   (define (comment? line)
     ;; Return #t if the given LINE is a comment, #f otherwise.
@@ -160,7 +164,7 @@ cannot determine package dependencies"))
                  ((or (string-null? line) (comment? line))
                   (loop result))
                  (else
-                  (loop (cons (python->package-name (clean-requirement line))
+                  (loop (cons (clean-requirement line)
                               result))))))))))
 
   (define (read-wheel-metadata wheel-archive)
@@ -180,9 +184,7 @@ cannot determine package dependencies"))
                                             (hash-ref (list-ref run_requires 0)
                                                        "requires")
                                             '())))
-                     (map (lambda (r)
-                            (python->package-name (clean-requirement r)))
-                          requirements)))))
+                     (map clean-requirement requirements)))))
              (lambda ()
                (delete-file json-file)
                (rmdir dirname))))))
@@ -197,31 +199,37 @@ cannot determine package dependencies"))
               (read-wheel-metadata temp))
          #f))))
 
-
   (define (guess-requirements-from-source)
     ;; Return the package's requirements by guessing them from the source.
     (let ((dirname (tarball-directory source-url)))
       (if (string? dirname)
-          (let* ((req-file (string-append dirname "/requirements.txt"))
-                 (exit-code (system* "tar" "xf" tarball req-file)))
-            ;; TODO: support more formats.
-            (if (zero? exit-code)
-                (dynamic-wind
-                  (const #t)
-                  (lambda ()
-                    (read-requirements req-file))
-                  (lambda ()
-                    (delete-file req-file)
-                    (rmdir dirname)))
-                (begin
-                  (warning (G_ "'tar xf' failed with exit code ~a\n")
-                           exit-code)
-                  '())))
+          (call-with-temporary-directory
+           (lambda (dir)
+             (let* ((pypi-name (string-take dirname (string-rindex dirname #\-)))
+                    (req-files (list (string-append dirname "/requirements.txt")
+                                     (string-append dirname "/" pypi-name ".egg-info"
+                                                    "/requires.txt")))
+                    (exit-codes (map (lambda (file-name)
+                                       (parameterize ((current-error-port (%make-void-port "rw+"))
+                                                      (current-output-port (%make-void-port "rw+")))
+                                         (system* "tar" "xf" tarball "-C" dir file-name)))
+                                     req-files)))
+               ;; Only one of these files needs to exist.
+               (if (any zero? exit-codes)
+                   (match (find-files dir)
+                     ((file . _)
+                      (read-requirements file))
+                     (()
+                      (warning (G_ "No requirements file found.\n"))))
+                   (begin
+                     (warning (G_ "Failed to extract requirements files\n"))
+                     '())))))
           '())))
 
   ;; First, try to compute the requirements using the wheel, since that is the
   ;; most reliable option. If a wheel is not provided for this package, try
-  ;; getting them by reading the "requirements.txt" file from the source. Note
+  ;; getting them by reading either the "requirements.txt" file or the
+  ;; "requires.txt" from the egg-info directory from the source tarball. Note
   ;; that "requirements.txt" is not mandatory, so this is likely to fail.
   (or (guess-requirements-from-wheel)
       (guess-requirements-from-source)))
@@ -229,16 +237,21 @@ cannot determine package dependencies"))
 
 (define (compute-inputs source-url wheel-url tarball)
   "Given the SOURCE-URL of an already downloaded TARBALL, return a list of
-name/variable pairs describing the required inputs of this package."
-  (sort
-    (map (lambda (input)
-           (list input (list 'unquote (string->symbol input))))
-         (remove (cut string=? "python-argparse" <>)
-                 (guess-requirements source-url wheel-url tarball)))
-    (lambda args
-      (match args
-        (((a _ ...) (b _ ...))
-         (string-ci<? a b))))))
+name/variable pairs describing the required inputs of this package.  Also
+return the unaltered list of upstream dependency names."
+  (let ((dependencies
+         (remove (cut string=? "argparse" <>)
+                 (guess-requirements source-url wheel-url tarball))))
+    (values (sort
+             (map (lambda (input)
+                    (let ((guix-name (python->package-name input)))
+                      (list guix-name (list 'unquote (string->symbol guix-name)))))
+                  dependencies)
+             (lambda args
+               (match args
+                 (((a _ ...) (b _ ...))
+                  (string-ci<? a b)))))
+            dependencies)))
 
 (define (make-pypi-sexp name version source-url wheel-url home-page synopsis
                         description license)
@@ -247,46 +260,58 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
   (call-with-temporary-output-file
    (lambda (temp port)
      (and (url-fetch source-url temp)
-          `(package
-             (name ,(python->package-name name))
-             (version ,version)
-             (source (origin
-                       (method url-fetch)
+          (receive (input-package-names upstream-dependency-names)
+              (compute-inputs source-url wheel-url temp)
+            (values
+             `(package
+                (name ,(python->package-name name))
+                (version ,version)
+                (source (origin
+                          (method url-fetch)
 
-                       ;; Sometimes 'pypi-uri' doesn't quite work due to mixed
-                       ;; cases in NAME, for instance, as is the case with
-                       ;; "uwsgi".  In that case, fall back to a full URL.
-                       (uri (pypi-uri ,(string-downcase name) version))
-                       (sha256
-                        (base32
-                         ,(guix-hash-url temp)))))
-             (build-system python-build-system)
-             ,@(maybe-inputs (compute-inputs source-url wheel-url temp))
-             (home-page ,home-page)
-             (synopsis ,synopsis)
-             (description ,description)
-             (license ,(license->symbol license)))))))
+                          ;; Sometimes 'pypi-uri' doesn't quite work due to mixed
+                          ;; cases in NAME, for instance, as is the case with
+                          ;; "uwsgi".  In that case, fall back to a full URL.
+                          (uri (pypi-uri ,(string-downcase name) version))
+                          (sha256
+                           (base32
+                            ,(guix-hash-url temp)))))
+                (build-system python-build-system)
+                ,@(maybe-inputs input-package-names)
+                (home-page ,home-page)
+                (synopsis ,synopsis)
+                (description ,description)
+                (license ,(license->symbol license)))
+             upstream-dependency-names))))))
 
-(define (pypi->guix-package package-name)
-  "Fetch the metadata for PACKAGE-NAME from pypi.org, and return the
+(define pypi->guix-package
+  (memoize
+   (lambda* (package-name)
+     "Fetch the metadata for PACKAGE-NAME from pypi.org, and return the
 `package' s-expression corresponding to that package, or #f on failure."
-  (let ((package (pypi-fetch package-name)))
-    (and package
-         (guard (c ((missing-source-error? c)
-                    (let ((package (missing-source-error-package c)))
-                      (leave (G_ "no source release for pypi package ~a ~a~%")
-                             (assoc-ref* package "info" "name")
-                             (assoc-ref* package "info" "version")))))
-           (let ((name (assoc-ref* package "info" "name"))
-                 (version (assoc-ref* package "info" "version"))
-                 (release (assoc-ref (latest-source-release package) "url"))
-                 (wheel (assoc-ref (latest-wheel-release package) "url"))
-                 (synopsis (assoc-ref* package "info" "summary"))
-                 (description (assoc-ref* package "info" "summary"))
-                 (home-page (assoc-ref* package "info" "home_page"))
-                 (license (string->license (assoc-ref* package "info" "license"))))
-             (make-pypi-sexp name version release wheel home-page synopsis
-                             description license))))))
+     (let ((package (pypi-fetch package-name)))
+       (and package
+            (guard (c ((missing-source-error? c)
+                       (let ((package (missing-source-error-package c)))
+                         (leave (G_ "no source release for pypi package ~a ~a~%")
+                                (assoc-ref* package "info" "name")
+                                (assoc-ref* package "info" "version")))))
+              (let ((name (assoc-ref* package "info" "name"))
+                    (version (assoc-ref* package "info" "version"))
+                    (release (assoc-ref (latest-source-release package) "url"))
+                    (wheel (assoc-ref (latest-wheel-release package) "url"))
+                    (synopsis (assoc-ref* package "info" "summary"))
+                    (description (assoc-ref* package "info" "summary"))
+                    (home-page (assoc-ref* package "info" "home_page"))
+                    (license (string->license (assoc-ref* package "info" "license"))))
+                (make-pypi-sexp name version release wheel home-page synopsis
+                                description license))))))))
+
+(define (pypi-recursive-import package-name)
+  (recursive-import package-name #f
+                    #:repo->guix-package (lambda (name repo)
+                                           (pypi->guix-package name))
+                    #:guix-name python->package-name))
 
 (define (string->license str)
   "Convert the string STR into a license object."
@@ -305,7 +330,7 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
   (define (pypi-url? url)
     (or (string-prefix? "https://pypi.org/" url)
         (string-prefix? "https://pypi.python.org/" url)
-        (string-prefix? "https://pypi.io/packages" url)))
+        (string-prefix? "https://pypi.org/packages" url)))
 
   (let ((source-url (and=> (package-source package) origin-uri))
         (fetch-method (and=> (package-source package) origin-method)))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -23,7 +23,7 @@
 
 (define-module (guix scripts refresh)
   #:use-module (guix ui)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix scripts)
   #:use-module (guix store)
   #:use-module (guix utils)
@@ -89,6 +89,9 @@
                 (lambda (opt name arg result)
                   (alist-cons 'list-dependent? #t result)))
 
+        (option '("keyring") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'keyring arg result)))
         (option '("key-server") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'key-server arg result)))
@@ -138,6 +141,8 @@ specified with `--select'.\n"))
   -l, --list-dependent   list top-level dependent packages that would need to
                          be rebuilt as a result of upgrading PACKAGE..."))
   (newline)
+  (display (G_ "
+      --keyring=FILE     use FILE as the keyring of upstream OpenPGP keys"))
   (display (G_ "
       --key-server=HOST  use HOST as the OpenPGP key server"))
   (display (G_ "
@@ -437,7 +442,11 @@ update would trigger a complete rebuild."
                                 (%openpgp-key-server)))
                            (%gpg-command
                             (or (assoc-ref opts 'gpg-command)
-                                (%gpg-command))))
+                                (%gpg-command)))
+                           (current-keyring
+                            (or (assoc-ref opts 'keyring)
+                                (string-append (config-directory)
+                                               "/upstream/trustedkeys.kbx"))))
               (for-each
                (cut update-package store <> updaters
                     #:key-download key-download

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +19,7 @@
 
 (define-module (gnu packages printers)
   #:use-module (guix packages)
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages libusb)
@@ -32,15 +33,15 @@
   (package
     (name "robocut")
     (version "1.0.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Timmmm/robocut/archive/v"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "0nmr1plq1f6sarxwqwy4vzbxkljlx8y4xalm7r05vx4lrdai5pad"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Timmmm/robocut.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0dp9cssyik63yvkk35s51v94a873x751iqg93qzd8dpqkmz5z8gn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

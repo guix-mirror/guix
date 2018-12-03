@@ -2,6 +2,7 @@
 ;;; Copyright © 2012 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,14 +34,14 @@
 (define-public libntlm
   (package
     (name "libntlm")
-    (version "1.4")
+    (version "1.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.nongnu.org/libntlm/releases/"
+              (uri (string-append "https://www.nongnu.org/libntlm/releases/"
                                   "libntlm-" version ".tar.gz"))
               (sha256
                (base32
-                "129532iiip2cjr5h03bgz184v64v27sfm1r70v3ms4yk65gdf5c4"))))
+                "1gcvv7f9rggpxay81qv6kw5hr6gd4qiyzkbwhzz02fx9jvv9kmsk"))))
     (build-system gnu-build-system)
     (synopsis "Library that implements NTLM authentication")
     (description

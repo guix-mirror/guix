@@ -44,8 +44,22 @@
      ;; $libdir, which is not the case by default.  Work around it.
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
-                                              "/lib"))))
-    (outputs '("out" "debug"))
+                                              "/lib"))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'move-static-libraries
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (slib (string-append (assoc-ref outputs "static")
+                                                 "/lib")))
+                        (mkdir-p slib)
+                        (with-directory-excursion (string-append out "/lib")
+                          (for-each (lambda (ar)
+                                      (rename-file ar (string-append
+                                                       slib "/"
+                                                       (basename ar))))
+                                    (find-files "." "\\.a$")))
+                        #t))))))
+    (outputs '("out" "debug" "static"))
     (native-inputs `(("m4" ,m4)))
     (propagated-inputs `(("gmp" ,gmp)))
     (home-page "https://www.lysator.liu.se/~nisse/nettle/")

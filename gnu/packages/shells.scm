@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -155,23 +155,18 @@ and syntax highlighting.")
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/rakitzis/rc.git")
-                    ;; commit name 'release: rc-1.7.4'
-                    (commit "c884da53a7c885d46ace2b92de78946855b18e92")))
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "00mgzvrrh9w96xa85g4gjbsvq02f08k4jwjcdnxq7kyh5xgiw95l"))
-              (file-name (string-append name "-" version "-checkout"))))
+                "0vj1h4pcg13vxsiydmmk87dr2sra9h4gwx0c4q6fjsiw4in78rrd"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        '("--with-edit=gnu")
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'autoreconf
-          (lambda _ (zero? (system* "autoreconf" "-vfi"))))
-         (add-before
-          'autoreconf 'patch-trip.rc
+         (add-before 'bootstrap 'patch-trip.rc
           (lambda _
             (substitute* "trip.rc"
               (("/bin/pwd") (which "pwd"))
@@ -292,18 +287,18 @@ history mechanism, job control and a C-like syntax.")
 (define-public zsh
   (package
     (name "zsh")
-    (version "5.5.1")
+    (version "5.6.2")
     (source (origin
               (method url-fetch)
               (uri (list (string-append
-                           "http://www.zsh.org/pub/zsh-" version
+                           "https://www.zsh.org/pub/zsh-" version
                            ".tar.xz")
                          (string-append
-                           "http://www.zsh.org/pub/old/zsh-" version
+                           "https://www.zsh.org/pub/old/zsh-" version
                            ".tar.xz")))
               (sha256
                (base32
-                "105aqkdfsdxc4531anrj2zis2ywz6icagjam9lsc235yzh48ihz1"))))
+                "17iffliqcj4hv91g0bd2sxsyfcz51mfyh97sp2iyrs2p0mndc2x5"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
                  #:phases
@@ -347,7 +342,7 @@ as an interactive login shell and as a powerful command interpreter
 for shell scripting.  Zsh can be thought of as an extended Bourne shell
 with a large number of improvements, including some features of bash,
 ksh, and tcsh.")
-    (home-page "http://www.zsh.org/")
+    (home-page "https://www.zsh.org/")
 
     ;; The whole thing is under an MIT/X11-style license, but there's one
     ;; command, 'Completion/Unix/Command/_darcs', which is under GPLv2+.
@@ -419,10 +414,7 @@ use of experts and novices alike.")
                                              "/rx")))
                  (delete-file-recursively "rx")
                  (symlink rxpath "rx"))
-               #t))
-           (add-after 'unpack 'autoreconf
-             (lambda _
-               (zero? (system* "autoreconf")))))))
+               #t)))))
       (inputs
        `(("scheme48" ,scheme48)
          ("scheme48-rx" ,scheme48-rx)))
@@ -574,30 +566,30 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
 (define-public loksh
   (package
     (name "loksh")
-    (version "6.3")
+    (version "6.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dimkr/loksh/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dimkr/loksh.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0i1b60g1p19s5cnzz0nmjzjnxywm9szzyp1rcwfcx3gmzvrwr2sc"))))
+        (base32 "1d92cf5iadj1vwg0wwksaq1691zaxjrd2y4qygj4sdd25zsahj6p"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libbsd" ,libbsd)))
+     `(("libbsd" ,libbsd)
+       ("ncurses" ,ncurses)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:tests? #f ;No tests included
+     `(#:tests? #f                      ; no tests included
        #:make-flags (list "CC=gcc" "HAVE_LIBBSD=1"
-                          (string-append "DESTDIR="
-                                         (assoc-ref %outputs "out"))
-                          "PREFIX=")
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ;No configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://github.com/dimkr/loksh")
     (synopsis "Korn Shell from OpenBSD")
     (description
@@ -628,7 +620,7 @@ interactive POSIX shell targeted at resource-constrained systems.")
          (replace 'build
            (lambda _
              (setenv "CC" "gcc")
-             (zero? (system* (which "sh") "Build.sh"))))
+             (invoke (which "sh") "Build.sh")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -637,7 +629,8 @@ interactive POSIX shell targeted at resource-constrained systems.")
                (install-file "mksh" bin)
                (with-directory-excursion bin
                  (symlink "mksh" "ksh"))
-               (install-file "mksh.1" man)))))))
+               (install-file "mksh.1" man)
+               #t))))))
     (home-page "https://www.mirbsd.org/mksh.htm")
     (synopsis "Korn Shell from MirBSD")
     (description "mksh is an actively developed free implementation of the

@@ -21,7 +21,7 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix monads)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module (guix packages)
   #:use-module (guix derivations)
@@ -31,6 +31,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (web uri)
@@ -44,6 +45,9 @@
 
 (define %store
   (open-connection-for-tests))
+
+(define %shell
+  (or (getenv "SHELL") (getenv "CONFIG_SHELL")))
 
 
 (test-begin "store")
@@ -220,7 +224,8 @@
     ("./foo/c" directory #t)
     ("./foo/c/p" regular "file p")
     ("./foo/c/q" directory #t)
-    ("./foo/c/q/x" regular "#!/bin/sh\nexit 42")
+    ("./foo/c/q/x" regular
+     ,(string-append "#!" %shell "\nexit 42"))
     ("./foo/c/q/y" symlink "..")
     ("./foo/c/q/z" directory #t))
   (let* ((tree  `("file-tree" directory
@@ -231,7 +236,7 @@
                     ("p" regular (data ,(string->utf8 "file p")))
                     ("q" directory
                      ("x" executable
-                      (data "#!/bin/sh\nexit 42"))
+                      (data ,(string-append "#!" %shell "\nexit 42")))
                      ("y" symlink "..")
                      ("z" directory))))
                   ("bar" directory)))
@@ -1016,5 +1021,67 @@
                    read)
                  (call-with-input-file (derivation->output-path drv2)
                    read))))))
+
+(test-equal "multiplexed-build-output"
+  '("Hello from first." "Hello from second.")
+  (with-store store
+    (let* ((build  (add-text-to-store store "build.sh"
+                                      "echo Hello from $NAME.; echo > $out"))
+           (bash   (add-to-store store "bash" #t "sha256"
+                                 (search-bootstrap-binary "bash"
+                                                          (%current-system))))
+           (drv1   (derivation store "one" bash
+                               `("-e" ,build)
+                               #:inputs `((,bash) (,build))
+                               #:env-vars `(("NAME" . "first")
+                                            ("x" . ,(random-text)))))
+           (drv2   (derivation store "two" bash
+                               `("-e" ,build)
+                               #:inputs `((,bash) (,build))
+                               #:env-vars `(("NAME" . "second")
+                                            ("x" . ,(random-text))))))
+      (set-build-options store
+                         #:print-build-trace #t
+                         #:multiplexed-build-output? #t
+                         #:max-build-jobs 10)
+      (let ((port (open-output-string)))
+        ;; Send the build log to PORT.
+        (parameterize ((current-build-output-port port))
+          (build-derivations store (list drv1 drv2)))
+
+        ;; Retrieve the build log; make sure it contains valid "@ build-log"
+        ;; traces that allow us to retrieve each builder's output (we assume
+        ;; there's exactly one "build-output" trace for each builder, which is
+        ;; reasonable.)
+        (let* ((log     (get-output-string port))
+               (started (fold-matches
+                         (make-regexp "@ build-started ([^ ]+) - ([^ ]+) ([^ ]+) ([0-9]+)")
+                         log '() cons))
+               (done    (fold-matches
+                         (make-regexp "@ build-succeeded (.*) - (.*) (.*) (.*)")
+                         log '() cons))
+               (output  (fold-matches
+                         (make-regexp "@ build-log ([[:digit:]]+) ([[:digit:]]+)\n([A-Za-z .*]+)\n")
+                         log '() cons))
+               (drv-pid (lambda (name)
+                          (lambda (m)
+                            (let ((drv (match:substring m 1))
+                                  (pid (string->number
+                                        (match:substring m 4))))
+                              (and (string-suffix? name drv) pid)))))
+               (pid-log (lambda (pid)
+                          (lambda (m)
+                            (let ((n   (string->number
+                                        (match:substring m 1)))
+                                  (len (string->number
+                                        (match:substring m 2)))
+                                  (str (match:substring m 3)))
+                              (and (= pid n)
+                                   (= (string-length str) (- len 1))
+                                   str)))))
+               (pid1    (any (drv-pid "one.drv") started))
+               (pid2    (any (drv-pid "two.drv") started)))
+          (list (any (pid-log pid1) output)
+                (any (pid-log pid2) output)))))))
 
 (test-end "store")

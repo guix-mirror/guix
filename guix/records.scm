@@ -52,17 +52,6 @@
       ((weird _ ...)                              ;weird!
        (syntax-violation name "invalid field specifier" #'weird)))))
 
-(define (print-record-abi-mismatch-error port key args
-                                         default-printer)
-  (match args
-    ((rtd . _)
-     ;; The source file where this exception is thrown must be recompiled.
-     (format port "ERROR: ~a: record ABI mismatch; recompilation needed"
-             rtd))))
-
-(set-exception-printer! 'record-abi-mismatch-error
-                        print-record-abi-mismatch-error)
-
 (eval-when (expand load eval)
   ;; The procedures below are needed both at run time and at expansion time.
 
@@ -81,7 +70,11 @@
 interface\" (ABI) for TYPE is equal to COOKIE."
     (with-syntax ((current-abi (current-abi-identifier type)))
       #`(unless (eq? current-abi #,cookie)
-          (throw 'record-abi-mismatch-error #,type)))))
+          ;; The source file where this exception is thrown must be
+          ;; recompiled.
+          (throw 'record-abi-mismatch-error 'abi-check
+                 "~a: record ABI mismatch; recompilation needed"
+                 (list #,type) '())))))
 
 (define-syntax make-syntactic-constructor
   (syntax-rules ()

@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,8 +33,10 @@
   #:use-module (guix store)
   #:export (%test-httpd
             %test-nginx
+            %test-varnish
             %test-php-fpm
-            %test-hpcguix-web))
+            %test-hpcguix-web
+            %test-tailon))
 
 (define %index.html-contents
   ;; Contents of the /index.html file.
@@ -122,7 +125,7 @@ HTTP-PORT."
 
 (define %httpd-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service httpd-service-type
             (httpd-configuration
              (config
@@ -151,7 +154,7 @@ HTTP-PORT."
 (define %nginx-os
   ;; Operating system under test.
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service nginx-service-type
             (nginx-configuration
              (log-directory "/var/log/nginx")
@@ -165,6 +168,46 @@ HTTP-PORT."
    (description "Connect to a running NGINX server.")
    (value (run-webserver-test name %nginx-os
                               #:log-file "/var/log/nginx/access.log"))))
+
+
+;;;
+;;; Varnish
+;;;
+
+(define %varnish-vcl
+  (mixed-text-file
+   "varnish-test.vcl"
+   "vcl 4.0;
+backend dummy { .host = \"127.1.1.1\"; }
+sub vcl_recv { return(synth(200, \"OK\")); }
+sub vcl_synth {
+  synthetic(\"" %index.html-contents "\");
+  set resp.http.Content-Type = \"text/plain\";
+  return(deliver);
+}"))
+
+(define %varnish-os
+  (simple-operating-system
+   (service dhcp-client-service-type)
+   ;; Pretend to be a web server that serves %index.html-contents.
+   (service varnish-service-type
+            (varnish-configuration
+             (name "/tmp/server")
+             ;; Use a small VSL buffer to fit in the test VM.
+             (parameters '(("vsl_space" . "4M")))
+             (vcl %varnish-vcl)))
+   ;; Proxy the "server" using the builtin configuration.
+   (service varnish-service-type
+            (varnish-configuration
+             (parameters '(("vsl_space" . "4M")))
+             (backend "localhost:80")
+             (listen '(":8080"))))))
+
+(define %test-varnish
+  (system-test
+   (name "varnish")
+   (description "Test the Varnish Cache server.")
+   (value (run-webserver-test "varnish-default" %varnish-os))))
 
 
 ;;;
@@ -194,7 +237,7 @@ echo(\"Computed by php:\".((string)(2+3)));
 (define %php-fpm-os
   ;; Operating system under test.
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service php-fpm-service-type)
    (service nginx-service-type
             (nginx-configuration
@@ -349,7 +392,7 @@ HTTP-PORT, along with php-fpm."
 
 (define %hpcguix-web-os
   (simple-operating-system
-   (dhcp-client-service)
+   (service dhcp-client-service-type)
    (service hpcguix-web-service-type
             (hpcguix-web-configuration
              (specs %hpcguix-web-specs)))))
@@ -359,3 +402,99 @@ HTTP-PORT, along with php-fpm."
    (name "hpcguix-web")
    (description "Connect to a running hpcguix-web server.")
    (value (run-hpcguix-web-server-test name %hpcguix-web-os))))
+
+
+(define %tailon-os
+  ;; Operating system under test.
+  (simple-operating-system
+   (service dhcp-client-service-type)
+   (service tailon-service-type
+            (tailon-configuration
+             (config-file
+              (tailon-configuration-file
+               (bind "0.0.0.0:8080")))))))
+
+(define* (run-tailon-test #:optional (http-port 8081))
+  "Run tests in %TAILON-OS, which has tailon running and listening on
+HTTP-PORT."
+  (define os
+    (marionette-operating-system
+     %tailon-os
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
+
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (port-forwardings `((,http-port . 8080)))))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (srfi srfi-11) (srfi srfi-64)
+                       (ice-9 match)
+                       (gnu build marionette)
+                       (web uri)
+                       (web client)
+                       (web response))
+
+          (define marionette
+            ;; Forward the guest's HTTP-PORT, where tailon is listening, to
+            ;; port 8080 in the host.
+            (make-marionette (list #$vm)))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "tailon")
+
+          (test-assert "service running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'tailon))
+             marionette))
+
+          (define* (retry-on-error f #:key times delay)
+            (let loop ((attempt 1))
+              (match (catch
+                      #t
+                      (lambda ()
+                        (cons #t
+                              (f)))
+                      (lambda args
+                        (cons #f
+                              args)))
+                ((#t . return-value)
+                 return-value)
+                ((#f . error-args)
+                 (if (>= attempt times)
+                     error-args
+                     (begin
+                       (sleep delay)
+                       (loop (+ 1 attempt))))))))
+
+          (test-equal "http-get"
+            200
+            (retry-on-error
+             (lambda ()
+               (let-values (((response text)
+                             (http-get #$(format
+                                          #f
+                                          "http://localhost:~A/"
+                                          http-port)
+                                       #:decode-body? #t)))
+                 (response-code response)))
+             #:times 10
+             #:delay 5))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "tailon-test" test))
+
+(define %test-tailon
+  (system-test
+   (name "tailon")
+   (description "Connect to a running Tailon server.")
+   (value (run-tailon-test))))

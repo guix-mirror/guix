@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,15 +28,15 @@
 (define-public mtools
   (package
     (name "mtools")
-    (version "4.0.18")
+    (version "4.0.21")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/mtools/mtools-"
-                          version ".tar.gz"))
+                          version ".tar.bz2"))
       (sha256
        (base32
-        "1hxciksv7av5ilnkvwbidyxxr1gzn24lr0mz9z8drkml7780im1h"))))
+        "1kybydx74qgbwpnjvjn49msf8zipchl43d4cq8zzwcyvfkdzw7h2"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/mtools/")
     (synopsis "Access MS-DOS disks without mounting")
@@ -49,7 +50,7 @@ FAT-specific file attributes.")
 (define-public exfat-utils
   (package
     (name "exfat-utils")
-    (version "1.2.8")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -57,7 +58,7 @@ FAT-specific file attributes.")
                     version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "09yf41mgwp8wg0psq347d5razllilx1sd4ij9173nri47p9465jw"))))
+                "0da8f8mm1sbwqp7prh78qk33xm0b8kk2d5is7mh2szlhgdxd1syz"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/relan/exfat")
     (synopsis "Utilities to manipulate exFAT file systems")

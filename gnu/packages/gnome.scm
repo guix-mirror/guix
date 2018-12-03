@@ -115,6 +115,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages selinux)
@@ -122,6 +124,7 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages tex)
@@ -395,28 +398,30 @@ access the common Google services, and has full asynchronous support.")
 (define-public libgxps
   (package
     (name "libgxps")
-    (version "0.2.5")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches (search-patches "libgxps-CVE-2017-11590.patch"))
               (sha256
                (base32
-                "184r06s8g20cfigg7m169n42jjsc9wmzzlycr4g1fxxhr72r8x9y"))))
-    (build-system gnu-build-system)
+                "1bhgrpb6ndlp11qwr95g9piklmjcsca7bi04f8gy9ziipm1i6as1"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("cairo" ,cairo)
-       ("glib" ,glib)
-       ("libarchive" ,libarchive)
-       ("libjpeg" ,libjpeg)
+     `(("gtk+" ,gtk+)
+       ("libjpeg" ,libjpeg-turbo)
        ("lcms" ,lcms)
        ("libtiff" ,libtiff)
        ("nettle" ,nettle)))
+    (propagated-inputs
+     ;; In Requires of libgxps.pc.
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("libarchive" ,libarchive)))
     (home-page "https://wiki.gnome.org/Projects/libgxps")
     (synopsis "GObject-based library for handling and rendering XPS documents")
     (description
@@ -938,14 +943,14 @@ guidelines.")
 (define-public shared-mime-info
   (package
     (name "shared-mime-info")
-    (version "1.8")
+    (version "1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://freedesktop.org/~hadess/"
                                  "shared-mime-info-" version ".tar.xz"))
              (sha256
               (base32
-               "1sc96lv9dp1lkvs8dh3ngm3hbjb274d363dl9avhb61il3qmxx9a"))))
+               "10ywzhzg8v1xmb9sz5xbqaci90id38knswigynyl33i29vn360aw"))))
     (build-system gnu-build-system)
     (arguments
      ;; The build system appears not to be parallel-safe.
@@ -1316,9 +1321,13 @@ functionality was designed to be as reusable and portable as possible.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       ;; The programmer kindly gives us a hook to turn off deprecation
-       ;; warnings ...
-       '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
+       '(;; We don't need static libraries, plus they don't build reproducibly
+         ;; (non-deterministic ordering of .o files in the archive.)
+         "--disable-static"
+
+         ;; The programmer kindly gives us a hook to turn off deprecation
+         ;; warnings ...
+         "DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
        ;; ... which they then completly ignore !!
        #:phases
        (modify-phases %standard-phases
@@ -1338,7 +1347,8 @@ featuring mature C, C++ and Python bindings.")
     ;; Licence notice is unclear.  The Web page simply say "GPL" without giving
     ;; a version.  SOME of the code files have licence notices for GPLv2+.
     ;; The tarball contains files of the text of GPLv2 and LGPLv2.
-    (license license:gpl2+)))
+    (license license:gpl2+)
+    (properties `((upstream-name . "ORBit2")))))
 
 
 (define-public libbonobo
@@ -1366,7 +1376,14 @@ featuring mature C, C++ and Python bindings.")
            (lambda _
              (substitute* "activation-server/Makefile.in"
                (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
-             #t)))))
+             #t)))
+
+       ;; There's apparently a race condition between the server stub
+       ;; generation and linking of the example under 'samples/echo' that can
+       ;; lead do undefined references when building in parallel, as reported
+       ;; at <https://forums.gentoo.org/viewtopic-t-223376-start-550.html>.
+       ;; Thus, disable parallel builds.
+       #:parallel-build? #f))
     (inputs `(("popt" ,popt)
               ("libxml2" ,libxml2)))
     ;; The following are Required by the .pc file
@@ -2034,7 +2051,7 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.36.3")
+    (version "0.40.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2042,7 +2059,7 @@ passwords in the GNOME keyring.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0706izk9prxqclm7gv4f63diwnlc1llvfl5sc9ghqbgn076lx2mc"))))
+                "0yvaijkpahzz26sa37cyzbj75a9vbcbgvxbqzzb7hbcvfy009zy7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2050,20 +2067,25 @@ passwords in the GNOME keyring.")
          (add-before 'check 'pre-check
                      (lambda _
                        (setenv "CC" "gcc")
+                       (substitute* "valadoc/tests/testrunner.sh"
+                         (("export PKG_CONFIG_PATH=" m)
+                          (string-append m "$PKG_CONFIG_PATH:")))
                        ;; For missing '/etc/machine-id'.
                        (setenv "DBUS_FATAL_WARNINGS" "0")
-                       #t)))
-       ;; Build the Vala API generator
-       #:configure-flags '("--enable-vapigen")))
+                       #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("flex" ,flex)
        ("bison" ,bison)
        ("xsltproc" ,libxslt)
+       ("grep" ,grep)
+       ("sed" ,sed)
        ("dbus" ,dbus)                                     ; for dbus tests
        ("gobject-introspection" ,gobject-introspection))) ; for gir tests
+    (inputs
+     `(("graphviz" ,graphviz)))
     (propagated-inputs
-     `(("glib" ,glib))) ; required by libvala-0.26.pc
+     `(("glib" ,glib))) ; required by libvala-0.40.pc
     (home-page "https://live.gnome.org/Vala/")
     (synopsis "Compiler for the GObject type system")
     (description
@@ -2111,7 +2133,15 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.52.2.a")
+    (version "0.54.2.a")
+    (home-page "https://github.com/thestinger/vte-ng")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1r7d9m07cpdr4f7rw3yx33hmp4jmsk0dn5byq5wgksb2qjbc4ags"))))
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
@@ -2119,14 +2149,6 @@ editors, IDEs, etc.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ,@(package-native-inputs vte)))
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/thestinger/"
-                                  name "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1fd65mk7c87k03vhnb2ixkjvv9nja04mfq813iyjji1b11f2sh7v"))))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'bootstrap
@@ -2455,7 +2477,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.62.3")
+    (version "2.64.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2463,7 +2485,7 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0whi8p03kpbp68kg6fg3vb7rhykjp7wn3nlbzy9j0p298zjss4nk"))))
+                "1il6lyrmfi0hfh3ysw8w1qzc1rdz0igkb7dv6d8g5mmilnac3pbm"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -2567,6 +2589,7 @@ libxml to ease remote use of the RESTful API.")
        ("libxml2" ,libxml2)))
     (inputs
      `(("glib-networking" ,glib-networking)
+       ("libpsl" ,libpsl)
        ("sqlite" ,sqlite)))
     (home-page "https://live.gnome.org/LibSoup/")
     (synopsis "GLib-based HTTP Library")
@@ -3620,7 +3643,7 @@ for application developers.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.26.1")
+    (version "3.26.2")
     (source
      (origin
        (method url-fetch)
@@ -3629,7 +3652,7 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "10n302fdp3lhkzbij5sbzmsnln738029xil6cnng2d4dxv4n1099"))
+         "1llyisls3pzf5bwkpxyfyxc2d3gpa09n5pjy7qsjdqrp3ya4k36g"))
        (patches (search-patches "totem-meson-easy-codec.patch"))))
     (build-system meson-build-system)
     (native-inputs
@@ -3741,7 +3764,7 @@ which can read a large number of file formats.")
                       "b182c6b9e1d09e601bac0b703cc5f8b159ebbc3a.patch"))
                 (sha256
                  (base32
-                  "17j45vyyr071ka3nckj2gycgyyv1j08fyrxw89jfdq2442nzrsiy")))))
+                  "06n87xgf927djmv1vshal84nqx7g8nwgljza3g2vydhy7g2n1csq")))))
             (sha256
              (base32
               "0hzcns8gf5yb0rm4ss8jd8qzarcaplp5cylk6plwilsqfvxj4xn2"))))
@@ -4087,35 +4110,27 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.15")
+    (version "0.9.45")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/gnumdk/eolie/"
-                                  "releases/download/" version
-                                  "/eolie-" version ".tar.xz"))
+              (uri (string-append "https://gitlab.gnome.org/World/eolie/"
+                                  "uploads/020f3f686e2b938731752a1d9f5bfa7e/"
+                                  "eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "0glydxp1xh85gfidk1l9miqn6qxdbvvk5s3iy0pjlv8nrs3263jd"))))
-    (build-system glib-or-gtk-build-system)
+                "0371p7g13r0b7zjc48fdcil43ddwpmyvkd2a4vv6ifsqmny6kl42"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:phases
+     `(#:glib-or-gtk? #t
+       #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "meson" "build"
-                             "--prefix" (assoc-ref outputs "out")))))
-         (replace 'check
-           (lambda _ (zero? (system* "ninja" "-C" "build" "test"))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "ninja" "-C" "build" "install"))))
          (add-after 'wrap 'wrap-more
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
                     ;; These libraries must be on LD_LIBRARY_PATH.
                     (libs '("gtkspell3" "webkitgtk" "libsoup" "libsecret"
                             "atk" "gtk+" "gsettings-desktop-schemas"
+                            "gcc:lib" ; needed b/c webkitgtk is built with gcc-7
                             "gobject-introspection"))
                     (path (string-join
                            (map (lambda (lib)
@@ -4128,12 +4143,12 @@ work and the interface is well tested.")
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))
              #t)))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gcc:lib" ,gcc-7 "lib") ; needed because webkitgtk is built with gcc-7
+       ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
-       ("meson" ,meson-for-build)
-       ("ninja" ,ninja)
        ("python" ,python)
+       ("glib:bin" ,glib "bin")
        ("gtk+" ,gtk+ "bin")))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -4143,13 +4158,15 @@ work and the interface is well tested.")
        ("atk" ,atk)    ; propagated by gtk+, but we need it in LD_LIBRARY_PATH
        ("python" ,python-wrapper)
        ("python-dateutil" ,python-dateutil)
+       ("python-pyfxa" ,python-pyfxa)
        ("python-pygobject" ,python-pygobject)
        ("python-pycairo" ,python-pycairo)
+       ("python-pycrypto" ,python-pycrypto)
        ("libsecret" ,libsecret)
        ("gtkspell3" ,gtkspell3)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk)))
-    (home-page "https://github.com/gnumdk/eolie/")
+       ("webkitgtk" ,webkitgtk-2.22)))
+    (home-page "https://wiki.gnome.org/Apps/Eolie")
     (synopsis "Web browser for GNOME")
     (description
      "Eolie is a new web browser for GNOME.  It features Firefox sync support,
@@ -4186,6 +4203,7 @@ a secret password store, an adblocker, and a modern UI.")
      `(("dconf" ,dconf)))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("gcc" ,gcc-7)  ; needed because webkitgtk-2.22 is compiled with gcc-7
        ("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
        ("intltool" ,intltool)
@@ -4206,7 +4224,7 @@ a secret password store, an adblocker, and a modern UI.")
        ("libxslt" ,libxslt)
        ("nettle" ,nettle) ; for hogweed
        ("sqlite" ,sqlite)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-2.22)))
     (home-page "https://wiki.gnome.org/Apps/Web")
     (synopsis "GNOME web browser")
     (description
@@ -4431,7 +4449,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.28.0")
+    (version "0.28.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4439,7 +4457,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1d797nmlz9gs6ri0h65b76s40ss6ma6h6405xqx03lhg5xni3kmg"))))
+                "03k7n2kmzqn11kf3733w7m6xjh2b5q9xr84za2hli11fjymzaxm9"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs
      `(("dconf" ,dconf)))
@@ -5860,7 +5878,7 @@ is complete it provides a graphical representation of each selected folder.")
 (define-public gnome-backgrounds
   (package
     (name "gnome-backgrounds")
-    (version "3.26.2")
+    (version "3.28.0")
     (source
      (origin
        (method url-fetch)
@@ -5869,8 +5887,8 @@ is complete it provides a graphical representation of each selected folder.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0kzrh5h0cfby3rhsy31d1w1c0rr3wcc845kv6zibqw1x8v9si2rs"))))
-    (build-system glib-or-gtk-build-system)
+         "1qgim0yhzjgcq172y4vp5hqz4rh1ak38a7pgi6s7dq0wklyrcnxj"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("intltool" ,intltool)))
     (home-page "https://git.gnome.org/browse/gnome-backgrounds")
@@ -6929,7 +6947,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
 (define-public gspell
   (package
     (name "gspell")
-    (version "1.4.2")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6937,7 +6955,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1683vyyfq3q0ph665jj6id8hnlyid4qxzmqiwpv97gmz8zksg6x5"))
+                "1rdv873ixhwr15jwgc2z6k6y0hj353fqnwsy7zkh0c30qwiiv6l1"))
               (patches (search-patches "gspell-dash-test.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -6971,7 +6989,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
        ("aspell-dict-en" ,aspell-dict-en)
        ("xorg-server" ,xorg-server)))
     (propagated-inputs
-     `(("enchant" ,enchant)))           ; enchant.pc is required by gspell-1.pc
+     `(("enchant" ,enchant)))            ;enchant.pc is required by gspell-1.pc
     (home-page "https://wiki.gnome.org/Projects/gspell")
     (synopsis "GNOME's alternative spell checker")
     (description
@@ -7222,8 +7240,73 @@ It supports ripping to any audio codec supported by a GStreamer plugin, such as
 mp3, Ogg Vorbis and FLAC")
     (license license:gpl2+)))
 
+(define-public soundconverter
+  (package
+    (name "soundconverter")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/soundconverter/trunk/"
+                           version "/+download/"
+                           "soundconverter-" version ".tar.xz"))
+
+       (sha256
+        (base32
+         "1wrxf5py54xplrf97qp24pzbis0cvax5c6k0c7vr3z3ry8r7gd7c"))
+       (patches
+        (search-patches
+         "soundconverter-remove-gconf-dependency.patch"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           (guix build glib-or-gtk-build-system)
+                           ,@%gnu-build-system-modules)
+
+       #:modules ((guix build glib-or-gtk-build-system)
+                  (guix build utils)
+                  ((guix build gnu-build-system) #:prefix gnu:)
+                  ((guix build python-build-system) #:prefix python:))
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-POTFILES.in
+           (lambda _
+             (substitute* "po/POTFILES.in"
+               ;; This file doesn't exist, so without removing it, the 'check
+               ;; phase fails for the po directory
+               (("soundconverter/gconfstore\\.py") ""))))
+         (add-after 'install 'wrap-soundconverter-for-python
+           (assoc-ref python:%standard-phases 'wrap))
+         (add-after 'install 'wrap-soundconverter
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                   (gst-plugin-path   (getenv "GST_PLUGIN_SYSTEM_PATH")))
+               (wrap-program (string-append out "/bin/soundconverter")
+                 `("GI_TYPELIB_PATH"        ":" prefix (,gi-typelib-path))
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (home-page "http://soundconverter.org/")
+    (synopsis "Convert between audio formats with a graphical interface")
+    (description
+     "SoundConverter supports converting between many audio formats including
+Opus, Ogg Vorbis, FLAC and more.  It supports parallel conversion, and
+configurable file renaming. ")
+    (license license:gpl3)))
+
 (define-public workrave
-  (let ((commit "v1_10_20"))
+  (let ((commit "v1_10_21"))
     (package
       (name "workrave")
       (version (string-map (match-lambda
@@ -7235,18 +7318,11 @@ mp3, Ogg Vorbis and FLAC")
                 (uri (git-reference
                       (url "https://github.com/rcaelers/workrave.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "099a87zkrkmsgfz9isrfm89dh545x52891jh6qxmn19h6wwsi941"))))
+                  "150qca8c552fakjlzkgarsxgp87l1xcwn19svqsa9d0cygqxjgia"))))
       (build-system glib-or-gtk-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'autogen
-             (lambda _
-               (invoke "sh" "autogen.sh")
-               #t)))))
       (propagated-inputs `(("glib" ,glib)
                            ("gtk+" ,gtk+)
                            ("gdk-pixbuf" ,gdk-pixbuf)

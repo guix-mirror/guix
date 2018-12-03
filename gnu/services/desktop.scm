@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
@@ -672,7 +672,7 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
    ("KillUserProcesses" (yesno elogind-kill-user-processes?))
    ("KillOnlyUsers" (user-name-list elogind-kill-only-users))
    ("KillExcludeUsers" (user-name-list elogind-kill-exclude-users))
-   ("InhibitDelayMaxSecs" (non-negative-integer elogind-inhibit-delay-max-seconds))
+   ("InhibitDelayMaxSec" (non-negative-integer elogind-inhibit-delay-max-seconds))
    ("HandlePowerKey" (handle-action elogind-handle-power-key))
    ("HandleSuspendKey" (handle-action elogind-handle-suspend-key))
    ("HandleHibernateKey" (handle-action elogind-handle-hibernate-key))
@@ -682,16 +682,16 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
    ("SuspendKeyIgnoreInhibited" (yesno elogind-suspend-key-ignore-inhibited?))
    ("HibernateKeyIgnoreInhibited" (yesno elogind-hibernate-key-ignore-inhibited?))
    ("LidSwitchIgnoreInhibited" (yesno elogind-lid-switch-ignore-inhibited?))
-   ("HoldoffTimeoutSecs" (non-negative-integer elogind-holdoff-timeout-seconds))
+   ("HoldoffTimeoutSec" (non-negative-integer elogind-holdoff-timeout-seconds))
    ("IdleAction" (handle-action elogind-idle-action))
-   ("IdleActionSeconds" (non-negative-integer elogind-idle-action-seconds))
+   ("IdleActionSec" (non-negative-integer elogind-idle-action-seconds))
    ("RuntimeDirectorySize"
     (identity
      (lambda (config)
        (match (elogind-runtime-directory-size-percent config)
          (#f (non-negative-integer (elogind-runtime-directory-size config)))
          (percent (string-append (non-negative-integer percent) "%"))))))
-   ("RemoveIpc" (yesno elogind-remove-ipc?))
+   ("RemoveIPC" (yesno elogind-remove-ipc?))
    "[Sleep]"
    ("SuspendState" (sleep-list elogind-suspend-state))
    ("SuspendMode" (sleep-list elogind-suspend-mode))
@@ -996,7 +996,7 @@ as expected.")))
          (elogind-service)
          (dbus-service)
 
-         (ntp-service)
+         (service ntp-service-type)
 
          x11-socket-directory-service
 

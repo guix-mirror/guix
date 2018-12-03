@@ -18,7 +18,10 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +45,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
@@ -133,15 +137,15 @@ library.  It supports almost all PNG features and is extensible.")
          (add-after 'unpack 'patch-apng
            (lambda* (#:key inputs #:allow-other-keys)
              (define (apply-patch file)
-               (zero? (system* "patch" "-p1" "--force"
-                               "--input" file)))
+               (invoke "patch" "-p1" "--force"
+                       "--input" file))
              (let ((apng.gz (assoc-ref inputs "apng")))
                (format #t "Applying APNG patch '~a'...~%"
                        apng.gz)
-               (and
-                 (zero?
-                   (system (string-append "gunzip < " apng.gz " > the-patch")))
-                 (apply-patch "the-patch")))))
+               (invoke "sh" "-c"
+                       (string-append "gunzip < " apng.gz " > the-patch"))
+               (apply-patch "the-patch")
+               #t)))
          (add-before 'configure 'no-checks
            (lambda _
              (substitute* "Makefile.in"
@@ -236,7 +240,8 @@ in-memory raw vectors.")
                (string-append vardef (assoc-ref inputs "zlib") "/"))
               ;; The Makefile is written by hand and not using $PREFIX
               (("\\$\\(DESTDIR\\)/usr/")
-               (string-append (assoc-ref outputs "out") "/"))))))))
+               (string-append (assoc-ref outputs "out") "/")))
+            #t)))))
    (inputs
     `(("libpng" ,libpng)
       ("zlib" , zlib)))
@@ -250,24 +255,87 @@ files.  It can compress them as much as 40% losslessly.")
   ;; This package used to be wrongfully name "pngcrunch".
   (deprecated-package "pngcrunch" pngcrush))
 
+(define-public pnglite
+  (let ((commit "11695c56f7d7db806920bd9229b69f230e6ffb38")
+        (revision "1"))
+    (package
+      (name "pnglite")
+      ;; The project was moved from sourceforge to github.
+      ;; The latest version in sourceforge was 0.1.17:
+      ;; https://sourceforge.net/projects/pnglite/files/pnglite/
+      ;; No releases are made in github.
+      (version (git-version "0.1.17" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dankar/pnglite")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1lmmkdxby5b8z9kx3zrpgpk33njpcf2xx8z9bgqag855sjsqbbby"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda _
+               ;; common build flags for building shared libraries
+               (let ((cflags '("-O2" "-g" "-fPIC"))
+                     (ldflags '("-shared")))
+                 (apply invoke
+                        `("gcc"
+                          "-o" "libpnglite.so"
+                          ,@cflags
+                          ,@ldflags
+                          "pnglite.c"))
+                 #t)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib/"))
+                      (include (string-append out "/include/"))
+                      (doc (string-append out "/share/doc/"
+                                          ,name "-" ,version "/")))
+                 (install-file "libpnglite.so" lib)
+                 (install-file "pnglite.h" include)
+                 (install-file "README.md" doc)
+                 #t))))))
+      (inputs `(("zlib" ,zlib)))
+      (home-page "https://github.com/dankar/pnglite")
+      (synopsis "Pretty small png library")
+      (description "A pretty small png library.
+Currently all documentation resides in @file{pnglite.h}.")
+      (license license:zlib))))
+
 (define-public libjpeg
   (package
    (name "libjpeg")
-   (version "9b")
+   (version "9c")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.ijg.org/files/jpegsrc.v"
                    version ".tar.gz"))
             (sha256 (base32
-                     "0lnhpahgdwlrkd41lx6cr90r199f8mc6ydlh7jznj5klvacd63r4"))))
+                     "08kixcf3a7s9x91174abjnk1xbvj4v8crdc73zi4k9h3jfbm00k5"))))
    (build-system gnu-build-system)
    (synopsis "Library for handling JPEG files")
    (description
     "Libjpeg implements JPEG image encoding, decoding, and transcoding.
 JPEG is a standardized compression method for full-color and gray-scale
 images.
-The included programs provide conversion between the JPEG format and
-image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
+It also includes programs that provide conversion between the JPEG format and
+image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats, as well as
+lossless JPEG manipulations such as rotation, scaling or cropping:
+@enumerate
+@item cjpeg
+@item djpeg
+@item jpegtran
+@item rdjpgcom
+@item wrjpgcom
+@end enumerate")
    (license license:ijg)
    (home-page "http://www.ijg.org/")))
 
@@ -393,7 +461,6 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (replacement libtiff/fixed)
    (version "4.0.9")
    (source
      (origin
@@ -404,7 +471,9 @@ extracting icontainer icon files.")
         (base32
          "1kfg4q01r4mqn7dj63ifhi6pmqzbf4xax6ni6kkk81ri5kndwyvf"))
        (patches (search-patches "libtiff-CVE-2017-9935.patch"
-                                "libtiff-CVE-2017-18013.patch"))))
+                                "libtiff-CVE-2017-18013.patch"
+                                "libtiff-CVE-2018-8905.patch"
+                                "libtiff-CVE-2018-10963.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
@@ -426,30 +495,19 @@ collection of tools for doing simple manipulations of TIFF images.")
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
 
-(define libtiff/fixed
-  (package
-    (inherit libtiff)
-    (source
-      (origin
-        (inherit (package-source libtiff))
-        (patches
-          (append (origin-patches (package-source libtiff))
-                  (search-patches "libtiff-CVE-2018-8905.patch"
-                                  "libtiff-CVE-2018-10963.patch")))))))
-
 (define-public leptonica
   (package
     (name "leptonica")
     (version "1.74.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/DanBloomberg/leptonica/archive/" version
-             ".tar.gz"))
-       (file-name (string-append "leptonica-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DanBloomberg/leptonica.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "10pw7pwccd0m0fc9rlrr2m41s7j1qvba2wcrav17pw1gclkf34i0"))))
+        (base32 "0sfg1ky0lghlq7xx0qii5167bim0wwfnnr83dl4skbj9awyvjiwi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gnuplot" ,gnuplot)             ;needed for test suite
@@ -472,14 +530,15 @@ collection of tools for doing simple manipulations of TIFF images.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "sh" "autobuild"))))
+             (invoke "sh" "autobuild")))
          (add-after 'unpack 'patch-reg-wrapper
            (lambda _
              (substitute* "prog/reg_wrapper.sh"
                ((" /bin/sh ")
                 (string-append " " (which "sh") " "))
                (("which gnuplot")
-                "true")))))))
+                "true"))
+             #t)))))
     (home-page "http://www.leptonica.com/")
     (synopsis "Library and tools for image processing and analysis")
     (description
@@ -494,17 +553,18 @@ arithmetic ops.")
 (define-public jbig2dec
   (package
     (name "jbig2dec")
-    (version "0.14")
-    (source
-      (origin
-        (method url-fetch)
-        (uri
-         (string-append "https://github.com/ArtifexSoftware/ghostpdl-downloads/"
-                        "releases/download/gs922/" name "-" version ".tar.gz"))
-        (sha256
-          (base32 "0k01hp0q4275fj4rbr1gy64svfraw5w7wvwl08yjhvsnpb1rid11"))
-        (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
+    (version "0.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ArtifexSoftware"
+                                  "/ghostpdl-downloads/releases/download"
+                                  "/gs924/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0m1qwpbjbirgw2fqznbajdhdhh35d6xa2csr64lpjz735pvimykb"))
+              (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
     (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--disable-static")))
     (synopsis "Decoder of the JBIG2 image compression format")
     (description
       "JBIG2 is designed for lossy or lossless encoding of 'bilevel' (1-bit
@@ -825,11 +885,15 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
     `(#:test-target "check"
       #:phases
       (modify-phases %standard-phases
-        ;; See https://github.com/ukoethe/vigra/issues/432
-        (add-after 'unpack 'disable-broken-test
+        (add-after 'unpack 'disable-broken-tests
           (lambda _
+            ;; See https://github.com/ukoethe/vigra/issues/432
             (substitute* "test/fourier/CMakeLists.txt"
               (("VIGRA_ADD_TEST.*") ""))
+            ;; This test fails with Numpy 1.15:
+            ;; <https://github.com/ukoethe/vigra/issues/436>.
+            (substitute* "vigranumpy/test/CMakeLists.txt"
+              (("test1\\.py") ""))
             #t)))
       #:configure-flags
         (list "-Wno-dev" ; suppress developer mode with lots of warnings
@@ -892,7 +956,7 @@ language bindings to VIGRA.")
 (define-public libwebp
   (package
     (name "libwebp")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        ;; No tarballs are provided for >0.6.1.
@@ -903,7 +967,7 @@ language bindings to VIGRA.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1w8jzdbr1s4238ygyrlxryycss3f2z6d9amxdq8m82nl3l6skar4"))))
+         "09l4pq4k2acglkmwr96arn79rssl54sv7vrdrgsxqlg7v8c882zh"))))
     (build-system gnu-build-system)
     (inputs
      `(("freeglut" ,freeglut)
@@ -1038,13 +1102,14 @@ convert, manipulate, filter and display a wide variety of image formats.")
     (name "jasper")
     (version "2.0.14")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mdadams/jasper/archive/"
-                                  "version-" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mdadams/jasper.git")
+                    (commit (string-append "version-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0yx9y5y0g6jv142vnqp50j3k8k5yqznz3smrblv192wgfbm6w9l5"))))
+                "0aarg8nbik9wrm7fx0451sbm5ypfdfr6i169pxzi354mpdp8gg7f"))))
     (build-system cmake-build-system)
     (inputs `(("libjpeg" ,libjpeg)))
     (synopsis "JPEG-2000 library")
@@ -1060,13 +1125,14 @@ ISO/IEC 15444-1).")
     (version "2.5")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/sekrit-twc/zimg/archive/"
-                            "release-" version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/sekrit-twc/zimg.git")
+              (commit (string-append "release-" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "0kbq2dy659645fmgxpzg38b6y6x82kwkydhc380kdkaikv2brcjh"))))
+          "05krggiifbl6hyg2j3z8qz2k7si84g1qg9snhsnf1ml7mrhqhhlr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1077,7 +1143,7 @@ ISO/IEC 15444-1).")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (synopsis "Scaling, colorspace conversion, and dithering library")
     (description "Zimg implements the commonly required image processing basics
 of scaling, colorspace conversion, and depth conversion.  A simple API enables
@@ -1110,7 +1176,8 @@ the programmer.")
                     ;; of the source tree, one level higher than expected
                     (lambda _
                       (substitute* "test/run_tests.bash"
-                        (("../build") "../../build")))))))
+                        (("../build") "../../build"))
+                      #t)))))
     (home-page "https://github.com/myint/perceptualdiff")
     (synopsis "Perceptual image comparison utility")
     (description "PerceptualDiff visually compares two images to determine
@@ -1309,12 +1376,14 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
     (name "gpick")
     (version "0.2.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/thezbyg/gpick/archive/"
-                                  name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/thezbyg/gpick.git")
+                    (commit (string-append name "-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mxvxk15xhk2i5vfavjhnkk4j3bnii0gpf8di14rlbpq070hd5rs"))))
+                "0mcj806zagh122qgrdkrg0macpzby97y89xi2sjyn3bh8vmmyxjy"))))
     (build-system scons-build-system)
     (native-inputs
      `(("boost" ,boost)
@@ -1343,19 +1412,22 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
 (define-public libiptcdata
   (package
     (name "libiptcdata")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                                  version "/" name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/ianw/libiptcdata"
+                                  "/releases/download/release_"
+                                  (string-join (string-split version #\.) "_")
+                                  "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "03pfvkmmx762iydq0q207x2028d275pbdysfsgpmrr0ywy63pxkr"))))
+                "17m2bscc76r1bymjgb44fbbfrdsjfqyb2ivg9wchyllm8pgx1560"))))
     (build-system gnu-build-system)
-    (home-page "http://libiptcdata.sourceforge.net/")
+    (home-page "https://github.com/ianw/libiptcdata")
     (synopsis "IPTC metadata manipulation library")
-    (description "Libiptcdata is a C library for manipulating the International
-Press Telecommunications Council (IPTC) metadata stored within multimedia files
+    (description
+     "Libiptcdata is a C library for manipulating the International Press
+Telecommunications Council (@dfn{IPTC}) metadata stored within multimedia files
 such as images.  This metadata can include captions and keywords, often used by
 popular photo management applications.  The library provides routines for
 parsing, viewing, modifying, and saving this metadata.")
@@ -1367,13 +1439,14 @@ parsing, viewing, modifying, and saving this metadata.")
     (version "0.5.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/lupoDharkael/flameshot/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lupoDharkael/flameshot.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0kp451bqgssvg8n3sg60s3fifplm9l5kxiij0yxkl864p2mhw8im"))))
+         "13h77np93r796jf289v4r687cmnpqkyqs34dm9gif4akaig74ky0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("qttools" ,qttools)))
@@ -1469,3 +1542,31 @@ Two other programs are included with Gifsicle: @command{gifview} is a
 lightweight animated-GIF viewer, and @command{gifdiff} compares two GIFs for
 identical visual appearance.")
    (license license:gpl2+)))
+
+(define-public jp2a
+  (package
+    (name "jp2a")
+    (version "1.0.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cslarsen/jp2a.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "12a1z9ba2j16y67f41y8ax5sgv1wdjd71pg7circdxkj263n78ql"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libjpeg" ,libjpeg)
+       ("curl" ,curl)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://csl.name/jp2a/")
+    (synopsis "Convert JPEG images to ASCII")
+    (description
+     "Jp2a is a small utility that converts JPEG images to ASCII.")
+    (license license:gpl2)))

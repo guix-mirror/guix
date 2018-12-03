@@ -21,7 +21,7 @@
   #:use-module (guix import crate)
   #:use-module (guix base32)
   #:use-module (guix build-system cargo)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix tests)
   #:use-module (ice-9 iconv)
   #:use-module (ice-9 match)

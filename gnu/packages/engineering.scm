@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,6 +60,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
@@ -76,6 +78,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages wxwidgets)
@@ -223,6 +226,74 @@ a schematic; libgeda, libraries for gschem gnetlist and gsymcheck; gsch2pcb, a
 tool to forward annotation from your schematic to layout using PCB; some minor
 utilities.")
     (license license:gpl2+)))
+
+(define-public lepton-eda
+  ;; This is a fork of gEDA/gaf started in late 2016.  One of its goal is to
+  ;; keep and to extend Guile support.
+  (package
+    (inherit geda-gaf)
+    (name "lepton-eda")
+    (version "1.9.5-20180820")
+    (home-page "https://github.com/lepton-eda/lepton-eda")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (sha256
+               (base32
+                "1ayaccvw18zh4g7a4x5jf6yxkphi5xafb0hpc732g59qkgwfcmlr"))
+              (file-name (git-file-name name version))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("gettext" ,gnu-gettext)
+       ("texinfo" ,texinfo)
+       ("groff" ,groff)
+       ("which" ,which)
+       ,@(package-native-inputs geda-gaf)))
+    ;; For now it's Guile 2.0, not 2.2.
+    (arguments
+     (substitute-keyword-arguments (package-arguments geda-gaf)
+       ((#:configure-flags flags ''())
+        ;; When running "make", the POT files are built with the build time as
+        ;; their "POT-Creation-Date".  Later on, "make" notices that .pot
+        ;; files were updated and goes on to run "msgmerge"; as a result, the
+        ;; non-deterministic POT-Creation-Date finds its way into .po files,
+        ;; and then in .gmo files.  To avoid that, simply make sure 'msgmerge'
+        ;; never runs.  See <https://bugs.debian.org/792687>.
+        `(cons "ac_cv_path_MSGMERGE=true" ,flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'bootstrap 'prepare
+             (lambda _
+               ;; Some of the scripts there are invoked by autogen.sh.
+               (for-each patch-shebang (find-files "build-tools"))
+
+               ;; Make sure 'msgmerge' can modify the PO files.
+               (for-each (lambda (po)
+                           (chmod po #o666))
+                         (find-files "." "\\.po$"))
+
+               ;; This would normally be created by invoking 'git', but it
+               ;; doesn't work here.
+               (call-with-output-file "version.h"
+                 (lambda (port)
+                   (format port "#define PACKAGE_DATE_VERSION \"~a\"~%"
+                           ,(string-drop version
+                                         (+ 1 (string-index version #\-))))
+                   (format port "#define PACKAGE_DOTTED_VERSION \"~a\"~%"
+                           ,(string-take version
+                                         (string-index version #\-)))
+                   (format port "#define PACKAGE_GIT_COMMIT \"cabbag3\"~%")))
+               #t))))))
+    (description
+     "Lepton EDA ia an @dfn{electronic design automation} (EDA) tool set
+forked from gEDA/gaf in late 2016.  EDA tools are used for electrical circuit
+design, schematic capture, simulation, prototyping, and production.  Lepton
+EDA includes tools for schematic capture, attribute management, bill of
+materials (BOM) generation, netlisting into over 20 netlist formats, analog
+and digital simulation, and printed circuit board (PCB) layout, and many other
+features.")))
 
 (define-public pcb
   (package
@@ -610,24 +681,19 @@ language.")
 (define-public ao
   (deprecated-package "ao-cad" libfive))
 
-;; We use kicad from a git commit, because support for boost 1.61.0 has been
-;; recently added.
 (define-public kicad
-  (let ((commit "5f4599fb56da4dd748845ab10abec02961d477f3")
-        (revision "2"))
     (package
       (name "kicad")
-      (version (string-append "4.0-" revision "."
-                              (string-take commit 7)))
+      (version "5.0.0")
       (source
        (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://git.launchpad.net/kicad")
-               (commit commit)))
+         (method url-fetch)
+         (file-name (string-append name "-" version ".tar.xz"))
+         (uri (string-append
+                "https://launchpad.net/kicad/5.0/" version "/+download/" name
+                "-" version ".tar.xz"))
          (sha256
-          (base32 "1833pln2975gmc5s18xf7s8m9vg834lmxxdjk0wlk3lq7bvjjnff"))
-         (file-name (string-append name "-" version "-checkout"))))
+          (base32 "17nqjszyvd25wi6550j981whlnb1wxzmlanljdjihiki53j84x9p"))))
       (build-system cmake-build-system)
       (arguments
        `(#:out-of-source? #t
@@ -636,8 +702,6 @@ language.")
          #:configure-flags
          (list "-DKICAD_STABLE_VERSION=ON"
                "-DKICAD_REPO_NAME=stable"
-               ,(string-append "-DKICAD_BUILD_VERSION=4.0-"
-                               (string-take commit 7))
                "-DKICAD_SKIP_BOOST=ON"; Use our system's boost library.
                "-DKICAD_SCRIPTING=ON"
                "-DKICAD_SCRIPTING_MODULES=ON"
@@ -653,6 +717,13 @@ language.")
                "-DBUILD_GITHUB_PLUGIN=OFF")
          #:phases
          (modify-phases %standard-phases
+           (add-after 'unpack 'adjust-boost-include
+             (lambda _
+               ;; The location of this header changed in Boost 1.66.
+               (substitute* "3d-viewer/3d_cache/3d_cache.cpp"
+                 (("boost/uuid/sha1\\.hpp")
+                  "boost/uuid/detail/sha1.hpp"))
+               #t))
            (add-after 'install 'wrap-program
              ;; Ensure correct Python at runtime.
              (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -684,6 +755,7 @@ language.")
          ("libngspice" ,libngspice)
          ("libsm" ,libsm)
          ("mesa" ,mesa)
+         ("opencascade-oce" ,opencascade-oce)
          ("openssl" ,openssl)
          ("python" ,python-2)
          ("wxwidgets" ,wxwidgets-gtk2)
@@ -694,7 +766,7 @@ language.")
 boards and electrical circuits.  The software has a number of programs that
 perform specific functions, for example, pcbnew (Editing PCB), eeschema (editing
 electrical diagrams), gerbview (viewing Gerber files) and others.")
-      (license license:gpl3+))))
+      (license license:gpl3+)))
 
 (define-public kicad-library
   (let ((version "4.0.7"))
@@ -757,6 +829,30 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
       (description "This package provides Kicad component, footprint and 3D
 render model libraries.")
       (license license:lgpl2.0+))))
+
+(define-public kicad-symbols
+  (package
+    (name "kicad-symbols")
+    (version "5.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/KiCad/kicad-symbols.git")
+                    (commit version)))
+              (file-name (string-append "kicad-symbols-" version "-checkout"))
+              (sha256
+               (base32
+                "18z5vpdq7hy2mpvm5vz1dz3ra3a5iybavvlzi8q2bmmdb6gsvf64"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; No tests exist
+    (home-page "http://kicad-pcb.org/")
+    (synopsis "Official KiCad schematic symbol libraries for KiCad 5")
+    (description "This package contains the official KiCad schematic symbol
+libraries for KiCad 5.")
+    ;; TODO: Exception: "To the extent that the creation of electronic designs that use 'Licensed Material' can be considered to be 'Adapted Material', then the copyright holder waives article 3 of the license with respect to these designs and any generated files which use data provided as part of the 'Licensed Material'."
+    ;; See <https://github.com/KiCad/kicad-symbols/blob/master/LICENSE.md>.
+    (license license:cc-by-sa4.0)))
 
 (define-public linsmith
   (package
@@ -1031,7 +1127,7 @@ language, ADMS transforms Verilog-AMS code into other target languages.")
              (setenv "LDFLAGS"  (string-append "-Wl,-rpath="
                                                (assoc-ref outputs "out") "/lib"))
              #t)))))
-    (home-page "http://www.capstone-engine.org")
+    (home-page "https://www.capstone-engine.org")
     (synopsis "Lightweight multi-platform, multi-architecture disassembly framework")
     (description
      "Capstone is a lightweight multi-platform, multi-architecture disassembly

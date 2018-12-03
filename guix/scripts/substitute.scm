@@ -26,11 +26,11 @@
   #:use-module (guix config)
   #:use-module (guix records)
   #:use-module ((guix serialization) #:select (restore-file))
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module (guix base64)
   #:use-module (guix cache)
-  #:use-module (guix pk-crypto)
+  #:use-module (gcrypt pk-crypto)
   #:use-module (guix pki)
   #:use-module ((guix build utils) #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
@@ -837,8 +837,17 @@ REPORTER, which should be a <progress-reporter> object."
        (make-custom-binary-input-port "progress-port-proc"
                                       read! #f #f
                                       (lambda ()
-                                        (close-connection port)
-                                        (stop)))))))
+                                        ;; XXX: Kludge!  When used through
+                                        ;; 'decompressed-port', this port ends
+                                        ;; up being closed twice: once in a
+                                        ;; child process early on, and at the
+                                        ;; end in the parent process.  Ignore
+                                        ;; the early close so we don't output
+                                        ;; a spurious "download-succeeded"
+                                        ;; trace.
+                                        (unless (zero? total)
+                                          (stop))
+                                        (close-port port)))))))
 
 (define-syntax with-networking
   (syntax-rules ()
@@ -930,7 +939,7 @@ authorized substitutes."
      (error "unknown `--query' command" wtf))))
 
 (define* (process-substitution store-item destination
-                               #:key cache-urls acl)
+                               #:key cache-urls acl print-build-trace?)
   "Substitute STORE-ITEM (a store file name) from CACHE-URLS, and write it to
 DESTINATION as a nar file.  Verify the substitute against ACL."
   (let* ((narinfo (lookup-narinfo cache-urls store-item
@@ -943,8 +952,10 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
     ;; Tell the daemon what the expected hash of the Nar itself is.
     (format #t "~a~%" (narinfo-hash narinfo))
 
-    (format (current-error-port)
-            (G_ "Downloading ~a...~%") (uri->string uri))
+    (unless print-build-trace?
+      (format (current-error-port)
+              (G_ "Downloading ~a...~%") (uri->string uri)))
+
     (let*-values (((raw download-size)
                    ;; Note that Hydra currently generates Nars on the fly
                    ;; and doesn't specify a Content-Length, so
@@ -955,10 +966,15 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
                           (dl-size  (or download-size
                                         (and (equal? comp "none")
                                              (narinfo-size narinfo))))
-                          (reporter (progress-reporter/file
-                                     (uri->string uri) dl-size
-                                     (current-error-port)
-                                     #:abbreviation nar-uri-abbreviation)))
+                          (reporter (if print-build-trace?
+                                        (progress-reporter/trace
+                                         destination
+                                         (uri->string uri) dl-size
+                                         (current-error-port))
+                                        (progress-reporter/file
+                                         (uri->string uri) dl-size
+                                         (current-error-port)
+                                         #:abbreviation nar-uri-abbreviation))))
                      (progress-report-port reporter raw)))
                   ((input pids)
                    ;; NOTE: This 'progress' port of current process will be
@@ -1058,6 +1074,13 @@ default value."
 
 (define (guix-substitute . args)
   "Implement the build daemon's substituter protocol."
+  (define print-build-trace?
+    (match (or (find-daemon-option "untrusted-print-extended-build-trace")
+               (find-daemon-option "print-extended-build-trace"))
+      (#f #f)
+      ((= string->number number) (> number 0))
+      (_ #f)))
+
   (mkdir-p %narinfo-cache-directory)
   (maybe-remove-expired-cache-entries %narinfo-cache-directory
                                       cached-narinfo-files
@@ -1087,7 +1110,10 @@ default value."
     (#f     #f)
     (locale (false-if-exception (setlocale LC_ALL locale))))
 
-  (set-thread-name "guix substitute")
+  (catch 'system-error
+    (lambda ()
+      (set-thread-name "guix substitute"))
+    (const #t))                                   ;GNU/Hurd lacks 'prctl'
 
   (with-networking
    (with-error-handling                           ; for signature errors
@@ -1108,7 +1134,8 @@ default value."
         (parameterize ((current-terminal-columns (client-terminal-columns)))
           (process-substitution store-path destination
                                 #:cache-urls (substitute-urls)
-                                #:acl (current-acl))))
+                                #:acl (current-acl)
+                                #:print-build-trace? print-build-trace?)))
        ((or ("-V") ("--version"))
         (show-version-and-exit "guix substitute"))
        (("--help")

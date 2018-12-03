@@ -23,7 +23,7 @@
   #:use-module (guix grafts)
   #:use-module (guix store)
   #:use-module (guix utils)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module (guix tests)
   #:use-module (guix tests http)
@@ -1131,6 +1131,16 @@
                                   (match y
                                     ((p2 . _)
                                      (string<? p1 p2)))))))))))))
+
+(test-equal "derivation-properties"
+  (list '() '((type . test)))
+  (let ((drv1 (build-expression->derivation %store "bar"
+                                            '(mkdir %output)))
+        (drv2 (build-expression->derivation %store "foo"
+                                           '(mkdir %output)
+                                           #:properties '((type . test)))))
+    (list (derivation-properties drv1)
+          (derivation-properties drv2))))
 
 (test-equal "map-derivation"
   "hello"

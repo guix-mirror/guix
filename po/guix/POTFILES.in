@@ -31,11 +31,17 @@ guix/scripts/challenge.scm
 guix/scripts/copy.scm
 guix/scripts/pack.scm
 guix/scripts/weather.scm
+guix/scripts/describe.scm
+guix/scripts/processes.scm
 guix/gnu-maintenance.scm
 guix/scripts/container.scm
 guix/scripts/container/exec.scm
 guix/upstream.scm
 guix/ui.scm
+guix/status.scm
 guix/http-client.scm
 guix/nar.scm
+guix/channels.scm
+guix/profiles.scm
+guix/git.scm
 nix/nix-daemon/guix-daemon.cc

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -14,7 +14,8 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,7 +85,7 @@ to DOS format and vice versa.")
 (define-public recode
   (package
     (name "recode")
-    (version "3.7")
+    (version "3.7.1")
     (source
      (origin
        (method url-fetch)
@@ -92,7 +93,7 @@ to DOS format and vice versa.")
                            "download/v" version "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0r4yhf7i7zp2nl2apyzz7r3i2in12n385hmr8zcfr18ly0ly530q"))
+         "0215hfj0rhlh0grg91qfx75pp6z09bpv8211qdxqihniw7y9a4fs"))
        (modules '((guix build utils)))
        (snippet '(begin
                    (delete-file "tests/Recode.c")
@@ -200,8 +201,8 @@ encoding, supporting Unicode version 9.0.0.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
+         (replace 'bootstrap
+           (lambda _ (invoke "sh" "reconf"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -338,7 +339,7 @@ as existing hashing techniques, with provably negligible risk of collisions.")
 (define-public oniguruma
   (package
     (name "oniguruma")
-    (version "6.8.2")
+    (version "6.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/kkos/"
@@ -346,7 +347,7 @@ as existing hashing techniques, with provably negligible risk of collisions.")
                                   "/onig-" version ".tar.gz"))
               (sha256
                (base32
-                "00s9gjgb3srn5sbmx4x9bssn52mi04d868ghizssdhjlddgxmsmd"))))
+                "1jg76i2ksf3s4bz4h3g2f9ac19q31lzxs11j900w7qqc0mgb5gwi"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/kkos/oniguruma")
     (synopsis "Regular expression library")
@@ -572,22 +573,16 @@ categories.")
     (name "dotconf")
     (version "1.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/williamh/dotconf/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/williamh/dotconf.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lsnh0yaw44psmx59hq94cj1932gscp5h8d3cnh05l0svr0cy7kz"))))
+                "1sc95hw5k2xagpafny0v35filmcn05k1ds5ghkldfpf6xw4hakp7"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f ; FIXME maketest.sh does not work.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
+    (arguments `(#:tests? #f))  ; FIXME maketest.sh does not work.
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -735,7 +730,8 @@ measuring and checking the width of strings, with support east asian text.")
                                  unzip
                                  "/bin/unzip',")))
                ;; Makefile is wrong.
-               (chmod config #o644)))))))
+               (chmod config #o644)
+               #t))))))
     (synopsis "Recover text from @file{.docx} files, with good formatting")
     (description
      "@command{docx2txt} is a Perl based command line utility to convert
@@ -755,3 +751,26 @@ indentation.
 @end itemize\n")
     (home-page "http://docx2txt.sourceforge.net")
     (license license:gpl3+)))
+
+(define-public opencc
+  (package
+    (name "opencc")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/BYVoid/OpenCC"
+                           "/archive/ver." version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01870gbkf711msirf3206k0ajaabypjhnx3fny5wikw0ladn9q8w"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("python" ,python-wrapper)))
+    (home-page "https://github.com/BYVoid/OpenCC")
+    (synopsis "Convert between Traditional Chinese and Simplified Chinese")
+    (description "Open Chinese Convert (OpenCC) converts between Traditional
+Chinese and Simplified Chinese, supporting character-level conversion,
+phrase-level conversion, variant conversion, and regional idioms among
+Mainland China, Taiwan, and Hong-Kong.")
+    (license license:asl2.0)))

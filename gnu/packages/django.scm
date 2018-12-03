@@ -265,6 +265,41 @@ account authentication.")
 (define-public python2-django-allauth
   (package-with-python2 python-django-allauth))
 
+(define-public python-django-debug-toolbar
+  (package
+    (name "python-django-debug-toolbar")
+    (version "1.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/jazzband/django-debug-toolbar/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rww056hyzks8spbgf4h7kf6ybxlc5p08a2b6gn1nqrrzs4yx9sy"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-sqlparse" ,python-sqlparse)
+       ("python-django" ,python-django)))
+    (native-inputs
+     `(("python-django-jinja" ,python-django-jinja)
+       ("python-html5lib" ,python-html5lib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "make" "test"))))))
+    (home-page
+     "https://github.com/jazzband/django-debug-toolbar")
+    (synopsis "Toolbar to help with developing Django applications")
+    (description
+     "A configurable set of panels that display information about the current
+request and response as a toolbar on the rendered page.")
+    (license license:bsd-3)))
+
 (define-public python-django-gravatar2
   (package
     (name "python-django-gravatar2")
@@ -337,6 +372,47 @@ merging, minifying and compiling CSS and Javascript files.")
 
 (define-public python2-django-assets
   (package-with-python2 python-django-assets))
+
+(define-public python-django-jinja
+  (package
+    (name "python-django-jinja")
+    (version "2.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/niwinz/django-jinja/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bzrb4m6wx9ph5cpvz7wpvg5k6ksvj0dnxlg0nhhqskhvp46brs1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pytz" ,python-pytz)
+       ("python-django-pipeline" ,python-django-pipeline)))
+    (arguments
+     '(;; TODO Tests currently fail due to issues with the configuration for
+       ;; django-pipeline
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (or
+              (not tests?)
+              (with-directory-excursion "testing"
+                (invoke "python" "runtests.py"))))))))
+    (home-page
+     "https://niwinz.github.io/django-jinja/latest/")
+    (synopsis "Simple jinja2 templating backend for Django")
+    (description
+     "This package provides a templating backend for Django, using Jinja2.  It
+provides certain advantages over the builtin Jinja2 backend in Django, for
+example, explicit calls to callables from templates and better performance.")
+    (license license:bsd-3)))
 
 (define-public python-django-jsonfield
   (package
@@ -517,6 +593,46 @@ project.")
 
 (define-public python2-django-overextends
   (package-with-python2 python-django-overextends))
+
+(define-public python-django-pipeline
+  (package
+    (name "python-django-pipeline")
+    (version "1.6.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-pipeline" version))
+       (sha256
+        (base32
+         "1a207y71r7za033ira0qmh2yrgp5rq0l04gw2fg9b8jri7sslrzg"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "tests/tests/test_compiler.py"
+               (("\\/usr\\/bin\\/env")
+                (which "env")))))
+         (replace 'check
+           (lambda*(#:key tests? #:allow-other-keys)
+             (or
+              (not tests?)
+              (begin
+                (setenv "DJANGO_SETTINGS_MODULE" "tests.settings")
+                (invoke "django-admin" "test" "tests"))))))))
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-slimit" ,python-slimit)
+       ("python-jsmin" ,python-jsmin)))
+    (home-page
+     "https://github.com/jazzband/django-pipeline")
+    (synopsis "Asset packaging library for Django")
+    (description
+     "Pipeline is an asset packaging library for Django, providing both CSS
+and JavaScript concatenation and compression, built-in JavaScript template
+support, and optional data-URI image and font embedding.")
+    (license license:expat)))
 
 (define-public python-django-redis
   (package

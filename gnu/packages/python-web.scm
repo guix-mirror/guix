@@ -1,11 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
@@ -26,6 +26,7 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
 (define-module (gnu packages python-web)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (gnu packages)
@@ -58,6 +60,7 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-1))
@@ -65,22 +68,17 @@
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
-    (version "3.1.3")
+    (version "3.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
         (base32
-         "1b888lggmyf2d08rfayq9khszzc0pav1z70ssc0b4d9kkr4g1klz"))))
+         "1ykm6kdjkrg556j0zd7dx2l1rsrbh0d9g27ivr6dmaahz9pyrbsi"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))                    ;FIXME: 2 errors, 2084 passed
-    (native-inputs
-     `(("python-async-generator" ,python-async-generator)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-capturelog" ,python-pytest-capturelog)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     `(#:tests? #f))                    ;missing pytest-timeout
     (propagated-inputs
      `(("python-aiodns" ,python-aiodns)
        ("python-async-timeout" ,python-async-timeout)
@@ -125,6 +123,85 @@ Callback Hell.
 asynchronous DNS resolutions with a synchronous looking interface by
 using @url{https://github.com/saghul/pycares,pycares}.")
     (license license:expat)))
+
+(define-public python-falcon
+  (package
+    (name "python-falcon")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "falcon" version))
+       (sha256
+        (base32
+         "1i0vmqsk24z4biirqhpvas9h28wy7nmpy3jvnb6rz2imq04zd09r"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-mimeparse" ,python-mimeparse)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-cython" ,python-cython) ;for faster binaries
+       ("python-pytest" ,python-pytest)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-testtools" ,python-testtools)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-msgpack" ,python-msgpack)))
+    (home-page "https://falconframework.org")
+    (synopsis
+     "Web framework for building APIs and application backends")
+    (description
+     "Falcon is a web API framework for building microservices, application
+backends and higher-level frameworks.  Among its features are:
+@itemize
+@item Optimized and extensible code base
+@item Routing via URI templates and REST-inspired resource
+classes
+@item Access to headers and bodies through request and response
+classes
+@item Request processing via middleware components and hooks
+@item Idiomatic HTTP error responses
+@item Straightforward exception handling
+@item Unit testing support through WSGI helpers and mocks
+@item Compatible with both CPython and PyPy
+@item Cython support for better performance when used with CPython
+@end itemize")
+    (license license:asl2.0)))
+
+(define-public python2-falcon
+  (package-with-python2 python-falcon))
+
+(define-public python-falcon-cors
+  (package
+    (name "python-falcon-cors")
+    (version "1.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "falcon-cors" version))
+       (sha256
+        (base32
+         "12pym7hwsbd8b0c1azn95nas8gm3f1qpr6lpyx0958xm65ffr20p"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-falcon" ,python-falcon)))
+    (home-page
+     "https://github.com/lwcolton/falcon-cors")
+    (synopsis "Falcon @dfn{cross-origin resource sharing} (CORS) library")
+    (description "This middleware provides @dfn{cross-origin resource
+sharing} (CORS) support for Falcon.  It allows applying a specially crafted
+CORS object to the incoming requests, enabling the ability to serve resources
+over a different origin than that of the web application.")
+    (license license:asl2.0)))
+
+(define-public python2-falcon-cors
+  (package-with-python2 python-falcon-cors))
 
 (define-public python-furl
   (package
@@ -174,17 +251,54 @@ other HTTP libraries.")
 (define-public python2-httplib2
   (package-with-python2 python-httplib2))
 
+(define-public python-mechanicalsoup
+  (package
+    (name "python-mechanicalsoup")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "MechanicalSoup" version))
+       (sha256
+        (base32 "0k59wwk75q7nz6i6gynvzhagy02ql0bv7py3qqcwgjw7607yq4i7"))))
+    (build-system python-build-system)
+    (arguments
+     ;; TODO: Enable tests when python-flake8@3.5 hits master.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-lxml" ,python-lxml)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    ;; (native-inputs
+    ;;  ;; For tests.
+    ;;  `(("python-pytest-flake8" ,python-pytest-flake8)
+    ;;    ("python-pytest-httpbin" ,python-pytest-httpbin)
+    ;;    ("python-pytest-mock" ,python-pytest-mock)
+    ;;    ("python-pytest-runner" ,python-pytest-runner)
+    ;;    ("python-requests-mock" ,python-requests-mock)))
+    (home-page "https://mechanicalsoup.readthedocs.io/")
+    (synopsis "Python library for automating website interaction")
+    (description
+     "MechanicalSoup is a Python library for automating interaction with
+websites.  It automatically stores and sends cookies, follows redirects, and can
+follow links and submit forms.  It doesn’t do JavaScript.")
+    (license license:expat)))
+
+(define-public python2-mechanicalsoup
+  (package-with-python2 python-mechanicalsoup))
+
 (define-public python-sockjs-tornado
   (package
     (name "python-sockjs-tornado")
-    (version "1.0.3")
+    (version "1.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sockjs-tornado" version))
        (sha256
         (base32
-         "16cff40nniqsyvda1pb2j3b4zwmrw7y2g1vqq78lp20xpmhnwwkd"))))
+         "0zhq8wnnhkfbvdnsggqrc3pp97pqpilsf7fh6ymvnf52r0rwyjsc"))))
     (build-system python-build-system)
     (arguments
      `(;; There are no tests, and running the test phase requires missing
@@ -194,12 +308,12 @@ other HTTP libraries.")
      `(("python-tornado" ,python-tornado)))
     (home-page "https://github.com/mrjoes/sockjs-tornado/")
     (synopsis
-     "SockJS python server implementation on top of Tornado framework")
+     "SockJS Python server implementation on top of the Tornado framework")
     (description
-     "SockJS-tornado provides the server side counterpart to a SockJS client
+     "SockJS-tornado provides the server-side counterpart to a SockJS client
 library, through the Tornado framework.
 
-SockJS provides a low latency, full duplex, cross-domain communication channel
+SockJS provides a low-latency, full-duplex, cross-domain communication channel
 between a web browser and web server.")
     (license license:expat)))
 
@@ -324,7 +438,15 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
     (arguments
      ;; The tests attempt to access external web servers, so we cannot run
      ;; them.  Furthermore, they are skipped altogether when using Python 2.
-     '(#:tests? #f))
+     '(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                    (add-before 'build 'configure-tls-backend
+                      (lambda _
+                        ;; XXX: PycURL fails to automatically determine which TLS
+                        ;; backend to use when cURL is built with --disable-static.
+                        ;; See setup.py and <https://github.com/pycurl/pycurl/pull/147>.
+                        (setenv "PYCURL_SSL_LIBRARY" "gnutls")
+                        #t)))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-bottle" ,python-bottle)))
@@ -1286,14 +1408,14 @@ authenticated session objects providing things like keep-alive.")
 (define-public python-urllib3
   (package
     (name "python-urllib3")
-    (version "1.18.1")
+    (version "1.23")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urllib3" version))
         (sha256
          (base32
-          "1wb8aqnq53vzh2amrv8kc66f3h6fx217y0q62y6n30a64p2yqmam"))))
+          "1bvbd35q3zdcd7gsv38fwpizy7p06dr0154g5gfybrvnbvhwb2m6"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (native-inputs
@@ -1350,14 +1472,14 @@ Amazon Web Services (AWS) API.")
 (define-public python-wsgiproxy2
   (package
     (name "python-wsgiproxy2")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WSGIProxy2" version ".tar.gz"))
        (sha256
         (base32
-         "16532rjc94h3w74x52jfckf3yzsp8h6z34522jk4xgjy82hpnd7r"))))
+         "19d9dva282vfjs784i0zkxp078lxfz4h3f621z30ij9wbf5rba6a"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-webtest" ,python-webtest)))
@@ -1591,6 +1713,29 @@ library.")
 (define-public python2-responses
   (package-with-python2 python-responses))
 
+(define-public python-grequests
+  (package
+    (name "python-grequests")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "grequests" version))
+       (sha256
+        (base32
+         "1j9icncllbkv7x5719b20mx670c6q1jrdx1sakskkarvx3pc8h8g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-gevent" ,python-gevent)
+       ("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/kennethreitz/grequests")
+    (synopsis "Python library for asynchronous HTTP requests")
+    (description "GRequests is a Python library that allows you to use
+@code{Requests} with @code{Gevent} to make asynchronous HTTP Requests easily")
+    (license license:bsd-2)))
+
 (define-public python-geventhttpclient
   (package
     (name "python-geventhttpclient")
@@ -1620,7 +1765,10 @@ library.")
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (invoke "py.test" "src/geventhttpclient/tests" "-v")
+             (invoke "py.test"  "src/geventhttpclient/tests" "-v"
+                     ;; Append the test modules to sys.path to avoid
+                     ;; namespace conflict which breaks SSL tests.
+                     "--import-mode=append")
              #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -1841,6 +1989,31 @@ transfers.")
        `(("python2-futures" ,python2-futures)
          ,@(package-native-inputs base))))))
 
+(define-public python-slimit
+  (package
+    (name "python-slimit")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "slimit" version ".zip"))
+       (sha256
+        (base32
+         "02vj2x728rs1127q2nc27frrqra4fczivnb7gch6n5lzi7pxqczl"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (propagated-inputs
+     `(("python-ply" ,python-ply)))
+    (home-page "https://slimit.readthedocs.io/")
+    (synopsis "JavaScript minifier, parser and lexer written in Python")
+    (description
+     "SlimIt is a JavaScript minifier written in Python.  It compiles
+JavaScript into more compact code so that it downloads and runs faster.
+SlimIt also provides a library that includes a JavaScript parser, lexer,
+pretty printer and a tree visitor.")
+    (license license:expat)))
+
 (define-public python-flask-restful
   (package
     (name "python-flask-restful")
@@ -2026,24 +2199,58 @@ It comes with safe defaults and easily configurable options.")
 (define-public python2-flask-htmlmin
   (package-with-python2 python-flask-htmlmin))
 
-(define-public python-flask-login
+(define-public python-jsmin
   (package
-    (name "python-flask-login")
-    (version "0.4.0")
+    (name "python-jsmin")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/maxcountryman/flask-login/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (pypi-uri "jsmin" version))
        (sha256
         (base32
-         "1pdqp7a2gyb7k06xda004x0fi2w66s6kn2i0ndkqndmg12d83f9w"))))
-    (arguments
-     ;; Tests fail PEP8 compliance. See:
-     ;; https://github.com/maxcountryman/flask-login/issues/340
-     `(#:tests? #f))
+         "0fsmqbjvpxvff0984x7c0y8xmf49ax9mncz48b9xjx8wrnr9kpxn"))))
     (build-system python-build-system)
+    (home-page "https://github.com/tikitu/jsmin/")
+    (synopsis "Python JavaScript minifier")
+    (description
+     "@code{jsmin} is a JavaScript minifier, usable from both Python code and
+on the command line.")
+    (license license:expat)))
+
+(define-public python-flask-login
+  (package
+    (name "python-flask-login")
+    (version "0.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/maxcountryman/flask-login.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rj0qwyxapxnp84fi4lhmvh3d91fdiwz7hibw77x3d5i72knqaa9"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'avoid-yanc
+           ;; Work around '.nosetests-real: error: no such option: --with-yanc'.
+           (lambda _
+             (setenv "NOCOLOR" "set")
+             #t)))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)))
+    (native-inputs
+     ;; For tests.
+     `(("python-blinker" ,python-blinker)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-pep8" ,python-pep8)
+       ("python-pyflakes" ,python-pyflakes)
+       ("python-semantic-version" ,python-semantic-version)
+       ("python-werkzeug" ,python-werkzeug)))
     (home-page "https://github.com/maxcountryman/flask-login")
     (synopsis "User session management for Flask")
     (description
@@ -2248,29 +2455,16 @@ for Flask programs that are using @code{python-alembic}.")
 (define-public python-genshi
   (package
     (name "python-genshi")
-    (version "0.7")
+    (version "0.7.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://ftp.edgewall.org/pub/genshi/Genshi-"
-             version ".tar.gz"))
-       (patches
-        (search-patches
-         ;; The first 4 patches are in the master branch upstream.
-         ;; See this as a reference https://genshi.edgewall.org/ticket/582
-         ;; The last 2 are NOT in any branch.
-         ;; They were sent as attachments to a ticket opened at
-         ;; https://genshi.edgewall.org/ticket/602#no1
-         "python-genshi-stripping-of-unsafe-script-tags.patch"
-         "python-genshi-disable-speedups-on-python-3.3.patch"
-         "python-genshi-isstring-helper.patch"
-         "python-genshi-add-support-for-python-3.4-AST.patch"
-         "python-genshi-fix-tests-on-python-3.5.patch"
-         "python-genshi-buildable-on-python-2.7.patch"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/edgewall/genshi.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0lkkbp6fbwzv0zda5iqc21rr7rdldkwh3hfabfjl9i4bwq14858x"))))
+        (base32 "01fx8fnpay5w048ppyjivg2dgfpp5rybn07y3pfsgj2knram3nhl"))))
     (build-system python-build-system)
     (home-page "https://genshi.edgewall.org/")
     (synopsis "Toolkit for generation of output for the web")
@@ -2279,9 +2473,6 @@ of components for parsing, generating, and processing HTML, XML or other
 textual content for output generation on the web.")
     (license license:bsd-3)))
 
-;; The linter here claims that patch file names should start with the package
-;; name. But, in this case the patches are inherited from python-genshi with
-;; the "python-genshi-" prefix instead of "python2-genshi-".
 (define-public python2-genshi
   (package-with-python2 python-genshi))
 
@@ -2487,19 +2678,25 @@ available in Django, but is a standalone package.")
 (define-public python-paste
   (package
     (name "python-paste")
-    (version "2.0.3")
+    (version "3.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Paste" version))
        (sha256
         (base32
-         "062jk0nlxf6lb2wwj6zc20rlvrwsnikpkh90y0dn8cjch93s6ii3"))
-       (patches (search-patches "python-paste-remove-website-test.patch"
-                                "python-paste-remove-timing-test.patch"))))
+         "01w26w9jyfkh0mfydhfz3dwy3pj3fw7mzvj0lna3vs8hyx1hwl0n"))
+       (patches (search-patches "python-paste-remove-timing-test.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; This test calls out to the internet.
+           (delete-file "tests/test_proxy.py") #t))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (home-page "http://pythonpaste.org")
@@ -2641,3 +2838,79 @@ for URL parsing and changing.")
 
 (define-public python2-google-api-client
   (package-with-python2 python-google-api-client))
+
+(define-public python-hawkauthlib
+  (package
+    (name "python-hawkauthlib")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hawkauthlib" version))
+       (sha256
+        (base32
+         "03ai47s4h8nfnrf25shbfvkm1b9n1ccd4nmmj280sg1fayi69zgg"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-webob" ,python-webob)))
+    (home-page "https://github.com/mozilla-services/hawkauthlib")
+    (synopsis "Hawk Access Authentication protocol")
+    (description
+     "This is a low-level Python library for implementing Hawk Access Authentication,
+a simple HTTP request-signing scheme.")
+    (license license:mpl2.0)))
+
+(define-public python-pybrowserid
+  (package
+    (name "python-pybrowserid")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyBrowserID" version))
+       (sha256
+        (base32
+         "1qvi79kfb8x9kxkm5lw2mp42hm82cpps1xknmsb5ghkwx1lpc8kc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
+    (home-page "https://github.com/mozilla/PyBrowserID")
+    (synopsis "Python library for the BrowserID protocol")
+    (description
+     "This is a Python client library for the BrowserID protocol that
+underlies Mozilla Persona.")
+    (license license:mpl2.0)))
+
+(define-public python-pyfxa
+  (package
+    (name "python-pyfxa")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyFxA" version))
+       (sha256
+        (base32
+         "0axl16fyrz2r88gnw4b12mk7dpkqscv8c4wsc1y5hicl7bsbc4fm"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; 17 tests require network access
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-hawkauthlib" ,python-hawkauthlib)
+       ("python-pybrowserid" ,python-pybrowserid)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-grequests" ,python-grequests)
+       ("python-mock" ,python-mock)
+       ("python-responses" ,python-responses)
+       ("python-unittest2" ,python-unittest2)))
+    (home-page "https://github.com/mozilla/PyFxA")
+    (synopsis "Firefox Accounts client library for Python")
+    (description
+     "This is a Python library for interacting with the Firefox Accounts
+ecosystem.")
+    (license license:mpl2.0)))

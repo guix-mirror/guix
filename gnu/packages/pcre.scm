@@ -35,7 +35,7 @@
 (define-public pcre
   (package
    (name "pcre")
-   (version "8.41")
+   (version "8.42")
    (source (origin
             (method url-fetch)
             (uri (list
@@ -46,11 +46,12 @@
                                  version "/pcre-" version ".tar.bz2")))
             (sha256
              (base32
-              "0c5m469p5pd7jip621ipq6hbgh7128lzh7xndllfgh77ban7wb76"))))
+              "00ckpzlgyr16bnqx8fawa3afjgqxw5yxgs2l081vw23qi1y4pl1c"))))
    (build-system gnu-build-system)
    (outputs '("out"           ;library & headers
               "bin"           ;depends on Readline (adds 20MiB to the closure)
-              "doc"))         ;1.8 MiB of HTML
+              "doc"           ;1.8 MiB of HTML
+              "static"))      ;1.8 MiB static libraries
    (inputs `(("bzip2" ,bzip2)
              ("readline" ,readline)
              ("zlib" ,zlib)))
@@ -63,7 +64,19 @@
                           "--enable-unicode-properties"
                           "--enable-pcre16"
                           "--enable-pcre32"
-                          "--enable-jit")))
+                          "--enable-jit")
+      #:phases (modify-phases %standard-phases
+                 (add-after 'install 'move-static-libs
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((source (string-append (assoc-ref outputs "out") "/lib"))
+                           (static (string-append (assoc-ref outputs "static") "/lib")))
+                       (mkdir-p static)
+                       (for-each (lambda (lib)
+                                   (link lib (string-append static "/"
+                                                            (basename lib)))
+                                   (delete-file lib))
+                                 (find-files source "\\.a$"))
+                       #t))))))
    (synopsis "Perl Compatible Regular Expressions")
    (description
     "The PCRE library is a set of functions that implement regular expression

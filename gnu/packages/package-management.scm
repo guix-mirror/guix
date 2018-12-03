@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -101,8 +102,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.15.0")
-        (commit "8bbb79cf95a07a40950448a8a09d888254404ed4")
-        (revision 2))
+        (commit "71a78ba65b00ad1f27086a3dcdded7dc4326ade1")
+        (revision 8))
     (package
       (name "guix")
 
@@ -118,7 +119,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0h83l91v2cg9bb78c7vqx9wj71ckz22jbjmm2fy4vqs9216jnvc0"))
+                  "0isagzccfxjqrc38wamknvh0jzv1pjh0wq5baj9jzwl07xkrc0hc"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -213,6 +214,7 @@
                         ;; Guile-JSON, and Guile-Git automatically.
                         (let* ((out    (assoc-ref outputs "out"))
                                (guile  (assoc-ref inputs "guile"))
+                               (gcrypt (assoc-ref inputs "guile-gcrypt"))
                                (json   (assoc-ref inputs "guile-json"))
                                (sqlite (assoc-ref inputs "guile-sqlite3"))
                                (git    (assoc-ref inputs "guile-git"))
@@ -220,7 +222,8 @@
                                                   "guile-bytestructures"))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
-                               (deps   (list json sqlite gnutls git bs ssh))
+                               (deps   (list gcrypt json sqlite gnutls
+                                             git bs ssh))
                                (effective
                                 (read-line
                                  (open-pipe* OPEN_READ
@@ -230,13 +233,13 @@
                                         (map (cut string-append <>
                                                   "/share/guile/site/"
                                                   effective)
-                                             deps)
+                                             (delete #f deps))
                                         ":"))
                                (gopath (string-join
                                         (map (cut string-append <>
                                                   "/lib/guile/" effective
                                                   "/site-ccache")
-                                             deps)
+                                             (delete #f deps))
                                         ":")))
 
                           (wrap-program (string-append out "/bin/guix")
@@ -264,9 +267,7 @@
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
 
-         ;; Use 2.2.4 to avoid various thread-safety issues while building
-         ;; code in parallel.
-         ("guile" ,guile-2.2.4)
+         ("guile" ,guile-2.2)
 
          ;; Many tests rely on the 'guile-bootstrap' package, which is why we
          ;; have it here.
@@ -279,6 +280,7 @@
                '())))
       (propagated-inputs
        `(("gnutls" ,gnutls)
+         ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-ssh" ,guile-ssh)
@@ -314,6 +316,7 @@ the Nix package manager.")
     (inputs
      `(("gnutls" ,gnutls)
        ("guile-git" ,guile-git)
+       ("guile-gcrypt" ,guile-gcrypt)
        ,@(fold alist-delete (package-inputs guix)
                '("boot-guile" "boot-guile/i686" "util-linux"))))
 
@@ -343,12 +346,14 @@ the Nix package manager.")
                        "install-nodist_pkglibexecSCRIPTS")
 
                ;; We need to tell 'guix-daemon' which 'guix' command to use.
-               ;; Here we use a questionable hack where we hard-code
-               ;; "~root/.config", which could be wrong (XXX).
+               ;; Here we use a questionable hack where we hard-code root's
+               ;; current guix, which could be wrong (XXX).  Note that scripts
+               ;; like 'guix perform-download' do not run as root so we assume
+               ;; that they have access to /var/guix/profiles/per-user/root.
                (let ((out (assoc-ref outputs "out")))
                  (substitute* (find-files (string-append out "/libexec"))
                    (("exec \".*/bin/guix\"")
-                    "exec ~root/.config/guix/current/bin/guix"))
+                    "exec /var/guix/profiles/per-user/root/current-guix/bin/guix"))
                  #t)))
            (delete 'wrap-program)))))))
 
@@ -361,9 +366,28 @@ the Nix package manager.")
        ,@(alist-delete "guile" (package-inputs guix))))
     (propagated-inputs
      `(("gnutls" ,gnutls/guile-2.0)
+       ("guile-gcrypt" ,guile2.0-gcrypt)
        ("guile-json" ,guile2.0-json)
+       ("guile-sqlite3" ,guile2.0-sqlite3)
        ("guile-ssh" ,guile2.0-ssh)
        ("guile-git" ,guile2.0-git)))))
+
+(define-public guix-minimal
+  ;; A version of Guix which is built with the minimal set of dependencies, as
+  ;; outlined in the README "Requirements" section.  Intended as a CI job, so
+  ;; marked as hidden.
+  (let ((guix guile2.0-guix))
+    (hidden-package
+     (package
+       (inherit guix)
+       (name "guix-minimal")
+       (inputs
+        `(("guile" ,guile-2.0.13)
+          ,@(alist-delete "guile" (package-inputs guix))))
+       (propagated-inputs
+        (fold alist-delete
+              (package-propagated-inputs guix)
+              '("guile-ssh")))))))
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical
@@ -491,7 +515,7 @@ symlinks to the files in a common directory such as /usr/local.")
 (define-public rpm
   (package
     (name "rpm")
-    (version "4.13.0.2")
+    (version "4.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.rpm.org/releases/rpm-"
@@ -499,40 +523,20 @@ symlinks to the files in a common directory such as /usr/local.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1521y4ghjns449kzpwkjn9cksh686383xnfx0linzlalqc3jqgig"))))
+                "0armd7dqr8bl0isx8l4xlylm7dikasmxhhcbz336fkp2x30w5jw0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-external-db"   ;use the system's bdb
                            "--enable-python"
                            "--without-lua")
        #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'set-nspr-search-path
+                  (add-before 'configure 'set-nss-library-path
                     (lambda* (#:key inputs #:allow-other-keys)
-                      ;; nspr.pc contains the right -I flag pointing to
-                      ;; 'include/nspr', but unfortunately 'configure' doesn't
-                      ;; use 'pkg-config'.  Thus, augment CPATH.
-                      ;; Likewise for NSS.
-                      (let ((nspr (assoc-ref inputs "nspr"))
-                            (nss  (assoc-ref inputs "nss")))
-                        (setenv "CPATH"
-                                (string-append (getenv "C_INCLUDE_PATH") ":"
-                                               nspr "/include/nspr:"
-                                               nss "/include/nss"))
+                      (let ((nss (assoc-ref inputs "nss")))
                         (setenv "LIBRARY_PATH"
                                 (string-append (getenv "LIBRARY_PATH") ":"
                                                nss "/lib/nss"))
-                        #t)))
-                  (add-after 'install 'fix-rpm-symlinks
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; 'make install' gets these symlinks wrong.  Fix them.
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin")))
-                        (with-directory-excursion bin
-                          (for-each (lambda (file)
-                                      (delete-file file)
-                                      (symlink "rpm" file))
-                                    '("rpmquery" "rpmverify"))
-                          #t)))))))
+                        #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -548,7 +552,7 @@ symlinks to the files in a common directory such as /usr/local.")
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)
        ("cpio" ,cpio)))
-    (home-page "http://www.rpm.org/")
+    (home-page "http://rpm.org/")
     (synopsis "The RPM Package Manager")
     (description
      "The RPM Package Manager (RPM) is a command-line driven package
@@ -564,13 +568,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "96")
+    (version "106")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1x66f2x8miy3giff14higpcs70c0zb5d3gj6yn8ac6p183sngl72"))))
+                "0qrfp7nha2n2s9h5ibcf7rqji1amh4cqbcf80m6anim6p3ik26da"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -581,6 +585,12 @@ transactions from C or Python.")
                     (lambda _
                       (substitute* "setup.py"
                         (("'python-magic',") ""))))
+                  ;; This test is broken because our `file` package has a
+                  ;; bug in berkeley-db file type detection.
+                  (add-after 'unpack 'remove-berkeley-test
+                    (lambda _
+                      (delete-file "tests/comparators/test_berkeley_db.py")
+                      #t))
                   (add-after 'unpack 'embed-tool-references
                     (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "diffoscope/comparators/utils/compare.py"

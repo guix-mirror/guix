@@ -7,6 +7,8 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,15 +56,18 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.9")
+   (version "2.9.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "12jcdz1in20yaa55izxalg3hm1pf7nydfrzps5bzb4zgihybmzz6"))
-            (patches (search-patches "freetype-CVE-2018-6942.patch"))))
+                     "0kg8w6qyiizlyzh4a8lpzslipcbv96hcg3rqqpnxba8ffbm8g3fv"))))
    (build-system gnu-build-system)
+   (arguments
+    ;; The use of "freetype-config" is deprecated, but other packages still
+    ;; depend on it.
+    `(#:configure-flags (list "--enable-freetype-config")))
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (propagated-inputs
@@ -190,6 +195,58 @@ TTF (TrueType/OpenType Font) files.")
     (license license:bsd-2)
     (home-page "https://github.com/wget/ttf2eot")))
 
+(define-public ttf2pt1
+  (package
+    (name "ttf2pt1")
+    (version "3.4.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ttf2pt1/ttf2pt1/"
+                                  version "/ttf2pt1-" version ".tgz"))
+              (sha256
+               (base32
+                "1l718n4k4widx49xz7qrj4mybzb8q67kp2jw7f47604ips4654mf"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove trailing backslashes in the sed expression of the
+                  ;; 'install' rule since sed would otherwise fail.
+                  (substitute* "Makefile"
+                    (("\\|;\\\\[[:space:]]*$") "|; "))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                                ;no tests
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "Makefile"
+                          (("INSTDIR =.*")
+                           (string-append "INSTDIR = " out "\n"))
+                          (("OWNER = .*")
+                           "OWNER = `id -un`\n")
+                          (("GROUP = .*")
+                           "GROUP = `id -g`\n"))
+                        #t)))
+                  (replace 'build
+                    (lambda _
+                      (invoke "make" "-j"
+                              (number->string (parallel-job-count))
+                              "all" "CC=gcc"))))))
+    (inputs `(("perl" ,perl)))
+    (synopsis "Convert TrueType fonts to Postscript Type 1")
+    (description
+     "TTF2PT1 provides tools to convert most TrueType fonts (or other formats
+supported by the FreeType library) to an Adobe Type 1 @file{.pfa} or
+@file{.pfb} file.  Another use is as a hinting engine: feed it an unhinted or
+poorly hinted Adobe Type 1 font through the FreeType library and get it back
+with freshly generated hints.  The files produced by default are in
+human-readable form, which further needs to be encoded with t1utilities to
+work with most software requiring Type 1 fonts.")
+    (home-page "http://ttf2pt1.sourceforge.net/")
+    (license license:bsd-3)))
+
 (define-public woff2
   (let ((commit "4e698b8c6c5e070d53c340db9ddf160e21070ede")
         (revision "1"))
@@ -233,14 +290,14 @@ fonts to/from the WOFF2 format.")
 (define-public fontconfig
   (package
    (name "fontconfig")
-   (version "2.13.0")
+   (version "2.13.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
             (sha256 (base32
-                     "1fgf28zgsqh7x6dw30n6zi9z679gx6dyfyahp55z7dsm454yipci"))))
+                     "0hb700a68kk0ip51wdlnjjc682kvlrmb6q920mzajykdk0mdsmgn"))))
    (build-system gnu-build-system)
    ;; In Requires or Requires.private of fontconfig.pc.
    (propagated-inputs `(("expat" ,expat)
@@ -375,7 +432,7 @@ applications should be.")
 (define-public graphite2
   (package
    (name "graphite2")
-   (version "1.3.11")
+   (version "1.3.12")
    (source
      (origin
        (method url-fetch)
@@ -383,7 +440,7 @@ applications should be.")
                            "download/" version "/" name "-" version ".tgz"))
        (sha256
         (base32
-         "0z5dcgh8r3678awq6fb8igik7xmar5m6z9xxwpkkhradhk8jxfds"))))
+         "1l1940d8fz67jm6a0x8cjb5p2dv48cvz3wcskwa83hamd70k15fd"))))
    (build-system cmake-build-system)
    (native-inputs
     `(("python" ,python-2) ; because of "import imap" in tests
@@ -533,7 +590,10 @@ definitions.")
              ("libxml2"         ,libxml2)
              ("pango"           ,pango)
              ("potrace"         ,potrace)
-             ("python"          ,python-wrapper)
+             ;; FIXME: We use Python 2 here because there is a bug in Python
+             ;; 3.7 that is triggered when Py_Main is called after Py_Init, as
+             ;; is done by fontforge.  This will be fixed in Python 3.7.1.
+             ("python"          ,python-2)
              ("zlib"            ,zlib)))
    (arguments
     '(#:phases

@@ -1,10 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +30,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages linux)
@@ -125,7 +128,7 @@ bind processes, and much more.")
   ;; Note: 2.0 isn't the default yet, see above.
   (package
     (inherit hwloc)
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.open-mpi.org/software/hwloc/v"
@@ -133,7 +136,7 @@ bind processes, and much more.")
                                   "/downloads/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "0jf0krj1h95flmb784ifv9vnkdnajjz00p4zbhmja7vm4v67axdr"))))
+                "1phc863d5b2fvwpyyq4mlh4rkjdslh6h0h197zmyk3prwrq7si8l"))))
 
     ;; libnuma is no longer needed.
     (inputs (alist-delete "numactl" (package-inputs hwloc)))
@@ -250,3 +253,55 @@ software vendors, application developers and computer science researchers.")
 work correctly with all transports (such as @code{openib}), and the
 performance is generally worse than the vanilla @code{openmpi} package, which
 only provides @code{MPI_THREAD_FUNNELED}.")))
+
+;;; Build phase to be used for packages that execute MPI code.
+(define-public %openmpi-setup
+  '(lambda _
+     ;; By default, running the test suite would fail because 'ssh' could not
+     ;; be found in $PATH.  Define this variable to placate Open MPI without
+     ;; adding a dependency on OpenSSH (the agent isn't used anyway.)
+     (setenv "OMPI_MCA_plm_rsh_agent" (which "false"))
+     ;; Allow oversubscription in case there are less physical cores available
+     ;; in the build environment than the package wants while testing.
+     (setenv "OMPI_MCA_rmaps_base_oversubscribe" "yes")
+     #t))
+
+(define-public python-mpi4py
+  (package
+    (name "python-mpi4py")
+    (version "3.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mpi4py" version))
+        (sha256
+          (base32
+            "1mzgd26dfv4vwbci8gq77ss9f0x26i9aqzq9b9vs9ndxhlnv0mxl"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'mpi-setup
+           ,%openmpi-setup)
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Skip BaseTestSpawn class (causes error 'ompi_dpm_dyn_init()
+             ;; failed --> Returned "Unreachable"' in chroot environment).
+             (substitute* "test/test_spawn.py"
+               (("unittest.skipMPI\\('openmpi\\(<3.0.0\\)'\\)")
+                "unittest.skipMPI('openmpi')"))
+             #t)))))
+    (inputs
+     `(("openmpi" ,openmpi)))
+    (home-page "https://bitbucket.org/mpi4py/mpi4py/")
+    (synopsis "Python bindings for the Message Passing Interface standard")
+    (description "MPI for Python (mpi4py) provides bindings of the Message
+Passing Interface (MPI) standard for the Python programming language, allowing
+any Python program to exploit multiple processors.
+
+mpi4py is constructed on top of the MPI-1/MPI-2 specification and provides an
+object oriented interface which closely follows MPI-2 C++ bindings.  It
+supports point-to-point and collective communications of any picklable Python
+object as well as optimized communications of Python objects (such as NumPy
+arrays) that expose a buffer interface.")
+    (license bsd-3)))

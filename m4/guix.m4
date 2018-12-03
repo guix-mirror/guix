@@ -18,24 +18,6 @@ dnl
 dnl You should have received a copy of the GNU General Public License
 dnl along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-dnl GUIX_ASSERT_LIBGCRYPT_USABLE
-dnl
-dnl Assert that GNU libgcrypt is usable from Guile.
-AC_DEFUN([GUIX_ASSERT_LIBGCRYPT_USABLE],
-  [AC_CACHE_CHECK([whether $LIBGCRYPT can be dynamically loaded],
-    [guix_cv_libgcrypt_usable_p],
-    [GUILE_CHECK([retval],
-      [(dynamic-func \"gcry_md_hash_buffer\" (dynamic-link \"$LIBGCRYPT\"))])
-     if test "$retval" = 0; then
-       guix_cv_libgcrypt_usable_p="yes"
-     else
-       guix_cv_libgcrypt_usable_p="no"
-     fi])
-
-   if test "x$guix_cv_libgcrypt_usable_p" != "xyes"; then
-     AC_MSG_ERROR([GNU libgcrypt does not appear to be usable; see `--with-libgcrypt-prefix' and `README'.])
-   fi])
-
 dnl GUIX_SYSTEM_TYPE
 dnl
 dnl Determine the Guix host system type, and store it in the
@@ -180,7 +162,7 @@ dnl Check whether a recent-enough Guile-Sqlite3 is available.
 AC_DEFUN([GUIX_CHECK_GUILE_SQLITE3], [
   dnl Check whether 'sqlite-bind-arguments' is available.  It was introduced
   dnl in February 2018:
-  dnl <https://notabug.org/civodul/guile-sqlite3/commit/1cd1dec96a9999db48c0ff45bab907efc637247f>.
+  dnl <https://notabug.org/guile-sqlite3/guile-sqlite3/commit/1cd1dec96a9999db48c0ff45bab907efc637247f>.
   AC_CACHE_CHECK([whether Guile-Sqlite3 is available and recent enough],
     [guix_cv_have_recent_guile_sqlite3],
     [GUILE_CHECK([retval],

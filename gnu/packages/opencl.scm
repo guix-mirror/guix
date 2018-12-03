@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +58,7 @@
                 (uri (git-reference
                       (url "https://github.com/KhronosGroup/OpenCL-Headers.git")
                       (commit commit)))
-                (file-name (string-append name "-" commit))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "176ydpbyws5nr4av6hf8p41pkhc0rc4m4vrah9w6gp2fw2i32838"))))
@@ -102,15 +103,15 @@ programming.")
   (package
     (name "opencl-clhpp")
     (version "2.0.10")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/KhronosGroup/OpenCL-CLHPP/archive/v"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "0awg6yznbz3h285kmnd47fykx2qa34a07sr4x1657yn3jmi4a9zs"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/OpenCL-CLHPP.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0h5kpg5cl8wzfnqmv6i26aig2apv06ffm9p3rh35938n9r8rladm"))
+       (file-name (git-file-name name version))))
     (native-inputs
      `(("python" ,python-wrapper)))
     (propagated-inputs
@@ -124,7 +125,7 @@ programming.")
           (string-append "-DCMAKE_INSTALL_PREFIX="
                          (assoc-ref %outputs "out")
                          "/include")))
-       ;; regression tests requires a lot more dependencies
+       ;; The regression tests require a lot more dependencies.
        #:tests? #f))
     (build-system cmake-build-system)
     (home-page "http://github.khronos.org/OpenCL-CLHPP/")
@@ -174,15 +175,15 @@ Loader as provided by this package.")
   (package
     (name "clinfo")
     (version "2.2.18.04.06")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Oblomov/clinfo/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0v7cy01irwdgns6lzaprkmm0502pp5a24zhhffydxz1sgfjj2w7p"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Oblomov/clinfo.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0y2q0lz5yzxy970b7w7340vp4fl25vndahsyvvrywcrn51ipgplx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("opencl-headers" ,opencl-headers)))
@@ -216,22 +217,21 @@ the system.")
   (package
     (name "beignet")
     (version "1.3.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/intel/beignet/archive/Release_v"
-                    version
-                    ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "18r0lq3dkd4yn6bxa45s2lrr9cjbg70nr2nn6xablvgqwzw0jb0r"))
-              (patches (search-patches "beignet-correct-file-names.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; There's a suspicious .isa binary file under kernels/.
-               ;; Remove it.
-               '(for-each delete-file (find-files "." "\\.isa$")))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/intel/beignet.git")
+             (commit (string-append "Release_v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0lpv3lvi2vrmzb8blflrpbd3jgin76zqmz6jcv17vn9mylqdrfnd"))
+       (patches (search-patches "beignet-correct-file-names.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; There's a suspicious .isa binary file under kernels/.
+        ;; Remove it.
+        '(for-each delete-file (find-files "." "\\.isa$")))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("python" ,python)))
     (inputs `(("clang@3.7" ,clang-3.7)
@@ -294,23 +294,23 @@ back-end for the LLVM compiler framework.")
 (define-public pocl
   (package
     (name "pocl")
-    (version "1.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/pocl/pocl/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0lrw3hlb0w53xzmrf2hvbda406l70ar4gyadflvlkj4879lx138y"))))
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pocl/pocl.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0fyiwd9nrqhl0jsac0bx17p9acpfzhyxp50mmp28mzn7psb9qidg"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
      `(("libltdl" ,libltdl)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("clang" ,clang)
-       ("hwloc" ,hwloc "lib")
+       ("hwloc" ,hwloc-2.0 "lib")
        ("llvm" ,llvm)
        ("ocl-icd" ,ocl-icd)))
     (arguments
@@ -323,12 +323,6 @@ back-end for the LLVM compiler framework.")
                             (assoc-ref %build-inputs "libc") "/lib"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'remove-headers
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (delete-file-recursively
-                (string-append out "/include"))
-               #t)))
          (add-before 'check 'set-HOME
            (lambda _
              (setenv "HOME" "/tmp")

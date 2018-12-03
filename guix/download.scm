@@ -372,19 +372,38 @@
   ;; List of content-addressed mirrors.  Each mirror is represented as a
   ;; procedure that takes a file name, an algorithm (symbol) and a hash
   ;; (bytevector), and returns a URL or #f.
-  ;; Note: Avoid 'https' to mitigate <http://bugs.gnu.org/22774>.
-  ;; TODO: Add more.
-  '(list (lambda (file algo hash)
-           ;; Files served by 'guix publish' are accessible under a single
-           ;; hash algorithm.
-           (string-append "http://mirror.hydra.gnu.org/file/"
-                          file "/" (symbol->string algo) "/"
-                          (bytevector->nix-base32-string hash)))
-         (lambda (file algo hash)
-           ;; 'tarballs.nixos.org' supports several algorithms.
-           (string-append "http://tarballs.nixos.org/"
-                          (symbol->string algo) "/"
-                          (bytevector->nix-base32-string hash)))))
+  '(begin
+     (use-modules (guix base32))
+
+     (define (guix-publish host)
+       (lambda (file algo hash)
+         ;; Files served by 'guix publish' are accessible under a single
+         ;; hash algorithm.
+         (string-append "https://" host "/file/"
+                        file "/" (symbol->string algo) "/"
+                        (bytevector->nix-base32-string hash))))
+
+     ;; XXX: (guix base16) appeared in March 2017 (and thus 0.13.0) so old
+     ;; installations of the daemon might lack it.  Thus, load it lazily to
+     ;; avoid gratuitous errors.  See <https://bugs.gnu.org/33542>.
+     (module-autoload! (current-module)
+                       '(guix base16) '(bytevector->base16-string))
+
+     (list (guix-publish "mirror.hydra.gnu.org")
+           (guix-publish "berlin.guixsd.org")
+           (lambda (file algo hash)
+             ;; 'tarballs.nixos.org' supports several algorithms.
+             (string-append "https://tarballs.nixos.org/"
+                            (symbol->string algo) "/"
+                            (bytevector->nix-base32-string hash)))
+           (lambda (file algo hash)
+             ;; Software Heritage usually archives VCS history rather than
+             ;; tarballs, but tarballs are sometimes available (and can be
+             ;; explicitly stored there.)  For example, see
+             ;; <https://archive.softwareheritage.org/api/1/content/sha256:92d0fa1c311cacefa89853bdb53c62f4110cdfda3820346b59cbd098f40f955e/>.
+             (string-append "https://archive.softwareheritage.org/api/1/content/"
+                            (symbol->string algo) ":"
+                            (bytevector->base16-string hash) "/raw/")))))
 
 (define %content-addressed-mirror-file
   ;; Content-addressed mirrors stored in a file.

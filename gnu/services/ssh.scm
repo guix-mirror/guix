@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -319,6 +319,10 @@ The other options should be self-descriptive."
   (accepted-environment  openssh-configuration-accepted-environment
                          (default '()))
 
+  ;; symbol
+  (log-level             openssh-configuration-log-level
+                         (default 'info))
+
   ;; list of user-name/file-like tuples
   (authorized-keys       openssh-authorized-keys
                          (default '()))
@@ -451,6 +455,10 @@ of user-name/file-like tuples."
            (format port "PrintLastLog ~a\n"
                    #$(if (openssh-configuration-print-last-log? config)
                          "yes" "no"))
+           (format port "LogLevel ~a\n"
+                   #$(string-upcase
+                      (symbol->string
+                       (openssh-configuration-log-level config))))
 
            ;; Add '/etc/authorized_keys.d/%u', which we populate.
            (format port "AuthorizedKeysFile \
@@ -510,7 +518,15 @@ of user-name/file-like tuples."
                        (service-extension activation-service-type
                                           openssh-activation)
                        (service-extension account-service-type
-                                          (const %openssh-accounts))))
+                                          (const %openssh-accounts))
+
+                       ;; Install OpenSSH in the system profile.  That way,
+                       ;; 'scp' is found when someone tries to copy to or from
+                       ;; this machine.
+                       (service-extension profile-service-type
+                                          (lambda (config)
+                                            (list (openssh-configuration-openssh
+                                                   config))))))
                 (compose concatenate)
                 (extend extend-openssh-authorized-keys)
                 (default-value (openssh-configuration))))

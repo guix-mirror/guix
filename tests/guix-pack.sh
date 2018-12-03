@@ -1,5 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
+# Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -28,11 +29,6 @@ fi
 
 guix pack --version
 
-# FIXME: Starting from commit 66e9944e078cbb9e0d618377dd6df6e639640efa,
-# '--bootstrap' is mostly ineffective since 'guix pack' produces derivations
-# that refer to guile-sqlite3 and libgcrypt.  For now we just skip the test.
-exit 77
-
 # Use --no-substitutes because we need to verify we can do this ourselves.
 GUIX_BUILD_OPTIONS="--no-substitutes"
 export GUIX_BUILD_OPTIONS
@@ -53,7 +49,7 @@ the_pack="`guix pack --bootstrap -S /opt/gnu/bin=bin guile-bootstrap`"
 # exists because /opt/gnu/bin may be an absolute symlink to a store item that
 # has been GC'd.
 test_directory="`mktemp -d`"
-trap 'rm -rf "$test_directory"' EXIT
+trap 'chmod -Rf +w "$test_directory"; rm -rf "$test_directory"' EXIT
 cd "$test_directory"
 tar -xf "$the_pack"
 test -L opt/gnu/bin

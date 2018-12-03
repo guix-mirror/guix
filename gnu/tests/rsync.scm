@@ -111,7 +111,7 @@ PORT."
   ;; Return operating system under test.
   (let ((base-os
          (simple-operating-system
-          (dhcp-client-service)
+          (service dhcp-client-service-type)
           (service rsync-service-type))))
     (operating-system
       (inherit base-os)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +19,7 @@
 (define-module (run-system-tests)
   #:use-module (gnu tests)
   #:use-module (guix store)
+  #:use-module (guix status)
   #:use-module (guix monads)
   #:use-module (guix derivations)
   #:use-module (guix ui)
@@ -63,25 +64,27 @@
           (length tests))
 
   (with-store store
-    (run-with-store store
-      (mlet* %store-monad ((drv (mapm %store-monad system-test-value tests))
-                           (out -> (map derivation->output-path drv)))
-        (mbegin %store-monad
-          (show-what-to-build* drv)
-          (set-build-options* #:keep-going? #t #:keep-failed? #t
-                              #:print-build-trace #t
-                              #:fallback? #t)
-          (built-derivations* drv)
-          (mlet %store-monad ((valid  (filterm (store-lift valid-path?)
-                                               out))
-                              (failed (filterm (store-lift
-                                                (negate valid-path?))
-                                               out)))
-            (format #t "TOTAL: ~a\n" (length drv))
-            (for-each (lambda (item)
-                        (format #t "PASS: ~a~%" item))
-                      valid)
-            (for-each (lambda (item)
-                        (format #t "FAIL: ~a~%" item))
-                      failed)
-            (exit (null? failed))))))))
+    (with-status-report print-build-event
+      (run-with-store store
+        (mlet* %store-monad ((drv (mapm %store-monad system-test-value tests))
+                             (out -> (map derivation->output-path drv)))
+          (mbegin %store-monad
+            (show-what-to-build* drv)
+            (set-build-options* #:keep-going? #t #:keep-failed? #t
+                                #:print-build-trace #t
+                                #:print-extended-build-trace? #t
+                                #:fallback? #t)
+            (built-derivations* drv)
+            (mlet %store-monad ((valid  (filterm (store-lift valid-path?)
+                                                 out))
+                                (failed (filterm (store-lift
+                                                  (negate valid-path?))
+                                                 out)))
+              (format #t "TOTAL: ~a\n" (length drv))
+              (for-each (lambda (item)
+                          (format #t "PASS: ~a~%" item))
+                        valid)
+              (for-each (lambda (item)
+                          (format #t "FAIL: ~a~%" item))
+                        failed)
+              (exit (null? failed)))))))))

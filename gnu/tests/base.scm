@@ -42,6 +42,7 @@
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match)
   #:export (run-basic-test
             %test-basic-os
             %test-halt
@@ -67,6 +68,11 @@ initialization step, such as entering a LUKS passphrase."
     (service-value
      (fold-services (operating-system-services os)
                     #:target-type special-files-service-type)))
+
+  (define guix&co
+    (match (package-transitive-propagated-inputs guix)
+      (((labels packages) ...)
+       (cons guix packages))))
 
   (define test
     (with-imported-modules '((gnu build marionette)
@@ -148,10 +154,15 @@ info --version")
                                                  (#f (reverse result))
                                                  (x  (loop (cons x result))))))
                                           marionette)))
-              (lset= string=?
-                     (map passwd:name users)
+              (lset= equal?
+                     (map (lambda (user)
+                            (list (passwd:name user)
+                                  (passwd:dir user)))
+                          users)
                      (list
-                      #$@(map user-account-name
+                      #$@(map (lambda (account)
+                                `(list ,(user-account-name account)
+                                       ,(user-account-home-directory account)))
                               (operating-system-user-accounts os))))))
 
           (test-assert "shepherd services"
@@ -329,6 +340,20 @@ info --version")
               (x
                (pk 'failure x #f))))
 
+          (test-equal "nscd invalidate action"
+            '(#t)                                 ;one value, #t
+            (marionette-eval '(with-shepherd-action 'nscd ('invalidate "hosts")
+                                                    result
+                                                    result)
+                             marionette))
+
+          (test-equal "nscd invalidate action, wrong table"
+            '(#f)                                 ;one value, #f
+            (marionette-eval '(with-shepherd-action 'nscd ('invalidate "xyz")
+                                                    result
+                                                    result)
+                             marionette))
+
           (test-equal "host not found"
             #f
             (marionette-eval
@@ -345,8 +370,14 @@ info --version")
             'success!
             (marionette-eval '(begin
                                 ;; Make sure the (guix …) modules are found.
-                                (add-to-load-path
-                                 #+(file-append guix "/share/guile/site/2.2"))
+                                (eval-when (expand load eval)
+                                  (set! %load-path
+                                    (append (map (lambda (package)
+                                                   (string-append package
+                                                                  "/share/guile/site/"
+                                                                  (effective-version)))
+                                                 '#$guix&co)
+                                            %load-path)))
 
                                 (use-modules (srfi srfi-34) (guix store))
 
@@ -661,7 +692,7 @@ non-ASCII names from /tmp.")
     (name-service-switch %mdns-host-lookup-nss)
     (services (cons* (avahi-service #:debug? #t)
                      (dbus-service)
-                     (dhcp-client-service)        ;needed for multicast
+                     (service dhcp-client-service-type) ;needed for multicast
 
                      ;; Enable heavyweight debugging output.
                      (modify-services (operating-system-user-services

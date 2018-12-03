@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2018 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -40,6 +40,8 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages enlightenment)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
@@ -67,12 +69,13 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system python)
+  #:use-module (srfi srfi-1))
 
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.28")
+    (version "1.32")
     (source
      (origin
       (method url-fetch)
@@ -80,8 +83,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0jfsfnh9bxlxiwxws60yah4ybjw2hshmvqp31pri4m4h8ivrbnry"))
-      (patches (search-patches "libgpg-error-aarch64-logging-fix.patch"))))
+        "1jj08ns4sh1hmafqp1giskvdicdz18la516va26jycy27kkwaif3"))))
     (build-system gnu-build-system)
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
@@ -94,32 +96,19 @@ Daemon and possibly more in the future.")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgpg-error")))))
 
-;; Some packages (e.g. GPGME) require a newer libgpg-error to deal with
-;; error codes from recent GnuPG.  Remove this in the next rebuild cycle.
-(define-public libgpg-error-1.31
-  (package
-    (inherit libgpg-error)
-    (version "1.31")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnupg/libgpg-error/libgpg-error-"
-                                  version ".tar.bz2"))
-              (sha256
-               (base32
-                "1vx4nw6rxh2biy3h8n96fyr86q29h8gjl6837437i51jr4isil20"))))))
-
 (define-public libgcrypt
   (package
-    (replacement libgcrypt/fixed)
     (name "libgcrypt")
-    (version "1.8.2")
+    (version "1.8.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "01sca9m8hm6b5v8hmqsfdjhyz013869p1f0fxw9ln52qfnp4q1n8"))))
+               "0z5gs1khzyknyfjr19k8gk4q148s6q987ya85cpn0iv70fz91v36"))
+             (patches
+              (search-patches "libgcrypt-make-yat2m-reproducible.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))
@@ -144,19 +133,6 @@ generation.")
     (license license:lgpl2.0+)
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
-
-(define libgcrypt/fixed
-  (package
-    (inherit libgcrypt)
-    (name "libgcrypt")
-    (version "1.8.3")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
-                                 version ".tar.bz2"))
-             (sha256
-              (base32
-               "0z5gs1khzyknyfjr19k8gk4q148s6q987ya85cpn0iv70fz91v36"))))))
 
 (define-public libassuan
   (package
@@ -247,14 +223,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.9")
+    (version "2.2.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0r11mx8nkh7ysrnshs560amha5csx8zcaggb5kxcksx1zymyly32"))))
+                "1ncwqjhcxh46fgkp84g2lhf91amcha7abk6wdm1kagzm7q93wv29"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -406,7 +382,7 @@ libskba (working with X.509 certificates and CMS data).")
      `(("gnupg" ,gnupg)))
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
-     `(("libgpg-error" ,libgpg-error-1.31)))
+     `(("libgpg-error" ,libgpg-error)))
     (inputs
      `(("libassuan" ,libassuan)))
     (home-page "https://www.gnupg.org/related_software/gpgme/")
@@ -484,6 +460,13 @@ hash functions, message authentication codes (MAC), public-key cryptography,
 strong randomness, and more.  It is implemented using the foreign function
 interface (FFI) of Guile.")
     (license license:gpl3+)))
+
+(define-public guile2.0-gcrypt
+  (package (inherit guile-gcrypt)
+    (name "guile2.0-gcrypt")
+    (inputs
+     `(("guile" ,guile-2.0)
+       ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
 
 (define-public python-gpg
   (package
@@ -853,6 +836,34 @@ software.")))
      `(#:configure-flags '("CXXFLAGS=-std=gnu++11")))
   (description
    "Pinentry provides a console and a Qt GUI that allows users to enter a
+passphrase when @code{gpg} is run and needs it.")))
+
+(define-public pinentry-efl
+  (package
+    (inherit pinentry-tty)
+    (name "pinentry-efl")
+    (source
+      (origin
+        (inherit (package-source pinentry-tty))
+        (patches (search-patches "pinentry-efl.patch"))))
+    (arguments
+     '(#:configure-flags '("--enable-pinentry-efl")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _
+             (invoke "sh" "autogen.sh"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ,@(package-native-inputs pinentry-tty)))
+    (inputs
+     `(("efl" ,efl)
+       ,@(package-inputs pinentry-tty)))
+    (description
+   "Pinentry provides a console and a graphical interface for the
+@dfn{Enlightenment Foundation Libraries} (EFL) that allows users to enter a
 passphrase when @code{gpg} is run and needs it.")))
 
 (define-public pinentry

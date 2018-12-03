@@ -565,6 +565,12 @@ static void performOp(bool trusted, unsigned int clientVersion,
 
     case wopSetOptions: {
         settings.keepFailed = readInt(from) != 0;
+	if (isRemoteConnection)
+	    /* When the client is remote, don't keep the failed build tree as
+	       it is presumably inaccessible to the client and could fill up
+	       our disk.  */
+	    settings.keepFailed = 0;
+
         settings.keepGoing = readInt(from) != 0;
         settings.set("build-fallback", readInt(from) ? "true" : "false");
         verbosity = (Verbosity) readInt(from);
@@ -594,7 +600,7 @@ static void performOp(bool trusted, unsigned int clientVersion,
                 if (name == "build-timeout" || name == "build-max-silent-time"
                     || name == "build-max-jobs" || name == "build-cores"
                     || name == "build-repeat"
-                    || name == "use-ssh-substituter")
+                    || name == "multiplexed-build-output")
                     settings.set(name, value);
                 else
                     settings.set(trusted ? name : "untrusted-" + name, value);

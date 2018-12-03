@@ -115,7 +115,7 @@ and 'guix publish', something like
         (string-drop path 33)
         path)))
 
-(define* (ftp-fetch uri file #:key timeout)
+(define* (ftp-fetch uri file #:key timeout print-build-trace?)
   "Fetch data from URI and write it to FILE.  Return FILE on success.  Bail
 out if the connection could not be established in less than TIMEOUT seconds."
   (let* ((conn (match (and=> (uri-userinfo uri)
@@ -136,12 +136,17 @@ out if the connection could not be established in less than TIMEOUT seconds."
       (lambda (out)
         (dump-port* in out
                     #:buffer-size %http-receive-buffer-size
-                    #:reporter (progress-reporter/file
-                                (uri-abbreviation uri) size))))
+                    #:reporter
+                    (if print-build-trace?
+                        (progress-reporter/trace
+                         file (uri->string uri) size)
+                        (progress-reporter/file
+                         (uri-abbreviation uri) size)))))
 
-    (ftp-close conn))
-    (newline)
-  file)
+    (ftp-close conn)
+    (unless print-build-trace?
+      (newline))
+    file))
 
 ;; Autoload GnuTLS so that this module can be used even when GnuTLS is
 ;; not available.  At compile time, this yields "possibly unbound
@@ -723,7 +728,8 @@ Return a list of URIs."
                     #:key
                     (timeout 10) (verify-certificate? #t)
                     (mirrors '()) (content-addressed-mirrors '())
-                    (hashes '()))
+                    (hashes '())
+                    print-build-trace?)
   "Fetch FILE from URL; URL may be either a single string, or a list of
 string denoting alternate URLs for FILE.  Return #f on failure, and FILE
 on success.
@@ -759,13 +765,18 @@ otherwise simply ignore them."
             (lambda (output)
               (dump-port* port output
                           #:buffer-size %http-receive-buffer-size
-                          #:reporter (progress-reporter/file
-                                      (uri-abbreviation uri) size))
+                          #:reporter (if print-build-trace?
+                                         (progress-reporter/trace
+                                          file (uri->string uri) size)
+                                         (progress-reporter/file
+                                          (uri-abbreviation uri) size)))
               (newline)))
           file)))
       ((ftp)
        (false-if-exception* (ftp-fetch uri file
-                                       #:timeout timeout)))
+                                       #:timeout timeout
+                                       #:print-build-trace?
+                                       print-build-trace?)))
       (else
        (format #t "skipping URI with unsupported scheme: ~s~%"
                uri)

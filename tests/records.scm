@@ -313,8 +313,9 @@
       (lambda ()
         (eval '(foo? (make-me-a-record)) module)
         #f)
-      (lambda (key rtd . _)
-        (eq? rtd (eval '<foo> module))))))
+      (match-lambda*
+        ((key 'abi-check (? string? message) (rtd) . _)
+         (eq? rtd (eval '<foo> module)))))))
 
 (test-equal "recutils->alist"
   '((("Name" . "foo")

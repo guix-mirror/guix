@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2018 Roel Janssen <roel@gnu.org>
@@ -19,7 +19,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -43,9 +43,9 @@
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
-  #:use-module (guix utils) ;substitute-keyword-arguments for perl-5.26.2
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
@@ -62,17 +62,15 @@
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
     (name "perl")
-    (version "5.26.1")
-    (replacement perl/fixed)
+    (version "5.28.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/src/5.0/perl-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1p81wwvr5jb81m41d07kfywk5gvbk0axdrnvhc2aghcdbr4alqz7"))
+               "1a3f822lcl8dr8v0hk80yyhpzqlljg49z9flb48rs3nbsij9z4ky"))
              (patches (search-patches
-                       "perl-file-path-CVE-2017-6512.patch"
                        "perl-no-sys-dirs.patch"
                        "perl-autosplit-default-time.patch"
                        "perl-deterministic-ordering.patch"
@@ -156,45 +154,12 @@
                                 (files '("lib/perl5/site_perl")))))
     (synopsis "Implementation of the Perl programming language")
     (description
-     "Perl 5 is a highly capable, feature-rich programming language with over
-24 years of development.")
+     "Perl is a general-purpose programming language originally developed for
+text manipulation and now used for a wide range of tasks including system
+administration, web development, network programming, GUI development, and
+more.")
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
-
-;; Fixes CVE-2018-6797, CVE-2018-6798, and CVE-2018-6913.
-;; See <https://metacpan.org/changes/release/SHAY/perl-5.26.2>.
-(define perl-5.26.2
-  (package
-    (inherit perl)
-    (version "5.26.2")
-    (source (origin
-              (inherit (package-source perl))
-              (uri (string-append "mirror://cpan/src/5.0/perl-"
-                                  version ".tar.gz"))
-              (patches (append (origin-patches (package-source perl))
-                               (search-patches "perl-archive-tar-CVE-2018-12015.patch")))
-              (sha256
-               (base32
-                "03gpnxx1g6hvlh0v4aqx00580h787sfywp1vlvw64q2xcbm9qbsp"))))))
-
-;; When grafting perl, complications arise when the replacement perl has a
-;; different version number than the original.  So, here we create a version
-;; of perl-5.26.2 that thinks it is version 5.26.1.  See
-;; <https://bugs.gnu.org/31210> and <https://bugs.gnu.org/31216>.
-(define perl/fixed
-  (package
-    (inherit perl-5.26.2)
-    (version "5.26.1")
-    (arguments
-     (substitute-keyword-arguments (package-arguments perl-5.26.2)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'revert-perl-subversion
-             (lambda _
-               (substitute* "patchlevel.h"
-                 (("^#define PERL_SUBVERSION	2")
-                  "#define PERL_SUBVERSION	1"))
-               #t))))))))
 
 (define-public perl-algorithm-c3
   (package
@@ -362,7 +327,7 @@ sometimes even without using a single syscall.")
 (define-public perl-autovivification
   (package
     (name "perl-autovivification")
-    (version "0.16")
+    (version "0.18")
     (source
      (origin
        (method url-fetch)
@@ -370,7 +335,7 @@ sometimes even without using a single syscall.")
                            "autovivification-" version ".tar.gz"))
        (sha256
         (base32
-         "1422kw9fknv7rbjkgdfflg1q3mb69d3yryszp38dn0bgzkqhwkc1"))))
+         "01giacr2sx6b9bgfz6aqw7ndcnf08j8n6kwhm7880a94hmb9g69d"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/autovivification")
     (synopsis "Lexically disable autovivification")
@@ -1407,7 +1372,7 @@ supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
 (define-public perl-config-autoconf
   (package
     (name "perl-config-autoconf")
-    (version "0.315")
+    (version "0.317")
     (source
      (origin
        (method url-fetch)
@@ -1415,7 +1380,7 @@ supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
                            "Config-AutoConf-" version ".tar.gz"))
        (sha256
         (base32
-         "0h39x9rzrhhilpg8yxlzpka269qrzsjg0iy0c1b9xflqlvhx2g2b"))))
+         "1qcwib4yaml5z2283qy5khjcydyibklsnk8zrk9wzdzc5wnv5r01"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
@@ -2178,7 +2143,7 @@ hours, minutes, seconds, and time zones.")
 (define-public perl-datetime
   (package
     (name "perl-datetime")
-    (version "1.49")
+    (version "1.50")
     (source
      (origin
        (method url-fetch)
@@ -2186,7 +2151,7 @@ hours, minutes, seconds, and time zones.")
                            "DateTime-" version ".tar.gz"))
        (sha256
         (base32
-         "0hbw4zq1562slnz7g7hyhfhyq98dzkk3i5g21x3xra5cvfix93kh"))))
+         "165iqk1xvhs5j0kzsipa7aqycx3h37wqsl2r4jl104yqvmqhqszd"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
@@ -2624,6 +2589,30 @@ the appropriate objects.")
 particular command is available.")
     (license (package-license perl))))
 
+(define-public perl-devel-checklib
+  (package
+    (name "perl-devel-checklib")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MATTN/Devel-CheckLib-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1a19qkwxwz3wqb16cdabymfbf9kiydiifw90nd5srpq5hy8gvb94"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-io-captureoutput" ,perl-io-captureoutput)
+       ("perl-mock-config" ,perl-mock-config)))
+    (home-page "https://metacpan.org/release/Devel-CheckLib")
+    (synopsis "Check that a library is available")
+    (description
+     "@code{Devel::CheckLib} is a Perl module that checks whether a particular
+C library and its headers are available.  You can also check for the presence of
+particular functions in a library, or even that those functions return
+particular results.")
+    (license perl-license)))
+
 (define-public perl-devel-checkcompiler
   (package
   (name "perl-devel-checkcompiler")
@@ -2888,7 +2877,8 @@ interface for the RFC 2104 HMAC mechanism.")
          (add-after 'build 'set-permissions
            (lambda _
              ;; Make MD5.so read-write so it can be stripped.
-             (chmod "blib/arch/auto/Digest/MD5/MD5.so" #o755))))))
+             (chmod "blib/arch/auto/Digest/MD5/MD5.so" #o755)
+             #t)))))
     (home-page "https://metacpan.org/release/Digest-MD5")
     (synopsis "Perl interface to the MD-5 algorithm")
     (description
@@ -3014,7 +3004,7 @@ also known as JIS 2000.")
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-env
-           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1"))))))
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (home-page "https://metacpan.org/release/Encode-HanExtra")
     (synopsis "Additional Chinese encodings")
     (description "This Perl module provides Chinese encodings that are not
@@ -3166,7 +3156,7 @@ only about 40% as many lines of code and with zero non-core dependencies.")
 (define-public perl-extutils-installpaths
   (package
     (name "perl-extutils-installpaths")
-    (version "0.011")
+    (version "0.012")
     (source
      (origin
        (method url-fetch)
@@ -3174,7 +3164,7 @@ only about 40% as many lines of code and with zero non-core dependencies.")
                            "ExtUtils-InstallPaths-" version ".tar.gz"))
        (sha256
         (base32
-         "0z06y0fhx9hy9x01abb7s2xdbqrh9x4ps7avmlf4bwfwih2gl2bn"))))
+         "1v9lshfhm9ck4p0v77arj5f7haj1mmkqal62lgzzvcds6wq5www4"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-extutils-config" ,perl-extutils-config)))
@@ -3230,7 +3220,7 @@ XS interface besides the perl one.")
 (define-public perl-extutils-helpers
   (package
     (name "perl-extutils-helpers")
-    (version "0.022")
+    (version "0.026")
     (source
      (origin
        (method url-fetch)
@@ -3238,7 +3228,7 @@ XS interface besides the perl one.")
                            "ExtUtils-Helpers-" version ".tar.gz"))
        (sha256
         (base32
-         "15dalfwmpfmifw312i5pwiai8134pxf7b2804shlqhdk1xqczy6k"))))
+         "05ilqcj1rg5izr09dsqmy5di4fvq6ph4k0chxks7qmd4j1kip46y"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/ExtUtils-Helpers")
     (synopsis "Various portability utilities for module builders")
@@ -3810,7 +3800,7 @@ single-letter approach, is provided but not enabled by default.")
 (define-public perl-getopt-long-descriptive
   (package
     (name "perl-getopt-long-descriptive")
-    (version "0.102")
+    (version "0.103")
     (source
      (origin
        (method url-fetch)
@@ -3818,7 +3808,7 @@ single-letter approach, is provided but not enabled by default.")
                            "Getopt-Long-Descriptive-" version ".tar.gz"))
        (sha256
         (base32
-         "0ii8xafvlph5vzcqp3dpc83lg7nkg3l1l2hmqdf5382a567vkm4s"))))
+         "1cpl240qxmh7jf85ai9sfkp3nzm99syya4jxidizp7aa83kvmqbh"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
@@ -4289,7 +4279,8 @@ run interactively.  It also has an option to capture output/error buffers.")
                    (lambda _
                      ;; This test fails, and we're not really interested in
                      ;; it, so disable it.
-                     (delete-file "t/win32_compile.t"))))))
+                     (delete-file "t/win32_compile.t")
+                     #t)))))
     (home-page "https://metacpan.org/release/IPC-Run")
     (synopsis "Run system() and background procs w/ piping, redirs, ptys")
     (description "IPC::Run allows you run and interact with child processes
@@ -5260,7 +5251,7 @@ examine the contents, and perform some simple tasks.  It can also load the
 (define-public perl-module-runtime
   (package
     (name "perl-module-runtime")
-    (version "0.014")
+    (version "0.016")
     (source
      (origin
        (method url-fetch)
@@ -5268,7 +5259,7 @@ examine the contents, and perform some simple tasks.  It can also load the
                            "Module-Runtime-" version ".tar.gz"))
        (sha256
         (base32
-         "19326f094jmjs6mgpwkyisid54k67w34br8yfh0gvaaml87gwi2c"))))
+         "097hy2czwkxlppri32m599ph0xfvfsbf0a5y23a4fdc38v32wc38"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "https://metacpan.org/release/Module-Runtime")
@@ -5519,7 +5510,7 @@ private methods are not.")
 (define-public perl-moosex-getopt
   (package
     (name "perl-moosex-getopt")
-    (version "0.71")
+    (version "0.73")
     (source
      (origin
        (method url-fetch)
@@ -5527,12 +5518,15 @@ private methods are not.")
                            "MooseX-Getopt-" version ".tar.gz"))
        (sha256
         (base32
-         "0nf2094qgir0irxjycwqavy53ygm530g9f7cxfywnl2n1bmgh66y"))))
+         "19zm8brf930p0ymqn3w1y0ix29kb74m8nvhrhjvrg8cgz6vc5fyz"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
+       ("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-path-tiny" ,perl-path-tiny)
        ("perl-test-deep" ,perl-test-deep)
        ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-needs" ,perl-test-needs)
        ("perl-test-requires" ,perl-test-requires)
        ("perl-test-trap" ,perl-test-trap)
        ("perl-test-warnings" ,perl-test-warnings)))
@@ -6362,7 +6356,7 @@ anything that looks like a method.")
 (define-public perl-namespace-clean
   (package
     (name "perl-namespace-clean")
-    (version "0.25")
+    (version "0.27")
     (source
      (origin
        (method url-fetch)
@@ -6370,7 +6364,7 @@ anything that looks like a method.")
                            "namespace-clean-" version ".tar.gz"))
        (sha256
         (base32
-         "016dds70ql1mp18b07chkxiy4drn976ibnbshqc2hmhrh9xjnsll"))))
+         "17dg64pd4bwi2ad3p8ykwys1zha7kg8a8ykvks7wfg8q7qyah44a"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-package-stash" ,perl-package-stash)
@@ -6742,7 +6736,7 @@ checking parameters easier.")
 (define-public perl-params-validate
   (package
     (name "perl-params-validate")
-    (version "1.26")
+    (version "1.29")
     (source
      (origin
        (method url-fetch)
@@ -6750,7 +6744,7 @@ checking parameters easier.")
                            "Params-Validate-" version ".tar.gz"))
        (sha256
         (base32
-         "1vbj78qd46ip09i06dsbb62jfwpzp4bg7yi617v98nvim77w66l2"))))
+         "0cwpf8yxwyxbnwhf6rx4wnaq1q38j38i34a78a005shb8gxqv9j9"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -6875,7 +6869,8 @@ directory specifications in a cross-platform manner.")
              (substitute* "Cwd.pm"
                (("'/bin/pwd'")
                 (string-append "'" (assoc-ref inputs "coreutils")
-                               "/bin/pwd'"))))))))
+                               "/bin/pwd'")))
+             #t)))))
     (inputs
      `(("coreutils" ,coreutils)))
     (home-page "https://metacpan.org/release/PathTools")
@@ -6935,7 +6930,7 @@ for correctness.")
 (define-public perl-pegex
   (package
    (name "perl-pegex")
-   (version "0.64")
+   (version "0.67")
    (source
     (origin
      (method url-fetch)
@@ -6944,7 +6939,7 @@ for correctness.")
            version ".tar.gz"))
      (sha256
       (base32
-       "1kb7y2cc3nibbn8i8y3vrzz1f9h3892nbf8jj88c5fdgpmj05q17"))))
+       "149015ra2figalxrnj72fz02qc5cm96xg6x8d6kmyanfmrrxzf9w"))))
    (build-system perl-build-system)
    (native-inputs
     `(("perl-file-sharedir-install" ,perl-file-sharedir-install)
@@ -7631,7 +7626,7 @@ renaming exports, if they try to use them.")
 (define-public perl-sub-identify
   (package
     (name "perl-sub-identify")
-    (version "0.10")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
@@ -7639,7 +7634,7 @@ renaming exports, if they try to use them.")
                            "Sub-Identify-" version ".tar.gz"))
        (sha256
         (base32
-         "087fjcg6w576w47i1slj6mjfd3gl1b0airgddmn3prn0nff6nn2m"))))
+         "0vxdxyfh6037xy88ic7500wydzmsxldhp95n8bld2kaihqh2g386"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Sub-Identify")
     (synopsis "Retrieve names of code references")
@@ -9007,6 +9002,9 @@ defined by Annex #11 is used to determine breaking positions.")
                (base32
                 "1xnhazbdvpyfpnxd90krzhxkvabf8fa2ji6xzlrf75j6nz8251zs"))))
     (build-system perl-build-system)
+    ;; FIXME: Tests fail on 32-bit architectures:
+    ;; <https://rt.cpan.org/Public/Bug/Display.html?id=127007>.
+    (arguments `(#:tests? ,(target-64bit?)))
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-leaktrace" ,perl-test-leaktrace)

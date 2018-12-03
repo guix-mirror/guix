@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -685,17 +686,20 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
   (shepherd-service-type
    'virtual-terminal
    (lambda (utf8?)
-     (shepherd-service
-      (documentation "Set virtual terminals in UTF-8 module.")
-      (provision '(virtual-terminal))
-      (requirement '(root-file-system))
-      (start #~(lambda _
-                 (call-with-output-file
-                     "/sys/module/vt/parameters/default_utf8"
-                   (lambda (port)
-                     (display 1 port)))
-                 #t))
-      (stop #~(const #f))))
+     (let ((knob "/sys/module/vt/parameters/default_utf8"))
+       (shepherd-service
+        (documentation "Set virtual terminals in UTF-8 module.")
+        (provision '(virtual-terminal))
+        (requirement '(root-file-system))
+        (start #~(lambda _
+                   ;; In containers /sys is read-only so don't insist on
+                   ;; writing to this file.
+                   (unless (= 1 (call-with-input-file #$knob read))
+                     (call-with-output-file #$knob
+                       (lambda (port)
+                         (display 1 port))))
+                   #t))
+        (stop #~(const #f)))))
    #t))                                           ;default to UTF-8
 
 (define console-keymap-service-type
@@ -1248,18 +1252,57 @@ the tty to run, among other things."
                                 (string-concatenate
                                  (map cache->config caches)))))))
 
+(define (nscd-action-procedure nscd config option)
+  ;; XXX: This is duplicated from mcron; factorize.
+  #~(lambda (_ . args)
+      ;; Run 'nscd' in a pipe so we can explicitly redirect its output to
+      ;; 'current-output-port', which at this stage is bound to the client
+      ;; connection.
+      (let ((pipe (apply open-pipe* OPEN_READ #$nscd
+                         "-f" #$config #$option args)))
+        (let loop ()
+          (match (read-line pipe 'concat)
+            ((? eof-object?)
+             (catch 'system-error
+               (lambda ()
+                 (zero? (close-pipe pipe)))
+               (lambda args
+                 ;; There's a race with the SIGCHLD handler, which could
+                 ;; call 'waitpid' before 'close-pipe' above does.  If we
+                 ;; get ECHILD, that means we lost the race, but that's
+                 ;; fine.
+                 (or (= ECHILD (system-error-errno args))
+                     (apply throw args)))))
+            (line
+             (display line)
+             (loop)))))))
+
+(define (nscd-actions nscd config)
+  "Return Shepherd actions for NSCD."
+  ;; Make this functionality available as actions because that's a simple way
+  ;; to run the right 'nscd' binary with the right config file.
+  (list (shepherd-action
+         (name 'statistics)
+         (documentation "Display statistics about nscd usage.")
+         (procedure (nscd-action-procedure nscd config "--statistics")))
+        (shepherd-action
+         (name 'invalidate)
+         (documentation
+          "Invalidate the given cache--e.g., 'hosts' for host name lookups.")
+         (procedure (nscd-action-procedure nscd config "--invalidate")))))
+
 (define (nscd-shepherd-service config)
   "Return a shepherd service for CONFIG, an <nscd-configuration> object."
-  (let ((nscd.conf     (nscd.conf-file config))
+  (let ((nscd          (file-append (nscd-configuration-glibc config)
+                                    "/sbin/nscd"))
+        (nscd.conf     (nscd.conf-file config))
         (name-services (nscd-configuration-name-services config)))
     (list (shepherd-service
            (documentation "Run libc's name service cache daemon (nscd).")
            (provision '(nscd))
            (requirement '(user-processes))
            (start #~(make-forkexec-constructor
-                     (list #$(file-append (nscd-configuration-glibc config)
-                                          "/sbin/nscd")
-                           "-f" #$nscd.conf "--foreground")
+                     (list #$nscd "-f" #$nscd.conf "--foreground")
 
                      ;; Wait for the PID file.  However, the PID file is
                      ;; written before nscd is actually listening on its
@@ -1273,7 +1316,12 @@ the tty to run, among other things."
                                                   (string-append dir "/lib"))
                                                 (list #$@name-services))
                                            ":")))))
-           (stop #~(make-kill-destructor))))))
+           (stop #~(make-kill-destructor))
+           (modules `((ice-9 popen)               ;for the actions
+                      (ice-9 rdelim)
+                      (ice-9 match)
+                      ,@%default-modules))
+           (actions (nscd-actions nscd nscd.conf))))))
 
 (define nscd-activation
   ;; Actions to take before starting nscd.
@@ -1846,16 +1894,9 @@ item of @var{packages}."
 
          (documentation "Populate the /dev directory, dynamically.")
          (start #~(lambda ()
-                    (define find
-                      (@ (srfi srfi-1) find))
-
                     (define udevd
-                      ;; Choose the right 'udevd'.
-                      (find file-exists?
-                            (map (lambda (suffix)
-                                   (string-append #$udev suffix))
-                                 '("/libexec/udev/udevd" ;udev
-                                   "/sbin/udevd"))))     ;eudev
+                      ;; 'udevd' from eudev.
+                      #$(file-append udev "/sbin/udevd"))
 
                     (define (wait-for-udevd)
                       ;; Wait until someone's listening on udevd's control
@@ -1888,27 +1929,28 @@ item of @var{packages}."
                             (string-append linux-module-directory "/"
                                            kernel-release))
                            (old-umask (umask #o022)))
-                      (make-static-device-nodes directory)
+                      ;; If we're in a container, DIRECTORY might not exist,
+                      ;; for instance because the host runs a different
+                      ;; kernel.  In that case, skip it; we'll just miss a few
+                      ;; nodes like /dev/fuse.
+                      (when (file-exists? directory)
+                        (make-static-device-nodes directory))
                       (umask old-umask))
 
-                    (let ((pid (primitive-fork)))
-                      (case pid
-                        ((0)
-                         (exec-command (list udevd)))
-                        (else
-                         ;; Wait until udevd is up and running.  This
-                         ;; appears to be needed so that the events
-                         ;; triggered below are actually handled.
-                         (wait-for-udevd)
+                    (let ((pid (fork+exec-command (list udevd))))
+                      ;; Wait until udevd is up and running.  This appears to
+                      ;; be needed so that the events triggered below are
+                      ;; actually handled.
+                      (wait-for-udevd)
 
-                         ;; Trigger device node creation.
-                         (system* #$(file-append udev "/bin/udevadm")
-                                  "trigger" "--action=add")
+                      ;; Trigger device node creation.
+                      (system* #$(file-append udev "/bin/udevadm")
+                               "trigger" "--action=add")
 
-                         ;; Wait for things to settle down.
-                         (system* #$(file-append udev "/bin/udevadm")
-                                  "settle")
-                         pid)))))
+                      ;; Wait for things to settle down.
+                      (system* #$(file-append udev "/bin/udevadm")
+                               "settle")
+                      pid)))
          (stop #~(make-kill-destructor))
 
          ;; When halting the system, 'udev' is actually killed by
@@ -2043,6 +2085,8 @@ This service is not part of @var{%base-services}."
                            (default (file-append shadow "/bin/login")))
   (login-arguments         kmscon-configuration-login-arguments
                            (default '("-p")))
+  (auto-login              kmscon-configuration-auto-login
+                           (default #f))
   (hardware-acceleration?  kmscon-configuration-hardware-acceleration?
                            (default #f))) ; #t causes failure
 
@@ -2054,14 +2098,20 @@ This service is not part of @var{%base-services}."
            (virtual-terminal (kmscon-configuration-virtual-terminal config))
            (login-program (kmscon-configuration-login-program config))
            (login-arguments (kmscon-configuration-login-arguments config))
+           (auto-login (kmscon-configuration-auto-login config))
            (hardware-acceleration? (kmscon-configuration-hardware-acceleration? config)))
 
        (define kmscon-command
          #~(list
             #$(file-append kmscon "/bin/kmscon") "--login"
             "--vt" #$virtual-terminal
+            "--no-switchvt" ;Prevent a switch to the virtual terminal.
             #$@(if hardware-acceleration? '("--hwaccel") '())
-            "--" #$login-program #$@login-arguments))
+            "--login" "--"
+            #$login-program #$@login-arguments
+            #$@(if auto-login
+                   #~(#$auto-login)
+                   #~())))
 
        (shepherd-service
         (documentation "kmscon virtual terminal")
@@ -2133,7 +2183,7 @@ This service is not part of @var{%base-services}."
                                              AF_INET INADDR_ANY 0)))
                     (set-network-interface-flags sock #$interface 0)
                     (close-port sock)
-:                    #f)))
+                    #f)))
         (respawn? #f))))))
 
 (define (static-networking-etc-files interfaces)

@@ -23,13 +23,15 @@
   #:use-module (guix memoization)
   #:use-module (guix serialization)
   #:use-module (guix monads)
+  #:use-module (guix records)
   #:use-module (guix base16)
   #:use-module (guix base32)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix profiling)
   #:autoload   (guix build syscalls) (terminal-columns)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 binary-ports)
+  #:use-module ((ice-9 control) #:select (let/ec))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
@@ -50,9 +52,12 @@
             %default-substitute-urls
 
             nix-server?
+            nix-server-version
             nix-server-major-version
             nix-server-minor-version
             nix-server-socket
+            current-store-protocol-version        ;for internal use
+            mcached
 
             &nix-error nix-error?
             &nix-connection-error nix-connection-error?
@@ -150,9 +155,10 @@
             store-path-package-name
             store-path-hash-part
             direct-store-path
+            derivation-log-file
             log-file))
 
-(define %protocol-version #x161)
+(define %protocol-version #x163)
 
 (define %worker-magic-1 #x6e697863)               ; "nixc"
 (define %worker-magic-2 #x6478696f)               ; "dxio"
@@ -161,6 +167,8 @@
   (logand magic #xff00))
 (define (protocol-minor magic)
   (logand magic #x00ff))
+(define (protocol-version major minor)
+  (logior major minor))
 
 (define-syntax define-enumerate-type
   (syntax-rules ()
@@ -327,10 +335,7 @@
 
 ;; remote-store.cc
 
-(define-record-type <nix-server>
-  (%make-nix-server socket major minor
-                    buffer flush
-                    ats-cache atts-cache)
+(define-record-type* <nix-server> nix-server %make-nix-server
   nix-server?
   (socket nix-server-socket)
   (major  nix-server-major-version)
@@ -343,7 +348,9 @@
   ;; during the session are temporary GC roots kept for the duration of
   ;; the session.
   (ats-cache  nix-server-add-to-store-cache)
-  (atts-cache nix-server-add-text-to-store-cache))
+  (atts-cache nix-server-add-text-to-store-cache)
+  (object-cache nix-server-object-cache
+                (default vlist-null)))            ;vhash
 
 (set-record-type-printer! <nix-server>
                           (lambda (obj port)
@@ -518,7 +525,8 @@ for this connection will be pinned.  Return a server object."
                                                     (protocol-minor v)
                                                     output flush
                                                     (make-hash-table 100)
-                                                    (make-hash-table 100))))
+                                                    (make-hash-table 100)
+                                                    vlist-null)))
                         (let loop ((done? (process-stderr conn)))
                           (or done? (process-stderr conn)))
                         conn)))))))))
@@ -538,7 +546,13 @@ connection.  Use with care."
                       (protocol-minor version)
                       output flush
                       (make-hash-table 100)
-                      (make-hash-table 100))))
+                      (make-hash-table 100)
+                      vlist-null)))
+
+(define (nix-server-version store)
+  "Return the protocol version of STORE as an integer."
+  (protocol-version (nix-server-major-version store)
+                    (nix-server-minor-version store)))
 
 (define (write-buffered-output server)
   "Flush SERVER's output port."
@@ -556,9 +570,19 @@ automatically close the store when the dynamic extent of EXP is left."
     (dynamic-wind
       (const #f)
       (lambda ()
-        exp ...)
+        (parameterize ((current-store-protocol-version
+                        (nix-server-version store)))
+         exp) ...)
       (lambda ()
         (false-if-exception (close-connection store))))))
+
+(define current-store-protocol-version
+  ;; Protocol version of the store currently used.  XXX: This is a hack to
+  ;; communicate the protocol version to the build output port.  It's a hack
+  ;; because it could be inaccurrate, for instance if there's code that
+  ;; manipulates several store connections at once; it works well for the
+  ;; purposes of (guix status) though.
+  (make-parameter #f))
 
 (define current-build-output-port
   ;; The port where build output is sent.
@@ -682,6 +706,22 @@ encoding conversion errors."
                             (build-verbosity 0)
                             (log-type 0)
                             (print-build-trace #t)
+
+                            ;; When true, provide machine-readable "build
+                            ;; traces" for use by (guix status).  Old clients
+                            ;; are unable to make sense, which is why it's
+                            ;; disabled by default.
+                            print-extended-build-trace?
+
+                            ;; When true, the daemon prefixes builder output
+                            ;; with "@ build-log" traces so we can
+                            ;; distinguish it from daemon output, and we can
+                            ;; distinguish each builder's output
+                            ;; (PRINT-BUILD-TRACE must be true as well.)  The
+                            ;; latter is particularly useful when
+                            ;; MAX-BUILD-JOBS > 1.
+                            multiplexed-build-output?
+
                             build-cores
                             (use-substitutes? #t)
 
@@ -725,7 +765,16 @@ encoding conversion errors."
     (when (>= (nix-server-minor-version server) 10)
       (send (boolean use-substitutes?)))
     (when (>= (nix-server-minor-version server) 12)
-      (let ((pairs `(,@(if timeout
+      (let ((pairs `(;; This option is honored by 'guix substitute' et al.
+                     ,@(if print-build-trace
+                           `(("print-extended-build-trace"
+                              . ,(if print-extended-build-trace? "1" "0")))
+                           '())
+                     ,@(if multiplexed-build-output?
+                           `(("multiplexed-build-output"
+                              . ,(if multiplexed-build-output? "true" "false")))
+                           '())
+                     ,@(if timeout
                            `(("build-timeout" . ,(number->string timeout)))
                            '())
                      ,@(if max-silent-time
@@ -770,6 +819,7 @@ bytevector) as its internal buffer, and a thunk to flush this output port."
 
   (define (flush)
     (put-bytevector port buffer 0 total)
+    (force-output port)
     (set! total 0))
 
   (define (write bv offset count)
@@ -927,6 +977,7 @@ path."
              (write-int (if recursive? 1 0) port)
              (write-string hash-algo port)
              (write-file file-name port #:select? select?)
+             (write-buffered-output server)
              (let loop ((done? (process-stderr server)))
                (or done? (loop (process-stderr server))))
              (read-store-path port)))))
@@ -1042,6 +1093,7 @@ an arbitrary directory layout in the store without creating a derivation."
                            #:file-port file-port
                            #:symlink-target symlink-target
                            #:directory-entries directory-entries)
+          (write-buffered-output server)
           (let loop ((done? (process-stderr server)))
             (or done? (loop (process-stderr server))))
           (let ((result (read-store-path port)))
@@ -1061,13 +1113,15 @@ an arbitrary directory layout in the store without creating a derivation."
 outputs, and return when the worker is done building them.  Elements of THINGS
 that are not derivations can only be substituted and not built locally.
 Return #t on success."
-      (if (>= (nix-server-minor-version store) 15)
-          (build store things mode)
-          (if (= mode (build-mode normal))
-              (build/old store things)
-              (raise (condition (&nix-protocol-error
-                                 (message "unsupported build mode")
-                                 (status  1)))))))))
+      (parameterize ((current-store-protocol-version
+                      (nix-server-version store)))
+        (if (>= (nix-server-minor-version store) 15)
+            (build store things mode)
+            (if (= mode (build-mode normal))
+                (build/old store things)
+                (raise (condition (&nix-protocol-error
+                                   (message "unsupported build mode")
+                                   (status  1))))))))))
 
 (define-operation (add-temp-root (store-path path))
   "Make PATH a temporary root for the duration of the current session.
@@ -1436,6 +1490,56 @@ This makes sense only when the daemon was started with '--cache-failures'."
 ;; from %STATE-MONAD.
 (template-directory instantiations %store-monad)
 
+(define* (cache-object-mapping object keys result)
+  "Augment the store's object cache with a mapping from OBJECT/KEYS to RESULT.
+KEYS is a list of additional keys to match against, for instance a (SYSTEM
+TARGET) tuple.
+
+OBJECT is typically a high-level object such as a <package> or an <origin>,
+and RESULT is typically its derivation."
+  (lambda (store)
+    (values result
+            (nix-server
+             (inherit store)
+             (object-cache (vhash-consq object (cons result keys)
+                                        (nix-server-object-cache store)))))))
+
+(define* (lookup-cached-object object #:optional (keys '()))
+  "Return the cached object in the store connection corresponding to OBJECT
+and KEYS.  KEYS is a list of additional keys to match against, and which are
+compared with 'equal?'.  Return #f on failure and the cached result
+otherwise."
+  (lambda (store)
+    ;; Escape as soon as we find the result.  This avoids traversing the whole
+    ;; vlist chain and significantly reduces the number of 'hashq' calls.
+    (values (let/ec return
+              (vhash-foldq* (lambda (item result)
+                              (match item
+                                ((value . keys*)
+                                 (if (equal? keys keys*)
+                                     (return value)
+                                     result))))
+                            #f object
+                            (nix-server-object-cache store)))
+            store)))
+
+(define* (%mcached mthunk object #:optional (keys '()))
+  "Bind the monadic value returned by MTHUNK, which supposedly corresponds to
+OBJECT/KEYS, or return its cached value."
+  (mlet %store-monad ((cached (lookup-cached-object object keys)))
+    (if cached
+        (return cached)
+        (>>= (mthunk)
+             (lambda (result)
+               (cache-object-mapping object keys result))))))
+
+(define-syntax-rule (mcached mvalue object keys ...)
+  "Run MVALUE, which corresponds to OBJECT/KEYS, and cache it; or return the
+value associated with OBJECT/KEYS in the store's object cache if there is
+one."
+  (%mcached (lambda () mvalue)
+            object (list keys ...)))
+
 (define (preserve-documentation original proc)
   "Return PROC with documentation taken from ORIGINAL."
   (set-object-property! proc 'documentation
@@ -1670,21 +1774,26 @@ syntactically valid store path."
                 (and (string-every %nix-base32-charset hash)
                      hash))))))
 
+(define (derivation-log-file drv)
+  "Return the build log file for DRV, a derivation file name, or #f if it
+could not be found."
+  (let* ((base    (basename drv))
+         (log     (string-append (dirname %state-directory) ; XXX
+                                 "/log/guix/drvs/"
+                                 (string-take base 2) "/"
+                                 (string-drop base 2)))
+         (log.gz  (string-append log ".gz"))
+         (log.bz2 (string-append log ".bz2")))
+    (cond ((file-exists? log.gz) log.gz)
+          ((file-exists? log.bz2) log.bz2)
+          ((file-exists? log) log)
+          (else #f))))
+
 (define (log-file store file)
   "Return the build log file for FILE, or #f if none could be found.  FILE
 must be an absolute store file name, or a derivation file name."
   (cond ((derivation-path? file)
-         (let* ((base    (basename file))
-                (log     (string-append (dirname %state-directory) ; XXX
-                                        "/log/guix/drvs/"
-                                        (string-take base 2) "/"
-                                        (string-drop base 2)))
-                (log.gz  (string-append log ".gz"))
-                (log.bz2 (string-append log ".bz2")))
-           (cond ((file-exists? log.gz) log.gz)
-                 ((file-exists? log.bz2) log.bz2)
-                 ((file-exists? log) log)
-                 (else #f))))
+         (derivation-log-file file))
         (else
          (match (valid-derivers store file)
            ((derivers ...)

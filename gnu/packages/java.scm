@@ -46,6 +46,7 @@
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
@@ -1672,6 +1673,190 @@ new Date();"))
                  '("jdk" "openjdk-src" "corba-drop" "jaxp-drop" "jaxws-drop"
                    "jdk-drop" "langtools-drop" "hotspot-drop")))))))
 
+(define-public openjdk9
+  (package
+    (name "openjdk")
+    (version "9.181")
+    (source (origin
+              (method url-fetch)
+              (uri "https://hg.openjdk.java.net/jdk/jdk/archive/3cc80be736f2.tar.bz2")
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "01ihmyf7k5z17wbr7xig7y40l9f01d5zjgkcmawn1102hw5kchpq"))
+              (modules '((guix build utils)))
+              (snippet
+                `(begin
+                   (for-each delete-file (find-files "." ".*.bin$"))
+                   (for-each delete-file (find-files "." ".*.exe$"))
+                   (for-each delete-file (find-files "." ".*.jar$"))
+                   #t))))
+    (build-system gnu-build-system)
+    (outputs '("out" "jdk" "doc"))
+    (arguments
+     `(#:tests? #f; require jtreg
+       #:imported-modules
+       ((guix build syscalls)
+        ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'fix-java-shebangs
+           (lambda _
+             ;; This file was "fixed" by patch-source-shebangs, but it requires
+             ;; this exact first line.
+             (substitute* "jdk/make/data/blacklistedcertsconverter/blacklisted.certs.pem"
+               (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))
+             #t))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; TODO: unbundle libpng and lcms
+             (invoke "bash" "./configure"
+                     (string-append "--with-freetype=" (assoc-ref inputs "freetype"))
+                     "--disable-freetype-bundling"
+                     "--disable-warnings-as-errors"
+                     "--disable-hotspot-gtest"
+                     "--with-giflib=system"
+                     "--with-libjpeg=system"
+                     (string-append "--prefix=" (assoc-ref outputs "out")))
+             #t))
+         (replace 'build
+           (lambda _
+             (with-output-to-file ".src-rev"
+               (lambda _
+                 (display ,version)))
+             (setenv "GUIX_LD_WRAPPER_ALLOW_IMPURITIES" "yes")
+             (invoke "make" "all")
+             #t))
+         ;; Some of the libraries in the lib/ folder link to libjvm.so.
+         ;; But that shared object is located in the server/ folder, so it
+         ;; cannot be found.  This phase creates a symbolic link in the
+         ;; lib/ folder so that the other libraries can find it.
+         ;;
+         ;; See:
+         ;; https://lists.gnu.org/archive/html/guix-devel/2017-10/msg00169.html
+         ;;
+         ;; FIXME: Find the bug in the build system, so that this symlink is
+         ;; not needed.
+         (add-after 'install 'install-libjvm
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((lib-out (string-append (assoc-ref outputs "out")
+                                             "/lib"))
+                    (lib-jdk (string-append (assoc-ref outputs "jdk")
+                                             "/lib")))
+               (symlink (string-append lib-jdk "/server/libjvm.so")
+                        (string-append lib-jdk "/libjvm.so"))
+               (symlink (string-append lib-out "/server/libjvm.so")
+                        (string-append lib-out "/libjvm.so")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (jdk (assoc-ref outputs "jdk"))
+                   (doc (assoc-ref outputs "doc"))
+                   (images (car (find-files "build" ".*-server-release"
+                                            #:directories? #t))))
+               (copy-recursively (string-append images "/images/jdk") jdk)
+               (copy-recursively (string-append images "/images/jre") out)
+               (copy-recursively (string-append images "/images/docs") doc))
+             #t))
+         (add-after 'install 'strip-zip-timestamps
+           (lambda* (#:key outputs #:allow-other-keys)
+             (use-modules (guix build syscalls))
+             (for-each (lambda (zip)
+                         (let ((dir (mkdtemp! "zip-contents.XXXXXX")))
+                           (with-directory-excursion dir
+                             (invoke "unzip" zip))
+                           (delete-file zip)
+                           (for-each (lambda (file)
+                                       (let ((s (lstat file)))
+                                         (unless (eq? (stat:type s) 'symlink)
+                                           (format #t "reset ~a~%" file)
+                                           (utime file 0 0 0 0))))
+                             (find-files dir #:directories? #t))
+                           (with-directory-excursion dir
+                             (let ((files (find-files "." ".*" #:directories? #t)))
+                               (apply invoke "zip" "-0" "-X" zip files)))))
+               (find-files (assoc-ref outputs "doc") ".*.zip$"))
+             #t)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("cups" ,cups)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("giflib" ,giflib)
+       ("lcms" ,lcms)
+       ("libelf" ,libelf)
+       ("libjpeg" ,libjpeg)
+       ("libice" ,libice)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxcomposite" ,libxcomposite)
+       ("libxi" ,libxi)
+       ("libxinerama" ,libxinerama)
+       ("libxrender" ,libxrender)
+       ("libxt" ,libxt)
+       ("libxtst" ,libxtst)))
+    (native-inputs
+     `(("icedtea-8" ,icedtea-8)
+       ("icedtea-8:jdk" ,icedtea-8 "jdk")
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (home-page "https://openjdk.java.net/projects/jdk9/")
+    (synopsis "Java development kit")
+    (description
+     "This package provides the Java development kit OpenJDK.")
+    (license license:gpl2+)))
+
+(define-public openjdk10
+  (package
+    (inherit openjdk9)
+    (name "openjdk")
+    (version "10.46")
+    (source (origin
+              (method url-fetch)
+              (uri "http://hg.openjdk.java.net/jdk/jdk/archive/6fa770f9f8ab.tar.bz2")
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0zywq2203b4hx4jms9vbwvjcj1d3k2v3qpx4s33729fkpmid97r4"))
+              (modules '((guix build utils)))
+              (snippet
+                `(begin
+                   (for-each delete-file (find-files "." ".*.bin$"))
+                   (for-each delete-file (find-files "." ".*.exe$"))
+                   (for-each delete-file (find-files "." ".*.jar$"))
+                   #t))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments openjdk9)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (replace 'fix-java-shebangs
+              (lambda _
+                ;; This file was "fixed" by patch-source-shebangs, but it requires
+                ;; this exact first line.
+                (substitute* "make/data/blacklistedcertsconverter/blacklisted.certs.pem"
+                  (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))
+                #t))
+            (replace 'configure
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (invoke "bash" "./configure"
+                        (string-append "--with-freetype=" (assoc-ref inputs "freetype"))
+                        "--disable-freetype-bundling"
+                        "--disable-warnings-as-errors"
+                        "--disable-hotspot-gtest"
+                        "--with-giflib=system"
+                        "--with-libjpeg=system"
+                        "--with-native-debug-symbols=zipped"
+                        (string-append "--prefix=" (assoc-ref outputs "out")))
+                #t))))))
+    (native-inputs
+     `(("openjdk9" ,openjdk9)
+       ("openjdk9:jdk" ,openjdk9 "jdk")
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))))
+
 (define-public icedtea icedtea-8)
 
 
@@ -1803,172 +1988,43 @@ new Date();"))
      `(("java-junit" ,java-junit)
        ,@(package-inputs ant/java8)))))
 
-(define-public clojure
-  (let* ((remove-archives '(begin
-                             (for-each delete-file
-                                       (find-files "." ".*\\.(jar|zip)"))
-                             #t))
-         (submodule (lambda (prefix version hash)
-                      (origin
-                        (method url-fetch)
-                        (uri (string-append "https://github.com/clojure/"
-                                            prefix version ".tar.gz"))
-                        (sha256 (base32 hash))
-                        (modules '((guix build utils)))
-                        (snippet remove-archives)))))
-    (package
-      (name "clojure")
-      (version "1.9.0")
-      (source
-       (origin
-         (method url-fetch)
-         (uri
-          (string-append "https://github.com/clojure/clojure/archive/clojure-"
-                         version ".tar.gz"))
-         (sha256
-          (base32 "0xjbzcw45z32vsn9pifp7ndysjzqswp5ig0jkjpivigh2ckkdzha"))
-         (modules '((guix build utils)))
-         (snippet remove-archives)))
-      (build-system ant-build-system)
-      (arguments
-       `(#:modules ((guix build ant-build-system)
-                    (guix build utils)
-                    (ice-9 ftw)
-                    (ice-9 regex)
-                    (srfi srfi-1)
-                    (srfi srfi-26))
-         #:test-target "test"
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'unpack-submodule-sources
-             (lambda* (#:key inputs #:allow-other-keys)
-               (for-each
-                (lambda (name)
-                  (mkdir-p name)
-                  (with-directory-excursion name
-                    (invoke "tar"
-                            ;; Use xz for repacked tarball.
-                            "--xz"
-                            "--extract"
-                            "--verbose"
-                            "--file" (assoc-ref inputs name)
-                            "--strip-components=1"))
-                  (copy-recursively (string-append name "/src/main/clojure/")
-                                    "src/clj/"))
-                '("core-specs-alpha-src"
-                  "data-generators-src"
-                  "spec-alpha-src"
-                  "test-check-src"
-                  "test-generative-src"
-                  "tools-namespace-src"))
-               #t))
-           (add-after 'unpack 'fix-manifest-classpath
-             (lambda _
-               (substitute* "build.xml"
-                 (("<attribute name=\"Class-Path\" value=\".\"/>") ""))
-               #t))
-           ;; The javadoc target is not built by default.
-           (add-after 'build 'build-doc
-             (lambda _
-               (invoke "ant" "javadoc")))
-           ;; Needed since no install target is provided.
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((java-dir (string-append (assoc-ref outputs "out")
-                                              "/share/java/")))
-                 ;; Install versioned to avoid collisions.
-                 (install-file (string-append "clojure-" ,version ".jar")
-                               java-dir)
-                 #t)))
-           ;; Needed since no install-doc target is provided.
-           (add-after 'install 'install-doc
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((doc-dir (string-append (assoc-ref outputs "out")
-                                             "/share/doc/clojure-"
-                                             ,version "/")))
-                 (copy-recursively "doc/clojure" doc-dir)
-                 (copy-recursively "target/javadoc/"
-                                   (string-append doc-dir "javadoc/"))
-                 (for-each (cut install-file <> doc-dir)
-                           (filter (cut string-match
-                                     ".*\\.(html|markdown|md|txt)"
-                                     <>)
-                                   (scandir "./")))
-                 #t))))))
-      ;; The native-inputs below are needed to run the tests.
-      (native-inputs
-       `(("core-specs-alpha-src"
-          ,(submodule "core.specs.alpha/archive/core.specs.alpha-"
-                      "0.1.24"
-                      "0v2a0svf1ar2y42ajxwsjr7zmm5j7pp2zwrd2jh3k7xzd1p9x1fv"))
-         ("data-generators-src"
-          ,(submodule "data.generators/archive/data.generators-"
-                      "0.1.2"
-                      "0kki093jp4ckwxzfnw8ylflrfqs8b1i1wi9iapmwcsy328dmgzp1"))
-         ("spec-alpha-src"
-          ,(submodule "spec.alpha/archive/spec.alpha-"
-                      "0.1.143"
-                      "00alf0347licdn773w2jarpllyrbl52qz4d8mw61anjksacxylzz"))
-         ("test-check-src"
-          ,(submodule "test.check/archive/test.check-"
-                      "0.9.0"
-                      "0p0mnyhr442bzkz0s4k5ra3i6l5lc7kp6ajaqkkyh4c2k5yck1md"))
-         ("test-generative-src"
-          ,(submodule "test.generative/archive/test.generative-"
-                      "0.5.2"
-                      "1pjafy1i7yblc7ixmcpfq1lfbyf3jaljvkgrajn70sws9xs7a9f8"))
-         ("tools-namespace-src"
-          ,(submodule "tools.namespace/archive/tools.namespace-"
-                      "0.2.11"
-                      "10baak8v0hnwz2hr33bavshm7y49mmn9zsyyms1dwjz45p5ymhy0"))))
-      (home-page "https://clojure.org/")
-      (synopsis "Lisp dialect running on the JVM")
-      (description "Clojure is a dynamic, general-purpose programming language,
-combining the approachability and interactive development of a scripting
-language with an efficient and robust infrastructure for multithreaded
-programming.  Clojure is a compiled language, yet remains completely dynamic
-– every feature supported by Clojure is supported at runtime.  Clojure
-provides easy access to the Java frameworks, with optional type hints and type
-inference, to ensure that calls to Java can avoid reflection.
-
-Clojure is a dialect of Lisp, and shares with Lisp the code-as-data philosophy
-and a powerful macro system.  Clojure is predominantly a functional programming
-language, and features a rich set of immutable, persistent data structures.
-When mutable state is needed, Clojure offers a software transactional memory
-system and reactive Agent system that ensure clean, correct, multithreaded
-designs.")
-      ;; Clojure is licensed under EPL1.0
-      ;; ASM bytecode manipulation library is licensed under BSD-3
-      ;; Guava Murmur3 hash implementation is licensed under APL2.0
-      ;; src/clj/repl.clj is licensed under CPL1.0
-      ;;
-      ;; See readme.html or readme.txt for details.
-      (license (list license:epl1.0
-                     license:bsd-3
-                     license:asl2.0
-                     license:cpl1.0)))))
-
-(define-public javacc
+(define-public javacc-4
   (package
     (name "javacc")
-    (version "7.0.3")
+    (version "4.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/javacc/javacc/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append "javacc-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/javacc/javacc.git")
+                    (commit "release_41")))
+              (file-name (string-append "javacc-" version "-checkout"))
               (sha256
                (base32
-                "111xc9mnmc5a6qz6x3xbhqc07y1lg2b996ggzw0hrblg42zya9xf"))))
+                "07ysav7j8r1c6h8qxrgqk6lwdp74ly0ad1935lragxml0qqc3ka0"))
+              (modules '((guix build utils)))
+              ;; delete bundled jars
+              (snippet '(begin (delete-file-recursively "lib") #t))))
     (build-system ant-build-system)
+    ;; Tests fail with
+    ;; /tmp/guix-build-javacc-4.1.drv-0/source/test/javacodeLA/build.xml:60:
+    ;; JAVACODE failed
     (arguments
-     `(#:test-target "test"
+     `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-bundled-libs
+         ;; Delete tests to avoid build failure (we don't run them anyway).
+         (add-after 'unpack 'delete-tests
            (lambda _
-             (delete-file-recursively "lib") #t))
-         (replace 'install (install-jars "target")))))
+             (for-each delete-file
+                       '("src/org/javacc/JavaCCTestCase.java"
+                         "src/org/javacc/parser/ExpansionTest.java"
+                         "src/org/javacc/parser/OptionsTest.java"
+                         "src/org/javacc/jjtree/JJTreeOptionsTest.java"))
+             (for-each delete-file-recursively
+                       '("src/org/javacc/parser/test"
+                         "src/org/javacc/jjdoc/test"))
+             #t))
+         (replace 'install (install-jars "bin/lib")))))
     (home-page "https://javacc.org/")
     (synopsis "Java parser generator")
     (description "Java Compiler Compiler (JavaCC) is the most popular parser
@@ -1980,29 +2036,34 @@ as tree building (via a tool called JJTree included with JavaCC), actions,
 debugging, etc.")
     (license license:bsd-3)))
 
-(define-public javacc-4
-  (package (inherit javacc)
-    (version "4.1")
+(define-public javacc
+  (package
+    (inherit javacc-4)
+    (version "7.0.3")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/javacc/javacc.git")
-                    (commit "release_41")))
-              (file-name (string-append "javacc-" version "-checkout"))
+              (method url-fetch)
+              (uri (string-append "https://github.com/javacc/javacc/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append "javacc-" version ".tar.gz"))
               (sha256
                (base32
-                "07ysav7j8r1c6h8qxrgqk6lwdp74ly0ad1935lragxml0qqc3ka0"))))
-    ;; Tests fail with
-    ;; /tmp/guix-build-javacc-4.1.drv-0/source/test/javacodeLA/build.xml:60:
-    ;; JAVACODE failed
+                "111xc9mnmc5a6qz6x3xbhqc07y1lg2b996ggzw0hrblg42zya9xf"))
+              (modules '((guix build utils)))
+              ;; delete bundled jars
+              (snippet '(begin (for-each delete-file-recursively
+                                         '("bootstrap" "lib"))
+                               #t))))
     (arguments
-     `(#:tests? #f
+     `(#:make-flags ; bootstrap from javacc-4
+       (list (string-append "-Dbootstrap-jar="
+                            (assoc-ref %build-inputs "javacc")
+                            "/share/java/javacc.jar"))
+       #:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-bundled-libs
-           (lambda _
-             (delete-file-recursively "lib") #t))
-         (replace 'install (install-jars "bin/lib")))))))
+         (replace 'install (install-jars "target")))))
+    (native-inputs
+     `(("javacc" ,javacc-4)))))
 
 ;; This is the last 3.x release of ECJ
 (define-public java-ecj-3
@@ -4287,6 +4348,85 @@ setter and getter method.")
     (description "Commons-IO contains utility classes, stream implementations,
 file filters and endian classes.")
     (license license:asl2.0)))
+
+(define-public java-commons-exec-1.1
+  (package
+    (name "java-commons-exec")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/commons/exec/source/"
+                           "commons-exec-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "025dk8xgj10lxwwwqp0hng2rn7fr4vcirxzydqzx9k4dim667alk"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "-Dmaven.junit.jar="
+                            (assoc-ref %build-inputs "java-junit")
+                            "/share/java/junit.jar"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'delete-network-tests
+           (lambda _
+             (delete-file "src/test/java/org/apache/commons/exec/DefaultExecutorTest.java")
+             (substitute* "src/test/java/org/apache/commons/exec/TestRunner.java"
+              (("suite\\.addTestSuite\\(DefaultExecutorTest\\.class\\);") ""))
+             #t))
+         ;; The "build" phase automatically tests.
+         (delete 'check)
+         (replace 'install (install-jars "target")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://commons.apache.org/proper/commons-exec/")
+    (synopsis "Common program execution related classes")
+    (description "Commons-Exec simplifies executing external processes.")
+    (license license:asl2.0)))
+
+(define-public java-commons-exec
+  (package
+    (inherit java-commons-exec-1.1)
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://apache/commons/exec/source/"
+                           "commons-exec-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "17yb4h6f8l49c5iyyvda4z2nmw0bxrx857nrwmsr7mmpb7x441yv"))))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "-Dmaven.junit.jar="
+                            (assoc-ref %build-inputs "java-junit")
+                            "/share/java/junit.jar")
+             "-Dmaven.compiler.source=1.7"
+             "-Dmaven.compiler.target=1.7")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'delete-network-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; This test hangs indefinitely.
+             (delete-file "src/test/java/org/apache/commons/exec/issues/Exec60Test.java")
+             (substitute* "src/test/java/org/apache/commons/exec/issues/Exec41Test.java"
+              (("ping -c 10 127.0.0.1") "sleep 10"))
+             (substitute* "src/test/java/org/apache/commons/exec/issues/Exec49Test.java"
+              (("/bin/ls") "ls"))
+             (call-with-output-file "src/test/scripts/ping.sh"
+               (lambda (port)
+                 (format port "#!~a/bin/sh\nsleep $1\n"
+                              (assoc-ref inputs "bash"))))
+             #t))
+         ;; The "build" phase automatically tests.
+         (delete 'check)
+         (replace 'install (install-jars "target")))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))))
 
 (define-public java-commons-lang
   (package
@@ -7585,6 +7725,55 @@ configuration.")
     (description "This package is the jaxb annotations module for jackson.")
     (license license:asl2.0))); found on wiki.fasterxml.com/JacksonLicensing
 
+(define-public java-fasterxml-jackson-modules-base-mrbean
+  (package
+    (name "java-fasterxml-jackson-modules-base-mrbean")
+    (version "2.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FasterXML/"
+                                  "jackson-modules-base/archive/"
+                                  "jackson-modules-base-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1wws95xi8sppp6b0k2vvjdjyynl20r1a4dwrhai08lzlria6blp5"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jackson-modules-base-mrbean.jar"
+       #:source-dir "mrbean/src/main/java"
+       #:test-dir "mrbean/src/test"
+       #:test-exclude
+       ;; Base class for tests
+       (list "**/BaseTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-PackageVersion.java
+           (lambda _
+             (let* ((out (string-append "mrbean/src/main/java/com/fasterxml/"
+                                        "jackson/module/mrbean/PackageVersion.java"))
+                    (in (string-append out ".in")))
+               (copy-file in out)
+               (substitute* out
+                 (("@package@") "com.fasterxml.jackson.module.mrbean")
+                 (("@projectversion@") ,version)
+                 (("@projectgroupid@") "com.fasterxml.jackson.module.mrbean")
+                 (("@projectartifactid@") "jackson-module-mrbean")))
+             #t)))))
+    (inputs
+     `(("java-asm" ,java-asm)
+       ("java-fasterxml-jackson-annotations"
+        ,java-fasterxml-jackson-annotations)
+       ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)
+       ("java-fasterxml-jackson-databind" ,java-fasterxml-jackson-databind)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://github.com/FasterXML/jackson-modules-base")
+    (synopsis "POJO type materialization for Java")
+    (description "This package implements POJO type materialization.
+Databinders can construct implementation classes for Java interfaces as part
+of deserialization.")
+    (license license:asl2.0)))
+
 (define-public java-snakeyaml
   (package
     (name "java-snakeyaml")
@@ -9199,7 +9388,8 @@ that is part of the SWT Tools project.")
                                        ,(match (%current-system)
                                           ((or "i686-linux" "armhf-linux")
                                            "linux32")
-                                          ((or "x86_64-linux" "aarch64-linux")
+                                          ((or "x86_64-linux" "aarch64-linux"
+                                               "mips64el-linux")
                                            "linux64")))))
                (install-file "src/main/native-package/src/libjansi.so" dir))
              #t))
@@ -9506,6 +9696,39 @@ Candidate Recommendation, and will correctly serialize XML 1.1 documents if
 the DOM level 3 load/save API's are in use.")
     (license license:asl2.0)))
 
+(define-public java-jakarta-regexp
+  (package
+    (name "java-jakarta-regexp")
+    (version "1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://archive.apache.org/dist/jakarta/regexp/jakarta-regexp-"
+              version ".tar.gz"))
+        (sha256
+         (base32
+          "0zg9rmyif48dck0cv6ynpxv23mmcsx265am1fnnxss7brgw0ms3r"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+          (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (out-share (string-append out "/share/java")))
+                (mkdir-p out-share)
+                (for-each (lambda (name)
+                            (install-file name out-share))
+                          (find-files "build" "^jakarta-regexp-.*\\.jar$"))
+                #t))))))
+    (home-page "https://attic.apache.org/projects/jakarta-regexp.html")
+    (synopsis "Regular expression parser generator for Java.")
+    (description "@code{jakarta-regexp} is an old regular expression parser
+generator for Java.")
+    (license license:asl2.0)))
+
 (define-public java-jline
   (package
     (name "java-jline")
@@ -9631,6 +9854,37 @@ against expected outcomes.")
        ("java-junit" ,java-junit)))
     (native-inputs
      `(("java-mockito-1" ,java-mockito-1)))))
+
+(define-public java-xmlunit-matchers
+  (package
+    (inherit java-xmlunit)
+    (name "java-xmlunit-matchers")
+    (arguments
+     `(#:jar-name "java-xmlunit-matchers.jar"
+       #:source-dir "xmlunit-matchers/src/main/java"
+       #:test-dir "xmlunit-matchers/src/test"
+       #:test-exclude
+       ;; Cannot open xsd for http://www.xmlunit.org/test-support/Book.xsd
+       (list "**/ValidationMatcherTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-test-class
+           (lambda _
+             (copy-file "xmlunit-core/src/test/java/org/xmlunit/TestResources.java"
+                        "xmlunit-matchers/src/test/java/org/xmlunit/TestResources.java")
+             #t))
+         (add-before 'build 'fix-test-resources-path
+           (lambda _
+             (substitute* (find-files "xmlunit-matchers/src/test" ".*.java")
+               (("../test-resources") "test-resources"))
+             #t))
+         (add-before 'check 'copy-test-resources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "resources") "test-resources")
+             #t)))))
+    (inputs
+     `(("java-xmlunit" ,java-xmlunit)
+       ("java-junit" ,java-junit)))))
 
 (define-public java-openchart2
   (package

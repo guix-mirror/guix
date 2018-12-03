@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages java)
   #:use-module (gnu packages gnuzilla)
@@ -64,14 +66,14 @@
 (define-public expat
   (package
     (name "expat")
-    (version "2.2.5")
+    (version "2.2.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/expat/expat/"
                                  version "/expat-" version ".tar.bz2"))
              (sha256
               (base32
-               "1xpd78sp7m34jqrw5x13bz7kgz0n6aj15wn4zj4gfx3ypbpk5p6r"))))
+               "1wl1x93b5w457ddsdgj0lh7yjq4q6l7wfbgwhagkc8fm2qkkrd0p"))))
     (build-system gnu-build-system)
     (home-page "https://libexpat.github.io/")
     (synopsis "Stream-oriented XML parser library written in C")
@@ -129,8 +131,23 @@ hierarchical form with variable field lengths.")
               (base32
                "0ci7is75bwqqw2p32vxvrk6ds51ik7qgx73m920rakv5jlayax0b"))))
     (build-system gnu-build-system)
+    (outputs '("out" "static"))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'move-static-libs
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((src (string-append (assoc-ref outputs "out") "/lib"))
+                            (dst (string-append (assoc-ref outputs "static")
+                                                "/lib")))
+                        (mkdir-p dst)
+                        (for-each (lambda (ar)
+                                    (rename-file ar (string-append dst "/"
+                                                                   (basename ar))))
+                                  (find-files src "\\.a$"))
+                        #t))))))
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
+    (inputs `(("xz" ,xz)))
     (propagated-inputs `(("zlib" ,zlib))) ; libxml2.la says '-lz'.
     (native-inputs `(("perl" ,perl)))
     ;; $XML_CATALOG_FILES lists 'catalog.xml' files found in under the 'xml'
@@ -151,6 +168,7 @@ project (but it is usable outside of the Gnome platform).")
   (package/inherit libxml2
     (name "python-libxml2")
     (build-system python-build-system)
+    (outputs '("out"))
     (arguments
      `(;; XXX: Tests are specified in 'Makefile.am', but not in 'setup.py'.
        #:tests? #f
@@ -169,7 +187,8 @@ project (but it is usable outside of the Gnome platform).")
                  (format #f "ROOT = r'~a'" libxml2))
                 ;; For 'iconv.h'.
                 (("/opt/include")
-                 (string-append glibc "/include")))))))))
+                 (string-append glibc "/include"))))
+            #t)))))
     (inputs `(("libxml2" ,libxml2)))
     (synopsis "Python bindings for the libxml2 library")))
 
@@ -534,7 +553,8 @@ that allow you to generate HTML from an RSS, convert between 0.9, 0.91, and
                      (setenv "PERL5LIB"
                              (string-append (getenv "PERL5LIB") ":"
                                             (assoc-ref outputs "out")
-                                            "/lib/perl5/site_perl")))))))
+                                            "/lib/perl5/site_perl"))
+                     #t)))))
     (home-page "https://metacpan.org/release/XML-SAX")
     (synopsis "Perl API for XML")
     (description "XML::SAX consists of several framework classes for using and
@@ -665,20 +685,23 @@ This module provide functions which simplify writing tests for
 (define-public perl-xml-compile
   (package
     (name "perl-xml-compile")
-    (version "1.54")
+    (version "1.60")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-" version ".tar.gz"))
               (sha256
                (base32
-                "1hp41960bpqxvv1samv9hc0ghhmvs3i16r4rfl9yp54lp6jhsr2c"))))
+                "04vv7wy5v1l38xsfdbacvyd90qircvnrs2f3ysljm1nhq8mycmwm"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-log-report" ,perl-log-report)
+     `(("perl-carp" ,perl-carp)
+       ("perl-log-report" ,perl-log-report)
        ("perl-xml-compile-tester" ,perl-xml-compile-tester)
        ("perl-xml-libxml" ,perl-xml-libxml)
-       ("perl-test-deep" ,perl-test-deep)))
+       ("perl-scalar-list-utils" ,perl-scalar-list-utils)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-types-serialiser" ,perl-types-serialiser)))
     (home-page "https://metacpan.org/release/XML-Compile")
     (synopsis "Compilation-based XML processing")
     (description
@@ -767,17 +790,17 @@ server, collect the answer, and finally decoding the XML to Perl.")
 (define-public perl-xml-feed
   (package
     (name "perl-xml-feed")
-    (version "0.53")
+    (version "0.55")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/D/DA/DAVECROSS/"
                                   "XML-Feed-" version ".tar.gz"))
               (sha256
                (base32
-                "07b165g6wk8kqwpl49r3n0kag6p2nrkyp3ch0h8qyxb6nrnkkq7c"))))
+                "0am345qzy5rxxnzh13l6p18a7drgkzmmlkgrgl4cv3b2j1pwls3i"))))
     (build-system perl-build-system)
     (arguments
-     `(#:tests? #f)) ; Tests require internet connection
+     `(#:tests? #f))                    ; tests require internet connection
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-uri" ,perl-uri)
@@ -806,14 +829,14 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom")
 (define-public perl-xml-xpath
   (package
     (name "perl-xml-xpath")
-    (version "1.42")
+    (version "1.44")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/"
                                   "XML-XPath-" version ".tar.gz"))
               (sha256
                (base32
-                "04mm91kxav598ax7nlg81dhnvanwvg6bkf30l0cgkmga5iyccsly"))))
+                "03yxj7w5a43ibbpiqsvb3lswj2b71dydsx4rs2fw0p8n0l3i3j8w"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-path-tiny" ,perl-path-tiny)))
@@ -917,16 +940,16 @@ XSL-T processor.  It also performs any necessary post-processing.")
 (define-public xmlsec
   (package
     (name "xmlsec")
-    (version "1.2.26")
+    (version "1.2.27")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://www.aleksey.com/xmlsec/download/"
-                                 name "1-" version ".tar.gz"))
-             (sha256
-              (base32
-               "0l1dk344rn3j2vnj13daz72xd8j1msvzhg82n2il5ji0qz4pd0ld"))))
+              (method url-fetch)
+              (uri (string-append "https://www.aleksey.com/xmlsec/download/"
+                                  "xmlsec1-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1dlf263mvxj9n4lnhhjawc2hv45agrwjf8kxk7k8h9g9v2x5dmwp"))))
     (build-system gnu-build-system)
-    (propagated-inputs ; according to xmlsec1.pc
+    (propagated-inputs                  ; according to xmlsec1.pc
      `(("libxml2" ,libxml2)
        ("libxslt" ,libxslt)))
     (inputs
@@ -949,6 +972,10 @@ Libxml2).")
   (package
     (inherit xmlsec)
     (name "xmlsec-nss")
+    (native-inputs
+     ;; For tests.
+     `(("nss:bin" ,nss "bin")           ; for certutil
+       ,@(package-native-inputs xmlsec)))
     (inputs
      `(("nss" ,nss)
        ("libltdl" ,libltdl)))
@@ -957,7 +984,7 @@ Libxml2).")
 (define-public minixml
   (package
     (name "minixml")
-    (version "2.11")
+    (version "2.12")
     (source (origin
               (method url-fetch/tarbomb)
               (uri (string-append "https://github.com/michaelrsweet/mxml/"
@@ -965,10 +992,13 @@ Libxml2).")
                                   "/mxml-" version ".tar.gz"))
               (sha256
                (base32
-                "13xsw8vvkxd10vca42ccdyl9rs64lcvhbfz57aknpl3xcfn8mxma"))))
+                "1z8nqxa4pqdic8wpixkkgg1m2pak9wjikjjxnk3j5i0d29dbgmmg"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-permissions
            ;; FIXME: url-fetch/tarbomb resets all permissions to 555/444.
@@ -1117,7 +1147,7 @@ XSLT and EXSLT.")
 (define-public html-xml-utils
  (package
    (name "html-xml-utils")
-   (version "7.6")
+   (version "7.7")
    (source
     (origin
       (method url-fetch)
@@ -1126,7 +1156,7 @@ XSLT and EXSLT.")
             version ".tar.gz"))
       (sha256
        (base32
-        "0l97ps089byy62838wf2jwvvc465iw29z9r5kwmwcq7f3bn11y3m"))))
+        "1vwqp5q276j8di9zql3kygf31z2frp2c59yjqlrvvwcvccvkcdwr"))))
    (build-system gnu-build-system)
    (home-page "https://www.w3.org/Tools/HTML-XML-utils/")
    (synopsis "Command line utilities to manipulate HTML and XML files")
@@ -1192,7 +1222,7 @@ elements to their parents
              (substitute* "test/run"
                ;; Run tests with `python' only
                (("^(PYTHON_VERSIONS = ).*" all m) (string-append m "['']")))
-             (zero? (system* "test/run")))))))
+             (invoke "test/run"))))))
     (home-page "https://github.com/dilshod/xlsx2csv")
     (synopsis "XLSX to CSV converter")
     (description
@@ -1241,7 +1271,7 @@ files.  It is designed to be fast and to handle large input files.")
          ;; Bootstrapping is required in order to fix the test driver script.
          (replace 'bootstrap
            (lambda _
-             (zero? (system* "bash" "bootstrap")))))))
+             (invoke "bash" "bootstrap"))))))
     (native-inputs
      `(("unzip" ,unzip)
        ("autoconf" ,autoconf)
@@ -1842,7 +1872,8 @@ low memory footprint.")
        (modify-phases %standard-phases
          (add-before 'build 'copy-resources
            (lambda _
-             (copy-recursively "src/main/resources" "build/classes"))))))
+             (copy-recursively "src/main/resources" "build/classes")
+             #t)))))
     (inputs
      `(("java-xpp3" ,java-xpp3)))
     (native-inputs
@@ -2075,7 +2106,6 @@ derivations of regular expressions.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-parsec" ,ghc-parsec)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-hxt-charproperties" ,ghc-hxt-charproperties)
        ("ghc-hxt-unicode" ,ghc-hxt-unicode)
        ("ghc-hxt-regex-xmlschema" ,ghc-hxt-regex-xmlschema)
@@ -2086,3 +2116,39 @@ derivations of regular expressions.")
      "The Haskell XML Toolbox bases on the ideas of HaXml and HXML, but
 introduces a more general approach for processing XML with Haskell.")
     (license license:expat)))
+
+(define-public xmlrpc-c
+  (package
+    (name "xmlrpc-c")
+    (version "1.43.08")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/xmlrpc-c/Xmlrpc-c%20Super%20Stable/"
+                                 version "/xmlrpc-c-" version ".tgz"))
+             (sha256
+              (base32
+               "18zwbj6i2hpcn5riiyp8i6rml0sfv60dd7phw1x8g4r4lj2bbxf9"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("curl" ,curl)))
+    (native-inputs
+     `(;; For tools, if ever needed.
+       ("perl" ,perl)))
+    (arguments
+     `(#:make-flags ; Add $libdir to the RUNPATH of all the executables.
+       (list (string-append "LDFLAGS_PERSONAL=-Wl,-rpath=" %output "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-/bin/sh-in-tests
+           (lambda _
+             (substitute* "GNUmakefile"
+               (("#! /bin/sh") (which "sh")))
+             #t)))))
+    (home-page "http://xmlrpc-c.sourceforge.net/")
+    (synopsis "Lightweight RPC library based on XML and HTTP")
+    (description
+     "XML-RPC is a quick-and-easy way to make procedure calls over the Internet.
+It converts the procedure call into an XML document, sends it to a remote
+server using HTTP, and gets back the response as XML.  This library provides a
+modular implementation of XML-RPC for C and C++.")
+    (license (list license:psfl license:expat))))

@@ -99,13 +99,14 @@ in print.  With attention to detail for high resolution rendering.")
     (name "font-ubuntu")
     (version "0.83")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://font.ubuntu.com/download/ubuntu-font-family-"
-                    version ".zip"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://salsa.debian.org/fonts-team/fonts-ubuntu")
+                    (commit (string-append "upstream/" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hjvq2x758dx0sfwqhzflns0ns035qm7h6ygskbx1svzg517sva5"))))
+                "1d2xrjpxy70f3nsgqiggwv6pj06qglf5vj2847pqx60w3ygi903g"))))
     (build-system font-build-system)
     (home-page "http://font.ubuntu.com/")
     (synopsis "The Ubuntu Font Family")
@@ -753,41 +754,51 @@ It contains the following fonts and styles:
 (define-public font-fantasque-sans
   (package
     (name "font-fantasque-sans")
-    (version "1.7.1")
+    (version "1.7.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/belluzj/fantasque-sans/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/belluzj/fantasque-sans.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "07fpy53k2x2nz5q61swkab6cfk9gw2kc4x4brsj6zjgbm16fap85"))))
+         "1gjranq7qf20rfxnpxsckv1hl35nzsal0rjs475nhfbpqy5wmly6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ttfautohint" ,ttfautohint)
        ("woff-tools" ,woff-tools)
        ("fontforge" ,fontforge)
        ("woff2" ,woff2)
-       ("ttf2eot" ,ttf2eot)))
+       ("ttf2eot" ,ttf2eot)
+       ("zip" ,zip)))
     (arguments
      `(#:tests? #f                 ;test target intended for visual inspection
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ;no configuration
+                  (add-before 'build 'xrange->range
+                    ;; Rather than use a python2 fontforge, just replace the
+                    ;; offending function.
+                    (lambda _
+                      (substitute* "Scripts/fontbuilder.py"
+                        (("xrange") "range"))
+                      #t))
                   (replace 'install
                     ;; 'make install' wants to install to ~/.fonts, install to
-                    ;; output instead.
+                    ;; output instead.  Install only the "Normal" variant.
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
                              (font-dir (string-append out "/share/fonts"))
                              (truetype-dir (string-append font-dir "/truetype"))
                              (opentype-dir (string-append font-dir "/opentype"))
                              (webfonts-dir (string-append font-dir "/webfonts")))
-                        (copy-recursively "OTF" opentype-dir)
-                        (for-each (lambda (f) (install-file f truetype-dir))
-                                  (find-files "." "\\.ttf$"))
-                        (copy-recursively "Webfonts" webfonts-dir)
-                        #t))))))
+                        (with-directory-excursion "Variants/Normal"
+                          (copy-recursively "OTF" opentype-dir)
+                          (for-each (lambda (f) (install-file f truetype-dir))
+                                    (find-files "." "\\.ttf$"))
+                          (copy-recursively "Webfonts" webfonts-dir)
+                          #t)))))))
     (synopsis "Font family with a monospaced variant for programmers")
     (description
      "Fantasque Sans Mono is a programming font designed with functionality in
@@ -887,7 +898,7 @@ designed to work well in user interface environments.")
 (define-public font-fira-code
   (package
     (name "font-fira-code")
-    (version "1.204")
+    (version "1.205")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://github.com/tonsky/FiraCode/releases/"
@@ -895,7 +906,7 @@ designed to work well in user interface environments.")
                                   "/FiraCode_" version ".zip"))
               (sha256
                (base32
-                "17wky221b3igrqhmxgmqiyv1xdfn0nw471vzhpkrvv1w2w1w1k18"))))
+                "13bxgf59g6fw5191xclcjzn22hj8jk9k5jjwf7vz07mpjbgadcl5"))))
     (build-system font-build-system)
     (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Monospaced font with programming ligatures")
@@ -1200,7 +1211,7 @@ ExtraLight, Light, Book, Medium, Semibold, Bold & ExtraBold")
 (define-public font-culmus
   (package
     (name "font-culmus")
-    (version "0.132")
+    (version "0.133")
     (source
      (origin
        (method url-fetch)
@@ -1209,7 +1220,7 @@ ExtraLight, Light, Book, Medium, Semibold, Bold & ExtraBold")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1djxalm26r7bcq33ckmfa15xfs6pmqzvcl64d5lqa1dl01bl4j4z"))))
+         "02akysgsqhi15cck54xcacm16q5raf4l7shgb8fnj7xr3c1pbfyp"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
@@ -1291,4 +1302,54 @@ Kannada, Malayalam, Manipuri, Oriya, Punjabi, Tamil and Telugu scripts.")
     (description
      "Inria Sans and Inria Serif are the two members of a type family designed
 for Inria, a public research institute in computer science and mathematics.")
+    (license license:silofl1.1)))
+
+(define-public font-sil-gentium
+  (package
+    (name "font-sil-gentium")
+    (version "5.000")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://software.sil.org/downloads/r/gentium/GentiumPlus-"
+                    version ".zip"))
+              (sha256
+               (base32
+                "0m7189870hha217n1vgpmf89mwggrxkh679ffi1lxpnjggqi2n9k"))))
+    ;; Note: The zip file provides TTF files only, but the developer release,
+    ;; which contains additional files, has a 'SOURCES.txt' file that says
+    ;; that "the primary source files for the fonts are the fonts themselves".
+    ;; Thus it looks like the TTF can be considered source.
+    (build-system font-build-system)
+    (synopsis "Serif font for the Cyrillic, Greek, and Latin alphabets")
+    (description
+     "Gentium is a typeface family designed to enable the diverse ethnic
+groups around the world who use the Latin, Cyrillic and Greek scripts to
+produce readable, high-quality publications.  The font comes with regular and
+italics shapes.  This package provides only TrueType files (TTF).")
+    (home-page "https://software.sil.org/gentium/")
+    (license license:silofl1.1)))
+
+(define-public font-sil-charis
+  (package
+    (name "font-sil-charis")
+    (version "5.000")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://software.sil.org/downloads/r/charis/CharisSIL-"
+                    version ".zip"))
+              (sha256
+               (base32
+                "1zcvw37f1a7gkml3yfm6hxh93844llm7xj4w52600qq3ndrm8gjy"))))
+    ;; As for Gentium (see above), the TTF files are considered source.
+    (build-system font-build-system)
+    (synopsis "Serif font for the Cyrillic and Latin alphabets")
+    (description
+     "Charis SIL is a Unicode-based font family that supports the wide range
+of languages that use the Latin and Cyrillic scripts.  It is specially
+designed to make long texts pleasant and easy to read, even in less than ideal
+reproduction and display environments.  This package provides only TrueType
+files (TTF).")
+    (home-page "https://software.sil.org/charis/")
     (license license:silofl1.1)))

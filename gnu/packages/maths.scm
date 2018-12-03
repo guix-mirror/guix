@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017, 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
@@ -27,6 +27,8 @@
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -238,16 +240,60 @@ triangulations.")
     (license (license:non-copyleft "file://COPYING.txt"
                                    "See COPYING in the distribution."))))
 
+(define-public python-cvxopt
+  (package
+    (name "python-cvxopt")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cvxopt/cvxopt.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05mnjil9palaa48xafdfh4f5pr4z7aqjr995rwl08qfyxs8y0crf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CVXOPT_BLAS_LIB" "openblas")
+             (setenv "CVXOPT_BUILD_FFTW" "1")
+             (setenv "CVXOPT_BUILD_GLPK" "1")
+             (setenv "CVXOPT_BUILD_GSL" "1")
+             #t)))))
+    (inputs
+     `(("fftw" ,fftw)
+       ("glpk" ,glpk)
+       ("gsl" ,gsl)
+       ("lapack" ,lapack)
+       ("openblas" ,openblas)
+       ("suitesparse" ,suitesparse)))
+    (home-page "https://www.cvxopt.org")
+    (synopsis "Python library for convex optimization")
+    (description
+     "CVXOPT is a package for convex optimization based on the Python
+programming language.  Its main purpose is to make the development of software
+for convex optimization applications straightforward by building on Python’s
+extensive standard library and on the strengths of Python as a high-level
+programming language.")
+    (license license:gpl3+)))
+
+(define-public python2-cvxopt
+  (package-with-python2 python-cvxopt))
+
 (define-public units
   (package
    (name "units")
-   (version "2.17")
+   (version "2.18")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/units/units-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1n2xzpnxfn475zkd8rzs5gg58xszjbr4bdbgvk6hryzimvwwj0qz"))))
+                     "0y26kj349i048y4z3xrk90bvciw2j6ds3rka7r7yn3183hirr5b4"))))
    (build-system gnu-build-system)
    (inputs
     `(("readline" ,readline)
@@ -276,15 +322,15 @@ enough to be used effectively as a scientific calculator.")
 (define-public double-conversion
   (package
     (name "double-conversion")
-    (version "3.0.0")
+    (version "3.1.0")
     (home-page "https://github.com/google/double-conversion")
     (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "059r1czs28ljjd388pn6l3njg1ghbf1cv3q9nkxv3dj2a8siabqm"))))
+                "123rb2p4snqagrybw66vnapchqdwn2rfpr1wcq0ya9gwbyl7xccx"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"
@@ -459,22 +505,16 @@ computing convex hulls.")
 (define-public arpack-ng
   (package
     (name "arpack-ng")
-    (version "3.5.0")
+    (version "3.6.3")
     (home-page "https://github.com/opencollab/arpack-ng")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0f8jx3fifmj9qdp289zr7r651y1q48k1jya859rqxq62mvis7xsh"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wljl96yqxc9v8r49c37lscwkdp58kaacfb9p6s6nvpm31haax4y"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autoreconf
-                    (lambda _
-                      (invoke "autoreconf" "-vfi"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -513,7 +553,11 @@ large scale eigenvalue problems.")
     (arguments
      (substitute-keyword-arguments (package-arguments arpack-ng)
        ((#:configure-flags _ '())
-        ''("--enable-mpi"))))
+        ''("--enable-mpi"))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'mpi-setup
+             ,%openmpi-setup)))))
     (synopsis "Fortran subroutines for solving eigenvalue problems with MPI")))
 
 (define-public lapack
@@ -574,14 +618,8 @@ problems in numerical linear algebra.")
     (arguments
      `(#:configure-flags `("-DBUILD_SHARED_LIBS:BOOL=YES")
        #:phases (modify-phases %standard-phases
-                  (add-before 'check 'set-test-environment
-                    (lambda _
-                      ;; By default, running the test suite would fail because
-                      ;; 'ssh' could not be found in $PATH.  Define this
-                      ;; variable to placate Open MPI without adding a
-                      ;; dependency on OpenSSH (the agent isn't used anyway.)
-                      (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-                      #t)))))
+                  (add-before 'check 'mpi-setup
+		    ,%openmpi-setup))))
     (home-page "http://www.netlib.org/scalapack/")
     (synopsis "Library for scalable numerical linear algebra")
     (description
@@ -821,8 +859,11 @@ incompatible with HDF5.")
                 (mkdir-p flib)
                 (mkdir-p finc)
                 (mkdir-p fex)
-                (rename-file (string-append bin "/h5fc")
-                             (string-append fbin "/h5fc"))
+                ;; Note: When built with --enable-parallel, the 'h5fc' file
+                ;; doesn't exist, hence this condition.
+                (when (file-exists? (string-append bin "/h5fc"))
+                  (rename-file (string-append bin "/h5fc")
+                               (string-append fbin "/h5fc")))
                 (for-each (lambda (file)
                             (rename-file file
                                          (string-append flib "/" (basename file))))
@@ -843,6 +884,25 @@ incompatible with HDF5.")
 extremely large and complex data collections.")
     (license (license:x11-style
               "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
+
+(define-public hdf5-1.10
+  (package (inherit hdf5)
+    (version "1.10.4")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (list (string-append "https://support.hdfgroup.org/ftp/HDF5/releases/"
+                                "hdf5-" (version-major+minor version)
+                                "/hdf5-" version "/src/hdf5-"
+                                version ".tar.bz2")
+                 (string-append "https://support.hdfgroup.org/ftp/HDF5/"
+                                "current"
+                                (apply string-append
+                                       (take (string-split version #\.) 2))
+                                "/src/hdf5-" version ".tar.bz2")))
+      (sha256
+       (base32 "1pr85fa1sh2ky6ai2hs3f21lp252grl2cq3wbyi4rh7dm83gyrqj"))
+      (patches (list (search-patch "hdf5-config-date.patch")))))))
 
 (define-public hdf-java
   (package
@@ -1041,10 +1101,13 @@ Swath).")
      `(("mpi" ,openmpi)
        ,@(package-inputs hdf5)))
     (arguments
-     (substitute-keyword-arguments `(#:configure-flags '("--enable-parallel")
-                                     ,@(package-arguments hdf5))
+     (substitute-keyword-arguments (package-arguments hdf5)
+       ((#:configure-flags flags)
+        ``("--enable-parallel" ,@(delete "--enable-cxx" ,flags)))
        ((#:phases phases)
         `(modify-phases ,phases
+           (add-after 'build 'mpi-setup
+             ,%openmpi-setup)
            (add-before 'check 'patch-tests
              (lambda _
                ;; OpenMPI's mpirun will exit with non-zero status if it
@@ -1403,6 +1466,13 @@ can solve two kinds of problems:
        ("less" ,less)
        ("ghostscript" ,ghostscript)
        ("gnuplot" ,gnuplot)))
+    ;; Octave code uses this variable to detect directories holding multiple CA
+    ;; certificates to verify peers with.  This is required for the networking
+    ;; functions that require encryption to work properly.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CURLOPT_CAPATH")
+            (files '("etc/ssl/certs")))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-shell="
@@ -1585,7 +1655,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.8.0")
+    (version "3.10.2")
     (source
      (origin
       (method url-fetch)
@@ -1593,7 +1663,9 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "1lajbk3c29hnh83v6cbmm3a8wv6bdykh0p70kwrr4vrnizalk88s"))))
+       (base32 "0bl64pydak3rblnjffi482r8bin4xim9sb37ksl2jkcxf0i0irsi"))))
+    (outputs '("out"                    ;libraries and headers
+               "examples"))             ;~30MiB of examples
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -1610,11 +1682,7 @@ September 2004}")
        #:configure-flags
        `("--with-mpi=0"
          "--with-openmp=1"
-         "--with-superlu=1"
-         ,(string-append "--with-superlu-include="
-                         (assoc-ref %build-inputs "superlu") "/include")
-         ,(string-append "--with-superlu-lib="
-                         (assoc-ref %build-inputs "superlu") "/lib/libsuperlu.a"))
+         "--with-superlu=1")
        #:make-flags
        ;; Honor (parallel-job-count) for build.  Do not use --with-make-np,
        ;; whose value is dumped to $out/lib/petsc/conf/petscvariables.
@@ -1667,6 +1735,15 @@ September 2004}")
                           "PETScBuildInternal.cmake"
                           ;; Once installed, should uninstall with Guix
                           "uninstall.py"))
+              #t)))
+        (add-after 'install 'move-examples
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (examples (assoc-ref outputs "examples"))
+                   (exdir (string-append out "/share/petsc/examples"))
+                   (exdir' (string-append examples "/share/petsc/examples")))
+              (copy-recursively exdir exdir')
+              (delete-file-recursively exdir)
               #t))))))
     (home-page "http://www.mcs.anl.gov/petsc")
     (synopsis "Library to solve PDEs")
@@ -1689,16 +1766,33 @@ scientific applications modeled by partial differential equations.")
   (package (inherit petsc)
     (name "petsc-openmpi")
     (inputs
-     `(("openmpi" ,openmpi)
+     `(("hdf5" ,hdf5-parallel-openmpi)
+       ("metis" ,metis)
+       ("mumps" ,mumps-openmpi)
+       ("openmpi" ,openmpi)
+       ("scalapack" ,scalapack)
+       ("scotch" ,pt-scotch)
        ,@(package-inputs petsc)))
     (arguments
      (substitute-keyword-arguments (package-arguments petsc)
        ((#:configure-flags cf)
         ``("--with-mpiexec=mpirun"
+           "--with-metis=1"
+           "--with-mumps=1"
+           "--with-scalapack=1"
+           "--with-ptscotch=1"
            ,(string-append "--with-mpi-dir="
                            (assoc-ref %build-inputs "openmpi"))
-           ,@(delete "--with-mpi=0" ,cf)))))
-    (synopsis "Library to solve PDEs (with MPI support)")))
+           ,(string-append "--with-hdf5-include="
+                           (assoc-ref %build-inputs "hdf5") "/include")
+           ,(string-append "--with-hdf5-lib="
+                           (assoc-ref %build-inputs "hdf5") "/lib/libhdf5.a")
+           ,@(delete "--with-mpi=0" ,cf)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'mpi-setup
+             ,%openmpi-setup)))))
+    (synopsis "Library to solve PDEs (with MUMPS and MPI support)")))
 
 (define-public petsc-complex-openmpi
   (package (inherit petsc-complex)
@@ -1715,6 +1809,40 @@ scientific applications modeled by partial differential equations.")
            ,@(delete "--with-mpi=0" ,cf)))))
     (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
 
+(define-public python-petsc4py
+  (package
+    (name "python-petsc4py")
+    (version "3.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "petsc4py" version))
+        (sha256
+          (base32
+            "0ch3g6dsvxl7qi984fcssv7cxfbif4bw04gkvxl2l1b8wrmvrm25"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; Define path to PETSc installation.
+             (setenv "PETSC_DIR" (assoc-ref %build-inputs "petsc"))
+             #t))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
+    (inputs
+     `(("petsc" ,petsc-openmpi)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://bitbucket.org/petsc/petsc4py/")
+    (synopsis "Python bindings for PETSc")
+    (description "PETSc, the Portable, Extensible Toolkit for
+Scientific Computation, is a suite of data structures and routines for
+the scalable (parallel) solution of scientific applications modeled by
+partial differential equations.  It employs the MPI standard for all
+message-passing communication.  @code{petsc4py} provides Python
+bindings to almost all functions of PETSc.")
+    (license license:bsd-3)))
 
 (define-public python-kiwisolver
   (package
@@ -1743,7 +1871,7 @@ savings are consistently > 5x.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.8.2")
+    (version "3.10.1")
     (source
      (origin
        (method url-fetch)
@@ -1751,7 +1879,7 @@ savings are consistently > 5x.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "04zd48p43rnvg68p6cp28zll0px5whglc5v0sc3s6vdj1v920z8y"))))
+         "188j1a133q91h8pivpnzwcf78kz8dvz2nzf6ndnjygdbqb48fizn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -1828,14 +1956,8 @@ arising after the discretization of partial differential equations.")
      (substitute-keyword-arguments (package-arguments slepc)
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
-           (add-before 'check 'set-test-environment
-             (lambda _
-               ;; By default, running the test suite would fail because 'ssh'
-               ;; could not be found in $PATH.  Define this variable to
-               ;; placate Open MPI without adding a dependency on OpenSSH (the
-               ;; agent isn't used anyway.)
-               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-               #t))))))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)))))
     (inputs
      `(("mpi" ,openmpi)
        ("arpack" ,arpack-ng-openmpi)
@@ -1852,6 +1974,43 @@ arising after the discretization of partial differential equations.")
      `(("petsc" ,petsc-complex-openmpi)
        ,@(alist-delete "petsc" (package-propagated-inputs slepc-openmpi))))
     (synopsis "Scalable library for eigenproblems (with complex scalars and MPI support)")))
+
+(define-public python-slepc4py
+  (package
+    (name "python-slepc4py")
+    (version "3.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "slepc4py" version))
+        (sha256
+          (base32
+            "0x049dyc8frgh79fvvavf4vlbqp4mgm61nsaivzdav4316vvlv1j"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; Define path to PETSc installation.
+             (setenv "PETSC_DIR" (assoc-ref %build-inputs "petsc"))
+             ;; Define path to SLEPc installation.
+             (setenv "SLEPC_DIR" (assoc-ref %build-inputs "slepc"))
+             #t))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
+    (inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-petsc4py" ,python-petsc4py)
+       ("slepc" ,slepc-openmpi)))
+    (home-page "https://bitbucket.org/slepc/slepc4py/")
+    (synopsis "Python bindings for SLEPc")
+    (description "SLEPc, the Scalable Library for Eigenvalue Problem
+Computations, is based on PETSc, the Portable, Extensible Toolkit for
+Scientific Computation.  It employs the MPI standard for all
+message-passing communication.  @code{slepc4py} provides Python
+bindings to almost all functions of SLEPc.")
+    (license license:bsd-3)))
 
 (define-public mumps
   (package
@@ -2005,14 +2164,8 @@ sparse system of linear equations A x = b using Guassian elimination.")
      (substitute-keyword-arguments (package-arguments mumps)
        ((#:phases phases)
         `(modify-phases ,phases
-           (add-before 'check 'set-test-environment
-             (lambda _
-               ;; By default, running the test suite would fail because 'ssh'
-               ;; could not be found in $PATH.  Define this variable to
-               ;; placate Open MPI without adding a dependency on OpenSSH (the
-               ;; agent isn't used anyway.)
-               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-               #t))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)
            (replace 'check
              (lambda _
                ((assoc-ref ,phases 'check)
@@ -2049,16 +2202,14 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "2.1.4")
+    (version "2.1.8")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "1ygm81i7mqvh229dp9935djjyb120p3bqvaf4k572sa4q63fzjhc"))))
+        (base32 "0m8ladhrfyxwybblkcdgg4xv1mk5kibmwarpj2k0c2y34zzcix4z"))))
     (build-system r-build-system)
-    (propagated-inputs
-     `(("r-quadprog" ,r-quadprog)))
-    (home-page "https://cran.r-project.org/web/packages/pracma")
+    (home-page "https://cran.r-project.org/web/packages/pracma/")
     (synopsis "Practical numerical math functions")
     (description "This package provides functions for numerical analysis and
 linear algebra, numerical optimization, differential equations, plus some
@@ -2087,7 +2238,8 @@ porting.")
            (lambda _
              (substitute* "spec/parser_spec.rb"
                (("\\\\\"")
-                "\"")))))))
+                "\""))
+             #t)))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-rspec" ,ruby-rspec)))
@@ -2258,13 +2410,10 @@ CDEFS       = -DAdd_"
                                         "/" dir)))
               '("lib" "include"))
              #t))
+	 (add-before 'check 'mpi-setup
+	   ,%openmpi-setup)
          (replace 'check
            (lambda _
-             ;; By default, running the test suite would fail because 'ssh'
-             ;; could not be found in $PATH.  Define this variable to placate
-             ;; Open MPI without adding a dependency on OpenSSH (the agent
-             ;; isn't used anyway.)
-             (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
              (with-directory-excursion "EXAMPLE"
                (invoke "mpirun" "-n" "2"
                        "./pddrive" "-r" "1" "-c" "2" "g20.rua")
@@ -2357,15 +2506,8 @@ YACC = bison -pscotchyy -y -b y
                           ;; "SCOTCH_PTHREAD_NUMBER=2"
                           "restrict=__restrict"))))
             #t))
-         (add-after
-          'build 'build-esmumps
+         (add-after 'build 'build-esmumps
           (lambda _
-            ;; By default, running the test suite would fail because 'ssh'
-            ;; could not be found in $PATH.  Define this variable to placate
-            ;; Open MPI without adding a dependency on OpenSSH (the agent
-            ;; isn't used anyway.)
-            (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-
             (invoke "make"
                     (format #f "-j~a" (parallel-job-count))
                     "esmumps")))
@@ -2458,15 +2600,16 @@ YACC = bison -pscotchyy -y -b y
            (replace
             'build
             (lambda _
-              (and
-               (zero? (system* "make"
-                               (format #f "-j~a" (parallel-job-count))
-                               "ptscotch" "ptesmumps"))
-               ;; Install the serial metis compatibility library
-               (zero? (system* "make" "-C" "libscotchmetis" "install")))))
-           (replace
-            'check
-            (lambda _ (zero? (system* "make" "ptcheck"))))))))
+              (invoke "make" (format #f "-j~a" (parallel-job-count))
+                      "ptscotch" "ptesmumps")
+
+              ;; Install the serial metis compatibility library
+              (invoke "make" "-C" "libscotchmetis" "install")))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)
+           (replace 'check
+             (lambda _
+               (invoke "make" "ptcheck")))))))
     (synopsis "Programs and libraries for graph algorithms (with MPI)")))
 
 (define-public pt-scotch32
@@ -2480,15 +2623,15 @@ YACC = bison -pscotchyy -y -b y
         `(modify-phases ,scotch32-phases
            (replace 'build
              (lambda _
-               (and
-                (zero? (system* "make"
-                                (format #f "-j~a" (parallel-job-count))
-                                "ptscotch" "ptesmumps"))
-                ;; Install the serial metis compatibility library
-                (zero? (system* "make" "-C" "libscotchmetis" "install")))))
+               (invoke "make" (format #f "-j~a" (parallel-job-count))
+                       "ptscotch" "ptesmumps")
+               ;; Install the serial metis compatibility library
+               (invoke "make" "-C" "libscotchmetis" "install")))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)
            (replace 'check
              (lambda _
-               (zero? (system* "make" "ptcheck"))))))))
+               (invoke "make" "ptcheck")))))))
     (synopsis
      "Programs and libraries for graph algorithms (with MPI and 32-bit integers)")))
 
@@ -2548,14 +2691,8 @@ schemes.")
                                            (assoc-ref %build-inputs "lapack")
                                            " -llapack"))
        #:phases (modify-phases %standard-phases
-                  (add-before 'check 'set-test-environment
-                    (lambda _
-                      ;; By default, running the test suite would fail because
-                      ;; 'ssh' could not be found in $PATH.  Define this
-                      ;; variable to placate Open MPI without adding a
-                      ;; dependency on OpenSSH (the agent isn't used anyway.)
-                      (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-                      #t)))))
+                  (add-before 'check 'mpi-setup
+		    ,%openmpi-setup))))
     (home-page "http://www.p4est.org")
     (synopsis "Adaptive mesh refinement on forests of octrees")
     (description
@@ -2613,7 +2750,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.41.0")
+    (version "5.42.1")
     (source
      (origin
        (method url-fetch)
@@ -2621,7 +2758,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0x0n81z0s4pl8nwpf7ivlsbvsdphm9w42250g7qdkizl0132by6s"))
+         "1ka0xf70a55ndgmyrq7p5xxbd78pq7bfkqhgxsivaqdw6gn5lmcg"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -2653,6 +2790,18 @@ to BMP, JPEG or PNG image formats.")
            (lambda _
              (chmod "src/maxima" #o555)
              #t))
+         (replace 'check
+           (lambda _
+             ;; This is derived from the testing code in the "debian/rules" file
+             ;; of Debian's Maxima package.
+             ;; If Maxima can successfully run this, the binary to be installed
+             ;; should be fine.
+             (zero?
+              (system
+               (string-append "./maxima-local "
+                              "--lisp=gcl "
+                              "--batch-string=\"run_testsuite();\" "
+                              "| grep -q \"No unexpected errors found\"")))))
          ;; Make sure the doc and emacs files are found in the
          ;; standard location.  Also configure maxima to find gnuplot
          ;; without having it on the PATH.
@@ -2700,18 +2849,17 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "18.02.0")
+    (version "18.11.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/andrejv/" name "/archive"
-                           "/Version-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wxMaxima-developers/wxmaxima.git")
+             (commit (string-append "Version-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "03kr2rgfp4hcf3is8m8d8f9hj660c3xgrc50vrrfpixx4syh6wvj"))
-       (patches
-        (search-patches "wxmaxima-do-not-use-old-gnuplot-parameters.patch"))))
+         "1sz8n9v23q442l7yjj67pjh0dk78rl4cbcc3j8m1bm88anlfxl9r"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -2825,16 +2973,16 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/xianyi/OpenBLAS/tarball/v"
-                           version))
+       (uri (string-append "mirror://sourceforge/openblas/v" version "/OpenBLAS%20"
+                           version "%20version.tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0b20km2jv7m6qiylrlvhq2vnmkmilb633mr8rhqmgbn1wqrp58jq"))))
+         "0cvlixnpc3cdvvn3f30phfvsgnqljqix6wn72ps9rj7xdhvw06jg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -2890,6 +3038,18 @@ parts of it.")
     (synopsis "Optimized BLAS library based on GotoBLAS")
     (description
      "OpenBLAS is a BLAS library forked from the GotoBLAS2-1.13 BSD version.")
+    (license license:bsd-3)))
+
+(define-public openblas-ilp64
+  (package (inherit openblas)
+    (name "openblas-ilp64")
+    (supported-systems '("x86_64-linux" "aarch64-linux" "mips64el-linux"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openblas)
+       ((#:make-flags flags '())
+        `(append (list "INTERFACE64=1" "LIBNAMESUFFIX=ilp64")
+                 ,flags))))
+    (synopsis "Optimized BLAS library based on GotoBLAS (ILP64 version)")
     (license license:bsd-3)))
 
 (define* (make-blis implementation #:optional substitutable?)
@@ -3236,7 +3396,7 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.9.0")
+    (version "0.9.9.3")
     (source
      (origin
        (method url-fetch)
@@ -3244,7 +3404,7 @@ Failure to do so will result in a library with poor performance.")
                            version  "/glm-" version ".zip"))
        (sha256
         (base32
-         "0ihjadp2sb8w312a276skfjsljm3y41bjscbxf79wn23gi00giz1"))))
+         "0yqk5r3qh60d4r2iab5q7wq0fryn8p3pz6s28y1i7amqj1aqavj9"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -3517,7 +3677,7 @@ set.")
 (define-public hypre
   (package
     (name "hypre")
-    (version "2.11.0")
+    (version "2.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/LLNL/hypre/archive/"
@@ -3525,7 +3685,7 @@ set.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0q69ia0jivzcr8p049dn3mg8yjpn6nwq4sw9iqac8vr63vi54l6m"))
+                "0v515i73bvaz378h5465b1dy9v2gf924zy2q94cpq4qqarawvkqh"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3533,7 +3693,7 @@ set.")
                   ;; substitute the tarball creation time.
                   (substitute* "src/utilities/HYPRE_utilities.h"
                     (("Date Compiled: .*$")
-                     "Date Compiled: Mar 28 2016 20:19:59 +0000\"\n"))
+                     "Date Compiled: Apr 11 2018 16:24:59 +0000\"\n"))
                   #t))))
     (build-system gnu-build-system)
     (outputs '("out"                    ;6.1 MiB of headers and libraries
@@ -3622,14 +3782,8 @@ problems.")
            ,@(delete "--without-MPI" ,flags)))
        ((#:phases phases)
         `(modify-phases ,phases
-           (add-before 'check 'set-test-environment
-             (lambda _
-               ;; By default, running the test suite would fail because 'ssh'
-               ;; could not be found in $PATH.  Define this variable to
-               ;; placate Open MPI without adding a dependency on OpenSSH (the
-               ;; agent isn't used anyway.)
-               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-               #t))))))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)))))
     (synopsis "Parallel solvers and preconditioners for linear equations")
     (description
      "HYPRE is a software library of high performance preconditioners and
@@ -3794,15 +3948,15 @@ as equations, scalars, vectors, and matrices.")
 (define-public z3
   (package
     (name "z3")
-    (version "4.5.0")
+    (version "4.8.1")
+    (home-page "https://github.com/Z3Prover/z3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Z3Prover/z3/archive/z3-"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "z3-" version))))
               (sha256
                (base32
-                "032a5lvji2liwmc25jv52bdrhimqflvqbpg77ccaq1jykhiivbmf"))))
+                "1vr57bwx40sd5riijyrhy70i2wnv9xrdihf6y5zdz56yq88rl48f"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -3831,43 +3985,57 @@ as equations, scalars, vectors, and matrices.")
     (synopsis "Theorem prover")
     (description "Z3 is a theorem prover and @dfn{satisfiability modulo
 theories} (SMT) solver.  It provides a C/C++ API, as well as Python bindings.")
-    (home-page "https://github.com/Z3Prover/z3")
     (license license:expat)))
 
 (define-public cubicle
   (package
     (name "cubicle")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://cubicle.lri.fr/cubicle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1sny9c4fm14k014pk62ibpwbrjjirkx8xmhs9jg7q1hk7y7x3q2h"))))
+                "10kk80jdmpdvql88sdjsh7vqzlpaphd8vip2lp47aarxjkwjlz1q"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ocaml" ,ocaml)
+     `(("automake" ,automake)
+       ("ocaml" ,ocaml)
        ("which" ,(@@ (gnu packages base) which))))
     (propagated-inputs
-     `(("z3" ,z3)))
+     `(("ocaml-num" ,ocaml-num)
+       ("z3" ,z3)))
     (arguments
      `(#:configure-flags (list "--with-z3")
+       #:make-flags (list "QUIET=")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'configure-for-release
            (lambda _
              (substitute* "Makefile.in"
-               (("SVNREV=") "#SVNREV="))))
+               (("SVNREV=") "#SVNREV="))
+             #t))
          (add-before 'configure 'fix-/bin/sh
            (lambda _
              (substitute* "configure"
-               (("/bin/sh") (which "sh")))))
+               (("-/bin/sh") (string-append "-" (which "sh"))))
+             #t))
          (add-before 'configure 'fix-smt-z3wrapper.ml
            (lambda _
              (substitute* "Makefile.in"
-               (("\\\\n") "")))))))
+               (("\\\\n") ""))
+             #t))
+         (add-before 'configure 'fix-ocaml-num
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("= \\$\\(FUNCTORYLIB\\)")
+                (string-append "= -I "
+                               (assoc-ref inputs "ocaml-num")
+                               "/lib/ocaml/site-lib"
+                               " $(FUNCTORYLIB)")))
+             #t)))))
     (home-page "http://cubicle.lri.fr/")
     (synopsis "Model checker for array-based systems")
     (description "Cubicle is a model checker for verifying safety properties
@@ -3912,6 +4080,8 @@ exclusion algorithms are typical examples of such systems.")
                            "-DCMAKE_INSTALL_LIBDIR=lib"
                            "-DGFORTRAN_LIB=gfortran")
        #:phases (modify-phases %standard-phases
+		  (add-before 'check 'mpi-setup
+		    ,%openmpi-setup)
                   (add-before 'check 'setup-tests
                     (lambda _
                       ;; Parallelism is done at the MPI layer.
@@ -3958,7 +4128,7 @@ toolset supports analysis and automatic verification, linearisation, simulation,
 state-space exploration and generation, and tools to optimise and analyse
 specifications.  Also, state spaces can be manipulated, visualised and
 analysed.")
-    (home-page "http://mcrl2.org")
+    (home-page "https://mcrl2.org")
     (license license:boost1.0)))
 
 (define-public r-subplex
@@ -4032,3 +4202,70 @@ terminal do calculations simply and quickly.  The formula to be calculated can
 be fed to @command{tcalc} through the command line.")
   (home-page "https://sites.google.com/site/mohammedisam2000/tcalc")
   (license license:gpl3+)))
+
+(define-public sundials
+  (package
+    (name "sundials")
+    (version "3.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://computation.llnl.gov/projects/sundials/download/"
+                           "sundials-" version ".tar.gz"))
+       (sha256
+        (base32
+         "090s8ymhd0g1s1d44fa73r5yi32hb4biwahhbfi327zd64yn8kd2"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("python" ,python-2)))    ;for tests; syntax incompatible with python 3
+    (inputs
+     `(("fortran" ,gfortran)            ;for fcmix
+       ("blas" ,openblas)
+       ("suitesparse" ,suitesparse)))   ;TODO: Add hypre
+    (arguments
+     `(#:configure-flags `("-DEXAMPLES_ENABLE_C:BOOL=ON"
+                           "-DEXAMPLES_ENABLE_CXX:BOOL=ON"
+                           "-DEXAMPLES_ENABLE_F77:BOOL=ON"
+                           "-DEXAMPLES_ENABLE_F90:BOOL=ON"
+                           "-DEXAMPLES_INSTALL:BOOL=OFF"
+
+                           "-DFCMIX_ENABLE:BOOL=ON"
+
+                           "-DKLU_ENABLE:BOOL=ON"
+                           ,(string-append "-DKLU_INCLUDE_DIR="
+                                           (assoc-ref %build-inputs "suitesparse")
+                                           "/include")
+                           ,(string-append "-DKLU_LIBRARY_DIR="
+                                           (assoc-ref %build-inputs "suitesparse")
+                                           "/lib"))))
+    (home-page "https://computation.llnl.gov/projects/sundials")
+    (synopsis "Suite of nonlinear and differential/algebraic equation solvers")
+    (description "SUNDIALS is a family of software packages implemented with
+the goal of providing robust time integrators and nonlinear solvers that can
+easily be incorporated into existing simulation codes.")
+    (license license:bsd-3)))
+
+(define-public sundials-openmpi
+  (package (inherit sundials)
+    (name "sundials-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ("petsc" ,petsc-openmpi)         ;support in SUNDIALS requires MPI
+       ,@(package-inputs sundials)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sundials)
+       ((#:configure-flags flags '())
+        `(cons* "-DMPI_ENABLE:BOOL=ON"
+                "-DPETSC_ENABLE:BOOL=ON"
+                (string-append "-DPETSC_INCLUDE_DIR="
+                               (assoc-ref %build-inputs "petsc")
+                               "/include")
+                (string-append "-DPETSC_LIBRARY_DIR="
+                               (assoc-ref %build-inputs "petsc")
+                               "/lib")
+                ,flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)))))
+    (synopsis "SUNDIALS with OpenMPI support")))

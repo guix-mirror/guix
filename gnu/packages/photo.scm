@@ -69,14 +69,14 @@
 (define-public libraw
   (package
     (name "libraw")
-    (version "0.19.0")
+    (version "0.19.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.libraw.org/data/LibRaw-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nfj7s7qmgfy1cl8s3ck7dxjvprfq5glfi6iidmvmy8r7gl52gz8"))))
+                "1xjyw4n9gfr2r637pjbpbi3h98h9mdjn61b0hsxwqynq2vdij452"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -95,6 +95,18 @@ cameras (CRW/CR2, NEF, RAF, DNG, and others).")
     ;; both two licensing modes for your changes/additions."
     (license (list license:lgpl2.1 license:cddl1.0))))
 
+(define-public libraw-0.18
+  (package (inherit libraw)
+    (name "libraw")
+    (version "0.18.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.libraw.org/data/LibRaw-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1m2khr2cij8z6lawgbmdksjn14fpnjsy8ad4qahnpqapm1slsxap"))))))
+
 (define-public libexif
   (package
     (name "libexif")
@@ -109,7 +121,7 @@ cameras (CRW/CR2, NEF, RAF, DNG, and others).")
                (base32
                 "06nlsibr3ylfwp28w8f5466l6drgrnydgxrm4jmxzrmk5svaxk8n"))))
     (build-system gnu-build-system)
-    (home-page "http://libexif.sourceforge.net/")
+    (home-page "https://libexif.github.io/")
     (synopsis "Read and manipulate EXIF data in digital photographs")
     (description
      "The libexif C library allows applications to read, edit, and save EXIF
@@ -119,14 +131,14 @@ data as produced by digital cameras.")
 (define-public libgphoto2
   (package
     (name "libgphoto2")
-    (version "2.5.18")
+    (version "2.5.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/libgphoto/"
                                   version "/libgphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "1v57ayp17j88bj79nl7rf4iyajbxx00kgb4l5k3kbv50gjfvh5sv"))))
+                "03wbwsb4v7yay8g5ni7pzmkbrh7qnqx977bddjpxsp9f1qag03z1"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
@@ -194,7 +206,7 @@ MTP, and much more.")
 (define-public perl-image-exiftool
   (package
     (name "perl-image-exiftool")
-    (version "11.01")
+    (version "11.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -202,7 +214,7 @@ MTP, and much more.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "175w34n73mypdpbaqj2vgqsfp59yvfrn8k7zmx4cawnp895bypvh"))))
+                "1szg1k82nz88pp5n7lg71ja7q3hh5i5f9bcbb7m482dwrmsywkp6"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
@@ -215,7 +227,8 @@ MTP, and much more.")
                     (pm  (find-files out "^ExifTool\\.pm$"))
                     (lib (dirname (dirname (car pm)))))
                (wrap-program (string-append out "/bin/exiftool")
-                             `("PERL5LIB" prefix (,lib)))))))))
+                 `("PERL5LIB" prefix (,lib)))
+               #t))))))
     (home-page "https://metacpan.org/release/Image-ExifTool")
     (synopsis "Program and Perl library to manipulate EXIF and other metadata")
     (description "This package provides the @code{exiftool} command and the
@@ -410,7 +423,7 @@ and enhance them.")
 (define-public hugin
   (package
     (name "hugin")
-    (version "2016.2.0")
+    (version "2018.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hugin/hugin/hugin-"
@@ -418,7 +431,7 @@ and enhance them.")
                                   "/hugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "058zd63vx29yrx2pphbbll7kzcxkai22q26lpw13rn4lvp41pasl"))))
+                "1jv5wpqbq49fhbl5g521g1qxhdm1rm7acxd18fr3n3n5d830vbyk"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gnu-gettext)

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
+  #:use-module (srfi srfi-41)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (guix-import-stackage))
@@ -43,10 +45,12 @@
   (display (G_ "Usage: guix import stackage PACKAGE-NAME
 Import and convert the LTS Stackage package for PACKAGE-NAME.\n"))
   (display (G_ "
-  -r VERSION, --lts-version=VERSION
+  -l VERSION, --lts-version=VERSION
                                specify the LTS version to use"))
   (display (G_ "
   -h, --help                   display this help and exit"))
+  (display (G_ "
+  -r, --recursive              import packages recursively"))
   (display (G_ "
   -t, --no-test-dependencies   don't include test-only dependencies"))
   (display (G_ "
@@ -68,11 +72,14 @@ Import and convert the LTS Stackage package for PACKAGE-NAME.\n"))
                    (alist-cons 'include-test-dependencies? #f
                                (alist-delete 'include-test-dependencies?
                                              result))))
-         (option '(#\r "lts-version") #t #f
+         (option '(#\l "lts-version") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'lts-version arg
                                (alist-delete 'lts-version
                                              result))))
+         (option '(#\r "recursive") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'recursive #t result)))
          %standard-import-options))
 
 
@@ -90,6 +97,27 @@ Import and convert the LTS Stackage package for PACKAGE-NAME.\n"))
                   (alist-cons 'argument arg result))
                 %default-options))
 
+  (define (run-importer package-name opts error-fn)
+    (let* ((arguments (list
+                       package-name
+                       #:include-test-dependencies?
+                       (assoc-ref opts 'include-test-dependencies?)
+                       #:lts-version (assoc-ref opts 'lts-version)))
+           (sexp (if (assoc-ref opts 'recursive)
+                     ;; Recursive import
+                     (map (match-lambda
+                            ((and ('package ('name name) . rest) pkg)
+                             `(define-public ,(string->symbol name)
+                                ,pkg))
+                            (_ #f))
+                          (reverse
+                           (stream->list
+                            (apply stackage-recursive-import arguments))))
+                     ;; Single import
+                     (apply stackage->guix-package arguments))))
+      (unless sexp (error-fn))
+      sexp))
+
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda
                             (('argument . value)
@@ -99,15 +127,11 @@ Import and convert the LTS Stackage package for PACKAGE-NAME.\n"))
     (match args
       ((package-name)
        (with-error-handling
-        (let ((sexp (stackage->guix-package
-                     package-name
-                     #:include-test-dependencies?
-                     (assoc-ref opts 'include-test-dependencies?)
-                     #:lts-version (assoc-ref opts 'lts-version))))
-          (unless sexp
-            (leave (G_ "failed to download cabal file for package '~a'~%")
-                   package-name))
-          sexp)))
+         (run-importer package-name opts
+                       (lambda ()
+                         (leave (G_ "failed to download cabal file \
+for package '~a'~%")
+                                package-name)))))
       (()
        (leave (G_ "too few arguments~%")))
       ((many ...)

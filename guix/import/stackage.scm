@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,10 +26,12 @@
   #:use-module (srfi srfi-35)
   #:use-module (guix import json)
   #:use-module (guix import hackage)
+  #:use-module (guix import utils)
   #:use-module (guix memoization)
   #:use-module (guix packages)
   #:use-module (guix upstream)
   #:export (stackage->guix-package
+            stackage-recursive-import
             %stackage-updater))
 
 
@@ -40,15 +43,12 @@
 
 (define (lts-info-ghc-version lts-info)
   "Retruns the version of the GHC compiler contained in LTS-INFO."
-  (match lts-info
-    ((("snapshot" ("ghc" . version) _ _) _)  version)
-    (_ #f)))
+  (and=> (assoc-ref lts-info "snapshot")
+         (cut assoc-ref <> "ghc")))
 
 (define (lts-info-packages lts-info)
   "Retruns the alist of packages contained in LTS-INFO."
-  (match lts-info
-    ((_ ("packages" pkg ...)) pkg)
-    (_ '())))
+  (or (assoc-ref lts-info "packages") '()))
 
 (define (leave-with-message fmt . args)
   (raise (condition (&message (message (apply format #f fmt args))))))
@@ -85,25 +85,33 @@
 (define (hackage-name-version name version)
   (and version (string-append  name "@" version)))
 
-(define* (stackage->guix-package package-name ; upstream name
-                                 #:key
-                                 (include-test-dependencies? #t)
-                                 (lts-version "")
-                                 (packages-info
-                                  (lts-info-packages
-                                   (stackage-lts-info-fetch lts-version))))
-  "Fetch Cabal file for PACKAGE-NAME from hackage.haskell.org.  The retrieved
+(define stackage->guix-package
+  (memoize
+   (lambda* (package-name ; upstream name
+             #:key
+             (include-test-dependencies? #t)
+             (lts-version "")
+             (packages-info
+              (lts-info-packages
+               (stackage-lts-info-fetch lts-version))))
+     "Fetch Cabal file for PACKAGE-NAME from hackage.haskell.org.  The retrieved
 vesion corresponds to the version of PACKAGE-NAME specified in the LTS-VERSION
 release at stackage.org.  Return the `package' S-expression corresponding to
 that package, or #f on failure.  PACKAGES-INFO is the alist with the packages
 included in the Stackage LTS release."
-  (let* ((version (lts-package-version packages-info package-name))
-         (name-version (hackage-name-version package-name version)))
-    (if name-version
-        (hackage->guix-package name-version
-                               #:include-test-dependencies?
-                               include-test-dependencies?)
-        (leave-with-message "~a: Stackage package not found" package-name))))
+     (let* ((version (lts-package-version packages-info package-name))
+            (name-version (hackage-name-version package-name version)))
+       (if name-version
+           (hackage->guix-package name-version
+                                  #:include-test-dependencies?
+                                  include-test-dependencies?)
+           (leave-with-message "~a: Stackage package not found" package-name))))))
+
+(define (stackage-recursive-import package-name . args)
+  (recursive-import package-name #f
+                    #:repo->guix-package (lambda (name repo)
+                                           (apply stackage->guix-package (cons name args)))
+                    #:guix-name hackage-name->package-name))
 
 
 ;;;

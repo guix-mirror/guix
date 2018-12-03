@@ -24,6 +24,7 @@
 
 (define-module (guix scripts package)
   #:use-module (guix ui)
+  #:use-module (guix status)
   #:use-module (guix store)
   #:use-module (guix grafts)
   #:use-module (guix derivations)
@@ -35,6 +36,7 @@
   #:use-module (guix config)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
+  #:autoload   (guix describe) (current-profile-entries)
   #:use-module ((guix build utils)
                 #:select (directory-exists? mkdir-p))
   #:use-module (ice-9 format)
@@ -66,50 +68,14 @@
 
 (define (ensure-default-profile)
   "Ensure the default profile symlink and directory exist and are writable."
-
-  (define (rtfm)
-    (format (current-error-port)
-            (G_ "Try \"info '(guix) Invoking guix package'\" for \
-more information.~%"))
-    (exit 1))
+  (ensure-profile-directory)
 
   ;; Create ~/.guix-profile if it doesn't exist yet.
   (when (and %user-profile-directory
              %current-profile
              (not (false-if-exception
                    (lstat %user-profile-directory))))
-    (symlink %current-profile %user-profile-directory))
-
-  (let ((s (stat %profile-directory #f)))
-    ;; Attempt to create /…/profiles/per-user/$USER if needed.
-    (unless (and s (eq? 'directory (stat:type s)))
-      (catch 'system-error
-        (lambda ()
-          (mkdir-p %profile-directory))
-        (lambda args
-          ;; Often, we cannot create %PROFILE-DIRECTORY because its
-          ;; parent directory is root-owned and we're running
-          ;; unprivileged.
-          (format (current-error-port)
-                  (G_ "error: while creating directory `~a': ~a~%")
-                  %profile-directory
-                  (strerror (system-error-errno args)))
-          (format (current-error-port)
-                  (G_ "Please create the `~a' directory, with you as the owner.~%")
-                  %profile-directory)
-          (rtfm))))
-
-    ;; Bail out if it's not owned by the user.
-    (unless (or (not s) (= (stat:uid s) (getuid)))
-      (format (current-error-port)
-              (G_ "error: directory `~a' is not owned by you~%")
-              %profile-directory)
-      (format (current-error-port)
-              (G_ "Please change the owner of `~a' to user ~s.~%")
-              %profile-directory (or (getenv "USER")
-                                     (getenv "LOGNAME")
-                                     (getuid)))
-      (rtfm))))
+    (symlink %current-profile %user-profile-directory)))
 
 (define (delete-generations store profile generations)
   "Delete GENERATIONS from PROFILE.
@@ -198,7 +164,9 @@ do not treat collisions in MANIFEST as an error."
                               count)
                        count)
                (display-search-paths entries (list profile)
-                                     #:kind 'prefix))))))))
+                                     #:kind 'prefix)))
+
+        (warn-about-disk-space profile))))))
 
 
 ;;;
@@ -238,7 +206,7 @@ of relevance scores."
     (info (G_ "package '~a' has been superseded by '~a'~%")
           (manifest-entry-name old) (package-name new))
     (manifest-transaction-install-entry
-     (package->manifest-entry new (manifest-entry-output old))
+     (package->manifest-entry* new (manifest-entry-output old))
      (manifest-transaction-remove-pattern
       (manifest-pattern
         (name (manifest-entry-name old))
@@ -261,7 +229,7 @@ of relevance scores."
            (case (version-compare candidate-version version)
              ((>)
               (manifest-transaction-install-entry
-               (package->manifest-entry pkg output)
+               (package->manifest-entry* pkg output)
                transaction))
              ((<)
               transaction)
@@ -274,7 +242,7 @@ of relevance scores."
                          (null? (package-propagated-inputs pkg)))
                     transaction
                     (manifest-transaction-install-entry
-                     (package->manifest-entry pkg output)
+                     (package->manifest-entry* pkg output)
                      transaction))))))))
        (#f
         (warning (G_ "package '~a' no longer exists~%") name)
@@ -328,7 +296,10 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
   `((verbosity . 0)
     (graft? . #t)
     (substitutes? . #t)
-    (build-hook? . #t)))
+    (build-hook? . #t)
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)))
 
 (define (show-help)
   (display (G_ "Usage: guix package [OPTION]...
@@ -570,6 +541,52 @@ upgrading, #f otherwise."
       (output "out")                              ;XXX: wild guess
       (item item))))
 
+(define (package-provenance package)
+  "Return the provenance of PACKAGE as an sexp for use as the 'provenance'
+property of manifest entries, or #f if it could not be determined."
+  (define (entry-source entry)
+    (match (assq 'source
+                 (manifest-entry-properties entry))
+      (('source value) value)
+      (_ #f)))
+
+  (match (and=> (package-location package) location-file)
+    (#f #f)
+    (file
+     (let ((file (if (string-prefix? "/" file)
+                     file
+                     (search-path %load-path file))))
+       (and file
+            (string-prefix? (%store-prefix) file)
+
+            ;; Always store information about the 'guix' channel and
+            ;; optionally about the specific channel FILE comes from.
+            (or (let ((main  (and=> (find (lambda (entry)
+                                            (string=? "guix"
+                                                      (manifest-entry-name entry)))
+                                          (current-profile-entries))
+                                    entry-source))
+                      (extra (any (lambda (entry)
+                                    (let ((item (manifest-entry-item entry)))
+                                      (and (string-prefix? item file)
+                                           (entry-source entry))))
+                                  (current-profile-entries))))
+                  (and main
+                       `(,main
+                         ,@(if extra (list extra) '()))))))))))
+
+(define (package->manifest-entry* package output)
+  "Like 'package->manifest-entry', but attach PACKAGE provenance meta-data to
+the resulting manifest entry."
+  (define (provenance-properties package)
+    (match (package-provenance package)
+      (#f   '())
+      (sexp `((provenance ,@sexp)))))
+
+  (package->manifest-entry package output
+                           #:properties (provenance-properties package)))
+
+
 (define (options->installable opts manifest transaction)
   "Given MANIFEST, the current manifest, and OPTS, the result of 'args-fold',
 return an variant of TRANSACTION that accounts for the specified installations
@@ -590,13 +607,13 @@ and upgrades."
                   (('install . (? package? p))
                    ;; When given a package via `-e', install the first of its
                    ;; outputs (XXX).
-                   (package->manifest-entry p "out"))
+                   (package->manifest-entry* p "out"))
                   (('install . (? string? spec))
                    (if (store-path? spec)
                        (store-item->manifest-entry spec)
                        (let-values (((package output)
                                      (specification->package+output spec)))
-                         (package->manifest-entry package output))))
+                         (package->manifest-entry* package output))))
                   (_ #f))
                 opts))
 
@@ -754,9 +771,13 @@ processed, #f otherwise."
       (('show requested-name)
        (let-values (((name version)
                      (package-name->name+version requested-name)))
-         (leave-on-EPIPE
-          (for-each (cute package->recutils <> (current-output-port))
-                    (find-packages-by-name name version)))
+         (match (find-packages-by-name name version)
+           (()
+            (leave (G_ "~a~@[@~a~]: package not found~%") name version))
+           (packages
+            (leave-on-EPIPE
+             (for-each (cute package->recutils <> (current-output-port))
+                       packages))))
          #t))
 
       (('search-paths kind)
@@ -883,14 +904,18 @@ processed, #f otherwise."
         (arg-handler arg result)
         (leave (G_ "~A: extraneous argument~%") arg)))
 
-  (let ((opts (parse-command-line args %options (list %default-options #f)
-                                  #:argument-handler handle-argument)))
-    (with-error-handling
-      (or (process-query opts)
-          (parameterize ((%store  (open-connection))
-                         (%graft? (assoc-ref opts 'graft?)))
-            (set-build-options-from-command-line (%store) opts)
+  (define opts
+    (parse-command-line args %options (list %default-options #f)
+                        #:argument-handler handle-argument))
+  (define verbose?
+    (assoc-ref opts 'verbose?))
 
+  (with-error-handling
+    (or (process-query opts)
+        (parameterize ((%store  (open-connection))
+                       (%graft? (assoc-ref opts 'graft?)))
+          (with-status-report print-build-event/quiet
+            (set-build-options-from-command-line (%store) opts)
             (parameterize ((%guile-for-build
                             (package-derivation
                              (%store)

@@ -39,7 +39,7 @@
 (define-public ghc-tasty-ant-xml
   (package
     (name "ghc-tasty-ant-xml")
-    (version "1.0.2")
+    (version "1.1.4")
     (source
      (origin
        (method url-fetch)
@@ -49,12 +49,11 @@
              ".tar.gz"))
        (sha256
         (base32
-         "0pgz2lclg2hp72ykljcbxd88pjanfdfk8m5vb2qzcyjr85kwrhxv"))))
+         "0v0gsb90kh6hwlgxbclzawsskywc6yf7n8xhiifia97l4y0yx2m8"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-generic-deriving" ,ghc-generic-deriving)
        ("ghc-xml" ,ghc-xml)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-stm" ,ghc-stm)
        ("ghc-tagged" ,ghc-tagged)
        ("ghc-tasty" ,ghc-tasty)))
@@ -97,7 +96,7 @@ Haskell test framework.")
 (define-public ghc-tasty-quickcheck
   (package
     (name "ghc-tasty-quickcheck")
-    (version "0.8.4")
+    (version "0.10")
     (source
      (origin
        (method url-fetch)
@@ -106,7 +105,7 @@ Haskell test framework.")
              "tasty-quickcheck-" version ".tar.gz"))
        (sha256
         (base32
-         "15rjxib5jmjq0hzj47x15kgp3awc73va4cy1pmpf7k3hvfv4qprn"))))
+         "0vr6szbbz3s5461i0zr8zpq347zfvidfzv5gf3xwxhm0yk731z8h"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
@@ -125,7 +124,7 @@ Haskell test framework.")
 (define-public ghc-tasty-golden
   (package
     (name "ghc-tasty-golden")
-    (version "2.3.1.1")
+    (version "2.3.2")
     (source
      (origin
        (method url-fetch)
@@ -135,12 +134,11 @@ Haskell test framework.")
              ".tar.gz"))
        (sha256
         (base32
-         "0pcf5hsyp5mmbqn7krdm49jxpkjm6rb4j83j28f76h7q55dzm1wy"))))
+         "0k3ibjhjc9vcwzrjnl4rnwvfm8l81q347nb7dgvcib6n5wm3s404"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-temporary" ,ghc-temporary)
        ("ghc-tasty" ,ghc-tasty)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-tagged" ,ghc-tagged)
        ("ghc-async" ,ghc-async)
@@ -183,7 +181,7 @@ timer functions of different operating systems via a unified API.")
 (define-public ghc-tasty
   (package
     (name "ghc-tasty")
-    (version "0.11.0.4")
+    (version "1.1.0.3")
     (source
      (origin
        (method url-fetch)
@@ -193,19 +191,18 @@ timer functions of different operating systems via a unified API.")
              ".tar.gz"))
        (sha256
         (base32
-         "05pxjzgbgjdn7477xry0ssjrnmnsydqiq6nm6ck8n2da1baliqp0"))))
+         "14riid753hjqr6lca1kgxpnvq0wykf0k3qc5jpag42hh8bszav22"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stm" ,ghc-stm)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-tagged" ,ghc-tagged)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-       ("ghc-regex-tdfa-rc" ,ghc-regex-tdfa-rc)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-unbounded-delays" ,ghc-unbounded-delays)
        ("ghc-async" ,ghc-async)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-clock-bootstrap" ,ghc-clock-bootstrap)))
+       ("ghc-clock-bootstrap" ,ghc-clock-bootstrap)
+       ("ghc-wcwidth" ,ghc-wcwidth-bootstrap)))
     (home-page "http://documentup.com/feuerbach/tasty")
     (synopsis "Modern and extensible testing framework")
     (description "Tasty is a modern testing framework for Haskell.  It lets
@@ -216,7 +213,7 @@ and any other types of tests into a single test suite.")
 (define-public ghc-tasty-hunit
   (package
     (name "ghc-tasty-hunit")
-    (version "0.9.2")
+    (version "0.10.0.1")
     (source
      (origin
        (method url-fetch)
@@ -226,10 +223,11 @@ and any other types of tests into a single test suite.")
              ".tar.gz"))
        (sha256
         (base32
-         "08qnxaw34wfnzi9irs1jd4d0zczqm3k5ffkd4zwhkz0dflmgq7mf"))))
+         "0j3hgga6c3s8h5snzivb8a75h96207ia2rlbxzj07xbf4zpkp44g"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-tasty" ,ghc-tasty)))
+     `(("ghc-call-stack" ,ghc-call-stack-boot)
+       ("ghc-tasty" ,ghc-tasty)))
     (home-page "http://documentup.com/feuerbach/tasty")
     (synopsis "HUnit support for the Tasty test framework")
     (description "This package provides HUnit support for the Tasty Haskell
@@ -250,7 +248,6 @@ test framework.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
     (home-page "https://github.com/vincenthz/tasty-kat")
@@ -263,7 +260,7 @@ tasty.")
 (define-public ghc-tasty-th
   (package
     (name "ghc-tasty-th")
-    (version "0.1.4")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
@@ -272,10 +269,12 @@ tasty.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0dff9si8i1qp0s7p4hlk0l29vq7wxfglw6mvlgmld43h7rllv88q"))))
+         "0b2ivrw2257m4cy4rjnkwqlarh83j1y3zywnmaqqqbvy667sqnj3"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-tasty" ,ghc-tasty)))
+     `(("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
     (home-page "https://github.com/bennofs/tasty-th")
     (synopsis "Automatically generate tasty TestTrees")
     (description
@@ -288,7 +287,7 @@ test-framework.")
 (define-public ghc-tasty-rerun
   (package
     (name "ghc-tasty-rerun")
-    (version "1.1.8")
+    (version "1.1.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -296,11 +295,10 @@ test-framework.")
                     "tasty-rerun-" version ".tar.gz"))
               (sha256
                (base32
-                "0yg8cicfn3qaazvp4rbanzy3dyk95k3y1kkd4bykvkl9v4076788"))))
+                "05lp4zy6lwd916snq6hs43848n62j9vdfl3s8sfivqydrax0vvd8"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-mtl" ,ghc-mtl)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+     `(("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-reducers" ,ghc-reducers)
        ("ghc-split" ,ghc-split)
        ("ghc-stm" ,ghc-stm)
@@ -317,7 +315,7 @@ been added since previous test run.")
 (define-public ghc-tasty-expected-failure
   (package
     (name "ghc-tasty-expected-failure")
-    (version "0.11.0.4")
+    (version "0.11.1.1")
     (source
      (origin
        (method url-fetch)
@@ -326,7 +324,7 @@ been added since previous test run.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0r555f18d2gj96pjyc13chn1nxaxl81am4xgip3mvvjhw8s5mva1"))))
+         "1i2s809m644b7hgiblqay9j364r3fjj1rwbrahsn1pgr5q6mr6ji"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-tagged" ,ghc-tagged)
@@ -356,7 +354,8 @@ development.")
          "1bh1pzz5fdcqvzdcirqxna6fnjms02min5md716299g5niz46w55"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=base-compat")))
+     `(#:cabal-revision
+       ("1" "1sngfq3v71bvgjsl8cj5kh65m3fziwy8dkvwjzs0kxfrzr87faly")))
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-base-compat" ,ghc-base-compat)
@@ -426,7 +425,7 @@ use HUnit assertions as QuickCheck properties.")
 (define-public ghc-quickcheck
   (package
     (name "ghc-quickcheck")
-    (version "2.10.1")
+    (version "2.11.3")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -437,11 +436,10 @@ use HUnit assertions as QuickCheck properties.")
              ".tar.gz"))
        (sha256
         (base32
-         "1rfmns3lj3hl93k1jws85ajkkw7z9ll8cw292n9m7zald1w5dfqx"))))
+         "0xhqk35fkzlbjcqbabg6962jkv8d688nzmz7ng4bm84x2d95d328"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
-       #:configure-flags '("-f base4")))
+     `(#:tests? #f))  ; FIXME: currently missing libraries used for tests.
     (inputs
      `(("ghc-random" ,ghc-random)
        ("ghc-tf-random" ,ghc-tf-random)))
@@ -455,37 +453,10 @@ hold in a large number of randomly generated cases.  Specifications are
 expressed in Haskell, using combinators defined in the QuickCheck library.")
     (license license:bsd-3)))
 
-(define-public ghc-quickcheck-2.9
-  (package
-    (inherit ghc-quickcheck)
-    (name "ghc-quickcheck")
-    (version "2.9.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://hackage.haskell.org/package/QuickCheck-2.9.2/QuickCheck-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "119np67qvx8hyp9vkg4gr2wv3lj3j6ay2vl4hxspkg43ymb1cp0m"))))))
-
-(define-public ghc-quickcheck-latest
-  (package (inherit ghc-quickcheck)
-    (version "2.11.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/QuickCheck/QuickCheck-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "0xhqk35fkzlbjcqbabg6962jkv8d688nzmz7ng4bm84x2d95d328"))))))
-
 (define-public ghc-test-framework
   (package
     (name "ghc-test-framework")
-    (version "0.8.1.1")
+    (version "0.8.2.0")
     (source
      (origin
        (method url-fetch)
@@ -493,10 +464,17 @@ expressed in Haskell, using combinators defined in the QuickCheck library.")
                            "test-framework-" version ".tar.gz"))
        (sha256
         (base32
-         "0wxjgdvb1c4ykazw774zlx86550848wbsvgjgcrdzcgbb9m650vq"))))
+         "1hhacrzam6b8f10hyldmjw8pb7frdxh04rfg3farxcxwbnhwgbpm"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=time")))
+     `(#:tests? #f  ; FIXME: Tests do not build.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "test-framework.cabal"
+               (("QuickCheck     >= 2\\.3 && < 2\\.10")
+                "QuickCheck     >= 2.3 && < 2.12")))))))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)))
@@ -508,7 +486,8 @@ expressed in Haskell, using combinators defined in the QuickCheck library.")
        ("ghc-random" ,ghc-random)
        ("ghc-regex-posix" ,ghc-regex-posix)
        ("ghc-xml" ,ghc-xml)
-       ("ghc-libxml" ,ghc-libxml)))
+       ("ghc-libxml" ,ghc-libxml)
+       ("ghc-semigroups" ,ghc-semigroups-bootstrap)))
     (home-page "https://batterseapower.github.io/test-framework/")
     (synopsis "Framework for running and organising tests")
     (description
@@ -533,9 +512,9 @@ reporting and test statistics output.")
         (base32
          "1y0b6vg8nfm43v90lxxcydhi6qlxhfy4vpxbzm5ic2w55bh8xjwm"))))
     (build-system haskell-build-system)
-    ;; The official revision of the cabal file allows for HUnit lower than 1.7
     (arguments
-     `(#:configure-flags (list "--allow-newer=HUnit")))
+     `(#:cabal-revision
+       ("3" "0i9mlalv7cl1iq43ld5myrnpszq5rxmd79hk495dcb08rglhgl3z")))
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
        ("ghc-hunit" ,ghc-hunit)
@@ -560,6 +539,9 @@ reporting and test statistics output.")
         (base32
          "0vj834337r6jzr3258cv68ly2sv5999mklpsrfngyk51kywsyqyp"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "147ngmfdkskyg7mwsp5w73a4dbx3rp5s38bci3z03kn1m093lxff")))
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
        ("ghc-quickcheck" ,ghc-quickcheck)
@@ -827,7 +809,6 @@ minimal dependencies.")
          "19wqignlq90qwpam01hnmmrxaxh5lkax9l1l6rlbi4a07nvp1dnz"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-quickcheck" ,ghc-quickcheck)
-              ("ghc-mtl" ,ghc-mtl)
               ("ghc-hunit" ,ghc-hunit)
               ("ghc-test-framework" ,ghc-test-framework)
               ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)

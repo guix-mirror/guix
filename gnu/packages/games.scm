@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
@@ -34,6 +34,8 @@
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -180,9 +182,73 @@ more advanced player there are new game modes and a wide variety of physics
 settings to tweak as well.")
     (license license:gpl2+)))
 
+(define-public bastet
+  (package
+    (name "bastet")
+    (version "0.43.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fph/bastet.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "09kamxapm9jw9przpsgjfg33n9k94bccv65w95dakj0br33a75wn"))
+       (patches
+        (search-patches "bastet-change-source-of-unordered_set.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CXXFLAGS=-I"
+                            (assoc-ref %build-inputs "boost") "/include"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (replace 'check
+           ;; The 'Test' target builds the tests, but doesn't actually run them.
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "Test" make-flags)
+             (setenv "HOME" ".")
+             (invoke "./Test")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (share   (string-append out "/share"))
+                    (hicolor (string-append share "/icons/hicolor")))
+               (install-file "bastet"
+                             (string-append out "/bin"))
+
+               (install-file "bastet.desktop"
+                             (string-append share "/applications"))
+               (install-file "bastet.svg"
+                             (string-append hicolor "/scalable/apps"))
+
+               (install-file "bastet.appdata.xml"
+                             (string-append share "/appdata"))
+
+               (install-file "bastet.6"
+                             (string-append out "/share/man/man6"))
+               #t))))))
+    (native-inputs
+     `(("hicolor-icon-theme" ,hicolor-icon-theme)))
+    (inputs
+     `(("boost" ,boost)
+       ("ncurses" ,ncurses)))
+    (home-page "http://fph.altervista.org/prog/bastet.html")
+    (synopsis "Antagonistic Tetris-style falling brick game for text terminals")
+    (description
+     "Bastet (short for Bastard Tetris) is a simple ncurses-based falling brick
+game.  Unlike normal Tetris, Bastet does not choose the next brick at random.
+Instead, it uses a special algorithm to choose the worst brick possible.
+
+Playing bastet can be a painful experience, especially if you usually make
+canyons and wait for the long I-shaped block to clear four rows at a time.")
+    (license license:gpl3+)))
+
 (define-public cataclysm-dda
-  (let ((commit "ad3b0c3d521292d119f97a83390e7acfe9e9e7f7")
-        (revision "1"))
+  (let ((commit "0b2c194e5c6a06f4fbf14a0ec1260e0f3cf2567c")
+        (revision "2"))
     (package
       (name "cataclysm-dda")
       ;; This denotes the version released after the 0.C release.
@@ -195,7 +261,7 @@ settings to tweak as well.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1kdgbl8zqd53f5yilm2c9nyq3w6585yxl5jvgxy65dlpzxcqqj7y"))
+                  "1yzsn0y2g27bvbxjvivjyjhkmf2w5na1qqw5qfkswcfqqwym2y33"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -363,6 +429,59 @@ played.  Freedoom complements the Doom engine with free levels, artwork, sound
 effects and music to make a completely free game.")
    (license license:bsd-3)))
 
+(define-public freedroidrpg
+  (package
+    (name "freedroidrpg")
+    (version "0.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://ftp.osuosl.org/pub/freedroid/"
+                           "freedroidRPG-" (version-major+minor version) "/"
+                           "freedroidRPG-" version ".tar.gz"))
+       (sha256
+        (base32 "0n4kn38ncmcy3lrxmq8fjry6c1z50z4q1zcqfig0j4jb0dsz2va2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "CFLAGS="
+                       "-I" (assoc-ref %build-inputs "sdl-gfx") "/include/SDL "
+                       "-I" (assoc-ref %build-inputs "sdl-image") "/include/SDL "
+                       "-I" (assoc-ref %build-inputs "sdl-mixer") "/include/SDL")
+        "--enable-opengl")
+       ;; FIXME: the test suite fails with the following error output:
+       ;;   4586 Segmentation fault      env SDL_VIDEODRIVER=dummy \
+       ;;   SDL_AUDIODRIVER=dummy ./src/freedroidRPG -nb text
+       #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glu" ,glu)
+       ("libjpeg" ,libjpeg)
+       ("libogg" ,libogg)
+       ("libpng" ,libpng)
+       ("libvorbis" ,libvorbis)
+       ("mesa" ,mesa)
+       ("python" ,python-wrapper)
+       ("sdl" ,sdl)
+       ("sdl-gfx" ,sdl-gfx)
+       ("sdl-image" ,sdl-image)
+       ("sdl-mixer" ,sdl-mixer)
+       ("zlib" ,zlib)))
+    (home-page "http://www.freedroid.org/")
+    (synopsis "Isometric role-playing game against killer robots")
+    (description
+     "Freedroid RPG is an @dfn{RPG} (Role-Playing Game) with isometric graphics.
+The game tells the story of a world destroyed by a conflict between robots and
+their human masters.  To restore peace to humankind, the player must complete
+numerous quests while fighting off rebelling robots---either by taking control
+of them, or by simply blasting them to pieces with melee and ranged weapons in
+real-time combat.")
+    (license (list license:expat        ; lua/
+                   license:gpl3         ; src/gen_savestruct.py
+                   license:gpl2+))))    ; the rest
+
 (define-public golly
   (package
     (name "golly")
@@ -454,7 +573,7 @@ automata.  The following features are available:
 (define-public meandmyshadow
   (package
     (name "meandmyshadow")
-    (version "0.4.1")
+    (version "0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/meandmyshadow/"
@@ -462,38 +581,24 @@ automata.  The following features are available:
                                   "-src.tar.gz"))
               (sha256
                (base32
-                "0wl5dc75qy001s6043cx0vr2l5y2qfv1cldqnwill9sfygqj9p95"))))
+                "1b6qf83vdfv8jwn2jq9ywmda2qn2f5914i7mwfy04m17wx593m3m"))
+              (patches (search-patches
+                        ;; This will not be needed in the next release.
+                        "meandmyshadow-define-paths-earlier.patch"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f ; there are no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-sdl'paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "cmake/Modules/FindSDL_gfx.cmake"
-               (("/usr/local/include/SDL")
-                (string-append (assoc-ref inputs "sdl")
-                               "/include/SDL")))
-             ;; Because SDL provides lib/libX11.so.6 we need to explicitly
-             ;; link with libX11, even though we're using the GL backend.
-             (substitute* "CMakeLists.txt"
-               (("\\$\\{X11_LIBRARIES\\}") "-lX11"))
-             #t)))))
+     `(#:tests? #f))                    ; there are no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("sdl" ,(sdl-union (list sdl
-                                sdl-image
-                                sdl-gfx
-                                sdl-mixer
-                                sdl-ttf)))
-       ("libx11" ,libx11) ; needed by sdl's libX11
+     `(("curl" ,curl)
        ("libarchive" ,libarchive)
-       ("openssl" ,openssl)
-       ("mesa" ,mesa)
-       ("glu" ,glu)
-       ("curl" ,curl)))
-    (home-page "http://meandmyshadow.sourceforge.net/")
+       ("lua" ,lua)
+       ("sdl" ,(sdl-union (list sdl2
+                                sdl2-image
+                                sdl2-mixer
+                                sdl2-ttf)))))
+    (home-page "https://acmepjz.github.io/meandmyshadow/")
     (synopsis "Puzzle/platform game")
     (description "Me and My Shadow is a puzzle/platform game in which you try
 to reach the exit by solving puzzles.  Spikes, moving blocks, fragile blocks
@@ -793,6 +898,46 @@ role, and your gender.")
       (license:fsdg-compatible
         "https://nethack.org/common/license.html"))))
 
+(define-public pipewalker
+  (package
+    (name "pipewalker")
+    (version "0.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://downloads.sourceforge.net/pipewalker/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x46wgk0s55562pd96cxagxkn6wpgglq779f9b64ff1k3xzp3myn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-docdir
+           ;; Makefile.in ignores configure's ‘--docdir=...’ option.  Fix that.
+           (lambda _
+             (substitute* "Makefile"
+               (("(pkgdocdatadir = ).*" _ assignment)
+                (string-append assignment "$(docdir)\n")))
+             #t)))))
+    (inputs
+     `(("libpng" ,libpng)
+       ("mesa" ,mesa)
+       ("sdl" ,sdl)))
+    (home-page "http://pipewalker.sourceforge.net/")
+    (synopsis "Logical tile puzzle")
+    (description
+     "PipeWalker is a simple puzzle game with many diffent themes: connect all
+computers to one network server, bring water from a source to the taps, etc.
+The underlying mechanism is always the same: you must turn each tile in the
+grid in the right direction to combine all components into a single circuit.
+Every puzzle has a complete solution, although there may be more than one.")
+    (license license:gpl3+)))
+
 (define-public prboom-plus
   (package
    (name "prboom-plus")
@@ -842,7 +987,7 @@ role, and your gender.")
 (define-public retux
   (package
     (name "retux")
-    (version "1.3.5")
+    (version "1.3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/retux/"
@@ -850,7 +995,7 @@ role, and your gender.")
                                   version "-src.tar.gz"))
               (sha256
                (base32
-                "1pcrh3z16fl412r3k7xccrgika19ahb1xh90jihgl8yy7zza2i6p"))))
+                "01bidh4zisjp3nc436x0g85v60dvwb3ig37i7y01sa71j8fm4fmb"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -1979,7 +2124,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.4")
+    (version "1.14.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -1988,7 +2133,7 @@ falling, themeable graphics and sounds, and replays.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1hw1ap8xxpdwyx1sf8fm1g75p6724y3hwb4kpvyqbsq7bwfwsb9i"))))
+                "1kgpj2f22nnx4mwd1zis3s5ny2983aasgqsmz7wnqaq7n6a7ac85"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
@@ -2081,28 +2226,36 @@ on the screen and keyboard to display letters.")
 (define-public raincat
   (package
     (name "raincat")
-    (version "1.1.1.3")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "http://hackage.haskell.org/package/Raincat/Raincat-"
-             version
-             ".tar.gz"))
+       (uri (string-append "http://hackage.haskell.org/package/Raincat/"
+                           "Raincat-" version ".tar.gz"))
        (sha256
         (base32
-         "1aalh68h6799mv4vyg30zpskl5jkn6x2j1jza7p4lrflyifxzar8"))))
+         "10y9zi22m6hf13c9h8zd9vg7mljpwbw0r3djb6r80bna701fdf6c"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/raincat")
+                 `("LD_LIBRARY_PATH" ":" =
+                   (,(string-append (assoc-ref inputs "freeglut")
+                                    "/lib"))))
+               #t))))))
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-random" ,ghc-random)
        ("ghc-glut" ,ghc-glut)
        ("freeglut" ,freeglut)
        ("ghc-opengl" ,ghc-opengl)
-       ("ghc-sdl" ,ghc-sdl)
-       ("ghc-sdl-image" ,ghc-sdl-image)
-       ("ghc-sdl-mixer" ,ghc-sdl-mixer)))
+       ("ghc-sdl2" ,ghc-sdl2)
+       ("ghc-sdl2-image" ,ghc-sdl2-image)
+       ("ghc-sdl2-mixer" ,ghc-sdl2-mixer)))
     (home-page "http://www.bysusanlin.com/raincat/")
     (synopsis "Puzzle game with a cat in lead role")
     (description "Project Raincat is a game developed by Carnegie Mellon
@@ -2430,7 +2583,7 @@ Transport Tycoon Deluxe.")
 (define openrct2-objects
   (package
    (name "openrct2-objects")
-   (version "1.0.2")
+   (version "1.0.6")
    (source
     (origin
      (method url-fetch)
@@ -2439,7 +2592,7 @@ Transport Tycoon Deluxe.")
      (file-name (string-append name "-" version ".zip"))
      (sha256
       (base32
-       "1z92afhbv13j1ig6fz0x8w9vdmfchssv16vwwhb0vj40pn1g1rwy"))))
+       "00kfy95zx6g4ldr6br5p7bwkwfx6pw9v78fd3rvghjnwyvf5fhki"))))
    (build-system trivial-build-system)
    (native-inputs
     `(("bash" ,bash)
@@ -2471,7 +2624,7 @@ Transport Tycoon Deluxe.")
 (define-public openrct2
   (package
     (name "openrct2")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -2479,7 +2632,7 @@ Transport Tycoon Deluxe.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1yrbjra27n2xxb1x47v962lc3qi8gwm5ws4f97952nvn533zrwxz"))
+         "1fxzk037xphpyk7vv5jfrcz739zrj86p43pnf5gjjv9rjxwv7m8f"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
@@ -2653,7 +2806,7 @@ is attributed to Albert Einstein.")
 (define-public powwow
   (package
     (name "powwow")
-    (version "1.2.17")
+    (version "1.2.18")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2662,11 +2815,11 @@ is attributed to Albert Einstein.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1xmsg2y7qcvj67i9ilnih0mvfxcpni7fzrz343x9rdfnkkzf3pp8"))))
+                "1gf0jc1vfv05lxij51n3c1dqn3aiiy2kj1v6q14an3wm7yl7cllp"))))
     (inputs
      `(("ncurses" ,ncurses)))
     (build-system gnu-build-system)
-    (home-page "http://www.hoopajoo.net/projects/powwow.html")
+    (home-page "https://www.hoopajoo.net/projects/powwow.html")
     (synopsis "MUD and telnet client")
     (description
      "POWWOW is a client software which can be used for telnet as well as for
@@ -3106,7 +3259,7 @@ safety of the Chromium vessel.")
 (define-public tuxpaint
   (package
     (name "tuxpaint")
-    (version "0.9.22")                  ;keep VER_DATE below in sync
+    (version "0.9.23")                  ;keep VER_DATE below in sync
     (source
      (origin
        (method url-fetch)
@@ -3114,7 +3267,7 @@ safety of the Chromium vessel.")
                            version "/tuxpaint-" version ".tar.gz"))
        (sha256
         (base32
-         "1qrbrdck9yxpcg3si6jb9i11w8lw9h4hqad0pfaxgyiniqpr7gca"))
+         "09k9pxi88r3dx6dyjwf9h85d4qpva4i29qz63dc558hg9v21k69l"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3142,16 +3295,22 @@ safety of the Chromium vessel.")
        ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-ttf sdl-image)))))
     ;; TODO: Use system fonts rather than those in data/fonts
     (arguments
-     `(#:make-flags `("VER_DATE=2014-08-23"
+     `(#:make-flags `("VER_DATE=2018-09-02"
                       "GPERF=gperf" "CC=gcc"
                       "SDL_PCNAME=sdl SDL_image SDL_mixer SDL_ttf"
                       ,(string-append "PREFIX=" %output)
-                      "GNOME_PREFIX=$(PREFIX)"
+                      "KDE_PREFIX=$(PREFIX)/share/applications"
+                      "KDE_ICON_PREFIX=$(PREFIX)/share/icons/"
                       "COMPLETIONDIR=$(PREFIX)/etc/bash_completion.d")
        #:parallel-build? #f             ;fails on some systems
        #:tests? #f                      ;No tests
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ;no configure phase
+                  (add-before 'install 'no-sys-cache
+                    (lambda _           ;do not rebuild system conf cache
+                      (substitute* "Makefile"
+                        (("kbuildsycoca4") ""))
+                      #t))
                   (add-after 'install 'fix-import
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
@@ -3183,7 +3342,7 @@ your child be creative.")
 (define-public tuxpaint-stamps
   (package
     (name "tuxpaint-stamps")
-    (version "2014.08.23")
+    (version "2018.09.01")
     (source
      (origin
        (method url-fetch)
@@ -3192,7 +3351,7 @@ your child be creative.")
                            "/tuxpaint-stamps-" version ".tar.gz"))
        (sha256
         (base32
-         "0rhlwrjz44wp269v3rid4p8pi0i615pzifm1ym6va64gn1bms06q"))))
+         "1skr23k27yj3vgwfazpzxp90lb2a278gxrkr3bxw7az6zpkmb3yp"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("tar" ,tar)
@@ -3221,7 +3380,7 @@ with the \"Stamp\" tool within Tux Paint.")
 (define-public tuxpaint-config
   (package
     (name "tuxpaint-config")
-    (version "0.0.13")                  ;keep VER_DATE below in sync
+    (version "0.0.14")                  ;keep VER_DATE below in sync
     (source
      (origin
        (method url-fetch)
@@ -3229,7 +3388,7 @@ with the \"Stamp\" tool within Tux Paint.")
                            version "/tuxpaint-config-" version ".tar.gz"))
        (sha256
         (base32
-         "1z12s46mvy87qs3vgq9m0ki9pp21zqc52mmgphahpihw3s7haf6v"))))
+         "0zkgxk436nqcp43zghkfmh397c7dvh5bwn2as7gwvv208bzyij6g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -3241,7 +3400,7 @@ with the \"Stamp\" tool within Tux Paint.")
        ("libxft" ,libxft)
        ("mesa" ,mesa)))
     (arguments
-     `(#:make-flags `("VER_DATE=2014-08-23"
+     `(#:make-flags `("VER_DATE=2018-09-01"
                       "CONFDIR=/etc/tuxpaint" ;don't write to store
                       ,(string-append "PREFIX=" %output)
                       "GNOME_PREFIX=$(PREFIX)")
@@ -3492,22 +3651,23 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.4j")
+    (version "10.5")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.roguetemple.com/z/hyper/"
+                    "https://www.roguetemple.com/z/hyper/"
                     name (string-join (string-split version #\.) "")
                     "-src.tgz"))
               (sha256
                (base32
-                "0909p4xvbi1c2jc5rdgrf8b1c60fmsaapabsi6yyglh5znkf0k27"))))
+                "04wk50f51xrb9vszwil4ivkfpy7xc6nw3gnp90hbna2zqi2jnvb8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
-       #:make-flags '("CXXFLAGS=-std=c++11")
+       #:make-flags '("HYPERROGUE_USE_GLEW=1"
+                      "HYPERROGUE_USE_PNG=1")
        #:phases
        (modify-phases %standard-phases
          (add-after 'set-paths 'set-sdl-paths
@@ -3530,12 +3690,16 @@ throwing people around in pseudo-randomly generated buildings.")
                   (string-append dejavu-dir "/" dejavu-font)))
                (substitute* music-file
                  (("\\*/")
-                  (string-append share-dir "/sounds/"))))
-             ;; Fix Makefile.
-             (substitute* "Makefile"
-               (("g\\+\\+ langen.cpp")
-                "g++ langen.cpp ${CXXFLAGS}")
-               (("savepng.c") "savepng.cpp"))
+                  (string-append share-dir "/sounds/")))
+               (substitute* "sound.cpp"
+                 (("musicfile = \"\"")
+                  (string-append "musicfile = \""
+                                 share-dir "/" music-file "\"")))
+               ;; Disable build machine CPU optimizations and warnings treated
+               ;; as errors.
+               (substitute* "Makefile"
+                 (("-march=native") "")
+                 (("-Werror") "")))
              #t))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3543,7 +3707,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     (bin (string-append out "/bin"))
                     (share-dir (string-append out "/share/hyperrogue")))
                (mkdir-p bin)
-               (copy-file "hyper" (string-append bin "/hyperrogue"))
+               (install-file "hyperrogue" bin)
                (install-file "hyperrogue-music.txt" share-dir))
              #t))
          (add-after 'install 'install-data
@@ -3570,12 +3734,12 @@ throwing people around in pseudo-randomly generated buildings.")
            (method url-fetch)
            (uri
             (string-append
-             "http://www.roguetemple.com/z/hyper/" name
+             "https://www.roguetemple.com/z/hyper/" name
              (string-join (string-split version #\.) "")
              "-win.zip"))
            (sha256
             (base32
-             "0w61iv2rn93hi0q3hxyyyf9xcr8vi9zd7fjvpz5adpgf94jm3zsc"))))
+             "0r6xvnr7b56iv27n8z10qmxhsz5h7w6ayhxkz3xinlvch84bk708"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -3585,7 +3749,7 @@ throwing people around in pseudo-randomly generated buildings.")
                                       sdl-gfx
                                       sdl-mixer
                                       sdl-ttf)))))
-    (home-page "http://www.roguetemple.com/z/hyper/")
+    (home-page "https://www.roguetemple.com/z/hyper/")
     (synopsis "Non-euclidean graphical rogue-like game")
     (description
      "HyperRogue is a game in which the player collects treasures and fights
@@ -3847,7 +4011,7 @@ emerges from a sewer hole and pulls her below ground.")
 (define-public cdogs-sdl
   (package
     (name "cdogs-sdl")
-    (version "0.6.7")
+    (version "0.6.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3856,7 +4020,7 @@ emerges from a sewer hole and pulls her below ground.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1frafzsj3f83xkmn4llr7g728c82lcqi424ini1hv3gv5zjgpa15"))))
+                "1v0adxm4xsix6r6j9hs7vmss7pxrb37azwfazr54p1dmfz4s6rp8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -3982,31 +4146,54 @@ small robot living in the nano world, repair its maker.")
 (define-public teeworlds
   (package
     (name "teeworlds")
-    (version "0.6.4")
+    (version "0.7.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/teeworlds/teeworlds/"
-                                  "archive/" version "-release.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              ;; do not use auto-generated tarballs
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/teeworlds/teeworlds.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mqhp6xjl75l49050cid36wxyjn1qr0vjx1c709dfg1lkvmgs6l3"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (for-each delete-file-recursively
-                            '("src/engine/external/wavpack/"
-                              "src/engine/external/zlib/"))
+                "0jigg2yikihbivzs7hpljr0mghx1l9v4f1cdr8fbmqv2wb51ah8q"))
+              (modules '((guix build utils)
+                         (ice-9 ftw)
+                         (ice-9 regex)
+                         (srfi srfi-1)
+                         (srfi srfi-26)))
+              (snippet ; remove bundled libraries except md5
+               '(let ((base-dir "src/engine/external/"))
+                  (for-each (compose (cut delete-file-recursively <>)
+                                     (cut string-append base-dir <>))
+                            (remove (cut string-match "(^.)|(^md5$)" <>)
+                                    (scandir base-dir)))
                   #t))
               (patches
                (search-patches "teeworlds-use-latest-wavpack.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests included
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
+             ;; The bundled json-parser uses an old API.
+             ;; To use the latest non-bundled version, we need to pass the
+             ;; length of the data in all 'json_parse_ex' calls.
+             (define (use-latest-json-parser file)
+               (substitute* file
+                 (("engine/external/json-parser/json\\.h")
+                  "json-parser/json.h")
+                 (("json_parse_ex\\(&JsonSettings, pFileData, aError\\);")
+                  "json_parse_ex(&JsonSettings,
+                                 pFileData,
+                                 strlen(pFileData),
+                                 aError);")))
+
              ;; Embed path to assets.
              (substitute* "src/engine/shared/storage.cpp"
                (("#define DATA_DIR.*")
@@ -4016,50 +4203,68 @@ small robot living in the nano world, repair its maker.")
                                "\"")))
 
              ;; Bam expects all files to have a recent time stamp.
-             (for-each (lambda (file)
-                         (utime file 1 1))
+             (for-each (cut utime <> 1 1)
                        (find-files "."))
 
              ;; Do not use bundled libraries.
              (substitute* "bam.lua"
-               (("if config.zlib.value == 1 then")
-                "if true then")
-               (("wavpack = .*")
-                "wavpack = {}
-settings.link.libs:Add(\"wavpack\")\n"))
+               (("local json = Compile.+$")
+                "local json = nil
+settings.link.libs:Add(\"jsonparser\")")
+               (("local png = Compile.+$")
+                "local png = nil
+settings.link.libs:Add(\"pnglite\")")
+               (("local wavpack = Compile.+$")
+                "local wavpack = nil
+settings.link.libs:Add(\"wavpack\")")
+               (("if config\\.zlib\\.value == 1")
+                "if config.zlib.value"))
+             (substitute* "src/engine/client/graphics_threaded.cpp"
+               (("engine/external/pnglite/pnglite\\.h")
+                "pnglite.h"))
              (substitute* "src/engine/client/sound.cpp"
-               (("#include <engine/external/wavpack/wavpack.h>")
-                "#include <wavpack/wavpack.h>"))
+               (("engine/external/wavpack/wavpack\\.h")
+                "wavpack/wavpack.h"))
+             (for-each use-latest-json-parser
+                       '("src/game/client/components/countryflags.cpp"
+                         "src/game/client/components/menus_settings.cpp"
+                         "src/game/client/components/skins.cpp"
+                         "src/game/client/localization.cpp"
+                         "src/game/editor/auto_map.h"
+                         "src/game/editor/editor.cpp"))
              #t))
          (replace 'build
            (lambda _
-             (zero? (system* "bam" "-a" "-v" "release"))))
+             (invoke "bam" "-a" "-v" "conf=release")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (bin  (string-append out "/bin"))
-                    (data (string-append out "/share/teeworlds/data")))
-               (mkdir-p bin)
-               (mkdir-p data)
-               (for-each (lambda (file)
-                           (install-file file bin))
-                         '("teeworlds" "teeworlds_srv"))
-               (copy-recursively "data" data)
+             (let* ((arch ,(system->linux-architecture
+                            (or (%current-target-system)
+                                (%current-system))))
+                    (build (string-append "build/" arch "/release/"))
+                    (data-built (string-append build "data/"))
+                    (out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (data (string-append out "/share/teeworlds/data/")))
+               (for-each (cut install-file <> bin)
+                         (map (cut string-append build <>)
+                              '("teeworlds" "teeworlds_srv")))
+               (copy-recursively data-built data)
                #t))))))
-    ;; FIXME: teeworlds bundles the sources of "pnglite", a two-file PNG
-    ;; library without a build system.
     (inputs
      `(("freetype" ,freetype)
        ("glu" ,glu)
+       ("json-parser" ,json-parser)
        ("mesa" ,mesa)
-       ("sdl-union" ,(sdl-union (list sdl
-                                      sdl-mixer
-                                      sdl-image)))
+       ("pnglite" ,pnglite)
+       ("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-mixer" ,sdl2-mixer)
        ("wavpack" ,wavpack)
        ("zlib" ,zlib)))
     (native-inputs
      `(("bam" ,bam)
-       ("python" ,python-2)
+       ("python" ,python-wrapper)
        ("pkg-config" ,pkg-config)))
     (home-page "https://www.teeworlds.com")
     (synopsis "2D retro multiplayer shooter game")
@@ -4231,7 +4436,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.21.0")
+    (version "0.22.1")
     (source
      (origin
        (method url-fetch)
@@ -4245,7 +4450,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                             version "-nodeps.tar.xz")))
        (sha256
         (base32
-         "0mmnkch8s9l7dh136yjvcyjr0vmyzv7z370rlcyir91qz6gg82n1"))
+         "1qc90wwbxvjzqq66n8kfr0a2ny7sfvv2n84si67jiv2887d0ws6k"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -5184,7 +5389,7 @@ You can save humanity and get programming skills!")
     (build-system cmake-build-system)
     (inputs `(("bzip2" ,bzip2)
               ("fluid-3" ,fluid-3)
-              ("fluidsynth" ,fluidsynth)
+              ("fluidsynth" ,fluidsynth-1)      ;XXX: try using 2.x when updating
               ("gtk+3" ,gtk+)
               ("libgme" ,libgme)
               ("libjpeg" ,libjpeg)
@@ -5382,7 +5587,8 @@ quotation from a collection of quotes.")
                      Comment=Xonotic glx~@
                      Exec=~a/bin/xonotic-glx~@
                      TryExec=~@*~a/bin/xonotic-glx~@
-                     Icon=~@
+                     Icon=xonotic~@
+                     Categories=Game~@
                      Type=Application~%"
                            output)))
                (with-output-to-file
@@ -5394,7 +5600,8 @@ quotation from a collection of quotes.")
                      Comment=Xonotic sdl~@
                      Exec=~a/bin/xonotic-sdl~@
                      TryExec=~@*~a/bin/xonotic-sdl~@
-                     Icon=~@
+                     Icon=xonotic~@
+                     Categories=Game~@
                      Type=Application~%"
                            output)))
                (with-output-to-file
@@ -5406,7 +5613,8 @@ quotation from a collection of quotes.")
                      Comment=Xonotic~@
                      Exec=~a/bin/xonotic-glx~@
                      TryExec=~@*~a/bin/xonotic~@
-                     Icon=~@
+                     Icon=xonotic~@
+                     Categories=Game~@
                      Type=Application~%"
                            output)))
                #t)))
@@ -5446,8 +5654,8 @@ quotation from a collection of quotes.")
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (data (assoc-ref inputs "xonotic-data")))
-               (copy-recursively (string-append data "/share/xonotic")
-                                 (string-append out "/share/xonotic"))
+               (symlink (string-append data "/share/xonotic")
+                        (string-append out "/share/xonotic"))
                #t)))
          (add-after 'install-binaries 'wrap-binaries
            (lambda* (#:key outputs inputs #:allow-other-keys)
@@ -5513,3 +5721,159 @@ open-source FPS of its kind.")
     (license (list license:gpl2+
                    license:bsd-3 ; /source/d0_blind_id folder and others
                    (license:x11-style "" "See file rcon.pl.")))))
+
+(define-public frotz
+  (package
+    (name "frotz")
+    (version "2.44")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append
+                          "http://www.ifarchive.org/if-archive/infocom/interpreters/"
+                          name "/" name "-" version ".tar.gz")
+                         (string-append
+                          "ftp://ftp.ifarchive.org/if-archive/infocom/interpreters/"
+                          name "/" name "-" version ".tar.gz")))
+              (sha256
+               (base32
+                "1v735xr3blznac8fnwa27s1vhllx4jpz7kw7qdw1bsfj6kq21v3k"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'curses
+           (lambda _
+             (substitute* "Makefile"
+               (("lcurses") "lncurses"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man6")))
+               (install-file "frotz" bin)
+               (mkdir-p man)
+               (install-file "doc/frotz.6" man)
+               #t))))))
+    (inputs `(("libmodplug" ,libmodplug)
+              ("libsamplerate" ,libsamplerate)
+              ("libsndfile" ,libsndfile)
+              ("libvorbis" ,libvorbis)
+              ("ncurses" ,ncurses)))
+    (synopsis "Portable Z-machine interpreter (ncurses version) for text adventure games")
+    (description "Frotz is an interpreter for Infocom games and other Z-machine
+games in the text adventure/interactive fiction genre.  This version of Frotz
+complies with standard 1.0 of Graham Nelson's specification.  It plays all
+Z-code games V1-V8, including V6, with sound support through libao, and uses
+ncurses for text display.")
+    (home-page "http://frotz.sourceforge.net")
+    (license license:gpl2+)))
+
+(define-public frotz-dumb-terminal
+  (package
+    (name "frotz-dumb-terminal")
+    (version "2.44")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append
+                          "http://www.ifarchive.org/if-archive/infocom/interpreters/"
+                          "frotz" "/" "frotz" "-" version ".tar.gz")
+                         (string-append
+                          "ftp://ftp.ifarchive.org/if-archive/infocom/interpreters/"
+                          "frotz" "/" "frotz" "-" version ".tar.gz")))
+              (sha256
+               (base32
+                "1v735xr3blznac8fnwa27s1vhllx4jpz7kw7qdw1bsfj6kq21v3k"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "make" "dumb")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man6")))
+               (install-file "dfrotz" bin)
+               (mkdir-p man)
+               (install-file "doc/dfrotz.6" man)
+               #t))))))
+    (synopsis "Portable Z-machine dumb interpreter for text adventure games")
+    (description "Frotz is an interpreter for Infocom games and
+other Z-machine games in the text adventure/interactive fiction genre.
+dfrotz is the dumb interface version.  You get no screen control; everything
+is just printed to the terminal line by line.  The terminal handles all the
+scrolling.  Maybe you'd like to experience what it's like to play Adventure on
+a teletype.  A much cooler use for compiling Frotz with the dumb interface is
+that it can be wrapped in CGI scripting, PHP, and the like to allow people
+to play games on webpages.  It can also be made into a chat bot.")
+    (home-page "http://frotz.sourceforge.net")
+    (license license:gpl2+)))
+
+(define-public frotz-sdl
+  (let* ((commit "4de8c34f2116fff554af6216c30ec9d41bf50b24"))
+    (package
+      (name "frotz-sdl")
+      (version "2.45pre")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/DavidGriffith/frotz")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "18ms21pcrl7ipcnyqnf8janamkryzx78frsgd9kfk67jvbj0z2k8"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; there are no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'build 'patch-makefile
+             (lambda _
+               (substitute* "Makefile"
+                 (("lcurses") "lncurses")
+                 (("^BUILD_DATE_TIME =.*$")
+                  "BUILD_DATE_TIME = \"2.45pre-20180907.00000\"\n"))
+               #t))
+           (replace 'build
+             (lambda _
+               (invoke "make" "sdl")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (man (string-append out "/share/man/man6")))
+                 (install-file "sfrotz" bin)
+                 (mkdir-p man)
+                 (install-file "doc/sfrotz.6" man)
+                 #t))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("which" ,which)
+         ("perl" ,perl)))
+      (inputs `(("sdl2" ,sdl2)
+                ("sdl2-mixer" ,sdl2-mixer)
+                ("libmodplug" ,libmodplug)
+                ("libsamplerate" ,libsamplerate)
+                ("libsndfile" ,libsndfile)
+                ("libvorbis" ,libvorbis)
+                ("ncurses" ,ncurses)
+                ("freetype" ,freetype)
+                ("libjpeg-turbo" ,libjpeg-turbo)))
+      (synopsis "Portable Z-machine interpreter (SDL port) for text adventure games")
+      (description "Frotz is an interpreter for Infocom games and other Z-machine
+games in the text adventure/interactive fiction genre.  This version of Frotz
+using SDL fully supports all these versions of the Z-Machine including the
+graphical version 6.  Graphics and sound are created through the use of the SDL
+libraries.  AIFF sound effects and music in MOD and OGG formats are supported
+when packaged in Blorb container files or optionally from individual files.")
+      (home-page "http://frotz.sourceforge.net")
+      (license license:gpl2+))))

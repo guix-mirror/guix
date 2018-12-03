@@ -19,12 +19,8 @@
 
 (define-module (gnu bootloader extlinux)
   #:use-module (gnu bootloader)
-  #:use-module (gnu system)
-  #:use-module (gnu build bootloader)
   #:use-module (gnu packages bootloaders)
   #:use-module (guix gexp)
-  #:use-module (guix monads)
-  #:use-module (guix records)
   #:use-module (guix utils)
   #:export (extlinux-bootloader
             extlinux-bootloader-gpt))
@@ -78,7 +74,7 @@ TIMEOUT ~a~%"
                       (format port "~%"))
                    #~())))))
 
-  (gexp->derivation "extlinux.conf" builder))
+  (computed-file "extlinux.conf" builder))
 
 
 

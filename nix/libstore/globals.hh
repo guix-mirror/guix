@@ -127,7 +127,7 @@ struct Settings {
        a fixed format to allow its progress to be monitored.  Each
        line starts with a "@".  The following are defined:
 
-       @ build-started <drvpath> <outpath> <system> <logfile>
+       @ build-started <drvpath> <outpath> <system> <logfile> <pid>
        @ build-failed <drvpath> <outpath> <exitcode> <error text>
        @ build-succeeded <drvpath> <outpath>
        @ substituter-started <outpath> <substituter>
@@ -138,6 +138,13 @@ struct Settings {
        conceivably contain lines in this format printed by the
        builders. */
     bool printBuildTrace;
+
+    /* When true, 'buildDerivations' prefixes lines coming from builders so
+       that clients know exactly which line comes from which builder, and
+       which line comes from the daemon itself.  The prefix for data coming
+       from builders is "log:PID:LEN:DATA" where PID uniquely identifies the
+       builder (PID is given in "build-started" traces.)  */
+    bool multiplexedBuildOutput;
 
     /* Amount of reserved space for the garbage collector
        (/nix/var/nix/db/reserved). */
@@ -160,12 +167,6 @@ struct Settings {
 
     /* Whether to build in chroot. */
     bool useChroot;
-
-    /* Set of ssh connection strings for the ssh substituter */
-    Strings sshSubstituterHosts;
-
-    /* Whether to use the ssh substituter at all */
-    bool useSshSubstituter;
 
     /* Whether to impersonate a Linux 2.6 machine on newer kernels. */
     bool impersonateLinux26;
@@ -211,12 +212,6 @@ struct Settings {
 
     /* Whether to show a stack trace if Nix evaluation fails. */
     bool showTrace;
-
-    /* A list of URL prefixes that can return Nix build logs. */
-    Strings logServers;
-
-    /* Whether the importNative primop should be enabled */
-    bool enableImportNative;
 
 private:
     SettingsMap settings, overrides;

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,6 +61,13 @@
          ,(string-append "--with-krb5=" (assoc-ref %build-inputs "mit-krb5")))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-glibc-compatability
+           (lambda _
+             (substitute* '("utils/blkmapd/device-discovery.c"
+                            "utils/blkmapd/dm-device.c")
+               (("<sys/stat.h>")
+                "<sys/stat.h>\n#include <sys/sysmacros.h>"))
+             #t))
          (add-before 'configure 'adjust-command-file-names
            (lambda _
              ;; Remove assumptions of FHS from start-statd script

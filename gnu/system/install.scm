@@ -47,12 +47,13 @@
             a20-olinuxino-lime-installation-os
             a20-olinuxino-lime2-emmc-installation-os
             a20-olinuxino-micro-installation-os
-            banana-pi-m2-ultra-installation-os
+            bananapi-m2-ultra-installation-os
             beaglebone-black-installation-os
             mx6cuboxi-installation-os
             nintendo-nes-classic-edition-installation-os
             novena-installation-os
             pine64-plus-installation-os
+            pinebook-installation-os
             rk3399-puma-installation-os
             wandboard-installation-os
             os-with-u-boot))
@@ -448,8 +449,8 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
                             "/dev/mmcblk0" ; SD card storage
                             "ttyS0"))
 
-(define banana-pi-m2-ultra-installation-os
-  (embedded-installation-os u-boot-banana-pi-m2-ultra-bootloader
+(define bananapi-m2-ultra-installation-os
+  (embedded-installation-os u-boot-bananapi-m2-ultra-bootloader
                             "/dev/mmcblk1" ; eMMC storage
                             "ttyS0"))
 
@@ -470,6 +471,11 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
 
 (define pine64-plus-installation-os
   (embedded-installation-os u-boot-pine64-plus-bootloader
+                            "/dev/mmcblk0" ; SD card storage
+                            "ttyS0"))
+
+(define pinebook-installation-os
+  (embedded-installation-os u-boot-pinebook-bootloader
                             "/dev/mmcblk0" ; SD card storage
                             "ttyS0"))
 

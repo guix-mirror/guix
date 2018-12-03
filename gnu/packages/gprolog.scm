@@ -27,15 +27,18 @@
 (define-public gprolog
   (package
     (name "gprolog")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/gprolog/gprolog-" version
-                          ".tar.gz"))
-      (sha256
-       (base32
-        "13miyas47bmijmadm68cbvb21n4s156gjafz7kfx9brk9djfkh0q"))))
+      (origin
+        (method url-fetch)
+        ;; Recent versions are not hosted on the GNU mirrors.
+        (uri (list (string-append "http://gprolog.org/gprolog-" version
+                                  ".tar.gz")
+                   (string-append "mirror://gnu/gprolog/gprolog-" version
+                                  ".tar.gz")))
+        (sha256
+         (base32
+          "0z4cc42n3k6i35b8mr816iwsvrpxshw6d7dgz6s2h1hy0l7g1p5z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

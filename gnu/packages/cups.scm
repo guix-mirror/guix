@@ -53,7 +53,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.20.1")
+    (version "1.21.0")
     (source(origin
               (method url-fetch)
               (uri
@@ -61,7 +61,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "0qix1whz5n4ijnl6d44f1v8nzkpv99wqjyrby8vx6xnpskw5hsxk"))
+                "0fs90xx9i4h8gbpligf5kkh21llv4kf5g3bgfbx4z272xkm7bsfi"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -176,8 +176,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
-    (replacement cups-minimal-2.2.8)
-    (version "2.2.6")
+    (version "2.2.8")
     (source
      (origin
        (method url-fetch)
@@ -185,7 +184,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                            version "/cups-" version "-source.tar.gz"))
        (sha256
         (base32
-         "16qn41b84xz6khrr2pa2wdwlqxr29rrrkjfi618gbgdkq9w5ff20"))))
+         "1r7r7b3nqpzc1a9dczqpj2mr8rkcwf01676v11sp4j7w4qfzqs1r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -237,21 +236,8 @@ describe printer capabilities and features, and a wide variety of generic and
 device-specific programs to convert and print many types of files.")
     (license license:gpl2)))
 
-(define-public cups-minimal-2.2.8
-  (package
-    (inherit cups-minimal)
-    (version "2.2.8")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/apple/cups/releases/download/v"
-                           version "/cups-" version "-source.tar.gz"))
-       (sha256
-        (base32
-         "1r7r7b3nqpzc1a9dczqpj2mr8rkcwf01676v11sp4j7w4qfzqs1r"))))))
-
 (define-public cups
-  (package/inherit cups-minimal
+  (package (inherit cups-minimal)
     (name "cups")
     (arguments
      `(;; Three tests fail:
@@ -396,23 +382,27 @@ device-specific programs to convert and print many types of files.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.18.6")
+    (version "3.18.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "0zbv6cp9n3xypf2fg4j6fpz8zkvl0z08lyc1vq1gd04ln1l3xkqf"))
+                "0g3q5mm2crjyc1z4z6gv4lam6sc5d3diz704djrnpqadk4q3h290"))
               (modules '((guix build utils)))
+              (patches (search-patches "hplip-remove-imageprocessor.patch"))
               (snippet
-               ;; Fix type mismatch.
                '(begin
+                  ;; Delete non-free blobs
+                  (for-each delete-file (find-files "." "\\.so$"))
+                  (delete-file "prnt/hpcups/ImageProcessor.h")
+                  ;; Fix type mismatch.
                   (substitute* "prnt/hpcups/genPCLm.cpp"
                     (("boolean") "bool"))
                   #t))))
     (build-system gnu-build-system)
-    (home-page "http://hplipopensource.com/")
+    (home-page "https://developers.hp.com/hp-linux-imaging-and-printing")
     (synopsis "HP printer drivers")
     (description
      "Hewlett-Packard printer drivers and PostScript Printer Descriptions
@@ -428,6 +418,8 @@ device-specific programs to convert and print many types of files.")
        `("--disable-network-build"
          ,(string-append "--prefix=" (assoc-ref %outputs "out"))
          ,(string-append "--sysconfdir=" (assoc-ref %outputs "out") "/etc")
+         ,(string-append "LDFLAGS=-Wl,-rpath="
+                         (assoc-ref %outputs "out") "/lib")
          ;; Disable until mime.types merging works (FIXME).
          "--disable-fax-build"
          "--enable-hpcups-install"
@@ -588,14 +580,14 @@ printer/driver specific, but spooler-independent PPD file.")
 (define-public foo2zjs
   (package
     (name "foo2zjs")
-    (version "20171202")
+    (version "20180910")
     (source (origin
               (method url-fetch)
               ;; XXX: This is an unversioned URL!
               (uri "http://foo2zjs.rkkda.com/foo2zjs.tar.gz")
               (sha256
                (base32
-                "10m1ksbzqsrsl4faqyl73ahfnj2hv1y3zrmr366zvjg7w3l6ag5n"))))
+                "1clddqy4y4vvws0lllv1v90dfiihihdc23bn93c544yb3fvmwmr6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -656,7 +648,7 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
 (define-public escpr
   (package
     (name "escpr")
-    (version "1.6.20")
+    (version "1.6.30")
     ;; XXX: This currently works.  But it will break as soon as a newer
     ;; version is available since the URLs for older versions are not
     ;; preserved.  An alternative source will be added as soon as
@@ -664,12 +656,12 @@ HP@tie{}LaserJet, and possibly other printers.  See @file{README} for details.")
     (source (origin
               (method url-fetch)
               ;; The uri has to be chopped up in order to satisfy guix lint.
-              (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/07/16/23/"
-                                  "804253d188a31ae6a0f2722648248ef952afedfb/"
-                                  "epson-inkjet-printer-escpr-1.6.20-1lsb3.2.tar.gz"))
+              (uri (string-append "https://download3.ebz.epson.net/dsc/f/03/00/08/18/20/"
+                                  "e94de600e28e510c1cfa158929d8b2c0aadc8aa0/"
+                                  "epson-inkjet-printer-escpr-1.6.30-1lsb3.2.tar.gz"))
               (sha256
                (base32
-                "19800pl7kbbgdzbsy9ijmd7dm3ly4kr2h1dxypqpd075g6n0i770"))))
+                "0m8pyfkixisp0vclwxj340isn15zzisal0v2xvv66kxfd68dzf12"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

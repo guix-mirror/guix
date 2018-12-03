@@ -108,7 +108,7 @@ use their packages mostly unmodified in our Android NDK build system.")
 ;; Big thanks to them for laying the groundwork.
 
 ;; The version tag is consistent between all repositories.
-(define (android-platform-version) "7.1.2_r6")
+(define (android-platform-version) "7.1.2_r36")
 
 (define (android-platform-system-core version)
   (origin
@@ -120,7 +120,7 @@ use their packages mostly unmodified in our Android NDK build system.")
                               version "-checkout"))
     (sha256
      (base32
-      "0xc2n7jxrf1iw9cc278pijdfjix2fkiig5ws27f6rwp40zg5mrgg"))
+      "1krnc2b9zfkzpdgs1dcbji59nszlx2qr723pg89m52622czc06hg"))
     (patches
      (search-patches "libbase-use-own-logging.patch"
                      "libbase-fix-includes.patch"
@@ -151,7 +151,7 @@ use their packages mostly unmodified in our Android NDK build system.")
                               version "-checkout"))
     (sha256
      (base32
-      "0n9wkz3ynqw39if1ss9n32m66iga14nndf29hpm7g1aqn4wvvgzk"))))
+      "15r4s20d7vw022f8vrc3jbghmqwdcqzprl7i2bfvdkz8z76wc1ps"))))
 
 (define (android-platform-external version subdirectory checksum)
   (origin
@@ -339,6 +339,13 @@ various Android core host applications.")
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
            (lambda _ (chdir "adb") #t))
+         (add-after 'enter-source 'glibc-compat
+           (lambda _
+             ;; Include sysmacros.h for "major" and "minor" in Glibc 2.28.
+             (substitute* "usb_linux.cpp"
+               (("#include <sys/types.h>" all)
+                (string-append all "\n#include <sys/sysmacros.h>\n")))
+             #t))
          (add-after 'enter-source 'make-libs-available
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "Android.mk"
@@ -863,14 +870,14 @@ useful for reverse engineering, analysis of Android applications and more.")
 (define-public fdroidserver
   (package
     (name "fdroidserver")
-    (version "1.0.9")
+    (version "1.0.10")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fdroidserver" version))
         (sha256
          (base32
-          "0cwb1fmindw6v9jkiim9yn3496rk1pvnk94s1r0vz2hxgz16xp7n"))))
+          "0n6kkby65qzqdx1jn72grfffvr1w1j1rby5pwm9z8rymmsh8s0pm"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

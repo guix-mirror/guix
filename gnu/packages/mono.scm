@@ -41,7 +41,8 @@
                     ".tar.bz2"))
               (sha256
                (base32
-                "0jibyvyv2jy8dq5ij0j00iq3v74r0y90dcjc3dkspcfbnn37cphn"))))
+                "0jibyvyv2jy8dq5ij0j00iq3v74r0y90dcjc3dkspcfbnn37cphn"))
+              (patches (search-patches "mono-mdoc-timestamping.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -52,10 +53,26 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             (substitute* "mono/mini/Makefile.in"
+              (("build_date = [^;]*;")
+               "build_date = (void*) 0;"))
+             #t))
          (add-after 'unpack 'set-env
            (lambda _ ;;* (#:key inputs #:allow-other-keys)
              ;; all tests under mcs/class fail trying to access $HOME
-             (setenv "HOME" "/tmp")))
+             (setenv "HOME" "/tmp")
+             ;; ZIP files have "DOS time" which starts in Jan 1980.
+             (setenv "SOURCE_DATE_EPOCH" "315532800")
+             #t))
+         (add-after 'unpack 'fix-includes
+           (lambda _
+             ;; makedev is in <sys/sysmacros.h> now.  Include it.
+             (substitute* "mono/io-layer/processes.c"
+              (("#ifdef HAVE_SYS_MKDEV_H") "#if 1")
+              (("sys/mkdev.h") "sys/sysmacros.h"))
+             #t))
          (add-after 'unpack 'patch-tests
            (lambda _  ;;* (#:key inputs #:allow-other-keys)
              (substitute* "mono/tests/Makefile.in"
@@ -105,5 +122,5 @@
     (description "Mono is a compiler, vm, debugger and set of libraries for
 C#, a C-style programming language from Microsoft that is very similar to
 Java.")
-    (home-page "http://mono-project.com/")
+    (home-page "https://www.mono-project.com/")
     (license license:x11)))

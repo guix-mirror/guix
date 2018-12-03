@@ -26,6 +26,8 @@
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix derivations)
+  #:use-module ((guix profiles) #:select (%profile-directory))
+  #:use-module (guix build syscalls)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-37)
@@ -36,7 +38,9 @@
             build-package
             build-package-source
             %distro-age-warning
-            warn-about-old-distro))
+            warn-about-old-distro
+            %disk-space-warning
+            warn-about-disk-space))
 
 ;;; Commentary:
 ;;;
@@ -169,8 +173,7 @@ Show what and how will/would be built."
 
     (define age
       (match (false-if-not-found
-              (lstat (string-append (config-directory #:ensure? #f)
-                                    "/current")))
+              (lstat (string-append %profile-directory "/current-guix")))
         (#f    #f)
         (stat  (- (time-second (current-time time-utc))
                   (stat:mtime stat)))))
@@ -185,5 +188,38 @@ Show what and how will/would be built."
 '~a' to get up-to-date packages and security updates.\n")
                suggested-command)
       (newline (guix-warning-port)))))
+
+(define %disk-space-warning
+  ;; The fraction (between 0 and 1) of free disk space below which a warning
+  ;; is emitted.
+  (make-parameter (match (and=> (getenv "GUIX_DISK_SPACE_WARNING")
+                                string->number)
+                    (#f        .05)               ;5%
+                    (threshold (/ threshold 100.)))))
+
+(define* (warn-about-disk-space #:optional profile
+                                #:key
+                                (threshold (%disk-space-warning)))
+  "Display a hint about 'guix gc' if less than THRESHOLD of /gnu/store is
+available."
+  (let* ((stats      (statfs (%store-prefix)))
+         (block-size (file-system-block-size stats))
+         (available  (* block-size (file-system-blocks-available stats)))
+         (total      (* block-size (file-system-block-count stats)))
+         (ratio      (/ available total 1.)))
+    (when (< ratio threshold)
+      (warning (G_ "only ~,1f% of free space available on ~a~%")
+               (* ratio 100) (%store-prefix))
+      (if profile
+          (display-hint (format #f (G_ "Consider deleting old profile
+generations and collecting garbage, along these lines:
+
+@example
+guix package -p ~s --delete-generations=1m
+guix gc
+@end example\n")
+                                profile))
+          (display-hint (G_ "Consider running @command{guix gc} to free
+space."))))))
 
 ;;; scripts.scm ends here

@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -219,9 +220,9 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
                            "Grammalecte-fr-v" version ".zip"))
        (sha256
         (base32
-         "1flsahqw2r0cmg0bixpl5w0acricmdh2cf4lf9zr66ydgmjnmv2s"))))
+         "11byjs3ggdhia5f4vyfqfvbbczsfqimll98h98g7hlsrm7vrifb0"))))
     (build-system python-build-system)
-    (home-page "https://www.dicollecte.org")
+    (home-page "https://grammalecte.net")
     (synopsis  "French spelling and grammar checker")
     (description "Grammalecte is a grammar checker dedicated to the French
 language, derived from Lightproof.

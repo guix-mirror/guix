@@ -18,7 +18,7 @@
 
 (define-module (test-challenge)
   #:use-module (guix tests)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix derivations)
@@ -31,16 +31,8 @@
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match))
 
-(define %store
-  (open-connection-for-tests))
-
 (define query-path-hash*
   (store-lift query-path-hash))
-
-(define-syntax-rule (test-assertm name exp)
-  (test-assert name
-    (run-with-store %store exp
-                    #:guile-for-build (%guile-for-build))))
 
 (define* (call-with-derivation-narinfo* drv thunk hash)
   (lambda (store)

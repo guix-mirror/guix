@@ -6,6 +6,7 @@
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2012, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -47,7 +48,7 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (version "1.16")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -59,7 +60,7 @@
                                    "/krb5-" version ".tar.gz")))
               (sha256
                (base32
-                "024yjr15ij0qdnay0bcqfpclgfri0qa8iw4r5zdlryxhhdgi5szs"))))
+                "05qis9l93hhxaknbp0a2v5cr24fsy52fqx20aqqcgl1s9qwzwkr1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -116,7 +117,7 @@ cryptography.")
      '(;; This is required since we patch some of the build scripts.
        ;; Remove for the next Shishi release after 1.0.2 or when
        ;; removing 'shishi-fix-libgcrypt-detection.patch'.
-       #:configure-flags '("ac_cv_libgcrypt=yes")))
+       #:configure-flags '("ac_cv_libgcrypt=yes" "--disable-static")))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("gnutls" ,gnutls)

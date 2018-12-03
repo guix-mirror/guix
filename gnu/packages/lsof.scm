@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,6 +78,12 @@
             #t))
         (add-before 'check 'disable-failing-tests
           (lambda _
+            ;; In libc 2.28, the 'major' and 'minor' macros are provided by
+            ;; <sys/sysmacros.h> only so include it.
+            (substitute* "tests/LTlib.c"
+              (("#ifndef lint")
+               "#include <sys/sysmacros.h>\n\n#ifndef lint"))
+
             (substitute* "tests/Makefile"
               ;; Fails with ‘ERROR!!! client gethostbyaddr() failure’.
               (("(STDTST=.*) LTsock" _ prefix) prefix)

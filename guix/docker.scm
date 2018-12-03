@@ -19,13 +19,14 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix docker)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base16)
   #:use-module ((guix build utils)
                 #:select (mkdir-p
                           delete-file-recursively
                           with-directory-excursion
                           invoke))
+  #:use-module (gnu build install)
   #:use-module (json)                             ;guile-json
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
@@ -108,10 +109,14 @@ return \"a\"."
                              (symlinks '())
                              (transformations '())
                              (system (utsname:machine (uname)))
+                             database
                              compressor
                              (creation-time (current-time time-utc)))
   "Write to IMAGE a Docker image archive containing the given PATHS.  PREFIX
 must be a store path that is a prefix of any store paths in PATHS.
+
+When DATABASE is true, copy it to /var/guix/db in the image and create
+/var/guix/gcroots and friends.
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples describing symlinks to be
 created in the image, where each TARGET is relative to PREFIX.
@@ -188,10 +193,15 @@ SRFI-19 time-utc object, as the creation time in metadata."
                                 source))))
                   symlinks)
 
+        (when database
+          ;; Initialize /var/guix, assuming PREFIX points to a profile.
+          (install-database-and-gc-roots "." database prefix))
+
         (apply invoke "tar" "-cf" "layer.tar"
                `(,@transformation-options
                  ,@%tar-determinism-options
                  ,@paths
+                 ,@(if database '("var") '())
                  ,@(map symlink-source symlinks)))
         ;; It is possible for "/" to show up in the archive, especially when
         ;; applying transformations.  For example, the transformation
@@ -199,11 +209,20 @@ SRFI-19 time-utc object, as the creation time in metadata."
         ;; the path "/a" into "/".  The presence of "/" in the archive is
         ;; probably benign, but it is definitely safe to remove it, so let's
         ;; do that.  This fails when "/" is not in the archive, so use system*
-        ;; instead of invoke to avoid an exception in that case.
-        (system* "tar" "--delete" "/" "-f" "layer.tar")
+        ;; instead of invoke to avoid an exception in that case, and redirect
+        ;; stderr to the bit bucket to avoid "Exiting with failure status"
+        ;; error messages.
+        (with-error-to-port (%make-void-port "w")
+          (lambda ()
+            (system* "tar" "--delete" "/" "-f" "layer.tar")))
+
         (for-each delete-file-recursively
                   (map (compose topmost-component symlink-source)
-                       symlinks)))
+                       symlinks))
+
+        ;; Delete /var/guix.
+        (when database
+          (delete-file-recursively "var")))
 
       (with-output-to-file "config.json"
         (lambda ()

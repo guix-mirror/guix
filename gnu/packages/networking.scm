@@ -25,7 +25,7 @@
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,6 +87,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ssh)
@@ -143,7 +144,8 @@ or, more generally, MAC addresses of the same category of hardware.")
           'check 'disable-checkconf-test
           (lambda _
             (substitute* "src/Makefile"
-              (("^TESTS = .*") "TESTS = \n")))))))
+              (("^TESTS = .*") "TESTS = \n"))
+            #t)))))
     (home-page "http://www.remlab.net/miredo/")
     (synopsis "Teredo IPv6 tunneling software")
     (description
@@ -215,7 +217,7 @@ libwrap.so: $(LIB_OBJ)\n
              (substitute* "scaffold.c"
                (("extern char .malloc.*;") ""))
              ;; This, believe it or not, is the recommended way to build!
-             (zero? (system* "make" "REAL_DAEMON_DIR=/etc" "linux"))))
+             (invoke "make" "REAL_DAEMON_DIR=/etc" "linux")))
          ;; There is no make install stage, so we have to do it ourselves.
          (replace 'install
            (lambda _
@@ -250,7 +252,8 @@ libwrap.so: $(LIB_OBJ)\n
                (for-each
                 (lambda (x)
                   (install-file x (string-append out "/bin/")))
-                bins)))))))
+                bins))
+             #t)))))
     (home-page "http://www.porcupine.org")
     (synopsis  "Monitor and filter incoming requests for network services")
     (description "With this package you can monitor and filter incoming requests for
@@ -372,8 +375,8 @@ files contain direct mappings of the abstractions provided by the ØMQ C API.")
                ;; librdkafka++.so lacks RUNPATH for librdkafka.so
                (setenv "LDFLAGS"
                        (string-append "-Wl,-rpath=" out "/lib"))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (native-inputs
      `(("python" ,python-wrapper)))
     (propagated-inputs
@@ -456,7 +459,8 @@ Ethernet devices.")
                            (bin (string-append out "/bin")))
                       (mkdir-p bin)
                       (copy-file "ifstatus"
-                                 (string-append bin "/ifstatus"))))))))
+                                 (string-append bin "/ifstatus")))
+                    #t)))))
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://ifstatus.sourceforge.net/graphic/index.html")
     (synopsis "Text based network interface status monitor")
@@ -510,14 +514,16 @@ and min/max network usage.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/tun.c"
                (("PATH=[^ ]* ")
-                (string-append (assoc-ref inputs "net-tools") "/bin/")))))
+                (string-append (assoc-ref inputs "net-tools") "/bin/")))
+             #t))
          (add-before 'check 'delete-failing-tests
            ;; Avoid https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=802105.
            (lambda _
              (substitute* "tests/common.c"
                (("tcase_add_test\\(tc, \
 test_parse_format_ipv(4(|_listen_all|_mapped_ipv6)|6)\\);")
-                "")))))
+                ""))
+             #t)))
        #:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:test-target "test"))
@@ -537,7 +543,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.3.2")
+    (version "5.4.0")
     (source
      (origin
        (method url-fetch)
@@ -545,7 +551,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "0m3352d5b0ragygbqjbaimghrbx4va2rixa34j5a1g3jj6l4nwbr"))))
+         "0y73b3z1akni620s1hlrijwdrk95ca1c8csjds48vpd6z86awx9p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -580,7 +586,7 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.6.2")
+    (version "2.6.4")
     (source
      (origin
        (method url-fetch)
@@ -588,7 +594,7 @@ of the same name.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "153h6prxamv5a62f3pfadkry0y57696xrgxfy2gfy5xswdg8kcj9"))))
+         "0qf81dk726sdsmjqa9nd251j1cwvzkyb4hrlp6w4iwa3cdz00sx0"))))
     (build-system gnu-build-system)
     (inputs `(("c-ares" ,c-ares)
               ("glib" ,glib)
@@ -651,7 +657,7 @@ network frames.")
 (define-public fping
   (package
     (name "fping")
-    (version "4.0")
+    (version "4.1")
     (source
      (origin
        (method url-fetch)
@@ -659,9 +665,9 @@ network frames.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1kp81wchi79l8z8rrj602fpjrd8bi84y3i7fsaclzlwap5943sv7"))))
+         "0wxbvm480vij8dy4v1pi8f0c7010rx6bidg3qhsvkdf2ijhy4cr7"))))
     (build-system gnu-build-system)
-    (home-page "http://fping.org/")
+    (home-page "https://fping.org/")
     (synopsis "Send ICMP ECHO_REQUEST packets to network hosts")
     (description
      "fping is a ping like program which uses the Internet Control Message
@@ -672,6 +678,55 @@ Instead of sending to one target until it times out or replies, fping will
 send out a ping packet and move on to the next target in a round-robin
 fashion.")
     (license license:expat)))
+
+(define-public gandi.cli
+  (package
+    (name "gandi.cli")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (sha256
+        (base32 "0vfzkw1avybjkf6fwqpf5m4kjz4c0qkkmj62f3jd0zx00vh5ly1d"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'embed-store-file-names
+           (lambda _
+             (substitute* (list "gandi/cli/modules/cert.py"
+                                "gandi/cli/tests/commands/test_certificate.py")
+               (("openssl") (which "openssl")))
+             #t))
+         (add-after 'install 'install-documentation
+           ;; The included man page may be outdated but we install it anyway,
+           ;; since it's mentioned in 'gandi --help' and better than nothing.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (man1 (string-append out "/share/man/man1")))
+               (mkdir-p man1)
+               (with-output-to-file (string-append man1 "/gandi.1")
+                 (lambda _
+                   (invoke "rst2man.py" "gandicli.man.rst")))
+               #t))))))
+    (native-inputs
+     `(("python-docutils" ,python-docutils)   ; for rst2man.py
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-tox" ,python-tox)))
+    (inputs
+     `(("openssl" ,openssl)
+       ("python-click" ,python-click)
+       ("python-ipy" ,python-ipy)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)))
+    (home-page "https://cli.gandi.net")
+    (synopsis "Command-line interface to the Gandi.net Web API")
+    (description
+     "This package provides a command-line client (@command{gandi}) to buy,
+manage, and delete Internet resources from Gandi.net such as domain names,
+virtual machines, and certificates.")
+    (license license:gpl3+)))
 
 (define-public httping
   (package
@@ -729,7 +784,8 @@ application stack itself.")
                (("ENV_CURL_BIN.get\\('curl'\\)")
                 (string-append "ENV_CURL_BIN.get('"
                                (assoc-ref inputs "curl")
-                               "/bin/curl')"))))))))
+                               "/bin/curl')")))
+             #t)))))
     (home-page "https://github.com/reorx/httpstat")
     (synopsis "Visualize curl statistics")
     (description
@@ -762,52 +818,58 @@ live network and disk I/O bandwidth monitor.")
 (define-public aircrack-ng
   (package
     (name "aircrack-ng")
-    (version "1.2-rc4")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.aircrack-ng.org/aircrack-ng-"
+       (uri (string-append "https://download.aircrack-ng.org/aircrack-ng-"
                            version ".tar.gz"))
        (sha256
         (base32
-         "0dpzx9kddxpgzmgvdpl3rxn0jdaqhm5wxxndp1xd7d75mmmc2fnr"))))
+         "1jl30d0kibc82447fr3lgw75arik0l9729k94z76l7vl51y8mq4a"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
     (inputs
      `(("libgcrypt" ,libgcrypt)
        ("libnl" ,libnl)
+       ("libpcap" ,libpcap)
        ("ethtool" ,ethtool)
        ("pcre" ,pcre)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (arguments
-     `(#:make-flags `("sqlite=true"
-                      "gcrypt=true"
-                      "libnl=true"
-                      "pcre=true"
-                      "experimental=true" ;build wesside-ng, etc.
-                      "AVX2FLAG=N" "AVX1FLAG=N"
-                      ,,@(match (%current-system)
-                           ((or "x86_64-linux" "i686-linux")
-                            `("SSEFLAG=Y"))
-                           (_
-                            `("NEWSSE=false")))
-                      ,(string-append "prefix=" %output))
+     `(#:configure-flags
+       (list "--with-experimental=yes"  ; build wesside-ng, etc.
+             "--with-gcrypt")           ; openssl's the default
        #:phases (modify-phases %standard-phases
-                  (delete 'configure)   ;no configure phase
+                  (add-before 'bootstrap 'patch-evalrev
+                    (lambda _
+                      ;; Called by ./autogen.sh below, before the default
+                      ;; ‘patch-shebangs’ phase has had a chance to run.
+                      (substitute* "evalrev"
+                        (("/bin/sh")
+                         (which "sh")))
+                      #t))
+                  (replace 'bootstrap
+                    (lambda _
+                      ;; Patch shebangs in generated files before running
+                      ;; ./configure.
+                      (setenv "NOCONFIGURE" "please")
+                      (invoke "bash" "./autogen.sh")))
                   (add-after 'build 'absolutize-tools
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((ethtool (string-append (assoc-ref inputs "ethtool")
                                                     "/sbin/ethtool")))
                         (substitute* "scripts/airmon-ng"
-                          (("\\[ ! -x \"\\$\\(command -v ethtool 2>&1)\" \\]")
-                           (string-append "! " ethtool " --version "
-                                          ">/dev/null 2>&1"))
-                          (("\\$\\(ethtool")
-                           (string-append "$(" ethtool)))
+                          (("ethtool ")
+                           (string-append ethtool " ")))
                         #t))))))
-    (home-page "http://www.aircrack-ng.org")
+    (home-page "https://www.aircrack-ng.org")
     (synopsis "Assess WiFi network security")
     (description
      "Aircrack-ng is a complete suite of tools to assess WiFi network
@@ -846,7 +908,7 @@ private (reserved).")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.17")
+  (version "1.18")
   (source
     (origin
       (method url-fetch)
@@ -858,7 +920,7 @@ private (reserved).")
                        version ".tar.gz")))
       (sha256
         (base32
-          "1q62w9rf2w8kjzqagzr0rdn20ybl8gj3l6cdq4k8fw0sxa7zsycs"))))
+          "1lx902cbvlfl63bqfdrnyavmfwbjvrfdnwgdc1dgs1wpzja19kjj"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))
@@ -871,7 +933,7 @@ private (reserved).")
 (define-public perl-socket6
  (package
   (name "perl-socket6")
-  (version "0.28")
+  (version "0.29")
   (source
     (origin
       (method url-fetch)
@@ -881,7 +943,7 @@ private (reserved).")
              ".tar.gz"))
       (sha256
         (base32
-          "11j5jzqbzmwlws9zals43ry2f1nw9qy6im7yhn9ck5rikywrmm5z"))))
+          "054izici8klfxs8hr5rljib28plijpsfymy99xbzdp047bx1b2a6"))))
   (build-system perl-build-system)
   (arguments
    `(#:phases
@@ -893,7 +955,7 @@ private (reserved).")
                             ,(string-append "PREFIX=" out)
                             "INSTALLDIRS=site")))
                (setenv "CONFIG_SHELL" (which "sh"))
-               (zero? (apply system* "perl" args))))))))
+               (apply invoke "perl" args)))))))
   (home-page "https://metacpan.org/release/Socket6")
   (synopsis
     "IPv6 related part of the C socket.h defines and structure manipulators for Perl")
@@ -953,7 +1015,7 @@ offline emulation of DNS.")
                             ,(string-append "PREFIX=" out)
                             "INSTALLDIRS=site")))
                (setenv "CONFIG_SHELL" (which "sh"))
-               (zero? (apply system* "perl" args))))))))
+               (apply invoke "perl" args)))))))
   (home-page
     "https://metacpan.org/release/NetAddr-IP")
   (synopsis
@@ -1089,7 +1151,7 @@ sockets in Perl.")
        (modify-phases %standard-phases
          (replace 'check
                   (lambda _
-                    (zero? (system* "ctest" "-E" "url-test")))))))
+                    (invoke "ctest" "-E" "url-test"))))))
     (synopsis "Library providing automatic proxy configuration management")
     (description "Libproxy handles the details of HTTP/HTTPS proxy
 configuration for applications across all scenarios.  Applications using
@@ -1360,13 +1422,13 @@ procedure calls (RPCs).")
        (modify-phases %standard-phases
          (replace 'install
            (lambda _
-             (zero? (system* "make"
-                             ;; Don't try to create directories under /var.
-                             "RUNDIR=/tmp"
-                             "PKIDIR=/tmp"
-                             "LOGDIR=/tmp"
-                             "DBDIR=/tmp"
-                             "install")))))))
+             (invoke "make"
+                     ;; Don't try to create directories under /var.
+                     "RUNDIR=/tmp"
+                     "PKIDIR=/tmp"
+                     "LOGDIR=/tmp"
+                     "DBDIR=/tmp"
+                     "install"))))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -1667,8 +1729,8 @@ interface and a programmable text output for scripting.")
            (lambda _ (chdir "libnet") #t))
          (add-before 'build 'build-doc
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* "make" "-C" "doc" "doc"
-                           make-flags)))))))
+             (apply invoke "make" "-C" "doc" "doc"
+                    make-flags))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -2013,7 +2075,9 @@ Features:
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out")
                             "/lib")
-             "--with-logfile=/var/log/snmpd.log")
+             "--with-logfile=/var/log/snmpd.log"
+             (string-append "--with-openssl="
+                            (assoc-ref %build-inputs "openssl")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-tests

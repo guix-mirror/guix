@@ -33,7 +33,7 @@
   #:use-module ((guix import utils) #:select (factorize-uri recursive-import))
   #:use-module (guix import cabal)
   #:use-module (guix store)
-  #:use-module (guix hash)
+  #:use-module (gcrypt hash)
   #:use-module (guix base32)
   #:use-module (guix memoization)
   #:use-module (guix upstream)
@@ -44,6 +44,7 @@
             %hackage-updater
 
             guix-package->hackage-name
+            hackage-name->package-name
             hackage-fetch
             hackage-source-url
             hackage-cabal-url
@@ -214,15 +215,18 @@ representation of a Cabal file as produced by 'read-cabal'."
      cabal))
 
   (define hackage-native-dependencies
-    ((compose (cut filter-dependencies <>
-                   (cabal-package-name cabal))
-              ;; FIXME: Check include-test-dependencies?
-              (lambda (cabal)
-                (append (if include-test-dependencies?
-                            (cabal-test-dependencies->names cabal)
-                            '())
-                        (cabal-custom-setup-dependencies->names cabal))))
-     cabal))
+    (lset-difference
+     equal?
+     ((compose (cut filter-dependencies <>
+                    (cabal-package-name cabal))
+               ;; FIXME: Check include-test-dependencies?
+               (lambda (cabal)
+                 (append (if include-test-dependencies?
+                             (cabal-test-dependencies->names cabal)
+                             '())
+                         (cabal-custom-setup-dependencies->names cabal))))
+      cabal)
+     hackage-dependencies))
 
   (define dependencies
     (map (lambda (name)

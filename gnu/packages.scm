@@ -30,6 +30,7 @@
                 #:select ((package-name->name+version
                            . hyphen-separated-name->name+version)))
   #:autoload   (guix profiles) (packages->manifest)
+  #:use-module (guix describe)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -46,6 +47,7 @@
             %auxiliary-files-path
             %bootstrap-binaries-path
             %package-module-path
+            %default-package-module-path
 
             fold-packages
 
@@ -130,22 +132,31 @@ for system '~a'")
          ("gnu/packages.scm"      gnu/)
          ("guix.scm"))))
 
+(define %default-package-module-path
+  ;; Default search path for package modules.
+  `((,%distro-root-directory . "gnu/packages")))
+
 (define %package-module-path
   ;; Search path for package modules.  Each item must be either a directory
   ;; name or a pair whose car is a directory and whose cdr is a sub-directory
   ;; to narrow the search.
   (let* ((not-colon   (char-set-complement (char-set #\:)))
          (environment (string-tokenize (or (getenv "GUIX_PACKAGE_PATH") "")
-                                       not-colon)))
-    ;; Automatically add items from $GUIX_PACKAGE_PATH to Guile's search path.
-    (for-each (lambda (directory)
-                (set! %load-path (cons directory %load-path))
-                (set! %load-compiled-path
-                      (cons directory %load-compiled-path)))
-              environment)
+                                       not-colon))
+         (channels    (package-path-entries)))
+    ;; Automatically add channels and items from $GUIX_PACKAGE_PATH to Guile's
+    ;; search path.  For historical reasons, $GUIX_PACKAGE_PATH goes to the
+    ;; front; channels go to the back so that they don't override Guix' own
+    ;; modules.
+    (set! %load-path
+      (append environment %load-path channels))
+    (set! %load-compiled-path
+      (append environment %load-compiled-path channels))
 
     (make-parameter
-     (append environment `((,%distro-root-directory . "gnu/packages"))))))
+     (append environment
+             %default-package-module-path
+             channels))))
 
 (define %patch-path
   ;; Define it after '%package-module-path' so that '%load-path' contains user

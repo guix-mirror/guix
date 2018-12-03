@@ -23,6 +23,7 @@
 (define-module (guix scripts system)
   #:use-module (guix config)
   #:use-module (guix ui)
+  #:use-module (guix status)
   #:use-module (guix store)
   #:autoload   (guix store database) (register-path)
   #:use-module (guix grafts)
@@ -174,12 +175,16 @@ TARGET, and register them."
 
     (return *unspecified*)))
 
-(define* (install-bootloader installer-drv
+(define* (install-bootloader installer
                              #:key
                              bootcfg bootcfg-file
                              target)
-  "Call INSTALLER-DRV with error handling, in %STORE-MONAD."
-  (with-monad %store-monad
+  "Run INSTALLER, a bootloader installation script, with error handling, in
+%STORE-MONAD."
+  (mlet %store-monad ((installer-drv (if installer
+                                         (lower-object installer)
+                                         (return #f)))
+                      (bootcfg       (lower-object bootcfg)))
     (let* ((gc-root      (string-append target %gc-roots-directory
                                         "/bootcfg"))
            (temp-gc-root (string-append gc-root ".new"))
@@ -234,26 +239,33 @@ When INSTALL-BOOTLOADER? is true, install bootloader using BOOTCFG."
 the ownership of '~a' may be incorrect!~%")
                target))
 
+  ;; If a previous installation was attempted, make sure we start anew; in
+  ;; particular, we don't want to keep a store database that might not
+  ;; correspond to what we're actually putting in the store.
+  (let ((state (string-append target "/var/guix")))
+    (when (file-exists? state)
+      (delete-file-recursively state)))
+
   (chmod target #o755)
   (let ((os-dir   (derivation->output-path os-drv))
         (format   (lift format %store-monad))
         (populate (lift2 populate-root-file-system %store-monad)))
 
-    (mbegin %store-monad
-      ;; Copy the closure of BOOTCFG, which includes OS-DIR,
-      ;; eventual background image and so on.
-      (maybe-copy
-       (derivation->output-path bootcfg))
+    (mlet %store-monad ((bootcfg (lower-object bootcfg)))
+      (mbegin %store-monad
+        ;; Copy the closure of BOOTCFG, which includes OS-DIR,
+        ;; eventual background image and so on.
+        (maybe-copy (derivation->output-path bootcfg))
 
-      ;; Create a bunch of additional files.
-      (format log-port "populating '~a'...~%" target)
-      (populate os-dir target)
+        ;; Create a bunch of additional files.
+        (format log-port "populating '~a'...~%" target)
+        (populate os-dir target)
 
-      (mwhen install-bootloader?
-        (install-bootloader bootloader-installer
-                            #:bootcfg bootcfg
-                            #:bootcfg-file bootcfg-file
-                            #:target target)))))
+        (mwhen install-bootloader?
+          (install-bootloader bootloader-installer
+                              #:bootcfg bootcfg
+                              #:bootcfg-file bootcfg-file
+                              #:target target))))))
 
 
 ;;;
@@ -310,9 +322,9 @@ names of services to load (upgrade), and the list of names of services to
 unload."
   (match (current-services)
     ((services ...)
-     (let-values (((to-unload to-load)
+     (let-values (((to-unload to-restart)
                    (shepherd-service-upgrade services new-services)))
-       (mproc to-load
+       (mproc to-restart
               (map (compose first live-service-provision)
                    to-unload))))
     (#f
@@ -335,25 +347,32 @@ bring the system down."
   ;; Arrange to simply emit a warning if the service upgrade fails.
   (with-shepherd-error-handling
    (call-with-service-upgrade-info new-services
-     (lambda (to-load to-unload)
+     (lambda (to-restart to-unload)
         (for-each (lambda (unload)
                     (info (G_ "unloading service '~a'...~%") unload)
                     (unload-service unload))
                   to-unload)
 
         (with-monad %store-monad
-          (munless (null? to-load)
-            (let ((to-load-names  (map shepherd-service-canonical-name to-load))
-                  (to-start       (filter shepherd-service-auto-start? to-load)))
-              (info (G_ "loading new services:~{ ~a~}...~%") to-load-names)
+          (munless (null? new-services)
+            (let ((new-service-names  (map shepherd-service-canonical-name new-services))
+                  (to-restart-names   (map shepherd-service-canonical-name to-restart))
+                  (to-start           (filter shepherd-service-auto-start? new-services)))
+              (info (G_ "loading new services:~{ ~a~}...~%") new-service-names)
+              (unless (null? to-restart-names)
+                ;; Listing TO-RESTART-NAMES in the message below wouldn't help
+                ;; because many essential services cannot be meaningfully
+                ;; restarted.  See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=22039#30>.
+                (format #t (G_ "To complete the upgrade, run 'herd restart SERVICE' to stop,
+upgrade, and restart each service that was not automatically restarted.\n")))
               (mlet %store-monad ((files (mapm %store-monad
                                                (compose lower-object
                                                         shepherd-service-file)
-                                               to-load)))
+                                               new-services)))
                 ;; Here we assume that FILES are exactly those that were computed
                 ;; as part of the derivation that built OS, which is normally the
                 ;; case.
-                (load-services (map derivation->output-path files))
+                (load-services/safe (map derivation->output-path files))
 
                 (for-each start-service
                           (map shepherd-service-canonical-name to-start))
@@ -775,19 +794,18 @@ checking this by themselves in their 'check' procedure."
     (warning (G_ "Consider running 'guix pull' before 'reconfigure'.~%"))
     (warning (G_ "Failing to do that may downgrade your system!~%"))))
 
-(define (bootloader-installer-derivation installer
-                                         bootloader device target)
+(define (bootloader-installer-script installer
+                                     bootloader device target)
   "Return a file calling INSTALLER gexp with given BOOTLOADER, DEVICE
 and TARGET arguments."
-  (with-monad %store-monad
-    (gexp->file "bootloader-installer"
-                (with-imported-modules '((gnu build bootloader)
-                                         (guix build utils))
-                  #~(begin
-                      (use-modules (gnu build bootloader)
-                                   (guix build utils)
-                                   (ice-9 binary-ports))
-                      (#$installer #$bootloader #$device #$target))))))
+  (scheme-file "bootloader-installer"
+               (with-imported-modules '((gnu build bootloader)
+                                        (guix build utils))
+                 #~(begin
+                     (use-modules (gnu build bootloader)
+                                  (guix build utils)
+                                  (ice-9 binary-ports))
+                     (#$installer #$bootloader #$device #$target)))))
 
 (define* (perform-action action os
                          #:key skip-safety-checks?
@@ -815,6 +833,25 @@ static checks."
   (define println
     (cut format #t "~a~%" <>))
 
+  (define menu-entries
+    (if (eq? 'init action)
+        '()
+        (map boot-parameters->menu-entry (profile-boot-parameters))))
+
+  (define bootloader
+    (bootloader-configuration-bootloader (operating-system-bootloader os)))
+
+  (define bootcfg
+    (and (not (eq? 'container action))
+         (operating-system-bootcfg os menu-entries)))
+
+  (define bootloader-script
+    (let ((installer (bootloader-installer bootloader))
+          (target    (or target "/")))
+      (bootloader-installer-script installer
+                                   (bootloader-package bootloader)
+                                   bootloader-target target)))
+
   (when (eq? action 'reconfigure)
     (maybe-suggest-running-guix-pull))
 
@@ -834,39 +871,16 @@ static checks."
                                                 #:image-size image-size
                                                 #:full-boot? full-boot?
                                                 #:mappings mappings))
-       (bootloader -> (bootloader-configuration-bootloader
-                       (operating-system-bootloader os)))
-       (bootloader-package
-        (let ((package (bootloader-package bootloader)))
-          (if package
-              (package->derivation package)
-              (return #f))))
-       (bootcfg  (if (eq? 'container action)
-                     (return #f)
-                     (operating-system-bootcfg
-                      os
-                      (if (eq? 'init action)
-                          '()
-                          (map boot-parameters->menu-entry
-                               (profile-boot-parameters))))))
-       (bootcfg-file -> (bootloader-configuration-file bootloader))
-       (bootloader-installer
-        (let ((installer (bootloader-installer bootloader))
-              (target    (or target "/")))
-          (bootloader-installer-derivation installer
-                                           bootloader-package
-                                           bootloader-target target)))
 
        ;; For 'init' and 'reconfigure', always build BOOTCFG, even if
        ;; --no-bootloader is passed, because we then use it as a GC root.
        ;; See <http://bugs.gnu.org/21068>.
-       (drvs   -> (if (memq action '(init reconfigure))
-                      (if (and install-bootloader? bootloader-package)
-                          (list sys bootcfg
-				bootloader-package
-				bootloader-installer)
-                          (list sys bootcfg))
-                      (list sys)))
+       (drvs      (mapm %store-monad lower-object
+                        (if (memq action '(init reconfigure))
+                            (if install-bootloader?
+                                (list sys bootcfg bootloader-script)
+                                (list sys bootcfg))
+                            (list sys))))
        (%         (if derivations-only?
                       (return (for-each (compose println derivation-file-name)
                                         drvs))
@@ -875,7 +889,7 @@ static checks."
 
     (if (or dry-run? derivations-only?)
         (return #f)
-        (begin
+        (let ((bootcfg-file (bootloader-configuration-file bootloader)))
           (for-each (compose println derivation->output-path)
                     drvs)
 
@@ -884,7 +898,7 @@ static checks."
              (mbegin %store-monad
                (switch-to-system os)
                (mwhen install-bootloader?
-                 (install-bootloader bootloader-installer
+                 (install-bootloader bootloader-script
                                      #:bootcfg bootcfg
                                      #:bootcfg-file bootcfg-file
                                      #:target "/"))))
@@ -896,7 +910,7 @@ static checks."
                       #:install-bootloader? install-bootloader?
                       #:bootcfg bootcfg
                       #:bootcfg-file bootcfg-file
-                      #:bootloader-installer bootloader-installer))
+                      #:bootloader-installer bootloader-script))
             (else
              ;; All we had to do was to build SYS and maybe register an
              ;; indirect GC root.
@@ -1072,6 +1086,9 @@ Some ACTIONS support additional ARGS.\n"))
   `((system . ,(%current-system))
     (substitutes? . #t)
     (build-hook? . #t)
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
     (graft? . #t)
     (verbosity . 0)
     (file-system-type . "ext4")
@@ -1150,7 +1167,8 @@ resulting from command-line parsing."
                              #:target target
                              #:bootloader-target bootloader-target
                              #:gc-root (assoc-ref opts 'gc-root)))))
-        #:system system))))
+        #:system system))
+    (warn-about-disk-space)))
 
 (define (resolve-subcommand name)
   (let ((module (resolve-interface
@@ -1246,9 +1264,11 @@ argument list and OPTS is the option alist."
                                          parse-sub-command))
            (args     (option-arguments opts))
            (command  (assoc-ref opts 'action)))
-      (parameterize ((%graft? (assoc-ref opts 'graft?))
-                     (current-terminal-columns (terminal-columns)))
-        (process-command command args opts)))))
+      (parameterize ((%graft? (assoc-ref opts 'graft?)))
+        (with-status-report (if (memq command '(init reconfigure))
+                                print-build-event/quiet
+                                print-build-event)
+          (process-command command args opts))))))
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-service-upgrade-info 'scheme-indent-function 1)

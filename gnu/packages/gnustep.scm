@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -167,14 +168,7 @@ interface.  It is fast, feature rich, easy to configure, and easy to use.")
                (base32
                 "084a3irxbmgms4bqaga80mlx9wgvlkx6d2w0ns939yrpfzg87laj"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f              ; no "check" target
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _
-             (invoke "autoreconf" "-vfi")
-             #t)))))
+    (arguments '(#:tests? #f)) ; no "check" target
     (inputs
      `(("glib" ,glib)
        ("libx11" ,libx11)
@@ -262,18 +256,11 @@ on.")
                (base32
                 "1lx276ba8r2yydhmwj1g586jdqg695ad89ng36fr3mb067gvb2rz"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _
-             (invoke "autoreconf" "-vfi")
-             #t)))))
-    ;; wmclock requires autoreconf to generate its configure script.
     (inputs
      `(("libx11" ,libx11)
        ("libxext" ,libxext)
        ("libxpm" ,libxpm)))
+    ;; wmclock requires autoreconf to generate its configure script.
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

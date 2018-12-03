@@ -246,8 +246,6 @@ installed with setuptools."
 
 (define* (enable-bytecode-determinism #:rest _)
   "Improve determinism of pyc files."
-  ;; Set DETERMINISTIC_BUILD to override the embedded mtime in pyc files.
-  (setenv "DETERMINISTIC_BUILD" "1")
   ;; Use deterministic hashes for strings, bytes, and datetime objects.
   (setenv "PYTHONHASHSEED" "0")
   #t)
