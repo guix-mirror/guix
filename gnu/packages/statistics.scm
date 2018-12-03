@@ -1876,14 +1876,14 @@ building design matrices.")
 (define-public python-statsmodels
   (package
     (name "python-statsmodels")
-    (version "0.8.0")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "statsmodels" version))
        (sha256
         (base32
-         "0j30v3932shnj9368c9jr3svkyrvfj90h2l7nxnqkbpv0svilhr6"))))
+         "0fxs8a7sp4d7jvqlm36yi45i2d28kjfvraf9q8i9jr1chhxgjqb4"))))
     (build-system python-build-system)
     (arguments
      `(;; The test suite is very large and rather brittle.  Tests often fail
@@ -1902,18 +1902,7 @@ building design matrices.")
               (("import matplotlib\\.pyplot as plt" line)
                (string-append "import matplotlib;matplotlib.use('Agg');"
                               line)))
-            #t))
-         ;; FIXME: This is a bug in version 0.8 since the upgrade to scipy 1.0.
-         ;; See https://github.com/statsmodels/statsmodels/issues/3931
-         ;; This has been fixed in version 0.9.
-         (add-after 'unpack 'patch-for-scipy
-           (lambda _
-             (substitute* "statsmodels/discrete/discrete_model.py"
-               (("return stats.chisqprob" match)
-                (string-append
-                 "stats.chisqprob = lambda chisq, df: stats.chi2.sf(chisq, df);"
-                 match)))
-             #t)))))
+            #t)))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)
