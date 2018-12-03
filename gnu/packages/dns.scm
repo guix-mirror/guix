@@ -58,6 +58,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial))
@@ -727,3 +728,56 @@ The client supports both dynamic and (near) static services, as well as MX
 record and alternative name management.  It caches the address, and only
 attempts the update when it has changed.")
     (license license:gpl2+)))
+
+(define-public hnsd
+  ;; There have been no releases yet, hence this commit.
+  (let ((revision "0")
+        (commit "895d89c25d316d18df9d374fe78aae3902bc89fb"))
+   (package
+     (name "hnsd")
+     (version (git-version "0.0" revision commit))
+     (source (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/handshake-org/hnsd")
+                     (commit commit)))
+               (sha256
+                (base32
+                 "0704y73sddn24jga9csw4gxyfb3pnrfnk0vdcph84n1h38490l16"))
+               (file-name (git-file-name name version))
+               (modules '((guix build utils)))
+               (snippet
+                '(begin
+                   ;; Delete the bundled copy of libuv.
+                   (delete-file-recursively "uv")
+                   (substitute* "configure.ac"
+                     (("AC_CONFIG_SUBDIRS\\(\\[uv\\]\\)") ""))
+                   (substitute* "Makefile.am"
+                     (("SUBDIRS = uv") "\n")
+                     (("\\$\\(top_builddir\\)/uv/libuv.la") "-luv")
+
+                     ;; Make sure the 'hnsd' binary is installed and
+                     ;; dynamically-linked.
+                     (("noinst_PROGRAMS") "bin_PROGRAMS")
+                     (("hnsd_LDFLAGS = -static") ""))
+
+                   ;; This script tries to chdir to "uv" and doesn't do more
+                   ;; than "autoreconf" so remove it.
+                   (delete-file "autogen.sh")
+                   #t))))
+     (build-system gnu-build-system)
+     (arguments
+      '(#:configure-flags '("--disable-static"))) ;no need for libhsk.a
+     (native-inputs
+      `(("autoconf" ,autoconf)
+        ("automake" ,automake)
+        ("libtool" ,libtool)))
+     (inputs
+      `(("unbound" ,unbound)
+        ("libuv" ,libuv)))
+     (home-page "https://www.handshake.org/")
+     (synopsis "Resolver daemon for the Handshake naming protocol")
+     (description
+      "@command{hnsd} is a @dfn{host name resolver} for the Handshake Naming
+System (HNS) peer-to-peer network.")
+     (license license:expat))))
