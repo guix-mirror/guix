@@ -14567,14 +14567,14 @@ pure-Python.")
 (define-public python-cloudpickle
   (package
     (name "python-cloudpickle")
-    (version "0.5.5")
+    (version "0.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cloudpickle" version))
        (sha256
         (base32
-         "0gdg5n025v4wqmdg65rm0n6fvp6731ip30ji0rmn2kqsyr4bb93f"))))
+         "1wdw89mlm7fqa3fm3ymskx05jrys66n8m1z1a8s0mss0799ahsgi"))))
     (build-system python-build-system)
     ;; FIXME: there are 5 errors in 122 tests:
     ;; ERROR: test_function_pickle_compat_0_4_0 (tests.cloudpickle_test.CloudPickleTest)
