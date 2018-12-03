@@ -65,7 +65,7 @@
 
 (define %default-log-urls
   ;; Default base URLs for build logs.
-  '("http://hydra.gnu.org/log"))
+  '("http://ci.guix.info/log"))
 
 ;; XXX: The following procedure cannot be in (guix store) because of the
 ;; dependency on (guix derivations).

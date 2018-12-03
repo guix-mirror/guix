@@ -1052,7 +1052,7 @@ found."
     (#f
      ;; This can only happen when this script is not invoked by the
      ;; daemon.
-     '("http://hydra.gnu.org"))))
+     '("http://ci.guix.info"))))
 
 (define substitute-urls
   ;; List of substitute URLs.

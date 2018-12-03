@@ -14,7 +14,7 @@
 @set KEY-SERVER pool.sks-keyservers.net
 
 @c The official substitute server used by default.
-@set SUBSTITUTE-SERVER ci.guix.info
+@set SUBSTITUTE-SERVER mirror.hydra.gnu.org
 
 @copying
 Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès@*
@@ -2374,14 +2374,9 @@ Then, you can run something like this:
 @end example
 
 @quotation Note
-Similarly, the @file{berlin.guixsd.org.pub} file contains the public key
-for the project's new build farm, reachable at
-@indicateurl{https://berlin.guixsd.org}.
-
-As of this writing @code{berlin.guixsd.org} is being upgraded so it can
-better scale up, but you might want to give it a try.  It is backed by
-20 x86_64/i686 build nodes and may be able to provide substitutes more
-quickly than @code{mirror.hydra.gnu.org}.
+Similarly, the @file{hydra.gnu.org.pub} file contains the public key
+of an independent build farm also run by the project, reachable at
+@indicateurl{https://mirror.hydra.gnu.org}.
 @end quotation
 
 Once this is in place, the output of a command like @code{guix build}
