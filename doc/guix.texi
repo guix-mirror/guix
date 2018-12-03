@@ -6963,12 +6963,11 @@ refresh, @code{--key-download}}.
 @item pypi
 @cindex pypi
 Import metadata from the @uref{https://pypi.python.org/, Python Package
-Index}@footnote{This functionality requires Guile-JSON to be installed.
-@xref{Requirements}.}.  Information is taken from the JSON-formatted
-description available at @code{pypi.python.org} and usually includes all
-the relevant information, including package dependencies.  For maximum
-efficiency, it is recommended to install the @command{unzip} utility, so
-that the importer can unzip Python wheels and gather data from them.
+Index}.  Information is taken from the JSON-formatted description
+available at @code{pypi.python.org} and usually includes all the relevant
+information, including package dependencies.  For maximum efficiency, it
+is recommended to install the @command{unzip} utility, so that the
+importer can unzip Python wheels and gather data from them.
 
 The command below imports metadata for the @code{itsdangerous} Python
 package:
@@ -6987,16 +6986,14 @@ in Guix.
 
 @item gem
 @cindex gem
-Import metadata from @uref{https://rubygems.org/,
-RubyGems}@footnote{This functionality requires Guile-JSON to be
-installed.  @xref{Requirements}.}.  Information is taken from the
-JSON-formatted description available at @code{rubygems.org} and includes
-most relevant information, including runtime dependencies.  There are
-some caveats, however.  The metadata doesn't distinguish between
-synopses and descriptions, so the same string is used for both fields.
-Additionally, the details of non-Ruby dependencies required to build
-native extensions is unavailable and left as an exercise to the
-packager.
+Import metadata from @uref{https://rubygems.org/, RubyGems}.  Information
+is taken from the JSON-formatted description available at
+@code{rubygems.org} and includes most relevant information, including
+runtime dependencies.  There are some caveats, however.  The metadata
+doesn't distinguish between synopses and descriptions, so the same string
+is used for both fields.  Additionally, the details of non-Ruby
+dependencies required to build native extensions is unavailable and left
+as an exercise to the packager.
 
 The command below imports metadata for the @code{rails} Ruby package:
 
@@ -7014,9 +7011,7 @@ in Guix.
 
 @item cpan
 @cindex CPAN
-Import metadata from @uref{https://www.metacpan.org/, MetaCPAN}@footnote{This
-functionality requires Guile-JSON to be installed.
-@xref{Requirements}.}.
+Import metadata from @uref{https://www.metacpan.org/, MetaCPAN}.
 Information is taken from the JSON-formatted metadata provided through
 @uref{https://fastapi.metacpan.org/, MetaCPAN's API} and includes most
 relevant information, such as module dependencies.  License information
@@ -7100,10 +7095,8 @@ guix import texlive --archive=generic ifxetex
 
 @item json
 @cindex JSON, import
-Import package metadata from a local JSON file@footnote{This
-functionality requires Guile-JSON to be installed.
-@xref{Requirements}.}.  Consider the following example package
-definition in JSON format:
+Import package metadata from a local JSON file.  Consider the following
+example package definition in JSON format:
 
 @example
 @{
