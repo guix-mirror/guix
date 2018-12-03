@@ -50,7 +50,7 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.59.0")
+   (version "7.61.1")
    (replacement curl-7.62.0)
    (source (origin
             (method url-fetch)
@@ -58,7 +58,7 @@
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1z310hrjm2vmbcpkyp81dcmj9rk127zkjyawpy2pah0nz6yslkp4"))))
+              "148qv1f32290r9pwg07mccawihz4srznkzsdwdl2xllvlgb16n9x"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -85,7 +85,8 @@
            (separator #f)                         ;single entry
            (files '("etc/ssl/certs/ca-certificates.crt")))))
    (arguments
-    `(#:configure-flags '("--with-gnutls" "--with-gssapi")
+    `(#:configure-flags '("--with-gnutls" "--with-gssapi"
+                          "--disable-static")
       ;; Add a phase to patch '/bin/sh' occurances in tests/runtests.pl
       #:phases
       (modify-phases %standard-phases

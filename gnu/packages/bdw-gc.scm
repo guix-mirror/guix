@@ -30,14 +30,14 @@
 (define-public libgc
   (package
    (name "libgc")
-   (version "7.6.4")
+   (version "7.6.6")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://www.hboehm.info/gc/gc_source/gc-"
-                                version ".tar.gz"))
+            (uri (string-append "https://github.com/ivmai/bdwgc/releases"
+                                "/download/v" version "/gc-" version ".tar.gz"))
             (sha256
              (base32
-              "076dzsqqyxd3nlzs0z277vvhqjp8nv5dqi763s0m90zr6ljiyk5r"))))
+              "1p1r015a7jbpvkkbgzv1y8nxrbbp6dg0mq3ksi6ji0qdz3wfss79"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
@@ -91,7 +91,7 @@ C or C++ programs, though that is not its primary goal.")
 (define-public libatomic-ops
   (package
     (name "libatomic-ops")
-    (version "7.6.4")
+    (version "7.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -99,7 +99,7 @@ C or C++ programs, though that is not its primary goal.")
                     version "/libatomic_ops-" version ".tar.gz"))
               (sha256
                (base32
-                "0knxncsjhbknlyy6lx7ycxhpzfk3sykhvicgxyp0rmsxd1d3v0jv"))))
+                "0x7071z707msvyrv9dmgahd1sghbkw8fpbagvcag6xs8yp2spzlr"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (synopsis "Accessing hardware atomic memory update operations")

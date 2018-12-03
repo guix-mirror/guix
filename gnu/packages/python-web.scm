@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
@@ -438,7 +438,15 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
     (arguments
      ;; The tests attempt to access external web servers, so we cannot run
      ;; them.  Furthermore, they are skipped altogether when using Python 2.
-     '(#:tests? #f))
+     '(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                    (add-before 'build 'configure-tls-backend
+                      (lambda _
+                        ;; XXX: PycURL fails to automatically determine which TLS
+                        ;; backend to use when cURL is built with --disable-static.
+                        ;; See setup.py and <https://github.com/pycurl/pycurl/pull/147>.
+                        (setenv "PYCURL_SSL_LIBRARY" "gnutls")
+                        #t)))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-bottle" ,python-bottle)))
@@ -1400,14 +1408,14 @@ authenticated session objects providing things like keep-alive.")
 (define-public python-urllib3
   (package
     (name "python-urllib3")
-    (version "1.18.1")
+    (version "1.23")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urllib3" version))
         (sha256
          (base32
-          "1wb8aqnq53vzh2amrv8kc66f3h6fx217y0q62y6n30a64p2yqmam"))))
+          "1bvbd35q3zdcd7gsv38fwpizy7p06dr0154g5gfybrvnbvhwb2m6"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (native-inputs
@@ -2667,19 +2675,25 @@ available in Django, but is a standalone package.")
 (define-public python-paste
   (package
     (name "python-paste")
-    (version "2.0.3")
+    (version "3.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Paste" version))
        (sha256
         (base32
-         "062jk0nlxf6lb2wwj6zc20rlvrwsnikpkh90y0dn8cjch93s6ii3"))
-       (patches (search-patches "python-paste-remove-website-test.patch"
-                                "python-paste-remove-timing-test.patch"))))
+         "01w26w9jyfkh0mfydhfz3dwy3pj3fw7mzvj0lna3vs8hyx1hwl0n"))
+       (patches (search-patches "python-paste-remove-timing-test.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; This test calls out to the internet.
+           (delete-file "tests/test_proxy.py") #t))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (home-page "http://pythonpaste.org")

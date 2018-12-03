@@ -165,13 +165,13 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 (define-public linux-libre-headers
   (package
     (name "linux-libre-headers")
-    (version "4.14.26")
+    (version "4.14.67")
     (source (origin
              (method url-fetch)
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1m2zr17wpasg5riysbaa4g5i492jzr93py2jm088ki818s4a9cm3"))))
+               "050zvdxjy6sc64q75pr1gxsmh49chwav2pwxz8xlif39bvahnrpg"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (arguments
@@ -300,12 +300,6 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                  (or (%current-target-system) (%current-system)))
            ((or "x86_64" "i386")
             `(("gcc" ,gcc-7)))
-           ("arm64"
-            ;; Work around a binutils 2.30 bug where some kernel symbols would
-            ;; be incorrectly marked as relocatable:
-            ;; <https://sourceware.org/bugzilla/show_bug.cgi?id=22764>.
-            `(("ld-wrapper" ,(make-ld-wrapper "ld-wrapper"
-                                              #:binutils binutils/fixed))))
            (_
             '()))
        ,@(match (and configuration-file
@@ -488,17 +482,17 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-pam
   (package
     (name "linux-pam")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append
-            "http://www.linux-pam.org/library/"
-            "Linux-PAM-" version ".tar.bz2"))
-      (sha256
-       (base32
-        "1fyi04d5nsh8ivd0rn2y0z83ylgc0licz7kifbb6xxi2ylgfs6i4"))
-      (patches (search-patches "linux-pam-no-setfsuid.patch"))))
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/linux-pam/linux-pam/releases/download/v"
+             version "/Linux-PAM-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1nyh9kdi3knhxcbv5v4snya0g3gff0m671lnvqcbygw3rm77mx7g"))
+       (patches (search-patches "linux-pam-no-setfsuid.patch"))))
 
     (build-system gnu-build-system)
     (native-inputs
@@ -580,7 +574,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.32")
+    (version "2.32.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -588,7 +582,7 @@ providing the system administrator with some help in common tasks.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0d2758kjll5xqm5fpp3sww1h66aahx161sf2b60jxqv4qymrfwvc"))
+                "1ck7d8srw5szpjq7v0gpmjahnjs6wgqzm311ki4gazww6xx71rl6"))
               (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -644,7 +638,14 @@ providing the system administrator with some help in common tasks.")
                                      (rename-file file
                                                   (string-append static "/"
                                                                  file)))
-                                   (find-files "lib" "\\.a$")))
+                                   (find-files "lib" "\\.a$"))
+
+                         ;; Remove references to the static library from the '.la'
+                         ;; files so that Libtool does the right thing when both
+                         ;; the shared and static library is available.
+                         (substitute* (find-files "lib" "\\.la$")
+                           (("old_library=.*") "old_library=''\n")))
+
                        #t))))))
     (inputs `(("zlib" ,zlib)
               ("ncurses" ,ncurses)
@@ -1250,7 +1251,8 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     (lambda _
                       ;; Don't attempt to create /var/lib/arpd.
                       (substitute* "Makefile"
-                        (("^.*ARPDDIR.*$") "")))))))
+                        (("^.*ARPDDIR.*$") ""))
+                      #t)))))
     (inputs
      `(("iptables" ,iptables)
        ("db4" ,bdb)))
@@ -2533,9 +2535,7 @@ in a digital read-out.")
   (package
     (name "perf")
     (version (package-version linux-libre))
-    (source (origin
-              (inherit (package-source linux-libre))
-              (patches (search-patches "perf-gcc-ice.patch"))))
+    (source (package-source linux-libre))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -3298,6 +3298,7 @@ and copy/paste text in the console and in xterm.")
               ("libuuid:static" ,util-linux "static")
               ("lzo" ,lzo)
               ("zlib" ,zlib)
+              ("zlib:static" ,zlib "static")
               ("zstd" ,zstd)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("asciidoc" ,asciidoc)
@@ -3539,7 +3540,8 @@ from userspace.")
              (let* ((out (assoc-ref outputs "out"))
                     (sbin (string-append out "/sbin")))
                (symlink "mount.ntfs-3g"
-                        (string-append sbin "/mount.ntfs"))))))))
+                        (string-append sbin "/mount.ntfs")))
+             #t)))))
     (home-page "https://www.tuxera.com/community/open-source-ntfs-3g/")
     (synopsis "Read-write access to NTFS file systems")
     (description
@@ -3696,7 +3698,8 @@ from that to the system kernel's @file{/dev/random} machinery.")
      '(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'enter-subdirectory
                     (lambda _
-                      (chdir "tools/power/cpupower")))
+                      (chdir "tools/power/cpupower")
+                      #t))
                   (delete 'configure)
                   (add-before 'build 'fix-makefiles
                     (lambda _
@@ -3704,7 +3707,8 @@ from that to the system kernel's @file{/dev/random} machinery.")
                         (("/usr/") "/")
                         (("/bin/(install|pwd)" _ command) command))
                       (substitute* "bench/Makefile"
-                        (("\\$\\(CC\\) -o") "$(CC) $(LDFLAGS) -o")))))
+                        (("\\$\\(CC\\) -o") "$(CC) $(LDFLAGS) -o"))
+                      #t)))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
                             (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")
@@ -4016,9 +4020,11 @@ developers.")
                   ;; getver.sh uses ‘git --describe’, isn't worth an extra git
                   ;; dependency, and doesn't even work on release(!) tarballs.
                   (add-after 'unpack 'report-correct-version
-                    (lambda _ (substitute* "getver.sh"
-                                (("ver=unknown")
-                                 (string-append "ver=" ,version)))))
+                    (lambda _
+                      (substitute* "getver.sh"
+                        (("ver=unknown")
+                         (string-append "ver=" ,version)))
+                      #t))
                   (delete 'configure))  ; no configure script
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
@@ -4245,8 +4251,7 @@ Light is the successor of lightscript.")
              #t))
          (replace 'install
            (lambda _
-             (invoke "make" "install-tlp" "install-man")
-             #t))
+             (invoke "make" "install-tlp" "install-man")))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))

@@ -81,7 +81,7 @@
 (define-public ixion
   (package
     (name "ixion")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
@@ -89,7 +89,7 @@
                            version ".tar.xz"))
        (sha256
         (base32
-         "1rf76drzg593jzswwnh8kr2jangp8ylizqjspx57rld25g2n1qss"))))
+         "14gdd6div4l22vnz3jn2qjxgjly98ck6p8c1v7386c41rx7kilba"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -107,7 +107,7 @@ their dependencies automatically upon calculation.")
 (define-public orcus
   (package
     (name "orcus")
-    (version "0.13.4")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
@@ -115,7 +115,7 @@ their dependencies automatically upon calculation.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1r42waglxwmvvwl20fy49vzgfp1sis4j703f81iswzdyzqalq75p"))))
+         "1ays13a1x15j81dsrq0d3697v1bbqd3bfz3ajn6kb9d61y2drlgj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -318,7 +318,16 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
           ;; During configure, the boost headers are found, but linking
           ;; fails without the following flag.
           (string-append "--with-boost="
-                         (assoc-ref %build-inputs "boost")))))
+                         (assoc-ref %build-inputs "boost")))
+        #:phases (modify-phases %standard-phases
+                   (add-before 'build 'fix-boost-include
+                     (lambda _
+                       ;; This library moved in Boost and the compatibility
+                       ;; redirect is no longer available since version 1.68.0.
+                       (substitute* "src/libcmis/xml-utils.cxx"
+                         (("boost/uuid/sha1.hpp")
+                          "boost/uuid/detail/sha1.hpp"))
+                       #t)))))
     (home-page "https://github.com/tdf/libcmis")
     (synopsis "CMIS client library")
     (description "LibCMIS is a C++ client library for the CMIS interface.  It
@@ -402,7 +411,16 @@ CorelDRAW documents of all versions.")
                "0bfq9rwm040xhh7b3v0gsdavwvnrz4hkwnhpggarxk70mr3j7jcx"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-mdds=1.2")))
+     `(#:configure-flags '("--with-mdds=1.4")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'support-mdds-1.4
+                    (lambda _
+                      ;; This package already works fine with mdds 1.4, but the
+                      ;; configure check is too strict.  Taken from upstream.
+                      (substitute* "configure"
+                        (("mdds=1\\.2") "mdds=1.4")
+                        (("mdds=\"1\\.2\"") "mdds=\"1.4\""))
+                      #t)))))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
@@ -941,8 +959,34 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        (sha256
         (base32
          "0i4gf3qi16fg7dxq2l4vhkwh4f5lx7xd1ilpzcw26vccqkv3hvyl"))
-       (patches (search-patches "libreoffice-icu.patch"
-                                "libreoffice-glm.patch"))))
+       (patches
+        (append (list (origin
+                        ;; Support newer versions of Orcus and MDDS.  These patches
+                        ;; are taken from upstream, but we use the patches from Arch
+                        ;; because they are adapted for the release tarball.
+                        ;; Note: remove the related substitutions below when these
+                        ;; are no longer needed.
+                        (method url-fetch)
+                        (uri (string-append "https://git.archlinux.org/svntogit"
+                                            "/packages.git/plain/trunk/"
+                                            "0001-Update-orcus-to-0.14.0.patch?&id="
+                                            "4002fa927f2a143bd2ec008a0c400b2ce9f2c8a7"))
+                        (file-name "libreoffice-orcus.patch")
+                        (sha256
+                         (base32
+                          "0v1knblrmfzkb4g9pm5mdnrmjib59bznvca1ygbwlap2ln1h4mk0")))
+                      (origin
+                        (method url-fetch)
+                        (uri (string-append "https://git.archlinux.org/svntogit"
+                                            "/packages.git/plain/trunk/"
+                                            "0001-Update-mdds-to-1.4.1.patch?&id="
+                                            "4002fa927f2a143bd2ec008a0c400b2ce9f2c8a7"))
+                        (file-name "libreoffice-mdds.patch")
+                        (sha256
+                         (base32
+                          "0apbmammmp4pk473xiv5vk50r4c5gjvqzf9jkficksvz58q6114f"))))
+                (search-patches "libreoffice-icu.patch"
+                                "libreoffice-glm.patch")))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -1030,6 +1074,13 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
                          "solenv/gbuild/gbuild.mk"
                          "solenv/gbuild/platform/unxgcc.mk")
                  (("/bin/sh") (which "sh")))
+
+               ;; XXX: Adjust the checks for MDDS and liborcus to avoid having
+               ;; to re-bootstrap the whole thing.  Remove this with the related
+               ;; patches above.
+               (substitute* "configure"
+                 (("mdds-1.2 >= 1.2.3") "mdds-1.4 >= 1.4.1")
+                 (("liborcus-0.13 >= 0.13.3") "liborcus-0.14 >= 0.14.0"))
 
                ;; GPGME++ headers are installed in a gpgme++ subdirectory, but
                ;; files in "xmlsecurity/source/gpg/" and elsewhere expect to

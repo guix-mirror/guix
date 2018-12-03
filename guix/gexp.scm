@@ -633,11 +633,6 @@ names and file names suitable for the #:allowed-references argument to
                            local-build? (substitutable? #t)
                            (properties '())
 
-                           ;; TODO: This parameter is transitional; it's here
-                           ;; to avoid a full rebuild.  Remove it on the next
-                           ;; rebuild cycle.
-                           import-creates-derivation?
-
                            deprecation-warnings
                            (script-name (string-append name "-builder")))
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
@@ -732,18 +727,12 @@ The other arguments are as for 'derivation'."
                                        extensions))
                        (modules  (if (pair? %modules)
                                      (imported-modules %modules
-                                                       #:derivation?
-                                                       import-creates-derivation?
                                                        #:system system
                                                        #:module-path module-path
-                                                       #:guile guile-for-build
-                                                       #:deprecation-warnings
-                                                       deprecation-warnings)
+                                                       #:guile guile-for-build)
                                      (return #f)))
                        (compiled (if (pair? %modules)
                                      (compiled-modules %modules
-                                                       #:derivation?
-                                                       import-creates-derivation?
                                                        #:system system
                                                        #:module-path module-path
                                                        #:extensions extensions
@@ -1112,15 +1101,7 @@ to a tree suitable for 'interned-file-tree'."
                                     #:key (name "file-import")
                                     (symlink? #f)
                                     (system (%current-system))
-                                    (guile (%guile-for-build))
-
-                                    ;; XXX: The only reason we have
-                                    ;; #:deprecation-warnings is because (guix
-                                    ;; build utils), which we use here, relies
-                                    ;; on _IO*, which is deprecated in 2.2.  On
-                                    ;; the next full-rebuild cycle, we should
-                                    ;; disable such warnings unconditionally.
-                                    (deprecation-warnings #f))
+                                    (guile (%guile-for-build)))
   "Return a derivation that imports FILES into STORE.  FILES must be a list
 of (FINAL-PATH . FILE) pairs.  Each FILE is mapped to FINAL-PATH in the
 resulting store path.  FILE can be either a file name, or a file-like object,
@@ -1160,54 +1141,38 @@ to the source files instead of copying them."
                       #:guile-for-build guile
                       #:local-build? #t
 
-                      ;; TODO: On the next rebuild cycle, set to "no"
-                      ;; unconditionally.
+                      ;; Avoid deprecation warnings about the use of the _IO*
+                      ;; constants in (guix build utils).
                       #:env-vars
-                      (case deprecation-warnings
-                        ((#f)
-                         '(("GUILE_WARN_DEPRECATED" . "no")))
-                        ((detailed)
-                         '(("GUILE_WARN_DEPRECATED" . "detailed")))
-                        (else
-                         '())))))
+                      '(("GUILE_WARN_DEPRECATED" . "no")))))
 
 (define* (imported-files files
                          #:key (name "file-import")
-
-                         ;; TODO: Remove this parameter on the next rebuild
-                         ;; cycle.
-                         (derivation? #f)
-
                          ;; The following parameters make sense when creating
                          ;; an actual derivation.
                          (system (%current-system))
-                         (guile (%guile-for-build))
-                         (deprecation-warnings #f))
+                         (guile (%guile-for-build)))
   "Import FILES into the store and return the resulting derivation or store
 file name (a derivation is created if and only if some elements of FILES are
 file-like objects and not local file names.)  FILES must be a list
 of (FINAL-PATH . FILE) pairs.  Each FILE is mapped to FINAL-PATH in the
 resulting store path.  FILE can be either a file name, or a file-like object,
 as returned by 'local-file' for example."
-  (if (or derivation?
-          (any (match-lambda
-                 ((_ . (? struct? source)) #t)
-                 (_ #f))
-               files))
+  (if (any (match-lambda
+             ((_ . (? struct? source)) #t)
+             (_ #f))
+           files)
       (imported-files/derivation files #:name name
                                  #:symlink? derivation?
-                                 #:system system #:guile guile
-                                 #:deprecation-warnings deprecation-warnings)
+                                 #:system system #:guile guile)
       (interned-file-tree `(,name directory
                                   ,@(file-mapping->tree files)))))
 
 (define* (imported-modules modules
                            #:key (name "module-import")
-                           (derivation? #f)      ;TODO: remove on next rebuild
                            (system (%current-system))
                            (guile (%guile-for-build))
-                           (module-path %load-path)
-                           (deprecation-warnings #f))
+                           (module-path %load-path))
   "Return a derivation that contains the source files of MODULES, a list of
 module names such as `(ice-9 q)'.  All of MODULES must be either names of
 modules to be found in the MODULE-PATH search path, or a module name followed
@@ -1228,14 +1193,11 @@ last one is created from the given <scheme-file> object."
                          (cons f (search-path* module-path f)))))
                     modules)))
     (imported-files files #:name name
-                    #:derivation? derivation?
                     #:system system
-                    #:guile guile
-                    #:deprecation-warnings deprecation-warnings)))
+                    #:guile guile)))
 
 (define* (compiled-modules modules
                            #:key (name "module-import-compiled")
-                           (derivation? #f)      ;TODO: remove on next rebuild
                            (system (%current-system))
                            (guile (%guile-for-build))
                            (module-path %load-path)
@@ -1246,22 +1208,11 @@ corresponding to MODULES.  All the MODULES are built in a context where
 they can refer to each other."
   (define total (length modules))
 
-  (define build-utils-hack?
-    ;; To avoid a full rebuild, we limit the fix below to the case where
-    ;; MODULE-PATH is different from %LOAD-PATH.  This happens when building
-    ;; modules for 'compute-guix-derivation' upon 'guix pull'.  TODO: Make
-    ;; this unconditional on the next rebuild cycle.
-    (and (member '(guix build utils) modules)
-         (not (equal? module-path %load-path))))
-
   (mlet %store-monad ((modules (imported-modules modules
-                                                 #:derivation? derivation?
                                                  #:system system
                                                  #:guile guile
                                                  #:module-path
-                                                 module-path
-                                                 #:deprecation-warnings
-                                                 deprecation-warnings)))
+                                                 module-path)))
     (define build
       (gexp
        (begin
@@ -1300,46 +1251,34 @@ they can refer to each other."
          (setvbuf (current-output-port)
                   (cond-expand (guile-2.2 'line) (else _IOLBF)))
 
-         (ungexp-splicing
-          (if build-utils-hack?
-              (gexp ((define mkdir-p
-                       ;; Capture 'mkdir-p'.
-                       (@ (guix build utils) mkdir-p))))
-              '()))
+         (define mkdir-p
+           ;; Capture 'mkdir-p'.
+           (@ (guix build utils) mkdir-p))
 
          ;; Add EXTENSIONS to the search path.
-         ;; TODO: Remove the outer 'ungexp-splicing' on the next rebuild cycle.
-         (ungexp-splicing
-          (if (null? extensions)
-              '()
-              (gexp ((set! %load-path
-                       (append (map (lambda (extension)
-                                      (string-append extension
-                                                     "/share/guile/site/"
-                                                     (effective-version)))
-                                    '((ungexp-native-splicing extensions)))
-                               %load-path))
-                     (set! %load-compiled-path
-                       (append (map (lambda (extension)
-                                      (string-append extension "/lib/guile/"
-                                                     (effective-version)
-                                                     "/site-ccache"))
-                                    '((ungexp-native-splicing extensions)))
-                               %load-compiled-path))))))
+         (set! %load-path
+           (append (map (lambda (extension)
+                          (string-append extension
+                                         "/share/guile/site/"
+                                         (effective-version)))
+                        '((ungexp-native-splicing extensions)))
+                   %load-path))
+         (set! %load-compiled-path
+           (append (map (lambda (extension)
+                          (string-append extension "/lib/guile/"
+                                         (effective-version)
+                                         "/site-ccache"))
+                        '((ungexp-native-splicing extensions)))
+                   %load-compiled-path))
 
          (set! %load-path (cons (ungexp modules) %load-path))
 
-         (ungexp-splicing
-          (if build-utils-hack?
-              ;; Above we loaded our own (guix build utils) but now we may
-              ;; need to load a compile a different one.  Thus, force a
-              ;; reload.
-              (gexp ((let ((utils (ungexp
-                                   (file-append modules
-                                                "/guix/build/utils.scm"))))
-                       (when (file-exists? utils)
-                         (load utils)))))
-              '()))
+         ;; Above we loaded our own (guix build utils) but now we may need to
+         ;; load a compile a different one.  Thus, force a reload.
+         (let ((utils (string-append (ungexp modules)
+                                     "/guix/build/utils.scm")))
+           (when (file-exists? utils)
+             (load utils)))
 
          (mkdir (ungexp output))
          (chdir (ungexp modules))

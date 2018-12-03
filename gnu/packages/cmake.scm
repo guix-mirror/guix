@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,7 +44,7 @@
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.11.0")
+    (version "3.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.cmake.org/files/v"
@@ -51,7 +52,7 @@
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "0sv5k9q6braa8hhw0y3w19avqn0xn5czv5jf5fz5blnlf7ivw4y3"))
+                "19410mxgcyvk5q42phaclb1hz6rl08z4yj8iriq706p5k5bli5qg"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -86,6 +87,13 @@
            " --exclude-regex ^\\(" (string-join skipped-tests "\\|") "\\)$")))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'split-package
+           ;; Remove files that have been packaged in other package recipes.
+           (lambda _
+             (delete-file "Auxiliary/cmake-mode.el")
+             (substitute* "Auxiliary/CMakeLists.txt"
+               ((".*cmake-mode.el.*") ""))
+             #t))
          (add-before 'configure 'patch-bin-sh
            (lambda _
              ;; Replace "/bin/sh" by the right path in... a lot of

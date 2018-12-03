@@ -85,7 +85,8 @@
                                   "blender-" version ".tar.gz"))
               (sha256
                (base32
-                "1g4kcdqmf67srzhi3hkdnr4z1ph4h9sza1pahz38mrj998q4r52c"))))
+                "1g4kcdqmf67srzhi3hkdnr4z1ph4h9sza1pahz38mrj998q4r52c"))
+              (patches (search-patches "blender-newer-ffmpeg.patch"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -141,7 +142,7 @@
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
-       ("ffmpeg-2.8" ,ffmpeg-2.8) ;<https://lists.gnu.org/archive/html/guix-devel/2016-04/msg01019.html>
+       ("ffmpeg" ,ffmpeg)
        ("fftw" ,fftw)
        ("jack" ,jack-1)
        ("libsndfile" ,libsndfile)

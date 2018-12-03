@@ -75,7 +75,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.28")
+    (version "1.32")
     (source
      (origin
       (method url-fetch)
@@ -83,8 +83,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0jfsfnh9bxlxiwxws60yah4ybjw2hshmvqp31pri4m4h8ivrbnry"))
-      (patches (search-patches "libgpg-error-aarch64-logging-fix.patch"))))
+        "1jj08ns4sh1hmafqp1giskvdicdz18la516va26jycy27kkwaif3"))))
     (build-system gnu-build-system)
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
@@ -97,32 +96,19 @@ Daemon and possibly more in the future.")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgpg-error")))))
 
-;; Some packages (e.g. GPGME) require a newer libgpg-error to deal with
-;; error codes from recent GnuPG.  Remove this in the next rebuild cycle.
-(define-public libgpg-error-1.31
-  (package
-    (inherit libgpg-error)
-    (version "1.31")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnupg/libgpg-error/libgpg-error-"
-                                  version ".tar.bz2"))
-              (sha256
-               (base32
-                "1vx4nw6rxh2biy3h8n96fyr86q29h8gjl6837437i51jr4isil20"))))))
-
 (define-public libgcrypt
   (package
-    (replacement libgcrypt/fixed)
     (name "libgcrypt")
-    (version "1.8.2")
+    (version "1.8.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "01sca9m8hm6b5v8hmqsfdjhyz013869p1f0fxw9ln52qfnp4q1n8"))))
+               "0z5gs1khzyknyfjr19k8gk4q148s6q987ya85cpn0iv70fz91v36"))
+             (patches
+              (search-patches "libgcrypt-make-yat2m-reproducible.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))
@@ -147,19 +133,6 @@ generation.")
     (license license:lgpl2.0+)
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
-
-(define libgcrypt/fixed
-  (package
-    (inherit libgcrypt)
-    (name "libgcrypt")
-    (version "1.8.3")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
-                                 version ".tar.bz2"))
-             (sha256
-              (base32
-               "0z5gs1khzyknyfjr19k8gk4q148s6q987ya85cpn0iv70fz91v36"))))))
 
 (define-public libassuan
   (package
@@ -409,7 +382,7 @@ libskba (working with X.509 certificates and CMS data).")
      `(("gnupg" ,gnupg)))
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
-     `(("libgpg-error" ,libgpg-error-1.31)))
+     `(("libgpg-error" ,libgpg-error)))
     (inputs
      `(("libassuan" ,libassuan)))
     (home-page "https://www.gnupg.org/related_software/gpgme/")

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
@@ -122,6 +122,7 @@ system, and the core design of Django is reused in Grantlee.")
              (sha256
               (base32
                "10faac59jvz6dxxljdkaknlxazpnaxgvqdcszabfbbkc1f24n466"))
+             (patches (search-patches "qt-5-renameat2.patch"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -624,7 +625,6 @@ system, and the core design of Django is reused in Grantlee.")
                  ;; kernels that the glibc supports, including the RHEL6
                  ;; (2.6.32) and RHEL7 (3.10) kernels.
                  "-no-feature-getentropy"  ; requires Linux 3.17
-                 "-no-feature-renameat2"   ; requires Linux 3.16
 
                  ;; Do not build examples; if desired, these could go
                  ;; into a separate output, but for the time being, we

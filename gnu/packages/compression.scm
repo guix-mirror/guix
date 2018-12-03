@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -85,6 +85,7 @@
        (base32
         "18dighcs333gsvajvvgqp8l4cx7h1x7yx9gd5xacnk80spyykrf3"))))
     (build-system gnu-build-system)
+    (outputs '("out" "static"))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -99,7 +100,15 @@
                      `((setenv "CHOST" ,(%current-target-system)))
                      '())
                (invoke "./configure"
-                       (string-append "--prefix=" out))))))))
+                       (string-append "--prefix=" out)))))
+         (add-after 'install 'move-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (static (assoc-ref outputs "static")))
+               (with-directory-excursion (string-append out "/lib")
+                 (install-file "libz.a" (string-append static "/lib"))
+                 (delete-file "libz.a")
+                 #t)))))))
     (home-page "https://zlib.net/")
     (synopsis "Compression library")
     (description
@@ -208,6 +217,21 @@ adding and extracting files to/from a tar archive.")
     '(#:tests? #f
       #:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'patch-for-glibc-2.28
+          (lambda _
+            ;; Adjust the bundled gnulib to work with glibc 2.28.  See e.g.
+            ;; "m4-gnulib-libio.patch".  This is a phase rather than patch
+            ;; or snippet to work around <https://bugs.gnu.org/32347>.
+            (substitute* (find-files "lib" "\\.c$")
+              (("#if defined _IO_ftrylockfile")
+               "#if defined _IO_EOF_SEEN"))
+            (substitute* "lib/stdio-impl.h"
+              (("^/\\* BSD stdio derived implementations")
+               (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
+                              "# define _IO_IN_BACKUP 0x100\n"
+                              "#endif\n\n"
+                              "/* BSD stdio derived implementations")))
+            #t))
         (add-after 'unpack 'use-absolute-name-of-gzip
           (lambda* (#:key outputs #:allow-other-keys)
             (substitute* "gunzip.in"
@@ -240,6 +264,7 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
+                  (ice-9 ftw)
                   (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
@@ -268,25 +293,32 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
              ;; it create all the (un)versioned symlinks, so we handle it here.
              (let* ((out    (assoc-ref outputs "out"))
                     (libdir (string-append out "/lib"))
-                    ;; Find the actual library (e.g. "libbz2.so.1.0.6").
-                    (lib (string-drop
-                          (car (find-files
-                                "."
-                                (lambda (file stat)
-                                  (and (string-prefix? "./libbz2.so" file)
-                                       (eq? 'regular (stat:type stat))))))
-                          2))
-                    (soversion (string-drop lib (string-length "libbz2.so."))))
+                    (soname "libbz2.so")
+                    ;; Locate the built library (e.g. "libbz2.so.1.0.6").
+                    (lib (car (scandir "."
+                                       (lambda (file)
+                                         (and (string-prefix? soname file)
+                                              (eq? 'regular
+                                                   (stat:type (lstat file))))))))
+                    (soversion (string-drop lib (+ 1 (string-length soname)))))
                (install-file lib libdir)
                (with-directory-excursion libdir
                  ;; Create symlinks libbz2.so.1 -> libbz2.so.1.0, etc.
-                 (let loop ((base "libbz2.so")
+                 (let loop ((base soname)
                             (numbers (string-split soversion #\.)))
                    (unless (null? numbers)
                      (let ((so-file (string-append base "." (car numbers))))
                        (symlink so-file base)
                        (loop so-file (cdr numbers))))))
                #t)))
+         (add-after 'install-shared-lib 'move-static-lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (static (assoc-ref outputs "static")))
+               (with-directory-excursion (string-append out "/lib")
+                 (install-file "libbz2.a" (string-append static "/lib"))
+                 (delete-file "libbz2.a")
+                 #t))))
          (add-after 'install-shared-lib 'patch-scripts
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out")))
@@ -301,6 +333,7 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
        ,@(if (%current-target-system)
              '(#:tests? #f)
              '())))
+    (outputs '("out" "static"))
     (synopsis "High-quality data compression program")
     (description
      "bzip2 is a freely available, patent free (see below), high-quality data
@@ -322,7 +355,20 @@ decompression.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1sahaqc5bw4i0iyri05syfza4ncf5cml89an033fspn97klmxis6"))))
+                "1sahaqc5bw4i0iyri05syfza4ncf5cml89an033fspn97klmxis6"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 (substitute* (find-files "lib" "\\.c$")
+                   (("#if defined _IO_ftrylockfile")
+                    "#if defined _IO_EOF_SEEN"))
+                 (substitute* "lib/stdio-impl.h"
+                   (("^/\\* BSD stdio derived implementations")
+                    (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
+                                   "# define _IO_IN_BACKUP 0x100\n"
+                                   "#endif\n\n"
+                                   "/* BSD stdio derived implementations")))
+                 #t))))
     (build-system gnu-build-system)
     (synopsis "Parallel bzip2 compression utility")
     (description
@@ -368,7 +414,7 @@ compressed with pbzip2 can be decompressed with bzip2).")
 (define-public xz
   (package
    (name "xz")
-   (version "5.2.3")
+   (version "5.2.4")
    (source (origin
             (method url-fetch)
             (uri (list (string-append "http://tukaani.org/xz/xz-" version
@@ -377,7 +423,7 @@ compressed with pbzip2 can be decompressed with bzip2).")
                                       version ".tar.gz")))
             (sha256
              (base32
-              "1jr8pxnz55ifc8cvp3ivgl79ph9iik5aypsc9cma228aglsqp4ki"))))
+              "0ibi2zsfaz6l756spjwc5rayf4ckgc9hwmy8qinppcyk4svz64mm"))))
    (build-system gnu-build-system)
    (synopsis "General-purpose data compression")
    (description
@@ -543,7 +589,20 @@ decompressors when faced with corrupted input.")
       (patches (search-patches "sharutils-CVE-2018-1000097.patch"))
       (sha256
        (base32
-        "16isapn8f39lnffc3dp4dan05b7x6mnc76v6q5nn8ysxvvvwy19b"))))
+        "16isapn8f39lnffc3dp4dan05b7x6mnc76v6q5nn8ysxvvvwy19b"))
+      (modules '((guix build utils)))
+      (snippet
+       '(begin
+          (substitute* (find-files "lib" "\\.c$")
+            (("#if defined _IO_ftrylockfile")
+             "#if defined _IO_EOF_SEEN"))
+          (substitute* "lib/stdio-impl.h"
+            (("^/\\* BSD stdio derived implementations")
+             (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
+                            "# define _IO_IN_BACKUP 0x100\n"
+                            "#endif\n\n"
+                            "/* BSD stdio derived implementations")))
+          #t))))
     (build-system gnu-build-system)
     (inputs
      `(("which" ,which)))
@@ -701,7 +760,8 @@ INCLUDE = ~a/include
 LIB = ~:*~a/lib
 OLD_ZLIB = False
 GZIP_OS_CODE = AUTO_DETECT"
-                                 (assoc-ref inputs "zlib")))))))))
+                                 (assoc-ref inputs "zlib"))))
+                     #t)))))
     (home-page "https://metacpan.org/release/Compress-Raw-Zlib")
     (synopsis "Low-level interface to zlib compression library")
     (description "This module provides a Perl interface to the zlib
@@ -834,8 +894,16 @@ the LZ4 frame format.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-                  (lambda _
-                    (chdir "squashfs-tools"))))))
+           (lambda _
+             (chdir "squashfs-tools")
+             #t))
+         (add-after 'unpack 'fix-glibc-compatability
+           (lambda _
+             (substitute* '("squashfs-tools/mksquashfs.c"
+                            "squashfs-tools/unsquashfs.c")
+               (("<sys/sysinfo.h>")
+                "<sys/sysinfo.h>\n#include <sys/sysmacros.h>"))
+             #t)))))
     (inputs
      `(("lz4" ,lz4)
        ("lzo" ,lzo)
@@ -1134,16 +1202,30 @@ well as bzip2.")
 (define-public bitshuffle
   (package
     (name "bitshuffle")
-    (version "0.3.4")
+    (version "0.3.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "bitshuffle" version))
               (sha256
                (base32
-                "0ydawb01ghsvmw0lraczhrgvkjj97bpg98f1qqs1cnfp953mdd5v"))))
+                "1823x61kyax4dc2hjmc1xraskxi1193y8lvxd03vqv029jrj8cjy"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove generated Cython files.
+                  (delete-file "bitshuffle/h5.c")
+                  (delete-file "bitshuffle/ext.c")
+                  #t))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))           ; fail: https://github.com/h5py/h5py/issues/769
+     `(#:tests? #f             ; fail: https://github.com/h5py/h5py/issues/769
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'dont-build-native
+           (lambda _
+             (substitute* "setup.py"
+               (("'-march=native', ") ""))
+             #t)))))
     (inputs
      `(("numpy" ,python-numpy)
        ("h5py" ,python-h5py)
@@ -1161,14 +1243,15 @@ algorithm within the Numpy framework.")
   (package
     (name "snappy")
     (version "1.1.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/google/snappy/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append "snappy-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1m7rcdqzkys5lspj8jcsaah8w33zh28s771bw0ga2lgzfgl05yix"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/google/snappy/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append "snappy-" version ".tar.gz"))
+       (sha256
+        (base32 "1m7rcdqzkys5lspj8jcsaah8w33zh28s771bw0ga2lgzfgl05yix"))
+       (patches (search-patches "snappy-add-O2-flag-in-CmakeLists.txt.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
@@ -1278,7 +1361,8 @@ install: libbitshuffle.so
          (add-after 'build-jni 'copy-jni
            (lambda _
              (copy-recursively "src/main/resources/org/xerial/snappy/native"
-                               "build/classes/org/xerial/snappy/native")))
+                               "build/classes/org/xerial/snappy/native")
+             #t))
          (add-before 'check 'fix-failing
            (lambda _
              (with-directory-excursion "src/test/java/org/xerial/snappy"
@@ -1396,7 +1480,8 @@ compressor/decompressor.")
                        class))
              (invoke "ant" "compile-tests")
              (test "org.iq80.snappy.SnappyFramedStreamTest")
-             (test "org.iq80.snappy.SnappyStreamTest")))
+             (test "org.iq80.snappy.SnappyStreamTest")
+             #t))
          (add-before 'build 'remove-hadoop-dependency
            (lambda _
              ;; We don't have hadoop
@@ -1751,7 +1836,7 @@ speed.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-subdirectory
-           (lambda _ (chdir "contrib/pzstd")))
+           (lambda _ (chdir "contrib/pzstd") #t))
          (delete 'configure)            ; no configure script
          (add-before 'check 'compile-tests
            (lambda* (#:key make-flags #:allow-other-keys)
@@ -2033,14 +2118,16 @@ type by using either Perl modules, or command-line tools on your system.")
            (lambda _
              ;; Our build system enters the first directory in the archive, but
              ;; the package is not contained in a subdirectory
-             (chdir "..")))
+             (chdir "..")
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Do we want to install *Demo.jar?
              (install-file "build/jar/xz.jar"
                            (string-append
                              (assoc-ref outputs "out")
-                             "/share/java/xz.jar")))))))
+                             "/share/java/xz.jar"))
+             #t)))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://tukaani.org")

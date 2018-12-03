@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +32,23 @@
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1av11zkfirbixn05hyq4xvilin0ncddfjqzc4zd9pviyp506rdci"))))
+               "1av11zkfirbixn05hyq4xvilin0ncddfjqzc4zd9pviyp506rdci"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Adjust the bundled gnulib to work with glibc 2.28.  See e.g.
+                 ;; "m4-gnulib-libio.patch".  This is a phase rather than patch
+                 ;; or snippet to work around <https://bugs.gnu.org/32347>.
+                 (substitute* (find-files "lib" "\\.c$")
+                   (("#if defined _IO_ftrylockfile")
+                    "#if defined _IO_EOF_SEEN"))
+                 (substitute* "lib/stdio-impl.h"
+                   (("^/\\* BSD stdio derived implementations")
+                    (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
+                                   "# define _IO_IN_BACKUP 0x100\n"
+                                   "#endif\n\n"
+                                   "/* BSD stdio derived implementations")))
+                 #t))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/gcal/")
     (synopsis "Calculating and printing a wide variety of calendars")

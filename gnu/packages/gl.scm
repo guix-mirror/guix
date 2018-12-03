@@ -220,7 +220,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "18.1.5")
+    (version "18.1.8")
     (source
       (origin
         (method url-fetch)
@@ -232,7 +232,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1sldv7l3g6jfx0yn16kvxlik1qiy037lypdqpvsqc0v6lvqydnv9"))
+          "06y28hpynb8w1qagznr85ml48hf8264w4ji6cmvm2fy7x5zyc6xx"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system gnu-build-system)
@@ -248,7 +248,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("xorgproto" ,xorgproto)))
     (inputs
       `(("expat" ,expat)
-        ("libelf" ,libelf)    ;required for r600 when using llvm
+        ("libelf" ,elfutils)  ;required for r600 when using llvm
         ("libva" ,(force libva-without-mesa))
         ("libxml2" ,libxml2)
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support

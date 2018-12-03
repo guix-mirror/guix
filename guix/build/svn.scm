@@ -51,7 +51,7 @@ valid Subversion revision.  Return #t on success, #f otherwise."
   ;; of the repo.  Since we want a fixed output, this directory needs
   ;; to be taken out.
   (with-directory-excursion directory
-    (delete-file-recursively ".svn"))
+    (for-each delete-file-recursively (find-files "." "^\\.svn$" #:directories? #t)))
 
   #t)
 

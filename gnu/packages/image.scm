@@ -137,15 +137,15 @@ library.  It supports almost all PNG features and is extensible.")
          (add-after 'unpack 'patch-apng
            (lambda* (#:key inputs #:allow-other-keys)
              (define (apply-patch file)
-               (zero? (system* "patch" "-p1" "--force"
-                               "--input" file)))
+               (invoke "patch" "-p1" "--force"
+                       "--input" file))
              (let ((apng.gz (assoc-ref inputs "apng")))
                (format #t "Applying APNG patch '~a'...~%"
                        apng.gz)
-               (and
-                 (zero?
-                   (system (string-append "gunzip < " apng.gz " > the-patch")))
-                 (apply-patch "the-patch")))))
+               (invoke "sh" "-c"
+                       (string-append "gunzip < " apng.gz " > the-patch"))
+               (apply-patch "the-patch")
+               #t)))
          (add-before 'configure 'no-checks
            (lambda _
              (substitute* "Makefile.in"
@@ -240,7 +240,8 @@ in-memory raw vectors.")
                (string-append vardef (assoc-ref inputs "zlib") "/"))
               ;; The Makefile is written by hand and not using $PREFIX
               (("\\$\\(DESTDIR\\)/usr/")
-               (string-append (assoc-ref outputs "out") "/"))))))))
+               (string-append (assoc-ref outputs "out") "/")))
+            #t)))))
    (inputs
     `(("libpng" ,libpng)
       ("zlib" , zlib)))
@@ -312,13 +313,13 @@ Currently all documentation resides in @file{pnglite.h}.")
 (define-public libjpeg
   (package
    (name "libjpeg")
-   (version "9b")
+   (version "9c")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.ijg.org/files/jpegsrc.v"
                    version ".tar.gz"))
             (sha256 (base32
-                     "0lnhpahgdwlrkd41lx6cr90r199f8mc6ydlh7jznj5klvacd63r4"))))
+                     "08kixcf3a7s9x91174abjnk1xbvj4v8crdc73zi4k9h3jfbm00k5"))))
    (build-system gnu-build-system)
    (synopsis "Library for handling JPEG files")
    (description
@@ -460,7 +461,6 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (replacement libtiff/fixed)
    (version "4.0.9")
    (source
      (origin
@@ -471,7 +471,9 @@ extracting icontainer icon files.")
         (base32
          "1kfg4q01r4mqn7dj63ifhi6pmqzbf4xax6ni6kkk81ri5kndwyvf"))
        (patches (search-patches "libtiff-CVE-2017-9935.patch"
-                                "libtiff-CVE-2017-18013.patch"))))
+                                "libtiff-CVE-2017-18013.patch"
+                                "libtiff-CVE-2018-8905.patch"
+                                "libtiff-CVE-2018-10963.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
@@ -492,17 +494,6 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
-
-(define libtiff/fixed
-  (package
-    (inherit libtiff)
-    (source
-      (origin
-        (inherit (package-source libtiff))
-        (patches
-          (append (origin-patches (package-source libtiff))
-                  (search-patches "libtiff-CVE-2018-8905.patch"
-                                  "libtiff-CVE-2018-10963.patch")))))))
 
 (define-public leptonica
   (package
@@ -539,14 +530,15 @@ collection of tools for doing simple manipulations of TIFF images.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "sh" "autobuild"))))
+             (invoke "sh" "autobuild")))
          (add-after 'unpack 'patch-reg-wrapper
            (lambda _
              (substitute* "prog/reg_wrapper.sh"
                ((" /bin/sh ")
                 (string-append " " (which "sh") " "))
                (("which gnuplot")
-                "true")))))))
+                "true"))
+             #t)))))
     (home-page "http://www.leptonica.com/")
     (synopsis "Library and tools for image processing and analysis")
     (description
@@ -561,18 +553,18 @@ arithmetic ops.")
 (define-public jbig2dec
   (package
     (name "jbig2dec")
-    (version "0.14")
-    (replacement jbig2dec-0.15)
-    (source
-      (origin
-        (method url-fetch)
-        (uri
-         (string-append "https://github.com/ArtifexSoftware/ghostpdl-downloads/"
-                        "releases/download/gs922/" name "-" version ".tar.gz"))
-        (sha256
-          (base32 "0k01hp0q4275fj4rbr1gy64svfraw5w7wvwl08yjhvsnpb1rid11"))
-        (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
+    (version "0.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ArtifexSoftware"
+                                  "/ghostpdl-downloads/releases/download"
+                                  "/gs924/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0m1qwpbjbirgw2fqznbajdhdhh35d6xa2csr64lpjz735pvimykb"))
+              (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
     (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--disable-static")))
     (synopsis "Decoder of the JBIG2 image compression format")
     (description
       "JBIG2 is designed for lossy or lossless encoding of 'bilevel' (1-bit
@@ -586,21 +578,6 @@ maintaining parity with available encoders, so it is useful for real
 work.")
     (home-page "https://jbig2dec.com")
     (license license:gpl2+)))
-
-;; This is a bugfix release from an ongoing Ghostscript security audit.
-;; It was released alongside Ghostscript 9.24.
-(define-public jbig2dec-0.15
-  (package
-    (inherit jbig2dec)
-    (version "0.15")
-    (source (origin
-              (inherit (package-source jbig2dec))
-              (uri (string-append "https://github.com/ArtifexSoftware"
-                                  "/ghostpdl-downloads/releases/download/gs924/"
-                                  "jbig2dec-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0m1qwpbjbirgw2fqznbajdhdhh35d6xa2csr64lpjz735pvimykb"))))))
 
 (define-public openjpeg
   (package
@@ -908,11 +885,15 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
     `(#:test-target "check"
       #:phases
       (modify-phases %standard-phases
-        ;; See https://github.com/ukoethe/vigra/issues/432
-        (add-after 'unpack 'disable-broken-test
+        (add-after 'unpack 'disable-broken-tests
           (lambda _
+            ;; See https://github.com/ukoethe/vigra/issues/432
             (substitute* "test/fourier/CMakeLists.txt"
               (("VIGRA_ADD_TEST.*") ""))
+            ;; This test fails with Numpy 1.15:
+            ;; <https://github.com/ukoethe/vigra/issues/436>.
+            (substitute* "vigranumpy/test/CMakeLists.txt"
+              (("test1\\.py") ""))
             #t)))
       #:configure-flags
         (list "-Wno-dev" ; suppress developer mode with lots of warnings
@@ -1162,7 +1143,7 @@ ISO/IEC 15444-1).")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (synopsis "Scaling, colorspace conversion, and dithering library")
     (description "Zimg implements the commonly required image processing basics
 of scaling, colorspace conversion, and depth conversion.  A simple API enables
@@ -1195,7 +1176,8 @@ the programmer.")
                     ;; of the source tree, one level higher than expected
                     (lambda _
                       (substitute* "test/run_tests.bash"
-                        (("../build") "../../build")))))))
+                        (("../build") "../../build"))
+                      #t)))))
     (home-page "https://github.com/myint/perceptualdiff")
     (synopsis "Perceptual image comparison utility")
     (description "PerceptualDiff visually compares two images to determine

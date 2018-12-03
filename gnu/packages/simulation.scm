@@ -70,7 +70,16 @@
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0cgxh4h2hf50qbvvdg5miwc2nympb0nrv3md96vb3gbs9vk8vq9d"))
-       (patches (search-patches "openfoam-4.1-cleanup.patch"))))
+       (patches (search-patches "openfoam-4.1-cleanup.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Include <sys/sysmacros.h>, which is where glibc >= 2.28 provides
+           ;; 'major' and 'minor'.
+           (substitute* "src/OSspecific/POSIX/fileStat.C"
+             (("#include <unistd\\.h>")
+              "#include <unistd.h>\n#include <sys/sysmacros.h>\n"))
+           #t))))
     (build-system gnu-build-system)
     (inputs
      `(("boost" ,boost)

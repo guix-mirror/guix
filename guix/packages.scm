@@ -628,12 +628,7 @@ specifies modules in scope when evaluating SNIPPET."
                                           #:fail-on-error? #t)))))
               (apply invoke
                      (string-append #+tar "/bin/tar")
-                     "cvf" #$output
-                     ;; The bootstrap xz does not support
-                     ;; threaded compression (introduced in
-                     ;; 5.2.0), but it ignores the extra flag.
-                     (string-append "--use-compress-program="
-                                    #+xz "/bin/xz --threads=0")
+                     "cvfa" #$output
                      ;; avoid non-determinism in the archive
                      "--mtime=@0"
                      "--owner=root:0"
@@ -646,9 +641,6 @@ specifies modules in scope when evaluating SNIPPET."
 
     (let ((name (tarxz-name original-file-name)))
       (gexp->derivation name build
-                        ;; TODO: Remove this on the next rebuild cycle.
-                        #:import-creates-derivation? #t
-
                         #:graft? #f
                         #:system system
                         #:deprecation-warnings #t ;to avoid a rebuild

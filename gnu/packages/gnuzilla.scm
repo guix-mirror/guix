@@ -39,6 +39,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -417,7 +418,12 @@ in the Mozilla clients.")
              (setenv "DOMSUF" "(none)")
              (setenv "USE_IP" "TRUE")
              (setenv "IP_ADDRESS" "127.0.0.1")
-             (invoke "./nss/tests/all.sh")))
+
+             ;; The "PayPalEE.cert" certificate expires every six months,
+             ;; leading to test failures:
+             ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=609734>.  To
+             ;; work around that, set the time to roughly the release date.
+             (invoke "faketime" "2018-09-01" "./nss/tests/all.sh")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -453,7 +459,8 @@ in the Mozilla clients.")
      `(("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (propagated-inputs `(("nspr" ,nspr))) ; required by nss.pc.
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs `(("perl" ,perl)
+                     ("libfaketime" ,libfaketime))) ;for tests
 
     ;; The NSS test suite takes around 48 hours on Loongson 3A (MIPS) when
     ;; another build is happening concurrently on the same machine.

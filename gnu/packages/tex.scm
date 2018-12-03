@@ -76,42 +76,41 @@
 (define texlive-extra-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2017/texlive-20170524-extra.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2018/texlive-20180414-extra.tar.xz")
     (sha256 (base32
-              "0zvd2zskk78ig114mfj24g15qys41hzqv59fmqpirdbgq9c9gr5g"))))
+             "0a83kymxc8zmlxjb0y1gf6mx7qnf0hxffwkivwh5yh138y2rfhsv"))))
 
 (define texlive-texmf-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2017/texlive-20170524-texmf.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2018/texlive-20180414-texmf.tar.xz")
     (sha256 (base32
-              "1v69y3kgkbk24f7s4dfkknwd317mqmck5jgpyb35wqgqfy5p0qrz"))))
+             "1b8zigzg8raxkhhzphcmynf84rbdbj2ym2qkz24v8n0qx82zmqms"))))
 
 (define-public texlive-bin
   (package
    (name "texlive-bin")
-   (version "20170524")
+   (version "20180414")
    (source
     (origin
-     (method url-fetch)
-      (uri (string-append "ftp://tug.org/historic/systems/texlive/2017/"
+      (method url-fetch)
+      (uri (string-append "ftp://tug.org/historic/systems/texlive/2018/"
                           "texlive-" version "-source.tar.xz"))
+      (sha256
+       (base32
+        "0khyi6h015r2zfqgg0a44a2j7vmr1cy42knw7jbss237yvakc07y"))
       (patches
        (list
-        ;; This is required for compatibility with Poppler >= 0.58.
-        ;; See <http://tutex.tug.org/pipermail/tex-k/2017-September/002809.html>
-        ;; and <https://bugs.archlinux.org/task/55720> for some discussion.
+        ;; This is required for compatibility with Poppler 0.64.0 and to fix a
+        ;; segmentation fault in dvipdfm-x from XeTeX.
         (origin
           (method url-fetch)
-          (uri (string-append "https://git.archlinux.org/svntogit/packages.git/plain"
-                              "/trunk/texlive-poppler-0.59.patch?h=packages/texlive-bin"
-                              "&id=ba2de374e2b21ecc4b85cc9777f2f15c4d356c61"))
+          (uri (string-append "http://www.linuxfromscratch.org/patches/blfs/"
+                              "svn/texlive-" version "-source-upstream_fixes-1.patch"))
           (file-name "texlive-poppler-compat.patch")
           (sha256
            (base32
-            "1c4ikq4kxw48bi3i33bzpabrjvbk01fwjr2lz20gkc9kv8l0bg3n")))))
-      (sha256 (base32
-               "1amjrxyasplv4alfwcxwnw4nrx7dz2ydmddkq16k6hg90i9njq81"))))
+            "0f8vhyj167y4xj0jx47vkybrcacfpxw0wdn1b777yq3xmhlahhlg")))))))
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)
@@ -175,47 +174,62 @@
                   (not (or (string-prefix? "aarch64" s)
                            (string-prefix? "mips64" s))))
       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'configure-ghostscript-executable
-           ;; ps2eps.pl uses the "gswin32c" ghostscript executable on Windows,
-           ;; and the "gs" ghostscript executable on Unix. It detects Unix by
-           ;; checking for the existence of the /usr/bin directory. Since
-           ;; GuixSD does not have /usr/bin, it is also detected as Windows.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "utils/ps2eps/ps2eps-src/bin/ps2eps.pl"
-               (("gswin32c") "gs"))
-             (substitute* "texk/texlive/linked_scripts/epstopdf/epstopdf.pl"
-               (("\"gs\"")
-                (string-append "\"" (assoc-ref inputs "ghostscript") "/bin/gs\"")))
-             #t))
-         (add-after 'install 'postint
-           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
-             (let* ((out (assoc-ref outputs "out"))
-                    (share (string-append out "/share"))
-                    (texlive-extra (assoc-ref inputs "texlive-extra-src"))
-                    (unpack (assoc-ref %standard-phases 'unpack))
-                    (patch-source-shebangs
-                      (assoc-ref %standard-phases 'patch-source-shebangs)))
-               ;; Create symbolic links for the latex variants and their
-               ;; man pages.
-               (with-directory-excursion (string-append out "/bin/")
-                 (for-each symlink
-                 '("pdftex" "pdftex"   "xetex"   "luatex")
-                 '("latex"  "pdflatex" "xelatex" "lualatex")))
-               (with-directory-excursion (string-append share "/man/man1/")
-                 (symlink "luatex.1" "lualatex.1"))
-               ;; Unpack texlive-extra and install tlpkg.
-               (mkdir "texlive-extra")
-               (with-directory-excursion "texlive-extra"
-                 (apply unpack (list #:source texlive-extra))
-                 (apply patch-source-shebangs (list #:source texlive-extra))
-                 (invoke "mv" "tlpkg" share))
-               ;; texlua shebangs are not patched by the patch-source-shebangs
-               ;; phase because the texlua executable does not exist at that
-               ;; time.
-               (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin"))
-               (with-directory-excursion out
-                 (patch-source-shebangs))))))))
+      (modify-phases %standard-phases
+        (add-after 'unpack 'configure-ghostscript-executable
+          ;; ps2eps.pl uses the "gswin32c" ghostscript executable on Windows,
+          ;; and the "gs" ghostscript executable on Unix. It detects Unix by
+          ;; checking for the existence of the /usr/bin directory. Since
+          ;; GuixSD does not have /usr/bin, it is also detected as Windows.
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "utils/ps2eps/ps2eps-src/bin/ps2eps.pl"
+              (("gswin32c") "gs"))
+            (substitute* "texk/texlive/linked_scripts/epstopdf/epstopdf.pl"
+              (("\"gs\"")
+               (string-append "\"" (assoc-ref inputs "ghostscript") "/bin/gs\"")))
+            #t))
+        (add-after 'unpack 'use-code-for-new-poppler
+          (lambda _
+            (copy-file "texk/web2c/pdftexdir/pdftoepdf-newpoppler.cc"
+                       "texk/web2c/pdftexdir/pdftoepdf.cc")
+            (copy-file "texk/web2c/pdftexdir/pdftosrc-newpoppler.cc"
+                       "texk/web2c/pdftexdir/pdftosrc.cc")
+            #t))
+        (add-after 'unpack 'disable-failing-test
+          (lambda _
+            ;; FIXME: This test fails on 32-bit architectures since Glibc 2.28:
+            ;; <https://bugzilla.redhat.com/show_bug.cgi?id=1631847>.
+            (substitute* "texk/web2c/omegafonts/check.test"
+              (("^\\./omfonts -ofm2opl \\$srcdir/tests/check tests/xcheck \\|\\| exit 1")
+               "./omfonts -ofm2opl $srcdir/tests/check tests/xcheck || exit 77"))
+            #t))
+        (add-after 'install 'postint
+          (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+            (let* ((out (assoc-ref outputs "out"))
+                   (share (string-append out "/share"))
+                   (texlive-extra (assoc-ref inputs "texlive-extra-src"))
+                   (unpack (assoc-ref %standard-phases 'unpack))
+                   (patch-source-shebangs
+                    (assoc-ref %standard-phases 'patch-source-shebangs)))
+              ;; Create symbolic links for the latex variants and their
+              ;; man pages.
+              (with-directory-excursion (string-append out "/bin/")
+                (for-each symlink
+                          '("pdftex" "pdftex"   "xetex"   "luatex")
+                          '("latex"  "pdflatex" "xelatex" "lualatex")))
+              (with-directory-excursion (string-append share "/man/man1/")
+                (symlink "luatex.1" "lualatex.1"))
+              ;; Unpack texlive-extra and install tlpkg.
+              (mkdir "texlive-extra")
+              (with-directory-excursion "texlive-extra"
+                (apply unpack (list #:source texlive-extra))
+                (apply patch-source-shebangs (list #:source texlive-extra))
+                (invoke "mv" "tlpkg" share))
+              ;; texlua shebangs are not patched by the patch-source-shebangs
+              ;; phase because the texlua executable does not exist at that
+              ;; time.
+              (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin"))
+              (with-directory-excursion out
+                (patch-source-shebangs))))))))
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
     "TeX Live provides a comprehensive TeX document production system.
@@ -3995,7 +4009,7 @@ directly generate PDF documents instead of DVI.")
 (define texlive-texmf
   (package
    (name "texlive-texmf")
-   (version "2017")
+   (version "20180414")
    (source texlive-texmf-src)
    (build-system gnu-build-system)
    (inputs
@@ -4067,7 +4081,7 @@ This package contains the complete tree of texmf-dist data.")
 (define-public texlive
   (package
    (name "texlive")
-   (version "2017")
+   (version "20180414")
    (source #f)
    (build-system trivial-build-system)
    (inputs `(("bash" ,bash) ; for wrap-program

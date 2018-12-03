@@ -85,6 +85,7 @@
        ("xorg-rgb" ,xorg-rgb)
        ("nanopass" ,nanopass)
        ("zlib" ,zlib)
+       ("zlib:static" ,zlib "static")
        ("stex" ,stex)))
     (native-inputs
      `(("texlive" ,texlive)
@@ -128,6 +129,7 @@
                    (nanopass (assoc-ref inputs "nanopass"))
                    (stex (assoc-ref inputs "stex"))
                    (zlib (assoc-ref inputs "zlib"))
+                   (zlib-static (assoc-ref inputs "zlib:static"))
                    (unpack (assoc-ref %standard-phases 'unpack))
                    (patch-source-shebangs
                     (assoc-ref %standard-phases 'patch-source-shebangs)))
@@ -148,7 +150,7 @@
                  (("\\$\\{Kernel\\}: \\$\\{kernelobj\\} \\.\\./zlib/libz\\.a")
                   "${Kernel}: ${kernelobj}")
                  (("ld ([-a-zA-Z0-9_${} ]+) \\.\\./zlib/libz\\.a" all args)
-                  (string-append "ld " args " " zlib "/lib/libz.a"))
+                  (string-append "ld " args " " zlib-static "/lib/libz.a"))
                  (("\\(cd \\.\\./zlib; ([-a-zA-Z0-9=./ ]+))")
                   (which "true")))
                (substitute* (find-files "mats" "Mf-.*")

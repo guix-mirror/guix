@@ -158,14 +158,14 @@ avoiding password prompts when X11 forwarding has already been setup.")
 (define-public libxkbcommon
   (package
     (name "libxkbcommon")
-    (version "0.8.0")
+    (version "0.8.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://xkbcommon.org/download/" name "-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0vgy84vfbig5bqznr137h5arjidnfwrxrdli0pxyn2jfn1fjcag8"))))
+               "136mdq11lrwg6rjmm44lmysxxgb9c35p4sq6k0cd129x82rw9f3s"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
@@ -244,7 +244,8 @@ X11 (yet).")
                (mkdir-p (string-append out "/lib"))
                (setenv "PREFIX" out)
                (setenv "LDFLAGS" (string-append "-Wl,-rpath=" out "/lib"))
-               (setenv "CC" "gcc")))))))
+               (setenv "CC" "gcc")
+               #t))))))
     (native-inputs `(("perl" ,perl))) ; for pod2man
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
@@ -317,7 +318,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.92")
+    (version "2.4.93")
     (source
       (origin
         (method url-fetch)
@@ -327,7 +328,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "1yirzx8hmlvv6r0l7lb3zxmgy5la2mri9al0k16xqfg19pdqzr79"))
+          "0g6d9wsnb7lx8r1m4kq8js0wsc5jl20cz1csnlh6z9s8jpfd313f"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -478,7 +479,7 @@ move windows, switch between desktops, etc.).")
                     (doc (string-append out "/share/doc/scrot")))
                (mkdir-p doc)
                (invoke "make" "install"
-                        (string-append "docsdir=" doc))))))))
+                       (string-append "docsdir=" doc))))))))
     (inputs
      `(("libx11" ,libx11)
        ("giblib" ,giblib)))
@@ -1005,7 +1006,8 @@ color temperature should be set to match the lamps in your room.")
            (lambda _
              (substitute* '("driver/Makefile.in" "po/Makefile.in.in")
                (("@GTK_DATADIR@") "@datadir@")
-               (("@PO_DATADIR@") "@datadir@")))))
+               (("@PO_DATADIR@") "@datadir@"))
+             #t)))
        #:configure-flags '("--with-pam" "--with-proc-interrupts"
                            "--without-readdisplay")
        #:make-flags (list (string-append "AD_DIR="
@@ -1165,7 +1167,8 @@ by name.")
          (add-after 'unpack 'fix-installation-prefix
            (lambda _
              (substitute* "CMakeLists.txt"
-               (("/etc") "${CMAKE_INSTALL_PREFIX}/etc")))))))
+               (("/etc") "${CMAKE_INSTALL_PREFIX}/etc"))
+             #t)))))
     (inputs
      `(("gtk+" ,gtk+-2)
        ("imlib2" ,imlib2)

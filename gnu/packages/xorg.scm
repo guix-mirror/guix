@@ -3829,7 +3829,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.23.1")
+    (version "2.24")
     (source
       (origin
         (method url-fetch)
@@ -3839,7 +3839,7 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "1wq27cs1c9y7d1d7zp5yhq29paj9smajdb68lyvm28d2zq2vqjra"))))
+            "1my4786pd7iv5x392r9skj3qclmbd26nqzvh2fllwkkbyj08bcci"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gettext-minimal)
@@ -5193,21 +5193,10 @@ draggable titlebars and borders.")
 ;; This package is intended to be used when building GTK+.
 ;; Note: It's currently marked as "hidden" to avoid having two non-eq?
 ;; packages with the same name and version.
-(define-public xorg-server-1.19.3
+(define-public xorg-server-for-tests
   (hidden-package
    (package
-     (inherit xorg-server)
-     (name "xorg-server")
-     (version "1.19.3")
-     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-              "mirror://xorg/individual/xserver/"
-              name "-" version ".tar.bz2"))
-        (sha256
-         (base32
-          "162s1v901djr57gxmmk4airk8hiwcz79dqyz72972x1lw1k82yk7")))))))
+     (inherit xorg-server))))
 
 (define-public xorg-server-xwayland
   (package
@@ -5233,8 +5222,7 @@ draggable titlebars and borders.")
 (define-public libx11
   (package
     (name "libx11")
-    (version "1.6.5")
-    (replacement libx11-1.6.6)
+    (version "1.6.6")
     (source
       (origin
         (method url-fetch)
@@ -5244,7 +5232,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0pa3cfp6h9rl2vxmkph65250gfqyki0ccqyaan6bl9d25gdr0f2d"))))
+            "0ks1mxlda7nxfmffihi15ljsn50q8dknl33i2xag8xzc80fiizk5"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of man pages + XML
@@ -5263,20 +5251,6 @@ draggable titlebars and borders.")
     (synopsis "Xorg Core X11 protocol client library")
     (description "Xorg Core X11 protocol client library.")
     (license license:x11)))
-
-;; Replacement package to fix multiple security bugs:
-;; <http://seclists.org/oss-sec/2018/q3/146>.
-(define-public libx11-1.6.6
-  (package
-    (inherit libx11)
-    (version "1.6.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://xorg/individual/lib/libX11-"
-                                  version ".tar.bz2"))
-              (sha256
-               (base32
-                "0ks1mxlda7nxfmffihi15ljsn50q8dknl33i2xag8xzc80fiizk5"))))))
 
 ;; packages of height 5 in the propagated-inputs tree
 
@@ -5965,7 +5939,7 @@ Conventions Manual) and some of the @dfn{EWMH}
                   (add-after 'unpack 'autogen
                               (lambda _
                                 (setenv "NOCONFIGURE" "t")
-                                (zero? (system* "sh" "autogen.sh")))))))
+                                (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)

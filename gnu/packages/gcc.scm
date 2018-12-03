@@ -398,6 +398,7 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
               (patches (search-patches "gcc-4.9-libsanitizer-fix.patch"
+                                       "gcc-4.9-libsanitizer-ustat.patch"
                                        "gcc-arm-bug-71399.patch"
                                        "gcc-asan-missing-include.patch"
                                        "gcc-libvtv-runpath.patch"
@@ -432,6 +433,7 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "11zd1hgzkli3b2v70qsm2hyqppngd4616qc96lmm9zl2kl9yl32k"))
               (patches (search-patches "gcc-arm-bug-71399.patch"
+                                       "gcc-libsanitizer-ustat.patch"
                                        "gcc-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"
                                        "gcc-5-source-date-epoch-1.patch"
@@ -452,7 +454,8 @@ Go.  It also includes runtime support libraries for these languages.")
                      "$OBJDUMP_FOR_TARGET -T"))
                   #t))))
     (inputs
-     `(("isl" ,isl)
+     `(;; GCC5 needs <isl/band.h> which is removed in later versions.
+       ("isl" ,isl-0.18)
        ,@(package-inputs gcc-4.7)))))
 
 (define-public gcc-6
@@ -467,6 +470,7 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "1m0lr7938lw5d773dkvwld90hjlcq2282517d1gwvrfzmwgg42w5"))
               (patches (search-patches "gcc-libsanitizer-fix.patch"
+                                       "gcc-libsanitizer-ustat.patch"
                                        "gcc-strmov-store-file-names.patch"
                                        "gcc-6-source-date-epoch-1.patch"
                                        "gcc-6-source-date-epoch-2.patch"
@@ -511,6 +515,7 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "0p71bij6bfhzyrs8676a8jmpjsfz392s2rg862sdnsk30jpacb43"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
+                                       "gcc-libsanitizer-ustat.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))
     (description
      "GCC is the GNU Compiler Collection.  It provides compiler front-ends
@@ -854,7 +859,7 @@ as the 'native-search-paths' field."
 (define-public isl
   (package
     (name "isl")
-    (version "0.18")
+    (version "0.19")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -865,7 +870,7 @@ as the 'native-search-paths' field."
                                        name "-" version ".tar.gz")))
              (sha256
               (base32
-               "06ybml6llhi4i56q90jnimbcgk1lpcdwhy9nxdxra2hxz3bhz2vb"))))
+               "1n4yz9rj24mv226hqbpw210ifvqkn8dgvpnkzf0s0lkq9zrjd5ym"))))
     (build-system gnu-build-system)
     (inputs `(("gmp" ,gmp)))
     (home-page "http://isl.gforge.inria.fr/")
@@ -882,6 +887,20 @@ enumeration.  It also includes an ILP solver based on generalized basis
 reduction, transitive closures on maps (which may encode infinite graphs),
 dependence analysis and bounds on piecewise step-polynomials.")
     (license lgpl2.1+)))
+
+(define-public isl-0.18
+  (package
+    (inherit isl)
+    (version "0.18")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "http://isl.gforge.inria.fr/isl-"
+                                        version ".tar.bz2")
+                         (string-append %gcc-infrastructure
+                                        "isl-" version ".tar.gz")))
+              (sha256
+               (base32
+                "06ybml6llhi4i56q90jnimbcgk1lpcdwhy9nxdxra2hxz3bhz2vb"))))))
 
 (define-public isl-0.11
   (package

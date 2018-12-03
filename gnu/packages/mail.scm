@@ -2681,7 +2681,7 @@ replacement for the @code{urlview} program.")
          ("guile-fibers" ,guile-fibers)
          ("guile-json" ,guile-json)
          ("guile-syntax-highlight" ,guile-syntax-highlight)
-         ("guile" ,guile-2.2.4)))
+         ("guile" ,guile-2.2)))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)

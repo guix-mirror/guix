@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Coypright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -113,15 +113,16 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.14.10")
+   (version "1.14.12")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "02banr0wxckq62nbhc3mqidfdh2q956i2r7w2hd9bjgjb238g1vy"))
-            (patches (search-patches "cairo-CVE-2016-9082.patch"))))
+              "05mzyxkvsfc1annjw2dja8vka01ampp9pp93lg09j8hba06g144c"))
+            (patches (search-patches "cairo-CVE-2016-9082.patch"
+                                     "cairo-setjmp-wrapper.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("fontconfig" ,fontconfig)
@@ -179,7 +180,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.7.6")
+   (version "1.8.8")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -187,7 +188,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "16rf7qwgy1gza74v2ws79zdwwb1lpvgz2abwwm8ws9j82cwysyys"))))
+               "1ag3scnm1fcviqgx2p4858y433mr0ndqw6zccnccrqcr9mpcird8"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -218,8 +219,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.42.0")
-   (replacement pango-1.42.4)
+   (version "1.42.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
@@ -227,18 +227,18 @@ affine transformation (scale, rotation, shear, etc.).")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0illn78nfwpa8y5knh9ir74wa1skc2hi8f3ny19zgpyf7n5dh94r"))))
+              "17bwb7dgbncrfsmchlib03k9n3xaalirb39g3yb43gg8cg6p8aqx"))))
    (build-system gnu-build-system)
    (propagated-inputs
     ;; These are all in Requires or Requires.private of the '.pc' files.
     `(("cairo" ,cairo)
+      ("fribidi" ,fribidi)
       ("fontconfig" ,fontconfig)
       ("freetype" ,freetype)
       ("glib" ,glib)
       ("harfbuzz" ,harfbuzz)))
    (inputs
-    `(("fribidi" ,fribidi)
-      ("zlib" ,zlib)
+    `(("zlib" ,zlib)
 
       ;; Some packages, such as Openbox, expect Pango to be built with the
       ;; optional libxft support.
@@ -254,19 +254,6 @@ applications.  It has extensive support for the different writing systems
 used throughout the world.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/pango/")))
-
-(define-public pango-1.42.4
-  (package
-    (inherit pango)
-    (version "1.42.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/pango/"
-                                  (version-major+minor version) "/"
-                                  "pango-" version ".tar.xz"))
-              (sha256
-               (base32
-                "17bwb7dgbncrfsmchlib03k9n3xaalirb39g3yb43gg8cg6p8aqx"))))))
 
 (define-public pangox-compat
   (package
@@ -318,6 +305,7 @@ functions which were removed.")
                      (string-append "-Wl,-rpath="
                                     (assoc-ref outputs "out") "/lib"))
              #t)))
+       #:python ,python-2 ;XXX: The bundled waf fails with Python 3.7.0.
        #:tests? #f)) ; no check target
     (inputs
      `(("gtk" ,gtk+-2)
@@ -457,7 +445,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.36.12")
+   (version "2.38.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -465,26 +453,39 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0d534ysa6n9prd17wwzisq7mj6qkhwh8wcf8qgin1ar3hbs5ry7z"))))
-   (build-system gnu-build-system)
+              "0ixfmnxjylx06mjaw116apymwi1a8rnkmkbbvqaxxg2pfwy9fl6x"))))
+   (build-system meson-build-system)
    (arguments
-    '(#:configure-flags '("--with-x11")
+    '(#:configure-flags '("-Dinstalled-tests=false")
       #:phases
       (modify-phases %standard-phases
         (add-after
          'unpack 'disable-failing-tests
          (lambda _
-           (substitute* "tests/Makefile.in"
+           (substitute* "tests/meson.build"
              ;; XXX FIXME: This test fails on armhf machines with:
              ;; SKIP Not enough memory to load bitmap image
              ;; ERROR: cve-2015-4491 - too few tests run (expected 4, got 2)
-             (("cve-2015-4491\\$\\(EXEEXT\\) ") "")
+             ((".*'cve-2015-4491'.*") "")
              ;; XXX FIXME: This test fails with:
              ;; ERROR:pixbuf-jpeg.c:74:test_type9_rotation_exif_tag:
              ;; assertion failed (error == NULL): Data differ
              ;; (gdk-pixbuf-error-quark, 0)
-             (("pixbuf-jpeg\\$\\(EXEEXT\\) ") ""))
-           #t)))))
+             ((".*'pixbuf-jpeg'.*") "")
+             ;; Extend the timeout of the test suite.
+             ;; TODO: Check upstreaming effort:
+             ;; https://gitlab.gnome.org/GNOME/gdk-pixbuf/merge_requests/21
+             (("300") "1800"))
+           #t))
+        (add-before 'configure 'aid-install-script
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; "build-aux/post-install.sh" invokes `gdk-pixbuf-query-loaders`
+            ;; for updating loader.cache, but it's not on PATH.  Make it use
+            ;; the one we're installing.  XXX: Won't work when cross-compiling.
+            (substitute* "build-aux/post-install.sh"
+              (("gdk-pixbuf-query-loaders" match)
+               (string-append (assoc-ref outputs "out") "/bin/" match)))
+            #t)))))
    (propagated-inputs
     `(;; Required by gdk-pixbuf-2.0.pc
       ("glib" ,glib)
@@ -497,6 +498,7 @@ highlighting and other features typical of a source code editor.")
       ("libx11"  ,libx11)))
    (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME image loading and manipulation library")
@@ -516,7 +518,7 @@ in the GNOME project.")
      `(("librsvg" ,librsvg)
        ,@(package-inputs gdk-pixbuf)))
     (arguments
-     '(#:configure-flags '("--with-x11")
+     '(#:configure-flags '("-Dinstalled-tests=false")
        #:tests? #f ; tested by the gdk-pixbuf package already
        #:phases
        (modify-phases %standard-phases
@@ -585,7 +587,7 @@ is part of the GNOME accessibility project.")
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
-   (version "2.26.1")
+   (version "2.26.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -593,7 +595,7 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0x9vc99ni46fg5dzlx67vbw0zqffr24gz8jvbdxbmzyvc5xw5w5l"))))
+              "0vkan52ab9vrkknnv8y4f1cspk8x7xd10qx92xk9ys71p851z2b1"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -686,7 +688,7 @@ application suites.")
    (name "gtk+")
    ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
    ;;       mate.scm will also need to be updated.
-   (version "3.22.30")
+   (version "3.24.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -694,7 +696,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0rv5k8fyi2i19k4zncai6vf429s6zy3kncr8vb6f3m034z0sb951"))
+              "1a1jbsh9fg5ykmwrcl3svy7xfvx0b87d314qsx9n483pj8w93s82"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
@@ -730,9 +732,9 @@ application suites.")
       ("python-wrapper" ,python-wrapper)
       ;; By using a special xorg-server for GTK+'s tests, we reduce the impact
       ;; of updating xorg-server directly on the master branch.
-      ("xorg-server" ,xorg-server-1.19.3)))
+      ("xorg-server" ,xorg-server-for-tests)))
    (arguments
-    `(#:disallowed-references (,xorg-server-1.19.3)
+    `(#:disallowed-references (,xorg-server-for-tests)
       ;; 47 MiB goes to "out" (24 of which is locale data!), and 26 MiB goes
       ;; to "doc".
       #:configure-flags (list (string-append "--with-html-dir="
@@ -1061,7 +1063,7 @@ toolkit.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")        ;for 'glib-compile-resources'
-                     ("xorg-server" ,xorg-server-1.19.3)))
+                     ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
@@ -1072,7 +1074,7 @@ toolkit.")
      `(;; XXX: Tests require C++14 or later.  Remove this when the default
        ;; compiler is >= GCC6.
        #:configure-flags '("CXXFLAGS=-std=gnu++14")
-       #:disallowed-references (,xorg-server-1.19.3)
+       #:disallowed-references (,xorg-server-for-tests)
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'run-xvfb
                     (lambda* (#:key inputs #:allow-other-keys)
@@ -1153,7 +1155,7 @@ printing and other features typical of a source code editor.")
 (define-public python-pycairo
   (package
     (name "python-pycairo")
-    (version "1.16.3")
+    (version "1.17.1")
     (source
      (origin
       (method url-fetch)
@@ -1161,7 +1163,7 @@ printing and other features typical of a source code editor.")
                           version "/pycairo-" version ".tar.gz"))
       (sha256
        (base32
-        "1xq1bwhyi5imca5kvd28szh2rdzi8g0kaspwaqgsbczqskjj3csv"))))
+        "165n0g7gp2a0qi8558snvfans17x83jv2lv7bx4vr1rxjbn3a2hg"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1356,7 +1358,7 @@ and routines to assist in editing internationalized text.")
                      ("check" ,check)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")
-                     ("xorg-server" ,xorg-server-1.19.3)))
+                     ("xorg-server" ,xorg-server-for-tests)))
     ;; Listed in 'Requires.private' of 'girara.pc'.
     (propagated-inputs `(("gtk+" ,gtk+)))
     (arguments

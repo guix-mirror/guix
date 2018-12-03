@@ -22,7 +22,7 @@
 (define-module (gnu packages make-bootstrap)
   #:use-module (guix utils)
   #:use-module (guix packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module ((gnu packages) #:select (search-patch))
@@ -34,6 +34,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages multiprecision)
@@ -440,6 +441,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                                    "^gnu-user.*\\.h$"))
                       ((" -lgcc_s}}") "}}"))
                     #t)))))))
+     (inputs
+      `(("zlib:static" ,zlib "static")
+        ,@(package-inputs gcc)))
      (native-inputs
       (if (%current-target-system)
           `(;; When doing a Canadian cross, we need GMP/MPFR/MPC both
@@ -524,6 +528,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 
                   ;; Remove the 'debug' output (see above for the reason.)
                   (outputs (delete "debug" (package-outputs guile-2.2)))
+
+                  (inputs
+                   `(("libunistring:static" ,libunistring "static")
+                     ,@(package-inputs guile-2.2)))
 
                   (propagated-inputs
                    `(("bdw-gc" ,libgc)

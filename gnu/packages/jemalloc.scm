@@ -32,7 +32,7 @@
 (define-public jemalloc
   (package
     (name "jemalloc")
-    (version "5.0.1")
+    (version "5.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -40,8 +40,7 @@
                     version "/jemalloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "1sf3lzgb0y8nnyzmp4zrca3sngdxw3kfh20sna9z03jv74fph528"))
-              (patches (search-patches "jemalloc-arm-address-bits.patch"))))
+                "0s3jpcyhzia8d4k0xyc67is78kg416p9yc3c2f9w6fhhqqffd5jk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

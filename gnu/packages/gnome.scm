@@ -124,6 +124,7 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages tex)
@@ -942,14 +943,14 @@ guidelines.")
 (define-public shared-mime-info
   (package
     (name "shared-mime-info")
-    (version "1.8")
+    (version "1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://freedesktop.org/~hadess/"
                                  "shared-mime-info-" version ".tar.xz"))
              (sha256
               (base32
-               "1sc96lv9dp1lkvs8dh3ngm3hbjb274d363dl9avhb61il3qmxx9a"))))
+               "10ywzhzg8v1xmb9sz5xbqaci90id38knswigynyl33i29vn360aw"))))
     (build-system gnu-build-system)
     (arguments
      ;; The build system appears not to be parallel-safe.
@@ -1180,7 +1181,7 @@ XML/CSS rendering engine.")
 (define-public libgsf
   (package
     (name "libgsf")
-    (version "1.14.43")
+    (version "1.14.44")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1188,7 +1189,7 @@ XML/CSS rendering engine.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "05pf3h0dha3s20ddsrljbx7m94qyiqs5igwxx1ql0vlsdlylx50j"))))
+                "1ppzfk3zmmgrg9jh8vc4dacddbfngjslq2wpj94pcr3i0c8dxgk8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1320,9 +1321,13 @@ functionality was designed to be as reusable and portable as possible.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       ;; The programmer kindly gives us a hook to turn off deprecation
-       ;; warnings ...
-       '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
+       '(;; We don't need static libraries, plus they don't build reproducibly
+         ;; (non-deterministic ordering of .o files in the archive.)
+         "--disable-static"
+
+         ;; The programmer kindly gives us a hook to turn off deprecation
+         ;; warnings ...
+         "DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
        ;; ... which they then completly ignore !!
        #:phases
        (modify-phases %standard-phases
@@ -1342,7 +1347,8 @@ featuring mature C, C++ and Python bindings.")
     ;; Licence notice is unclear.  The Web page simply say "GPL" without giving
     ;; a version.  SOME of the code files have licence notices for GPLv2+.
     ;; The tarball contains files of the text of GPLv2 and LGPLv2.
-    (license license:gpl2+)))
+    (license license:gpl2+)
+    (properties `((upstream-name . "ORBit2")))))
 
 
 (define-public libbonobo
@@ -1370,7 +1376,14 @@ featuring mature C, C++ and Python bindings.")
            (lambda _
              (substitute* "activation-server/Makefile.in"
                (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
-             #t)))))
+             #t)))
+
+       ;; There's apparently a race condition between the server stub
+       ;; generation and linking of the example under 'samples/echo' that can
+       ;; lead do undefined references when building in parallel, as reported
+       ;; at <https://forums.gentoo.org/viewtopic-t-223376-start-550.html>.
+       ;; Thus, disable parallel builds.
+       #:parallel-build? #f))
     (inputs `(("popt" ,popt)
               ("libxml2" ,libxml2)))
     ;; The following are Required by the .pc file
@@ -2038,7 +2051,7 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.36.3")
+    (version "0.40.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2046,7 +2059,7 @@ passwords in the GNOME keyring.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0706izk9prxqclm7gv4f63diwnlc1llvfl5sc9ghqbgn076lx2mc"))))
+                "0yvaijkpahzz26sa37cyzbj75a9vbcbgvxbqzzb7hbcvfy009zy7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2054,20 +2067,25 @@ passwords in the GNOME keyring.")
          (add-before 'check 'pre-check
                      (lambda _
                        (setenv "CC" "gcc")
+                       (substitute* "valadoc/tests/testrunner.sh"
+                         (("export PKG_CONFIG_PATH=" m)
+                          (string-append m "$PKG_CONFIG_PATH:")))
                        ;; For missing '/etc/machine-id'.
                        (setenv "DBUS_FATAL_WARNINGS" "0")
-                       #t)))
-       ;; Build the Vala API generator
-       #:configure-flags '("--enable-vapigen")))
+                       #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("flex" ,flex)
        ("bison" ,bison)
        ("xsltproc" ,libxslt)
+       ("grep" ,grep)
+       ("sed" ,sed)
        ("dbus" ,dbus)                                     ; for dbus tests
        ("gobject-introspection" ,gobject-introspection))) ; for gir tests
+    (inputs
+     `(("graphviz" ,graphviz)))
     (propagated-inputs
-     `(("glib" ,glib))) ; required by libvala-0.26.pc
+     `(("glib" ,glib))) ; required by libvala-0.40.pc
     (home-page "https://live.gnome.org/Vala/")
     (synopsis "Compiler for the GObject type system")
     (description
@@ -5860,7 +5878,7 @@ is complete it provides a graphical representation of each selected folder.")
 (define-public gnome-backgrounds
   (package
     (name "gnome-backgrounds")
-    (version "3.26.2")
+    (version "3.28.0")
     (source
      (origin
        (method url-fetch)
@@ -5869,8 +5887,8 @@ is complete it provides a graphical representation of each selected folder.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0kzrh5h0cfby3rhsy31d1w1c0rr3wcc845kv6zibqw1x8v9si2rs"))))
-    (build-system glib-or-gtk-build-system)
+         "1qgim0yhzjgcq172y4vp5hqz4rh1ak38a7pgi6s7dq0wklyrcnxj"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("intltool" ,intltool)))
     (home-page "https://git.gnome.org/browse/gnome-backgrounds")

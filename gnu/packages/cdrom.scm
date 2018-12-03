@@ -293,17 +293,26 @@ images.")
      `(#:tests? #f ; No tests.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-glibc-compatability
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; We use sed --in-place because substitute* cannot handle the
+             ;; character encoding used by growisofs.c.
+             (invoke "sed" "-i" "-e"
+                     (string-append
+                       "s,<sys/stat.h>,"
+                       "<sys/stat.h>\\\n#include <sys/sysmacros.h>,")
+                     "growisofs.c")))
          (replace 'configure
            (lambda _ (setenv "prefix" (assoc-ref %outputs "out")) #t))
          (add-before 'build 'embed-mkisofs
-           (lambda*  (#:key inputs #:allow-other-keys)
+           (lambda* (#:key inputs #:allow-other-keys)
              ;; We use sed --in-place because substitute* cannot handle the
              ;; character encoding used by growisofs.c.
-             (zero? (system* "sed" "-i" "-e"
-                             (string-append
-                              "s,\"mkisofs\","
-                              "\"" (which "mkisofs") "\",")
-                             "growisofs.c")))))))
+             (invoke "sed" "-i" "-e"
+                     (string-append
+                       "s,\"mkisofs\","
+                       "\"" (which "mkisofs") "\",")
+                     "growisofs.c"))))))
     (home-page "http://fy.chalmers.se/~appro/linux/DVD+RW/")
     (synopsis "DVD and Blu-ray Disc burning tools")
     (description "dvd+rw-tools, mostly known for its command

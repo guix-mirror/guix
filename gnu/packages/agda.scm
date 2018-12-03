@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,6 +86,7 @@
            (lambda* (#:key outputs inputs tests? (configure-flags '())
                      #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
+                    (name-version (strip-store-file-name out))
                     (input-dirs (match inputs
                                   (((_ . dir) ...)
                                    dir)
@@ -95,8 +97,7 @@
                                     `(,(string-append "--bindir=" out "/bin"))
                                     `(,(string-append
                                         "--docdir=" out
-                                        "/share/doc/" ((@@ (guix build haskell-build-system)
-                                                           package-name-version) out)))
+                                        "/share/doc/" name-version))
                                     '("--libsubdir=$compiler/$pkg-$version")
                                     '("--package-db=../package.conf.d")
                                     '("--global")

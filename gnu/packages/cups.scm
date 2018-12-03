@@ -53,7 +53,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.20.1")
+    (version "1.21.0")
     (source(origin
               (method url-fetch)
               (uri
@@ -61,7 +61,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "0qix1whz5n4ijnl6d44f1v8nzkpv99wqjyrby8vx6xnpskw5hsxk"))
+                "0fs90xx9i4h8gbpligf5kkh21llv4kf5g3bgfbx4z272xkm7bsfi"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -176,8 +176,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
-    (replacement cups-minimal-2.2.8)
-    (version "2.2.6")
+    (version "2.2.8")
     (source
      (origin
        (method url-fetch)
@@ -185,7 +184,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                            version "/cups-" version "-source.tar.gz"))
        (sha256
         (base32
-         "16qn41b84xz6khrr2pa2wdwlqxr29rrrkjfi618gbgdkq9w5ff20"))))
+         "1r7r7b3nqpzc1a9dczqpj2mr8rkcwf01676v11sp4j7w4qfzqs1r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -237,21 +236,8 @@ describe printer capabilities and features, and a wide variety of generic and
 device-specific programs to convert and print many types of files.")
     (license license:gpl2)))
 
-(define-public cups-minimal-2.2.8
-  (package
-    (inherit cups-minimal)
-    (version "2.2.8")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/apple/cups/releases/download/v"
-                           version "/cups-" version "-source.tar.gz"))
-       (sha256
-        (base32
-         "1r7r7b3nqpzc1a9dczqpj2mr8rkcwf01676v11sp4j7w4qfzqs1r"))))))
-
 (define-public cups
-  (package/inherit cups-minimal
+  (package (inherit cups-minimal)
     (name "cups")
     (arguments
      `(;; Three tests fail:

@@ -27,7 +27,7 @@
 (define-public fribidi
   (package
     (name "fribidi")
-    (version "1.0.2")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
@@ -36,11 +36,8 @@
                         "/download/v" version "/fribidi-" version
                          ".tar.bz2"))
         (sha256
-          (base32 "0aw3i1g96axbr96flw4543dvhb8zlgb0w8314ks6cq2g1i9invdx"))))
+          (base32 "1kp4b1hpx2ky20ixgy2xhj5iygfl7ps5k9kglh1z5i7mhykg4r3a"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list "--disable-docs")))        ; TODO: enable; requires c2man
     (synopsis "Implementation of the Unicode bidirectional algorithm")
     (description
      "GNU FriBidi is an implementation of the Unicode Bidirectional

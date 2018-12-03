@@ -214,8 +214,7 @@ without requiring the source code to be rewritten.")
            (files '("share/guile/site/2.0")))
           (search-path-specification
            (variable "GUILE_LOAD_COMPILED_PATH")
-           (files '("lib/guile/2.0/site-ccache"
-                    "share/guile/site/2.0")))))
+           (files '("lib/guile/2.0/site-ccache")))))
 
    (synopsis "Scheme implementation intended especially for extensions")
    (description
@@ -244,7 +243,7 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.2
   (package (inherit guile-2.0)
     (name "guile")
-    (version "2.2.3")
+    (version "2.2.4")
     (source (origin
               (method url-fetch)
 
@@ -254,7 +253,7 @@ without requiring the source code to be rewritten.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "11j01agvnci2cx32wwpqs9078856yxmvs15gcsz7ganpkj2ahlw3"))
+                "07p3g0v2ba2vlfbfidqzlgbhnzdx46wh2rgc5gszq1mjyx5bks6r"))
               (modules '((guix build utils)))
 
               ;; Remove the pre-built object files.  Instead, build everything
@@ -273,8 +272,7 @@ without requiring the source code to be rewritten.")
             (files '("share/guile/site/2.2")))
            (search-path-specification
             (variable "GUILE_LOAD_COMPILED_PATH")
-            (files '("lib/guile/2.2/site-ccache"
-                     "share/guile/site/2.2")))))
+            (files '("lib/guile/2.2/site-ccache")))))
 
     (arguments
      (if (%current-target-system)
@@ -302,35 +300,6 @@ without requiring the source code to be rewritten.")
                   (timeout . 72000)             ;20 hours
                   (max-silent-time . 36000))))) ;10 hours (needed on ARM
                                                 ;  when heavily loaded)
-
-(define-public guile-2.2.2
-  ;; Keep it so that, when 'guix' runs on 2.2.2, 'guix pull' compiles objects
-  ;; with 2.2.2, thereby avoiding the ABI incompatibility issues described in
-  ;; <https://bugs.gnu.org/29570>.
-  (package
-    (inherit guile-2.2)
-    (version "2.2.2")
-    (source (origin
-              (inherit (package-source guile-2.2))
-              (uri (string-append "mirror://gnu/guile/guile-" version
-                                  ".tar.xz"))
-              (sha256
-               (base32
-                "1azm25zcmxif0skxfrp11d2wc89nrzpjaann9yxdw6pvjxhs948w"))))))
-
-(define-public guile-2.2.4
-  ;; This version contains important bug fixes, in particular wrt. to crashes
-  ;; of multi-threaded code as used by 'guix pull' and grafting.
-  (package
-    (inherit guile-2.2)
-    (version "2.2.4")
-    (source (origin
-              (inherit (package-source guile-2.2))
-              (uri (string-append "mirror://gnu/guile/guile-" version
-                                  ".tar.xz"))
-              (sha256
-               (base32
-                "07p3g0v2ba2vlfbfidqzlgbhnzdx46wh2rgc5gszq1mjyx5bks6r"))))))
 
 (define-public guile-next
   ;; This is the upcoming Guile 3.0, with JIT support.
@@ -1633,7 +1602,7 @@ you send to a FIFO file.")
 (define-public guile-commonmark
   (package
     (name "guile-commonmark")
-    (version "0.1")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OrangeShark/" name
@@ -1641,24 +1610,12 @@ you send to a FIFO file.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12cb5fqvvgc87f5xp0ih5az305wnjia89l5jba83d0r2p8bfy0b0"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Use the real effective version of Guile in directory names
-               ;; instead of a hard-coded "/2.0".
-               '(begin
-                  (substitute* "configure"
-                    (("ac_subst_vars='")
-                     "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
-                  (substitute* "Makefile.in"
-                    (("moddir =.*")
-                     "moddir = $(datadir)/guile/site/@GUILE_EFFECTIVE_VERSION@\n")
-                    (("godir =.*")
-                     "godir = $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
-                  #t))))
+                "0kzclwkfijj8xka3g9kfj53y67c34ndfy84swdbw3j7y962ndxq6"))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (synopsis "CommonMark parser for Guile")
     (description
      "guile-commonmark is a library for parsing CommonMark, a fully specified
@@ -2292,7 +2249,7 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
          ("autoconf" ,autoconf)
          ("automake" ,automake)))
       (inputs
-       `(("guile" ,guile-2.2.4)))
+       `(("guile" ,guile-2.2)))
       (home-page "https://git.systemreboot.net/guile-email")
       (synopsis "Guile email parser")
       (description "This package provides an email parser written in pure
@@ -2321,7 +2278,7 @@ Guile.")
          ("automake" ,automake)
          ("texinfo" ,texinfo)))
       (inputs
-       `(("guile" ,guile-2.2.4)
+       `(("guile" ,guile-2.2)
          ("guile-email" ,guile-email))))))
 
 ;; There has not been any release yet.

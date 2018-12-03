@@ -126,7 +126,9 @@
      `(("libgcrypt" ,libgcrypt)
        ("libgpg-error" ,libgpg-error)
        ("libmhash" ,libmhash)
+       ("pcre:static" ,pcre "static")
        ("pcre" ,pcre)
+       ("zlib:static" ,zlib "static")
        ("zlib" ,zlib)))
     (synopsis "File and directory integrity checker")
     (description
@@ -226,13 +228,15 @@ interface and is based on GNU Guile.")
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
            (lambda _
-             (chdir ,(string-append  name "-" version))))
+             (chdir ,(string-append name "-" version))
+             #t))
          (delete 'configure)
          (add-before 'build 'patch
            (lambda _
              (substitute* "src/error.h"
                (("extern int errno;")
-                "#include <errno.h>"))))
+                "#include <errno.h>"))
+             #t))
          (replace 'build
            (lambda _
              (invoke "package/compile")))
@@ -242,7 +246,8 @@ interface and is based on GNU Guile.")
                     (bin (string-append out "/bin")))
                (for-each (lambda (file)
                            (install-file file bin))
-                         (find-files "command"))))))))
+                         (find-files "command")))
+             #t)))))
     (synopsis "Tools for managing UNIX style services")
     (description
      "@code{daemontools} is a collection of tools for managing UNIX
@@ -964,7 +969,7 @@ at once based on a Perl regular expression.")
                       #t))
                   (add-after 'install 'install-info
                     (lambda _
-                      (zero? (system* "make" "install-info")))))))
+                      (invoke "make" "install-info"))))))
     (native-inputs `(("texinfo" ,texinfo)
                      ("util-linux" ,util-linux))) ; for 'cal'
     (home-page "https://www.gnu.org/software/rottlog/")
@@ -1095,7 +1100,8 @@ commands and their arguments.")
       CFLAGS += $(shell pkg-config libnl-3.0 --cflags)
       CONFIG_LIBNL32=y
       CONFIG_READLINE=y\n" port)
-               (close-port port))))
+               (close-port port))
+             #t))
          (add-after 'install 'install-man-pages
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -1234,11 +1240,10 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
                ;; It's an old configure script that doesn't understand
                ;; the extra options we pass.
                (setenv "CONFIG_SHELL" (which "bash"))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
-                         (string-append "--mandir=" out
-                                        "/share/man")))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--mandir=" out
+                                      "/share/man"))))))
        #:tests? #f))
     (home-page "https://www.kernel.org") ; really, no home page
     (synopsis "Send a wake-on-LAN packet")
@@ -1673,20 +1678,18 @@ lookup to YAML Mode.  You could enable the mode with @code{(add-hook
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure)
-                  (replace
-                   'build
-                   (lambda _
-                     (zero? (system* "make" "CC=gcc" "-Csrc"))))
-                  (replace
-                   'check
-                   (lambda _
-                     (zero? (system* "make" "CC=gcc" "-Ctests"))))
-                  (replace
-                   'install
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let* ((out (assoc-ref outputs "out"))
-                            (bin (string-append out "/bin")))
-                       (install-file "src/cpulimit" bin)))))))
+                  (replace 'build
+                    (lambda _
+                      (invoke "make" "CC=gcc" "-Csrc")))
+                  (replace 'check
+                    (lambda _
+                      (invoke "make" "CC=gcc" "-Ctests")))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin")))
+                        (install-file "src/cpulimit" bin))
+                      #t)))))
     (home-page "https://github.com/opsengine/cpulimit")
     (synopsis "Limit CPU usage")
     (description
@@ -1895,10 +1898,9 @@ done with the @code{auditctl} utility.")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (define (make out . args)
-               (unless (zero? (apply system* "make"
-                                     (string-append "prefix=" out)
-                                     args))
-                 (error "make failed")))
+               (apply invoke "make"
+                      (string-append "prefix=" out)
+                      args))
              (define (python-path dir)
                (string-append dir "/lib/python2.7/site-packages"))
              (let ((out (assoc-ref outputs "out"))
@@ -1912,13 +1914,14 @@ done with the @code{auditctl} utility.")
                (make ndiff "install-ndiff")
                (wrap-program (string-append ndiff "/bin/ndiff")
                  `("PYTHONPATH" prefix
-                   (,(python-path ndiff)))))))
+                   (,(python-path ndiff)))))
+             #t))
          ;; These are the tests that do not require network access.
          (replace 'check
-           (lambda _ (zero? (system* "make"
-                                     "check-nse"
-                                     "check-ndiff"
-                                     "check-dns")))))
+           (lambda _ (invoke "make"
+                             "check-nse"
+                             "check-ndiff"
+                             "check-dns"))))
        ;; Nmap can't cope with out-of-source building.
        #:out-of-source? #f))
     (home-page "https://nmap.org/")
@@ -2224,15 +2227,15 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
              #t))
          (replace 'build
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* "make" "tools" "misc" make-flags))))
+             (apply invoke "make" "tools" "misc" make-flags)))
          (add-after 'build 'build-armhf
            (lambda* (#:key make-flags #:allow-other-keys)
              (setenv "LIBRARY_PATH" #f)
-             (zero? (apply system* "make" "target-tools" make-flags))))
+             (apply invoke "make" "target-tools" make-flags)))
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* "make" "install-all" "install-misc"
-                           make-flags)))))))
+             (apply invoke "make" "install-all" "install-misc"
+                    make-flags))))))
     (home-page "https://github.com/linux-sunxi/sunxi-tools")
     (synopsis "Hardware management tools for Allwinner computers")
     (description "This package contains tools for Allwinner devices:

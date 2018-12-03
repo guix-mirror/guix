@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,12 +24,6 @@
             install-jars
             install-javadoc))
 
-;; Copied from haskell-build-system.scm
-(define (package-name-version store-dir)
-  "Given a store directory STORE-DIR return 'name-version' of the package."
-  (let* ((base (basename store-dir)))
-    (string-drop base (+ 1 (string-index base #\-)))))
-
 (define* (ant-build-javadoc #:key (target "javadoc") (make-flags '())
                             #:allow-other-keys)
   (apply invoke `("ant" ,target ,@make-flags)))
@@ -48,8 +43,9 @@ is used in case the build.xml does not include an install target."
 install javadocs when this is not done by the install target."
   (lambda* (#:key outputs #:allow-other-keys)
     (let* ((out (assoc-ref outputs "out"))
+           (name-version (strip-store-file-name out))
            (docs (string-append (or (assoc-ref outputs "doc") out)
-                                "/share/doc/" (package-name-version out) "/")))
+                                "/share/doc/" name-version "/")))
       (mkdir-p docs)
       (copy-recursively apidoc-directory docs)
       #t)))

@@ -50,7 +50,10 @@
               (patches (search-patches "libffi-3.2.1-complex-alpha.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(;; Prevent the build system from passing -march and -mtune to the
+       ;; compiler.  See "ax_cc_maxopt.m4" and "ax_gcc_archflag.m4".
+       #:configure-flags '("--enable-portable-binary" "--without-gcc-arch")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'post-install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -79,13 +82,14 @@ conversions for values passed between the two languages.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "1.11.4")
+    (version "1.11.5")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "07fiy4wqg8g08x38r04ydjr8n6g0g74gb8si8b6jhymijalq746z"))))
+       (base32 "1x3lrj928dcxx1k8k9gf3s4s3jwvzv8mc3kkyg1g7c3a1sc1f3z9"))
+      (patches (search-patches "python-cffi-x87-stack-clean.patch"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs

@@ -56,7 +56,7 @@
                                            (string-append
                                             "--with-guile-site-ccache-dir="
                                             (assoc-ref %outputs "out")
-                                            "/share/guile/site/2.2"))))
+                                            "/lib/guile/2.2/site-ccache"))))
       (native-inputs `(("pkg-config" ,pkg-config)
                        ("texinfo" ,texinfo)))
       (inputs `(("guile" ,guile-2.2)

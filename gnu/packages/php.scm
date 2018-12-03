@@ -50,16 +50,6 @@
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:))
 
-(define gd-for-php
-  (package
-    (inherit gd)
-    (source (origin
-             (inherit (package-source gd))
-             (patches (search-patches "gd-fix-tests-on-i686.patch"
-                                      "gd-freetype-test-failure.patch"
-                                      "gd-CVE-2018-5711.patch"
-                                      "gd-CVE-2018-1000222.patch"))))))
-
 (define-public php
   (package
     (name "php")
@@ -318,7 +308,7 @@
        ("curl" ,curl)
        ("cyrus-sasl" ,cyrus-sasl)
        ("freetype" ,freetype)
-       ("gd" ,gd-for-php)
+       ("gd" ,gd)
        ("gdbm" ,gdbm)
        ("glibc" ,glibc)
        ("gmp" ,gmp)

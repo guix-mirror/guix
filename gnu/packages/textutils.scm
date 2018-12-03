@@ -198,6 +198,11 @@ encoding, supporting Unicode version 9.0.0.")
        (sha256
         (base32 "0jiybkb2z58wa2msvllnphr4js2hvjvh988pavb3mzkgr6ihwbkr"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _ (invoke "sh" "reconf"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

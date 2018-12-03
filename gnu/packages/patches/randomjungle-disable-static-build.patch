@@ -1,0 +1,14 @@
+Drop build time dependency on the static executables.
+
+--- a/src/Makefile.in	2018-11-25 20:27:10.691508925 +0100
++++ b/src/Makefile.in	2018-11-25 20:27:43.565631413 +0100
+@@ -34,8 +34,7 @@
+ POST_UNINSTALL = :
+ build_triplet = @build@
+ host_triplet = @host@
+-bin_PROGRAMS = rjungle$(EXEEXT) rjungle_static$(EXEEXT) \
+-	rjunglesparse$(EXEEXT) rjunglesparse_static$(EXEEXT)
++bin_PROGRAMS = rjungle$(EXEEXT) rjunglesparse$(EXEEXT)
+ subdir = src
+ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4

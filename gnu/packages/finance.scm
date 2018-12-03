@@ -165,6 +165,13 @@ line client and a client based on Qt.")
        #:make-flags (list "ARGS=-E BaselineTest_cmd-org")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'boost-compat
+           (lambda _
+             (substitute* "src/utils.h"
+               ;; This library moved in Boost 1.66.  Remove for Ledger
+               ;; versions > 3.1.1.
+               (("boost/uuid/sha1.hpp") "boost/uuid/detail/sha1.hpp"))
+             #t))
          (add-before 'configure 'install-examples
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((examples (string-append (assoc-ref outputs "out")

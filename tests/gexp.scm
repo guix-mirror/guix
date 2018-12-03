@@ -659,11 +659,11 @@
                        (drv      (imported-files files)))
     (define (file=? file1 file2)
       ;; Assume deduplication is in place.
-      (= (stat:ino (lstat file1))
-         (stat:ino (lstat file2))))
+      (= (stat:ino (stat file1))
+         (stat:ino (stat file2))))
 
     (mbegin %store-monad
-      (built-derivations (list drv))
+      (built-derivations (list (pk 'drv drv)))
       (mlet %store-monad ((dir -> (derivation->output-path drv))
                           (plain* (text-file "foo" "bar!"))
                           (q-scm* (interned-file q-scm "c")))

@@ -83,20 +83,20 @@
   (package
    (name "poppler")
    (replacement poppler/fixed)
-   (version "0.63.0")
+   (version "0.68.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "04d1z1ygyb3llzc6s6c99wxafvljj2sc5b76djif34f7mzfqmk17"))))
+              "0n0f7mv24lzv9p3dlzakpdhqg7ygcvl6l40grcz95xldzgq083gr"))))
    (build-system cmake-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
    (inputs `(("fontconfig" ,fontconfig)
              ("freetype" ,freetype)
-             ("libjpeg" ,libjpeg)
+             ("libjpeg" ,libjpeg-turbo)
              ("libpng" ,libpng)
              ("libtiff" ,libtiff)
              ("lcms" ,lcms)
@@ -107,8 +107,12 @@
              ;; GLib.  But of course, that Cairo must not depend on Poppler.
              ("cairo" ,(package (inherit cairo)
                          (inputs (alist-delete "poppler"
-                                               (package-inputs cairo)))))
-             ("glib" ,glib)))
+                                               (package-inputs cairo)))))))
+   (propagated-inputs
+    ;; As per poppler-cairo and poppler-glib.pc.
+    ;; XXX: Ideally we'd propagate Cairo too, but that would require a
+    ;; different solution to the circular dependency mentioned above.
+    `(("glib" ,glib)))
    (native-inputs
       `(("pkg-config" ,pkg-config)
         ("glib" ,glib "bin")                      ; glib-mkenums, etc.
@@ -509,7 +513,7 @@ by using the poppler rendering engine.")
 
                      ;; For tests.
                      ("check" ,check)
-                     ("xorg-server" ,xorg-server-1.19.3)))
+                     ("xorg-server" ,xorg-server-for-tests)))
     (inputs `(("sqlite" ,sqlite)))
     ;; Listed in 'Requires.private' of 'zathura.pc'.
     (propagated-inputs `(("cairo" ,cairo)
@@ -553,7 +557,8 @@ interaction.")
                                   "/podofo-" version ".tar.gz"))
               (sha256
                (base32
-                "0wj0y4zcmj4q79wrn3vv3xq4bb0vhhxs8yifafwy9f2sjm83c5p9"))))
+                "0wj0y4zcmj4q79wrn3vv3xq4bb0vhhxs8yifafwy9f2sjm83c5p9"))
+              (patches (search-patches "podofo-cmake-3.12.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -656,14 +661,14 @@ line tools for batch rendering @command{pdfdraw}, rewriting files
 (define-public qpdf
   (package
    (name "qpdf")
-   (version "8.1.0")
+   (version "8.2.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/qpdf/qpdf/" version
                                 "/qpdf-" version ".tar.gz"))
             (sha256
              (base32
-              "1m3hcgip6bzjx4gd7wq1328p8zi3pq5savzncdyln6l0lcklh7vx"))
+              "1jdb0jj72fjdp6xip4m7yz31r5x13zs7h4smnxsycgw3vbmx6igl"))
             (modules '((guix build utils)))
             (snippet
              ;; Replace shebang with the bi-lingual shell/Perl trick to remove

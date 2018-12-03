@@ -18,12 +18,14 @@
 
 (define-module (test-gremlin)
   #:use-module (guix elf)
+  #:use-module ((guix utils) #:select (call-with-temporary-directory))
   #:use-module (guix build utils)
   #:use-module (guix build gremlin)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
+  #:use-module (ice-9 popen)
   #:use-module (ice-9 match))
 
 (define %guile-executable
@@ -36,6 +38,9 @@
 
 (define read-elf
   (compose parse-elf get-bytevector-all))
+
+(define c-compiler
+  (or (which "gcc") (which "cc") (which "g++")))
 
 
 (test-begin "gremlin")
@@ -62,5 +67,33 @@
          "${ORIGIN}"
          "../${ORIGIN}/bar/$ORIGIN/baz"
          "ORIGIN/foo")))
+
+(unless c-compiler
+  (test-skip 1))
+(test-equal "strip-runpath"
+  "hello\n"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (with-directory-excursion directory
+       (call-with-output-file "t.c"
+         (lambda (port)
+           (display "int main () { puts(\"hello\"); }" port)))
+       (invoke c-compiler "t.c"
+               "-Wl,-rpath=/foo" "-Wl,-rpath=/bar")
+       (let* ((dyninfo (elf-dynamic-info
+                        (parse-elf (call-with-input-file "a.out"
+                                     get-bytevector-all))))
+              (old     (elf-dynamic-info-runpath dyninfo))
+              (new     (strip-runpath "a.out"))
+              (new*    (strip-runpath "a.out")))
+         (validate-needed-in-runpath "a.out")
+         (and (member "/foo" old) (member "/bar" old)
+              (not (member "/foo" new))
+              (not (member "/bar" new))
+              (equal? new* new)
+              (let* ((pipe (open-input-pipe "./a.out"))
+                     (str  (get-string-all pipe)))
+                (close-pipe pipe)
+                str)))))))
 
 (test-end "gremlin")

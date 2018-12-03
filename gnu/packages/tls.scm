@@ -80,6 +80,8 @@
        (base32
         "1jlc1iahj8k3haz28j55nzg7sgni5h41vqy461i1bpbx6668wlky"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (native-inputs `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/libtasn1/")
     (synopsis "ASN.1 library")
@@ -260,8 +262,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (replacement openssl/fixed)
-   (version "1.0.2o")
+   (version "1.0.2p")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -273,7 +274,7 @@ required structures.")
                                        "/" name "-" version ".tar.gz")))
              (sha256
               (base32
-               "0kcy13l701054nhpbd901mz32v1kn4g311z0nifd83xs2jbmqgzc"))
+               "003xh9f898i56344vpvpxxxzmikivxig4xwlm7vbi7m8n43qxaah"))
              (patches (search-patches "openssl-runpath.patch"
                                       "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
@@ -316,15 +317,7 @@ required structures.")
                      (string-append "--openssldir=" out
                                     "/share/openssl-" ,version)
 
-                     (string-append "--prefix=" out)
-
-                     ;; XXX FIXME: Work around a code generation bug in GCC
-                     ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
-                     ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
-                     ,@(if (and (not (%current-target-system))
-                                (string-prefix? "armhf" (%current-system)))
-                           '("-mfpu=vfpv3")
-                           '())))))
+                     (string-append "--prefix=" out)))))
         (add-after
          'install 'make-libraries-writable
          (lambda* (#:key outputs #:allow-other-keys)
@@ -396,15 +389,6 @@ required structures.")
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
-
-(define openssl/fixed
-  (package
-    (inherit openssl)
-    (source (origin
-              (inherit (package-source openssl))
-              (patches (append (origin-patches (package-source openssl))
-                               (search-patches "openssl-1.0.2-CVE-2018-0495.patch"
-                                               "openssl-1.0.2-CVE-2018-0732.patch")))))))
 
 (define-public openssl-next
   (package
@@ -616,7 +600,7 @@ netcat implementation that supports TLS.")
      `(("python-nose" ,python-nose)
        ("python-mock" ,python-mock)
        ;; For documentation
-       ("python-sphinx" ,python-sphinx-1.6)
+       ("python-sphinx" ,python-sphinx)
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
        ("python-sphinx-repoze-autointerface" ,python-sphinx-repoze-autointerface)
        ("python-sphinxcontrib-programoutput" ,python-sphinxcontrib-programoutput)

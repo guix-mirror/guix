@@ -116,23 +116,10 @@ applications.")
    (propagated-inputs `(("libgcrypt" ,libgcrypt)
                         ("zlib" ,zlib)))
    (arguments `(#:configure-flags `("--with-libgcrypt")
-                #:phases
-                ;; FIXME: In the next core-updates cycle, replace the entire
-                ;; following ,(...) form with its first 'modify-phases'
-                ;; subform.  The change made here is only strictly needed on
-                ;; MIPS, but should work on any system.  For now, we apply it
-                ;; only to MIPS to avoid forcing thousands of rebuilds on
-                ;; other systems.
-                ,(if (string-prefix? "mips" (or (%current-target-system)
-                                                (%current-system)))
-                     '(modify-phases %standard-phases
-                        (replace 'bootstrap
-                          (lambda _
-                            (invoke "autoreconf" "-v"))))
-                     '(modify-phases %standard-phases
-                        (add-before 'configure 'autoreconf
-                          (lambda _
-                            (invoke "autoreconf" "-v")))))))
+                #:phases (modify-phases %standard-phases
+                           (replace 'bootstrap
+                             (lambda _
+                               (invoke "autoreconf" "-v"))))))
    (native-inputs `(("autoconf" ,autoconf)
                     ("automake" ,automake)))
    (synopsis "Client-side C library implementing the SSH2 protocol")

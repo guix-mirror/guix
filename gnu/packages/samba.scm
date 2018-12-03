@@ -397,6 +397,18 @@ key-value pair databases and a real LDAP database.")
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ppp/ppp-"
                                   version ".tar.gz"))
+              (patches
+               (list (origin
+                       ;; Use OpenSSL for cryptography instead of the obsolete glibc
+                       ;; crypto functions that were removed in glibc 2.28.
+                       (method url-fetch)
+                       (uri (string-append "https://github.com/paulusmack/ppp/commit/"
+                                           "3c7b86229f7bd2600d74db14b1fe5b3896be3875"
+                                           ".patch"))
+                       (file-name "ppp-use-openssl-crypto.patch")
+                       (sha256
+                        (base32
+                         "0qlbi247lx3injpy8a1gcij9yilik0vfaibkpvdp88k3sa1rs69z")))))
               (sha256
                (base32
                 "0c7vrjxl52pdwi4ckrvfjr08b31lfpgwf3pp0cqy76a77vfs7q02"))))
@@ -409,15 +421,19 @@ key-value pair databases and a real LDAP database.")
          (add-before 'configure 'patch-Makefile
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((libc    (assoc-ref inputs "libc"))
+                   (openssl (assoc-ref inputs "openssl"))
                    (libpcap (assoc-ref inputs "libpcap")))
                (substitute* "pppd/Makefile.linux"
                  (("/usr/include/crypt\\.h")
                   (string-append libc "/include/crypt.h"))
+                 (("/usr/include/openssl")
+                  (string-append openssl "/include/openssl"))
                  (("/usr/include/pcap-bpf.h")
                   (string-append libpcap "/include/pcap-bpf.h")))
                #t))))))
     (inputs
-     `(("libpcap" ,libpcap)))
+     `(("libpcap" ,libpcap)
+       ("openssl" ,(@ (gnu packages tls) openssl))))
     (synopsis "Implementation of the Point-to-Point Protocol")
     (home-page "https://ppp.samba.org/")
     (description

@@ -76,6 +76,7 @@
               (method url-fetch)
               (uri (string-append "mirror://gnu/parted/parted-"
                                   version ".tar.xz"))
+              (patches (search-patches "parted-glibc-compat.patch"))
               (sha256
                (base32
                 "1r3qpg3bhz37mgvp9chsaa3k0csby3vayfvz8ggsqz194af5i2w5"))))

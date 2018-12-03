@@ -46,6 +46,7 @@
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
@@ -1671,6 +1672,190 @@ new Date();"))
          ,@(fold alist-delete (package-native-inputs icedtea-7)
                  '("jdk" "openjdk-src" "corba-drop" "jaxp-drop" "jaxws-drop"
                    "jdk-drop" "langtools-drop" "hotspot-drop")))))))
+
+(define-public openjdk9
+  (package
+    (name "openjdk")
+    (version "9.181")
+    (source (origin
+              (method url-fetch)
+              (uri "https://hg.openjdk.java.net/jdk/jdk/archive/3cc80be736f2.tar.bz2")
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "01ihmyf7k5z17wbr7xig7y40l9f01d5zjgkcmawn1102hw5kchpq"))
+              (modules '((guix build utils)))
+              (snippet
+                `(begin
+                   (for-each delete-file (find-files "." ".*.bin$"))
+                   (for-each delete-file (find-files "." ".*.exe$"))
+                   (for-each delete-file (find-files "." ".*.jar$"))
+                   #t))))
+    (build-system gnu-build-system)
+    (outputs '("out" "jdk" "doc"))
+    (arguments
+     `(#:tests? #f; require jtreg
+       #:imported-modules
+       ((guix build syscalls)
+        ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'fix-java-shebangs
+           (lambda _
+             ;; This file was "fixed" by patch-source-shebangs, but it requires
+             ;; this exact first line.
+             (substitute* "jdk/make/data/blacklistedcertsconverter/blacklisted.certs.pem"
+               (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))
+             #t))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; TODO: unbundle libpng and lcms
+             (invoke "bash" "./configure"
+                     (string-append "--with-freetype=" (assoc-ref inputs "freetype"))
+                     "--disable-freetype-bundling"
+                     "--disable-warnings-as-errors"
+                     "--disable-hotspot-gtest"
+                     "--with-giflib=system"
+                     "--with-libjpeg=system"
+                     (string-append "--prefix=" (assoc-ref outputs "out")))
+             #t))
+         (replace 'build
+           (lambda _
+             (with-output-to-file ".src-rev"
+               (lambda _
+                 (display ,version)))
+             (setenv "GUIX_LD_WRAPPER_ALLOW_IMPURITIES" "yes")
+             (invoke "make" "all")
+             #t))
+         ;; Some of the libraries in the lib/ folder link to libjvm.so.
+         ;; But that shared object is located in the server/ folder, so it
+         ;; cannot be found.  This phase creates a symbolic link in the
+         ;; lib/ folder so that the other libraries can find it.
+         ;;
+         ;; See:
+         ;; https://lists.gnu.org/archive/html/guix-devel/2017-10/msg00169.html
+         ;;
+         ;; FIXME: Find the bug in the build system, so that this symlink is
+         ;; not needed.
+         (add-after 'install 'install-libjvm
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((lib-out (string-append (assoc-ref outputs "out")
+                                             "/lib"))
+                    (lib-jdk (string-append (assoc-ref outputs "jdk")
+                                             "/lib")))
+               (symlink (string-append lib-jdk "/server/libjvm.so")
+                        (string-append lib-jdk "/libjvm.so"))
+               (symlink (string-append lib-out "/server/libjvm.so")
+                        (string-append lib-out "/libjvm.so")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (jdk (assoc-ref outputs "jdk"))
+                   (doc (assoc-ref outputs "doc"))
+                   (images (car (find-files "build" ".*-server-release"
+                                            #:directories? #t))))
+               (copy-recursively (string-append images "/images/jdk") jdk)
+               (copy-recursively (string-append images "/images/jre") out)
+               (copy-recursively (string-append images "/images/docs") doc))
+             #t))
+         (add-after 'install 'strip-zip-timestamps
+           (lambda* (#:key outputs #:allow-other-keys)
+             (use-modules (guix build syscalls))
+             (for-each (lambda (zip)
+                         (let ((dir (mkdtemp! "zip-contents.XXXXXX")))
+                           (with-directory-excursion dir
+                             (invoke "unzip" zip))
+                           (delete-file zip)
+                           (for-each (lambda (file)
+                                       (let ((s (lstat file)))
+                                         (unless (eq? (stat:type s) 'symlink)
+                                           (format #t "reset ~a~%" file)
+                                           (utime file 0 0 0 0))))
+                             (find-files dir #:directories? #t))
+                           (with-directory-excursion dir
+                             (let ((files (find-files "." ".*" #:directories? #t)))
+                               (apply invoke "zip" "-0" "-X" zip files)))))
+               (find-files (assoc-ref outputs "doc") ".*.zip$"))
+             #t)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("cups" ,cups)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("giflib" ,giflib)
+       ("lcms" ,lcms)
+       ("libelf" ,libelf)
+       ("libjpeg" ,libjpeg)
+       ("libice" ,libice)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxcomposite" ,libxcomposite)
+       ("libxi" ,libxi)
+       ("libxinerama" ,libxinerama)
+       ("libxrender" ,libxrender)
+       ("libxt" ,libxt)
+       ("libxtst" ,libxtst)))
+    (native-inputs
+     `(("icedtea-8" ,icedtea-8)
+       ("icedtea-8:jdk" ,icedtea-8 "jdk")
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (home-page "https://openjdk.java.net/projects/jdk9/")
+    (synopsis "Java development kit")
+    (description
+     "This package provides the Java development kit OpenJDK.")
+    (license license:gpl2+)))
+
+(define-public openjdk10
+  (package
+    (inherit openjdk9)
+    (name "openjdk")
+    (version "10.46")
+    (source (origin
+              (method url-fetch)
+              (uri "http://hg.openjdk.java.net/jdk/jdk/archive/6fa770f9f8ab.tar.bz2")
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0zywq2203b4hx4jms9vbwvjcj1d3k2v3qpx4s33729fkpmid97r4"))
+              (modules '((guix build utils)))
+              (snippet
+                `(begin
+                   (for-each delete-file (find-files "." ".*.bin$"))
+                   (for-each delete-file (find-files "." ".*.exe$"))
+                   (for-each delete-file (find-files "." ".*.jar$"))
+                   #t))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments openjdk9)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (replace 'fix-java-shebangs
+              (lambda _
+                ;; This file was "fixed" by patch-source-shebangs, but it requires
+                ;; this exact first line.
+                (substitute* "make/data/blacklistedcertsconverter/blacklisted.certs.pem"
+                  (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))
+                #t))
+            (replace 'configure
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (invoke "bash" "./configure"
+                        (string-append "--with-freetype=" (assoc-ref inputs "freetype"))
+                        "--disable-freetype-bundling"
+                        "--disable-warnings-as-errors"
+                        "--disable-hotspot-gtest"
+                        "--with-giflib=system"
+                        "--with-libjpeg=system"
+                        "--with-native-debug-symbols=zipped"
+                        (string-append "--prefix=" (assoc-ref outputs "out")))
+                #t))))))
+    (native-inputs
+     `(("openjdk9" ,openjdk9)
+       ("openjdk9:jdk" ,openjdk9 "jdk")
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))))
 
 (define-public icedtea icedtea-8)
 

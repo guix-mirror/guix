@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -54,7 +54,24 @@
                                   "inkscape-" version ".tar.bz2"))
               (sha256
                (base32
-                "1chng2yw8dsjxc9gf92aqv7plj11cav8ax321wmakmv5bb09cch6"))))
+                "1chng2yw8dsjxc9gf92aqv7plj11cav8ax321wmakmv5bb09cch6"))
+              (patches
+               (list (origin
+                       (method url-fetch)
+                       (uri (string-append "https://gitlab.com/inkscape/inkscape/commit/"
+                                           "a600c6438fef2f4c06f9a4a7d933d99fb054a973.diff"))
+                       (file-name "inkscape-poppler-compat.patch")
+                       (sha256
+                        (base32
+                         "19dam5vsy571xszgjddl5g0958dmcsv0wvgxidp4bhj2lban222i")))
+                     (origin
+                       (method url-fetch)
+                       (uri (string-append "https://gitlab.com/inkscape/inkscape/commit/"
+                                           "fa1c469aa8c005e07bb8676d72af9f7c16fae3e0.diff"))
+                       (file-name "inkscape-poppler-compat2.patch")
+                       (sha256
+                        (base32
+                         "14k9yrfjz4nx3bz9dk91q74mc0i7rvl2qzkwhcy1br71yqjvngn5")))))))
     (build-system cmake-build-system)
     (inputs
      `(("aspell" ,aspell)

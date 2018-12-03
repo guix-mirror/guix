@@ -41,7 +41,6 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages version-control)
   #:use-module (gnu packages)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system gnu)
@@ -387,7 +386,6 @@ test = { path = \"../libtest\" }
        ("cmake" ,cmake)
        ("flex" ,flex) ; For the tests
        ("gdb" ,gdb)   ; For the tests
-       ("git" ,git)
        ("procps" ,procps) ; For the tests
        ("python-2" ,python-2)
        ("rustc-bootstrap" ,mrustc)
@@ -446,6 +444,13 @@ safety and thread safety guarantees.")
                  ;; i686-linux.
                  (substitute* "src/tools/cargo/tests/test.rs"
                    (("fn cargo_test_env") "#[ignore]\nfn cargo_test_env"))
+
+                 ;; These tests pull in a dependency on "git", which changes
+                 ;; too frequently take part in the Rust toolchain.
+                 (substitute* "src/tools/cargo/tests/new.rs"
+                   (("fn author_prefers_cargo") "#[ignore]\nfn author_prefers_cargo")
+                   (("fn finds_author_git") "#[ignore]\nfn finds_author_git")
+                   (("fn finds_local_author_git") "#[ignore]\nfn finds_local_author_git"))
                  #t))
              (add-after 'patch-cargo-tests 'ignore-glibc-2.27-incompatible-test
                ;; https://github.com/rust-lang/rust/issues/47863
@@ -571,8 +576,20 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  #t)))))))))
 
 (define-public rust-1.22
-  (rust-bootstrapped-package rust-1.21 "1.22.1"
-                             "1lrzzp0nh7s61wgfs2h6ilaqi6iq89f1pd1yaf65l87bssyl4ylb"))
+  (let ((base-rust (rust-bootstrapped-package rust-1.21 "1.22.1"
+                    "1lrzzp0nh7s61wgfs2h6ilaqi6iq89f1pd1yaf65l87bssyl4ylb")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'remove-flaky-test
+               (lambda _
+                 ;; See <https://github.com/rust-lang/rust/issues/43402>.
+                 (when (file-exists? "src/test/run-make/issue-26092")
+                   (delete-file-recursively "src/test/run-make/issue-26092"))
+                 #t)))))))))
 
 (define-public rust-1.23
   (let ((base-rust (rust-bootstrapped-package rust-1.22 "1.23.0"
@@ -678,6 +695,12 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  ;; i686-linux.
                  (substitute* "src/tools/cargo/tests/testsuite/test.rs"
                    (("fn cargo_test_env") "#[ignore]\nfn cargo_test_env"))
+
+                 ;; Avoid dependency on "git".
+                 (substitute* "src/tools/cargo/tests/testsuite/new.rs"
+                   (("fn author_prefers_cargo") "#[ignore]\nfn author_prefers_cargo")
+                   (("fn finds_author_git") "#[ignore]\nfn finds_author_git")
+                   (("fn finds_local_author_git") "#[ignore]\nfn finds_local_author_git"))
                  #t))
              (add-after 'patch-cargo-tests 'disable-cargo-test-for-nightly-channel
                (lambda* _
@@ -702,7 +725,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                                     '("rust-coresimd-doctest.patch"
                                       "rust-bootstrap-stage0-test.patch"
                                       "rust-1.25-accept-more-detailed-gdb-lines.patch"
-                                      "rust-mdbook-support-reproducible-builds-by-forcing-window.search.patch"))))
+                                      "rust-reproducible-builds.patch"))))
     (package
       (inherit base-rust)
       (arguments
@@ -731,7 +754,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                                     '("rust-coresimd-doctest.patch"
                                       "rust-bootstrap-stage0-test.patch"
                                       "rust-1.25-accept-more-detailed-gdb-lines.patch"
-                                      "rust-mdbook-support-reproducible-builds-by-forcing-window.search.patch"))))
+                                      "rust-reproducible-builds.patch"))))
     (package
       (inherit base-rust)
       (inputs

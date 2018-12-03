@@ -84,11 +84,9 @@
    (native-inputs `(("libtool" ,libtool)))
    (arguments
     `(#:tests? #f
+      #:configure-flags '("--disable-static")
       #:phases
       (modify-phases %standard-phases
-        (add-after 'configure 'provide-libtool
-          (lambda _ (copy-file (which "libtool") "libtool")
-            #t))
         (add-after 'install 'patch-sasl-path
           ;; Give -L arguments for cyrus-sasl to avoid propagation.
           (lambda* (#:key inputs outputs #:allow-other-keys)

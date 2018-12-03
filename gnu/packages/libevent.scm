@@ -122,24 +122,17 @@ limited support for fork events.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.19.2")
+    (version "1.23.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dist.libuv.org/dist/v" version
                                   "/libuv-v" version ".tar.gz"))
               (sha256
                (base32
-                "1msk9ac1z69whww88ibrwjqkd1apdla6l77cm2fwy5kigq0z5g3w"))))
+                "09yf7c71n8b80nbsv4lsmq5nqmb0rylhpx3z9jgkv5za9lr6sx6i"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autogen
-                    (lambda _
-                      ;; Fashionable people don't run 'make dist' these days, so
-                      ;; we need to do that ourselves.
-                      (invoke "sh" "autogen.sh"))))
-
-       ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
+     '(;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
        #:tests? #f))
     (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
@@ -158,6 +151,19 @@ resolution, asynchronous file system operations, and threading primitives.")
     ;; A few files fall under other non-copyleft licenses; see 'LICENSE' for
     ;; details.  Documentation is CC-BY 4.0 as of 1.12.0; see 'LICENSE-docs'.
     (license (list expat cc-by4.0))))
+
+;; This version is required for Node versions < 10.
+(define-public libuv-1.19
+  (package
+    (inherit libuv)
+    (version "1.19.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://dist.libuv.org/dist/v" version
+                                  "/libuv-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1msk9ac1z69whww88ibrwjqkd1apdla6l77cm2fwy5kigq0z5g3w"))))))
 
 (define-public perl-anyevent
   (package

@@ -67,7 +67,8 @@
                 (symlink (string-append path "/lib/dub/" d-basename)
                          (string-append vendor-dir "/" d-basename))))))))
       inputs)
-    (zero? (system* "dub" "add-path" vendor-dir))))
+    (invoke "dub" "add-path" vendor-dir)
+    #t))
 
 (define (grep string file-name)
   "Find the first occurrence of STRING in the file named FILE-NAME.
@@ -88,24 +89,22 @@
 (define* (build #:key (dub-build-flags '())
                 #:allow-other-keys)
   "Build a given DUB package."
-  (if (or (grep* "sourceLibrary" "package.json")
-          (grep* "sourceLibrary" "dub.sdl") ; note: format is different!
-          (grep* "sourceLibrary" "dub.json"))
-    #t
-    (let ((status (zero? (apply system* `("dub" "build" ,@dub-build-flags)))))
-      (substitute* ".dub/dub.json"
-        (("\"lastUpgrade\": \"[^\"]*\"")
-         "\"lastUpgrade\": \"1970-01-01T00:00:00.0000000\""))
-      status)))
+  (unless (or (grep* "sourceLibrary" "package.json")
+              (grep* "sourceLibrary" "dub.sdl") ; note: format is different!
+              (grep* "sourceLibrary" "dub.json"))
+    (apply invoke `("dub" "build" ,@dub-build-flags))
+    (substitute* ".dub/dub.json"
+      (("\"lastUpgrade\": \"[^\"]*\"")
+       "\"lastUpgrade\": \"1970-01-01T00:00:00.0000000\"")))
+  #t)
 
 (define* (check #:key tests? #:allow-other-keys)
-  (if tests?
-    (let ((status (zero? (system* "dub" "test"))))
-      (substitute* ".dub/dub.json"
-        (("\"lastUpgrade\": \"[^\"]*\"")
-         "\"lastUpgrade\": \"1970-01-01T00:00:00.0000000\""))
-      status)
-    #t))
+  (when tests?
+    (invoke "dub" "test")
+    (substitute* ".dub/dub.json"
+      (("\"lastUpgrade\": \"[^\"]*\"")
+       "\"lastUpgrade\": \"1970-01-01T00:00:00.0000000\"")))
+  #t)
 
 (define* (install #:key inputs outputs #:allow-other-keys)
   "Install a given DUB package."

@@ -32,7 +32,7 @@
 (define-public icu4c
   (package
    (name "icu4c")
-   (version "61.1")
+   (version "62.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -42,7 +42,7 @@
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
             (sha256
-             (base32 "1vxgkx0cyvdy00a9yd5khkx14r5kcndkax2wa99klm52x2dgh1yh"))))
+             (base32 "18ssgnwzzpm1g1fvbm9h1fvryiwxvvn5wc3fdakdsl33cs6qdn9x"))))
    (build-system gnu-build-system)
    (inputs
     `(("perl" ,perl)))
@@ -55,10 +55,24 @@
                     (string-prefix? "mips" s)))
               '("--with-data-packaging=archive")
               '()))
+        ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                         (%current-system)))
+              ;; FIXME: Some tests are failing on i686:
+              ;; <https://unicode-org.atlassian.net/browse/ICU-20080>.
+              '(#:tests? #f)
+              '())
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'chdir-to-source
-          (lambda _ (chdir "source") #t)))))
+          (lambda _ (chdir "source") #t))
+        (add-after 'install 'avoid-coreutils-reference
+          ;; Don't keep a reference to the build tools.
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* (find-files (string-append out "/lib/icu")
+                                       "\\.inc$")
+                (("INSTALL_CMD=.*/bin/install") "INSTALL_CMD=install"))
+              #t))))))
    (synopsis "International Components for Unicode")
    (description
     "ICU is a set of C/C++ and Java libraries providing Unicode and

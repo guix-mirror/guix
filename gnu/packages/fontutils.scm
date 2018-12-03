@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -55,15 +56,18 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.9")
+   (version "2.9.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "12jcdz1in20yaa55izxalg3hm1pf7nydfrzps5bzb4zgihybmzz6"))
-            (patches (search-patches "freetype-CVE-2018-6942.patch"))))
+                     "0kg8w6qyiizlyzh4a8lpzslipcbv96hcg3rqqpnxba8ffbm8g3fv"))))
    (build-system gnu-build-system)
+   (arguments
+    ;; The use of "freetype-config" is deprecated, but other packages still
+    ;; depend on it.
+    `(#:configure-flags (list "--enable-freetype-config")))
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (propagated-inputs
@@ -286,14 +290,14 @@ fonts to/from the WOFF2 format.")
 (define-public fontconfig
   (package
    (name "fontconfig")
-   (version "2.13.0")
+   (version "2.13.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
             (sha256 (base32
-                     "1fgf28zgsqh7x6dw30n6zi9z679gx6dyfyahp55z7dsm454yipci"))))
+                     "0hb700a68kk0ip51wdlnjjc682kvlrmb6q920mzajykdk0mdsmgn"))))
    (build-system gnu-build-system)
    ;; In Requires or Requires.private of fontconfig.pc.
    (propagated-inputs `(("expat" ,expat)
@@ -428,7 +432,7 @@ applications should be.")
 (define-public graphite2
   (package
    (name "graphite2")
-   (version "1.3.11")
+   (version "1.3.12")
    (source
      (origin
        (method url-fetch)
@@ -436,7 +440,7 @@ applications should be.")
                            "download/" version "/" name "-" version ".tgz"))
        (sha256
         (base32
-         "0z5dcgh8r3678awq6fb8igik7xmar5m6z9xxwpkkhradhk8jxfds"))))
+         "1l1940d8fz67jm6a0x8cjb5p2dv48cvz3wcskwa83hamd70k15fd"))))
    (build-system cmake-build-system)
    (native-inputs
     `(("python" ,python-2) ; because of "import imap" in tests
@@ -586,7 +590,10 @@ definitions.")
              ("libxml2"         ,libxml2)
              ("pango"           ,pango)
              ("potrace"         ,potrace)
-             ("python"          ,python-wrapper)
+             ;; FIXME: We use Python 2 here because there is a bug in Python
+             ;; 3.7 that is triggered when Py_Main is called after Py_Init, as
+             ;; is done by fontforge.  This will be fixed in Python 3.7.1.
+             ("python"          ,python-2)
              ("zlib"            ,zlib)))
    (arguments
     '(#:phases

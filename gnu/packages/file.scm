@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +29,14 @@
 (define-public file
   (package
     (name "file")
-    (version "5.32")
+    (version "5.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.astron.com/pub/file/file-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0l1bfa0icng9vdwya00ff48fhvjazi5610ylbhl35qi13d6xqfc6"))))
+                "1iipnwjkag7q04zjkaqic41r9nlw0ml6mhqian6qkkbisb1whlhw"))))
    (build-system gnu-build-system)
 
    ;; When cross-compiling, this package depends upon a native install of

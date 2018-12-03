@@ -1,0 +1,80 @@
+https://sources.debian.org/data/main/b/blender/2.79.b+dfsg0-4/debian/patches/0008-fix_building_with_latest_versions_of_FFmpeg.patch
+
+From: Bastien Montagne <montagne29@wanadoo.fr>
+Date: Tue, 8 May 2018 16:00:52 +0200
+Subject: fix_building_with_latest_versions_of_FFmpeg
+
+Some years-old deprecated stuff has now been removed.
+
+Correct solution is probably to use valid defines etc. in own code, but
+this is more FFMEPG maintainer task (since it also may change how old
+FFMPEG we do support...).
+---
+ intern/ffmpeg/ffmpeg_compat.h                  | 39 ++++++++++++++++++++++++++
+ source/blender/blenkernel/intern/writeffmpeg.c |  3 +-
+ 2 files changed, 41 insertions(+), 1 deletion(-)
+
+diff --git a/intern/ffmpeg/ffmpeg_compat.h b/intern/ffmpeg/ffmpeg_compat.h
+index 9c06c8a..f7f437c 100644
+--- a/intern/ffmpeg/ffmpeg_compat.h
++++ b/intern/ffmpeg/ffmpeg_compat.h
+@@ -109,6 +109,45 @@ int av_sample_fmt_is_planar(enum AVSampleFormat sample_fmt)
+ 
+ #endif
+ 
++/* XXX TODO Probably fix to correct modern flags in code? Not sure how old FFMPEG we want to support though,
++ * so for now this will do. */
++
++#ifndef FF_MIN_BUFFER_SIZE
++#  ifdef AV_INPUT_BUFFER_MIN_SIZE
++#    define FF_MIN_BUFFER_SIZE AV_INPUT_BUFFER_MIN_SIZE
++#  endif
++#endif
++
++#ifndef FF_INPUT_BUFFER_PADDING_SIZE
++#  ifdef AV_INPUT_BUFFER_PADDING_SIZE
++#    define FF_INPUT_BUFFER_PADDING_SIZE AV_INPUT_BUFFER_PADDING_SIZE
++#  endif
++#endif
++
++#ifndef CODEC_FLAG_GLOBAL_HEADER
++#  ifdef AV_CODEC_FLAG_GLOBAL_HEADER
++#    define CODEC_FLAG_GLOBAL_HEADER AV_CODEC_FLAG_GLOBAL_HEADER
++#  endif
++#endif
++
++#ifndef CODEC_FLAG_GLOBAL_HEADER
++#  ifdef AV_CODEC_FLAG_GLOBAL_HEADER
++#    define CODEC_FLAG_GLOBAL_HEADER AV_CODEC_FLAG_GLOBAL_HEADER
++#  endif
++#endif
++
++#ifndef CODEC_FLAG_INTERLACED_DCT
++#  ifdef AV_CODEC_FLAG_INTERLACED_DCT
++#    define CODEC_FLAG_INTERLACED_DCT AV_CODEC_FLAG_INTERLACED_DCT
++#  endif
++#endif
++
++#ifndef CODEC_FLAG_INTERLACED_ME
++#  ifdef AV_CODEC_FLAG_INTERLACED_ME
++#    define CODEC_FLAG_INTERLACED_ME AV_CODEC_FLAG_INTERLACED_ME
++#  endif
++#endif
++
+ /* FFmpeg upstream 1.0 is the first who added AV_ prefix. */
+ #if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(54, 59, 100)
+ #  define AV_CODEC_ID_NONE CODEC_ID_NONE
+diff --git a/source/blender/blenkernel/intern/writeffmpeg.c b/source/blender/blenkernel/intern/writeffmpeg.c
+index a19e414..04d508a 100644
+--- a/source/blender/blenkernel/intern/writeffmpeg.c
++++ b/source/blender/blenkernel/intern/writeffmpeg.c
+@@ -605,7 +605,8 @@ static AVStream *alloc_video_stream(FFMpegContext *context, RenderData *rd, int
+ 	c->rc_buffer_aggressivity = 1.0;
+ #endif
+ 
+-	c->me_method = ME_EPZS;
++	/* Deprecated and not doing anything since July 2015, deleted in recent ffmpeg */
++	//c->me_method = ME_EPZS;
+ 	
+ 	codec = avcodec_find_encoder(c->codec_id);
+ 	if (!codec)

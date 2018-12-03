@@ -10619,6 +10619,7 @@ expose it from another module in the hierarchy.
            (lambda* (#:key outputs inputs tests? (configure-flags '())
                      #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
+                    (name-version (strip-store-file-name out))
                     (input-dirs (match inputs
                                   (((_ . dir) ...)
                                    dir)
@@ -10629,8 +10630,7 @@ expose it from another module in the hierarchy.
                                     `(,(string-append "--bindir=" out "/bin"))
                                     `(,(string-append
                                         "--docdir=" out
-                                        "/share/doc/" ((@@ (guix build haskell-build-system)
-                                                           package-name-version) out)))
+                                        "/share/doc/" name-version))
                                     '("--libsubdir=$compiler/$pkg-$version")
                                     '("--package-db=../package.conf.d")
                                     '("--global")

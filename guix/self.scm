@@ -916,16 +916,9 @@ running Guile."
                 'canonical-package))
 
   (match version
-    ("2.2.2"
-     ;; Gross hack to avoid ABI incompatibilities (see
-     ;; <https://bugs.gnu.org/29570>.)
-     (module-ref (resolve-interface '(gnu packages guile))
-                 'guile-2.2.2))
     ("2.2"
-     ;; Use the latest version, which has fixes for
-     ;; <https://bugs.gnu.org/30602> and VM stack-marking issues.
      (canonical-package (module-ref (resolve-interface '(gnu packages guile))
-                                    'guile-2.2.4)))
+                                    'guile-2.2)))
     ("2.0"
      (module-ref (resolve-interface '(gnu packages guile))
                  'guile-2.0))))
@@ -958,10 +951,7 @@ is not supported."
                                                      (shorten version))
                                #:pull-version pull-version
                                #:guile-version (if (>= pull-version 1)
-                                                   "2.2"
-                                                   (match guile-version
-                                                     ("2.2.2" "2.2")
-                                                     (version version)))
+                                                   "2.2" guile-version)
                                #:guile-for-build guile)))
       (if guix
           (lower-object guix)

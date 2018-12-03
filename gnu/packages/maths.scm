@@ -322,15 +322,15 @@ enough to be used effectively as a scientific calculator.")
 (define-public double-conversion
   (package
     (name "double-conversion")
-    (version "3.0.0")
+    (version "3.1.0")
     (home-page "https://github.com/google/double-conversion")
     (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "059r1czs28ljjd388pn6l3njg1ghbf1cv3q9nkxv3dj2a8siabqm"))))
+                "123rb2p4snqagrybw66vnapchqdwn2rfpr1wcq0ya9gwbyl7xccx"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"
@@ -2600,15 +2600,16 @@ YACC = bison -pscotchyy -y -b y
            (replace
             'build
             (lambda _
-              (and
-               (zero? (system* "make"
-                               (format #f "-j~a" (parallel-job-count))
-                               "ptscotch" "ptesmumps"))
-               ;; Install the serial metis compatibility library
-               (zero? (system* "make" "-C" "libscotchmetis" "install")))))
-           (replace
-            'check
-            (lambda _ (zero? (system* "make" "ptcheck"))))))))
+              (invoke "make" (format #f "-j~a" (parallel-job-count))
+                      "ptscotch" "ptesmumps")
+
+              ;; Install the serial metis compatibility library
+              (invoke "make" "-C" "libscotchmetis" "install")))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)
+           (replace 'check
+             (lambda _
+               (invoke "make" "ptcheck")))))))
     (synopsis "Programs and libraries for graph algorithms (with MPI)")))
 
 (define-public pt-scotch32
@@ -2622,15 +2623,15 @@ YACC = bison -pscotchyy -y -b y
         `(modify-phases ,scotch32-phases
            (replace 'build
              (lambda _
-               (and
-                (zero? (system* "make"
-                                (format #f "-j~a" (parallel-job-count))
-                                "ptscotch" "ptesmumps"))
-                ;; Install the serial metis compatibility library
-                (zero? (system* "make" "-C" "libscotchmetis" "install")))))
+               (invoke "make" (format #f "-j~a" (parallel-job-count))
+                       "ptscotch" "ptesmumps")
+               ;; Install the serial metis compatibility library
+               (invoke "make" "-C" "libscotchmetis" "install")))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)
            (replace 'check
              (lambda _
-               (zero? (system* "make" "ptcheck"))))))))
+               (invoke "make" "ptcheck")))))))
     (synopsis
      "Programs and libraries for graph algorithms (with MPI and 32-bit integers)")))
 
@@ -2972,7 +2973,7 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
@@ -2981,7 +2982,7 @@ parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0b20km2jv7m6qiylrlvhq2vnmkmilb633mr8rhqmgbn1wqrp58jq"))))
+         "0cvlixnpc3cdvvn3f30phfvsgnqljqix6wn72ps9rj7xdhvw06jg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

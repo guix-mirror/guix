@@ -32,6 +32,7 @@
             (method url-fetch)
             (uri (string-append "mirror://gnu/m4/m4-"
                                 version ".tar.xz"))
+            (patches (search-patches "m4-gnulib-libio.patch"))
             (sha256
              (base32
               "01sfjd5a4waqw83bibvmn522g69qfqvwig9i2qlgy154l1nfihgj"))))

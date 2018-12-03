@@ -2,10 +2,10 @@ This patch removes a part of meson that clears the rpath upon installation.
 This will only be applied to a special version of meson, used for the
 meson-build-system.
 
-Patch by Peter Mikkelsen <petermikkelsen10@gmail.com>
+Original patch for Meson 0.42.0 by Peter Mikkelsen <petermikkelsen10@gmail.com>
 
---- meson-0.42.0/mesonbuild/minstall.py.orig	2017-09-09 01:49:39.147374148 +0200
-+++ meson-0.42.0/mesonbuild/minstall.py	2017-09-09 01:51:01.209134717 +0200
+--- meson-0.47.1/mesonbuild/minstall.py.old	2018-08-10 11:01:27.812327013 +0200
++++ meson-0.47.1/mesonbuild/minstall.py	2018-08-10 11:01:51.940368505 +0200
 @@ -436,15 +436,6 @@
                          print("Symlink creation does not work on this platform. "
                                "Skipping all symlinking.")

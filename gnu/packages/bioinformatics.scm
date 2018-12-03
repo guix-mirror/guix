@@ -281,7 +281,8 @@ instance, it implements several methods to assess contig-wise read coverage.")
             (setenv "LDFLAGS"
                     (string-append
                      "-Wl,-rpath="
-                     (assoc-ref outputs "out") "/lib/bamtools")))))))
+                     (assoc-ref outputs "out") "/lib/bamtools"))
+            #t)))))
     (inputs `(("zlib" ,zlib)))
     (home-page "https://github.com/pezmaster31/bamtools")
     (synopsis "C++ API and command-line toolkit for working with BAM data")
@@ -496,7 +497,8 @@ BED, GFF/GTF, VCF.")
                 '("create_annotations_files.bash"
                   "create_metaplots.bash"
                   "Ribotaper_ORF_find.sh"
-                  "Ribotaper.sh"))))))))
+                  "Ribotaper.sh")))
+             #t)))))
     (inputs
      `(("bedtools" ,bedtools-2.18)
        ("samtools" ,samtools-0.1)
@@ -591,7 +593,8 @@ independently with transcriptional regulation.")
                     (man (string-append out "/share/man/man1")))
                (mkdir-p man)
                (copy-file "awk.1" (string-append man "/bioawk.1"))
-               (install-file "bioawk" bin)))))))
+               (install-file "bioawk" bin))
+             #t)))))
     (home-page "https://github.com/lh3/bioawk")
     (synopsis "AWK with bioinformatics extensions")
     (description "Bioawk is an extension to Brian Kernighan's awk, adding the
@@ -1240,7 +1243,7 @@ confidence to have in an alignment.")
      '(#:tests? #f ;no "check" target
        #:make-flags
        (list (string-append "ZLIB="
-                            (assoc-ref %build-inputs "zlib")
+                            (assoc-ref %build-inputs "zlib:static")
                             "/lib/libz.a")
              (string-append "LDFLAGS="
                             (string-join '("-lboost_filesystem"
@@ -1283,6 +1286,7 @@ confidence to have in an alignment.")
        ("boost" ,boost)
        ("sparsehash" ,sparsehash)
        ("pigz" ,pigz)
+       ("zlib:static" ,zlib "static")
        ("zlib" ,zlib)))
     (supported-systems '("x86_64-linux"))
     (home-page "https://sourceforge.net/p/bless-ec/wiki/Home/")
@@ -1811,7 +1815,8 @@ databases.")
                (copy-recursively "QuarryFiles"
                                  (string-append out "/QuarryFiles"))
                (install-file "CodingQuarry" bin)
-               (install-file "CufflinksGTF_to_CodingQuarryGFF3.py" bin)))))))
+               (install-file "CufflinksGTF_to_CodingQuarryGFF3.py" bin))
+             #t)))))
     (inputs `(("openmpi" ,openmpi)))
     (native-search-paths
      (list (search-path-specification
@@ -2727,7 +2732,8 @@ Illumina, Roche 454, and the SOLiD platform.")
                     (share (string-append out "/share/fraggenescan/train")))
                (install-file "run_FragGeneScan.pl" bin)
                (install-file "FragGeneScan" bin)
-               (copy-recursively "train" share))))
+               (copy-recursively "train" share))
+             #t))
          (delete 'check)
          (add-after 'install 'post-install-check
            ;; In lieu of 'make check', run one of the examples and check the
@@ -4153,7 +4159,8 @@ probabilistic distances of genome abundance and tetranucleotide frequency.")
                      "#!" (assoc-ref inputs "bash") "/bin/sh\n\n"
                      (assoc-ref inputs "jre") "/bin/java -jar "
                      bin "/minced.jar \"$@\"\n"))))
-               (chmod wrapper #o555)))))))
+               (chmod wrapper #o555))
+             #t)))))
     (native-inputs
      `(("jdk" ,icedtea "jdk")))
     (inputs
@@ -4408,7 +4415,7 @@ downstream analysis.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-scripts-dir
-           (lambda _ (chdir "scripts")))
+           (lambda _ (chdir "scripts") #t))
          (replace 'check
            (lambda _ (invoke "python" "-m" "unittest" "discover" "-v") #t))
          (add-after 'install 'wrap-executables
@@ -5222,6 +5229,7 @@ viewer.")
                         #t))))))
       (inputs
        `(("perl" ,perl)
+         ("zlib:static" ,zlib "static")
          ("zlib" ,zlib)))
       (supported-systems '("x86_64-linux"))
       (home-page "https://github.com/wanpinglee/MOSAIK")
@@ -6019,7 +6027,8 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
            (lambda _
              (substitute* "Makefile"
                (("(COMPILATION_TIME_PLACE=\")(.*)(\")" _ pre mid post)
-                (string-append pre "Built with Guix" post)))))
+                (string-append pre "Built with Guix" post)))
+             #t))
          (add-after 'enter-source-dir 'do-not-use-bundled-htslib
            (lambda _
              (substitute* "Makefile"
@@ -6103,7 +6112,8 @@ sequences.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
                (mkdir-p bin)
-               (copy-recursively "../bin" bin))))
+               (copy-recursively "../bin" bin))
+             #t))
          ;; no "configure" script
          (delete 'configure))))
     (inputs `(("zlib" ,zlib)))
@@ -12007,11 +12017,13 @@ bytes of memory space, where n is the length of the string.")
          (add-after 'unpack 'do-not-look-for-boost
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "CMakeLists.txt"
-               (("find_package\\(Boost 1\\.53\\.0") "#"))))
+               (("find_package\\(Boost 1\\.53\\.0") "#"))
+             #t))
          (add-after 'unpack 'do-not-assign-to-macro
            (lambda _
              (substitute* "include/spdlog/details/format.cc"
-               (("const unsigned CHAR_WIDTH = 1;") ""))))
+               (("const unsigned CHAR_WIDTH = 1;") ""))
+             #t))
          (add-after 'unpack 'prepare-rapmap
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((src "external/install/src/rapmap/")
@@ -12027,7 +12039,8 @@ bytes of memory space, where n is the length of the string.")
                (for-each (lambda (file)
                            (install-file file src))
                          (find-files "/tmp/rapmap/src" "\\.(c|cpp)"))
-               (copy-recursively "/tmp/rapmap/include" include))))
+               (copy-recursively "/tmp/rapmap/include" include))
+             #t))
          (add-after 'unpack 'use-system-libraries
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("src/SailfishIndexer.cpp"
@@ -12067,7 +12080,8 @@ bytes of memory space, where n is the length of the string.")
                      (string-append (getenv "CPLUS_INCLUDE_PATH")
                                     ":"
                                     (assoc-ref inputs "eigen")
-                                    "/include/eigen3")))))))
+                                    "/include/eigen3"))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("eigen" ,eigen)
@@ -12253,11 +12267,13 @@ performance as its primary goal.")
          (add-after 'unpack 'do-not-look-for-boost
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "CMakeLists.txt"
-               (("find_package\\(Boost 1\\.53\\.0") "#"))))
+               (("find_package\\(Boost 1\\.53\\.0") "#"))
+             #t))
          (add-after 'unpack 'do-not-phone-home
            (lambda _
              (substitute* "src/Salmon.cpp"
-               (("getVersionMessage\\(\\)") "\"\""))))
+               (("getVersionMessage\\(\\)") "\"\""))
+             #t))
          (add-after 'unpack 'prepare-rapmap
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((src "external/install/src/rapmap/")
@@ -12274,7 +12290,8 @@ performance as its primary goal.")
                                        "external/install/include/rapmap/concurrentqueue.h"
                                        "external/install/include/rapmap/FastxParserThreadUtils.hpp"
                                        "external/install/src/rapmap/FastxParser.cpp"
-                                       "external/install/src/rapmap/xxhash.c")))))
+                                       "external/install/src/rapmap/xxhash.c")))
+             #t))
          (add-after 'unpack 'use-system-libraries
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/CMakeLists.txt"
@@ -12385,8 +12402,7 @@ variational inference.")
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
        ("python-numpy" ,python-numpy)
-       ("python-scipy" ,python-scipy)
-       ("python-typing" ,python-typing)))
+       ("python-scipy" ,python-scipy)))
     (home-page "https://github.com/linnarsson-lab/loompy")
     (synopsis "Work with .loom files for single-cell RNA-seq data")
     (description "The loom file format is an efficient format for very large
@@ -13059,7 +13075,7 @@ expression report comparing samples in an easily configurable manner.")
        ("fastqc" ,fastqc)
        ("bowtie" ,bowtie)
        ("idr" ,idr)
-       ("snakemake" ,snakemake-4)
+       ("snakemake" ,snakemake)
        ("samtools" ,samtools)
        ("bedtools" ,bedtools)
        ("kentutils" ,kentutils)))
@@ -13120,7 +13136,7 @@ in an easily configurable manner.")
        ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
        ("python-wrapper" ,python-wrapper)
        ("python-pyyaml" ,python-pyyaml)
-       ("snakemake" ,snakemake-4)
+       ("snakemake" ,snakemake)
        ("bismark" ,bismark)
        ("fastqc" ,fastqc)
        ("bowtie" ,bowtie)
@@ -13170,7 +13186,7 @@ methylation and segmentation.")
        ("ghc-pandoc" ,ghc-pandoc)
        ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
        ("samtools" ,samtools)
-       ("snakemake" ,snakemake-4)
+       ("snakemake" ,snakemake)
        ("star" ,star)
        ("r-minimal" ,r-minimal)
        ("r-argparser" ,r-argparser)

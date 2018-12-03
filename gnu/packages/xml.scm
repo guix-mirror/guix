@@ -66,14 +66,14 @@
 (define-public expat
   (package
     (name "expat")
-    (version "2.2.5")
+    (version "2.2.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/expat/expat/"
                                  version "/expat-" version ".tar.bz2"))
              (sha256
               (base32
-               "1xpd78sp7m34jqrw5x13bz7kgz0n6aj15wn4zj4gfx3ypbpk5p6r"))))
+               "1wl1x93b5w457ddsdgj0lh7yjq4q6l7wfbgwhagkc8fm2qkkrd0p"))))
     (build-system gnu-build-system)
     (home-page "https://libexpat.github.io/")
     (synopsis "Stream-oriented XML parser library written in C")
@@ -131,8 +131,23 @@ hierarchical form with variable field lengths.")
               (base32
                "0ci7is75bwqqw2p32vxvrk6ds51ik7qgx73m920rakv5jlayax0b"))))
     (build-system gnu-build-system)
+    (outputs '("out" "static"))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'move-static-libs
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((src (string-append (assoc-ref outputs "out") "/lib"))
+                            (dst (string-append (assoc-ref outputs "static")
+                                                "/lib")))
+                        (mkdir-p dst)
+                        (for-each (lambda (ar)
+                                    (rename-file ar (string-append dst "/"
+                                                                   (basename ar))))
+                                  (find-files src "\\.a$"))
+                        #t))))))
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
+    (inputs `(("xz" ,xz)))
     (propagated-inputs `(("zlib" ,zlib))) ; libxml2.la says '-lz'.
     (native-inputs `(("perl" ,perl)))
     ;; $XML_CATALOG_FILES lists 'catalog.xml' files found in under the 'xml'
@@ -153,6 +168,7 @@ project (but it is usable outside of the Gnome platform).")
   (package/inherit libxml2
     (name "python-libxml2")
     (build-system python-build-system)
+    (outputs '("out"))
     (arguments
      `(;; XXX: Tests are specified in 'Makefile.am', but not in 'setup.py'.
        #:tests? #f
@@ -171,7 +187,8 @@ project (but it is usable outside of the Gnome platform).")
                  (format #f "ROOT = r'~a'" libxml2))
                 ;; For 'iconv.h'.
                 (("/opt/include")
-                 (string-append glibc "/include")))))))))
+                 (string-append glibc "/include"))))
+            #t)))))
     (inputs `(("libxml2" ,libxml2)))
     (synopsis "Python bindings for the libxml2 library")))
 
@@ -536,7 +553,8 @@ that allow you to generate HTML from an RSS, convert between 0.9, 0.91, and
                      (setenv "PERL5LIB"
                              (string-append (getenv "PERL5LIB") ":"
                                             (assoc-ref outputs "out")
-                                            "/lib/perl5/site_perl")))))))
+                                            "/lib/perl5/site_perl"))
+                     #t)))))
     (home-page "https://metacpan.org/release/XML-SAX")
     (synopsis "Perl API for XML")
     (description "XML::SAX consists of several framework classes for using and
@@ -1204,7 +1222,7 @@ elements to their parents
              (substitute* "test/run"
                ;; Run tests with `python' only
                (("^(PYTHON_VERSIONS = ).*" all m) (string-append m "['']")))
-             (zero? (system* "test/run")))))))
+             (invoke "test/run"))))))
     (home-page "https://github.com/dilshod/xlsx2csv")
     (synopsis "XLSX to CSV converter")
     (description
@@ -1253,7 +1271,7 @@ files.  It is designed to be fast and to handle large input files.")
          ;; Bootstrapping is required in order to fix the test driver script.
          (replace 'bootstrap
            (lambda _
-             (zero? (system* "bash" "bootstrap")))))))
+             (invoke "bash" "bootstrap"))))))
     (native-inputs
      `(("unzip" ,unzip)
        ("autoconf" ,autoconf)
@@ -1854,7 +1872,8 @@ low memory footprint.")
        (modify-phases %standard-phases
          (add-before 'build 'copy-resources
            (lambda _
-             (copy-recursively "src/main/resources" "build/classes"))))))
+             (copy-recursively "src/main/resources" "build/classes")
+             #t)))))
     (inputs
      `(("java-xpp3" ,java-xpp3)))
     (native-inputs

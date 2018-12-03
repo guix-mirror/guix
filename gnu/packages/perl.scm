@@ -43,9 +43,9 @@
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
-  #:use-module (guix utils) ;substitute-keyword-arguments for perl-5.26.2
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
@@ -62,17 +62,15 @@
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
     (name "perl")
-    (version "5.26.1")
-    (replacement perl/fixed)
+    (version "5.28.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/src/5.0/perl-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1p81wwvr5jb81m41d07kfywk5gvbk0axdrnvhc2aghcdbr4alqz7"))
+               "1a3f822lcl8dr8v0hk80yyhpzqlljg49z9flb48rs3nbsij9z4ky"))
              (patches (search-patches
-                       "perl-file-path-CVE-2017-6512.patch"
                        "perl-no-sys-dirs.patch"
                        "perl-autosplit-default-time.patch"
                        "perl-deterministic-ordering.patch"
@@ -162,41 +160,6 @@ administration, web development, network programming, GUI development, and
 more.")
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
-
-;; Fixes CVE-2018-6797, CVE-2018-6798, and CVE-2018-6913.
-;; See <https://metacpan.org/changes/release/SHAY/perl-5.26.2>.
-(define perl-5.26.2
-  (package
-    (inherit perl)
-    (version "5.26.2")
-    (source (origin
-              (inherit (package-source perl))
-              (uri (string-append "mirror://cpan/src/5.0/perl-"
-                                  version ".tar.gz"))
-              (patches (append (origin-patches (package-source perl))
-                               (search-patches "perl-archive-tar-CVE-2018-12015.patch")))
-              (sha256
-               (base32
-                "03gpnxx1g6hvlh0v4aqx00580h787sfywp1vlvw64q2xcbm9qbsp"))))))
-
-;; When grafting perl, complications arise when the replacement perl has a
-;; different version number than the original.  So, here we create a version
-;; of perl-5.26.2 that thinks it is version 5.26.1.  See
-;; <https://bugs.gnu.org/31210> and <https://bugs.gnu.org/31216>.
-(define perl/fixed
-  (package
-    (inherit perl-5.26.2)
-    (version "5.26.1")
-    (arguments
-     (substitute-keyword-arguments (package-arguments perl-5.26.2)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'revert-perl-subversion
-             (lambda _
-               (substitute* "patchlevel.h"
-                 (("^#define PERL_SUBVERSION	2")
-                  "#define PERL_SUBVERSION	1"))
-               #t))))))))
 
 (define-public perl-algorithm-c3
   (package
@@ -2914,7 +2877,8 @@ interface for the RFC 2104 HMAC mechanism.")
          (add-after 'build 'set-permissions
            (lambda _
              ;; Make MD5.so read-write so it can be stripped.
-             (chmod "blib/arch/auto/Digest/MD5/MD5.so" #o755))))))
+             (chmod "blib/arch/auto/Digest/MD5/MD5.so" #o755)
+             #t)))))
     (home-page "https://metacpan.org/release/Digest-MD5")
     (synopsis "Perl interface to the MD-5 algorithm")
     (description
@@ -3040,7 +3004,7 @@ also known as JIS 2000.")
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-env
-           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1"))))))
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (home-page "https://metacpan.org/release/Encode-HanExtra")
     (synopsis "Additional Chinese encodings")
     (description "This Perl module provides Chinese encodings that are not
@@ -4315,7 +4279,8 @@ run interactively.  It also has an option to capture output/error buffers.")
                    (lambda _
                      ;; This test fails, and we're not really interested in
                      ;; it, so disable it.
-                     (delete-file "t/win32_compile.t"))))))
+                     (delete-file "t/win32_compile.t")
+                     #t)))))
     (home-page "https://metacpan.org/release/IPC-Run")
     (synopsis "Run system() and background procs w/ piping, redirs, ptys")
     (description "IPC::Run allows you run and interact with child processes
@@ -5286,7 +5251,7 @@ examine the contents, and perform some simple tasks.  It can also load the
 (define-public perl-module-runtime
   (package
     (name "perl-module-runtime")
-    (version "0.014")
+    (version "0.016")
     (source
      (origin
        (method url-fetch)
@@ -5294,7 +5259,7 @@ examine the contents, and perform some simple tasks.  It can also load the
                            "Module-Runtime-" version ".tar.gz"))
        (sha256
         (base32
-         "19326f094jmjs6mgpwkyisid54k67w34br8yfh0gvaaml87gwi2c"))))
+         "097hy2czwkxlppri32m599ph0xfvfsbf0a5y23a4fdc38v32wc38"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "https://metacpan.org/release/Module-Runtime")
@@ -6904,7 +6869,8 @@ directory specifications in a cross-platform manner.")
              (substitute* "Cwd.pm"
                (("'/bin/pwd'")
                 (string-append "'" (assoc-ref inputs "coreutils")
-                               "/bin/pwd'"))))))))
+                               "/bin/pwd'")))
+             #t)))))
     (inputs
      `(("coreutils" ,coreutils)))
     (home-page "https://metacpan.org/release/PathTools")
@@ -9036,6 +9002,9 @@ defined by Annex #11 is used to determine breaking positions.")
                (base32
                 "1xnhazbdvpyfpnxd90krzhxkvabf8fa2ji6xzlrf75j6nz8251zs"))))
     (build-system perl-build-system)
+    ;; FIXME: Tests fail on 32-bit architectures:
+    ;; <https://rt.cpan.org/Public/Bug/Display.html?id=127007>.
+    (arguments `(#:tests? ,(target-64bit?)))
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-leaktrace" ,perl-test-leaktrace)
