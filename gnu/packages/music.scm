@@ -2692,6 +2692,7 @@ Songs can be searched by artist, name or even by a part of the song text.")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
+              (patches (search-patches "beets-python-3.7-fix.patch"))
               (sha256
                (base32
                 "0l2vfrknwcsm6bn83m7476qrz45qwgxcb5k0h7kn96kr70irn1v2"))))
