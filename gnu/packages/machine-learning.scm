@@ -719,7 +719,7 @@ computing environments.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0qv7ir1fy9vjar3llc72yxmfja3gxm5icdf0y3q57vsn3wcdglkz"))))
+         "0fkhwg3xn1s7ln9q1szq6kwc4jhwvjh8w4kmv9wcrqy7cq3lbv0d"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
