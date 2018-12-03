@@ -53,6 +53,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages selinux)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -159,7 +160,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.56.3")
+   (version "2.58.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -167,19 +168,20 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1cjcqz77m62zrx7224vl3f2cxwqf28r5xpqb2jy7av0vr2scb959"))
+              "1mnp4vankish8bqxymdl591p9v1ynk7pfc5dmpx3vamn4vcskmlp"))
             (patches (search-patches "glib-tests-timer.patch"))))
-   (build-system gnu-build-system)
+   (build-system meson-build-system)
    (outputs '("out"           ; everything
-              "bin"           ; glib-mkenums, gtester, etc.; depends on Python
-              "doc"))         ; 20 MiB of GTK-Doc reference
+              "bin"))         ; glib-mkenums, gtester, etc.; depends on Python
    (propagated-inputs
-    `(("pcre" ,pcre))) ; in the Requires.private field of glib-2.0.pc
-   (inputs
-    `(("coreutils" ,coreutils)
+    `(("pcre" ,pcre)  ; in the Requires.private field of glib-2.0.pc
+      ("libffi" ,libffi) ; in the Requires.private field of gobject-2.0.pc
+      ;; These are in the Requires.private field of gio-2.0.pc
       ("util-linux" ,util-linux)  ; for libmount
-      ("libffi" ,libffi)
+      ("libselinux" ,libselinux)
       ("zlib" ,zlib)))
+   (inputs
+    `(("coreutils" ,coreutils)))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("dbus" ,dbus)                              ; for GDBus tests
@@ -189,11 +191,14 @@ shared NFS home directories.")
       ("bash" ,bash)
       ("tzdata" ,tzdata-for-tests)))                  ; for tests/gdatetime.c
    (arguments
-    `(#:disallowed-references (,tzdata-for-tests)
-      #:phases
+    `(#:phases
       (modify-phases %standard-phases
+        (delete 'bootstrap)
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; For building deterministic pyc files
+            (setenv "DETERMINISTIC_BUILD" "1")
+
             ;; For tests/gdatetime.c.
             (setenv "TZDIR"
                     (string-append (assoc-ref inputs "tzdata")
@@ -202,14 +207,8 @@ shared NFS home directories.")
             ;; Some tests want write access there.
             (setenv "HOME" (getcwd))
             (setenv "XDG_CACHE_HOME" (getcwd))
-
-            (substitute* '("glib/gspawn.c"
-                           "glib/tests/utils.c"
-                           "tests/spawn-test.c")
-              (("/bin/sh")
-               (string-append (assoc-ref inputs "bash") "/bin/sh")))
             #t))
-        (add-before 'check 'disable-failing-tests
+        (add-after 'unpack 'disable-failing-tests
           (lambda _
             (let ((disable
                    (lambda (test-file test-paths)
@@ -227,6 +226,15 @@ shared NFS home directories.")
                        ;; as found on hydra.gnu.org, and strace(1) doesn't
                        ;; recognize it.
                        "/thread/thread4"))
+
+                     ;; This tries to find programs in FHS directories.
+                     ("glib/tests/utils.c"
+                      ("/utils/find-program"))
+
+                     ;; This fails because "glib/tests/echo-script" cannot be
+                     ;; found.
+                     ("glib/tests/spawn-singlethread.c"
+                      ("/gthread/spawn-script"))
 
                      ("glib/tests/timer.c"
                       (;; fails if compiler optimizations are enabled, which they
@@ -273,12 +281,30 @@ shared NFS home directories.")
                       (;; Requires /etc/machine-id.
                        "/gdbus/x11-autolaunch")))))
               (for-each (lambda (x) (apply disable x)) failing-tests)
+              #t)))
+        ;; TODO: meson does not permit the bindir to be outside of prefix.
+        ;; See https://github.com/mesonbuild/meson/issues/2561
+        ;; We can remove this once meson is patched.
+        (add-after 'install 'move-executables
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (bin (assoc-ref outputs "bin")))
+              (mkdir-p bin)
+              (rename-file (string-append out "/bin")
+                           (string-append bin "/bin"))
+              ;; Do not refer to "bindir", which points to "${prefix}/bin".
+              ;; We don't patch "bindir" to point to "$bin/bin", because that
+              ;; would create a reference cycle between the "out" and "bin"
+              ;; outputs.
+              (substitute* (list (string-append out "/lib/pkgconfig/gio-2.0.pc")
+                                 (string-append out "/lib/pkgconfig/glib-2.0.pc"))
+                (("bindir=\\$\\{prefix\\}/bin") "")
+                (("=\\$\\{bindir\\}/") "="))
               #t))))
-
-      ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.
-      #:configure-flags (list (string-append "--with-html-dir="
-                                             (assoc-ref %outputs "doc")
-                                             "/share/gtk-doc/html"))
+      ;; TODO: see above for explanation.
+      ;; #:configure-flags (list (string-append "--bindir="
+      ;;                                        (assoc-ref %outputs "bin")
+      ;;                                        "/bin"))
 
       ;; In 'gio/tests', 'gdbus-test-codegen-generated.h' is #included in a
       ;; file that gets compiled possibly before it has been fully generated.
