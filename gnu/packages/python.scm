@@ -2822,25 +2822,26 @@ and is very extensible.")
 (define-public python-scikit-image
   (package
     (name "python-scikit-image")
-    (version "0.11.3")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/s/scikit-image/scikit-image-"
-             version ".tar.gz"))
+       (uri (pypi-uri "scikit-image" version))
        (sha256
-        (base32 "0jz416fqvpahqyffw8plmszzfj669w8wvf3y9clnr5lr6a7md3kn"))))
+        (base32 "0l1c3rl4s1jyv80i5hns4pgih09zrxfj7lygdc51w8sgyysb7ac6"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Some tests require running X11 server. Disable them?
      '(#:tests? #f))
     ;; See DEPENDS.txt for the list of build and run time requiremnts
     (propagated-inputs
-     `(("python-matplotlib" ,python-matplotlib)
+     `(("python-cloudpickle" ,python-cloudpickle)
+       ("python-dask" ,python-dask)
+       ("python-matplotlib" ,python-matplotlib)
        ("python-networkx" ,python-networkx)
-       ("python-scipy" ,python-scipy)
-       ("python-pillow" ,python-pillow)))
+       ("python-pillow" ,python-pillow)
+       ("python-pywavelets" ,python-pywavelets)
+       ("python-scipy" ,python-scipy)))
     (native-inputs
      `(("python-numpy" ,python-numpy)
        ("python-cython" ,python-cython)
@@ -14516,6 +14517,9 @@ library's @code{threading} module.")
 functions, and dictionaries.")
     (license license:bsd-3)))
 
+(define-public python2-toolz
+  (package-with-python2 python-toolz))
+
 (define-public python-cytoolz
   (package
     (name "python-cytoolz")
@@ -14598,6 +14602,9 @@ shipped over the network to execute on remote hosts, possibly close to the
 data.")
     (license license:bsd-3)))
 
+(define-public python2-cloudpickle
+  (package-with-python2 python-cloudpickle))
+
 (define-public python-locket
   (package
     (name "python-locket")
@@ -14616,6 +14623,9 @@ data.")
      "Locket implements a lock that can be used by multiple processes provided
 they use the same path.")
     (license license:bsd-2)))
+
+(define-public python2-locket
+  (package-with-python2 python-locket))
 
 (define-public python-blosc
   (package
@@ -14648,6 +14658,9 @@ regular-spaced values, etc.
 This Python package wraps the Blosc library.")
     (license license:bsd-3)))
 
+(define-public python2-blosc
+  (package-with-python2 python-blosc))
+
 (define-public python-partd
   (package
     (name "python-partd")
@@ -14672,6 +14685,9 @@ This Python package wraps the Blosc library.")
     (description "Partd stores key-value pairs.  Values are raw bytes.  We
 append on old values.  Partd excels at shuffling operations.")
     (license license:bsd-3)))
+
+(define-public python2-partd
+  (package-with-python2 python-partd))
 
 (define-public python-dask
   (package
@@ -14726,6 +14742,9 @@ extend common interfaces like NumPy, Pandas, or Python iterators to
 larger-than-memory or distributed environments.  These parallel collections
 run on top of the dynamic task schedulers. ")
     (license license:bsd-3)))
+
+(define-public python2-dask
+  (package-with-python2 python-dask))
 
 (define-public python-ilinkedlist
   (package
