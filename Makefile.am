@@ -763,7 +763,7 @@ assert-no-store-file-names: $(distdir)/ChangeLog
 	  exit 1 ;								\
 	fi
 
-# Make sure hydra.gnu.org has the important binaries.
+# Make sure important substitutes are available.
 assert-binaries-available: $(GOBJECTS)
 	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"			\
 	  "$(top_srcdir)/build-aux/check-available-binaries.scm"

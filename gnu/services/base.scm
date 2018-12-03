@@ -1518,7 +1518,7 @@ public key, with GUIX."
            (let ((status (cdr (waitpid pid))))
              (unless (zero? status)
                (format (current-error-port) "warning: \
-failed to register hydra.gnu.org public key: ~a~%" status))))))))
+failed to register public key '~a': ~a~%" key status))))))))
 
 (define %default-authorized-guix-keys
   ;; List of authorized substitute keys.
@@ -1630,7 +1630,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
      ;; otherwise call 'chown' here, but the problem is that on a COW overlayfs,
      ;; chown leads to an entire copy of the tree, which is a bad idea.
 
-     ;; Optionally authorize hydra.gnu.org's key.
+     ;; Optionally authorize substitute server keys.
      (if authorize-key?
          #~(begin
              #$@(map (cut hydra-key-authorization <> guix) keys))

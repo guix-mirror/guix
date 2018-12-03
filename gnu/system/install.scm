@@ -250,7 +250,7 @@ You have been warned.  Thanks for being so brave.\x1b[0m
           ;; The usual services.
           (syslog-service)
 
-          ;; The build daemon.  Register the hydra.gnu.org key as trusted.
+          ;; The build daemon.  Register the official server keys as trusted.
           ;; This allows the installation process to use substitutes by
           ;; default.
           (guix-service (guix-configuration (authorize-key? #t)))

@@ -443,7 +443,7 @@ as timestamps or randomly-generated output in the build result.
 
 Another option is to use @command{guix challenge} (@pxref{Invoking guix
 challenge}).  You may run it once the package has been committed and
-built by @code{hydra.gnu.org} to check whether it obtains the same
+built by @code{@value{SUBSTITUTE-SERVER}} to check whether it obtains the same
 result as you did.  Better yet: Find another machine that can build it
 and run @command{guix publish}.  Since the remote build machine is
 likely different from yours, this can catch non-determinism issues

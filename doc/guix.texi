@@ -13,6 +13,9 @@
 @set OPENPGP-SIGNING-KEY-ID 3CE464558A84FDC69DB40CFB090B11993D9AEBB5
 @set KEY-SERVER pool.sks-keyservers.net
 
+@c The official substitute server used by default.
+@set SUBSTITUTE-SERVER ci.guix.info
+
 @copying
 Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@*
@@ -1274,8 +1277,7 @@ remote procedure call (@pxref{The Store}).
 @anchor{daemon-substitute-urls}
 Consider @var{urls} the default whitespace-separated list of substitute
 source URLs.  When this option is omitted,
-@indicateurl{https://mirror.hydra.gnu.org https://hydra.gnu.org} is used
-(@code{mirror.hydra.gnu.org} is a mirror of @code{hydra.gnu.org}).
+@indicateurl{https://@value{SUBSTITUTE-SERVER}} is used.
 
 This means that substitutes may be downloaded from @var{urls}, as long
 as they are signed by a trusted signature (@pxref{Substitutes}).
@@ -2321,7 +2323,7 @@ also result from derivation builds, can be available as substitutes.
 
 @cindex hydra
 @cindex build farm
-The @code{mirror.hydra.gnu.org} server is a front-end to an official build farm
+The @code{@value{SUBSTITUTE-SERVER}} server is a front-end to an official build farm
 that builds packages from Guix continuously for some
 architectures, and makes them available as substitutes.  This is the
 default source of substitutes; it can be overridden by passing the
@@ -2353,22 +2355,22 @@ other substitute server.
 @cindex substitutes, authorization thereof
 @cindex access control list (ACL), for substitutes
 @cindex ACL (access control list), for substitutes
-To allow Guix to download substitutes from @code{hydra.gnu.org} or a
+To allow Guix to download substitutes from @code{@value{SUBSTITUTE-SERVER}} or a
 mirror thereof, you
 must add its public key to the access control list (ACL) of archive
 imports, using the @command{guix archive} command (@pxref{Invoking guix
-archive}).  Doing so implies that you trust @code{hydra.gnu.org} to not
+archive}).  Doing so implies that you trust @code{@value{SUBSTITUTE-SERVER}} to not
 be compromised and to serve genuine substitutes.
 
-The public key for @code{hydra.gnu.org} is installed along with Guix, in
-@code{@var{prefix}/share/guix/hydra.gnu.org.pub}, where @var{prefix} is
+The public key for @code{@value{SUBSTITUTE-SERVER}} is installed along with Guix, in
+@code{@var{prefix}/share/guix/@value{SUBSTITUTE-SERVER}.pub}, where @var{prefix} is
 the installation prefix of Guix.  If you installed Guix from source,
 make sure you checked the GPG signature of
 @file{guix-@value{VERSION}.tar.gz}, which contains this public key file.
 Then, you can run something like this:
 
 @example
-# guix archive --authorize < @var{prefix}/share/guix/hydra.gnu.org.pub
+# guix archive --authorize < @var{prefix}/share/guix/@value{SUBSTITUTE-SERVER}.pub
 @end example
 
 @quotation Note
@@ -2409,7 +2411,7 @@ $ guix build emacs --dry-run
 @end example
 
 @noindent
-This indicates that substitutes from @code{hydra.gnu.org} are usable and
+This indicates that substitutes from @code{@value{SUBSTITUTE-SERVER}} are usable and
 will be downloaded, when possible, for future builds.
 
 @cindex substitutes, how to disable
@@ -2501,9 +2503,9 @@ by a server.
 Today, each individual's control over their own computing is at the
 mercy of institutions, corporations, and groups with enough power and
 determination to subvert the computing infrastructure and exploit its
-weaknesses.  While using @code{hydra.gnu.org} substitutes can be
+weaknesses.  While using @code{@value{SUBSTITUTE-SERVER}} substitutes can be
 convenient, we encourage users to also build on their own, or even run
-their own build farm, such that @code{hydra.gnu.org} is less of an
+their own build farm, such that @code{@value{SUBSTITUTE-SERVER}} is less of an
 interesting target.  One way to help is by publishing the software you
 build using @command{guix publish} so that others have one more choice
 of server to download substitutes from (@pxref{Invoking guix publish}).
@@ -3658,11 +3660,11 @@ Read a single-item archive as served by substitute servers
 low-level operation needed in only very narrow use cases; see below.
 
 For example, the following command extracts the substitute for Emacs
-served by @code{hydra.gnu.org} to @file{/tmp/emacs}:
+served by @code{@value{SUBSTITUTE-SERVER}} to @file{/tmp/emacs}:
 
 @example
 $ wget -O - \
-  https://hydra.gnu.org/nar/@dots{}-emacs-24.5 \
+  https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-emacs-24.5 \
   | bunzip2 | guix archive -x /tmp/emacs
 @end example
 
@@ -6683,7 +6685,7 @@ but you are actually on an @code{x86_64} machine:
 
 @example
 $ guix build --log-file gdb -s mips64el-linux
-https://hydra.gnu.org/log/@dots{}-gdb-7.10
+https://@value{SUBSTITUTE-SERVER}/log/@dots{}-gdb-7.10
 @end example
 
 You can freely access a huge library of build logs!
@@ -8335,7 +8337,7 @@ When @command{guix publish} runs, it spawns an HTTP server which allows
 anyone with network access to obtain substitutes from it.  This means
 that any machine running Guix can also act as if it were a build farm,
 since the HTTP interface is compatible with Hydra, the software behind
-the @code{hydra.gnu.org} build farm.
+the @code{@value{SUBSTITUTE-SERVER}} build farm.
 
 For security, each substitute is signed, allowing recipients to check
 their authenticity and integrity (@pxref{Substitutes}).  Because
@@ -8572,20 +8574,20 @@ any given store item.
 The command output looks like this:
 
 @smallexample
-$ guix challenge --substitute-urls="https://hydra.gnu.org https://guix.example.org"
-updating list of substitutes from 'https://hydra.gnu.org'... 100.0%
+$ guix challenge --substitute-urls="https://@value{SUBSTITUTE-SERVER} https://guix.example.org"
+updating list of substitutes from 'https://@value{SUBSTITUTE-SERVER}'... 100.0%
 updating list of substitutes from 'https://guix.example.org'... 100.0%
 /gnu/store/@dots{}-openssl-1.0.2d contents differ:
   local hash: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
-  https://hydra.gnu.org/nar/@dots{}-openssl-1.0.2d: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
+  https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-openssl-1.0.2d: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
   https://guix.example.org/nar/@dots{}-openssl-1.0.2d: 1zy4fmaaqcnjrzzajkdn3f5gmjk754b43qkq47llbyak9z0qjyim
 /gnu/store/@dots{}-git-2.5.0 contents differ:
   local hash: 00p3bmryhjxrhpn2gxs2fy0a15lnip05l97205pgbk5ra395hyha
-  https://hydra.gnu.org/nar/@dots{}-git-2.5.0: 069nb85bv4d4a6slrwjdy8v1cn4cwspm3kdbmyb81d6zckj3nq9f
+  https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-git-2.5.0: 069nb85bv4d4a6slrwjdy8v1cn4cwspm3kdbmyb81d6zckj3nq9f
   https://guix.example.org/nar/@dots{}-git-2.5.0: 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
 /gnu/store/@dots{}-pius-2.1.1 contents differ:
   local hash: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
-  https://hydra.gnu.org/nar/@dots{}-pius-2.1.1: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
+  https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-pius-2.1.1: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
   https://guix.example.org/nar/@dots{}-pius-2.1.1: 1cy25x1a4fzq5rk0pmvc8xhwyffnqz95h2bpvqsz2mpvlbccy0gs
 
 @dots{}
@@ -8605,7 +8607,7 @@ the servers obtained a result different from the local build.
 
 @cindex non-determinism, in package builds
 As an example, @code{guix.example.org} always gets a different answer.
-Conversely, @code{hydra.gnu.org} agrees with local builds, except in the
+Conversely, @code{@value{SUBSTITUTE-SERVER}} agrees with local builds, except in the
 case of Git.  This might indicate that the build process of Git is
 non-deterministic, meaning that its output varies as a function of
 various things that Guix does not fully control, in spite of building
@@ -8619,14 +8621,14 @@ To find out what is wrong with this Git binary, we can do something along
 these lines (@pxref{Invoking guix archive}):
 
 @example
-$ wget -q -O - https://hydra.gnu.org/nar/@dots{}-git-2.5.0 \
+$ wget -q -O - https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-git-2.5.0 \
    | guix archive -x /tmp/git
 $ diff -ur --no-dereference /gnu/store/@dots{}-git.2.5.0 /tmp/git
 @end example
 
 This command shows the difference between the files resulting from the
 local build, and the files resulting from the build on
-@code{hydra.gnu.org} (@pxref{Overview, Comparing and Merging Files,,
+@code{@value{SUBSTITUTE-SERVER}} (@pxref{Overview, Comparing and Merging Files,,
 diffutils, Comparing and Merging Files}).  The @command{diff} command
 works great for text files.  When binary files differ, a better option
 is @uref{https://diffoscope.org/, Diffoscope}, a tool that helps
@@ -8641,7 +8643,7 @@ In the meantime, @command{guix challenge} is one tool to help address
 the problem.
 
 If you are writing packages for Guix, you are encouraged to check
-whether @code{hydra.gnu.org} and other substitute servers obtain the
+whether @code{@value{SUBSTITUTE-SERVER}} and other substitute servers obtain the
 same build result as you did with:
 
 @example
@@ -11231,14 +11233,14 @@ Number of build user accounts to create.
 @item @code{authorize-key?} (default: @code{#t})
 @cindex substitutes, authorization thereof
 Whether to authorize the substitute keys listed in
-@code{authorized-keys}---by default that of @code{hydra.gnu.org}
+@code{authorized-keys}---by default that of @code{@value{SUBSTITUTE-SERVER}}
 (@pxref{Substitutes}).
 
 @vindex %default-authorized-guix-keys
 @item @code{authorized-keys} (default: @var{%default-authorized-guix-keys})
 The list of authorized key files for archive imports, as a list of
 string-valued gexps (@pxref{Invoking guix archive}).  By default, it
-contains that of @code{hydra.gnu.org} (@pxref{Substitutes}).
+contains that of @code{@value{SUBSTITUTE-SERVER}} (@pxref{Substitutes}).
 
 @item @code{use-substitutes?} (default: @code{#t})
 Whether to use substitutes.
@@ -23740,7 +23742,7 @@ system}.
 @cindex substituter
 Users can obtain the new package definition simply by running
 @command{guix pull} (@pxref{Invoking guix pull}).  When
-@code{hydra.gnu.org} is done building the package, installing the
+@code{@value{SUBSTITUTE-SERVER}} is done building the package, installing the
 package automatically downloads binaries from there
 (@pxref{Substitutes}).  The only place where human intervention is
 needed is to review and apply the patch.
