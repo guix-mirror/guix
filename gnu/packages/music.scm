@@ -2688,14 +2688,14 @@ Songs can be searched by artist, name or even by a part of the song text.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.4.6")
+    (version "1.4.7")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
               (patches (search-patches "beets-python-3.7-fix.patch"))
               (sha256
                (base32
-                "0l2vfrknwcsm6bn83m7476qrz45qwgxcb5k0h7kn96kr70irn1v2"))))
+                "0w3gz69s9gf5ih69d4sddgh7ndj7658m621bp742zldvjakdncrs"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
