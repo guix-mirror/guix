@@ -14676,14 +14676,14 @@ append on old values.  Partd excels at shuffling operations.")
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "0.19.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dask" version))
        (sha256
         (base32
-         "1pm1163qb6s22p8fnvj0zlfazihvs7hxjn8l2n52bzs7shw6kdz3"))))
+         "1xwz8h020ipwav2p5gcq9pskya1cvzd6hjyvd06dvr3w5lxlmym1"))))
     (build-system python-build-system)
     ;; A single test out of 5000+ fails.  This test is marked as xfail when
     ;; pytest-xdist is used.
@@ -14696,7 +14696,16 @@ append on old values.  Partd excels at shuffling operations.")
                (("def test_interrupt\\(\\)" m)
                 (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
                                m)))
-             #t)))))
+             (when (which "python2")
+               ;; This test fails with recent Pandas:
+               ;; <https://github.com/dask/dask/issues/3794>.
+               (substitute* "dask/dataframe/tests/test_dataframe.py"
+                 (("def test_info\\(\\)" m)
+                  (string-append "@pytest.mark.skip(reason=\"Disabled by Guix\")\n"
+                                 m))))
+             #t))
+         (replace 'check
+           (lambda _ (invoke "pytest" "-vv"))))))
     (propagated-inputs
      `(("python-cloudpickle" ,python-cloudpickle)
        ("python-numpy" ,python-numpy)
