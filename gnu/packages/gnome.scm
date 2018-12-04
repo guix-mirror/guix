@@ -2838,7 +2838,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public five-or-more
   (package
     (name "five-or-more")
-    (version "3.28.0")
+    (version "3.30.0")
     (source
      (origin
        (method url-fetch)
@@ -2847,7 +2847,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1fy4a7qdjqvabm0cl45d6xlx6hy4paxvm0b2paifff73bl250d5c"))))
+         "00d729p251kh96624i7qg2370r5mxwafs016i6hy01vsr71jzb9x"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
