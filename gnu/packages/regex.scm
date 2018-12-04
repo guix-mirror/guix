@@ -23,6 +23,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix utils))
 
@@ -32,12 +33,12 @@
      (version "2018-10-01")
      (home-page "https://github.com/google/re2")
      (source (origin
-               (method url-fetch)
-               (uri (string-append home-page "/archive/" version ".tar.gz"))
-               (file-name (string-append name "-" version ".tar.gz"))
+               (method git-fetch)
+               (uri (git-reference (url home-page) (commit version)))
+               (file-name (git-file-name name version))
                (sha256
                 (base32
-                 "10fsxsj3yip34hp2zl5rw8h2x2lgnp83fwrh7m0qfd9m99qrf4x3"))))
+                 "086n0ldr2sqvybck9r0vc302yspj0x7nq554siadspfl1in8ysf6"))))
      (build-system gnu-build-system)
      (arguments
       `(#:modules ((guix build gnu-build-system)
