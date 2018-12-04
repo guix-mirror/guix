@@ -294,7 +294,10 @@ in C/C++.")
            "--with-system-zlib"
 
            ;; Intl API requires bundled ICU.
-           "--without-intl-api")
+           "--without-intl-api"
+
+           ;; Without this gnome-shell will crash at runtime.
+           "--disable-jemalloc")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'patch-and-chdir
