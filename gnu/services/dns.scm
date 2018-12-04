@@ -684,7 +684,8 @@
   (string-delete #\? (symbol->string field-name)))
 
 (define (serialize-field field-name val)
-  (format #t "~a=~a\n" (uglify-field-name field-name) val))
+  (when (not (member field-name '(group secret-file user)))
+    (format #t "~a=~a\n" (uglify-field-name field-name) val)))
 
 (define (serialize-boolean field-name val)
   (serialize-field field-name (if val "yes" "no")))
