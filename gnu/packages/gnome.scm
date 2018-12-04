@@ -927,7 +927,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
 (define-public adwaita-icon-theme
   (package (inherit gnome-icon-theme)
     (name "adwaita-icon-theme")
-    (version "3.28.0")
+    (version "3.30.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -935,7 +935,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0l114ildlb3lz3xymfxxi0wpr2x21rd3cg8slb8jyxynzwfqrbks"))))
+                "1kp1lis3dr16jmlgycz1b29jsr6ir8wmqj6laqwlhs663cmjlxbd"))))
     (native-inputs
      `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
 
