@@ -32,11 +32,13 @@
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pkg-config)
@@ -46,6 +48,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
 
 (define-public cifs-utils
@@ -147,14 +150,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.8.6")
+    (version "4.9.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "15hawqdm37l6lp9k14c634315p77cllsx89bvbw9h38fg1hj3fbk"))))
+               "1krm47x08c0vcrq12dxs8mbicma1ck2sl1i0hgkvrmwsgrqdi3yg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -199,10 +202,14 @@ anywhere.")
      `(("acl" ,acl)
        ("cups" ,cups)
        ;; ("gamin" ,gamin)
+       ("gpgme" ,gpgme)
        ("gnutls" ,gnutls)
        ("iniparser" ,iniparser)
+       ("jansson" ,jansson)
        ("libaio" ,libaio)
+       ("libarchive" ,libarchive)
        ("linux-pam" ,linux-pam)
+       ("lmdb" ,lmdb)
        ("openldap" ,openldap)
        ("popt" ,popt)
        ("readline" ,readline)
