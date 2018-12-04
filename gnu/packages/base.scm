@@ -1097,7 +1097,7 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2018e")
+    (version "2018g")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1105,7 +1105,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0bk97fv2i5ns42prpmlaadsswdjwv0ifi7whj2s4q6l44rcqwa3b"))))
+               "05kayi3w9pvhj6ljx1hvwd0r8mxfzn436fjmwhx53xkj919xxpq2"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -1155,7 +1155,7 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "1kpb02631s58i068mwq63xlamcv1ffj4p6y4wpb9kdl01vr0qd6a"))))))
+                            "09y44fzcdq3c06saa8iqqa0a59cyw6ni3p31ps0j1w3hcpxz8lxa"))))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
