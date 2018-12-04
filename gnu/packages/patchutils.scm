@@ -102,8 +102,8 @@ listing the files modified by a patch.")
        (base32
         "06b816m2gz9jfif7k9v2hrm7fz76zjg5pavf7hd3ifybwn4cgjzn"))
       (patches (search-patches "quilt-test-fix-regex.patch"
-                               "quilt-compat-getopt-fix-second-separator.patch"
-                               "quilt-compat-getopt-fix-option-with-nondigit-param.patch"))))
+                               "quilt-getopt-second-separator.patch"
+                               "quilt-getopt-nondigit-param.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gnu-gettext)))
