@@ -14,7 +14,7 @@
 @set KEY-SERVER pool.sks-keyservers.net
 
 @c The official substitute server used by default.
-@set SUBSTITUTE-SERVER mirror.hydra.gnu.org
+@set SUBSTITUTE-SERVER ci.guix.info
 
 @copying
 Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès@*
