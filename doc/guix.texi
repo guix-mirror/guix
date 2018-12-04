@@ -9069,7 +9069,7 @@ More and more system services are provided (@pxref{Services}), but some
 may be missing.
 
 @item
-More than 7,500 packages are available, but you might
+More than 8,500 packages are available, but you might
 occasionally find that a useful package is missing.
 
 @item
