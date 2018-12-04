@@ -364,7 +364,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.39")
+    (version "3.40.1")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -375,7 +375,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0jw6qlfl2g47hhx056nvnj6h92bk3sn46hy3ig61a911dzblvrkb"))
+                "1wf8qapd2lh8pbjd6pp9m32mx1zyddrmv5c4cr86xj3r5ap6n3jy"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-increase-test-timeout.patch"))))
@@ -415,7 +415,7 @@ in the Mozilla clients.")
            (lambda _
              ;; Use 127.0.0.1 instead of $HOST.$DOMSUF as HOSTADDR for testing.
              ;; The later requires a working DNS or /etc/hosts.
-             (setenv "DOMSUF" "(none)")
+             (setenv "DOMSUF" "localdomain")
              (setenv "USE_IP" "TRUE")
              (setenv "IP_ADDRESS" "127.0.0.1")
 
