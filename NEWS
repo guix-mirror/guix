@@ -11,28 +11,38 @@ Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
-* Changes since 0.15.0
+* Changes in 0.16.0 (since 0.15.0)
 
 ** Package management
 
+*** Default substitute URL changed to https://ci.guix.info
 *** ‘guix pull -l’ lists new and upgraded packages
 *** ‘guix pull’ now supports channels via ~/.config/guix/channels.scm
 *** New ‘--profile’ or ‘-p’ option for ‘guix pull’
+*** ~/.config/guix/current is now a symlink to /var/guix/profiles
 *** New ‘guix describe’ command
 *** ‘guix package’ no longer shows build logs by default
 *** ‘guix’ commands now produce colored output by default
+*** User interface now reports grafts separately
 *** Manifests can now refer to arbitrary Guix commits using “inferiors”
+*** New ‘--with-branch’ and ‘--with-commit’ package transformation options
+*** ‘guix build -f’ now accepts any kind of “file-like object”
+*** Git checkouts may now be fetched from Software Heritage
+*** New ‘guix repl’ command for use by inferiors
 *** New ‘guix processes’ command
 *** ‘guix pack’ now honors ‘--localstatedir’ for all its backends
+*** New ‘opam’ importer for ‘guix import’
 *** ‘guix import pypi’ has a new ‘--recursive’ option
 *** ‘guix import hackage’ has a new ‘--recursive’ option
 *** ‘guix import stackage’ has a new ‘--recursive’ option
 The short option for ‘--lts-version’ is now ‘-l’ (used to be ‘-r’).
 *** ‘guix refresh’ now stores upstream keys in ~/.config/guix/upstream
 *** Guix now depends on Guile-Gcrypt
+*** Guix now requires Guile-JSON
 
 ** Distribution
 
+*** Rust is now bootstrapped from mrustc
 *** The GNU Shepherd was upgraded to 0.5.0
 *** ‘guix system reconfigure’ now loads Shepherd service replacements
 *** ‘herd schedule mcron’ now displays mcron’s job schedule
@@ -40,20 +50,49 @@ The short option for ‘--lts-version’ is now ‘-l’ (used to be ‘-r’).
 *** ‘herd invalidate nscd TABLE’ instructs nscd to invalidate TABLE
 *** New services
 
-gitolite, iptables, pcscd, prometheus-node-exporter, varnish
+ddclient, gitolite, iptables, pcscd, prometheus-node-exporter, varnish
+
+*** XXX new packages
+*** XXX package updates
 
 ** Programming interfaces
 
-*** New (guix channels) module
-*** New (guix inferior) module
-*** New (guix status) module
+*** New (guix channels) module, see “Channels” in the manual
+*** New (guix inferior) module, see “Inferiors” in the manual
+*** New (guix describe) module, used by ‘guix describe’
+*** New (guix status) module, for build progress reporting
 *** ‘packages->manifest’ now accepts inferior packages
 *** New build systems: ‘clojure’, ‘guile’
+*** New ‘git-checkout’ record constructor in (guix git)
 *** Shepherd services can now declare custom actions
 *** More of the (gnu system …) APIs are now non-monadic
 *** New ‘add-file-tree-to-store’ procedure in (guix store)
+*** New (guix swh) module to access Software Heritage
+*** New (guix build debug-link) module, for ELF ‘.gnu_debuglink’ sections
 
 ** Noteworthy bug fixes
+
+*** Fix GCC crashes caused by a patch of ours (<https://bugs.gnu.org/31708>)
+*** ‘guix import hackage’ now supports ‘custom-setup’ field
+    (<https://bugs.gnu.org/23961>)
+*** ‘guix-daemon’ taken from ‘guix pull’ looks up ‘guix’ in the right place
+    (<https://bugs.gnu.org/32183>)
+*** Try several file names when looking up kernel modules
+    (<https://bugs.gnu.org/31714>)
+*** ‘file-system-*’ services are now always started after ‘udev’
+    (<https://bugs.gnu.org/32313>)
+*** Racket now ignores bytecode checksums for files in the store
+    (<https://bugs.gnu.org/30680>)
+*** Grafting now updates CRCs in ‘.gnu_debuglink’ ELF sections
+    (<https://bugs.gnu.org/19973>)
+*** UUID computation for VMs is now deterministic (<https://bugs.gnu.org/32652>)
+*** ‘git-predicate’ from (guix git) now uses Guile-Git, which fixes corner cases
+    (<https://bugs.gnu.org/27925>)
+*** (guix store database) registers each store item only once
+    (<https://bugs.gnu.org/32600>)
+*** The File > Open dialog in LibreOffice no longer triggers a crash
+    (<https://bugs.gnu.org/30642>)
+*** Account home directory is always honored (<https://bugs.gnu.org/33422>)
 
 ** Native language support
 
