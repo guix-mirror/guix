@@ -2040,18 +2040,24 @@ from the module-init-tools project.")
     (name "eudev")
     (version "3.2.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/gentoo/eudev/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url "https://github.com/gentoo/eudev")
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0dlkcgy7j4fdcksqrpc373zfybiif1bal3n6lpy1kfc5280j02c7"))
+                "0x23vxybvciskfbdgvp4ygkxdh2pjcglni29i36a09ii23lgs17l"))
               (patches (search-patches "eudev-rules-directory.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-source-writable
+           (lambda _
+             ;; XXX: Git checkouts are read-only, but this package needs to
+             ;; modify some of its files.
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'bootstrap 'patch-file-names
            (lambda* (#:key inputs #:allow-other-keys)
             (substitute* "man/make.sh"
