@@ -67,6 +67,7 @@
      `(#:tests? #f
        #:make-flags
        (list "threading=multi" "link=shared"
+             "cxxflags=-std=c++14"
 
              ;; Set the RUNPATH to $libdir so that the libs find each other.
              (string-append "linkflags=-Wl,-rpath="
