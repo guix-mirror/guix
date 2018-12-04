@@ -1902,7 +1902,7 @@ widgets built in the loading process.")
   ;; <https://mail.gnome.org/archives/devel-announce-list/2006-August/msg00005.html>.
   (package
     (name "libgnomeprint")
-    (version "2.8.2")
+    (version "2.18.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1910,7 +1910,7 @@ widgets built in the loading process.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "129ka3nn8gx9dlfry17ib79azxk45wzfv5rgqzw6dwx2b5ns8phm"))))
+                "14cnimvlc7ky22g2snyf4362412k3jk1syjf8b9887q5a63fqd0h"))))
     (build-system gnu-build-system)
     (inputs
      `(("popt" ,popt)
