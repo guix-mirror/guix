@@ -53,6 +53,7 @@
   #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -545,7 +546,7 @@ OpenGL graphics API.")
 (define-public libepoxy
   (package
     (name "libepoxy")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -553,10 +554,11 @@ OpenGL graphics API.")
                     version "/libepoxy-" version ".tar.xz"))
               (sha256
                (base32
-                "1n57xj5i6giw4mp5s59w1m9bm33sd6gjg7r00dzzvcwya6326mm9"))))
+                "0ga3qjv50x37my6pw5xr14g5n6z78hy5s8s06kays8c3ab2mha80"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (delete 'bootstrap)
          (add-before
            'configure 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
@@ -568,7 +570,7 @@ OpenGL graphics API.")
                  (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
                  (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))
                #t))))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
