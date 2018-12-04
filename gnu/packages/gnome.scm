@@ -468,7 +468,7 @@ commonly used macros.")
 (define-public gnome-desktop
   (package
     (name "gnome-desktop")
-    (version "3.28.2")
+    (version "3.30.2")
     (source
      (origin
       (method url-fetch)
@@ -477,7 +477,7 @@ commonly used macros.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0c439hhpfd9axmv4af6fzhibksh69pnn2nnbghbbqqbwy6zqfl30"))))
+        "0k6iccfj9naw42dl2mgljfvk12dmvg06plg86qd81nksrf9ycxal"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
