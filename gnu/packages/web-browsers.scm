@@ -442,6 +442,9 @@ features for productive professionals.")
                     ;; the illegal version will result in NIL in the .desktop
                     ;; file.
                     (lambda* (#:key outputs #:allow-other-keys)
+                      (with-output-to-file "version"
+                        (lambda _
+                          (format #t "~a" ,(package-version next-gtk-webkit))))
                       (invoke "make" "install-assets"
                               (string-append "PREFIX="
                                              (assoc-ref outputs "out"))))))))
@@ -453,14 +456,12 @@ features for productive professionals.")
        ("cl-strings" ,sbcl-cl-strings)
        ("cl-string-match" ,sbcl-cl-string-match)
        ("puri" ,sbcl-puri)
-       ("queues.simple-queue" ,sbcl-queues.simple-queue)
        ("sqlite" ,sbcl-cl-sqlite)
        ("parenscript" ,sbcl-parenscript)
        ("cl-json" ,sbcl-cl-json)
        ("swank" ,sbcl-slime-swank)
        ("cl-markup" ,sbcl-cl-markup)
        ("cl-css" ,sbcl-cl-css)
-       ("usocket" ,sbcl-usocket)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)
        ("s-xml-rpc" ,sbcl-s-xml-rpc)
        ("unix-opts" ,sbcl-unix-opts)))
