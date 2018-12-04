@@ -2250,7 +2250,7 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.40.9")
+    (version "0.42.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2258,7 +2258,7 @@ passwords in the GNOME keyring.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0yvaijkpahzz26sa37cyzbj75a9vbcbgvxbqzzb7hbcvfy009zy7"))))
+                "0zaq9009wqk5aah131m426a2ia0scwpjpl4npf8p7p43wv8kvisz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
