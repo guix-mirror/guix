@@ -1933,7 +1933,7 @@ since ca. 2006, when GTK+ itself incorporated printing support.")
   ;; Deprecated; see libgnomeprint.
   (package
     (name "libgnomeprintui")
-    (version "2.8.2")
+    (version "2.18.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1941,7 +1941,7 @@ since ca. 2006, when GTK+ itself incorporated printing support.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ivipk7r61rg90p9kp889j28xlyyj6466ypvwa4jvnrcllnaajsw"))))
+                "0spl8vinb5n6n1krnfnr61dwaxidg67h8j94z9p59k2xdsvfashm"))))
     (build-system gnu-build-system)
     ;; Mentioned as Required in the .pc file
     (propagated-inputs `(("libgnomeprint" ,libgnomeprint)))
