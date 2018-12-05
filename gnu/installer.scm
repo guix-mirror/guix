@@ -133,10 +133,11 @@ been performed at build time."
           result))))
 
 (define apply-keymap
-  ;; Apply the specified keymap.
+  ;; Apply the specified keymap. Use the default keyboard model.
   #~(match-lambda
-      ((model layout variant)
-       (kmscon-update-keymap model layout variant))))
+      ((layout variant)
+       (kmscon-update-keymap (default-keyboard-model)
+                             layout variant))))
 
 (define* (compute-keymap-step)
   "Return a gexp that runs the keymap-page of INSTALLER and install the
@@ -150,8 +151,7 @@ selected keymap."
                                    "/share/X11/xkb/rules/base.xml")))
                (lambda (models layouts)
                  ((installer-keymap-page current-installer)
-                  #:models models
-                  #:layouts layouts)))))
+                  layouts)))))
         (#$apply-keymap result))))
 
 (define (installer-steps)

@@ -56,42 +56,12 @@
         (condition
          (&installer-step-abort)))))))
 
-(define (run-model-page models model->text)
-  (let ((title (G_ "Keyboard model selection")))
-    (run-listbox-selection-page
-     #:title title
-     #:info-text (G_ "Please choose your keyboard model.")
-     #:listbox-items models
-     #:listbox-item->text model->text
-     #:listbox-default-item (find (lambda (model)
-                                    (string=? (x11-keymap-model-name model)
-                                              "pc105"))
-                                  models)
-     #:sort-listbox-items? #f
-     #:button-text (G_ "Back")
-     #:button-callback-procedure
-     (lambda _
-       (raise
-        (condition
-         (&installer-step-abort)))))))
-
-(define* (run-keymap-page #:key models layouts)
-  "Run a page asking the user to select a keyboard model, layout and
-variant. MODELS and LAYOUTS are lists of supported X11-KEYMAP-MODEL and
-X11-KEYMAP-LAYOUT. Return a list of three elements, the names of the selected
-keyboard model, layout and variant."
+(define* (run-keymap-page layouts)
+  "Run a page asking the user to select a keyboard layout and variant. LAYOUTS
+is a list of supported X11-KEYMAP-LAYOUT. Return a list of two elements, the
+names of the selected keyboard layout and variant."
   (define keymap-steps
     (list
-     (installer-step
-      (id 'model)
-      (compute
-       (lambda _
-         ;; TODO: Understand why (run-model-page models x11-keymap-model-name)
-         ;; fails with: warning: possibly unbound variable
-         ;; `%x11-keymap-model-description-procedure.
-         (run-model-page models (lambda (model)
-                                  (x11-keymap-model-description
-                                   model))))))
      (installer-step
       (id 'layout)
       (compute
@@ -120,13 +90,11 @@ keyboard model, layout and variant."
                                 variant)))))))))
 
   (define (format-result result)
-    (let ((model (x11-keymap-model-name
-                  (result-step result 'model)))
-          (layout (x11-keymap-layout-name
+    (let ((layout (x11-keymap-layout-name
                    (result-step result 'layout)))
           (variant (and=> (result-step result 'variant)
                           (lambda (variant)
                             (x11-keymap-variant-name variant)))))
-      (list model layout (or variant ""))))
+      (list layout (or variant ""))))
   (format-result
    (run-installer-steps #:steps keymap-steps)))

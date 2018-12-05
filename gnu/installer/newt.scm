@@ -68,9 +68,8 @@
 (define (menu-page steps)
   (run-menu-page steps))
 
-(define* (keymap-page #:key models layouts)
-  (run-keymap-page #:models models
-                   #:layouts layouts))
+(define* (keymap-page layouts)
+  (run-keymap-page layouts))
 
 (define (network-page)
   (run-network-page))

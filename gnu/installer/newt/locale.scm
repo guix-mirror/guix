@@ -143,7 +143,7 @@ glibc locale string and return it."
      (installer-step
       (id 'territory)
       (compute
-       (lambda (result)
+       (lambda (result _)
          (let ((locales (filter-locales supported-locales result)))
            ;; Stop the process if the language returned by the previous step
            ;; is matching one and only one supported locale.
@@ -161,7 +161,7 @@ glibc locale string and return it."
      (installer-step
       (id 'codeset)
       (compute
-       (lambda (result)
+       (lambda (result _)
          (let ((locales (filter-locales supported-locales result)))
            ;; Same as above but we now have a language and a territory to
            ;; narrow down the search of a locale.
@@ -173,7 +173,7 @@ glibc locale string and return it."
      (installer-step
       (id 'modifier)
       (compute
-       (lambda (result)
+       (lambda (result _)
          (let ((locales (filter-locales supported-locales result)))
            ;; Same thing with a language, a territory and a codeset this time.
            (break-on-locale-found locales)

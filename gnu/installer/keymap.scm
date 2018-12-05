@@ -46,6 +46,7 @@
             x11-keymap-variant-name
             x11-keymap-variant-description
 
+            default-keyboard-model
             xkb-rules->models+layouts
             kmscon-update-keymap))
 
@@ -67,6 +68,9 @@
   x11-keymap-variant?
   (name            x11-keymap-variant-name) ;string
   (description     x11-keymap-variant-description)) ;string
+
+;; Assume all modern keyboards have this model.
+(define default-keyboard-model (make-parameter "pc105"))
 
 (define (xkb-rules->models+layouts file)
   "Parse FILE and return two values, the list of supported X11-KEYMAP-MODEL

@@ -57,9 +57,9 @@
   (exit installer-exit)
   ;; procedure (key arguments) -> void
   (exit-error installer-exit-error)
-  ;; procedure (#:key models layouts) -> (list model layout variant)
   ;; procedure void -> void
   (final-page installer-final-page)
+  ;; procedure (layouts) -> (list layout variant)
   (keymap-page installer-keymap-page)
   ;; procedure: (#:key supported-locales iso639-languages iso3166-territories)
   ;; -> glibc-locale
