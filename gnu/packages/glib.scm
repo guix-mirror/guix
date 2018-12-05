@@ -185,6 +185,7 @@ shared NFS home directories.")
     `(("coreutils" ,coreutils)))
    (native-inputs
     `(("gettext" ,gettext-minimal)
+      ("m4" ,m4) ; for installing m4 macros
       ("dbus" ,dbus)                              ; for GDBus tests
       ("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)
