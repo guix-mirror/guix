@@ -146,6 +146,14 @@ glibc locale string and return it."
       ((locale)
        (locale->locale-string locale))))
 
+  (define (sort-languages languages)
+    "Extract some languages from LANGUAGES list and place them ahead."
+    (let* ((first-languages '("en"))
+           (other-languages (lset-difference equal?
+                                             languages
+                                             first-languages)))
+      `(,@first-languages ,@other-languages)))
+
   (define locale-steps
     (list
      (installer-step
@@ -153,7 +161,8 @@ glibc locale string and return it."
       (compute
        (lambda _
          (run-language-page
-          (delete-duplicates (map locale-language supported-locales))
+          (sort-languages
+           (delete-duplicates (map locale-language supported-locales)))
           (cut language-code->language-name iso639-languages <>)))))
      (installer-step
       (id 'territory)
