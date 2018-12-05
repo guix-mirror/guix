@@ -5498,28 +5498,14 @@ to virtual private networks (VPNs) via OpenVPN.")
               (sha256
                (base32
                 "0y31g0lxr93370xi74hbpvcy9m81n5wdkdhq8xy2nqp0y4219p13"))))
-    (build-system glib-or-gtk-build-system)
-    (arguments '(#:configure-flags '("--disable-migration")
-                 #:phases
-                 (modify-phases %standard-phases
-                   (add-after 'unpack 'patch-source
-                     (lambda* (#:key inputs #:allow-other-keys)
-                       (let ((mbpi (assoc-ref inputs
-                                              "mobile-broadband-provider-info"))
-                             (iso-codes (assoc-ref inputs "iso-codes")))
-                         (substitute* "src/libnma/nma-mobile-providers.c"
-                           (("(g_build_filename \\()dirs\\[i\\].*,\
- (MOBILE_BROADBAND_PROVIDER_INFO.*)" all start end)
-                            (string-append start "\"" mbpi "/share\", " end)))
-                         (substitute* "src/libnma/nma-mobile-providers.c"
-                           (("(g_build_filename \\()dirs\\[i\\].*,\
- (ISO_3166_COUNTRY_CODES.*)" all start end)
-                            (string-append start "\"" iso-codes
-                                           "/share\", " end)))
-                         #t))))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib:bin" ,glib "bin") ; for glib-compile-resources, etc.
        ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; libnm-gtk.pc refers to all these.
@@ -5527,7 +5513,8 @@ to virtual private networks (VPNs) via OpenVPN.")
        ("gtk+" ,gtk+)
        ("network-manager" ,network-manager)))
     (inputs
-     `(("iso-codes" ,iso-codes)
+     `(("gcr" ,gcr)
+       ("iso-codes" ,iso-codes)
        ("libgudev" ,libgudev)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
