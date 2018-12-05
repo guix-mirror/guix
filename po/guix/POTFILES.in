@@ -31,6 +31,7 @@ gnu/installer/newt/wifi.scm
 gnu/installer/services.scm
 gnu/installer/steps.scm
 gnu/installer/timezone.scm
+gnu/installer/user.scm
 gnu/installer/utils.scm
 guix/scripts.scm
 guix/scripts/build.scm

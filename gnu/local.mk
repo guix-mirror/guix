@@ -577,6 +577,7 @@ GNU_SYSTEM_MODULES +=                           \
   %D%/installer/services.scm			\
   %D%/installer/steps.scm			\
   %D%/installer/timezone.scm			\
+  %D%/installer/user.scm			\
   %D%/installer/utils.scm			\
 						\
   %D%/installer/newt/ethernet.scm		\
