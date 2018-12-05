@@ -5290,7 +5290,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.10.10")
+    (version "1.14.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -5298,20 +5298,13 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "1jn3g0f2x1irc88awqp8m3gnpdx1whqqqbdgkbgr4x55s702jki4"))
+                "064cgj9za0kzarks0lrv0qw2ysdphb5l97iw0c964bfiqzjfv8rm"))
+              (modules '((guix build utils)))
               (snippet
-              '(begin
-                 (use-modules (guix build utils))
-                 (substitute* "configure"
-                   ;; Replace libsystemd-login with libelogind.
-                   (("libsystemd-login") "libelogind"))
-                 (substitute* "src/devices/wwan/nm-modem-manager.c"
-                   (("systemd") "elogind"))
-                 (substitute* "src/nm-session-monitor.c"
-                   (("systemd") "elogind"))
-                 (substitute* "./src/nm-logging.c"
-                   (("systemd") "elogind"))
-                 #t))))
+               '(begin
+                  (substitute* "src/devices/wwan/nm-modem-manager.c"
+                    (("systemd") "elogind"))
+                  #t))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc")) ; 8 MiB of gtk-doc HTML
@@ -5321,7 +5314,10 @@ users.")
              (doc      (assoc-ref %outputs "doc"))
              (dhclient (string-append (assoc-ref %build-inputs "isc-dhcp")
                                       "/sbin/dhclient")))
-         (list "--with-systemd-logind=yes" ;In Guix System, this is provided by elogind.
+         (list "--with-libnm-glib" ; needed by network-manager-applet
+               "--with-systemd-journal=no"
+               "--with-session-tracking=elogind"
+               "--with-suspend-resume=elogind"
                "--with-consolekit=no"
                "--with-crypto=gnutls"
                "--disable-config-plugin-ibft"
@@ -5336,6 +5332,13 @@ users.")
                (string-append "--with-dhclient=" dhclient)))
        #:phases
        (modify-phases %standard-phases
+         ;; This bare "ls" invocation breaks some tests.
+         (add-after 'unpack 'patch-ls-invocation
+           (lambda _
+             (substitute* "build-aux/ltmain.sh"
+               (("`ls -")
+                (string-append "`" (which "ls") " -")))
+             #t))
          (add-before 'configure 'pre-configure
            (lambda _
              ;; These tests try to test aspects of network-manager's
@@ -5348,26 +5351,24 @@ users.")
                (("src/platform/tests/test-cleanup-linux") " ")
                (("src/platform/tests/test-link-linux") " ")
                (("src/platform/tests/test-route-linux") " ")
+               (("src/devices/tests/test-acd") "")
                (("src/devices/tests/test-arping") " ")
                (("src/devices/tests/test-lldp") " ")
                (("src/tests/test-route-manager-linux") " "))
              #t))
          (add-after 'unpack 'delete-failing-tests
            (lambda _
-             ;; FIXME: These four tests fail for unknown reasons.
+             ;; FIXME: These three tests fail for unknown reasons.
              ;; ERROR:libnm-core/tests/test-general.c:5842:
              ;;   _json_config_check_valid: assertion failed (res == expected): (1 == 0)
              ;; ERROR:libnm-core/tests/test-keyfile.c:647:
              ;;   test_team_conf_read_invalid: assertion failed: (nm_setting_team_get_config (s_team) == NULL)
              ;; ERROR:libnm-core/tests/test-setting.c:907:
              ;;   _test_team_config_sync: assertion failed: (nm_streq0 (nm_setting_team_get_runner (s_team), runner))
-             ;; NetworkManager:ERROR:src/platform/tests/test-nmp-object.c:397:
-             ;;   test_cache_link: assertion failed: (nmp_object_is_visible (obj_new))
              (substitute* "Makefile.in"
                (("libnm-core/tests/test-general") " ")
                (("libnm-core/tests/test-keyfile") " ")
-               (("libnm-core/tests/test-setting\\$\\(EXEEXT\\)") " ")
-               (("src/platform/tests/test-nmp-object") " "))
+               (("libnm-core/tests/test-setting\\$\\(EXEEXT\\)") " "))
              #t))
          (add-before 'check 'pre-check
            (lambda _
@@ -5398,7 +5399,8 @@ users.")
        ("python-dbus" ,python-dbus)
        ("python-pygobject" ,python-pygobject)))
     (inputs
-     `(("curl" ,curl)
+     `(("coreutils" ,coreutils) ; for ls
+       ("curl" ,curl)
        ("cyrus-sasl" ,cyrus-sasl)
        ("dbus-glib" ,dbus-glib)
        ("dnsmasq" ,dnsmasq)
