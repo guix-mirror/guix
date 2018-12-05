@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu installer)
+  #:use-module (guix discovery)
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (guix modules)
@@ -27,6 +28,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages connman)
+  #:use-module (gnu packages disk)
   #:use-module (gnu packages guile)
   #:autoload   (gnu packages gnupg) (guile-gcrypt)
   #:use-module (gnu packages iso-codes)
@@ -172,9 +174,14 @@ selected keymap."
                      ((installer-welcome-page current-installer)
                       #$(local-file "installer/aux-files/logo.txt")))))
 
-         ;; Ask the user to choose a locale among those supported by the glibc.
-         ;; Install the selected locale right away, so that the user may
-         ;; benefit from any available translation for the installer messages.
+         ;; Run a partitionment tool allowing the user to modify
+         ;; partition tables, partitions and their mount points.
+         (installer-step
+          (id 'partition)
+          (description (G_ "Partitionment"))
+          (compute (lambda _
+                     ((installer-partition-page current-installer))))
+          (configuration-formatter user-partitions->configuration))
 
          ;; Ask the user to choose a locale among those supported by
          ;; the glibc.  Install the selected locale right away, so that
@@ -263,18 +270,31 @@ selected keymap."
   (define set-installer-path
     ;; Add the specified binary to PATH for later use by the installer.
     #~(let* ((inputs
-              '#$(append (list bash connman shadow)
+              '#$(append (list bash ;start subshells
+                               connman ;call connmanctl
+                               dosfstools ;mkfs.fat
+                               e2fsprogs ;mkfs.ext4
+                               kbd ;chvt
+                               guix ;guix system init call
+                               util-linux ;mkwap
+                               shadow)
                          (map canonical-package (list coreutils)))))
         (with-output-to-port (%make-void-port "w")
           (lambda ()
             (set-path-environment-variable "PATH" '("bin" "sbin") inputs)))))
 
   (define steps (installer-steps))
+  (define modules
+    (scheme-modules*
+     (string-append (current-source-directory) "/..")
+     "gnu/installer"))
 
   (define installer-builder
-    (with-extensions (list guile-gcrypt guile-newt guile-json)
+    (with-extensions (list guile-gcrypt guile-newt
+                           guile-parted guile-bytestructures
+                           guile-json)
       (with-imported-modules `(,@(source-module-closure
-                                  '((gnu installer newt)
+                                  `(,@modules
                                     (guix build utils))
                                   #:select? not-config?)
                                ((guix config) => ,(make-config.scm)))

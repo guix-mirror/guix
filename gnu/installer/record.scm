@@ -35,6 +35,7 @@
             installer-timezone-page
             installer-hostname-page
             installer-user-page
+            installer-partition-page
             installer-services-page
             installer-welcome-page))
 
@@ -75,6 +76,8 @@
   (hostname-page installer-hostname-page)
   ;; procedure void -> void
   (user-page installer-user-page)
+  ;; procedure void -> void
+  (partition-page installer-partition-page)
   ;; procedure void -> void
   (services-page installer-services-page)
   ;; procedure (logo) -> void

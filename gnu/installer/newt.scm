@@ -25,6 +25,7 @@
   #:use-module (gnu installer newt locale)
   #:use-module (gnu installer newt menu)
   #:use-module (gnu installer newt network)
+  #:use-module (gnu installer newt partition)
   #:use-module (gnu installer newt services)
   #:use-module (gnu installer newt timezone)
   #:use-module (gnu installer newt user)
@@ -81,6 +82,9 @@
 (define (user-page)
   (run-user-page))
 
+(define (partition-page)
+  (run-partioning-page))
+
 (define (services-page)
   (run-services-page))
 
@@ -98,5 +102,6 @@
    (timezone-page timezone-page)
    (hostname-page hostname-page)
    (user-page user-page)
+   (partition-page partition-page)
    (services-page services-page)
    (welcome-page welcome-page)))

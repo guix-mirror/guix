@@ -574,6 +574,7 @@ GNU_SYSTEM_MODULES +=                           \
   %D%/installer/keymap.scm			\
   %D%/installer/locale.scm			\
   %D%/installer/newt.scm			\
+  %D%/installer/parted.scm			\
   %D%/installer/services.scm			\
   %D%/installer/steps.scm			\
   %D%/installer/timezone.scm			\
@@ -588,6 +589,7 @@ GNU_SYSTEM_MODULES +=                           \
   %D%/installer/newt/menu.scm			\
   %D%/installer/newt/network.scm		\
   %D%/installer/newt/page.scm			\
+  %D%/installer/newt/partition.scm		\
   %D%/installer/newt/services.scm		\
   %D%/installer/newt/timezone.scm		\
   %D%/installer/newt/utils.scm			\
