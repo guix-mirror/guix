@@ -76,7 +76,7 @@ DEVICES list."
          (device (car result)))
     device))
 
-(define (run-label-page button-callback)
+(define (run-label-page button-text button-callback)
   "Run a page asking the user to select a partition table label."
   (run-listbox-selection-page
    #:info-text (G_ "Select a new partition table type. \
@@ -84,7 +84,7 @@ Be careful, all data on the disk will be lost.")
    #:title (G_ "Partition table")
    #:listbox-items '("msdos" "gpt")
    #:listbox-item->text identity
-   #:button-text (G_ "Exit")
+   #:button-text button-text
    #:button-callback-procedure button-callback))
 
 (define (run-type-page partition)
@@ -519,7 +519,7 @@ edit it."
     (let ((item (car listbox-item)))
       (cond
        ((disk? item)
-        (let ((label (run-label-page (const #f))))
+        (let ((label (run-label-page (G_ "Back") (const #f))))
           (if label
               (let* ((device (disk-device item))
                      (new-disk (mklabel device label))
@@ -674,6 +674,7 @@ At least one partition must have its mounting point set to '/'.")
                 (disk (if disk-type
                           (disk-new device)
                           (let* ((label (run-label-page
+                                         (G_ "Exit")
                                          button-exit-action))
                                  (disk (mklabel device label)))
                             (disk-commit disk)
