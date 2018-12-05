@@ -5584,16 +5584,15 @@ libxml2.")
 (define-public gdm
   (package
     (name "gdm")
-    (version "3.28.2")
+    (version "3.30.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches (search-patches "gdm-CVE-2018-14424.patch"))
               (sha256
                (base32
-                "0wdm1503x66n1crdlmzmincbd2hccpxsdgjsl5anx3yjpdzs0hb0"))))
+                "1handy65r1n0zby09jr492b3643wszzigdkxp7q2ypgxb3hyv45y"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -5608,6 +5607,9 @@ libxml2.")
          ;; Use '/etc/environment' for locale settings instead of the
          ;; systemd-specific '/etc/locale.conf'.
          "--with-lang-file=/etc/environment"
+
+         ,(string-append "--with-udevdir="
+                         (assoc-ref %outputs "out") "/lib/udev")
 
          "--localstatedir=/var"
          ,(string-append "--with-default-path="
