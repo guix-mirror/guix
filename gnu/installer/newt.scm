@@ -19,6 +19,7 @@
 (define-module (gnu installer newt)
   #:use-module (gnu installer record)
   #:use-module (gnu installer newt ethernet)
+  #:use-module (gnu installer newt final)
   #:use-module (gnu installer newt hostname)
   #:use-module (gnu installer newt keymap)
   #:use-module (gnu installer newt locale)
@@ -45,6 +46,9 @@
 
 (define (exit-error key . args)
   (newt-finish))
+
+(define (final-page result prev-steps)
+  (run-final-page result prev-steps))
 
 (define* (locale-page #:key
                       supported-locales
@@ -83,6 +87,7 @@
    (init init)
    (exit exit)
    (exit-error exit-error)
+   (final-page final-page)
    (keymap-page keymap-page)
    (locale-page locale-page)
    (menu-page menu-page)

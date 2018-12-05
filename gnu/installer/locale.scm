@@ -35,7 +35,9 @@
             language-code->language-name
 
             iso3166->iso3166-territories
-            territory-code->territory-name))
+            territory-code->territory-name
+
+            locale->configuration))
 
 
 ;;;
@@ -197,3 +199,12 @@ territory name corresponding to the given TERRITORY-CODE."
                             territory-code)))
                territories)))
     (iso3166-territory-name iso3166-territory)))
+
+
+;;;
+;;; Configuration formatter.
+;;;
+
+(define (locale->configuration locale)
+  "Return the configuration field for LOCALE."
+  `((locale ,locale)))

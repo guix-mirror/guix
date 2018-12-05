@@ -129,7 +129,8 @@ been performed at build time."
                 #:supported-locales #$locales-loader
                 #:iso639-languages #$iso639-loader
                 #:iso3166-territories #$iso3166-loader)))
-          (#$apply-locale result)))))
+          (#$apply-locale result)
+          result))))
 
 (define apply-keymap
   ;; Apply the specified keymap.
@@ -176,17 +177,19 @@ selected keymap."
          ;; benefit from any available translation for the installer messages.
          (installer-step
           (id 'locale)
-          (description (G_ "Locale selection"))
+          (description (G_ "Locale"))
           (compute (lambda _
-                     (#$locale-step current-installer))))
+                     (#$locale-step current-installer)))
+          (configuration-formatter locale->configuration))
 
          ;; Ask the user to select a timezone under glibc format.
          (installer-step
           (id 'timezone)
-          (description (G_ "Timezone selection"))
+          (description (G_ "Timezone"))
           (compute (lambda _
                      ((installer-timezone-page current-installer)
-                      #$timezone-data))))
+                      #$timezone-data)))
+          (configuration-formatter posix-tz->configuration))
 
          ;; The installer runs in a kmscon virtual terminal where loadkeys
          ;; won't work. kmscon uses libxkbcommon as a backend for keyboard
@@ -205,9 +208,10 @@ selected keymap."
          ;; Ask the user to input a hostname for the system.
          (installer-step
           (id 'hostname)
-          (description (G_ "Hostname selection"))
+          (description (G_ "Hostname"))
           (compute (lambda _
-                     ((installer-hostname-page current-installer)))))
+                     ((installer-hostname-page current-installer))))
+          (configuration-formatter hostname->configuration))
 
          ;; Provide an interface above connmanctl, so that the user can select
          ;; a network susceptible to acces Internet.
@@ -219,10 +223,22 @@ selected keymap."
 
          ;; Prompt for users (name, group and home directory).
          (installer-step
-          (id 'hostname)
-          (description (G_ "User selection"))
+          (id 'user)
+          (description (G_ "User creation"))
           (compute (lambda _
-                     ((installer-user-page current-installer)))))))))
+                     ((installer-user-page current-installer))))
+          (configuration-formatter users->configuration))
+
+          (compute (lambda _
+                     ((installer-user-page current-installer)))))
+
+	(installer-step
+          (id 'final)
+          (description (G_ "Configuration file"))
+          (compute
+           (lambda (result prev-steps)
+             ((installer-final-page current-installer)
+              result prev-steps)))))))
 
 (define (installer-program)
   "Return a file-like object that runs the given INSTALLER."
@@ -255,7 +271,12 @@ selected keymap."
             (use-modules (gnu installer record)
                          (gnu installer keymap)
                          (gnu installer steps)
+                         (gnu installer final)
                          (gnu installer locale)
+                         (gnu installer parted)
+                         (gnu installer services)
+                         (gnu installer timezone)
+                         (gnu installer user)
                          (gnu installer newt)
                          (guix i18n)
                          (guix build utils)
@@ -268,7 +289,8 @@ selected keymap."
             ;; Add some binaries used by the installers to PATH.
             #$set-installer-path
 
-            (let ((current-installer newt-installer))
+            (let* ((current-installer newt-installer)
+                   (steps (#$steps current-installer)))
               ((installer-init current-installer))
 
               (catch #t
@@ -276,7 +298,7 @@ selected keymap."
                   (run-installer-steps
                    #:rewind-strategy 'menu
                    #:menu-proc (installer-menu-page current-installer)
-                   #:steps (#$steps current-installer)))
+                   #:steps steps))
                 (const #f)
                 (lambda (key . args)
                   ((installer-exit-error current-installer) key args)
@@ -289,8 +311,9 @@ selected keymap."
                       (print-exception port
                                        (stack-ref (make-stack #t) 1)
                                        key args)))
-                  (primitive-exit 1))))
-            ((installer-exit current-installer))))))
+                  (primitive-exit 1)))
+
+              ((installer-exit current-installer)))))))
 
   (program-file
    "installer"

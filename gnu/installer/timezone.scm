@@ -28,7 +28,8 @@
   #:export (locate-childrens
             timezone->posix-tz
             timezone-has-child?
-            zonetab->timezone-tree))
+            zonetab->timezone-tree
+            posix-tz->configuration))
 
 (define %not-blank
   (char-set-complement char-set:blank))
@@ -115,3 +116,12 @@ TREE. Raise a condition if the PATH could not be found."
 (define* (zonetab->timezone-tree zonetab)
   "Return the timezone tree corresponding to the given ZONETAB file."
   (timezones->timezone-tree (zonetab->timezones zonetab)))
+
+
+;;;
+;;; Configuration formatter.
+;;;
+
+(define (posix-tz->configuration timezone)
+  "Return the configuration field for TIMEZONE."
+  `((timezone ,timezone)))

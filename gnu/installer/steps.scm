@@ -18,10 +18,13 @@
 
 (define-module (gnu installer steps)
   #:use-module (guix records)
+  #:use-module (guix build utils)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 pretty-print)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (rnrs io ports)
   #:export (&installer-step-abort
             installer-step-abort?
 
@@ -35,13 +38,19 @@
             installer-step-id
             installer-step-description
             installer-step-compute
-            installer-step-configuration-proc
+            installer-step-configuration-formatter
 
             run-installer-steps
             find-step-by-id
             result->step-ids
             result-step
-            result-step-done?))
+            result-step-done?
+
+            %installer-configuration-file
+            %installer-target-dir
+            %configuration-file-width
+            format-configuration
+            configuration->file))
 
 ;; This condition may be raised to abort the current step.
 (define-condition-type &installer-step-abort &condition
@@ -60,12 +69,12 @@
 (define-record-type* <installer-step>
   installer-step make-installer-step
   installer-step?
-  (id                           installer-step-id) ;symbol
-  (description                  installer-step-description ;string
-                                (default #f))
-  (compute                      installer-step-compute) ;procedure
-  (configuration-format-proc    installer-step-configuration-proc ;procedure
-                                (default #f)))
+  (id                         installer-step-id) ;symbol
+  (description                installer-step-description ;string
+                              (default #f))
+  (compute                    installer-step-compute) ;procedure
+  (configuration-formatter    installer-step-configuration-formatter ;procedure
+                              (default #f)))
 
 (define* (run-installer-steps #:key
                               steps
@@ -157,7 +166,7 @@ return the accumalated result so far."
                   (reverse result)))
          (let* ((id (installer-step-id step))
                 (compute (installer-step-compute step))
-                (res (compute result)))
+                (res (compute result done-steps)))
            (run (alist-cons id res result)
                 #:todo-steps rest-steps
                 #:done-steps (append done-steps (list step))))))))
@@ -185,3 +194,44 @@ RESULTS."
   "Return #t if the installer-step specified by STEP-ID has a COMPUTE value
 stored in RESULTS. Return #f otherwise."
   (and (assoc step-id results) #t))
+
+(define %installer-configuration-file (make-parameter "/mnt/etc/config.scm"))
+(define %installer-target-dir (make-parameter "/mnt"))
+(define %configuration-file-width (make-parameter 79))
+
+(define (format-configuration steps results)
+  "Return the list resulting from the application of the procedure defined in
+CONFIGURATION-FORMATTER field of <installer-step> on the associated result
+found in RESULTS."
+  (let ((configuration
+         (append-map
+          (lambda (step)
+            (let* ((step-id (installer-step-id step))
+                   (conf-formatter
+                    (installer-step-configuration-formatter step))
+                   (result-step (result-step results step-id)))
+              (if (and result-step conf-formatter)
+                  (conf-formatter result-step)
+                  '())))
+          steps))
+        (modules '((use-modules (gnu))
+                   (use-service-modules desktop))))
+    `(,@modules
+      ()
+      (operating-system ,@configuration))))
+
+(define* (configuration->file configuration
+                              #:key (filename (%installer-configuration-file)))
+  "Write the given CONFIGURATION to FILENAME."
+  (mkdir-p (dirname filename))
+  (call-with-output-file filename
+    (lambda (port)
+      (format port ";; This is an operating system configuration generated~%")
+      (format port ";; by the graphical installer.~%")
+      (newline port)
+      (for-each (lambda (part)
+                  (if (null? part)
+                      (newline port)
+                      (pretty-print part port)))
+                configuration)
+      (flush-output-port port))))
