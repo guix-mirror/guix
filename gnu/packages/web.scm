@@ -1281,12 +1281,14 @@ minimum to provide high performance operation.")
          #:tests? #f
          #:phases
          (modify-phases %standard-phases
+           (delete 'bootstrap)
            (delete 'configure)
            (add-after 'unpack 'unpack-libsass-and-set-path
              (lambda* (#:key inputs #:allow-other-keys)
                (invoke "tar" "xvf" (assoc-ref inputs "libsass"))
                (setenv "SASS_LIBSASS_PATH"
-                       (string-append (getcwd) "/libsass-" ,version)))))))
+                       (string-append (getcwd) "/libsass-" ,version))
+               #t)))))
       (inputs
        `(("libsass" ,libsass)))
       (synopsis "CSS pre-processor")
