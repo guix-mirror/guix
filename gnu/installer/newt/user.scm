@@ -72,7 +72,7 @@
                               title)
     (let ((error-page
            (lambda ()
-             (run-error-page (G_ "Empty inputs are not allowed")
+             (run-error-page (G_ "Empty inputs are not allowed.")
                              (G_ "Empty input")))))
       (receive (exit-reason argument)
           (run-form form)

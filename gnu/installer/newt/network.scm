@@ -113,7 +113,7 @@ FULL-VALUE tentatives, spaced by 1 second."
   (let* ((full-value 5))
     (run-scale-page
      #:title (G_ "Checking connectivity")
-     #:info-text (G_ "Waiting internet access is established")
+     #:info-text (G_ "Waiting internet access is established.")
      #:scale-full-value full-value
      #:scale-update-proc
      (lambda (value)

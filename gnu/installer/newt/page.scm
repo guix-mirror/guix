@@ -98,7 +98,7 @@ enters an empty input."
     (add-components-to-form form text-box input-entry ok-button)
     (make-wrapped-grid-window grid title)
     (let ((error-page (lambda ()
-                        (run-error-page (G_ "Please enter a non empty input")
+                        (run-error-page (G_ "Please enter a non empty input.")
                                         (G_ "Empty input")))))
       (let loop ()
         (receive (exit-reason argument)

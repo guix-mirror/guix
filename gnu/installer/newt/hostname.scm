@@ -22,5 +22,5 @@
   #:export (run-hostname-page))
 
 (define (run-hostname-page)
-  (run-input-page (G_ "Please enter the system hostname")
+  (run-input-page (G_ "Please enter the system hostname.")
                   (G_ "Hostname")))

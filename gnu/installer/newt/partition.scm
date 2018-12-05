@@ -98,7 +98,7 @@ Be careful, all data on the disk will be lost.")
                          '()
                          '(extended)))))
     (run-listbox-selection-page
-     #:info-text (G_ "Please select a partition type")
+     #:info-text (G_ "Please select a partition type.")
      #:title (G_ "Partition type")
      #:listbox-items items
      #:listbox-item->text symbol->string
@@ -109,7 +109,7 @@ Be careful, all data on the disk will be lost.")
 (define (run-fs-type-page)
   "Run a page asking the user to select a file-system type."
   (run-listbox-selection-page
-   #:info-text (G_ "Please select the file-system type for this partition")
+   #:info-text (G_ "Please select the file-system type for this partition.")
    #:title (G_ "File-system type")
    #:listbox-items '(ext4 btrfs fat32 swap)
    #:listbox-item->text user-fs-type-name
@@ -123,17 +123,17 @@ calling CAN-CREATE-PARTITION? procedure. If an exception is raised, catch it
 an inform the user with an appropriate error-page and return #f."
   (guard (c ((max-primary-exceeded? c)
             (run-error-page
-             (G_ "Primary partitions count exceeded")
+             (G_ "Primary partitions count exceeded.")
              (G_ "Creation error"))
             #f)
            ((extended-creation-error? c)
             (run-error-page
-             (G_ "Extended partition creation error")
+             (G_ "Extended partition creation error.")
              (G_ "Creation error"))
             #f)
            ((logical-creation-error? c)
             (run-error-page
-             (G_ "Logical partition creation error")
+             (G_ "Logical partition creation error.")
              (G_ "Creation error"))
             #f))
     (can-create-partition? user-partition)))
@@ -625,7 +625,7 @@ At least one partition must have its mounting point set to '/'.")
                (guard
                    (c ((no-root-mount-point? c)
                        (run-error-page
-                        (G_ "No root mount point found")
+                        (G_ "No root mount point found.")
                         (G_ "Missing mount point"))
                        #f))
                  (check-user-partitions user-partitions))))

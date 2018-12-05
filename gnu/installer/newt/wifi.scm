@@ -86,7 +86,7 @@ nmc_wifi_strength_bars."
 
 (define (run-wifi-password-page)
   "Run a page prompting user for a password and return it."
-  (run-input-page (G_ "Please enter the wifi password")
+  (run-input-page (G_ "Please enter the wifi password.")
                   (G_ "Password required")))
 
 (define (run-wrong-password-page service-name)
