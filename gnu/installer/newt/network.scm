@@ -131,7 +131,7 @@ Internet."
      (installer-step
       (id 'power-technology)
       (compute
-       (lambda (result)
+       (lambda (result _)
          (let ((technology (result-step result 'select-technology)))
            (connman-enable-technology technology)
            (wait-technology-powered technology)))))
@@ -140,7 +140,7 @@ Internet."
      (installer-step
       (id 'connect-service)
       (compute
-       (lambda (result)
+       (lambda (result _)
          (let* ((technology (result-step result 'select-technology))
                 (type (technology-type technology)))
            (cond

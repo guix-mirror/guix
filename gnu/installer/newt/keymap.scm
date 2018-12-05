@@ -81,7 +81,7 @@ names of the selected keyboard layout and variant."
      (installer-step
       (id 'variant)
       (compute
-       (lambda (result)
+       (lambda (result _)
          (let ((variants (x11-keymap-layout-variants
                           (result-step result 'layout))))
            (run-variant-page variants
