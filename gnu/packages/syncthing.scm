@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.52")
+    (version "0.14.53")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,12 +38,19 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "1hhn72l74vb9l32i1a54ry2l85ji78cq6isd20lxxdk0bjqc4m29"))
-              (modules '((guix build utils)))
-              ;; Delete bundled ("vendored") free software source code.
-              (snippet '(begin
-                          (delete-file-recursively "vendor")
-                          #t))))
+                "0cplg4yw2szvfl91504s567n11qnxvfczzxvj9g1rhczgl7z14v5"))
+              ;; Since the update to Go 1.11, Go programs have been keeping
+              ;; spurious references to all their dependencies:
+              ;; <https://bugs.gnu.org/33620>.
+              ;; For Syncthing, this increases the size of the 'out' closure
+              ;; from 87.6 MiB to 253.5 MiB.  So, we use the bundled
+              ;; dependencies until the bug is resolved.
+;              (modules '((guix build utils)))
+;              ;; Delete bundled ("vendored") free software source code.
+;              (snippet '(begin
+;                          (delete-file-recursively "vendor")
+;                          #t))
+              ))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
@@ -63,7 +70,7 @@
              #t))
 
          (replace 'build
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda _
              (with-directory-excursion "src/github.com/syncthing/syncthing"
                (invoke "go" "run" "build.go" "-no-upgrade"))))
 
@@ -107,48 +114,6 @@
                (delete-file (string-append out man "/man1/strelaysrv.1"))
                (delete-file (string-append utils man "/man1/syncthing.1"))
              #t))))))
-    ;; When updating Syncthing, check 'vendor/manifest' in the source
-    ;; distribution to ensure we are using the correct versions of these
-    ;; dependencies.
-    (inputs
-     `(("go-github-com-audriusbutkevicius-cli"
-        ,go-github-com-audriusbutkevicius-cli)
-       ("go-github-com-audriusbutkevicius-go-nat-pmp"
-        ,go-github-com-audriusbutkevicius-go-nat-pmp)
-       ("go-github-com-audriusbutkevicius-pfilter"
-        ,go-github-com-audriusbutkevicius-pfilter)
-       ("go-github-com-bkaradzic-go-lz4" ,go-github-com-bkaradzic-go-lz4)
-       ("go-github-com-calmh-du" ,go-github-com-calmh-du)
-       ("go-github-com-calmh-xdr" ,go-github-com-calmh-xdr)
-       ("go-github-com-prometheus-union" ,(go-github-com-prometheus-union))
-       ("go-github-com-chmduquesne-rollinghash-adler32"
-        ,go-github-com-chmduquesne-rollinghash-adler32)
-       ("go-github-com-gobwas-glob" ,go-github-com-gobwas-glob)
-       ("go-github-com-gogo-protobuf-union"
-        ,(go-github-com-gogo-protobuf-union))
-       ("go-github-com-golang-groupcache-lru"
-        ,go-github-com-golang-groupcache-lru)
-       ("go-github-com-jackpal-gateway" ,go-github-com-jackpal-gateway)
-       ("go-github-com-kballard-go-shellquote"
-        ,go-github-com-kballard-go-shellquote)
-       ("go-github-com-lib-pq" ,go-github-com-lib-pq)
-       ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
-       ("go-github-com-oschwald-geoip2-golang"
-        ,go-github-com-oschwald-geoip2-golang)
-       ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
-       ("go-github-com-rcrowley-go-metrics" ,go-github-com-rcrowley-go-metrics)
-       ("go-github-com-sasha-s-go-deadlock" ,go-github-com-sasha-s-go-deadlock)
-       ("go-github-com-syncthing-notify" ,go-github-com-syncthing-notify)
-       ("go-github-com-syndtr-goleveldb" ,go-github-com-syndtr-goleveldb)
-       ("go-github-com-thejerf-suture" ,go-github-com-thejerf-suture)
-       ("go-github-com-vitrun-qart" ,(go-github-com-vitrun-qart-union))
-       ("go-golang-org-x-crypto" ,(go-golang-org-x-crypto-union))
-       ("go-golang-org-x-net-union" ,(go-golang-org-x-net-union))
-       ("go-golang-org-x-text" ,(go-golang-org-x-text-union))
-       ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)
-       ("go-gopkg.in-ldap.v2" ,go-gopkg.in-ldap.v2)
-       ;; For tests
-       ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
     (synopsis "Decentralized continuous file system synchronization")
     (description "Syncthing is a peer-to-peer file synchronization tool that
 supports a wide variety of computing platforms.  It uses the Block Exchange
