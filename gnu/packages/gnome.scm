@@ -81,6 +81,7 @@
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
+  #:use-module (gnu packages file-systems)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages game-development)
@@ -4161,7 +4162,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
 (define-public gvfs
   (package
     (name "gvfs")
-    (version "1.36.2")
+    (version "1.38.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4169,21 +4170,20 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1xq105596sk9yram5a143b369wpaiiwc9gz86n0j1kfr7nipkqn4"))))
-    (build-system gnu-build-system)
+                "18311pn5kp9b4kf5prvhcjs0cwf7fm3mqh6s6p42avcr5j26l4zd"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:tests? #f ; XXX: requiring `pidof'
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-broken-autogen-script
-           (lambda _ (delete-file "autogen.sh") #t)))))
+     '(#:glib-or-gtk? #t
+       #:configure-flags
+       (list "-Dsystemduserunitdir=no"
+             "-Dtmpfilesdir=no"
+             ;; Otherwise, the RUNPATH will lack the final path component.
+             (string-append "-Dc_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib/gvfs"))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
        ("gettext" ,gettext-minimal)
        ("gtk-doc" ,gtk-doc)
-       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
     (inputs
@@ -4191,23 +4191,28 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
        ("dbus" ,dbus)
+       ("elogind" ,elogind)
        ("fuse" ,fuse)
        ("gcr" ,gcr)
        ("glib" ,glib)
+       ("gnome-online-accounts" ,gnome-online-accounts)
        ("libarchive" ,libarchive)
        ("libbluray" ,libbluray)
        ("libcap" ,libcap)
        ("libcdio-paranoia" ,libcdio-paranoia)
        ("libgcrypt" ,libgcrypt)
+       ("libgdata" ,libgdata)
        ("libgphoto2" ,libgphoto2)
        ("libgudev" ,libgudev)
        ("libimobiledevice" ,libimobiledevice)
        ("libmtp" ,libmtp)
+       ("libnfs" ,libnfs)
        ("libsecret" ,libsecret)
        ("libsmbclient" ,samba)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
        ("nettle" ,nettle) ; XXX: required by libarchive.pc
+       ("openssh" ,openssh)
        ("polkit" ,polkit)
        ("udisks" ,udisks)))
     (home-page "https://wiki.gnome.org/gvfs/")
