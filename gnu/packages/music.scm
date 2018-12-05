@@ -2704,6 +2704,12 @@ Songs can be searched by artist, name or even by a part of the song text.")
            (lambda _
              (setenv "HOME" (string-append (getcwd) "/tmp"))
              #t))
+         (add-after 'unpack 'make-python3.7-compatible
+           (lambda _
+             ;; See <https://github.com/beetbox/beets/issues/2978>.
+             (substitute* "beets/autotag/hooks.py"
+              (("re\\._pattern_type") "re.Pattern"))
+             #t))
          (replace 'check
            (lambda _
              (invoke "nosetests" "-v"))))))
