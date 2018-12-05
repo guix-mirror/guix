@@ -30,14 +30,21 @@
   #:export (run-locale-page))
 
 (define (run-language-page languages language->text)
-  (let ((title (G_ "Language")))
+  (let ((title (G_ "Locale language")))
     (run-listbox-selection-page
      #:title title
-     #:info-text (G_ "Choose the language to be used for the installation \
-process. The selected language will also be the default \
-language for the installed system.")
+     #:info-text (G_ "Choose the locale's language to be used for the \
+installation process. A locale is a regional variant of your language \
+encompassing number, date and currency format, among other details.
+
+Based on the language you choose, you will possibly be asked to \
+select a locale's territory, codeset and modifier in the next \
+steps. The locale will also be used as the default one for the \
+installed system.")
+     #:info-textbox-width 70
      #:listbox-items languages
      #:listbox-item->text language->text
+     #:sort-listbox-items? #f
      #:button-text (G_ "Cancel")
      #:button-callback-procedure
      (lambda _
@@ -46,11 +53,11 @@ language for the installed system.")
          (&installer-step-abort)))))))
 
 (define (run-territory-page territories territory->text)
-  (let ((title (G_ "Location")))
+  (let ((title (G_ "Locale location")))
     (run-listbox-selection-page
      #:title title
-     #:info-text (G_ "Choose your location. This is a shortlist of locations \
-based on the language you selected.")
+     #:info-text (G_ "Choose your locale's location. This is a shortlist of \
+locations based on the language you selected.")
      #:listbox-items territories
      #:listbox-item->text territory->text
      #:button-text (G_ "Back")
@@ -61,11 +68,11 @@ based on the language you selected.")
          (&installer-step-abort)))))))
 
 (define (run-codeset-page codesets)
-  (let ((title (G_ "Codeset")))
+  (let ((title (G_ "Locale codeset")))
     (run-listbox-selection-page
      #:title title
-     #:info-text (G_ "Choose your codeset. If UTF-8 is available, it should be \
-preferred.")
+     #:info-text (G_ "Choose your locale's codeset. If UTF-8 is available, \
+ it should be preferred.")
      #:listbox-items codesets
      #:listbox-item->text identity
      #:listbox-default-item "UTF-8"
@@ -77,10 +84,12 @@ preferred.")
          (&installer-step-abort)))))))
 
 (define (run-modifier-page modifiers modifier->text)
-  (let ((title (G_ "Modifier")))
+  (let ((title (G_ "Locale modifier")))
     (run-listbox-selection-page
      #:title title
-     #:info-text (G_ "Choose your modifier.")
+     #:info-text (G_ "Choose your locale's modifier. The most frequent \
+modifier is euro. It indicates that you want to use Euro as the currency \
+symbol.")
      #:listbox-items modifiers
      #:listbox-item->text modifier->text
      #:button-text (G_ "Back")
@@ -94,6 +103,12 @@ preferred.")
                           supported-locales
                           iso639-languages
                           iso3166-territories)
+  "Run a page asking the user to select a locale language and possibly
+territory, codeset and modifier. Use SUPPORTED-LOCALES as the list of glibc
+available locales. ISO639-LANGUAGES is an association list associating a
+locale code to a locale name. ISO3166-TERRITORIES is an association list
+associating a territory code with a territory name. The formated locale, under
+glibc format is returned."
 
   (define (break-on-locale-found locales)
     "Raise the &installer-step-break condition if LOCALES contains exactly one
