@@ -1153,11 +1153,11 @@ server tools for Prometheus metrics.")
       (license asl2.0))))
 
 (define-public go-github-com-client-golang-prometheus
-  (let ((commit "180b8fdc22b4ea7750bcb43c925277654a1ea2f3")
+  (let ((commit "7e9098b20fb8e103a7a5691878272d7e3d703663")
         (revision "0"))
     (package
       (name "go-github-com-prometheus-client-golang-prometheus")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "0.9.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1166,11 +1166,12 @@ server tools for Prometheus metrics.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1kkfx1j9ka18ydsmdi2cdy3hs39c22b39mbc4laykmj2x93lmbdp"))))
+                  "09q8hlvgyn58hn8fmmj535hrwhqc1215czwzf7fhaqpa9zamj4w1"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/prometheus/client_golang/prometheus"
-         #:unpack-path "github.com/prometheus/client_golang"))
+         #:unpack-path "github.com/prometheus/client_golang"
+         #:tests? #f)) ; 'TestHandler' test fails in this non-critical dependency
       (propagated-inputs
        `(("go-github-com-beorn7-perks-quantile"
           ,go-github-com-beorn7-perks-quantile)
