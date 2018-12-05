@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu installer newt user)
+  #:use-module (gnu installer user)
   #:use-module (gnu installer newt page)
   #:use-module (gnu installer newt utils)
   #:use-module (guix i18n)
@@ -33,16 +34,12 @@
 
   (let* ((label-name
           (make-label -1 -1 (pad-label (G_ "Name"))))
-         (label-group
-          (make-label -1 -1 (pad-label (G_ "Group"))))
          (label-home-directory
           (make-label -1 -1 (pad-label (G_ "Home directory"))))
          (entry-width 30)
          (entry-name (make-entry -1 -1 entry-width))
-         (entry-group (make-entry -1 -1 entry-width
-                                  #:initial-value "users"))
          (entry-home-directory (make-entry -1 -1 entry-width))
-         (entry-grid (make-grid 2 3))
+         (entry-grid (make-grid 2 2))
          (button-grid (make-grid 1 1))
          (ok-button (make-button -1 -1 (G_ "Ok")))
          (grid (make-grid 1 2))
@@ -53,10 +50,8 @@
 
     (set-entry-grid-field 0 0 label-name)
     (set-entry-grid-field 1 0 entry-name)
-    (set-entry-grid-field 0 1 label-group)
-    (set-entry-grid-field 1 1 entry-group)
-    (set-entry-grid-field 0 2 label-home-directory)
-    (set-entry-grid-field 1 2 entry-home-directory)
+    (set-entry-grid-field 0 1 label-home-directory)
+    (set-entry-grid-field 1 1 entry-home-directory)
 
     (set-grid-field button-grid 0 0 GRID-ELEMENT-COMPONENT ok-button)
 
@@ -67,8 +62,8 @@
                        (string-append "/home/" (entry-value entry-name)))))
 
     (add-components-to-form form
-                            label-name label-group label-home-directory
-                            entry-name entry-group entry-home-directory
+                            label-name label-home-directory
+                            entry-name entry-home-directory
                             ok-button)
 
     (make-wrapped-grid-window (vertically-stacked-grid
@@ -88,17 +83,15 @@
               (cond
                ((components=? argument ok-button)
                 (let ((name (entry-value entry-name))
-                      (group (entry-value entry-group))
                       (home-directory (entry-value entry-home-directory)))
                   (if (or (string=? name "")
-                          (string=? group "")
                           (string=? home-directory ""))
                       (begin
                         (error-page)
                         (run-user-add-page))
-                      `((name . ,name)
-                        (group . ,group)
-                        (home-directory . ,home-directory))))))))
+                      (user
+                       (name name)
+                       (home-directory home-directory))))))))
           (lambda ()
             (destroy-form-and-pop form)))))))
 
@@ -124,7 +117,7 @@
                      (list GRID-ELEMENT-COMPONENT del-button)))))
            (ok-button (make-button -1 -1 (G_ "Ok")))
            (cancel-button (make-button -1 -1 (G_ "Cancel")))
-           (title "User selection")
+           (title "User creation")
            (grid
             (vertically-stacked-grid
              GRID-ELEMENT-COMPONENT info-textbox
@@ -135,13 +128,13 @@
                                    GRID-ELEMENT-COMPONENT ok-button
                                    GRID-ELEMENT-COMPONENT cancel-button)))
            (sorted-users (sort users (lambda (a b)
-                                       (string<= (assoc-ref a 'name)
-                                                 (assoc-ref b 'name)))))
+                                       (string<= (user-name a)
+                                                 (user-name b)))))
            (listbox-elements
             (map
              (lambda (user)
                `((key . ,(append-entry-to-listbox listbox
-                                                  (assoc-ref user 'name)))
+                                                  (user-name user)))
                  (user . ,user)))
              sorted-users))
            (form (make-form)))
@@ -175,7 +168,8 @@
                 (when (null? users)
                   (run-error-page (G_ "Please create at least one user.")
                                   (G_ "No user"))
-                  (run users))))))
+                  (run users))
+                users))))
           (lambda ()
             (destroy-form-and-pop form))))))
   (run '()))
