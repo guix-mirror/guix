@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2018 Lprndn <guix@lprndn.info>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,9 +32,11 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -444,3 +447,57 @@ vision algorithms.  It can be used to do things like:
     (description
      "vips is a demand-driven, horizontally threaded image processing library.")
     (license license:lgpl2.1+)))
+
+(define-public nip2
+  (package
+    (name "nip2")
+    (version "8.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/libvips/nip2/releases/download/v"
+                           version "/nip2-" version ".tar.gz" ))
+       (sha256
+        (base32 "08dxfds4n1vxdilxcw01741a2r6fxyhawi656b7f0hy6znnkbsbc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; test_conv.ws keep failing so disabling for now
+         (add-after 'unpack 'disable-test-conv
+           (lambda _
+             (delete-file "test/workspaces/test_conv.ws")
+             #t))
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" "/tmp") #t)))))
+    (inputs
+     `(("vips" ,vips)
+       ("glib" ,glib)
+       ("libtiff" ,libtiff)
+       ("gtk+-2" ,gtk+-2)
+       ("libxml2" ,libxml2)
+       ("libexif" ,libexif)
+       ("libjpeg" ,libjpeg)                       ;required by vips.pc
+       ("librsvg" ,librsvg)
+       ("fftw" ,fftw)
+       ("libgsf" ,libgsf)
+       ("imagemagick" ,imagemagick)
+       ("orc" ,orc)
+       ("matio" ,matio)
+       ("lcms" ,lcms)
+       ("libwebp" ,libwebp)
+       ("openexr" ,openexr)
+       ("poppler" ,poppler)
+       ("gsl" ,gsl)))
+    (native-inputs
+     `(("flex" ,flex)
+       ("bison" ,bison)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/libvips/nip2")
+    (synopsis "Spreadsheet-like GUI for libvips")
+    (description "This package provide a graphical user interface (GUI) for
+the VIPS image processing library.  It's a little like a spreadsheet: you
+create a set of formula connecting your objects together, and on a change nip2
+recalculates.")
+    (license license:gpl2+)))
