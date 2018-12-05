@@ -1775,7 +1775,7 @@ scientific applications modeled by partial differential equations.")
        ("mumps" ,mumps-openmpi)
        ("openmpi" ,openmpi)
        ("scalapack" ,scalapack)
-       ("scotch" ,pt-scotch)
+       ("scotch" ,pt-scotch32)
        ,@(package-inputs petsc)))
     (arguments
      (substitute-keyword-arguments (package-arguments petsc)
