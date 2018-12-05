@@ -25,6 +25,7 @@
   #:use-module (gnu installer newt locale)
   #:use-module (gnu installer newt menu)
   #:use-module (gnu installer newt network)
+  #:use-module (gnu installer newt services)
   #:use-module (gnu installer newt timezone)
   #:use-module (gnu installer newt user)
   #:use-module (gnu installer newt utils)
@@ -80,6 +81,9 @@
 (define (user-page)
   (run-user-page))
 
+(define (services-page)
+  (run-services-page))
+
 (define newt-installer
   (installer
    (name 'newt)
@@ -94,4 +98,5 @@
    (timezone-page timezone-page)
    (hostname-page hostname-page)
    (user-page user-page)
+   (services-page services-page)
    (welcome-page welcome-page)))

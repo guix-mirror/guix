@@ -21,11 +21,13 @@ gnu/installer/newt/locale.scm
 gnu/installer/newt/menu.scm
 gnu/installer/newt/network.scm
 gnu/installer/newt/page.scm
+gnu/installer/newt/services.scm
 gnu/installer/newt/timezone.scm
 gnu/installer/newt/user.scm
 gnu/installer/newt/utils.scm
 gnu/installer/newt/welcome.scm
 gnu/installer/newt/wifi.scm
+gnu/installer/services.scm
 gnu/installer/steps.scm
 gnu/installer/timezone.scm
 gnu/installer/utils.scm

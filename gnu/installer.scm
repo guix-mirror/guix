@@ -229,16 +229,22 @@ selected keymap."
                      ((installer-user-page current-installer))))
           (configuration-formatter users->configuration))
 
+         ;; Ask the user to choose one or many desktop environment(s).
+         (installer-step
+          (id 'services)
+          (description (G_ "Services"))
           (compute (lambda _
-                     ((installer-user-page current-installer)))))
+                     ((installer-services-page current-installer))))
+	  (configuration-formatter
+           desktop-environments->configuration))
 
-	(installer-step
+	 (installer-step
           (id 'final)
           (description (G_ "Configuration file"))
           (compute
            (lambda (result prev-steps)
              ((installer-final-page current-installer)
-              result prev-steps)))))))
+              result prev-steps))))))))
 
 (define (installer-program)
   "Return a file-like object that runs the given INSTALLER."
