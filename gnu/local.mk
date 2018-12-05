@@ -567,7 +567,6 @@ if ENABLE_INSTALLER
 
 GNU_SYSTEM_MODULES +=                           \
   %D%/installer.scm      			\
-  %D%/installer/record.scm		        \
   %D%/installer/connman.scm			\
   %D%/installer/final.scm			\
   %D%/installer/hostname.scm			\
@@ -575,6 +574,7 @@ GNU_SYSTEM_MODULES +=                           \
   %D%/installer/locale.scm			\
   %D%/installer/newt.scm			\
   %D%/installer/parted.scm			\
+  %D%/installer/record.scm		        \
   %D%/installer/services.scm			\
   %D%/installer/steps.scm			\
   %D%/installer/timezone.scm			\
