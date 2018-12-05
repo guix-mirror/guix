@@ -73,6 +73,7 @@
             file-system-mount-flags
             statfs
             free-disk-space
+            device-in-use?
 
             processes
             mkdtemp!
@@ -683,6 +684,27 @@ mounted at FILE."
 (define AT_SYMLINK_FOLLOW   #x400)
 (define AT_NO_AUTOMOUNT     #x800)
 (define AT_EMPTY_PATH       #x1000)
+
+(define-syntax BLKRRPART                         ;<sys/mount.h>
+  (identifier-syntax #x125F))
+
+(define* (device-in-use? device)
+  "Return #t if the block DEVICE is in use, #f otherwise. This is inspired
+from fdisk_device_is_used function of util-linux. This is particulary useful
+for devices that do not appear in /proc/self/mounts like overlayfs lowerdir
+backend device."
+  (let*-values (((port)    (open-file device "rb"))
+                ((ret err) (%ioctl (fileno port) BLKRRPART %null-pointer)))
+    (close-port port)
+    (cond
+     ((= ret 0)
+      #f)
+     ((= err EBUSY)
+      #t)
+     (else
+      (throw 'system-error "ioctl" "~A"
+             (list (strerror err))
+             (list err))))))
 
 
 ;;;
