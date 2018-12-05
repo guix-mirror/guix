@@ -32,7 +32,7 @@
   #:use-module (parted)
   #:export (run-partioning-page))
 
-(define (button-cancel-action)
+(define (button-exit-action)
   "Raise the &installer-step-abort condition."
   (raise
    (condition
@@ -48,8 +48,8 @@
                   #:title (G_ "Partition scheme")
                   #:listbox-items items
                   #:listbox-item->text cdr
-                  #:button-text (G_ "Cancel")
-                  #:button-callback-procedure button-cancel-action)))
+                  #:button-text (G_ "Exit")
+                  #:button-callback-procedure button-exit-action)))
     (car result)))
 
 (define (draw-formating-page)
@@ -71,8 +71,8 @@ DEVICES list."
                   #:title (G_ "Disk")
                   #:listbox-items (device-items)
                   #:listbox-item->text cdr
-                  #:button-text (G_ "Cancel")
-                  #:button-callback-procedure button-cancel-action))
+                  #:button-text (G_ "Exit")
+                  #:button-callback-procedure button-exit-action))
          (device (car result)))
     device))
 
@@ -84,7 +84,7 @@ Be careful, all data on the disk will be lost.")
    #:title (G_ "Partition table")
    #:listbox-items '("msdos" "gpt")
    #:listbox-item->text identity
-   #:button-text (G_ "Cancel")
+   #:button-text (G_ "Exit")
    #:button-callback-procedure button-callback))
 
 (define (run-type-page partition)
@@ -103,8 +103,8 @@ Be careful, all data on the disk will be lost.")
      #:listbox-items items
      #:listbox-item->text symbol->string
      #:sort-listbox-items? #f
-     #:button-text (G_ "Cancel")
-     #:button-callback-procedure button-cancel-action)))
+     #:button-text (G_ "Exit")
+     #:button-callback-procedure button-exit-action)))
 
 (define (run-fs-type-page)
   "Run a page asking the user to select a file-system type."
@@ -114,8 +114,8 @@ Be careful, all data on the disk will be lost.")
    #:listbox-items '(ext4 btrfs fat32 swap)
    #:listbox-item->text user-fs-type-name
    #:sort-listbox-items? #f
-   #:button-text (G_ "Cancel")
-   #:button-callback-procedure button-cancel-action))
+   #:button-text (G_ "Exit")
+   #:button-callback-procedure button-exit-action))
 
 (define (inform-can-create-partition? user-partition)
   "Return #t if it is possible to create USER-PARTITION. This is determined by
@@ -563,7 +563,7 @@ edit it."
                         path))
                (result (choice-window (G_ "Delete disk")
                                       (G_ "Ok")
-                                      (G_ "Cancel")
+                                      (G_ "Exit")
                                       info-text)))
           (case result
             ((1)
@@ -584,7 +584,7 @@ edit it."
                             number-str))
                    (result (choice-window (G_ "Delete partition")
                                           (G_ "Ok")
-                                          (G_ "Cancel")
+                                          (G_ "Exit")
                                           info-text)))
               (case result
                 ((1)
@@ -616,8 +616,8 @@ At least one partition must have its mounting point set to '/'.")
           #:allow-delete? #t
           #:button-text (G_ "Ok")
           #:button-callback-procedure button-ok-action
-          #:button2-text (G_ "Cancel")
-          #:button2-callback-procedure button-cancel-action
+          #:button2-text (G_ "Exit")
+          #:button2-callback-procedure button-exit-action
           #:listbox-callback-procedure listbox-action
           #:hotkey-callback-procedure hotkey-action)))
     (if (eq? result #t)
@@ -664,8 +664,8 @@ At least one partition must have its mounting point set to '/'.")
                     #:title (G_ "Partitioning method")
                     #:listbox-items items
                     #:listbox-item->text cdr
-                    #:button-text (G_ "Cancel")
-                    #:button-callback-procedure button-cancel-action))
+                    #:button-text (G_ "Exit")
+                    #:button-callback-procedure button-exit-action))
            (method (car result)))
       (case method
         ((entire)
@@ -674,7 +674,7 @@ At least one partition must have its mounting point set to '/'.")
                 (disk (if disk-type
                           (disk-new device)
                           (let* ((label (run-label-page
-                                         button-cancel-action))
+                                         button-exit-action))
                                  (disk (mklabel device label)))
                             (disk-commit disk)
                             disk)))

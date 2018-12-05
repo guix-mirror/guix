@@ -198,7 +198,7 @@ force a wifi scan."
           (make-reflowed-textbox -1 -1 info-text
                                  (info-textbox-width)
                                  #:flags FLAG-BORDER))
-         (cancel-button (make-button -1 -1 (G_ "Cancel")))
+         (exit-button (make-button -1 -1 (G_ "Exit")))
          (scan-button (make-button -1 -1 (G_ "Scan")))
          (services (wifi-services))
          (service-items '()))
@@ -211,12 +211,12 @@ force a wifi scan."
     (set-grid-field middle-grid 1 0 GRID-ELEMENT-COMPONENT scan-button
                     #:anchor ANCHOR-TOP
                     #:pad-left 2)
-    (set-grid-field buttons-grid 0 0 GRID-ELEMENT-COMPONENT cancel-button)
+    (set-grid-field buttons-grid 0 0 GRID-ELEMENT-COMPONENT exit-button)
 
     (add-components-to-form form
                             info-textbox
                             listbox scan-button
-                            cancel-button)
+                            exit-button)
     (make-wrapped-grid-window
      (basic-window-grid info-textbox middle-grid buttons-grid)
      (G_ "Wifi"))
@@ -231,7 +231,7 @@ force a wifi scan."
              ((components=? argument scan-button)
               (run-wifi-scan-page)
               (run-wifi-page))
-             ((components=? argument cancel-button)
+             ((components=? argument exit-button)
               (raise
                (condition
                 (&installer-step-abort))))

@@ -404,12 +404,12 @@ error is raised if the MAX-SCALE-UPDATE limit is reached."
                                  (checkbox-tree-height 10)
                                  (ok-button-callback-procedure
                                   (const #t))
-                                 (cancel-button-callback-procedure
+                                 (exit-button-callback-procedure
                                   (const #t)))
   "Run a page allowing the user to select one or multiple items among ITEMS in
 a checkbox list. The page contains vertically stacked from the top to the
 bottom, an informative text set to INFO-TEXT, the checkbox list and two
-buttons, 'Ok' and 'Cancel'. The page title's is set to TITLE. ITEMS are
+buttons, 'Ok' and 'Exit'. The page title's is set to TITLE. ITEMS are
 converted to text using ITEM->TEXT before being displayed in the checkbox
 list.
 
@@ -417,7 +417,7 @@ INFO-TEXTBOX-WIDTH is the width of the textbox where INFO-TEXT will be
 displayed. CHECKBOX-TREE-HEIGHT is the height of the checkbox list.
 
 OK-BUTTON-CALLBACK-PROCEDURE is called when the 'Ok' button is pressed.
-CANCEL-BUTTON-CALLBACK-PROCEDURE is called when the 'Cancel' button is
+EXIT-BUTTON-CALLBACK-PROCEDURE is called when the 'Exit' button is
 pressed.
 
 This procedure returns the list of checked items in the checkbox list among
@@ -439,14 +439,14 @@ ITEMS when 'Ok' is pressed."
                                  info-textbox-width
                                  #:flags FLAG-BORDER))
          (ok-button (make-button -1 -1 (G_ "Ok")))
-         (cancel-button (make-button -1 -1 (G_ "Cancel")))
+         (exit-button (make-button -1 -1 (G_ "Exit")))
          (grid (vertically-stacked-grid
                 GRID-ELEMENT-COMPONENT info-textbox
                 GRID-ELEMENT-COMPONENT checkbox-tree
                 GRID-ELEMENT-SUBGRID
                 (horizontal-stacked-grid
                  GRID-ELEMENT-COMPONENT ok-button
-                 GRID-ELEMENT-COMPONENT cancel-button)))
+                 GRID-ELEMENT-COMPONENT exit-button)))
          (keys (fill-checkbox-tree checkbox-tree items))
          (form (make-form)))
 
@@ -468,8 +468,8 @@ ITEMS when 'Ok' is pressed."
                                           entries)))
                  (ok-button-callback-procedure)
                  current-items))
-              ((components=? argument cancel-button)
-               (cancel-button-callback-procedure))))))
+              ((components=? argument exit-button)
+               (exit-button-callback-procedure))))))
         (lambda ()
           (destroy-form-and-pop form))))))
 
@@ -482,7 +482,7 @@ ITEMS when 'Ok' is pressed."
                                 (file-textbox-height 30)
                                 (ok-button-callback-procedure
                                  (const #t))
-                                (cancel-button-callback-procedure
+                                (exit-button-callback-procedure
                                  (const #t)))
   (let* ((info-textbox
           (make-reflowed-textbox -1 -1 info-text
@@ -495,14 +495,14 @@ ITEMS when 'Ok' is pressed."
                         file-textbox-height
                         (logior FLAG-SCROLL FLAG-BORDER)))
          (ok-button (make-button -1 -1 (G_ "Ok")))
-         (cancel-button (make-button -1 -1 (G_ "Cancel")))
+         (exit-button (make-button -1 -1 (G_ "Exit")))
          (grid (vertically-stacked-grid
                 GRID-ELEMENT-COMPONENT info-textbox
                 GRID-ELEMENT-COMPONENT file-textbox
                 GRID-ELEMENT-SUBGRID
                 (horizontal-stacked-grid
                  GRID-ELEMENT-COMPONENT ok-button
-                 GRID-ELEMENT-COMPONENT cancel-button)))
+                 GRID-ELEMENT-COMPONENT exit-button)))
          (form (make-form)))
 
     (set-textbox-text file-textbox file-text)
@@ -519,7 +519,7 @@ ITEMS when 'Ok' is pressed."
              (cond
               ((components=? argument ok-button)
                (ok-button-callback-procedure))
-              ((components=? argument cancel-button)
-               (cancel-button-callback-procedure))))))
+              ((components=? argument exit-button)
+               (exit-button-callback-procedure))))))
         (lambda ()
           (destroy-form-and-pop form))))))

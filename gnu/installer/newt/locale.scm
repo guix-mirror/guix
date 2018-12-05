@@ -45,7 +45,7 @@ installed system.")
      #:listbox-items languages
      #:listbox-item->text language->text
      #:sort-listbox-items? #f
-     #:button-text (G_ "Cancel")
+     #:button-text (G_ "Exit")
      #:button-callback-procedure
      (lambda _
        (raise

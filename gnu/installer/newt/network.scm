@@ -59,7 +59,7 @@ Internet and return the selected technology. For now, only technologies with
    #:title (G_ "Internet access")
    #:listbox-items (technology-items)
    #:listbox-item->text technology->text
-   #:button-text (G_ "Cancel")
+   #:button-text (G_ "Exit")
    #:button-callback-procedure
    (lambda _
      (raise

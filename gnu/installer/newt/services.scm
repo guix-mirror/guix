@@ -38,7 +38,7 @@ choose the one to use on the log-in screen with F1.")
    #:items %desktop-environments
    #:item->text desktop-environment-name
    #:checkbox-tree-height 5
-   #:cancel-button-callback-procedure
+   #:exit-button-callback-procedure
    (lambda ()
      (raise
       (condition

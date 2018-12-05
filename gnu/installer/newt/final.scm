@@ -42,7 +42,7 @@ new system will be created from this file when pression the Ok button.")
      #:info-textbox-width width
      #:file-textbox-width width
      #:file-textbox-height height
-     #:cancel-button-callback-procedure
+     #:exit-button-callback-procedure
      (lambda ()
        (raise
         (condition

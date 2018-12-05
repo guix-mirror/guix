@@ -35,7 +35,7 @@
      #:info-text (G_ "Please choose your keyboard layout.")
      #:listbox-items layouts
      #:listbox-item->text layout->text
-     #:button-text (G_ "Cancel")
+     #:button-text (G_ "Exit")
      #:button-callback-procedure
      (lambda _
        (raise

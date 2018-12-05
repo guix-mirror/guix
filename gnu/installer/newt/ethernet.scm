@@ -72,7 +72,7 @@ connection is pending."
          #:title (G_ "Ethernet connection")
          #:listbox-items services
          #:listbox-item->text ethernet-service->text
-         #:button-text (G_ "Cancel")
+         #:button-text (G_ "Exit")
          #:button-callback-procedure
          (lambda _
            (raise

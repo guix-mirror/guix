@@ -116,7 +116,7 @@
                      '()
                      (list GRID-ELEMENT-COMPONENT del-button)))))
            (ok-button (make-button -1 -1 (G_ "Ok")))
-           (cancel-button (make-button -1 -1 (G_ "Cancel")))
+           (exit-button (make-button -1 -1 (G_ "Exit")))
            (title "User creation")
            (grid
             (vertically-stacked-grid
@@ -126,7 +126,7 @@
                                    GRID-ELEMENT-SUBGRID listbox-button-grid)
              GRID-ELEMENT-SUBGRID (horizontal-stacked-grid
                                    GRID-ELEMENT-COMPONENT ok-button
-                                   GRID-ELEMENT-COMPONENT cancel-button)))
+                                   GRID-ELEMENT-COMPONENT exit-button)))
            (sorted-users (sort users (lambda (a b)
                                        (string<= (user-name a)
                                                  (user-name b)))))

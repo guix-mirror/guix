@@ -60,7 +60,7 @@ returned."
          #:listbox-items timezones
          #:listbox-item->text identity
          #:button-text (if (null? path)
-                           (G_ "Cancel")
+                           (G_ "Exit")
                            (G_ "Back"))
          #:button-callback-procedure
          (if (null? path)
