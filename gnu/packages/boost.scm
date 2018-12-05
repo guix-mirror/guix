@@ -122,6 +122,16 @@ across a broad spectrum of applications.")
     (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
 
+;; Some programs need Boost to be built with C++14 support.
+(define-public boost-cxx14
+  (package (inherit boost)
+    (arguments
+      (substitute-keyword-arguments (package-arguments boost)
+        ((#:make-flags flags)
+         `(append ,flags
+                  '("cxxflags=-std=c++14")))))
+    (properties '((hidden? . #t)))))
+
 (define-public boost-for-mysql
   ;; Older version for MySQL 5.7.23.
   (package

@@ -2263,7 +2263,7 @@ single-member files which can't be decompressed in parallel.")
    (build-system cmake-build-system)
    (arguments
     `(#:tests? #f)) ;; No tests available.
-   (inputs `(("boost" ,boost)
+   (inputs `(("boost" ,boost-cxx14)
              ("libiconv" ,libiconv)
              ("xz" ,xz)))
    (native-inputs `(("pkg-config" ,pkg-config)))
