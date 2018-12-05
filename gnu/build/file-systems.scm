@@ -42,6 +42,9 @@
             find-partition-by-luks-uuid
             canonicalize-device-spec
 
+            read-partition-label
+            read-partition-uuid
+
             bind-mount
 
             mount-flags->bit-mask
