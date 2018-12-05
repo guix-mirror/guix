@@ -7179,7 +7179,7 @@ handling the startup notification side.")
 (define-public gnome-calculator
   (package
     (name "gnome-calculator")
-    (version "3.28.2")
+    (version "3.30.1")
     (source
      (origin
        (method url-fetch)
@@ -7188,12 +7188,15 @@ handling the startup notification side.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0izsrqc9fm2lh25jr3nzi94p5hh2d3cklxqczbq16by85wr1xm5s"))))
-    (build-system glib-or-gtk-build-system)
+         "0qkzcmj51cjmljxl1nc84h6jgq1a51xj4g6jwh3ymgm19m3sqypc"))))
+    (build-system meson-build-system)
+    (arguments '(#:glib-or-gtk? #t))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
+       ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
        ("intltool" ,intltool)
        ("itstool" ,itstool)
+       ("vala" ,vala)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)
