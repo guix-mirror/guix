@@ -55,7 +55,7 @@ returned."
     (define (loop path)
       (let ((timezones (locate-childrens timezone-tree path)))
         (run-listbox-selection-page
-         #:title (G_ "Timezone selection")
+         #:title (G_ "Timezone")
          #:info-text (G_ "Please select a timezone.")
          #:listbox-items timezones
          #:listbox-item->text identity

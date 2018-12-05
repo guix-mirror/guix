@@ -30,7 +30,7 @@
   #:export (run-locale-page))
 
 (define (run-language-page languages language->text)
-  (let ((title (G_ "Language selection")))
+  (let ((title (G_ "Language")))
     (run-listbox-selection-page
      #:title title
      #:info-text (G_ "Choose the language to be used for the installation \
@@ -46,7 +46,7 @@ language for the installed system.")
          (&installer-step-abort)))))))
 
 (define (run-territory-page territories territory->text)
-  (let ((title (G_ "Location selection")))
+  (let ((title (G_ "Location")))
     (run-listbox-selection-page
      #:title title
      #:info-text (G_ "Choose your location. This is a shortlist of locations \
@@ -61,7 +61,7 @@ based on the language you selected.")
          (&installer-step-abort)))))))
 
 (define (run-codeset-page codesets)
-  (let ((title (G_ "Codeset selection")))
+  (let ((title (G_ "Codeset")))
     (run-listbox-selection-page
      #:title title
      #:info-text (G_ "Choose your codeset. If UTF-8 is available, it should be \
@@ -77,7 +77,7 @@ preferred.")
          (&installer-step-abort)))))))
 
 (define (run-modifier-page modifiers modifier->text)
-  (let ((title (G_ "Modifier selection")))
+  (let ((title (G_ "Modifier")))
     (run-listbox-selection-page
      #:title title
      #:info-text (G_ "Choose your modifier.")

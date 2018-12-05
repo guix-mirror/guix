@@ -23,4 +23,4 @@
 
 (define (run-hostname-page)
   (run-input-page (G_ "Please enter the system hostname")
-                  (G_ "Hostname selection")))
+                  (G_ "Hostname")))

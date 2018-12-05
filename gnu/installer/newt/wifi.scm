@@ -219,7 +219,7 @@ force a wifi scan."
                             cancel-button)
     (make-wrapped-grid-window
      (basic-window-grid info-textbox middle-grid buttons-grid)
-     (G_ "Wifi selection"))
+     (G_ "Wifi"))
 
     (receive (exit-reason argument)
         (run-form form)

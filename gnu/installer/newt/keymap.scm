@@ -29,7 +29,7 @@
   #:export (run-keymap-page))
 
 (define (run-layout-page layouts layout->text)
-  (let ((title (G_ "Layout selection")))
+  (let ((title (G_ "Layout")))
     (run-listbox-selection-page
      #:title title
      #:info-text (G_ "Please choose your keyboard layout.")
@@ -43,7 +43,7 @@
          (&installer-step-abort)))))))
 
 (define (run-variant-page variants variant->text)
-  (let ((title (G_ "Variant selection")))
+  (let ((title (G_ "Variant")))
     (run-listbox-selection-page
      #:title title
      #:info-text (G_ "Please choose a variant for your keyboard layout.")

@@ -56,7 +56,7 @@ Internet and return the selected technology. For now, only technologies with
   (run-listbox-selection-page
    #:info-text (G_ "The install process requires an internet access.\
  Please select a network technology.")
-   #:title (G_ "Technology selection")
+   #:title (G_ "Internet access")
    #:listbox-items (technology-items)
    #:listbox-item->text technology->text
    #:button-text (G_ "Cancel")
