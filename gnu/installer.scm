@@ -164,8 +164,8 @@ selected keymap."
                                         "/share/zoneinfo/zone.tab")))
     #~(lambda (current-installer)
         (list
-         ;; Welcome the user and ask him to choose between manual installation
-         ;; and graphical install.
+         ;; Welcome the user and ask him to choose between manual
+         ;; installation and graphical install.
          (installer-step
           (id 'welcome)
           (compute (lambda _
@@ -175,6 +175,11 @@ selected keymap."
          ;; Ask the user to choose a locale among those supported by the glibc.
          ;; Install the selected locale right away, so that the user may
          ;; benefit from any available translation for the installer messages.
+
+         ;; Ask the user to choose a locale among those supported by
+         ;; the glibc.  Install the selected locale right away, so that
+         ;; the user may benefit from any available translation for the
+         ;; installer messages.
          (installer-step
           (id 'locale)
           (description (G_ "Locale"))
