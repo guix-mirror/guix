@@ -3240,7 +3240,7 @@ services for numerous locations.")
 (define-public gnome-settings-daemon
   (package
     (name "gnome-settings-daemon")
-    (version "3.28.1")
+    (version "3.30.1.2")
     (source
      (origin
        (method url-fetch)
@@ -3249,7 +3249,7 @@ services for numerous locations.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0z9dip9p0iav646cmxisii5sbkdr9hmaklc5fzvschpbjkhphksr"))))
+         "079dh609rvpwfyzg4m898q8km9g7x04hg18rwwb1izj1dr7zdp2w"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
