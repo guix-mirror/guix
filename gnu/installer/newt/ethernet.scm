@@ -54,7 +54,8 @@ connection is pending."
   (let* ((service-name (service-name service))
          (form (draw-connecting-page service-name)))
     (connman-connect service)
-    (destroy-form-and-pop form)))
+    (destroy-form-and-pop form)
+    service))
 
 (define (run-ethernet-page)
   (let ((services (ethernet-services)))
