@@ -9,7 +9,6 @@ gnu/system/mapped-devices.scm
 gnu/system/shadow.scm
 guix/import/opam.scm
 gnu/installer.scm
-gnu/installer/record.scm
 gnu/installer/connman.scm
 gnu/installer/hostname.scm
 gnu/installer/keymap.scm
@@ -29,6 +28,7 @@ gnu/installer/newt/utils.scm
 gnu/installer/newt/welcome.scm
 gnu/installer/newt/wifi.scm
 gnu/installer/parted.scm
+gnu/installer/record.scm
 gnu/installer/services.scm
 gnu/installer/steps.scm
 gnu/installer/timezone.scm
