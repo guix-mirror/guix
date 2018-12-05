@@ -170,7 +170,7 @@ as required.")
 (define-public libfilezilla
   (package
     (name "libfilezilla")
-    (version "0.14.0")
+    (version "0.15.1")
     (source
      (origin
        (method url-fetch)
@@ -178,11 +178,13 @@ as required.")
                            name "/" name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "15cfz98asypf9rfybv4c6kx8nk3wak7qlm1azldc0gd1nqm4xqvz"))))
+         "17zlhw5b1a7jzh50cbpy2is3sps5lnzch5yf9qm7mwrviw9c8j10"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
        ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("nettle" ,nettle)))
     (home-page "https://lib.filezilla-project.org")
     (synopsis "Cross-platform C++ library used by Filezilla client")
     (description
