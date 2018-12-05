@@ -997,8 +997,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libgpg-error-gawk-compat.patch		\
   %D%/packages/patches/libgit2-avoid-python.patch		\
   %D%/packages/patches/libgit2-mtime-0.patch			\
-  %D%/packages/patches/libgdata-fix-tests.patch			\
-  %D%/packages/patches/libgdata-glib-duplicate-tests.patch	\
   %D%/packages/patches/libgnome-encoding.patch			\
   %D%/packages/patches/libgnomeui-utf8.patch			\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\

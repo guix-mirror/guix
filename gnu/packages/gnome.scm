@@ -357,10 +357,12 @@ relationship modeling, and network diagrams.  The program supports various file
 formats like PNG, SVG, PDF and EPS.")
       (license license:gpl2+))))
 
+;; This is the unstable release, but it is required for the current stable
+;; release of gvfs (1.38.1).
 (define-public libgdata
   (package
     (name "libgdata")
-    (version "0.16.1")
+    (version "0.17.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -368,10 +370,7 @@ formats like PNG, SVG, PDF and EPS.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "09q8h1129xjpw33rvzz7856drygxwlm0s64z9cm0vbmjxiqy0h47"))
-              (patches
-               (search-patches "libgdata-fix-tests.patch"
-                               "libgdata-glib-duplicate-tests.patch"))))
+                "0fj54yqxdapdppisqm1xcyrpgcichdmipq0a0spzz6009ikzgi45"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -391,14 +390,14 @@ formats like PNG, SVG, PDF and EPS.")
        ("uhttpmock" ,uhttpmock)))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
-       ("glib" ,glib)
-       ("glib-networking" ,glib-networking)
-       ("json-glib" ,json-glib)
-       ("libsoup" ,libsoup)))
+       ("glib-networking" ,glib-networking)))
     (propagated-inputs
      `(("gcr" ,gcr)
+       ("glib" ,glib)
        ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
+       ("json-glib" ,json-glib)
        ("liboauth" ,liboauth)
+       ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)))
     (home-page "https://wiki.gnome.org/Projects/libgdata")
     (synopsis "Library for accessing online service APIs")
