@@ -96,18 +96,18 @@ installation and reboot."
    (G_ "Welcome to GNU GuixSD installer!
 
 Please note that the present graphical installer is still under heavy \
-development, so you might want to fallback to the classical installer by \
-pressing CTRL-ALT-F3.")
+development, so you might want to prefer using the shell based process. \
+The documentation is accessible at any time by pressing CTRL-ALT-F2.")
    logo
    #:listbox-items
-   `((,(G_ "Install using the unguided shell based process")
+   `((,(G_ "Install using the shell based process")
       .
       ,(lambda ()
-         (clear-screen)
-         (newt-suspend)
-         (system* "bash" "-l")
-         (newt-resume)))
-     (,(G_ "Graphical install using a guided terminal based interface")
+         ;; Switch to TTY3, where a root shell is available for shell based
+         ;; install. The other root TTY's would have been ok too.
+         (system* "chvt" "3")
+         (run-welcome-page logo)))
+     (,(G_ "Graphical install using a terminal based interface")
       .
       ,(const #t))
      (,(G_ "Reboot")
