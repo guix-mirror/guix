@@ -11,6 +11,7 @@ guix/import/opam.scm
 gnu/installer.scm
 gnu/installer/record.scm
 gnu/installer/connman.scm
+gnu/installer/hostname.scm
 gnu/installer/keymap.scm
 gnu/installer/locale.scm
 gnu/installer/newt.scm

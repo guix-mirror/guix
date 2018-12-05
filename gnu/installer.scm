@@ -278,6 +278,7 @@ selected keymap."
                          (gnu installer keymap)
                          (gnu installer steps)
                          (gnu installer final)
+                         (gnu installer hostname)
                          (gnu installer locale)
                          (gnu installer parted)
                          (gnu installer services)

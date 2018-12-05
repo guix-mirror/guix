@@ -570,6 +570,7 @@ GNU_SYSTEM_MODULES +=                           \
   %D%/installer/record.scm		        \
   %D%/installer/connman.scm			\
   %D%/installer/final.scm			\
+  %D%/installer/hostname.scm			\
   %D%/installer/keymap.scm			\
   %D%/installer/locale.scm			\
   %D%/installer/newt.scm			\
