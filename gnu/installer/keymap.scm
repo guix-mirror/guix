@@ -149,18 +149,24 @@ Configuration Database, describing possible XKB configurations."
        (values models layouts)))))
 
 (define (kmscon-update-keymap model layout variant)
-  (let ((keymap-file (getenv "KEYMAP_UPDATE")))
-    (unless (and keymap-file
-                 (file-exists? keymap-file))
-      (error "Unable to locate keymap update file"))
+  "Update kmscon keymap with the provided MODEL, LAYOUT and VARIANT."
+  (and=>
+   (getenv "KEYMAP_UPDATE")
+   (lambda (keymap-file)
+     (unless (file-exists? keymap-file)
+       (error "Unable to locate keymap update file"))
 
-    (call-with-output-file keymap-file
-        (lambda (port)
-          (format port model)
-          (put-u8 port 0)
+     ;; See file gnu/packages/patches/kmscon-runtime-keymap-switch.patch.
+     ;; This dirty hack makes possible to update kmscon keymap at runtime by
+     ;; writing an X11 keyboard model, layout and variant to a named pipe
+     ;; referred by KEYMAP_UPDATE environment variable.
+     (call-with-output-file keymap-file
+       (lambda (port)
+         (format port model)
+         (put-u8 port 0)
 
-          (format port layout)
-          (put-u8 port 0)
+         (format port layout)
+         (put-u8 port 0)
 
-          (format port variant)
-          (put-u8 port 0)))))
+         (format port variant)
+         (put-u8 port 0))))))
