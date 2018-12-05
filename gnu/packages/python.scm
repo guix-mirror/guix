@@ -341,8 +341,7 @@ data types.")
 (define-public python-3.7
   (package (inherit python-2)
     (name "python")
-    (version "3.7.0")
-    (replacement python-3/fixed)
+    (version "3.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -355,7 +354,7 @@ data types.")
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "0j9mic5c9lbd2b20wka7hily7szz740wy9ilfrczxap63rnrk0h3"))
+                "0v9x4h22rh5cwpsq1mwpdi3c9lc9820lzp2nmn9g20llij72nzps"))
               (snippet
                '(begin
                   (for-each delete-file
@@ -413,14 +412,6 @@ data types.")
 
 ;; Current 3.x version.
 (define-public python-3 python-3.7)
-
-(define python-3/fixed
-  (package
-    (inherit python-3)
-    (source (origin
-              (inherit (package-source python-3))
-              (patches (append (origin-patches (package-source python-3))
-                               (search-patches "python-CVE-2018-14647.patch")))))))
 
 ;; Current major version.
 (define-public python python-3)
