@@ -53,18 +53,32 @@ Internet and return the selected technology. For now, only technologies with
                  (string=? type "wifi"))))
             (connman-technologies)))
 
-  (run-listbox-selection-page
-   #:info-text (G_ "The install process requires an internet access.\
- Please select a network technology.")
-   #:title (G_ "Internet access")
-   #:listbox-items (technology-items)
-   #:listbox-item->text technology->text
-   #:button-text (G_ "Exit")
-   #:button-callback-procedure
-   (lambda _
-     (raise
-      (condition
-       (&installer-step-abort))))))
+  (let ((items (technology-items)))
+    (if (null? items)
+        (case (choice-window
+               (G_ "Internet access")
+               (G_ "Continue")
+               (G_ "Exit")
+               (G_ "The install process requires an internet access, but no \
+network device were found. Do you want to continue anyway?"))
+          ((1) (raise
+                (condition
+                 (&installer-step-break))))
+          ((2) (raise
+                (condition
+                 (&installer-step-abort)))))
+        (run-listbox-selection-page
+         #:info-text (G_ "The install process requires an internet access.\
+ Please select a network device.")
+         #:title (G_ "Internet access")
+         #:listbox-items items
+         #:listbox-item->text technology->text
+         #:button-text (G_ "Exit")
+         #:button-callback-procedure
+         (lambda _
+           (raise
+            (condition
+             (&installer-step-abort))))))))
 
 (define (find-technology-by-type technologies type)
   "Find and return a technology with the given TYPE in TECHNOLOGIES list."
