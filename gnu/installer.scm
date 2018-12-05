@@ -174,15 +174,6 @@ selected keymap."
                      ((installer-welcome-page current-installer)
                       #$(local-file "installer/aux-files/logo.txt")))))
 
-         ;; Run a partitionment tool allowing the user to modify
-         ;; partition tables, partitions and their mount points.
-         (installer-step
-          (id 'partition)
-          (description (G_ "Partitionment"))
-          (compute (lambda _
-                     ((installer-partition-page current-installer))))
-          (configuration-formatter user-partitions->configuration))
-
          ;; Ask the user to choose a locale among those supported by
          ;; the glibc.  Install the selected locale right away, so that
          ;; the user may benefit from any available translation for the
@@ -216,6 +207,15 @@ selected keymap."
           (description (G_ "Keyboard mapping selection"))
           (compute (lambda _
                      (#$keymap-step current-installer))))
+
+         ;; Run a partitionment tool allowing the user to modify
+         ;; partition tables, partitions and their mount points.
+         (installer-step
+          (id 'partition)
+          (description (G_ "Partitionment"))
+          (compute (lambda _
+                     ((installer-partition-page current-installer))))
+          (configuration-formatter user-partitions->configuration))
 
          ;; Ask the user to input a hostname for the system.
          (installer-step
