@@ -7348,7 +7348,7 @@ Bluefish supports many programming and markup languages.")
 (define-public gnome-system-monitor
   (package
     (name "gnome-system-monitor")
-    (version "3.28.2")
+    (version "3.30.0")
     (source
      (origin
        (method url-fetch)
@@ -7357,10 +7357,14 @@ Bluefish supports many programming and markup languages.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "164in885dyfvna5yjzgdyrbrsskvh5wzxdmkjgb4mbh54lzqd1zb"))))
-    (build-system glib-or-gtk-build-system)
+         "0g0y565bjs6bdszrnxsz1f7hcm1x59i3mfvplysirh7nz3hpz888"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:configure-flags '("-Dsystemd=false")))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums.
+       ("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("libgtop" ,libgtop)
