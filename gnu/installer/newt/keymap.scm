@@ -66,28 +66,24 @@ names of the selected keyboard layout and variant."
       (id 'layout)
       (compute
        (lambda _
-         (let* ((layout (run-layout-page
-                         layouts
-                         (lambda (layout)
-                           (x11-keymap-layout-description layout)))))
-           (if (null? (x11-keymap-layout-variants layout))
-               ;; Break if this layout does not have any variant.
-               (raise
-                (condition
-                 (&installer-step-break)))
-               layout)))))
+         (run-layout-page
+          layouts
+          (lambda (layout)
+            (x11-keymap-layout-description layout))))))
      ;; Propose the user to select a variant among those supported by the
      ;; previously selected layout.
      (installer-step
       (id 'variant)
       (compute
        (lambda (result _)
-         (let ((variants (x11-keymap-layout-variants
-                          (result-step result 'layout))))
-           (run-variant-page variants
-                             (lambda (variant)
-                               (x11-keymap-variant-description
-                                variant)))))))))
+         (let* ((layout (result-step result 'layout))
+                (variants (x11-keymap-layout-variants layout)))
+           ;; Return #f if the layout does not have any variant.
+           (and (not (null? variants))
+                (run-variant-page variants
+                                  (lambda (variant)
+                                    (x11-keymap-variant-description
+                                     variant))))))))))
 
   (define (format-result result)
     (let ((layout (x11-keymap-layout-name
