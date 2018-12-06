@@ -1,4 +1,4 @@
-Gnome-tweak-tool does not look at GSETTINGS_SCHEMA_PATH or XDG_DATA_DIRS, it
+Gnome-tweaks does not look at GSETTINGS_SCHEMA_PATH or XDG_DATA_DIRS, it
 assumes that schemas are installed in one global directory
 (GSETTINGS_SCHEMA_DIR/gsettingsschemadir).
 
@@ -8,7 +8,7 @@ packages pick-up files using XDG_DATA_DIRS.
 Upstream ticket: https://bugzilla.gnome.org/show_bug.cgi?id=764537
 janneke@gnu.org
 
---- gnome-tweak-tool-3.18.1.orig/gtweak/gsettings.py	2015-04-08 15:21:32.000000000 +0200
+--- gnome-tweak-3.18.1.orig/gtweak/gsettings.py	2015-04-08 15:21:32.000000000 +0200
 +++ gnome-tweak-tool-3.18.1/gtweak/gsettings.py	2016-04-03 11:26:38.658482704 +0200
 @@ -16,7 +16,8 @@
  # along with gnome-tweak-tool.  If not, see <http://www.gnu.org/licenses/>.

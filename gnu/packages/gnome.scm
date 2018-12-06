@@ -6777,51 +6777,41 @@ fit the GNOME desktop.")
 existing databases over the internet.")
     (license license:gpl3+)))
 
-(define-public gnome-tweak-tool
+(define-public gnome-tweaks
   (package
-    (name "gnome-tweak-tool")
-    (version "3.26.4")
+    (name "gnome-tweaks")
+    (version "3.28.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/gnome-tweak-tool/"
+              (uri (string-append "mirror://gnome/sources/gnome-tweaks/"
                                   (version-major+minor version) "/"
-                                  "gnome-tweak-tool-" version ".tar.xz"))
-              (patches (list
-                        (search-patch "gnome-tweak-tool-search-paths.patch")))
+                                  "gnome-tweaks-" version ".tar.xz"))
+              (patches
+               (list (search-patch "gnome-tweaks-search-paths.patch")))
               (sha256
                (base32
-                "1pq5a0kzh1sz7s7ax5c7p6212k9d51nk5bfvjfyqn99cs928187x"))))
-    (build-system glib-or-gtk-build-system)
+                "1p5xydr0haz4389h6dvvbna6i1mipdzvmlfksnv0jqfvfs9sy6fp"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("--localstatedir=/tmp"
-                           "--sysconfdir=/tmp")
+     `(#:glib-or-gtk? #t
+       #:configure-flags '("-Dlocalstatedir=/tmp"
+                           "-Dsysconfdir=/tmp")
        #:imported-modules ((guix build python-build-system)
-                           ,@%glib-or-gtk-build-system-modules)
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (replace 'build
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (invoke "meson" "build"
-                                      "--prefix" (assoc-ref outputs "out"))))
-                  (replace 'check
-                    (lambda _ (invoke "ninja" "-C" "build" "test")))
-                  (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (invoke "ninja" "-C" "build" "install")))
-                  (add-after 'install 'wrap-program
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out               (assoc-ref outputs "out"))
-                            (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
-                        (wrap-program (string-append out "/bin/gnome-tweak-tool")
-                          `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
-                      #t))
-                  (add-after 'install 'wrap
-                    (@@ (guix build python-build-system) wrap)))))
+                           ,@%meson-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap
+           (@@ (guix build python-build-system) wrap))
+         (add-after 'wrap 'wrap-gi-typelib
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+               (wrap-program (string-append out "/bin/gnome-tweaks")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+             #t)))))
     (native-inputs
      `(("gtk+:bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
        ("intltool" ,intltool)
-       ("meson" ,meson-for-build)
-       ("ninja" ,ninja)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gnome-desktop" ,gnome-desktop)
@@ -6834,13 +6824,17 @@ existing databases over the internet.")
        ("python" ,python)
        ("python-pygobject" ,python-pygobject)))
     (synopsis "Customize advanced GNOME 3 options")
-    (home-page "https://wiki.gnome.org/action/show/Apps/GnomeTweakTool")
+    (home-page "https://wiki.gnome.org/Apps/Tweaks")
     (description
-     "GNOME Tweak Tool allows adjusting advanced configuration settings in
+     "GNOME Tweaks allows adjusting advanced configuration settings in
 GNOME 3.  This includes things like the fonts used in user interface elements,
 alternative user interface themes, changes in window management behavior,
 GNOME Shell appearance and extension, etc.")
     (license license:gpl3+)))
+
+;; This package has been renamed by upstream.
+(define-public gnome-tweak-tool
+  (deprecated-package "gnome-tweak-tool" gnome-tweaks))
 
 (define-public gnome-shell-extensions
   (package
