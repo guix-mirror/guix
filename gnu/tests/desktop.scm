@@ -50,7 +50,7 @@
 
           ;; Log in as root on tty1, and check what 'loginctl' returns.
           (test-equal "login on tty1"
-            '(("c1" "0" "root" "seat0" "/dev/tty1") ;session
+            '(("c1" "0" "root" "seat0" "tty1")      ;session
               ("seat0")                             ;seat
               ("0" "root"))                         ;user
 
