@@ -29,6 +29,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system r)
@@ -103,7 +104,7 @@ topology functions.")
 (define-public gnome-maps
   (package
     (name "gnome-maps")
-    (version "3.28.2")
+    (version "3.30.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -111,20 +112,19 @@ topology functions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1yzi08a9316jplgsl2z0qzlqxhghyqcjhv0m6i94wcain4mxk1z7"))))
-    (build-system glib-or-gtk-build-system)
+                "01hqv36j5ji0djq4vl151113bqhh4hpz72d88fm8zds4pdlx7l57"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags ;; Ensure that geoclue is referred to by output.
-       (list (string-append "LDFLAGS=-L"
-                            (assoc-ref %build-inputs "geoclue") "/lib")
-             (string-append "CFLAGS=-I"
-                            (assoc-ref %build-inputs "geoclue") "/include"))
+     `(#:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (gi-typelib-path (getenv "GI_TYPELIB_PATH"))
+                   (geocode-glib-path (string-append
+                                       (assoc-ref inputs "geocode-glib")
+                                       "/lib"))
                    (goa-path (string-append
                               (assoc-ref inputs "gnome-online-accounts")
                               "/lib"))
@@ -135,12 +135,15 @@ topology functions.")
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
 
                  ;; There seems to be no way to embed the path of
-                 ;; libgoa-1.0.so.0, libwebkit2gtk-4.0.so.37 and
-                 ;; libjavascriptcoregtk-4.0.so.18.
-                 `("LD_LIBRARY_PATH" ":" prefix (,goa-path ,webkitgtk-path)))
+                 ;; libgoa-1.0.so.0, libwebkit2gtk-4.0.so.37,
+                 ;; libjavascriptcoregtk-4.0.so.18, and libgeocode-glib.so.0
+                 `("LD_LIBRARY_PATH" ":" prefix (,goa-path
+                                                 ,webkitgtk-path
+                                                 ,geocode-glib-path)))
                #t))))))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
+     `(("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
+       ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
