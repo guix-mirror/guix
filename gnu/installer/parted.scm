@@ -1013,16 +1013,6 @@ bit bucket."
   (with-null-output-ports
    (invoke "mkswap" "-f" partition)))
 
-(define (start-swaping partition)
-  "Start swaping on PARTITION path."
-  (with-null-output-ports
-   (invoke "swapon" partition)))
-
-(define (stop-swaping partition)
-  "Stop swaping on PARTITION path."
-  (with-null-output-ports
-   (invoke "swapoff" partition)))
-
 (define (format-user-partitions user-partitions)
   "Format the <user-partition> records in USER-PARTITIONS list with
 NEED-FORMATING? field set to #t."
@@ -1060,8 +1050,7 @@ comes last. This is useful to mount/umount partitions in a coherent order."
 
 (define (mount-user-partitions user-partitions)
   "Mount the <user-partition> records in USER-PARTITIONS list on their
-respective mount-points. Also start swaping on <user-partition> records with
-FS-TYPE equal to 'swap."
+respective mount-points."
   (let* ((mount-partitions (filter user-partition-mount-point user-partitions))
          (sorted-partitions (sort-partitions mount-partitions)))
     (for-each (lambda (user-partition)
@@ -1075,44 +1064,54 @@ FS-TYPE equal to 'swap."
                        (mount-type
                         (user-fs-type->mount-type fs-type))
                        (path (user-partition-path user-partition)))
-                  (case fs-type
-                    ((swap)
-                     (start-swaping path))
-                    (else
-                     (mkdir-p target)
-                     (mount path target mount-type)))))
+                  (mkdir-p target)
+                  (mount path target mount-type)))
               sorted-partitions)))
 
 (define (umount-user-partitions user-partitions)
-  "Unmount all the <user-partition> records in USER-PARTITIONS list. Also stop
-swaping on <user-partition> with FS-TYPE set to 'swap."
+  "Unmount all the <user-partition> records in USER-PARTITIONS list."
   (let* ((mount-partitions (filter user-partition-mount-point user-partitions))
          (sorted-partitions (sort-partitions mount-partitions)))
     (for-each (lambda (user-partition)
                 (let* ((mount-point
                         (user-partition-mount-point user-partition))
-                       (fs-type
-                        (user-partition-fs-type user-partition))
-                       (path (user-partition-path user-partition))
                        (target
                         (string-append (%installer-target-dir)
                                        mount-point)))
-                  (case fs-type
-                    ((swap)
-                     (stop-swaping path))
-                    (else
-                     (umount target)))))
+                  (umount target)))
               (reverse sorted-partitions))))
 
+(define (find-swap-user-partitions user-partitions)
+  "Return the subset of <user-partition> records in USER-PARTITIONS list with
+the FS-TYPE field set to 'swap, return the empty list if none found."
+  (filter (lambda (user-partition)
+          (let ((fs-type (user-partition-fs-type user-partition)))
+            (eq? fs-type 'swap)))
+        user-partitions))
+
+(define (start-swapping user-partitions)
+  "Start swaping on <user-partition> records with FS-TYPE equal to 'swap."
+  (let* ((swap-user-partitions (find-swap-user-partitions user-partitions))
+         (swap-devices (map user-partition-path swap-user-partitions)))
+    (for-each swapon swap-devices)))
+
+(define (stop-swapping user-partitions)
+  "Stop swaping on <user-partition> records with FS-TYPE equal to 'swap."
+  (let* ((swap-user-partitions (find-swap-user-partitions user-partitions))
+         (swap-devices (map user-partition-path swap-user-partitions)))
+    (for-each swapoff swap-devices)))
+
 (define-syntax-rule (with-mounted-partitions user-partitions exp ...)
-  "Mount USER-PARTITIONS within the dynamic extent of EXP."
+  "Mount USER-PARTITIONS and start swapping within the dynamic extent of EXP."
   (dynamic-wind
     (lambda ()
-      (mount-user-partitions user-partitions))
+      (mount-user-partitions user-partitions)
+      (start-swapping user-partitions))
     (lambda ()
       exp ...)
     (lambda ()
       (umount-user-partitions user-partitions)
+      (stop-swapping user-partitions)
       #f)))
 
 (define (user-partition->file-system user-partition)
@@ -1139,14 +1138,6 @@ list of <file-system> records."
        (and mount-point
             (user-partition->file-system user-partition))))
    user-partitions))
-
-(define (find-swap-user-partitions user-partitions)
-  "Return the subset of <user-partition> records in USER-PARTITIONS list with
-the FS-TYPE field set to 'swap, return the empty list if none found."
-  (filter (lambda (user-partition)
-          (let ((fs-type (user-partition-fs-type user-partition)))
-            (eq? fs-type 'swap)))
-        user-partitions))
 
 (define (bootloader-configuration user-partitions)
   "Return the bootloader configuration field for USER-PARTITIONS."
