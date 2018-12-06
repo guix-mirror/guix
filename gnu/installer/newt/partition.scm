@@ -393,7 +393,8 @@ partition. Leave this field empty if you don't want to set a mounting point.")
       (else result))))
 
 (define* (run-disk-page disks
-                        #:optional (user-partitions '()))
+                        #:optional (user-partitions '())
+                        #:key (guided? #f))
   "Run a page allowing to edit the partition tables of the given DISKS. If
 specified, USER-PARTITIONS is a list of <user-partition> records associated to
 the partitions on DISKS."
@@ -597,17 +598,24 @@ edit it."
                 (else
                  default-result))))))))
 
-  (let ((result
-         (run-listbox-selection-page
-
-          #:info-text (G_ "You can change a disk's partition table by \
+  (let* ((info-text (G_ "You can change a disk's partition table by \
 selecting it and pressing ENTER. You can also edit a partition by selecting it \
 and pressing ENTER, or remove it by pressing DELETE. To create a new \
 partition, select a free space area and press ENTER.
 
-At least one partition must have its mounting point set to '/'.")
+At least one partition must have its mounting point set to '/'."))
+         (guided-info-text (format (G_ "This is the proposed partitionment. It \
+is still possible to edit it or to go back to install menu by pressing the \
+Exit button.~%~%")))
+         (result
+          (run-listbox-selection-page
+           #:info-text (if guided?
+                           (string-append guided-info-text info-text)
+                           info-text)
 
-          #:title (G_ "Manual partitioning")
+          #:title (if guided?
+                      (G_ "Guided partitioning")
+                      (G_ "Manual partitioning"))
           #:info-textbox-width 70
           #:listbox-items (disk-items)
           #:listbox-item->text cdr
@@ -633,7 +641,8 @@ At least one partition must have its mounting point set to '/'.")
               (begin
                 (for-each (cut disk-destroy <>) disks)
                 user-partitions)
-              (run-disk-page disks user-partitions)))
+              (run-disk-page disks user-partitions
+                             #:guided? guided?)))
         (let* ((result-disks (assoc-ref result 'disks))
                (result-user-partitions (assoc-ref result
                                                   'user-partitions))
@@ -651,7 +660,8 @@ At least one partition must have its mounting point set to '/'.")
                     (update-user-partitions result-user-partitions
                                             new-user-partition)
                     result-user-partitions)))
-          (run-disk-page result-disks new-user-partitions)))))
+          (run-disk-page result-disks new-user-partitions
+                         #:guided? guided?)))))
 
 (define (run-partioning-page)
   "Run a page asking the user for a partitioning method."
@@ -684,7 +694,8 @@ At least one partition must have its mounting point set to '/'.")
                                   (auto-partition disk #:scheme scheme)
                                   (create-special-user-partitions
                                    (disk-partitions disk)))))
-           (run-disk-page (list disk) user-partitions)))
+           (run-disk-page (list disk) user-partitions
+                          #:guided? #t)))
         ((manual)
          (let* ((disks (map disk-new devices))
                 (user-partitions (append-map
