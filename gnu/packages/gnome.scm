@@ -5128,7 +5128,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
 (define-public evolution-data-server
   (package
     (name "evolution-data-server")
-    (version "3.28.3")
+    (version "3.30.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5136,17 +5136,14 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "11sq795115vrcgxl9svscm6wg8isjj784c3d84qzb6z47zq92zj3"))))
+                "0h4f71kpf2ypdgifg369z35pk4cq99daw540yzjpax52grav2fjv"))))
     (outputs '("out" "libedataserverui"))
     (build-system cmake-build-system)
     (arguments
-     '(;; XXX FIXME: 11/85 tests are failing.
-       #:tests? #f
-       #:configure-flags
-       (let* ((lib (string-append (assoc-ref %outputs "out")
-                                  "/lib"))
-              (runpaths (map (lambda (s) (string-append
-                                          lib "/evolution-data-server/" s))
+     '(#:configure-flags
+       (let* ((lib (string-append (assoc-ref %outputs "out") "/lib"))
+              (runpaths (map (lambda (s)
+                               (string-append lib "/evolution-data-server/" s))
                              '("addressbook-backends" "calendar-backends"
                                "camel-providers" "credential-modules"
                                "registry-modules"))))
@@ -5167,9 +5164,25 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                "-DENABLE_INTROSPECTION=ON"))  ;required for Vala bindings
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             ;; tests/book-migration/test-migration.c:160:test_fetch_contacts:
+             ;; assertion failed (g_slist_length (contacts) == 20): (0 == 20)
+             (delete-file-recursively "tests/book-migration")
+             (substitute* "tests/CMakeLists.txt"
+               (("add_subdirectory\\(book-migration\\)") ""))
+             ;; tests/libedata-cal/test-cal-meta-backend.c:1328:test_get_attachment_uris:
+             ;; assertion failed (uris->data == expected_uri):
+             ;; ("" == "file:///tests/libedata-cal/components/event-1.ics")
+             (substitute* "tests/libedata-cal/CMakeLists.txt"
+               (("test-cal-meta-backend") ""))
+             #t))
          (add-after 'unpack 'patch-paths
           (lambda _
-            (substitute* "tests/test-server-utils/e-test-server-utils.c"
+            (substitute* '("tests/test-server-utils/e-test-server-utils.c"
+                           "tests/libedata-book/data-test-utils.c"
+                           "tests/libedata-book/test-book-cache-utils.c"
+                           "tests/libedata-cal/test-cal-cache-utils.c")
               (("/bin/rm") (which "rm")))
             #t))
          (add-before 'configure 'dont-override-rpath
@@ -5221,6 +5234,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
        ("gcr" ,gcr)
        ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("json-glib" ,json-glib)
+       ("libcanberra" ,libcanberra)
        ("libgweather" ,libgweather)
        ("mit-krb5" ,mit-krb5)
        ("openldap" ,openldap)
