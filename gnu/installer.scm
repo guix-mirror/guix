@@ -333,16 +333,15 @@ selected keymap."
                    #:steps steps))
                 (const #f)
                 (lambda (key . args)
-                  ((installer-exit-error current-installer) key args)
-
-                  ;; Be sure to call newt-finish, to restore the terminal into
-                  ;; its original state before printing the error report.
-                  (call-with-output-file "/tmp/error"
-                    (lambda (port)
-                      (display-backtrace (make-stack #t) port)
-                      (print-exception port
-                                       (stack-ref (make-stack #t) 1)
-                                       key args)))
+                  (let ((error-file "/tmp/last-installer-error"))
+                    (call-with-output-file error-file
+                      (lambda (port)
+                        (display-backtrace (make-stack #t) port)
+                        (print-exception port
+                                         (stack-ref (make-stack #t) 1)
+                                         key args)))
+                    ((installer-exit-error current-installer)
+                     error-file key args))
                   (primitive-exit 1)))
 
               ((installer-exit current-installer)))))))

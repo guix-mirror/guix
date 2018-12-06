@@ -18,6 +18,7 @@
 
 (define-module (gnu installer newt)
   #:use-module (gnu installer record)
+  #:use-module (gnu installer utils)
   #:use-module (gnu installer newt ethernet)
   #:use-module (gnu installer newt final)
   #:use-module (gnu installer newt hostname)
@@ -25,6 +26,7 @@
   #:use-module (gnu installer newt locale)
   #:use-module (gnu installer newt menu)
   #:use-module (gnu installer newt network)
+  #:use-module (gnu installer newt page)
   #:use-module (gnu installer newt partition)
   #:use-module (gnu installer newt services)
   #:use-module (gnu installer newt timezone)
@@ -32,6 +34,7 @@
   #:use-module (gnu installer newt utils)
   #:use-module (gnu installer newt welcome)
   #:use-module (gnu installer newt wifi)
+  #:use-module (guix config)
   #:use-module (guix discovery)
   #:use-module (guix i18n)
   #:use-module (srfi srfi-26)
@@ -46,7 +49,23 @@
 (define (exit)
   (newt-finish))
 
-(define (exit-error key . args)
+(define (exit-error file key args)
+  (newt-set-color COLORSET-ROOT "white" "red")
+  (let ((width (nearest-exact-integer
+                (* (screen-columns) 0.8)))
+        (height (nearest-exact-integer
+                 (* (screen-rows) 0.7))))
+    (run-file-textbox-page
+     #:info-text (format #f (G_ "The installer has encountered an unexpected \
+problem. The backtrace is displayed below. Please report it by email to \
+<~a>.") %guix-bug-report-address)
+     #:title (G_ "Unexpected problem")
+     #:file file
+     #:exit-button? #f
+     #:info-textbox-width width
+     #:file-textbox-width width
+     #:file-textbox-height height))
+  (newt-set-color COLORSET-ROOT "white" "blue")
   (newt-finish))
 
 (define (final-page result prev-steps)
