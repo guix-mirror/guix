@@ -2992,7 +2992,7 @@ keyboard shortcuts.")
 (define-public colord
   (package
     (name "colord")
-    (version "1.1.8")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
@@ -3000,38 +3000,42 @@ keyboard shortcuts.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "01w97rgzk4qi6fp03scq5jyw0ayx11b479p7dkm2r77k84b9agph"))))
-    (build-system glib-or-gtk-build-system)
+         "1xwxahg9mgmapc16xkb4kgmc40zpadrwav33xqmn6cgaw6g6d3ls"))))
+    (build-system meson-build-system)
     (arguments
-     '(;; The tests want to run valgrind.  Punt for now.
+     '(;; FIXME: One test fails:
+       ;; /colord/icc-store (in lib/colord/colord-self-test-private):
+       ;; Incorrect content type for /tmp/colord-vkve/already-exists.icc, got
+       ;; application/x-zerosize
        #:tests? #f
-       #:configure-flags (list "--localstatedir=/var"
-                               ;; GUSB not packaged yet.
-                               "--disable-gusb"
+       #:glib-or-gtk? #t
+       #:configure-flags (list "-Dlocalstatedir=/var"
                                ;; No dep on systemd.
-                               "--disable-systemd-login"
+                               "-Dsystemd=false"
                                ;; Wants to install to global completion dir;
                                ;; punt.
-                               "--disable-bash-completion"
+                               "-Dbash_completion=false"
                                ;; colord-gtk not packaged yet.
-                               "--disable-session-example"
-                               "--with-daemon-user=colord"
-                               "--enable-sane"
-                               (string-append "--with-udevrulesdir="
-                                              (assoc-ref %outputs "out")
-                                              "/lib/udev/rules.d"))
+                               "-Dsession_example=false"
+                               "-Ddaemon_user=colord"
+                               "-Dsane=true"
+                               ;; Requires spotread
+                               "-Dargyllcms_sensor=false"
+                               ;; TODO: Requires docbook2x
+                               "-Dman=false")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'patch-/bin/true
-                     (lambda _
-                       (substitute* "configure"
-                         (("/bin/true") (which "true")))
-                       (substitute* "src/Makefile.in"
-                         (("if test -w \\$\\(DESTDIR\\)\\$\\(prefix\\)/;")
-                          "if test -w $(DESTDIR)$(localstatedir);")))))))
+         (add-before 'configure 'patch-build-system
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "rules/meson.build"
+               (("udev.get_pkgconfig_variable\\('udevdir'\\)")
+                (string-append "'" (assoc-ref outputs "out") "/lib/udev'")))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin") ; for glib-compile-resources, etc.
        ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
        ("libtool" ,libtool)
        ("intltool" ,intltool)))
     (propagated-inputs
@@ -3041,10 +3045,12 @@ keyboard shortcuts.")
        ("lcms" ,lcms)))
     (inputs
      `(("dbus-glib" ,dbus-glib)
+       ("gusb" ,gusb)
        ("libgudev" ,libgudev)
        ("libusb" ,libusb)
        ("sqlite" ,sqlite)
        ("polkit" ,polkit)
+       ("python" ,python-wrapper)
        ("sane-backends" ,sane-backends)))
     (home-page "https://www.freedesktop.org/software/colord/")
     (synopsis "Color management service")
