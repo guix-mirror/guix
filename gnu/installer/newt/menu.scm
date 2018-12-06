@@ -33,7 +33,7 @@ process from."
 
   (run-listbox-selection-page
    #:info-text (G_ "Choose where you want to resume the install.\
-You can also abort the installion by pressing the button.")
+You can also abort the installation by pressing the Abort button.")
    #:title (G_ "Installation menu")
    #:listbox-items (steps->items steps)
    #:listbox-item->text installer-step-description
