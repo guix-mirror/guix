@@ -5075,7 +5075,7 @@ window manager.")
 (define-public gnome-online-accounts
   (package
     (name "gnome-online-accounts")
-    (version "3.28.0")
+    (version "3.30.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5083,7 +5083,7 @@ window manager.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "035lmm21imr7ddpzffqabv53g3ggjscmqvlzy3j1qkv00zrlxg47"))))
+                "1hyg9g7l4ypnirx2j7ms2vr8711x90aybpq3s3wa20ma8a4xin97"))))
     (outputs '("out" "lib"))
     (build-system glib-or-gtk-build-system)
     (arguments
