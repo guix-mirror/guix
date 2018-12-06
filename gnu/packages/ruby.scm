@@ -55,7 +55,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.5.1")
+    (version "2.5.3")
     (source
      (origin
        (method url-fetch)
@@ -64,7 +64,7 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0kbm3gkv689d1mb8fh261z8s79d6hw07p0xyk735yfqyskpcasl8"))
+         "0vrhrw7kcz9mg0jkqnihkcxqy5k05v8k1j0y2735z8wfk8sx1j8w"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
