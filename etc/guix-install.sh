@@ -361,8 +361,8 @@ sys_authorize_build_farms()
         case $yn in
             [Yy]*) guix archive --authorize < "${ROOT_HOME}/.config/guix/current/share/guix/hydra.gnu.org.pub" &&
                          _msg "${PAS}Authorized public key for hydra.gnu.org";
-                   guix archive --authorize < "${ROOT_HOME}/.config/guix/current/share/guix/berlin.guixsd.org.pub" &&
-                       _msg "${PAS}Authorized public key for berlin.guixsd.org";
+                   guix archive --authorize < "${ROOT_HOME}/.config/guix/current/share/guix/ci.guix.info.pub" &&
+                       _msg "${PAS}Authorized public key for ci.guix.info";
                    break;;
             [Nn]*) _msg "${INF}Skipped authorizing build farm public keys"
                    break;;
