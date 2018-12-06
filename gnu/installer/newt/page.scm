@@ -480,6 +480,7 @@ ITEMS when 'Ok' is pressed."
                                 (info-textbox-width 50)
                                 (file-textbox-width 50)
                                 (file-textbox-height 30)
+                                (exit-button? #t)
                                 (ok-button-callback-procedure
                                  (const #t))
                                 (exit-button-callback-procedure
@@ -500,9 +501,12 @@ ITEMS when 'Ok' is pressed."
                 GRID-ELEMENT-COMPONENT info-textbox
                 GRID-ELEMENT-COMPONENT file-textbox
                 GRID-ELEMENT-SUBGRID
-                (horizontal-stacked-grid
+                (apply
+                 horizontal-stacked-grid
                  GRID-ELEMENT-COMPONENT ok-button
-                 GRID-ELEMENT-COMPONENT exit-button)))
+                 `(,@(if exit-button?
+                         (list GRID-ELEMENT-COMPONENT exit-button)
+                         '())))))
          (form (make-form)))
 
     (set-textbox-text file-textbox file-text)
@@ -519,7 +523,8 @@ ITEMS when 'Ok' is pressed."
              (cond
               ((components=? argument ok-button)
                (ok-button-callback-procedure))
-              ((components=? argument exit-button)
+              ((and exit-button?
+                    (components=? argument exit-button))
                (exit-button-callback-procedure))))))
         (lambda ()
           (destroy-form-and-pop form))))))
