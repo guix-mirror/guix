@@ -6238,7 +6238,7 @@ shared object databases, search tools and indexing.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "3.28.1")
+    (version "3.30.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6246,7 +6246,7 @@ shared object databases, search tools and indexing.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "19dhpa2ylrg8d5274lahy7xqr2p9z3jnq1h4qmsh95czkpy7is4w"))))
+                "1fcavvv85mpaz53k5kx5mls7npx7b95s8isnhrgq2iglz4kpr7s1"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -6267,6 +6267,7 @@ shared object databases, search tools and indexing.")
        ("exempi" ,exempi)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-autoar" ,gnome-autoar)
+       ("libseccomp" ,libseccomp)
        ("libselinux" ,libselinux)
        ("nettle" ,nettle) ; XXX required by libarchive.pc via gnome-autoar
        ("tracker" ,tracker)
