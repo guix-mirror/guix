@@ -248,6 +248,41 @@ All of this is accomplished without a centralized metadata server.")
      "This is a file system client based on the FTP File Transfer Protocol.")
     (license license:gpl2+)))
 
+(define-public libnfs
+  (package
+    (name "libnfs")
+    (version "3.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sahlberg/libnfs.git")
+                    (commit (string-append "libnfs-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "115p55y2cbs92z5lmcnjx1v29lwinpgq4sha9v1kq1vd8674h404"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/sahlberg/libnfs")
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Client library for accessing NFS shares")
+    (description "LIBNFS is a client library for accessing NFS shares over a
+network.  LIBNFS offers three different APIs, for different use :
+
+@enumerate
+@item RAW, a fully asynchronous low level RPC library for NFS protocols.  This
+  API provides very flexible and precise control of the RPC issued.
+@item NFS ASYNC, a fully asynchronous library for high level vfs functions
+@item NFS SYNC, a synchronous library for high level vfs functions.
+@end enumerate\n")
+    (license (list license:lgpl2.1+ ; library
+                   license:gpl3+    ; tests
+                   license:bsd-3    ; copied nsf4 files
+                   ))))
+
 (define-public apfs-fuse
   (let ((commit "c7036a3030d128bcecefc1eabc47c039ccfdcec9")
         (revision "0"))
