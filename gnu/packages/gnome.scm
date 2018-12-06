@@ -6792,7 +6792,7 @@ existing databases over the internet.")
 (define-public gnome-tweaks
   (package
     (name "gnome-tweaks")
-    (version "3.28.1")
+    (version "3.30.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-tweaks/"
@@ -6802,7 +6802,7 @@ existing databases over the internet.")
                (list (search-patch "gnome-tweaks-search-paths.patch")))
               (sha256
                (base32
-                "1p5xydr0haz4389h6dvvbna6i1mipdzvmlfksnv0jqfvfs9sy6fp"))))
+                "0pj6k0106dy92lnb646dd656qdvljqwbaya95xp369a016pzngpa"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
