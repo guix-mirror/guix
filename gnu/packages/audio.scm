@@ -17,6 +17,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -229,13 +230,34 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }"))
     (arguments
      `(#:configure-flags '("--cxx11"          ; required by gtkmm
                            "--no-phone-home"  ; don't contact ardour.org
-                           "--freedesktop"    ; install .desktop file
+                           "--freedesktop"    ; build .desktop file
                            "--test")          ; build unit tests
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'set-rpath-in-LDFLAGS
-          ,(ardour-rpath-phase (version-major version))))
+         (add-after 'unpack 'set-rpath-in-LDFLAGS
+          ,(ardour-rpath-phase (version-major version)))
+         (add-after 'install 'install-freedesktop-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (ver   ,(version-major version)))
+               (for-each
+                 (lambda (size)
+                   (let ((dir (string-append share "/icons/hicolor/"
+                                             size "x" size "/apps")))
+                     (mkdir-p dir)
+                     (copy-file
+                       (string-append "gtk2_ardour/resources/Ardour-icon_"
+                                      size "px.png")
+                       (string-append dir "/ardour" ver ".png"))))
+                 '("16" "22" "32" "48" "256"))
+               (install-file (string-append "build/gtk2_ardour/ardour"
+                                            ver ".desktop")
+                             (string-append share "/applications/"))
+               (install-file (string-append "build/gtk2_ardour/ardour"
+                                            ver ".appdata.xml")
+                             (string-append share "/appdata/")))
+             #t)))
        #:test-target "test"
        #:python ,python-2))
     (inputs
