@@ -490,16 +490,15 @@ Go.  It also includes runtime support libraries for these languages.")
 (define-public gcc-7
   (package
     (inherit gcc-6)
-    (version "7.3.0")
+    (version "7.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.xz"))
               (sha256
                (base32
-                "0p71bij6bfhzyrs8676a8jmpjsfz392s2rg862sdnsk30jpacb43"))
+                "0lgy170b0pp60j9cczqkmaqyjjb584vfamj4c30swd7k0j6y5pgd"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
-                                       "gcc-libsanitizer-ustat.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))
     (description
      "GCC is the GNU Compiler Collection.  It provides compiler front-ends
