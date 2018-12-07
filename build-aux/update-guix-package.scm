@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -133,7 +133,8 @@ COMMIT."
            ;; Add an indirect GC root for SOURCE in the current directory.
            (false-if-exception (delete-file root))
            (symlink source root)
-           (add-indirect-root store root)
+           (add-indirect-root store
+                              (string-append (getcwd) "/" root))
 
            (format #t "source code for commit ~a: ~a (GC root: ~a)~%"
                    commit source root)))))
