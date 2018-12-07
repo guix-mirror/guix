@@ -138,6 +138,25 @@ an inform the user with an appropriate error-page and return #f."
             #f))
     (can-create-partition? user-partition)))
 
+(define (prompt-luks-passwords user-partitions)
+  "Prompt for the luks passwords of the encrypted partitions in
+USER-PARTITIONS list. Return this list with password fields filled-in."
+  (map (lambda (user-part)
+         (let* ((crypt-label (user-partition-crypt-label user-part))
+                (path (user-partition-path user-part))
+                (password-page
+                 (lambda ()
+                   (run-input-page
+                    (format #f (G_ "Please enter the password for the \
+encryption of partition ~a (label: ~a).") path crypt-label)
+                    (G_ "Password required")))))
+           (if crypt-label
+               (user-partition
+                (inherit user-part)
+                (crypt-password (password-page)))
+               user-part)))
+       user-partitions))
+
 (define* (run-partition-page target-user-partition
                              #:key
                              (default-item #f))
@@ -244,6 +263,18 @@ by USER-PART, if it is applicable for the partition type."
              (mount-point (if new-esp?
                               (default-esp-mount-point)
                               "")))))
+         ((crypt-label)
+          (let* ((label (user-partition-crypt-label
+                         target-user-partition))
+                 (new-label
+                  (and (not label)
+                       (run-input-page
+                        (G_ "Please enter the encrypted label")
+                        (G_ "Encryption label")))))
+            (user-partition
+             (inherit target-user-partition)
+             (need-formating? #t)
+             (crypt-label new-label))))
          ((need-formating?)
           (user-partition
            (inherit target-user-partition)
@@ -668,6 +699,7 @@ by pressing the Exit button.~%~%")))
   (define (run-page devices)
     (let* ((items
             '((entire . "Guided - using the entire disk")
+              (entire-crypted . "Guided - using the entire disk with encryption")
               (manual . "Manual")))
            (result (run-listbox-selection-page
                     #:info-text (G_ "Please select a partitioning method.")
@@ -677,8 +709,9 @@ by pressing the Exit button.~%~%")))
                     #:button-text (G_ "Exit")
                     #:button-callback-procedure button-exit-action))
            (method (car result)))
-      (case method
-        ((entire)
+      (cond
+       ((or (eq? method 'entire)
+            (eq? method 'entire-crypted))
          (let* ((device (run-device-page devices))
                 (disk-type (disk-probe device))
                 (disk (if disk-type
@@ -696,7 +729,7 @@ by pressing the Exit button.~%~%")))
                                    (disk-partitions disk)))))
            (run-disk-page (list disk) user-partitions
                           #:guided? #t)))
-        ((manual)
+       ((eq? method 'manual)
          (let* ((disks (map disk-new devices))
                 (user-partitions (append-map
                                   create-special-user-partitions
@@ -708,11 +741,13 @@ by pressing the Exit button.~%~%")))
   (init-parted)
   (let* ((non-install-devices (non-install-devices))
          (user-partitions (run-page non-install-devices))
+         (user-partitions-with-pass (prompt-luks-passwords
+                                     user-partitions))
          (form (draw-formating-page)))
     ;; Make sure the disks are not in use before proceeding to formating.
     (free-parted non-install-devices)
-    (run-error-page (format #f "~a" user-partitions)
+    (run-error-page (format #f "~a" user-partitions-with-pass)
                     "user-partitions")
-    (format-user-partitions user-partitions)
+    (format-user-partitions user-partitions-with-pass)
     (destroy-form-and-pop form)
     user-partitions))

@@ -28,6 +28,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages connman)
+  #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages guile)
   #:autoload   (gnu packages gnupg) (guile-gcrypt)
@@ -272,6 +273,7 @@ selected keymap."
     #~(let* ((inputs
               '#$(append (list bash ;start subshells
                                connman ;call connmanctl
+                               cryptsetup
                                dosfstools ;mkfs.fat
                                e2fsprogs ;mkfs.ext4
                                kbd ;chvt

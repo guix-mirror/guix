@@ -22,13 +22,16 @@
   #:use-module (gnu installer newt page)
   #:use-module (gnu system uuid)
   #:use-module ((gnu build file-systems)
-                #:select (read-partition-uuid))
+                #:select (read-partition-uuid
+                          find-partition-by-luks-uuid))
   #:use-module (guix build syscalls)
   #:use-module (guix build utils)
   #:use-module (guix records)
+  #:use-module (guix utils)
   #:use-module (guix i18n)
   #:use-module (parted)
   #:use-module (ice-9 match)
+  #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -41,6 +44,8 @@
             user-partition-type
             user-partition-path
             user-partition-disk-path
+            user-partition-crypt-label
+            user-partition-crypt-password
             user-partition-fs-type
             user-partition-bootable?
             user-partition-esp?
@@ -127,6 +132,10 @@
   (path                 user-partition-path
                         (default #f))
   (disk-path            user-partition-disk-path
+                        (default #f))
+  (crypt-label          user-partition-crypt-label
+                        (default #f))
+  (crypt-password       user-partition-crypt-password
                         (default #f))
   (fs-type              user-partition-fs-type
                         (default 'ext4))
@@ -427,7 +436,9 @@ DEVICE."
   (define (maybe-string-pad string length)
     "Returned a string formatted by padding STRING of LENGTH characters to the
 right. If STRING is #f use an empty string."
-    (string-pad-right (or string "") length))
+    (if (and string (not (string=? string "")))
+        (string-pad-right string length)
+        ""))
 
   (let* ((disk (partition-disk partition))
          (device (disk-device disk))
@@ -452,6 +463,8 @@ right. If STRING is #f use an empty string."
          (fs-type (partition-fs-type partition))
          (fs-type-name (and fs-type
                             (filesystem-type-name fs-type)))
+         (crypt-label (and user-partition
+                           (user-partition-crypt-label user-partition)))
          (flags (and (not (freespace-partition? partition))
                      (partition-print-flags partition)))
          (mount-point (and user-partition
@@ -464,6 +477,7 @@ right. If STRING is #f use an empty string."
       ,(or fs-type-name "")
       ,(or flags "")
       ,(or mount-point "")
+      ,(or crypt-label "")
       ,(maybe-string-pad name 30))))
 
 (define (partitions-descriptions partitions user-partitions)
@@ -525,6 +539,7 @@ determined by MAX-LENGTH-COLUMN procedure."
          (bootable? (user-partition-bootable? user-partition))
          (esp? (user-partition-esp? user-partition))
          (need-formating? (user-partition-need-formating? user-partition))
+         (crypt-label (user-partition-crypt-label user-partition))
          (size (user-partition-size user-partition))
          (mount-point (user-partition-mount-point user-partition)))
     `(,@(if has-name?
@@ -555,6 +570,15 @@ determined by MAX-LENGTH-COLUMN procedure."
                                          (partition-length partition)))))
               `((size . ,(string-append "Size : " size-formatted))))
             '())
+      ,@(if (or (eq? type 'extended)
+                (eq? fs-type 'swap))
+            '()
+            `((crypt-label
+               . ,(string-append
+                   "Encryption: "
+                   (if crypt-label
+                       (format #f "Yes (label ~a)" crypt-label)
+                       "No")))))
       ,@(if (or (freespace-partition? partition)
                 (eq? fs-type 'swap))
             '()
@@ -854,7 +878,8 @@ USER-PARTITIONS list and return the updated list."
        user-partitions))
 
 (define* (auto-partition disk
-                         #:key (scheme 'entire-root))
+                         #:key
+                         (scheme 'entire-root))
   "Automatically create partitions on DISK. All the previous
 partitions (except the ESP on a GPT disk, if present) are wiped. SCHEME is the
 desired partitioning scheme. It can be 'entire-root or
@@ -913,46 +938,57 @@ swap partition, a root partition and a home partition."
                       (bios-grub? #t)
                       (size bios-grub-size)))))
            (new-partitions
-            (case scheme
-              ((entire-root)
-               `(,@(if start-partition
-                       `(,start-partition)
-                       '())
-                 ,(user-partition
-                   (fs-type 'swap)
-                   (size swap-size))
-                 ,(user-partition
-                   (fs-type 'ext4)
-                   (bootable? has-extended?)
-                   (size "100%")
-                   (mount-point "/"))))
-              ((entire-root-home)
-               `(,@(if start-partition
-                       `(,start-partition)
-                       '())
-                 ,(user-partition
-                   (fs-type 'ext4)
-                   (bootable? has-extended?)
-                   (size "33%")
-                   (mount-point "/"))
-                 ,@(if has-extended?
-                       `(,(user-partition
-                           (type 'extended)
-                           (size "100%")))
-                       '())
-                 ,(user-partition
-                   (type (if has-extended?
-                             'logical
-                             'normal))
-                   (fs-type 'swap)
-                   (size swap-size))
-                 ,(user-partition
-                   (type (if has-extended?
-                             'logical
-                             'normal))
-                   (fs-type 'ext4)
-                   (size "100%")
-                   (mount-point "/home"))))))
+            (cond
+             ((or (eq? scheme 'entire-root)
+                  (eq? scheme 'entire-crypted-root))
+              (let ((crypted? (eq? scheme 'entire-crypted-root)))
+                `(,@(if start-partition
+                        `(,start-partition)
+                        '())
+                  ,@(if crypted?
+                     '()
+                     `(,(user-partition
+                         (fs-type 'swap)
+                         (size swap-size))))
+                  ,(user-partition
+                    (fs-type 'ext4)
+                    (bootable? has-extended?)
+                    (crypt-label (and crypted? "cryptroot"))
+                    (size "100%")
+                    (mount-point "/")))))
+             ((or (eq? scheme 'entire-root-home)
+                  (eq? scheme 'entire-crypted-root-home))
+              (let ((crypted? (eq? scheme 'entire-crypted-root-home)))
+                `(,@(if start-partition
+                        `(,start-partition)
+                        '())
+                  ,(user-partition
+                    (fs-type 'ext4)
+                    (bootable? has-extended?)
+                    (crypt-label (and crypted? "cryptroot"))
+                    (size "33%")
+                    (mount-point "/"))
+                  ,@(if has-extended?
+                        `(,(user-partition
+                            (type 'extended)
+                            (size "100%")))
+                        '())
+                  ,@(if crypted?
+                        '()
+                        `(,(user-partition
+                            (type (if has-extended?
+                                      'logical
+                                      'normal))
+                            (fs-type 'swap)
+                            (size swap-size))))
+                  ,(user-partition
+                    (type (if has-extended?
+                              'logical
+                              'normal))
+                    (fs-type 'ext4)
+                    (crypt-label (and crypted? "crypthome"))
+                    (size "100%")
+                    (mount-point "/home")))))))
            (new-partitions* (force-user-partitions-formating
                              new-partitions)))
       (create-adjacent-partitions disk
@@ -1013,6 +1049,40 @@ bit bucket."
   (with-null-output-ports
    (invoke "mkswap" "-f" partition)))
 
+(define (call-with-luks-key-file password proc)
+  "Write PASSWORD in a temporary file and pass it to PROC as argument."
+  (call-with-temporary-output-file
+   (lambda (file port)
+     (put-string port password)
+     (close port)
+     (proc file))))
+
+(define (user-partition-upper-path user-partition)
+  "Return the path of the virtual block device corresponding to USER-PARTITION
+if it is encrypted, or the plain path otherwise."
+  (let ((crypt-label (user-partition-crypt-label user-partition))
+        (path (user-partition-path user-partition)))
+    (if crypt-label
+        (string-append "/dev/mapper/" crypt-label)
+        path)))
+
+(define (luks-format-and-open user-partition)
+  "Format and open the crypted partition pointed by USER-PARTITION."
+  (let* ((path (user-partition-path user-partition))
+         (label (user-partition-crypt-label user-partition))
+         (password (user-partition-crypt-password user-partition)))
+    (call-with-luks-key-file
+     password
+     (lambda (key-file)
+       (system* "cryptsetup" "-q" "luksFormat" path key-file)
+       (system* "cryptsetup" "open" "--type" "luks"
+                "--key-file" key-file path label)))))
+
+(define (luks-close user-partition)
+  "Close the crypted partition pointed by USER-PARTITION."
+  (let ((label (user-partition-crypt-label user-partition)))
+    (system* "cryptsetup" "close" label)))
+
 (define (format-user-partitions user-partitions)
   "Format the <user-partition> records in USER-PARTITIONS list with
 NEED-FORMATING? field set to #t."
@@ -1021,8 +1091,12 @@ NEED-FORMATING? field set to #t."
      (let* ((need-formating?
              (user-partition-need-formating? user-partition))
             (type (user-partition-type user-partition))
-            (path (user-partition-path user-partition))
+            (crypt-label (user-partition-crypt-label user-partition))
+            (path (user-partition-upper-path user-partition))
             (fs-type (user-partition-fs-type user-partition)))
+       (when crypt-label
+         (luks-format-and-open user-partition))
+
        (case fs-type
          ((ext4)
           (and need-formating?
@@ -1061,9 +1135,11 @@ respective mount-points."
                                        mount-point))
                        (fs-type
                         (user-partition-fs-type user-partition))
+                       (crypt-label
+                        (user-partition-crypt-label user-partition))
                        (mount-type
                         (user-fs-type->mount-type fs-type))
-                       (path (user-partition-path user-partition)))
+                       (path (user-partition-upper-path user-partition)))
                   (mkdir-p target)
                   (mount path target mount-type)))
               sorted-partitions)))
@@ -1075,10 +1151,14 @@ respective mount-points."
     (for-each (lambda (user-partition)
                 (let* ((mount-point
                         (user-partition-mount-point user-partition))
+                       (crypt-label
+                        (user-partition-crypt-label user-partition))
                        (target
                         (string-append (%installer-target-dir)
                                        mount-point)))
-                  (umount target)))
+                  (umount target)
+                  (when crypt-label
+                    (luks-close user-partition))))
               (reverse sorted-partitions))))
 
 (define (find-swap-user-partitions user-partitions)
@@ -1119,14 +1199,21 @@ the FS-TYPE field set to 'swap, return the empty list if none found."
 (gnu system file-systems) module and return it."
   (let* ((mount-point (user-partition-mount-point user-partition))
          (fs-type (user-partition-fs-type user-partition))
+         (crypt-label (user-partition-crypt-label user-partition))
          (mount-type (user-fs-type->mount-type fs-type))
          (path (user-partition-path user-partition))
+         (upper-path (user-partition-upper-path user-partition))
          (uuid (uuid->string (read-partition-uuid path)
                              fs-type)))
     `(file-system
        (mount-point ,mount-point)
-       (device (uuid ,uuid (quote ,fs-type)))
-       (type ,mount-type))))
+       (device ,@(if crypt-label
+                     `(,upper-path)
+                     `((uuid ,uuid (quote ,fs-type)))))
+       (type ,mount-type)
+       ,@(if crypt-label
+             '((dependencies mapped-devices))
+             '()))))
 
 (define (user-partitions->file-systems user-partitions)
   "Convert the given USER-PARTITIONS list of <user-partition> records into a
@@ -1138,6 +1225,16 @@ list of <file-system> records."
        (and mount-point
             (user-partition->file-system user-partition))))
    user-partitions))
+
+(define (user-partition->mapped-device user-partition)
+  "Convert the given USER-PARTITION record into a MAPPED-DEVICE record
+from (gnu system mapped-devices) and return it."
+  (let ((label (user-partition-crypt-label user-partition))
+        (path (user-partition-path user-partition)))
+    `(mapped-device
+      (source (uuid ,(uuid->string (read-partition-uuid path))))
+      (target ,label)
+      (type luks-device-mapping))))
 
 (define (bootloader-configuration user-partitions)
   "Return the bootloader configuration field for USER-PARTITIONS."
@@ -1159,11 +1256,18 @@ list of <file-system> records."
 (define (user-partitions->configuration user-partitions)
   "Return the configuration field for USER-PARTITIONS."
   (let* ((swap-user-partitions (find-swap-user-partitions user-partitions))
-         (swap-devices (map user-partition-path swap-user-partitions)))
+         (swap-devices (map user-partition-path swap-user-partitions))
+         (crypted-partitions
+          (filter user-partition-crypt-label user-partitions)))
     `(,@(if (null? swap-devices)
             '()
             `((swap-devices (list ,@swap-devices))))
       (bootloader ,@(bootloader-configuration user-partitions))
+      ,@(if (null? crypted-partitions)
+            '()
+            `((mapped-devices
+               (list ,@(map user-partition->mapped-device
+                            crypted-partitions)))))
       (file-systems (cons*
                      ,@(user-partitions->file-systems user-partitions)
                      %base-file-systems)))))
