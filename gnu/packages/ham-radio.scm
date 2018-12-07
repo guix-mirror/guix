@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,9 +20,13 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages pkg-config)
-  #:use-module (guix build-system cmake))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xml)
+  #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python))
 
 (define-public rtl-sdr
   (package
@@ -50,3 +54,30 @@
 cheap software defined radio, since the chip allows transferring the raw I/Q
 samples to the host.  @code{rtl-sdr} provides drivers for this purpose.")
     (license license:gpl2+)))
+
+(define-public chirp
+  (package
+    (name "chirp")
+    (version "20181205")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://trac.chirp.danplanet.com/chirp_daily/daily-"
+                           version "/chirp-daily-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cp280b95j39xaxs50zn55jigg7pyfpm9n098hmsyxrplqn8z43c"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python2-libxml2" ,python2-libxml2)
+       ("python2-pygtk" ,python2-pygtk)
+       ("python2-pyserial" ,python2-pyserial)))
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://chirp.danplanet.com")
+    (synopsis "Cross-radio programming tool")
+    (description "Chirp is a cross-radio programming tool.  It supports a
+growing list of radios across several manufacturers and allows transferring of
+memory contents between them.")
+    (license (list license:gpl3+
+                   license:lgpl3+)))) ; chirp/elib_intl.py
