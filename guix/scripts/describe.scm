@@ -89,7 +89,7 @@ Display information about the channels currently in use.\n"))
 
 (define (channel->sexp channel)
   `(channel
-    (name ,(channel-name channel))
+    (name ',(channel-name channel))
     (url ,(channel-url channel))
     (commit ,(channel-commit channel))))
 
