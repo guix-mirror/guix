@@ -30,6 +30,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages autogen)
   #:use-module (gnu packages autotools)
@@ -93,13 +94,22 @@
                            "-DWITH_BUNDLED_ICONS=ON" ; so we install bundled icons
                            "-DWITH_OXYGEN_ICONS=ON" ; also the oxygen ones
                            "-DWITH_WEBENGINE=OFF") ; we don't depend on qtwebengine
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-inxi-reference
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((inxi (string-append (assoc-ref inputs "inxi") "/bin/inxi")))
+               (substitute* "src/common/aliasmanager.cpp"
+                 ((" inxi ") (string-append " " inxi " ")))
+               #t))))
        #:tests? #f)) ; no test target
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (inputs
-     `(("qca" ,qca)
+     `(("inxi" ,inxi-minimal)
+       ("qca" ,qca)
        ("qtbase" ,qtbase)
        ("qtmultimedia" ,qtmultimedia)
        ("qtscript" ,qtscript)
