@@ -2247,14 +2247,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "1j3rpvdkw9rw48j4zyfn6rprp01csy4rl6zckcjyx0vh7vaycchr"))))
+                "1010gvkzdzdk39g1g6wx2j19ls0kdl6l9q51xzk2qik7h2fwxl71"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no "check" target
