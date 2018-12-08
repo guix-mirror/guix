@@ -131,14 +131,14 @@ data as produced by digital cameras.")
 (define-public libgphoto2
   (package
     (name "libgphoto2")
-    (version "2.5.20")
+    (version "2.5.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/libgphoto/"
                                   version "/libgphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "03wbwsb4v7yay8g5ni7pzmkbrh7qnqx977bddjpxsp9f1qag03z1"))))
+                "1ccb8idjkv19p9zxg6hh8y6vbgs8flpnh550lq6a8cmga8d2nmy5"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
