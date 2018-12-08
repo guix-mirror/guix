@@ -2097,7 +2097,9 @@ buffers, and audio capture.")
                (base32
                 "1agdpwwi42176l4mxj0c4fsvdiv1ig56bfnnx0msckxmy57df8bb"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f ; no check target
+       #:python ,python-2))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("boost" ,boost)
