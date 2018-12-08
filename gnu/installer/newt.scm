@@ -47,7 +47,8 @@
   (set-screen-size!))
 
 (define (exit)
-  (newt-finish))
+  (newt-finish)
+  (clear-screen))
 
 (define (exit-error file key args)
   (newt-set-color COLORSET-ROOT "white" "red")
@@ -66,7 +67,8 @@ problem. The backtrace is displayed below. Please report it by email to \
      #:file-textbox-width width
      #:file-textbox-height height))
   (newt-set-color COLORSET-ROOT "white" "blue")
-  (newt-finish))
+  (newt-finish)
+  (clear-screen))
 
 (define (final-page result prev-steps)
   (run-final-page result prev-steps))
