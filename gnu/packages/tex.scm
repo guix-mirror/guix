@@ -102,15 +102,19 @@
       (patches
        (list
         ;; This is required for compatibility with Poppler 0.64.0 and to fix a
-        ;; segmentation fault in dvipdfm-x from XeTeX.
+        ;; segmentation fault in dvipdfm-x from XeTeX, and also contains a fix
+        ;; for CVE-2018-17407.
         (origin
           (method url-fetch)
           (uri (string-append "http://www.linuxfromscratch.org/patches/blfs/"
-                              "svn/texlive-" version "-source-upstream_fixes-1.patch"))
+                              "svn/texlive-" version "-source-upstream_fixes-2.patch"))
           (file-name "texlive-poppler-compat.patch")
           (sha256
            (base32
-            "0f8vhyj167y4xj0jx47vkybrcacfpxw0wdn1b777yq3xmhlahhlg")))))))
+            "04sxy1qv9y575mxwyg3y7rx7mh540pfjqx7yni7ncb5wjbq9pq1a")))
+        (search-patch "texlive-bin-luatex-poppler-compat.patch")
+        (search-patch "texlive-bin-pdftex-poppler-compat.patch")
+        (search-patch "texlive-bin-xetex-poppler-compat.patch")))))
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)

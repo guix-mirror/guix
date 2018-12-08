@@ -832,6 +832,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/icedtea-7-hotspot-gcc-segfault-workaround.patch  \
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
+  %D%/packages/patches/inkscape-poppler-compat3.patch		\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/irrlicht-use-system-libs.patch		\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
@@ -1061,7 +1062,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/plink-endian-detection.patch		\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\
   %D%/packages/patches/podofo-cmake-3.12.patch			\
-  %D%/packages/patches/poppler-CVE-2018-19149.patch		\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
   %D%/packages/patches/portmidi-modular-build.patch		\
   %D%/packages/patches/postgresql-disable-resolve_symlinks.patch	\
@@ -1186,6 +1186,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/teeworlds-use-latest-wavpack.patch	\
   %D%/packages/patches/texinfo-perl-compat.patch		\
   %D%/packages/patches/texinfo-5-perl-compat.patch		\
+  %D%/packages/patches/texlive-bin-luatex-poppler-compat.patch	\
+  %D%/packages/patches/texlive-bin-pdftex-poppler-compat.patch	\
+  %D%/packages/patches/texlive-bin-xetex-poppler-compat.patch	\
   %D%/packages/patches/telegram-purple-adjust-test.patch	\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\

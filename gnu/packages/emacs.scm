@@ -1634,7 +1634,15 @@ filters, new key bindings and faces.  It can be enabled by
               (sha256
                (base32
                 "1i4647vax5na73basc5dz4lh9kprir00fh8ps4i0l1y3ippnjs2s"))
-              (patches (search-patches "emacs-pdf-tools-poppler.patch"))))
+              (patches (search-patches "emacs-pdf-tools-poppler.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; In addition to the above patch, we need this additional
+                  ;; provision for compatibility with Poppler 0.72:
+                  (substitute* "server/poppler-hack.cc"
+                    (("getCString") "c_str"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
