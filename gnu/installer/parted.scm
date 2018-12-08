@@ -23,7 +23,7 @@
   #:use-module (gnu system uuid)
   #:use-module ((gnu build file-systems)
                 #:select (read-partition-uuid
-                          find-partition-by-luks-uuid))
+                          read-luks-partition-uuid))
   #:use-module (guix build syscalls)
   #:use-module (guix build utils)
   #:use-module (guix records)
@@ -1203,8 +1203,9 @@ the FS-TYPE field set to 'swap, return the empty list if none found."
          (mount-type (user-fs-type->mount-type fs-type))
          (path (user-partition-path user-partition))
          (upper-path (user-partition-upper-path user-partition))
-         (uuid (uuid->string (read-partition-uuid path)
-                             fs-type)))
+         ;; Only compute uuid if partition is not encrypted.
+         (uuid (or crypt-label
+                   (uuid->string (read-partition-uuid path) fs-type))))
     `(file-system
        (mount-point ,mount-point)
        (device ,@(if crypt-label
@@ -1232,7 +1233,9 @@ from (gnu system mapped-devices) and return it."
   (let ((label (user-partition-crypt-label user-partition))
         (path (user-partition-path user-partition)))
     `(mapped-device
-      (source (uuid ,(uuid->string (read-partition-uuid path))))
+      (source (uuid ,(uuid->string
+                      (read-luks-partition-uuid path)
+                      'luks)))
       (target ,label)
       (type luks-device-mapping))))
 
