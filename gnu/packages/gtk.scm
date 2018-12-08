@@ -115,16 +115,14 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.14.12")
+   (version "1.16.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "05mzyxkvsfc1annjw2dja8vka01ampp9pp93lg09j8hba06g144c"))
-            (patches (search-patches "cairo-CVE-2016-9082.patch"
-                                     "cairo-setjmp-wrapper.patch"))))
+              "0c930mk5xr2bshbdljv005j3j8zr47gqmkry3q6qgvqky6rjjysy"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("fontconfig" ,fontconfig)
