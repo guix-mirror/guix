@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.52")
+    (version "0.14.54")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,12 +38,19 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "1hhn72l74vb9l32i1a54ry2l85ji78cq6isd20lxxdk0bjqc4m29"))
-              (modules '((guix build utils)))
-              ;; Delete bundled ("vendored") free software source code.
-              (snippet '(begin
-                          (delete-file-recursively "vendor")
-                          #t))))
+                "1pfjckwsrhy8lbmy42fawgh1gcfmjbh3dfxx05w5yjxnpd1g2z6r"))
+              ;; Since the update to Go 1.11, Go programs have been keeping
+              ;; spurious references to all their dependencies:
+              ;; <https://bugs.gnu.org/33620>.
+              ;; For Syncthing, this increases the size of the 'out' closure
+              ;; from 87.6 MiB to 253.5 MiB.  So, we use the bundled
+              ;; dependencies until the bug is resolved.
+;              (modules '((guix build utils)))
+;              ;; Delete bundled ("vendored") free software source code.
+;              (snippet '(begin
+;                          (delete-file-recursively "vendor")
+;                          #t))
+              ))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
@@ -63,7 +70,7 @@
              #t))
 
          (replace 'build
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda _
              (with-directory-excursion "src/github.com/syncthing/syncthing"
                (invoke "go" "run" "build.go" "-no-upgrade"))))
 
@@ -107,48 +114,6 @@
                (delete-file (string-append out man "/man1/strelaysrv.1"))
                (delete-file (string-append utils man "/man1/syncthing.1"))
              #t))))))
-    ;; When updating Syncthing, check 'vendor/manifest' in the source
-    ;; distribution to ensure we are using the correct versions of these
-    ;; dependencies.
-    (inputs
-     `(("go-github-com-audriusbutkevicius-cli"
-        ,go-github-com-audriusbutkevicius-cli)
-       ("go-github-com-audriusbutkevicius-go-nat-pmp"
-        ,go-github-com-audriusbutkevicius-go-nat-pmp)
-       ("go-github-com-audriusbutkevicius-pfilter"
-        ,go-github-com-audriusbutkevicius-pfilter)
-       ("go-github-com-bkaradzic-go-lz4" ,go-github-com-bkaradzic-go-lz4)
-       ("go-github-com-calmh-du" ,go-github-com-calmh-du)
-       ("go-github-com-calmh-xdr" ,go-github-com-calmh-xdr)
-       ("go-github-com-prometheus-union" ,(go-github-com-prometheus-union))
-       ("go-github-com-chmduquesne-rollinghash-adler32"
-        ,go-github-com-chmduquesne-rollinghash-adler32)
-       ("go-github-com-gobwas-glob" ,go-github-com-gobwas-glob)
-       ("go-github-com-gogo-protobuf-union"
-        ,(go-github-com-gogo-protobuf-union))
-       ("go-github-com-golang-groupcache-lru"
-        ,go-github-com-golang-groupcache-lru)
-       ("go-github-com-jackpal-gateway" ,go-github-com-jackpal-gateway)
-       ("go-github-com-kballard-go-shellquote"
-        ,go-github-com-kballard-go-shellquote)
-       ("go-github-com-lib-pq" ,go-github-com-lib-pq)
-       ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
-       ("go-github-com-oschwald-geoip2-golang"
-        ,go-github-com-oschwald-geoip2-golang)
-       ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
-       ("go-github-com-rcrowley-go-metrics" ,go-github-com-rcrowley-go-metrics)
-       ("go-github-com-sasha-s-go-deadlock" ,go-github-com-sasha-s-go-deadlock)
-       ("go-github-com-syncthing-notify" ,go-github-com-syncthing-notify)
-       ("go-github-com-syndtr-goleveldb" ,go-github-com-syndtr-goleveldb)
-       ("go-github-com-thejerf-suture" ,go-github-com-thejerf-suture)
-       ("go-github-com-vitrun-qart" ,(go-github-com-vitrun-qart-union))
-       ("go-golang-org-x-crypto" ,(go-golang-org-x-crypto-union))
-       ("go-golang-org-x-net-union" ,(go-golang-org-x-net-union))
-       ("go-golang-org-x-text" ,(go-golang-org-x-text-union))
-       ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)
-       ("go-gopkg.in-ldap.v2" ,go-gopkg.in-ldap.v2)
-       ;; For tests
-       ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
     (synopsis "Decentralized continuous file system synchronization")
     (description "Syncthing is a peer-to-peer file synchronization tool that
 supports a wide variety of computing platforms.  It uses the Block Exchange
@@ -941,8 +906,8 @@ using sh's word-splitting rules.")
       (license expat))))
 
 (define-public go-github-com-syncthing-notify
-  (let ((commit "b76b45868a77e7800dd06cce61101af9c4274bcc")
-        (revision "2"))
+  (let ((commit "116c45bb5ad48777321e4984d1320d56889b6097")
+        (revision "3"))
     (package
       (name "go-github-com-syncthing-notify")
       (version (git-version "0.0.0" revision commit))
@@ -954,7 +919,7 @@ using sh's word-splitting rules.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1xxkzaxygxxr51i2kdxsdaqb5i95hqpkw4kcr75wmsp914slw2q9"))))
+                  "14bh95pkhwmnc65bnv08p3y4flj1j7f6xxr2cgmlwrphnlp9yhl9"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/syncthing/notify"))
@@ -1188,11 +1153,11 @@ server tools for Prometheus metrics.")
       (license asl2.0))))
 
 (define-public go-github-com-client-golang-prometheus
-  (let ((commit "180b8fdc22b4ea7750bcb43c925277654a1ea2f3")
+  (let ((commit "7e9098b20fb8e103a7a5691878272d7e3d703663")
         (revision "0"))
     (package
       (name "go-github-com-prometheus-client-golang-prometheus")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "0.9.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1201,11 +1166,12 @@ server tools for Prometheus metrics.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1kkfx1j9ka18ydsmdi2cdy3hs39c22b39mbc4laykmj2x93lmbdp"))))
+                  "09q8hlvgyn58hn8fmmj535hrwhqc1215czwzf7fhaqpa9zamj4w1"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/prometheus/client_golang/prometheus"
-         #:unpack-path "github.com/prometheus/client_golang"))
+         #:unpack-path "github.com/prometheus/client_golang"
+         #:tests? #f)) ; 'TestHandler' test fails in this non-critical dependency
       (propagated-inputs
        `(("go-github-com-beorn7-perks-quantile"
           ,go-github-com-beorn7-perks-quantile)

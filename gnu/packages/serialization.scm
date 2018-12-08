@@ -306,7 +306,7 @@ it a convenient format to store user input files.")
 (define-public capnproto
   (package
     (name "capnproto")
-    (version "0.6.1")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -314,7 +314,7 @@ it a convenient format to store user input files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "010s9yhq4531wvdfrdf2477zswhck6cjfby79w73rff3v06090l0"))))
+                "0hfdnhlbskagzgvby8wy6lrxj53zfzpfqimbhga68c0ji2yw1969"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -324,6 +324,14 @@ it a convenient format to store user input files.")
              ;; Workaround for test that tries to resolve port name from
              ;; /etc/services, which is not present in build environment.
              (substitute* "src/kj/async-io-test.c++" ((":http") ":80"))
+             #t))
+         (add-before 'check 'use-tmp-for-tempory-files
+           (lambda _
+             ;; Use /tmp for tempory files, as the default /var/tmp directory
+             ;; doesn't exist.
+             (substitute* "src/kj/filesystem-disk-test.c++"
+               (("VAR\\_TMP \"/var/tmp\"")
+                "VAR_TMP \"/tmp\""))
              #t)))))
     (home-page "https://capnproto.org")
     (synopsis "Capability-based RPC and serialization system")

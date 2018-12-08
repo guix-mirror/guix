@@ -459,7 +459,8 @@ check-system: $(GOBJECTS)
 # Public key used to sign substitutes from hydra.gnu.org & co.
 dist_pkgdata_DATA =				\
   etc/substitutes/hydra.gnu.org.pub		\
-  etc/substitutes/berlin.guixsd.org.pub
+  etc/substitutes/berlin.guixsd.org.pub		\
+  etc/substitutes/ci.guix.info.pub
 
 # Bash completion file.
 dist_bashcompletion_DATA = etc/completion/bash/guix	\
@@ -762,7 +763,7 @@ assert-no-store-file-names: $(distdir)/ChangeLog
 	  exit 1 ;								\
 	fi
 
-# Make sure hydra.gnu.org has the important binaries.
+# Make sure important substitutes are available.
 assert-binaries-available: $(GOBJECTS)
 	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"			\
 	  "$(top_srcdir)/build-aux/check-available-binaries.scm"

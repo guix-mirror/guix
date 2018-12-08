@@ -196,14 +196,14 @@ Interface} specification.")
     (name "nginx")
     ;; Consider updating the nginx-documentation package if the nginx package is
     ;; updated.
-    (version "1.14.1")
+    (version "1.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19542jxcjf4dvrqvgb5vr36mhbzcjrxc3v0xh451rm60610rf2dz"))))
+                "15wppq12qmq8acjs35xfj61czhf9cdc0drnl5mm8hcg3aihryb80"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -1281,12 +1281,14 @@ minimum to provide high performance operation.")
          #:tests? #f
          #:phases
          (modify-phases %standard-phases
+           (delete 'bootstrap)
            (delete 'configure)
            (add-after 'unpack 'unpack-libsass-and-set-path
              (lambda* (#:key inputs #:allow-other-keys)
                (invoke "tar" "xvf" (assoc-ref inputs "libsass"))
                (setenv "SASS_LIBSASS_PATH"
-                       (string-append (getcwd) "/libsass-" ,version)))))))
+                       (string-append (getcwd) "/libsass-" ,version))
+               #t)))))
       (inputs
        `(("libsass" ,libsass)))
       (synopsis "CSS pre-processor")

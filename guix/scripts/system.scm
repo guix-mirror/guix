@@ -497,9 +497,10 @@ STORE is an open connection to the store."
          (old-entries (map boot-parameters->menu-entry old-params)))
     (run-with-store store
       (mlet* %store-monad
-          ((bootcfg ((bootloader-configuration-file-generator bootloader)
-                     bootloader-config entries
-                     #:old-entries old-entries))
+          ((bootcfg (lower-object
+                     ((bootloader-configuration-file-generator bootloader)
+                      bootloader-config entries
+                      #:old-entries old-entries)))
            (bootcfg-file -> (bootloader-configuration-file bootloader))
            (target -> "/")
            (drvs -> (list bootcfg)))

@@ -1499,26 +1499,27 @@ starting at FIRST-UID, and under GID."
           1+
           1))
 
-(define (hydra-key-authorization key guix)
-  "Return a gexp with code to register KEY, a file containing a 'guix archive'
-public key, with GUIX."
+(define (hydra-key-authorization keys guix)
+  "Return a gexp with code to register KEYS, a list of files containing 'guix
+archive' public keys, with GUIX."
   #~(unless (file-exists? "/etc/guix/acl")
-      (let ((pid (primitive-fork)))
-        (case pid
-          ((0)
-           (let* ((key  #$key)
-                  (port (open-file key "r0b")))
-             (format #t "registering public key '~a'...~%" key)
-             (close-port (current-input-port))
-             (dup port 0)
-             (execl #$(file-append guix "/bin/guix")
-                    "guix" "archive" "--authorize")
-             (exit 1)))
-          (else
-           (let ((status (cdr (waitpid pid))))
-             (unless (zero? status)
-               (format (current-error-port) "warning: \
-failed to register hydra.gnu.org public key: ~a~%" status))))))))
+      (for-each (lambda (key)
+                  (let ((pid (primitive-fork)))
+                    (case pid
+                      ((0)
+                       (let* ((port (open-file key "r0b")))
+                         (format #t "registering public key '~a'...~%" key)
+                         (close-port (current-input-port))
+                         (dup port 0)
+                         (execl #$(file-append guix "/bin/guix")
+                                "guix" "archive" "--authorize")
+                         (primitive-exit 1)))
+                      (else
+                       (let ((status (cdr (waitpid pid))))
+                         (unless (zero? status)
+                           (format (current-error-port) "warning: \
+failed to register public key '~a': ~a~%" key status)))))))
+                '(#$@keys))))
 
 (define %default-authorized-guix-keys
   ;; List of authorized substitute keys.
@@ -1630,10 +1631,9 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
      ;; otherwise call 'chown' here, but the problem is that on a COW overlayfs,
      ;; chown leads to an entire copy of the tree, which is a bad idea.
 
-     ;; Optionally authorize hydra.gnu.org's key.
+     ;; Optionally authorize substitute server keys.
      (if authorize-key?
-         #~(begin
-             #$@(map (cut hydra-key-authorization <> guix) keys))
+         (hydra-key-authorization keys guix)
          #~#f))))
 
 (define* (references-file item #:optional (name "references"))

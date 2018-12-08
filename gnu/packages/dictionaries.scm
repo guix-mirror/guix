@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,22 +23,29 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages dictionaries)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages tcl))
+  #:use-module (gnu packages tcl)
+  #:use-module (gnu packages xml))
 
 
 (define-public vera
@@ -87,7 +95,7 @@
     (description
      "V.E.R.A. (Virtual Entity of Relevant Acronyms) is a list of computing
 acronyms distributed as an info document.")
-    (license fdl1.3+)))
+    (license license:fdl1.3+)))
 
 (define-public gcide
   (package
@@ -125,7 +133,7 @@ acronyms distributed as an info document.")
 be used via the GNU Dico program or accessed online at
 http://gcide.gnu.org.ua/")
     (home-page "http://gcide.gnu.org.ua/")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public diction
   ;; Not quite a dictionary, not quite a spell checker either…
@@ -147,7 +155,7 @@ Diction is used to identify wordy and commonly misused phrases in a
 body of text.  Style instead analyzes surface aspects of a written
 work, such as sentence length and other readability measures.")
     (home-page "https://www.gnu.org/software/diction/")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public ding
   (package
@@ -207,7 +215,7 @@ work, such as sentence length and other readability measures.")
     (description "Ding is a dictionary lookup program for the X window system.
 It comes with a German-English dictionary with approximately 270,000 entries.")
     (home-page  "http://www-user.tu-chemnitz.de/~fri/ding/")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public grammalecte
   (package
@@ -234,7 +242,7 @@ a dubious expression is wrong, it will keep silent.
 
 The package provides the command line interface, along with a server
 and a Python library.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public translate-shell
   (package
@@ -283,4 +291,87 @@ and a Python library.")
 translator powered by Google Translate (default), Bing Translator,
 Yandex.Translate and Apertium.  It gives you easy access to one of these
 translation engines from your terminal.")
-    (license public-domain)))
+    (license license:public-domain)))
+
+(define-public lttoolbox
+  (package
+    (name "lttoolbox")
+    (version "3.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/apertium/lttoolbox/releases/download/v"
+             version "/lttoolbox-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08y6pf1hl7prwygy1g8h6ndqww18pmb9f3r5988q0pcrp8w6xz6b"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://wiki.apertium.org/wiki/Lttoolbox")
+    (synopsis "Lexical processing toolbox")
+    (description "Lttoolbox is a toolbox for lexical processing, morphological
+analysis and generation of words.  Analysis is the process of splitting a
+word (e.g. cats) into its lemma \"cat\" and the grammatical information
+@code{<n><pl>}.  Generation is the opposite process.")
+    (license (list license:gpl2 ; main license
+                   license:expat)))) ; utf8/*
+
+(define-public apertium
+  (package
+    (name "apertium")
+    (version "3.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/apertium/apertium/releases/download/v"
+             version "/apertium-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lrx58ipx2kzh1pd3xm1viz05dqyrq38jbnj9dnk92c9ckkwkp4h"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("lttoolbox" ,lttoolbox)
+       ("pcre" ,pcre)))
+    (native-inputs
+     `(("apertium-get"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/apertium/apertium-get")
+                 (commit "692d030e68008fc123089cf2446070fe8c6e3a3b")))
+           (sha256
+            (base32
+             "0kgp68azvds7yjwfz57z8sa5094fyk5yr0qxzblrw7bisrrihnav"))))
+       ("flex" ,flex)
+       ("pkg-config" ,pkg-config)
+       ;; python is only required for running the test suite
+       ("python-minimal" ,python-minimal)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; If apertium-get does not exist in the source tree, the build tries
+         ;; to download it using an svn checkout. To avoid this, copy
+         ;; apertium-get into the source tree.
+         (add-after 'unpack 'unpack-apertium-get
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "apertium-get")
+                               "apertium/apertium-get")
+             #t)))))
+    (home-page "https://www.apertium.org/")
+    (synopsis "Rule based machine translation system")
+    (description "Apertium is a rule based machine translation system
+featuring a shallow-transfer machine translation engine.  The design of the
+system makes translations fast (translating tens of thousands of words per
+second on ordinary desktop computers) and, in spite of the errors, reasonably
+intelligible and easily correctable.")
+    (license (list license:gpl2 ; main license
+                   license:expat)))) ; utf8/*

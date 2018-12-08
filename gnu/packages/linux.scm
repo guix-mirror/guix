@@ -400,8 +400,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.19.6")
-(define %linux-libre-hash "1ybi878li06algbv2pdwn81jlh038pfvzz3axn1bzic9p4c9rjhf")
+(define %linux-libre-version "4.19.7")
+(define %linux-libre-hash "1fj038hz6b7g9gdiw9kggydryf8dvrdsfn81snns9bn5b01yp67n")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -423,8 +423,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.85")
-(define %linux-libre-4.14-hash "1jh11y6jakkp3xlq9jbf2myfjzbccjx1iyhd6ny7r9cjkv6r5i5i")
+(define %linux-libre-4.14-version "4.14.86")
+(define %linux-libre-4.14-hash "1w98drq4ns2awwrbbkd6vy9fh219w8bfjfni5zndfycs5yh5hg65")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -433,8 +433,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.142"
-                    "0a7c41m41p83byn68cfixq460sy73ahwcx9y3xm6cv05grqza8zh"
+  (make-linux-libre "4.9.143"
+                    "0vg6hs7vc09riyki8lyy73p3ghl6k9q4xfv7dals4s9q61i6b6d6"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -4055,7 +4055,7 @@ under OpenGL graphics workloads.")
 (define-public efivar
   (package
     (name "efivar")
-    (version "35")
+    (version "37")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rhboot/" name
@@ -4063,7 +4063,7 @@ under OpenGL graphics workloads.")
                                   "-" version ".tar.bz2"))
               (sha256
                (base32
-                "153k2ifyl4giz5fkryxhz8z621diqjy7v25hfga4z94rs32ks0qy"))))
+                "17vvfivhsrszh7q39b6npjsrhrhsjf1cmmcpp3xrh6wh7ywzwrrw"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Tests require a UEFI system and is not detected in the chroot.

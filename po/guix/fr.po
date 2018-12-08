@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: guix 0.16.0\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2018-11-28 15:05+0100\n"
-"PO-Revision-Date: 2018-11-30 23:11+0100\n"
+"PO-Revision-Date: 2018-12-03 19:23+0100\n"
 "Last-Translator: Julien Lepiller <julien@lepiller.eu>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -3767,7 +3767,7 @@ msgstr[1] "application de ~a greffes pour ~a..."
 #: guix/status.scm:340
 #, scheme-format
 msgid "building ~a..."
-msgstr "Construction de « ~a »...~%"
+msgstr "construction de ~a..."
 
 #: guix/status.scm:344
 #, scheme-format

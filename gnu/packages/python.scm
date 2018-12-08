@@ -2100,13 +2100,13 @@ cutting and pasting that code over and over.")
 (define-public python-unidecode
   (package
     (name "python-unidecode")
-    (version "0.04.21")
+    (version "1.0.23")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "Unidecode" version))
              (sha256
               (base32
-               "0lfhp9c5xrbpjvbpr12ji52g1lx04404bzzdg6pvabhzisw6l2i8"))))
+               "1ysjbr3nqfqj97h8zyj3v9pya413vkv7a1mzml80w37xx15kb1cb"))))
     (build-system python-build-system)
     (home-page "https://pypi.python.org/pypi/Unidecode")
     (synopsis "ASCII transliterations of Unicode text")
@@ -9759,13 +9759,13 @@ addresses, and phone numbers.")
 (define-public python-pyaml
   (package
     (name "python-pyaml")
-    (version "17.7.2")
+    (version "18.11.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pyaml" version))
               (sha256
                (base32
-                "132grrw0ajq4nrappi3ldbkb952k7yn9b6c7csi2rmvzm1g6ppp2"))))
+                "0fi604ix8lbpj1266q7js6szm771saprdzzcdwmj43wy83694qmr"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-unidecode" ,python-unidecode)))

@@ -2822,11 +2822,13 @@ These are distributed in separate files and can be used individually.")
     (version "1.2.0")
     (home-page "https://github.com/Sarcasm/irony-mode")
     (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append home-page ".git"))
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "1f68zi0glkg2aly66s07rx3w0b0hdi1znxan02h6dbabaadylk99"))
+                "0nhjrnlmss535jbshjjd30vydbr8py21vkx4p294w6d8vg2rssf8"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (arguments '())
@@ -6785,7 +6787,7 @@ It should enable you to implement low-level X11 applications.")
 (define-public emacs-exwm
   (package
     (name "emacs-exwm")
-    (version "0.20")
+    (version "0.21")
     (synopsis "Emacs X window manager")
     (source (origin
               (method url-fetch)
@@ -6793,7 +6795,7 @@ It should enable you to implement low-level X11 applications.")
                                   version ".tar"))
               (sha256
                (base32
-                "0nhhzbkm0mkj7sd1dy2c19cmn56gyaj9nl8kgy86h4fp63hjaz04"))))
+                "07ng1pgsnc3isfsyzh2gfc7391p9il8lb5xqf1z6yqn20w7k6xzj"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-xelb" ,emacs-xelb)))

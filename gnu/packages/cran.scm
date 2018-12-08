@@ -7754,3 +7754,24 @@ circular variables).")
      "This package provides tools to fit and compare Ornstein-Uhlenbeck models
 for evolution along a phylogenetic tree.")
     (license license:gpl2+)))
+
+(define-public r-fmsb
+  (package
+    (name "r-fmsb")
+    (version "0.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fmsb" version))
+       (sha256
+        (base32
+         "1n29bnyp20pvpk2lsa9fblsj5w7amp14snc74pk5w3yr5y6rj0s5"))))
+    (build-system r-build-system)
+    (home-page "http://minato.sip21c.org/msb/")
+    (synopsis "Functions for medical statistics book with demographic data")
+    (description
+     "This package provides several utility functions for the book entitled
+\"Practices of Medical and Health Data Analysis using R\" (Pearson Education
+Japan, 2007) with Japanese demographic data and some demographic analysis
+related functions.")
+    (license license:gpl2+)))

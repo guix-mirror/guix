@@ -632,7 +632,16 @@ way of specifying command line options.")
                   "1sv15sri99szkdz1bkh0ir46w9n8prrwx5hfai13nrhkawfyfy10"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "gopkg.in/tomb.v2"))
+       '(#:import-path "gopkg.in/tomb.v2"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-source
+             (lambda _
+               ;; Add a missing % to fix the compilation of this test
+               (substitute* "src/gopkg.in/tomb.v2/tomb_test.go"
+                 (("t.Fatalf\\(`Killf\\(\"BO%s")
+                  "t.Fatalf(`Killf(\"BO%%s"))
+               #t)))))
       (synopsis "@code{tomb} handles clean goroutine tracking and termination")
       (description
        "The @code{tomb} package handles clean goroutine tracking and

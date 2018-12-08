@@ -275,7 +275,8 @@ Libraries with some extra bells and whistles.")
              (let ((xkeyboard (assoc-ref inputs "xkeyboard-config"))
                    (setxkbmap (assoc-ref inputs "setxkbmap"))
                    (utils     (assoc-ref inputs "util-linux"))
-                   (libc      (assoc-ref inputs "libc")))
+                   (libc      (assoc-ref inputs "libc"))
+                   (efl       (assoc-ref inputs "efl")))
                ;; We need to patch the path to 'base.lst' to be able
                ;; to switch the keyboard layout in E.
                (substitute* (list "src/modules/xkbswitch/e_mod_parse.c"
@@ -290,6 +291,9 @@ Libraries with some extra bells and whistles.")
                                   "src/modules/conf_intl/e_int_config_intl.c"
                                   "src/modules/wizard/page_010.c")
                  (("locale -a") (string-append libc "/bin/locale -a")))
+               (substitute* "src/bin/e_import_config_dialog.c"
+                 (("%s/edje_cc -v %s %s %s\", e_prefix_bin_get\\(\\)")
+                  (string-append efl "/bin/edje_cc -v %s %s %s\"")))
                (substitute* "src/modules/everything/evry_plug_apps.c"
                  (("/usr/bin/") ""))
                (substitute* "configure"

@@ -39,6 +39,7 @@
 (define-module (gnu packages xml)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages gnupg)
@@ -2152,3 +2153,24 @@ It converts the procedure call into an XML document, sends it to a remote
 server using HTTP, and gets back the response as XML.  This library provides a
 modular implementation of XML-RPC for C and C++.")
     (license (list license:psfl license:expat))))
+
+(define-public python-xmltodict
+  (package
+    (name "python-xmltodict")
+    (version "0.11.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "xmltodict" version))
+        (sha256
+          (base32
+            "1pxh4yjhvmxi1h6f92skv41g4kbsws3ams57150kzn18m907v3cg"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/martinblech/xmltodict")
+    (synopsis "Work with XML like you are working with JSON")
+    (description "This package provides a Python library to convert XML to
+@code{OrderedDict}.")
+    (license license:expat)))

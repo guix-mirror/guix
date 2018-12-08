@@ -470,13 +470,13 @@ compression format (.mpc files).")
 (define-public eyed3
   (package
     (name "eyed3")
-    (version "0.8.7")
+    (version "0.8.8")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "eyeD3" version))
              (sha256
               (base32
-               "1fzqy6hkg73xvpapdjrdzr3r0fsamnplvjfl7dz7rzgzx2r4x4pg"))))
+               "197lszkyzm377ym5r0ssryfsiz20yjx8y4rii3wc81n92d1qzlaq"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; the required test data contains copyrighted material.

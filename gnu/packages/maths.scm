@@ -1413,9 +1413,9 @@ can solve two kinds of problems:
 
 ;; For a fully featured Octave, users are strongly recommended also to install
 ;; the following packages: less, ghostscript, gnuplot.
-(define-public octave
+(define-public octave-cli
   (package
-    (name "octave")
+    (name "octave-cli")
     (version "4.4.1")
     (source
      (origin
@@ -1497,21 +1497,21 @@ Work may be performed both at the interactive command-line as well as via
 script files.")
     (license license:gpl3+)))
 
-(define-public qtoctave
-  (package (inherit octave)
-    (name "qtoctave")
+(define-public octave
+  (package (inherit octave-cli)
+    (name "octave")
     (source (origin
-              (inherit (package-source octave))))
+              (inherit (package-source octave-cli))))
     (inputs
      `(("qscintilla" ,qscintilla)
        ("qt" ,qtbase)
-       ,@(package-inputs octave)))
+       ,@(package-inputs octave-cli)))
     (native-inputs
      `(("qttools" , qttools) ;for lrelease
        ("texlive" ,texlive) ;for texi2dvi
-       ,@(package-native-inputs octave)))
+       ,@(package-native-inputs octave-cli)))
     (arguments
-     (substitute-keyword-arguments (package-arguments octave)
+     (substitute-keyword-arguments (package-arguments octave-cli)
        ((#:phases phases)
         `(modify-phases ,phases
            (add-before 'configure 'patch-qscintilla-library-name
@@ -1524,6 +1524,9 @@ script files.")
                  (("qscintilla2-qt5")
                   "qscintilla2_qt5"))
                #t))))))))
+
+(define-public qtoctave
+  (deprecated-package "qtoctave" octave))
 
 (define-public opencascade-oce
   (package
@@ -1767,6 +1770,7 @@ scientific applications modeled by partial differential equations.")
     (name "petsc-openmpi")
     (inputs
      `(("hdf5" ,hdf5-parallel-openmpi)
+       ("hypre" ,hypre-openmpi)
        ("metis" ,metis)
        ("mumps" ,mumps-openmpi)
        ("openmpi" ,openmpi)
@@ -1776,7 +1780,8 @@ scientific applications modeled by partial differential equations.")
     (arguments
      (substitute-keyword-arguments (package-arguments petsc)
        ((#:configure-flags cf)
-        ``("--with-mpiexec=mpirun"
+        ``("--with-hypre=1"
+           "--with-mpiexec=mpirun"
            "--with-metis=1"
            "--with-mumps=1"
            "--with-scalapack=1"
@@ -3578,7 +3583,7 @@ in finite element programs.")
      `(("unzip" ,unzip)))
     (inputs
      `(("hdf5" ,hdf5)
-       ("octave" ,octave)
+       ("octave" ,octave-cli)
        ("python" ,python-2) ; print syntax
        ;; ("python2-numpy" ,python2-numpy) ; only required for the tests
        ("zlib" ,zlib)))

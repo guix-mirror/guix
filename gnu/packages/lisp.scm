@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -928,9 +929,9 @@ from other CLXes around the net.")
      `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
        ("sbcl-cl-unicode" ,sbcl-cl-unicode)))))
 
-(define-public sbcl-stumpwm
+(define-public stumpwm
   (package
-    (name "sbcl-stumpwm")
+    (name "stumpwm")
     (version "18.05")
     (source (origin
               (method url-fetch)
@@ -946,7 +947,8 @@ from other CLXes around the net.")
               ("alexandria" ,sbcl-alexandria)))
     (outputs '("out" "lib"))
     (arguments
-     '(#:phases
+     '(#:asd-system-name "stumpwm"
+       #:phases
        (modify-phases %standard-phases
          (add-after 'create-symlinks 'build-program
            (lambda* (#:key outputs #:allow-other-keys)
@@ -979,17 +981,15 @@ for input.  These design decisions reflect the growing popularity of
 productive, customizable lisp based systems.")
     (home-page "https://github.com/stumpwm/stumpwm")
     (license license:gpl2+)
-    (properties `((ecl-variant . ,(delay ecl-stumpwm))))))
+    (properties `((cl-source-variant . ,(delay cl-stumpwm))))))
+
+(define-public sbcl-stumpwm
+  (deprecated-package "sbcl-stumpwm" stumpwm))
 
 (define-public cl-stumpwm
-  (sbcl-package->cl-source-package sbcl-stumpwm))
-
-(define-public ecl-stumpwm
-  (let ((base (sbcl-package->ecl-package sbcl-stumpwm)))
-    (package
-      (inherit base)
-      (outputs '("out"))
-      (arguments '()))))
+  (package
+    (inherit (sbcl-package->cl-source-package stumpwm))
+    (name "cl-stumpwm")))
 
 ;; The slynk that users expect to install includes all of slynk's contrib
 ;; modules.  Therefore, we build the base module and all contribs first; then
@@ -1268,16 +1268,16 @@ multiple inspectors with independent history.")
                          paths)
             #t)))))))
 
-(define-public sbcl-stumpwm+slynk
+(define-public stumpwm+slynk
   (package
-    (inherit sbcl-stumpwm)
-    (name "sbcl-stumpwm-with-slynk")
+    (inherit stumpwm)
+    (name "stumpwm-with-slynk")
     (outputs '("out"))
     (inputs
-     `(("stumpwm" ,sbcl-stumpwm "lib")
+     `(("stumpwm" ,stumpwm "lib")
        ("slynk" ,sbcl-slynk)))
     (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-stumpwm)
+     (substitute-keyword-arguments (package-arguments stumpwm)
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'build-program
@@ -1300,6 +1300,9 @@ multiple inspectors with independent history.")
            (delete 'create-asd-file)
            (delete 'cleanup)
            (delete 'create-symlinks)))))))
+
+(define-public sbcl-stumpwm+slynk
+  (deprecated-package "sbcl-stumpwm-with-slynk" stumpwm+slynk))
 
 (define-public sbcl-parse-js
   (let ((commit "fbadc6029bec7039602abfc06c73bb52970998f6")

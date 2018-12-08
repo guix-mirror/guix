@@ -2247,14 +2247,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "1j3rpvdkw9rw48j4zyfn6rprp01csy4rl6zckcjyx0vh7vaycchr"))))
+                "1010gvkzdzdk39g1g6wx2j19ls0kdl6l9q51xzk2qik7h2fwxl71"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no "check" target
@@ -2688,13 +2688,14 @@ Songs can be searched by artist, name or even by a part of the song text.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.4.6")
+    (version "1.4.7")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
+              (patches (search-patches "beets-python-3.7-fix.patch"))
               (sha256
                (base32
-                "0l2vfrknwcsm6bn83m7476qrz45qwgxcb5k0h7kn96kr70irn1v2"))))
+                "0w3gz69s9gf5ih69d4sddgh7ndj7658m621bp742zldvjakdncrs"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2702,6 +2703,12 @@ Songs can be searched by artist, name or even by a part of the song text.")
          (add-after 'unpack 'set-HOME
            (lambda _
              (setenv "HOME" (string-append (getcwd) "/tmp"))
+             #t))
+         (add-after 'unpack 'make-python3.7-compatible
+           (lambda _
+             ;; See <https://github.com/beetbox/beets/issues/2978>.
+             (substitute* "beets/autotag/hooks.py"
+              (("re\\._pattern_type") "re.Pattern"))
              #t))
          (replace 'check
            (lambda _
@@ -3298,7 +3305,8 @@ plugins, a switch trigger, a toggle switch, and a peakmeter.")
            "1wg47vjw9djn99gbnsl2bcwj4xhdid61m4wrbn2nlp797flj91ic"))))
       (build-system waf-build-system)
       (arguments
-       `(#:tests? #f ; no "check" target
+       `(#:python ,python-2
+         #:tests? #f ; no "check" target
          #:configure-flags (list "--no-webkit")
          #:phases
          (modify-phases %standard-phases

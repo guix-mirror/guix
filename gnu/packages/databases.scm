@@ -2869,6 +2869,14 @@ transforms idiomatic python function calls to well-formed SQL queries.")
                (delete-file-recursively
                 "src/github.com/mongodb/mongo-tools/vendor")
                #t))
+           (add-after 'delete-bundled-source-code 'patch-source
+             (lambda _
+               ;; Remove a redundant argument that causes compilation to fail.
+               (substitute*
+                   "src/github.com/mongodb/mongo-tools/mongorestore/filepath.go"
+                 (("skipping restore of system.profile collection\", db)")
+                  "skipping restore of system.profile collection\")"))
+               #t))
            ;; We don't need to install the source code for end-user applications
            (delete 'install-source)
            (replace 'build

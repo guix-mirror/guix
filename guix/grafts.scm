@@ -144,7 +144,12 @@ are not recursively applied to dependencies of DRV."
                                                 ,@(append (map add-label sources)
                                                           (map add-label targets)))
                                      #:outputs outputs
+
+                                     ;; Grafts are computationally cheap so no
+                                     ;; need to offload or substitute.
                                      #:local-build? #t
+                                     #:substitutable? #f
+
                                      #:properties properties)))))
 (define (item->deriver store item)
   "Return two values: the derivation that led to ITEM (a store item), and the

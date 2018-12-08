@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1001,7 +1001,7 @@ PDF.  Indeed @command{pdfposter} was inspired by @command{poster}.")
 (define-public pdfgrep
   (package
     (name "pdfgrep")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
@@ -1009,7 +1009,7 @@ PDF.  Indeed @command{pdfposter} was inspired by @command{poster}.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "02qcl5kmr5qzjfc99qpbpfb1890bxlrq3r208gnding51zrmb09c"))))
+         "1fia10djcxxl7n9jw2prargw4yzbykk6izig2443ycj9syhxrwqf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

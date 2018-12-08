@@ -101,9 +101,9 @@
   ;; Latest version of Guix, which may or may not correspond to a release.
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
-  (let ((version "0.15.0")
-        (commit "71a78ba65b00ad1f27086a3dcdded7dc4326ade1")
-        (revision 8))
+  (let ((version "0.16.0")
+        (commit "6ddc63e599a26c302f74d0622f67cfd987f0dc5f")
+        (revision 3))
     (package
       (name "guix")
 
@@ -119,7 +119,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0isagzccfxjqrc38wamknvh0jzv1pjh0wq5baj9jzwl07xkrc0hc"))
+                  "0vzxrsfbr4phhy60m7pc6klb61whqc404c3x76ydj70xvi1xa0wz"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -316,6 +316,7 @@ the Nix package manager.")
     (inputs
      `(("gnutls" ,gnutls)
        ("guile-git" ,guile-git)
+       ("guile-json" ,guile-json)
        ("guile-gcrypt" ,guile-gcrypt)
        ,@(fold alist-delete (package-inputs guix)
                '("boot-guile" "boot-guile/i686" "util-linux"))))

@@ -2097,7 +2097,9 @@ buffers, and audio capture.")
                (base32
                 "1agdpwwi42176l4mxj0c4fsvdiv1ig56bfnnx0msckxmy57df8bb"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f ; no check target
+       #:python ,python-2))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("boost" ,boost)
@@ -2118,14 +2120,14 @@ and ALSA.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.5.4")
+    (version "0.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "0qr71nb93gkz5q53nfcl5g168z173wc6s8w1yjs3rfn3m4hg0bcq"))))
+                "1rzzqa39a6llr52vjkjr0a86nc776kmr5xs52qqga8ms9697psz5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target
@@ -2202,6 +2204,12 @@ background file post-processing.")
                   (ice-9 ftw))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-with-boost-1.68
+           (lambda _
+             (substitute* "server/supernova/utilities/time_tag.hpp"
+               (("(time_duration offset = .+ microseconds\\().*" _ m)
+                (string-append m "static_cast<long>(get_nanoseconds()/1000));\n")))
+             #t))
          (add-after 'unpack 'rm-bundled-libs
            (lambda _
              ;; The build system doesn't allow us to unbundle the following
@@ -2266,7 +2274,7 @@ external_libraries/yaml-cpp/include)"))
        ("eudev" ,eudev)                 ;for user interactions with devices
        ("avahi" ,avahi)                 ;zeroconf service discovery support
        ("icu4c" ,icu4c)
-       ("boost" ,boost)
+       ("boost" ,boost-cxx14)
        ("boost-sync" ,boost-sync)
        ("yaml-cpp" ,yaml-cpp)))
     (home-page "https://github.com/supercollider/supercollider")
@@ -2855,7 +2863,7 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.5.3")
+    (version "0.5.4")
     (source
      (origin
        (method url-fetch)
@@ -2863,7 +2871,7 @@ interface.")
                            "/qsynth-" version ".tar.gz"))
        (sha256
         (base32
-         "1jghczmmva7cyavg1q0j8nr3hmjpzzglzi5ckg92ax4ji8gpks9c"))))
+         "0kpq5fxr96wnii18ax780w1ivq8ksk892ac0bprn92iz0asfysrd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" phase

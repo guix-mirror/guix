@@ -278,7 +278,12 @@ the latest known version of ~a (~a)~%")
 
 (define (all-packages)
   "Return the list of all the distro's packages."
-  (fold-packages cons '()
+  (fold-packages (lambda (package result)
+                   ;; Ignore deprecated packages.
+                   (if (package-superseded package)
+                       result
+                       (cons package result)))
+                 '()
                  #:select? (const #t)))           ;include hidden packages
 
 (define (list-dependents packages)

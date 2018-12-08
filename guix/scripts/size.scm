@@ -297,7 +297,7 @@ Report the size of PACKAGE and its dependencies.\n"))
          (leave (G_ "missing store item argument\n")))
         ((files ..1)
          (leave-on-EPIPE
-          ;; Turn off grafts because (1) hydra.gnu.org does not serve grafted
+          ;; Turn off grafts because (1) substitute servers do not serve grafted
           ;; packages, and (2) they do not make any difference on the
           ;; resulting size.
           (parameterize ((%graft? #f))

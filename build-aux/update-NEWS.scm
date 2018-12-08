@@ -30,6 +30,7 @@
              (ice-9 match)
              (ice-9 rdelim)
              (ice-9 regex)
+             (ice-9 vlist)
              (ice-9 pretty-print))
 
 (define %header-rx
@@ -98,31 +99,60 @@ paragraph."
                              (lambda (match port)
                                (let ((stars (match:substring match 1)))
                                  (format port
-                                         "~a ~a new packages~%~%~a~%~%"
-                                         stars (length added)
-                                         (enumeration->paragraph added)))))))))
+                                         "~a ~a new packages~%~%"
+                                         stars (length added)))))))))
 
 (define (write-packages-updates news-file old new)
   "Write to NEWS-FILE the list of packages upgraded between OLD and NEW."
-  (let ((upgraded (filter-map (match-lambda
-                                ((package . new-version)
-                                 (match (assoc package old)
-                                   ((_ . old-version)
-                                    (and (version>? new-version old-version)
-                                         (string-append package "@"
-                                                        new-version)))
-                                   (_ #f))))
-                              new)))
+  (define important
+    '("gcc" "glibc" "binutils" "gdb"                   ;toolchain
+      "shepherd" "linux-libre" "xorg-server" "cups"    ;OS
+      "gnome" "xfce" "enlightenment" "lxde" "mate"     ;desktop env.
+      "guile" "bash" "python" "python2" "perl"         ;languages
+      "ghc" "rust" "go" "julia" "r" "ocaml"
+      "icedtea" "openjdk" "clojure" "sbcl" "racket"
+      "emacs" "gimp" "inkscape" "libreoffice"          ;applications
+      "octave" "icecat" "gnupg"))
+
+  (let* ((table    (fold (lambda (package table)
+                           (match package
+                             ((name . version)
+                              (vhash-cons name version table))))
+                         vlist-null
+                         new))
+         (latest   (lambda (name)
+                     (let ((versions (vhash-fold* cons '() name table)))
+                       (match (sort versions version>?)
+                         ((latest . _) latest)))))
+         (upgraded (filter-map (match-lambda
+                                 ((package . new-version)
+                                  (match (assoc package old)
+                                    ((_ . old-version)
+                                     (and (string=? new-version
+                                                    (latest package))
+                                          (version>? new-version old-version)
+                                          (cons package new-version)))
+                                    (_ #f))))
+                               new))
+         (noteworthy (filter (match-lambda
+                               ((package . version)
+                                (member package important)))
+                             upgraded)))
     (with-atomic-file-replacement news-file
       (lambda (input output)
         (rewrite-org-section input output
                              (make-regexp "^(\\*+) (.*) package updates")
                              (lambda (match port)
-                               (let ((stars (match:substring match 1)))
+                               (let ((stars (match:substring match 1))
+                                     (lst   (map (match-lambda
+                                                   ((package . version)
+                                                    (string-append package " "
+                                                                   version)))
+                                                 noteworthy)))
                                  (format port
-                                         "~a ~a package updates~%~%~a~%~%"
+                                         "~a ~a package updates~%~%Noteworthy updates:~%~a~%~%"
                                          stars (length upgraded)
-                                         (enumeration->paragraph upgraded)))))))))
+                                         (enumeration->paragraph lst)))))))))
 
 
 (define (main . args)
@@ -138,6 +168,8 @@ paragraph."
 
        (let-values (((previous-version new-version)
                      (call-with-input-file news-file NEWS->versions)))
+         (format (current-error-port) "Updating NEWS for ~a to ~a...~%"
+                 previous-version new-version)
          (let* ((old (call-with-input-file (package-file previous-version)
                        read))
                 (new (fold-packages (lambda (p r)

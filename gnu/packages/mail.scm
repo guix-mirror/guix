@@ -23,7 +23,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
@@ -2424,15 +2424,15 @@ tools and applications:
 (define-public balsa
   (package
     (name "balsa")
-    (version "2.5.3")
+    (version "2.5.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pawsa.fedorapeople.org/balsa/balsa-"
-                           version ".tar.bz2"))
+       (uri (string-append "https://pawsa.fedorapeople.org/balsa/"
+                           name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "15jkwp3ylbwd8iha4dr37z1xb6mkk31ym90vv3h2a5xk2rmym5mq"))))
+         "17k6wcsl8gki7cskr3hhmfj6n54rha8ca3b6fzd8blsl5shsankx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

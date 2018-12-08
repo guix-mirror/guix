@@ -31,6 +31,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,6 +96,7 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages inkscape)
   #:use-module (gnu packages ibus)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
@@ -151,6 +153,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages vpn)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
@@ -4629,14 +4632,6 @@ configuration program to choose applications starting on login.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'set-paths 'work-around-gcc-7-include-path-issue
-           ;; FIXME: Work around a problem with gcc-7 includes (see
-           ;; <https://bugs.gnu.org/30756>).  Note that we use gcc-7
-           ;; to work around an internal compiler error in gcc-5.
-           (lambda _
-             (unsetenv "C_INCLUDE_PATH")
-             (unsetenv "CPLUS_INCLUDE_PATH")
-             #t))
          (add-before
           'check 'pre-check
           (lambda _
@@ -4654,11 +4649,7 @@ configuration program to choose applications starting on login.")
               ((".*expect\\(datestr\\).*") ""))
             #t)))))
     (native-inputs
-     `(("gcc" ,gcc-7) ; FIXME: Work around an internal compiler error in
-                      ; gcc-5.  Try removing this when our default compiler is
-                      ; no longer gcc-5.5.0, and also remove the
-                      ; 'work-around-gcc-7-include-path-issue' phase above.
-       ("glib:bin" ,glib "bin")       ; for glib-compile-resources
+     `(("glib:bin" ,glib "bin")       ; for glib-compile-resources
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)
        ;; For testing
@@ -6434,15 +6425,16 @@ functionality and behavior.")
 (define-public arc-theme
   (package
     (name "arc-theme")
-    (version "20170302")
+    (version "20181022")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/horst3180/arc-theme"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/NicoHood/arc-theme.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0igxpngnkf1wpsg872a9jg3c9f5z8afm312yfbillz16mk8w39cw"))))
+                "08951dk1irfadwpr3p323a4fprmxg53rk2r2niwq3v62ryhi3663"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -6453,16 +6445,20 @@ functionality and behavior.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("gtk+" ,gtk+)))
+       ("glib" ,glib "bin")             ; for glib-compile-resources
+       ("gnome-shell" ,gnome-shell)
+       ("gtk+" ,gtk+)
+       ("inkscape" ,inkscape)
+       ("optipng" ,optipng)
+       ("pkg-config" ,pkg-config)
+       ("sassc" ,sassc)))
     (synopsis "A flat GTK+ theme with transparent elements")
     (description "Arc is a flat theme with transparent elements for GTK 3, GTK
 2, and GNOME Shell which supports GTK 3 and GTK 2 based desktop environments
 like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
     (home-page "https://github.com/horst3180/arc-theme")
     ;; No "or later" language found.
-    (license license:gpl3)))
+    (license license:gpl3+)))
 
 (define-public faba-icon-theme
   (package

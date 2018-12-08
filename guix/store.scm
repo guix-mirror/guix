@@ -693,7 +693,7 @@ encoding conversion errors."
   (map (if (false-if-exception (resolve-interface '(gnutls)))
            (cut string-append "https://" <>)
            (cut string-append "http://" <>))
-       '("mirror.hydra.gnu.org")))
+       '("ci.guix.info")))
 
 (define* (set-build-options server
                             #:key keep-failed? keep-going? fallback?
