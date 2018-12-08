@@ -209,11 +209,11 @@ selected keymap."
           (compute (lambda _
                      (#$keymap-step current-installer))))
 
-         ;; Run a partitionment tool allowing the user to modify
+         ;; Run a partitioning tool allowing the user to modify
          ;; partition tables, partitions and their mount points.
          (installer-step
           (id 'partition)
-          (description (G_ "Partitionment"))
+          (description (G_ "Partitioning"))
           (compute (lambda _
                      ((installer-partition-page current-installer))))
           (configuration-formatter user-partitions->configuration))

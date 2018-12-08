@@ -636,7 +636,7 @@ partition, select a free space area and press ENTER.
 
 At least one partition must have its mounting point set to '/'."))
          (guided-info-text (format #f (G_ "This is the proposed \
-partitionment. It is still possible to edit it or to go back to install menu \
+partitioning. It is still possible to edit it or to go back to install menu \
 by pressing the Exit button.~%~%")))
          (result
           (run-listbox-selection-page

@@ -940,12 +940,12 @@ swap partition, a root partition and a home partition."
            (new-partitions
             (cond
              ((or (eq? scheme 'entire-root)
-                  (eq? scheme 'entire-crypted-root))
-              (let ((crypted? (eq? scheme 'entire-crypted-root)))
+                  (eq? scheme 'entire-encrypted-root))
+              (let ((encrypted? (eq? scheme 'entire-encrypted-root)))
                 `(,@(if start-partition
                         `(,start-partition)
                         '())
-                  ,@(if crypted?
+                  ,@(if encrypted?
                      '()
                      `(,(user-partition
                          (fs-type 'swap)
@@ -953,19 +953,19 @@ swap partition, a root partition and a home partition."
                   ,(user-partition
                     (fs-type 'ext4)
                     (bootable? has-extended?)
-                    (crypt-label (and crypted? "cryptroot"))
+                    (crypt-label (and encrypted? "cryptroot"))
                     (size "100%")
                     (mount-point "/")))))
              ((or (eq? scheme 'entire-root-home)
-                  (eq? scheme 'entire-crypted-root-home))
-              (let ((crypted? (eq? scheme 'entire-crypted-root-home)))
+                  (eq? scheme 'entire-encrypted-root-home))
+              (let ((encrypted? (eq? scheme 'entire-encrypted-root-home)))
                 `(,@(if start-partition
                         `(,start-partition)
                         '())
                   ,(user-partition
                     (fs-type 'ext4)
                     (bootable? has-extended?)
-                    (crypt-label (and crypted? "cryptroot"))
+                    (crypt-label (and encrypted? "cryptroot"))
                     (size "33%")
                     (mount-point "/"))
                   ,@(if has-extended?
@@ -973,7 +973,7 @@ swap partition, a root partition and a home partition."
                             (type 'extended)
                             (size "100%")))
                         '())
-                  ,@(if crypted?
+                  ,@(if encrypted?
                         '()
                         `(,(user-partition
                             (type (if has-extended?
@@ -986,7 +986,7 @@ swap partition, a root partition and a home partition."
                               'logical
                               'normal))
                     (fs-type 'ext4)
-                    (crypt-label (and crypted? "crypthome"))
+                    (crypt-label (and encrypted? "crypthome"))
                     (size "100%")
                     (mount-point "/home")))))))
            (new-partitions* (force-user-partitions-formating
@@ -1067,7 +1067,7 @@ if it is encrypted, or the plain path otherwise."
         path)))
 
 (define (luks-format-and-open user-partition)
-  "Format and open the crypted partition pointed by USER-PARTITION."
+  "Format and open the encrypted partition pointed by USER-PARTITION."
   (let* ((path (user-partition-path user-partition))
          (label (user-partition-crypt-label user-partition))
          (password (user-partition-crypt-password user-partition)))
@@ -1079,7 +1079,7 @@ if it is encrypted, or the plain path otherwise."
                 "--key-file" key-file path label)))))
 
 (define (luks-close user-partition)
-  "Close the crypted partition pointed by USER-PARTITION."
+  "Close the encrypted partition pointed by USER-PARTITION."
   (let ((label (user-partition-crypt-label user-partition)))
     (system* "cryptsetup" "close" label)))
 
@@ -1260,17 +1260,17 @@ from (gnu system mapped-devices) and return it."
   "Return the configuration field for USER-PARTITIONS."
   (let* ((swap-user-partitions (find-swap-user-partitions user-partitions))
          (swap-devices (map user-partition-path swap-user-partitions))
-         (crypted-partitions
+         (encrypted-partitions
           (filter user-partition-crypt-label user-partitions)))
     `(,@(if (null? swap-devices)
             '()
             `((swap-devices (list ,@swap-devices))))
       (bootloader ,@(bootloader-configuration user-partitions))
-      ,@(if (null? crypted-partitions)
+      ,@(if (null? encrypted-partitions)
             '()
             `((mapped-devices
                (list ,@(map user-partition->mapped-device
-                            crypted-partitions)))))
+                            encrypted-partitions)))))
       (file-systems (cons*
                      ,@(user-partitions->file-systems user-partitions)
                      %base-file-systems)))))
