@@ -2202,6 +2202,12 @@ background file post-processing.")
                   (ice-9 ftw))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-with-boost-1.68
+           (lambda _
+             (substitute* "server/supernova/utilities/time_tag.hpp"
+               (("(time_duration offset = .+ microseconds\\().*" _ m)
+                (string-append m "static_cast<long>(get_nanoseconds()/1000));\n")))
+             #t))
          (add-after 'unpack 'rm-bundled-libs
            (lambda _
              ;; The build system doesn't allow us to unbundle the following
@@ -2266,7 +2272,7 @@ external_libraries/yaml-cpp/include)"))
        ("eudev" ,eudev)                 ;for user interactions with devices
        ("avahi" ,avahi)                 ;zeroconf service discovery support
        ("icu4c" ,icu4c)
-       ("boost" ,boost)
+       ("boost" ,boost-cxx14)
        ("boost-sync" ,boost-sync)
        ("yaml-cpp" ,yaml-cpp)))
     (home-page "https://github.com/supercollider/supercollider")
