@@ -176,7 +176,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
-    (version "2.2.8")
+    (version "2.2.10")
     (source
      (origin
        (method url-fetch)
@@ -184,7 +184,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                            version "/cups-" version "-source.tar.gz"))
        (sha256
         (base32
-         "1r7r7b3nqpzc1a9dczqpj2mr8rkcwf01676v11sp4j7w4qfzqs1r"))))
+         "1fq52aw1mini3ld2czv5gg37wbbvh4n7yc7wzzxvbs3zpfrv5j3p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
