@@ -65,7 +65,7 @@
 (define-public quassel
   (package
     (name "quassel")
-    (version "0.12.5")
+    (version "0.13.0")
     (source
       (origin
         (method url-fetch)
@@ -73,7 +73,7 @@
                             version ".tar.bz2"))
         (sha256
          (base32
-          "1qkl3sb4ijx4k17m0c42j2p5bc4jymypwhmplm942rbrzm6mg50q"))
+          "0xp9mppxl63qzgsdyprmblvfrj0bb9z57kfc088gvcavvq1210nr"))
         (modules '((guix build utils)))
         ;; We don't want to install the bundled scripts.
         (snippet
@@ -86,13 +86,13 @@
     (arguments
       ;; The three binaries are not mutually exlusive, and are all built
       ;; by default.
-     '(#:configure-flags '(;;"-DWANT_QTCLIENT=OFF" ; 5.2 MiB
-                           ;;"-DWANT_CORE=OFF" ; 2.4 MiB
-                           ;;"-DWANT_MONO=OFF" ; 6.4 MiB
-                           "-DUSE_QT5=ON" ; default is qt4
+     '(#:configure-flags '(;;"-DWANT_QTCLIENT=OFF" ; 6.1 MiB
+                           ;;"-DWANT_CORE=OFF" ; 3.0 MiB
+                           ;;"-DWANT_MONO=OFF" ; 7.6 MiB
                            "-DWITH_KDE=OFF" ; no to kde integration ...
-                           "-DWITH_OXYGEN=ON" ; therefore we install bundled icons
-                           "-DWITH_WEBKIT=OFF") ; we don't depend on qtwebkit
+                           "-DWITH_BUNDLED_ICONS=ON" ; so we install bundled icons
+                           "-DWITH_OXYGEN_ICONS=ON" ; also the oxygen ones
+                           "-DWITH_WEBENGINE=OFF") ; we don't depend on qtwebengine
        #:tests? #f)) ; no test target
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -101,6 +101,7 @@
     (inputs
      `(("qca" ,qca)
        ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
        ("qtscript" ,qtscript)
        ("snorenotify" ,snorenotify)
        ("zlib" ,zlib)))
