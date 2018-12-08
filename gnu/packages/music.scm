@@ -3305,7 +3305,8 @@ plugins, a switch trigger, a toggle switch, and a peakmeter.")
            "1wg47vjw9djn99gbnsl2bcwj4xhdid61m4wrbn2nlp797flj91ic"))))
       (build-system waf-build-system)
       (arguments
-       `(#:tests? #f ; no "check" target
+       `(#:python ,python-2
+         #:tests? #f ; no "check" target
          #:configure-flags (list "--no-webkit")
          #:phases
          (modify-phases %standard-phases
