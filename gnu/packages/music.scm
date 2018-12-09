@@ -3942,9 +3942,9 @@ OSC connections.")
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "faust"
                (delete-file "main.cpp")
-               (zero? (system* "faust" "-i"
-                               "-a" "lv2synth.cpp"
-                               "-o" "main.cpp" "main.dsp"))))))))
+               (invoke "faust" "-i"
+                       "-a" "lv2synth.cpp"
+                       "-o" "main.cpp" "main.dsp")))))))
     (inputs
      `(("boost" ,boost)
        ("lv2" ,lv2)
