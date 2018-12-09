@@ -4799,7 +4799,7 @@ indentation (space indentation only).
 (define-public emacs-elpy
   (package
     (name "emacs-elpy")
-    (version "1.26.0")
+    (version "1.27.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4808,7 +4808,7 @@ indentation (space indentation only).
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0wynzp5xmrgiggmam82n6lfaiqmfl4n3ccpsgnh86r6pbsmssxjk"))))
+                "1b76y0kzk7s9ya8k9bpsgn31i9l0rxs4iz6lg7snhjgh03k0ssgv"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons* "^elpy/[^/]+\\.py$" "^snippets\\/" %default-include)
