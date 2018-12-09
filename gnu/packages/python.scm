@@ -9841,20 +9841,25 @@ characters, mouse support, and auto suggestions.")
 (define-public python-jedi
   (package
     (name "python-jedi")
-    (version "0.12.1")
+    (version "0.13.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jedi" version))
        (sha256
         (base32
-         "1h8ypnjisn57kiv1zqrkj1im6sbfnhxllqaa8znh39qkd47ys2dl"))))
+         "0j11q42g5vjkyhhjpyy8nb0gdxs78m3rpjai7p1hvgpyl9rkyjdp"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `( ;; Many tests are failing with Python 3.7.x as of version 0.13.1 (see:
+        ;; https://github.com/davidhalter/jedi/issues/1263)
+       #:tests? #f
+       #:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _
-                           (invoke "py.test" "-vv"))))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "py.test" "-vv")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-docopt" ,python-docopt)))
