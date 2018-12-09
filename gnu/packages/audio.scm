@@ -2183,7 +2183,7 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.9.3")
+    (version "3.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2192,7 +2192,7 @@ background file post-processing.")
                     "/SuperCollider-" version "-Source-linux.tar.bz2"))
               (sha256
                (base32
-                "1d8ixfl100jvlialxdizp8wqsl1mp5pi2bam25vp97bhjd59cfdr"))))
+                "16j9psa32czx1p1y2vvq0qf2ib0ngrfc604vx35n2b4llyika84v"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
@@ -2230,13 +2230,13 @@ background file post-processing.")
          ;; https://github.com/supercollider/supercollider/issues/1736
          (add-after 'rm-bundled-libs 'disable-broken-tests
            (lambda _
-             (substitute* "testsuite/supernova/CMakeLists.txt"
+             (substitute* "testsuite/server/supernova/CMakeLists.txt"
                (("server_test.cpp")
                 "")
                (("perf_counter_test.cpp")
                 ""))
-             (delete-file "testsuite/supernova/server_test.cpp")
-             (delete-file "testsuite/supernova/perf_counter_test.cpp")
+             (delete-file "testsuite/server/supernova/server_test.cpp")
+             (delete-file "testsuite/server/supernova/perf_counter_test.cpp")
              (substitute* "testsuite/CMakeLists.txt"
                (("add_subdirectory\\(sclang\\)")
                 ""))
