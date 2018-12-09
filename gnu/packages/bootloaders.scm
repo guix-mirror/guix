@@ -317,6 +317,8 @@ menu to select one of the installed operating systems.")
       (home-page "https://www.syslinux.org")
       (synopsis "Lightweight Linux bootloader")
       (description "Syslinux is a lightweight Linux bootloader.")
+      ;; The Makefile specifically targets i386 and x86_64 using nasm.
+      (supported-systems '("i686-linux" "x86_64-linux"))
       (license (list license:gpl2+
                      license:bsd-3 ; gnu-efi/*
                      license:bsd-4 ; gnu-efi/inc/* gnu-efi/lib/*
