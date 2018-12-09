@@ -42,8 +42,8 @@
             user-partition?
             user-partition-name
             user-partition-type
-            user-partition-path
-            user-partition-disk-path
+            user-partition-file-name
+            user-partition-disk-file-name
             user-partition-crypt-label
             user-partition-crypt-password
             user-partition-fs-type
@@ -106,7 +106,7 @@
             no-root-mount-point?
 
             check-user-partitions
-            set-user-partitions-path
+            set-user-partitions-file-name
             format-user-partitions
             mount-user-partitions
             umount-user-partitions
@@ -129,9 +129,9 @@
                         (default #f))
   (type                 user-partition-type
                         (default 'normal)) ; 'normal | 'logical | 'extended
-  (path                 user-partition-path
+  (file-name            user-partition-file-name
                         (default #f))
-  (disk-path            user-partition-disk-path
+  (disk-file-name       user-partition-disk-file-name
                         (default #f))
   (crypt-label          user-partition-crypt-label
                         (default #f))
@@ -304,8 +304,8 @@ of <user-partition> record."
                 name))
      (type (or (partition-user-type partition)
                'normal))
-     (path (partition-get-path partition))
-     (disk-path (device-path device))
+     (file-name (partition-get-path partition))
+     (disk-file-name (device-path device))
      (fs-type (or (partition-filesystem-user-type partition)
                   'ext4))
      (mount-point (and (esp-partition? partition)
@@ -336,12 +336,12 @@ PARTED-OBJECT field equals PARTITION, return #f if not found."
 ;; Devices
 ;;
 
-(define (with-delay-device-in-use? path)
+(define (with-delay-device-in-use? file-name)
   "Call DEVICE-IN-USE? with a few retries, as the first re-read will often
 fail. See rereadpt function in wipefs.c of util-linux for an explanation."
   (let loop ((try 4))
     (usleep 250000)
-    (let ((in-use? (device-in-use? path)))
+    (let ((in-use? (device-in-use? file-name)))
       (if (and in-use? (> try 0))
           (loop (- try 1))
           in-use?))))
@@ -361,9 +361,9 @@ from (guix build syscalls) module, who will try to re-read the device's
 partition table to determine whether or not it is already used (like sfdisk
 from util-linux)."
   (remove (lambda (device)
-            (let ((path (device-path device)))
+            (let ((file-name (device-path device)))
               (or (device-is-busy? device)
-                  (with-delay-device-in-use? path))))
+                  (with-delay-device-in-use? file-name))))
           (devices)))
 
 
@@ -374,7 +374,7 @@ from util-linux)."
 (define* (device-description device #:optional disk)
   "Return a string describing the given DEVICE."
   (let* ((type (device-type device))
-         (path (device-path device))
+         (file-name (device-path device))
          (model (device-model device))
          (type-str (device-type->string type))
          (disk-type (if disk
@@ -389,7 +389,7 @@ from util-linux)."
      `(,@(if (string=? model "")
              `(,type-str)
              `(,model ,(string-append "(" type-str ")")))
-       ,path
+       ,file-name
        ,end
        ,@(if disk-type
              `(,(disk-type-name disk-type))
@@ -854,8 +854,8 @@ partition."
            (if new-partition
                (cons (user-partition
                       (inherit new-user-partition)
-                      (path (partition-get-path new-partition))
-                      (disk-path (device-path device))
+                      (file-name (partition-get-path new-partition))
+                      (disk-file-name (device-path device))
                       (parted-object new-partition))
                      (loop rest
                            (if (eq? type 'extended)
@@ -946,10 +946,10 @@ swap partition, a root partition and a home partition."
                         `(,start-partition)
                         '())
                   ,@(if encrypted?
-                     '()
-                     `(,(user-partition
-                         (fs-type 'swap)
-                         (size swap-size))))
+                        '()
+                        `(,(user-partition
+                            (fs-type 'swap)
+                            (size swap-size))))
                   ,(user-partition
                     (fs-type 'ext4)
                     (bootable? has-extended?)
@@ -1015,15 +1015,15 @@ otherwise."
         (raise
          (condition (&no-root-mount-point))))))
 
-(define (set-user-partitions-path user-partitions)
-  "Set the partition path of <user-partition> records in USER-PARTITIONS list
-and return the updated list."
+(define (set-user-partitions-file-name user-partitions)
+  "Set the partition file-name of <user-partition> records in USER-PARTITIONS
+list and return the updated list."
   (map (lambda (p)
          (let* ((partition (user-partition-parted-object p))
-                (path (partition-get-path partition)))
+                (file-name (partition-get-path partition)))
            (user-partition
             (inherit p)
-            (path path))))
+            (file-name file-name))))
        user-partitions))
 
 (define-syntax-rule (with-null-output-ports exp ...)
@@ -1035,17 +1035,17 @@ bit bucket."
         (lambda () exp ...)))))
 
 (define (create-ext4-file-system partition)
-  "Create an ext4 file-system for PARTITION path."
+  "Create an ext4 file-system for PARTITION file-name."
   (with-null-output-ports
    (invoke "mkfs.ext4" "-F" partition)))
 
 (define (create-fat32-file-system partition)
-  "Create an ext4 file-system for PARTITION path."
+  "Create an ext4 file-system for PARTITION file-name."
   (with-null-output-ports
    (invoke "mkfs.fat" "-F32" partition)))
 
 (define (create-swap-partition partition)
-  "Set up swap area on PARTITION path."
+  "Set up swap area on PARTITION file-name."
   (with-null-output-ports
    (invoke "mkswap" "-f" partition)))
 
@@ -1057,26 +1057,26 @@ bit bucket."
      (close port)
      (proc file))))
 
-(define (user-partition-upper-path user-partition)
-  "Return the path of the virtual block device corresponding to USER-PARTITION
-if it is encrypted, or the plain path otherwise."
+(define (user-partition-upper-file-name user-partition)
+  "Return the file-name of the virtual block device corresponding to
+USER-PARTITION if it is encrypted, or the plain file-name otherwise."
   (let ((crypt-label (user-partition-crypt-label user-partition))
-        (path (user-partition-path user-partition)))
+        (file-name (user-partition-file-name user-partition)))
     (if crypt-label
         (string-append "/dev/mapper/" crypt-label)
-        path)))
+        file-name)))
 
 (define (luks-format-and-open user-partition)
   "Format and open the encrypted partition pointed by USER-PARTITION."
-  (let* ((path (user-partition-path user-partition))
+  (let* ((file-name (user-partition-file-name user-partition))
          (label (user-partition-crypt-label user-partition))
          (password (user-partition-crypt-password user-partition)))
     (call-with-luks-key-file
      password
      (lambda (key-file)
-       (system* "cryptsetup" "-q" "luksFormat" path key-file)
+       (system* "cryptsetup" "-q" "luksFormat" file-name key-file)
        (system* "cryptsetup" "open" "--type" "luks"
-                "--key-file" key-file path label)))))
+                "--key-file" key-file file-name label)))))
 
 (define (luks-close user-partition)
   "Close the encrypted partition pointed by USER-PARTITION."
@@ -1092,7 +1092,7 @@ NEED-FORMATING? field set to #t."
              (user-partition-need-formating? user-partition))
             (type (user-partition-type user-partition))
             (crypt-label (user-partition-crypt-label user-partition))
-            (path (user-partition-upper-path user-partition))
+            (file-name (user-partition-upper-file-name user-partition))
             (fs-type (user-partition-fs-type user-partition)))
        (when crypt-label
          (luks-format-and-open user-partition))
@@ -1101,13 +1101,13 @@ NEED-FORMATING? field set to #t."
          ((ext4)
           (and need-formating?
                (not (eq? type 'extended))
-               (create-ext4-file-system path)))
+               (create-ext4-file-system file-name)))
          ((fat32)
           (and need-formating?
                (not (eq? type 'extended))
-               (create-fat32-file-system path)))
+               (create-fat32-file-system file-name)))
          ((swap)
-          (create-swap-partition path))
+          (create-swap-partition file-name))
          (else
           ;; TODO: Add support for other file-system types.
           #t))))
@@ -1139,9 +1139,10 @@ respective mount-points."
                         (user-partition-crypt-label user-partition))
                        (mount-type
                         (user-fs-type->mount-type fs-type))
-                       (path (user-partition-upper-path user-partition)))
+                       (file-name
+                        (user-partition-upper-file-name user-partition)))
                   (mkdir-p target)
-                  (mount path target mount-type)))
+                  (mount file-name target mount-type)))
               sorted-partitions)))
 
 (define (umount-user-partitions user-partitions)
@@ -1165,20 +1166,20 @@ respective mount-points."
   "Return the subset of <user-partition> records in USER-PARTITIONS list with
 the FS-TYPE field set to 'swap, return the empty list if none found."
   (filter (lambda (user-partition)
-          (let ((fs-type (user-partition-fs-type user-partition)))
-            (eq? fs-type 'swap)))
-        user-partitions))
+            (let ((fs-type (user-partition-fs-type user-partition)))
+              (eq? fs-type 'swap)))
+          user-partitions))
 
 (define (start-swapping user-partitions)
   "Start swaping on <user-partition> records with FS-TYPE equal to 'swap."
   (let* ((swap-user-partitions (find-swap-user-partitions user-partitions))
-         (swap-devices (map user-partition-path swap-user-partitions)))
+         (swap-devices (map user-partition-file-name swap-user-partitions)))
     (for-each swapon swap-devices)))
 
 (define (stop-swapping user-partitions)
   "Stop swaping on <user-partition> records with FS-TYPE equal to 'swap."
   (let* ((swap-user-partitions (find-swap-user-partitions user-partitions))
-         (swap-devices (map user-partition-path swap-user-partitions)))
+         (swap-devices (map user-partition-file-name swap-user-partitions)))
     (for-each swapoff swap-devices)))
 
 (define-syntax-rule (with-mounted-partitions user-partitions exp ...)
@@ -1201,15 +1202,15 @@ the FS-TYPE field set to 'swap, return the empty list if none found."
          (fs-type (user-partition-fs-type user-partition))
          (crypt-label (user-partition-crypt-label user-partition))
          (mount-type (user-fs-type->mount-type fs-type))
-         (path (user-partition-path user-partition))
-         (upper-path (user-partition-upper-path user-partition))
+         (file-name (user-partition-file-name user-partition))
+         (upper-file-name (user-partition-upper-file-name user-partition))
          ;; Only compute uuid if partition is not encrypted.
          (uuid (or crypt-label
-                   (uuid->string (read-partition-uuid path) fs-type))))
+                   (uuid->string (read-partition-uuid file-name) fs-type))))
     `(file-system
        (mount-point ,mount-point)
        (device ,@(if crypt-label
-                     `(,upper-path)
+                     `(,upper-file-name)
                      `((uuid ,uuid (quote ,fs-type)))))
        (type ,mount-type)
        ,@(if crypt-label
@@ -1231,10 +1232,10 @@ list of <file-system> records."
   "Convert the given USER-PARTITION record into a MAPPED-DEVICE record
 from (gnu system mapped-devices) and return it."
   (let ((label (user-partition-crypt-label user-partition))
-        (path (user-partition-path user-partition)))
+        (file-name (user-partition-file-name user-partition)))
     `(mapped-device
       (source (uuid ,(uuid->string
-                      (read-luks-partition-uuid path)
+                      (read-luks-partition-uuid file-name)
                       'luks)))
       (target ,label)
       (type luks-device-mapping))))
@@ -1248,7 +1249,7 @@ from (gnu system mapped-devices) and return it."
                     (and mount-point
                          (string=? mount-point "/"))))
                 user-partitions))
-         (root-partition-disk (user-partition-disk-path root-partition)))
+         (root-partition-disk (user-partition-disk-file-name root-partition)))
     `((bootloader-configuration
        ,@(if (efi-installation?)
              `((bootloader grub-efi-bootloader)
@@ -1259,7 +1260,7 @@ from (gnu system mapped-devices) and return it."
 (define (user-partitions->configuration user-partitions)
   "Return the configuration field for USER-PARTITIONS."
   (let* ((swap-user-partitions (find-swap-user-partitions user-partitions))
-         (swap-devices (map user-partition-path swap-user-partitions))
+         (swap-devices (map user-partition-file-name swap-user-partitions))
          (encrypted-partitions
           (filter user-partition-crypt-label user-partitions)))
     `(,@(if (null? swap-devices)
@@ -1296,13 +1297,13 @@ the devices not to be used before returning."
   ;; them to stop returning EBUSY to BLKRRPART ioctl seems to be enough. The
   ;; same kind of issue is described here:
   ;; https://mail.gnome.org/archives/commits-list/2013-March/msg18423.html.
-  (let ((device-paths (map device-path devices)))
+  (let ((device-file-names (map device-path devices)))
     (for-each force-device-sync devices)
     (free-all-devices)
-    (for-each (lambda (path)
-                (let ((in-use? (with-delay-device-in-use? path)))
+    (for-each (lambda (file-name)
+                (let ((in-use? (with-delay-device-in-use? file-name)))
                   (and in-use?
                        (error
                         (format #f (G_ "Device ~a is still in use.")
-                                path)))))
-              device-paths)))
+                                file-name)))))
+              device-file-names)))

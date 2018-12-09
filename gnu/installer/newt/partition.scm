@@ -143,12 +143,12 @@ an inform the user with an appropriate error-page and return #f."
 USER-PARTITIONS list. Return this list with password fields filled-in."
   (map (lambda (user-part)
          (let* ((crypt-label (user-partition-crypt-label user-part))
-                (path (user-partition-path user-part))
+                (file-name (user-partition-file-name user-part))
                 (password-page
                  (lambda ()
                    (run-input-page
                     (format #f (G_ "Please enter the password for the \
-encryption of partition ~a (label: ~a).") path crypt-label)
+encryption of partition ~a (label: ~a).") file-name crypt-label)
                     (G_ "Password required")))))
            (if crypt-label
                (user-partition
@@ -378,8 +378,8 @@ partition. Leave this field empty if you don't want to set a mounting point.")
                  (user-partition
                   (inherit new-user-partition)
                   (need-formating? #t)
-                  (path (partition-get-path new-partition))
-                  (disk-path (device-path device))
+                  (file-name (partition-get-path new-partition))
+                  (disk-file-name (device-path device))
                   (parted-object new-partition))))
           (and (apply-user-partition-changes new-user-partition)
                new-user-partition))))
@@ -389,7 +389,7 @@ partition. Leave this field empty if you don't want to set a mounting point.")
                      target-user-partition))
          (disk (partition-disk partition))
          (device (disk-device disk))
-         (path (device-path device))
+         (file-name (device-path device))
          (number-str (partition-print-number partition))
          (type (user-partition-type target-user-partition))
          (type-str (symbol->string type))
@@ -404,7 +404,7 @@ partition. Leave this field empty if you don't want to set a mounting point.")
            #:info-text
            (if creation?
                (G_ (format #f "Creating ~a partition starting at ~a of ~a."
-                           type-str start path))
+                           type-str start file-name))
                (G_ (format #f "You are currently editing partition ~a."
                            number-str)))
            #:title (if creation?
@@ -589,10 +589,10 @@ edit it."
       (cond
        ((disk? item)
         (let* ((device (disk-device item))
-               (path (device-path device))
+               (file-name (device-path device))
                (info-text
                 (format #f (G_ "Are you sure you want to delete everything on disk ~a?")
-                        path))
+                        file-name))
                (result (choice-window (G_ "Delete disk")
                                       (G_ "Ok")
                                       (G_ "Exit")
@@ -699,7 +699,7 @@ by pressing the Exit button.~%~%")))
   (define (run-page devices)
     (let* ((items
             '((entire . "Guided - using the entire disk")
-              (entire-crypted . "Guided - using the entire disk with encryption")
+              (entire-encrypted . "Guided - using the entire disk with encryption")
               (manual . "Manual")))
            (result (run-listbox-selection-page
                     #:info-text (G_ "Please select a partitioning method.")
@@ -711,7 +711,7 @@ by pressing the Exit button.~%~%")))
            (method (car result)))
       (cond
        ((or (eq? method 'entire)
-            (eq? method 'entire-crypted))
+            (eq? method 'entire-encrypted))
          (let* ((device (run-device-page devices))
                 (disk-type (disk-probe device))
                 (disk (if disk-type
