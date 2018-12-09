@@ -20,6 +20,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix git-download)
+  #:use-module (guix download)
   #:use-module (guix build-system go)
   #:use-module (gnu packages golang))
 
@@ -209,4 +210,30 @@ powerful and simple.")
     (synopsis "Golang subtool for the @command{gx} package manager")
     (description "A subtool for the @command{gx} package manager for packages
 written in Go.")
+    (license license:expat)))
+
+(define-public go-ipfs
+  (package
+    (name "go-ipfs")
+    (version "0.4.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://dist.ipfs.io/go-ipfs/v" version
+             "/go-ipfs-source.tar.gz"))
+       (sha256
+        (base32
+         "19hfgbyn5sr1bw0cwm3gsjz0w3b3vh3mmkax1906raah30lavj1x"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:unpack-path "github.com/ipfs/go-ipfs"
+       #:import-path "github.com/ipfs/go-ipfs/cmd/ipfs"))
+    (home-page "https://ipfs.io")
+    (synopsis "Go implementation of IPFS, a peer-to-peer hypermedia protocol")
+    (description "IPFS is a global, versioned, peer-to-peer filesystem.  It
+combines good ideas from Git, BitTorrent, Kademlia, SFS, and the Web.  It is
+like a single bittorrent swarm, exchanging git objects.  IPFS provides an
+interface as simple as the HTTP web, but with permanence built in.  You can
+also mount the world at @code{/ipfs}.")
     (license license:expat)))
