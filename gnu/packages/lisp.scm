@@ -84,8 +84,8 @@
              ,lisp))))
 
 (define-public gcl
-  (let ((commit "5956140b1083e2302a59d7ce2054b0b7c2cbb417")
-        (revision "1")) ;Guix package revision
+  (let ((commit "d3335e2b3deb63f930eb0328e9b05377744c9512")
+        (revision "2")) ;Guix package revision
     (package
       (name "gcl")
       (version (string-append "2.6.12-" revision "."
@@ -98,7 +98,7 @@
                (commit commit)))
          (file-name (string-append "gcl-" version "-checkout"))
          (sha256
-          (base32 "0mwclf2879mh3d9xqkqhghf58lwy7srsnsq9x0f1cc6j302sy4hb"))))
+          (base32 "05v86lhvsby05nzvcd3c4k0wljvgdgd0i6arzd2fx1yd67dl6fgj"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f  ; The build system seems not to be thread safe.
