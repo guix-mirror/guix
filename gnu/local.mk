@@ -772,7 +772,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gnucash-price-quotes-perl.patch		\
   %D%/packages/patches/gnucash-disable-failing-tests.patch	\
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
-  %D%/packages/patches/gnutls-skip-pkgconfig-test.patch		\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\

@@ -2556,7 +2556,8 @@ libxml to ease remote use of the RESTful API.")
                            ""               ;URI of subject
                            "127.0.0.1"      ;IP address of subject
                            ""               ;signing?
-                           ""               ;encryption?
+                           ""               ;encryption (RSA)?
+                           ""               ;data encryption?
                            ""               ;sign OCSP requests?
                            ""               ;sign code?
                            ""               ;time stamping?
