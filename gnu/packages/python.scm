@@ -13332,6 +13332,28 @@ such as figshare or Zenodo.")
 (define-public python2-semver
   (package-with-python2 python-semver))
 
+(define-public python-pyro4
+  (package
+    (name "python-pyro4")
+    (version "4.74")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Pyro4" version))
+       (sha256
+        (base32
+         "0pzp7c6q3vvkxq0wy9lr6wd5wky40sajz69g697i5rb2q497pvc9"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-serpent" ,python-serpent)))
+    (home-page "https://pyro4.readthedocs.io")
+    (synopsis "Distributed object middleware for Python")
+    (description
+     "Pyro enables you to build applications in which objects can talk to each
+other over the network.  You can just use normal Python method calls to call
+objects on other machines, also known as remote procedure calls (RPC).")
+    (license license:expat)))
+
 (define-public python2-pyro
   (package
     (name "python2-pyro")
