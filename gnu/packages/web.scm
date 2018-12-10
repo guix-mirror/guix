@@ -79,6 +79,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -6696,7 +6697,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
 (define-public nghttp2
   (package
     (name "nghttp2")
-    (version "1.32.0")
+    (version "1.35.1")
     (source
      (origin
        (method url-fetch)
@@ -6705,12 +6706,13 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0zbgp8f80h2zlfn8cd2ldrmgl81jzcdh1141n71aqmfckzaqj2kh"))))
+         "0fi6qg2w82636wixwkqy7bclpgxslmvg82r431hs8h6aqc4mnzwv"))))
     (build-system gnu-build-system)
     (outputs (list "out"
                    "lib"))              ; only libnghttp2
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gcc" ,gcc-7)                   ; 1.35.0 requires GCC6 or later
 
        ;; Required by tests.
        ("cunit" ,cunit)
@@ -6742,6 +6744,9 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                (("@prefix@")
                 (assoc-ref outputs "lib")))
              #t))
+         (add-before 'configure 'work-around-bug-30756
+           (lambda _
+             (for-each unsetenv '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH")) #t))
          (add-before 'check 'set-timezone-directory
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
