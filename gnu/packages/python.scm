@@ -8337,23 +8337,26 @@ applications.")
 (define-public python-kombu
   (package
     (name "python-kombu")
-    (version "3.0.37")
+    (version "4.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "kombu" version))
        (sha256
         (base32
-         "0l16chb314gpq2v7fh94a22c30lcv6w3ylmhsa60bldlcq6a0r70"))))
+         "15k8f7mzqr049sg9vi48m19vjykviafk3f0p5xzgw9by0x0kyxjj"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)))
+       ("python-case" ,python-case)
+       ("python-pyro4" ,python-pyro4)
+       ("python-pytest-sugar" ,python-pytest-sugar)
+       ("python-pytz" ,python-pytz)))
     (propagated-inputs
      `(("python-anyjson" ,python-anyjson)
        ("python-amqp" ,python-amqp)
        ("python-redis" ,python-redis)))
-    (home-page "http://kombu.readthedocs.org")
+    (home-page "https://kombu.readthedocs.io")
     (synopsis "Message passing library for Python")
     (description "The aim of Kombu is to make messaging in Python as easy as
 possible by providing an idiomatic high-level interface for the AMQ protocol,
