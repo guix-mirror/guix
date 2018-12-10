@@ -1071,6 +1071,32 @@ for additional processing.")
 (define-public python2-capturer
   (package-with-python2 python-capturer))
 
+(define-public python-case
+  (package
+    (name "python-case")
+    (version "1.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "case" version))
+       (sha256
+        (base32
+         "1cagg06vfph864s6l5jb0zqliwxh647bki8j6lf4a4qrv40jnhs8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-six" ,python-six)
+       ("python-unittest2" ,python-unittest2)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)))
+    (home-page "https://github.com/celery/case")
+    (synopsis "Unittest utilities and convenience methods")
+    (description
+     "The @code{case} package provides utilities on top of unittest, including
+some helpful Python 2 compatibility convenience methods.")
+    (license license:bsd-3)))
+
 (define-public python-verboselogs
   (package
     (name "python-verboselogs")
