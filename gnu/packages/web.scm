@@ -510,15 +510,15 @@ libraries for working with JNLP applets.")
 (define-public jansson
   (package
     (name "jansson")
-    (version "2.11")
+    (version "2.12")
     (source (origin
              (method url-fetch)
              (uri
               (string-append "http://www.digip.org/jansson/releases/jansson-"
-                             version ".tar.gz"))
+                             version ".tar.bz2"))
              (sha256
               (base32
-               "1x5jllzzqamq6kahx9d9a5mrarm9m3f30vfxvcqpi6p4mcnz91bf"))))
+               "1lp1mv8pjp5yziws66cy0dhpcam4bbjqhffk13v4vgdybp674pb4"))))
     (build-system gnu-build-system)
     (home-page "http://www.digip.org/jansson/")
     (synopsis "JSON C library")
