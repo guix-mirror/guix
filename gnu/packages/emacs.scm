@@ -12729,3 +12729,29 @@ Emacs.")
 rooms.  It also provides an API which allows Emacs to seamlessly create
 RPC channels with users and other software.")
       (license license:gpl3+))))
+
+(define-public emacs-sesman
+  (package
+    (name "emacs-sesman")
+    (version "0.3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vspinu/sesman.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0r32f8ma9ddczxrrdz0nadp14j3zmk10q1ch02gb82synkx3xdra"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")))
+    (home-page "https://github.com/vspinu/sesman")
+    (synopsis "Session manager for Emacs based IDEs")
+    (description "Sesman provides facilities for session management and
+interactive session association with the current contexts (project, directory,
+buffers).  While sesman can be used to manage arbitrary sessions, it primary
+targets the Emacs based IDEs (CIDER, ESS, Geiser, Robe, SLIME etc.)")
+    (license license:gpl3+)))
