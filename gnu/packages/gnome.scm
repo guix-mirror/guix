@@ -360,12 +360,6 @@ formats like PNG, SVG, PDF and EPS.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'use-empty-ssl-cert-file
-           (lambda _
-             ;; The ca-certificates.crt is not available in the build
-             ;; environment.
-             (setenv "SSL_CERT_FILE" "/dev/null")
-             #t))
          (add-before 'check 'disable-failing-tests
            (lambda _
              ;; The PicasaWeb API tests fail with gnome-online-accounts@3.24.2.
@@ -2396,7 +2390,7 @@ library.")
 (define-public glib-networking
   (package
     (name "glib-networking")
-    (version "2.54.1")
+    (version "2.58.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glib-networking/"
@@ -2404,29 +2398,17 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0bq16m9nh3gcz9x2fvygr0iwxd2pxcbrm3lj3kihsnh1afv8g9za"))
-              (patches
-               (search-patches "glib-networking-ssl-cert-file.patch"))))
-    (build-system gnu-build-system)
+                "0s006gs9nsq6mg31spqha1jffzmp6qjh10y27h0fxf1iw1ah5ymx"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
-       '("--with-ca-certificates=/etc/ssl/certs/ca-certificates.crt")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-giomoduledir
-           ;; Install GIO modules into $out/lib/gio/modules.
-           (lambda _
-             (substitute* "configure"
-               (("GIO_MODULE_DIR=.*")
-                (string-append "GIO_MODULE_DIR=" %output
-                               "/lib/gio/modules\n")))
-             #t))
-         (add-before 'check 'use-empty-ssl-cert-file
-           (lambda _
-             ;; The ca-certificates.crt is not available in the build
-             ;; environment.
-             (setenv "SSL_CERT_FILE" "/dev/null")
-             #t)))))
+     `(#:configure-flags '("-Dlibproxy_support=false")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-TLSv1.3
+                    (lambda _
+                      ;; XXX: One test fails when TLS 1.3 is enabled, fixed in 2.60.0:
+                      ;; <https://gitlab.com/gnutls/gnutls/issues/615>.
+                      (setenv "G_TLS_GNUTLS_PRIORITY" "NORMAL:-VERS-TLS1.3")
+                      #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
@@ -2516,9 +2498,6 @@ libxml to ease remote use of the RESTful API.")
              ;; The 'check-local' target runs 'env LANG=C sort -u',
              ;; unset 'LC_ALL' to make 'LANG' working.
              (unsetenv "LC_ALL")
-             ;; The ca-certificates.crt is not available in the build
-             ;; environment.
-             (setenv "SSL_CERT_FILE" "/dev/null")
              ;; HTTPD in Guix uses mod_event and does not build prefork.
              (substitute* "tests/httpd.conf"
                (("^LoadModule mpm_prefork_module.*$") "\n"))

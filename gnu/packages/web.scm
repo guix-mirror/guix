@@ -4243,15 +4243,6 @@ you'd expect.")
         (base32
          "163py4klka423x7li2b685gmg3a6hjf074mlff2ajhmi3l0lm8x6"))))
     (build-system glib-or-gtk-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'use-empty-ssl-cert-file
-           (lambda _
-             ;; Search for ca-certificates.crt files
-             ;; during the check phase.
-             (setenv "SSL_CERT_FILE" "/dev/null")
-             #t)))))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ;; For check phase.
