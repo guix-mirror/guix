@@ -908,6 +908,29 @@ version identifier.")
 (define-public python2-semantic-version
   (package-with-python2 python-semantic-version))
 
+(define-public python-serpent
+  (package
+    (name "python-serpent")
+    (version "1.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "serpent" version))
+       (sha256
+        (base32
+         "04p9dsrm5pv8vhk3flvih55kgvlzpi38hlaykdiakddmgwqw93bg"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/irmen/Serpent")
+    (synopsis "Serializer for literal Python expressions")
+    (description
+     "Serpent provides ast.literal_eval() compatible object tree
+serialization.  It serializes an object tree into bytes (utf-8 encoded string)
+that can be decoded and then passed as-is to ast.literal_eval() to rebuild it
+as the original object tree.  As such it is safe to send serpent data to other
+machines over the network for instance (because only safe literals are
+encoded).")
+    (license license:expat)))
+
 (define-public python-setuptools
   (package
     (name "python-setuptools")
