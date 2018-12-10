@@ -5206,26 +5206,28 @@ target will call @code{compile} on it.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "0.15.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/clojure-emacs/cider/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1j5hlmi14ypszv1f9nvq0jjlz7i742flg0ny3055l7i4x089xx6g"))))
+    (version "0.18.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clojure-emacs/cider.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1m9kc88vga3q5d731qnpngnsa0n57pf21k3hll20rw8rggrx4vdn"))))
     (build-system emacs-build-system)
     (arguments
      '(#:exclude                        ; Don't exclude 'cider-test.el'.
        '("^\\.dir-locals\\.el$" "^test/")))
     (propagated-inputs
      `(("emacs-clojure-mode" ,emacs-clojure-mode)
+       ("emacs-sesman" ,emacs-sesman)
        ("emacs-spinner" ,emacs-spinner)
        ("emacs-pkg-info" ,emacs-pkg-info)
        ("emacs-queue" ,emacs-queue)))
-    (home-page "https://cider.readthedocs.org/")
+    (home-page "https://cider.readthedocs.io/")
     (synopsis "Clojure development environment for Emacs")
     (description
      "CIDER (Clojure Interactive Development Environment that Rocks) aims to
