@@ -8269,18 +8269,21 @@ and provides a uniform API regardless of which JSON implementation is used.")
 (define-public python-amqp
   (package
     (name "python-amqp")
-    (version "1.4.9")
+    (version "2.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "amqp" version))
        (sha256
         (base32
-         "06n6q0kxhjnbfz3vn8x9yz09lwmn1xi9d6wxp31h5jbks0b4vsid"))))
+         "1sv600dgqwpimr6i1g59y9hpn50mc236gdqkr7zin13kvlpx0g87"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)
+     `(("python-case" ,python-case)
+       ("python-pytest-sugar" ,python-pytest-sugar)
        ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-vine" ,python-vine)))
     (home-page "https://github.com/celery/py-amqp")
     (synopsis
      "Low-level AMQP client for Python (fork of amqplib)")
