@@ -2317,6 +2317,30 @@ object.")
 (define-public python2-pyyaml
   (package-with-python2 python-pyyaml))
 
+(define-public python-vine
+  (package
+    (name "python-vine")
+    (version "1.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "vine" version))
+       (sha256
+        (base32
+         "0wkskb2hb494v9gixqnf4bl972p4ibcmxdykzpwjlfa5picns4aj"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-case" ,python-case)))
+    (home-page "https://github.com/celery/vine")
+    (synopsis "Promises for Python")
+    (description
+     "@code{vine} provides a special implementation of promises in that it can
+be used both for \"promise of a value\" and lazy evaluation.  The biggest
+upside for this is that everything in a promise can also be a promise,
+e.g. filters, callbacks and errbacks can all be promises.")
+    (license license:bsd-3)))
+
 (define-public python-virtualenv
   (package
     (name "python-virtualenv")
