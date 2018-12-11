@@ -91,7 +91,7 @@ C or C++ programs, though that is not its primary goal.")
 (define-public libatomic-ops
   (package
     (name "libatomic-ops")
-    (version "7.6.6")
+    (version "7.6.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -99,7 +99,7 @@ C or C++ programs, though that is not its primary goal.")
                     version "/libatomic_ops-" version ".tar.gz"))
               (sha256
                (base32
-                "0x7071z707msvyrv9dmgahd1sghbkw8fpbagvcag6xs8yp2spzlr"))))
+                "0rgni7056gnbn105lln629gwd6s51779yb5ds9s7wxl1vyg2fshx"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (synopsis "Accessing hardware atomic memory update operations")
