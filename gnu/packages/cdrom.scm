@@ -11,6 +11,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
 
 (define-module (gnu packages cdrom)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:select (lgpl2.1+ gpl2 gpl2+ gpl3+ cddl1.0))
   #:use-module (guix build-system cmake)
@@ -291,17 +293,26 @@ images.")
      `(#:tests? #f ; No tests.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-glibc-compatability
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; We use sed --in-place because substitute* cannot handle the
+             ;; character encoding used by growisofs.c.
+             (invoke "sed" "-i" "-e"
+                     (string-append
+                       "s,<sys/stat.h>,"
+                       "<sys/stat.h>\\\n#include <sys/sysmacros.h>,")
+                     "growisofs.c")))
          (replace 'configure
            (lambda _ (setenv "prefix" (assoc-ref %outputs "out")) #t))
          (add-before 'build 'embed-mkisofs
-           (lambda*  (#:key inputs #:allow-other-keys)
+           (lambda* (#:key inputs #:allow-other-keys)
              ;; We use sed --in-place because substitute* cannot handle the
              ;; character encoding used by growisofs.c.
-             (zero? (system* "sed" "-i" "-e"
-                             (string-append
-                              "s,\"mkisofs\","
-                              "\"" (which "mkisofs") "\",")
-                             "growisofs.c")))))))
+             (invoke "sed" "-i" "-e"
+                     (string-append
+                       "s,\"mkisofs\","
+                       "\"" (which "mkisofs") "\",")
+                     "growisofs.c"))))))
     (home-page "http://fy.chalmers.se/~appro/linux/DVD+RW/")
     (synopsis "DVD and Blu-ray Disc burning tools")
     (description "dvd+rw-tools, mostly known for its command
@@ -421,14 +432,14 @@ graphical interface.")
     (name "libcue")
     (version "2.2.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/lipnitsk/libcue/archive/v"
-                   version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/lipnitsk/libcue.git")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "000j5xqp7cc7njwlixr9byahz9kn8pcfdgm76afwv4p8nbmw6yzj"))))
+               "1iqw4n01rv2jyk9lksagyxj8ml0kcfwk67n79zy1r6zv1xfp5ywm"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))

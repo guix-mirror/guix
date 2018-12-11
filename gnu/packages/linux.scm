@@ -30,6 +30,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
+;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -399,10 +400,10 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.18.15")
-(define %linux-libre-hash "0v6xs85qn1iy2dj3m6s3cfnhbwb1mjy21d9lagjni8dg3jic26hf")
+(define %linux-libre-version "4.19.8")
+(define %linux-libre-hash "1rmgf3sbcyb47s3sagac7zrrpznq0vlcbzjzlzir95biy7lbswb3")
 
-(define %linux-libre-4.18-patches
+(define %linux-libre-4.19-patches
   (list %boot-logo-patch
         (origin
           (method url-fetch)
@@ -411,27 +412,19 @@ It has been modified to remove all non-free binary blobs.")
                 "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
                 "/debian/patches/bugfix/arm/"
                 "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
-          (file-name "linux-libre-4.18-arm-export-__sync_icache_dcache.patch")
+          (file-name "linux-libre-4.19-arm-export-__sync_icache_dcache.patch")
           (sha256
-           (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))
-        (origin
-          (method url-fetch)
-          (uri (string-append
-                "https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git"
-                "/patch/?id=c5157101e7793b42a56e07368c7f4cb73fb58008"))
-          (file-name "linux-libre-4.18-arm64-export-__sync_icache_dcache.patch")
-          (sha256
-           (base32 "0q13arsi8al3l3yq6d76z4h8n45wlpkjyxlrgn1sqbx5xjksycyz")))))
+           (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))))
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     %linux-compatible-systems
-                    #:patches %linux-libre-4.18-patches
+                    #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.77")
-(define %linux-libre-4.14-hash "18y81rga2lhsk7bjckglxz52pvnzf103ar0z2zj611g37wyf83r5")
+(define %linux-libre-4.14-version "4.14.87")
+(define %linux-libre-4.14-hash "1013h3qbsq76vlhrbl3gci25jbwydzm7k0bg08fbq42qrhjq92ak")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -440,14 +433,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.134"
-                    "0f5qif27k0mhc57d98arbfkq7zlvg0ra2gz6g5fasblyjz3j7w7h"
+  (make-linux-libre "4.9.144"
+                    "1jckikf1j294gr3sf43bfy3h34q3yqbqgqbj9l0px427h3n2vgkk"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.161"
-                    "1q6bsndpjgw72mybhl5l8vrxs4mimg6821bjgi1pjkxbc7nd921b"
+  (make-linux-libre "4.4.166"
+                    "1pb6hk141hzf6yf2423h0jfv9bjq09cynsp1xbm12mxayn637xmm"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -455,7 +448,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-4.18-patches
+                    #:patches %linux-libre-4.19-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
@@ -470,7 +463,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-4.18-patches
+                    #:patches %linux-libre-4.19-patches
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
 
@@ -944,7 +937,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.24")
+    (version "4.25")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
@@ -952,7 +945,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "0d061cdzk6a1822ds4wpqxg10ny27mi4i9zjmnsbz8nz3vy5jkhz"))))
+               "00f7zagfh3np5gwi0z7hi7zjd7s5nixcaq7z78n87dvhakkgi1fn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1230,7 +1223,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.18.0")
+    (version "4.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1238,7 +1231,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0ida5njr9nacg6ym3rjvl3cc9czw0hn4akhzbqf8f4zmjl6cgrm9"))))
+                "114rlb3bvrf7q6yr03mn1rj6gl7mrg0psvm2dx0qb2kxyjhmrv6r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -1258,7 +1251,8 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     (lambda _
                       ;; Don't attempt to create /var/lib/arpd.
                       (substitute* "Makefile"
-                        (("^.*ARPDDIR.*$") "")))))))
+                        (("^.*ARPDDIR.*$") ""))
+                      #t)))))
     (inputs
      `(("iptables" ,iptables)
        ("db4" ,bdb)))
@@ -1975,20 +1969,15 @@ for systems using the Linux kernel.  This includes commands such as
     (name "inotify-tools")
     (version "3.20.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rvoicilas/inotify-tools/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rvoicilas/inotify-tools.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1b22c8x4pjnz3abx4dikpbj43zprjw79pdkd4xw111dsxlfwqcx4"))))
+                "14dci1i4mhsd5sa33k8h3ayphk19kizynh5ql9ryibdpmcanfiyq"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
-                    (lambda _
-                      (invoke "autoreconf" "-vif"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -2923,7 +2912,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
 (define-public mdadm
   (package
     (name "mdadm")
-    (version "4.0")
+    (version "4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2931,7 +2920,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1ad3mma641946wn5lsllwf0lifw9lps34fv1nnkhyfpd9krffshx"))))
+                "0jjgjgqijpdp7ijh8slzzjjw690kydb1jjadf0x5ilq85628hxmb"))))
     (build-system gnu-build-system)
     (inputs
      `(("udev" ,eudev)))
@@ -3199,7 +3188,7 @@ is flexible, efficient and uses a modular implementation.")
 (define-public fuse-exfat
   (package
     (name "fuse-exfat")
-    (version "1.2.8")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3207,7 +3196,7 @@ is flexible, efficient and uses a modular implementation.")
                     version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jwnxw0bg9v5ij8xvbg4xpjr50nykq8a1lmc2xkblz204rq7wd8z"))))
+                "1lz00q8g4590mrdqmf13ba1s9zrqq645ymgm5p9y99ad0qv22r87"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -3409,7 +3398,7 @@ disks and SD cards.  This package provides the userland utilities.")
   (package
     (inherit f2fs-tools-1.7)
     (name "f2fs-tools")
-    (version "1.10.0")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3417,7 +3406,7 @@ disks and SD cards.  This package provides the userland utilities.")
                     "/f2fs-tools.git/snapshot/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "05ikaim0qq3dx9x3sp43ralwz43r3b0viv62n99kabp0vf3b0hg8"))))
+                "1qvr3hcic1vzfmyl7c0gnjxfsw8zjaadm66y337h49chv9yaq5mr"))))
     (inputs
      `(("libuuid" ,util-linux)))))
 
@@ -3551,7 +3540,8 @@ from userspace.")
              (let* ((out (assoc-ref outputs "out"))
                     (sbin (string-append out "/sbin")))
                (symlink "mount.ntfs-3g"
-                        (string-append sbin "/mount.ntfs"))))))))
+                        (string-append sbin "/mount.ntfs")))
+             #t)))))
     (home-page "https://www.tuxera.com/community/open-source-ntfs-3g/")
     (synopsis "Read-write access to NTFS file systems")
     (description
@@ -3708,7 +3698,8 @@ from that to the system kernel's @file{/dev/random} machinery.")
      '(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'enter-subdirectory
                     (lambda _
-                      (chdir "tools/power/cpupower")))
+                      (chdir "tools/power/cpupower")
+                      #t))
                   (delete 'configure)
                   (add-before 'build 'fix-makefiles
                     (lambda _
@@ -3716,7 +3707,8 @@ from that to the system kernel's @file{/dev/random} machinery.")
                         (("/usr/") "/")
                         (("/bin/(install|pwd)" _ command) command))
                       (substitute* "bench/Makefile"
-                        (("\\$\\(CC\\) -o") "$(CC) $(LDFLAGS) -o")))))
+                        (("\\$\\(CC\\) -o") "$(CC) $(LDFLAGS) -o"))
+                      #t)))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
                             (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")
@@ -3956,7 +3948,7 @@ are exceeded.")
 (define-public mtd-utils
   (package
     (name "mtd-utils")
-    (version "1.5.2")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3964,18 +3956,18 @@ are exceeded.")
                     "mtd-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "007lhsd8yb34l899r4m37whhzdw815cz4fnjbpnblfha524p7dax"))))
+                "1f30jszknc5v6ykmil8ajxgksmcg54q3rsp84jsancp9x0dycggv"))))
+    (arguments
+     '(#:configure-flags '("--enable-unit-tests")))
+    (native-inputs
+     `(("cmocka" ,cmocka)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("acl" ,acl)
+     `(("acl" ,acl) ; for XATTR
        ("libuuid" ,util-linux)
        ("lzo" ,lzo)
        ("zlib" ,zlib)))
     (build-system gnu-build-system)
-    (arguments
-     `(#:test-target "tests"
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
     (synopsis "MTD Flash Storage Utilities")
     (description "This package provides utilities for testing, partitioning, etc
 of flash storage.")
@@ -4028,9 +4020,11 @@ developers.")
                   ;; getver.sh uses ‘git --describe’, isn't worth an extra git
                   ;; dependency, and doesn't even work on release(!) tarballs.
                   (add-after 'unpack 'report-correct-version
-                    (lambda _ (substitute* "getver.sh"
-                                (("ver=unknown")
-                                 (string-append "ver=" ,version)))))
+                    (lambda _
+                      (substitute* "getver.sh"
+                        (("ver=unknown")
+                         (string-append "ver=" ,version)))
+                      #t))
                   (delete 'configure))  ; no configure script
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
@@ -4055,7 +4049,7 @@ under OpenGL graphics workloads.")
 (define-public efivar
   (package
     (name "efivar")
-    (version "35")
+    (version "37")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rhboot/" name
@@ -4063,7 +4057,7 @@ under OpenGL graphics workloads.")
                                   "-" version ".tar.bz2"))
               (sha256
                (base32
-                "153k2ifyl4giz5fkryxhz8z621diqjy7v25hfga4z94rs32ks0qy"))))
+                "17vvfivhsrszh7q39b6npjsrhrhsjf1cmmcpp3xrh6wh7ywzwrrw"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Tests require a UEFI system and is not detected in the chroot.
@@ -4167,30 +4161,21 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.1.2")
+    (version "1.2")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/haikarainen/light")
-                    (commit version)))
+              (method url-fetch)
+              (uri (string-append
+                     "https://github.com/haikarainen/light/archive/v"
+                     version ".tar.gz"))
               (sha256
                (base32
-                "0c934gxav9cgdf94li6dp0rfqmpday9d33vdn9xb2mfp4war9n4w"))))
+                "1gfvsw7gh5pis733l7j54vzp272pvjyzbg8a0pvapfmg0s7mip97"))
+              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (add-after 'unpack 'patch-makefile
-           (lambda _
-             (substitute* "Makefile" (("chown") "#"))
-             #t)))))
     (native-inputs
-     `(("help2man" ,help2man)))
-    (home-page "https://haikarainen.github.io/light")
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (home-page "https://haikarainen.github.io/light/")
     (synopsis "GNU/Linux application to control backlights")
     (description
      "Light is a program to send commands to screen backlight controllers
@@ -4266,8 +4251,7 @@ Light is the successor of lightscript.")
              #t))
          (replace 'install
            (lambda _
-             (invoke "make" "install-tlp" "install-man")
-             #t))
+             (invoke "make" "install-tlp" "install-man")))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))

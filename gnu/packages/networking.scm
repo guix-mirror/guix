@@ -144,7 +144,8 @@ or, more generally, MAC addresses of the same category of hardware.")
           'check 'disable-checkconf-test
           (lambda _
             (substitute* "src/Makefile"
-              (("^TESTS = .*") "TESTS = \n")))))))
+              (("^TESTS = .*") "TESTS = \n"))
+            #t)))))
     (home-page "http://www.remlab.net/miredo/")
     (synopsis "Teredo IPv6 tunneling software")
     (description
@@ -216,7 +217,7 @@ libwrap.so: $(LIB_OBJ)\n
              (substitute* "scaffold.c"
                (("extern char .malloc.*;") ""))
              ;; This, believe it or not, is the recommended way to build!
-             (zero? (system* "make" "REAL_DAEMON_DIR=/etc" "linux"))))
+             (invoke "make" "REAL_DAEMON_DIR=/etc" "linux")))
          ;; There is no make install stage, so we have to do it ourselves.
          (replace 'install
            (lambda _
@@ -251,7 +252,8 @@ libwrap.so: $(LIB_OBJ)\n
                (for-each
                 (lambda (x)
                   (install-file x (string-append out "/bin/")))
-                bins)))))))
+                bins))
+             #t)))))
     (home-page "http://www.porcupine.org")
     (synopsis  "Monitor and filter incoming requests for network services")
     (description "With this package you can monitor and filter incoming requests for
@@ -373,8 +375,8 @@ files contain direct mappings of the abstractions provided by the ØMQ C API.")
                ;; librdkafka++.so lacks RUNPATH for librdkafka.so
                (setenv "LDFLAGS"
                        (string-append "-Wl,-rpath=" out "/lib"))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (native-inputs
      `(("python" ,python-wrapper)))
     (propagated-inputs
@@ -457,7 +459,8 @@ Ethernet devices.")
                            (bin (string-append out "/bin")))
                       (mkdir-p bin)
                       (copy-file "ifstatus"
-                                 (string-append bin "/ifstatus"))))))))
+                                 (string-append bin "/ifstatus")))
+                    #t)))))
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://ifstatus.sourceforge.net/graphic/index.html")
     (synopsis "Text based network interface status monitor")
@@ -511,14 +514,16 @@ and min/max network usage.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/tun.c"
                (("PATH=[^ ]* ")
-                (string-append (assoc-ref inputs "net-tools") "/bin/")))))
+                (string-append (assoc-ref inputs "net-tools") "/bin/")))
+             #t))
          (add-before 'check 'delete-failing-tests
            ;; Avoid https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=802105.
            (lambda _
              (substitute* "tests/common.c"
                (("tcase_add_test\\(tc, \
 test_parse_format_ipv(4(|_listen_all|_mapped_ipv6)|6)\\);")
-                "")))))
+                ""))
+             #t)))
        #:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:test-target "test"))
@@ -538,7 +543,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.3.2")
+    (version "5.4.0")
     (source
      (origin
        (method url-fetch)
@@ -546,7 +551,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "0m3352d5b0ragygbqjbaimghrbx4va2rixa34j5a1g3jj6l4nwbr"))))
+         "0y73b3z1akni620s1hlrijwdrk95ca1c8csjds48vpd6z86awx9p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -779,7 +784,8 @@ application stack itself.")
                (("ENV_CURL_BIN.get\\('curl'\\)")
                 (string-append "ENV_CURL_BIN.get('"
                                (assoc-ref inputs "curl")
-                               "/bin/curl')"))))))))
+                               "/bin/curl')")))
+             #t)))))
     (home-page "https://github.com/reorx/httpstat")
     (synopsis "Visualize curl statistics")
     (description
@@ -949,7 +955,7 @@ private (reserved).")
                             ,(string-append "PREFIX=" out)
                             "INSTALLDIRS=site")))
                (setenv "CONFIG_SHELL" (which "sh"))
-               (zero? (apply system* "perl" args))))))))
+               (apply invoke "perl" args)))))))
   (home-page "https://metacpan.org/release/Socket6")
   (synopsis
     "IPv6 related part of the C socket.h defines and structure manipulators for Perl")
@@ -1009,7 +1015,7 @@ offline emulation of DNS.")
                             ,(string-append "PREFIX=" out)
                             "INSTALLDIRS=site")))
                (setenv "CONFIG_SHELL" (which "sh"))
-               (zero? (apply system* "perl" args))))))))
+               (apply invoke "perl" args)))))))
   (home-page
     "https://metacpan.org/release/NetAddr-IP")
   (synopsis
@@ -1145,7 +1151,7 @@ sockets in Perl.")
        (modify-phases %standard-phases
          (replace 'check
                   (lambda _
-                    (zero? (system* "ctest" "-E" "url-test")))))))
+                    (invoke "ctest" "-E" "url-test"))))))
     (synopsis "Library providing automatic proxy configuration management")
     (description "Libproxy handles the details of HTTP/HTTPS proxy
 configuration for applications across all scenarios.  Applications using
@@ -1416,13 +1422,13 @@ procedure calls (RPCs).")
        (modify-phases %standard-phases
          (replace 'install
            (lambda _
-             (zero? (system* "make"
-                             ;; Don't try to create directories under /var.
-                             "RUNDIR=/tmp"
-                             "PKIDIR=/tmp"
-                             "LOGDIR=/tmp"
-                             "DBDIR=/tmp"
-                             "install")))))))
+             (invoke "make"
+                     ;; Don't try to create directories under /var.
+                     "RUNDIR=/tmp"
+                     "PKIDIR=/tmp"
+                     "LOGDIR=/tmp"
+                     "DBDIR=/tmp"
+                     "install"))))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -1723,8 +1729,8 @@ interface and a programmable text output for scripting.")
            (lambda _ (chdir "libnet") #t))
          (add-before 'build 'build-doc
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* "make" "-C" "doc" "doc"
-                           make-flags)))))))
+             (apply invoke "make" "-C" "doc" "doc"
+                    make-flags))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

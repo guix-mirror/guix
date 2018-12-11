@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
 (define-module (gnu packages backup)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
@@ -132,22 +134,18 @@ spying and/or modification by the server.")
     (name "par2cmdline")
     (version "0.8.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/Parchive/par2cmdline/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Parchive/par2cmdline.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jpshmmcr81mxly0md2rr231qz9c8c680bbvcmhh100dg9i4a6s6"))))
+                "0f1jsd5sw2wynjzi7yjqjaf13yhyjfdid91p8yh0jn32y03kjyrz"))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
-           (lambda _ (invoke "autoreconf" "-vfi"))))))
     (synopsis "File verification and repair tools")
     (description "Par2cmdline uses Reed-Solomon error-correcting codes to
 generate and verify PAR2 recovery files.  These files can be distributed
@@ -493,15 +491,14 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.7")
+    (version "1.1.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "borgbackup" version))
-       (patches (search-patches "borg-respect-storage-quota.patch"))
        (sha256
         (base32
-         "1p3zia62vyg9vadkdjzzkzbj4dmgijr7ix5lmhfbxpwy5q9imdgp"))
+         "0qqvcscn1l4y83x4sh3izdpmr8zq38j8chjkpfq4q4d01i470hqb"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -889,6 +886,7 @@ is like a time machine for your data. ")
                                         ,version)
                ;; Disable 'restic self-update'.  It makes little sense in Guix.
                (substitute* "build.go" (("selfupdate") ""))
+               (setenv "HOME" (getcwd)) ; for $HOME/.cache/go-build
                (invoke "go" "run" "build.go"))))
 
          (replace 'check

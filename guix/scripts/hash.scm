@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,7 +45,7 @@
   `((format . ,bytevector->nix-base32-string)))
 
 (define (show-help)
-  (display (G_ "Usage: gcrypt hash [OPTION] FILE
+  (display (G_ "Usage: guix hash [OPTION] FILE
 Return the cryptographic hash of FILE.
 
 Supported formats: 'nix-base32' (default), 'base32', and 'base16' ('hex'
@@ -93,7 +94,7 @@ and 'hexadecimal' can be used as well).\n"))
                   (exit 0)))
         (option '(#\V "version") #f #f
                 (lambda args
-                  (show-version-and-exit "gcrypt hash")))))
+                  (show-version-and-exit "guix hash")))))
 
 
 

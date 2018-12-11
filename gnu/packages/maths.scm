@@ -28,6 +28,7 @@
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -286,13 +287,13 @@ programming language.")
 (define-public units
   (package
    (name "units")
-   (version "2.17")
+   (version "2.18")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/units/units-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1n2xzpnxfn475zkd8rzs5gg58xszjbr4bdbgvk6hryzimvwwj0qz"))))
+                     "0y26kj349i048y4z3xrk90bvciw2j6ds3rka7r7yn3183hirr5b4"))))
    (build-system gnu-build-system)
    (inputs
     `(("readline" ,readline)
@@ -884,6 +885,25 @@ extremely large and complex data collections.")
     (license (license:x11-style
               "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
 
+(define-public hdf5-1.10
+  (package (inherit hdf5)
+    (version "1.10.4")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (list (string-append "https://support.hdfgroup.org/ftp/HDF5/releases/"
+                                "hdf5-" (version-major+minor version)
+                                "/hdf5-" version "/src/hdf5-"
+                                version ".tar.bz2")
+                 (string-append "https://support.hdfgroup.org/ftp/HDF5/"
+                                "current"
+                                (apply string-append
+                                       (take (string-split version #\.) 2))
+                                "/src/hdf5-" version ".tar.bz2")))
+      (sha256
+       (base32 "1pr85fa1sh2ky6ai2hs3f21lp252grl2cq3wbyi4rh7dm83gyrqj"))
+      (patches (list (search-patch "hdf5-config-date.patch")))))))
+
 (define-public hdf-java
   (package
    (name "hdf-java")
@@ -1393,9 +1413,9 @@ can solve two kinds of problems:
 
 ;; For a fully featured Octave, users are strongly recommended also to install
 ;; the following packages: less, ghostscript, gnuplot.
-(define-public octave
+(define-public octave-cli
   (package
-    (name "octave")
+    (name "octave-cli")
     (version "4.4.1")
     (source
      (origin
@@ -1477,21 +1497,21 @@ Work may be performed both at the interactive command-line as well as via
 script files.")
     (license license:gpl3+)))
 
-(define-public qtoctave
-  (package (inherit octave)
-    (name "qtoctave")
+(define-public octave
+  (package (inherit octave-cli)
+    (name "octave")
     (source (origin
-              (inherit (package-source octave))))
+              (inherit (package-source octave-cli))))
     (inputs
      `(("qscintilla" ,qscintilla)
        ("qt" ,qtbase)
-       ,@(package-inputs octave)))
+       ,@(package-inputs octave-cli)))
     (native-inputs
      `(("qttools" , qttools) ;for lrelease
        ("texlive" ,texlive) ;for texi2dvi
-       ,@(package-native-inputs octave)))
+       ,@(package-native-inputs octave-cli)))
     (arguments
-     (substitute-keyword-arguments (package-arguments octave)
+     (substitute-keyword-arguments (package-arguments octave-cli)
        ((#:phases phases)
         `(modify-phases ,phases
            (add-before 'configure 'patch-qscintilla-library-name
@@ -1504,6 +1524,9 @@ script files.")
                  (("qscintilla2-qt5")
                   "qscintilla2_qt5"))
                #t))))))))
+
+(define-public qtoctave
+  (deprecated-package "qtoctave" octave))
 
 (define-public opencascade-oce
   (package
@@ -1635,7 +1658,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.9.3")
+    (version "3.10.2")
     (source
      (origin
       (method url-fetch)
@@ -1643,7 +1666,7 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "1fwkbwv4g7zf2lc8fw865xd0bl9anb6jaczfis5dff7h449gwa48"))))
+       (base32 "0bl64pydak3rblnjffi482r8bin4xim9sb37ksl2jkcxf0i0irsi"))))
     (outputs '("out"                    ;libraries and headers
                "examples"))             ;~30MiB of examples
     (build-system gnu-build-system)
@@ -1747,16 +1770,18 @@ scientific applications modeled by partial differential equations.")
     (name "petsc-openmpi")
     (inputs
      `(("hdf5" ,hdf5-parallel-openmpi)
+       ("hypre" ,hypre-openmpi)
        ("metis" ,metis)
        ("mumps" ,mumps-openmpi)
        ("openmpi" ,openmpi)
        ("scalapack" ,scalapack)
-       ("scotch" ,pt-scotch)
+       ("scotch" ,pt-scotch32)
        ,@(package-inputs petsc)))
     (arguments
      (substitute-keyword-arguments (package-arguments petsc)
        ((#:configure-flags cf)
-        ``("--with-mpiexec=mpirun"
+        ``("--with-hypre=1"
+           "--with-mpiexec=mpirun"
            "--with-metis=1"
            "--with-mumps=1"
            "--with-scalapack=1"
@@ -1789,6 +1814,41 @@ scientific applications modeled by partial differential equations.")
            ,@(delete "--with-mpi=0" ,cf)))))
     (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
 
+(define-public python-petsc4py
+  (package
+    (name "python-petsc4py")
+    (version "3.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "petsc4py" version))
+        (sha256
+          (base32
+            "0ch3g6dsvxl7qi984fcssv7cxfbif4bw04gkvxl2l1b8wrmvrm25"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; Define path to PETSc installation.
+             (setenv "PETSC_DIR" (assoc-ref %build-inputs "petsc"))
+             #t))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
+    (inputs
+     `(("petsc" ,petsc-openmpi)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://bitbucket.org/petsc/petsc4py/")
+    (synopsis "Python bindings for PETSc")
+    (description "PETSc, the Portable, Extensible Toolkit for
+Scientific Computation, is a suite of data structures and routines for
+the scalable (parallel) solution of scientific applications modeled by
+partial differential equations.  It employs the MPI standard for all
+message-passing communication.  @code{petsc4py} provides Python
+bindings to almost all functions of PETSc.")
+    (license license:bsd-3)))
+
 (define-public python-kiwisolver
   (package
     (name "python-kiwisolver")
@@ -1816,7 +1876,7 @@ savings are consistently > 5x.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.9.2")
+    (version "3.10.1")
     (source
      (origin
        (method url-fetch)
@@ -1824,7 +1884,7 @@ savings are consistently > 5x.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0gmhdqac8zm3jx43h935z7bflazjnpvqxjv4jh5za2y1z2rqax94"))))
+         "188j1a133q91h8pivpnzwcf78kz8dvz2nzf6ndnjygdbqb48fizn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -1919,6 +1979,43 @@ arising after the discretization of partial differential equations.")
      `(("petsc" ,petsc-complex-openmpi)
        ,@(alist-delete "petsc" (package-propagated-inputs slepc-openmpi))))
     (synopsis "Scalable library for eigenproblems (with complex scalars and MPI support)")))
+
+(define-public python-slepc4py
+  (package
+    (name "python-slepc4py")
+    (version "3.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "slepc4py" version))
+        (sha256
+          (base32
+            "0x049dyc8frgh79fvvavf4vlbqp4mgm61nsaivzdav4316vvlv1j"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda _
+             ;; Define path to PETSc installation.
+             (setenv "PETSC_DIR" (assoc-ref %build-inputs "petsc"))
+             ;; Define path to SLEPc installation.
+             (setenv "SLEPC_DIR" (assoc-ref %build-inputs "slepc"))
+             #t))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
+    (inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-petsc4py" ,python-petsc4py)
+       ("slepc" ,slepc-openmpi)))
+    (home-page "https://bitbucket.org/slepc/slepc4py/")
+    (synopsis "Python bindings for SLEPc")
+    (description "SLEPc, the Scalable Library for Eigenvalue Problem
+Computations, is based on PETSc, the Portable, Extensible Toolkit for
+Scientific Computation.  It employs the MPI standard for all
+message-passing communication.  @code{slepc4py} provides Python
+bindings to almost all functions of SLEPc.")
+    (license license:bsd-3)))
 
 (define-public mumps
   (package
@@ -2110,16 +2207,14 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "2.1.5")
+    (version "2.1.8")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "18cv7c2gvagbmggfbsy2xk9bpn47izd0qrmqnc3q7afvj6pr6nf9"))))
+        (base32 "0m8ladhrfyxwybblkcdgg4xv1mk5kibmwarpj2k0c2y34zzcix4z"))))
     (build-system r-build-system)
-    (propagated-inputs
-     `(("r-quadprog" ,r-quadprog)))
-    (home-page "https://cran.r-project.org/web/packages/pracma")
+    (home-page "https://cran.r-project.org/web/packages/pracma/")
     (synopsis "Practical numerical math functions")
     (description "This package provides functions for numerical analysis and
 linear algebra, numerical optimization, differential equations, plus some
@@ -2510,15 +2605,16 @@ YACC = bison -pscotchyy -y -b y
            (replace
             'build
             (lambda _
-              (and
-               (zero? (system* "make"
-                               (format #f "-j~a" (parallel-job-count))
-                               "ptscotch" "ptesmumps"))
-               ;; Install the serial metis compatibility library
-               (zero? (system* "make" "-C" "libscotchmetis" "install")))))
-           (replace
-            'check
-            (lambda _ (zero? (system* "make" "ptcheck"))))))))
+              (invoke "make" (format #f "-j~a" (parallel-job-count))
+                      "ptscotch" "ptesmumps")
+
+              ;; Install the serial metis compatibility library
+              (invoke "make" "-C" "libscotchmetis" "install")))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)
+           (replace 'check
+             (lambda _
+               (invoke "make" "ptcheck")))))))
     (synopsis "Programs and libraries for graph algorithms (with MPI)")))
 
 (define-public pt-scotch32
@@ -2532,15 +2628,15 @@ YACC = bison -pscotchyy -y -b y
         `(modify-phases ,scotch32-phases
            (replace 'build
              (lambda _
-               (and
-                (zero? (system* "make"
-                                (format #f "-j~a" (parallel-job-count))
-                                "ptscotch" "ptesmumps"))
-                ;; Install the serial metis compatibility library
-                (zero? (system* "make" "-C" "libscotchmetis" "install")))))
+               (invoke "make" (format #f "-j~a" (parallel-job-count))
+                       "ptscotch" "ptesmumps")
+               ;; Install the serial metis compatibility library
+               (invoke "make" "-C" "libscotchmetis" "install")))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)
            (replace 'check
              (lambda _
-               (zero? (system* "make" "ptcheck"))))))))
+               (invoke "make" "ptcheck")))))))
     (synopsis
      "Programs and libraries for graph algorithms (with MPI and 32-bit integers)")))
 
@@ -2659,7 +2755,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.42.0")
+    (version "5.42.1")
     (source
      (origin
        (method url-fetch)
@@ -2667,7 +2763,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0d5pdihvcbwb7r4i4qs5qqgsz46hxlq33qj8is053llrgn9ylpyn"))
+         "1ka0xf70a55ndgmyrq7p5xxbd78pq7bfkqhgxsivaqdw6gn5lmcg"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -2699,6 +2795,18 @@ to BMP, JPEG or PNG image formats.")
            (lambda _
              (chmod "src/maxima" #o555)
              #t))
+         (replace 'check
+           (lambda _
+             ;; This is derived from the testing code in the "debian/rules" file
+             ;; of Debian's Maxima package.
+             ;; If Maxima can successfully run this, the binary to be installed
+             ;; should be fine.
+             (zero?
+              (system
+               (string-append "./maxima-local "
+                              "--lisp=gcl "
+                              "--batch-string=\"run_testsuite();\" "
+                              "| grep -q \"No unexpected errors found\"")))))
          ;; Make sure the doc and emacs files are found in the
          ;; standard location.  Also configure maxima to find gnuplot
          ;; without having it on the PATH.
@@ -2746,18 +2854,17 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "18.02.0")
+    (version "18.11.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/andrejv/" name "/archive"
-                           "/Version-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wxMaxima-developers/wxmaxima.git")
+             (commit (string-append "Version-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "03kr2rgfp4hcf3is8m8d8f9hj660c3xgrc50vrrfpixx4syh6wvj"))
-       (patches
-        (search-patches "wxmaxima-do-not-use-old-gnuplot-parameters.patch"))))
+         "1sz8n9v23q442l7yjj67pjh0dk78rl4cbcc3j8m1bm88anlfxl9r"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -3294,7 +3401,7 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.9.2")
+    (version "0.9.9.3")
     (source
      (origin
        (method url-fetch)
@@ -3302,7 +3409,7 @@ Failure to do so will result in a library with poor performance.")
                            version  "/glm-" version ".zip"))
        (sha256
         (base32
-         "1m2gws1d7l6h4mdn0ap74pfnm3vva3kk8rybdqd5x4lksd1mk6r0"))))
+         "0yqk5r3qh60d4r2iab5q7wq0fryn8p3pz6s28y1i7amqj1aqavj9"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -3476,7 +3583,7 @@ in finite element programs.")
      `(("unzip" ,unzip)))
     (inputs
      `(("hdf5" ,hdf5)
-       ("octave" ,octave)
+       ("octave" ,octave-cli)
        ("python" ,python-2) ; print syntax
        ;; ("python2-numpy" ,python2-numpy) ; only required for the tests
        ("zlib" ,zlib)))
@@ -3846,15 +3953,15 @@ as equations, scalars, vectors, and matrices.")
 (define-public z3
   (package
     (name "z3")
-    (version "4.5.0")
+    (version "4.8.1")
+    (home-page "https://github.com/Z3Prover/z3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Z3Prover/z3/archive/z3-"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "z3-" version))))
               (sha256
                (base32
-                "032a5lvji2liwmc25jv52bdrhimqflvqbpg77ccaq1jykhiivbmf"))))
+                "1vr57bwx40sd5riijyrhy70i2wnv9xrdihf6y5zdz56yq88rl48f"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -3883,43 +3990,57 @@ as equations, scalars, vectors, and matrices.")
     (synopsis "Theorem prover")
     (description "Z3 is a theorem prover and @dfn{satisfiability modulo
 theories} (SMT) solver.  It provides a C/C++ API, as well as Python bindings.")
-    (home-page "https://github.com/Z3Prover/z3")
     (license license:expat)))
 
 (define-public cubicle
   (package
     (name "cubicle")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://cubicle.lri.fr/cubicle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1sny9c4fm14k014pk62ibpwbrjjirkx8xmhs9jg7q1hk7y7x3q2h"))))
+                "10kk80jdmpdvql88sdjsh7vqzlpaphd8vip2lp47aarxjkwjlz1q"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ocaml" ,ocaml)
+     `(("automake" ,automake)
+       ("ocaml" ,ocaml)
        ("which" ,(@@ (gnu packages base) which))))
     (propagated-inputs
-     `(("z3" ,z3)))
+     `(("ocaml-num" ,ocaml-num)
+       ("z3" ,z3)))
     (arguments
      `(#:configure-flags (list "--with-z3")
+       #:make-flags (list "QUIET=")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'configure-for-release
            (lambda _
              (substitute* "Makefile.in"
-               (("SVNREV=") "#SVNREV="))))
+               (("SVNREV=") "#SVNREV="))
+             #t))
          (add-before 'configure 'fix-/bin/sh
            (lambda _
              (substitute* "configure"
-               (("/bin/sh") (which "sh")))))
+               (("-/bin/sh") (string-append "-" (which "sh"))))
+             #t))
          (add-before 'configure 'fix-smt-z3wrapper.ml
            (lambda _
              (substitute* "Makefile.in"
-               (("\\\\n") "")))))))
+               (("\\\\n") ""))
+             #t))
+         (add-before 'configure 'fix-ocaml-num
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("= \\$\\(FUNCTORYLIB\\)")
+                (string-append "= -I "
+                               (assoc-ref inputs "ocaml-num")
+                               "/lib/ocaml/site-lib"
+                               " $(FUNCTORYLIB)")))
+             #t)))))
     (home-page "http://cubicle.lri.fr/")
     (synopsis "Model checker for array-based systems")
     (description "Cubicle is a model checker for verifying safety properties

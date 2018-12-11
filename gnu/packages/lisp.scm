@@ -9,6 +9,9 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +37,7 @@
   #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system asdf)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages admin)
@@ -66,7 +70,6 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages webkit)
   #:use-module (ice-9 match)
-  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19))
 
 (define (asdf-substitutions lisp)
@@ -81,8 +84,8 @@
              ,lisp))))
 
 (define-public gcl
-  (let ((commit "5956140b1083e2302a59d7ce2054b0b7c2cbb417")
-        (revision "1")) ;Guix package revision
+  (let ((commit "d3335e2b3deb63f930eb0328e9b05377744c9512")
+        (revision "2")) ;Guix package revision
     (package
       (name "gcl")
       (version (string-append "2.6.12-" revision "."
@@ -95,7 +98,7 @@
                (commit commit)))
          (file-name (string-append "gcl-" version "-checkout"))
          (sha256
-          (base32 "0mwclf2879mh3d9xqkqhghf58lwy7srsnsq9x0f1cc6j302sy4hb"))))
+          (base32 "05v86lhvsby05nzvcd3c4k0wljvgdgd0i6arzd2fx1yd67dl6fgj"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f  ; The build system seems not to be thread safe.
@@ -167,8 +170,7 @@
       (native-inputs
        `(("gcc" ,gcc-4.9)
          ("m4" ,m4)
-         ("texinfo" ,texinfo)
-         ("texlive" ,texlive)))
+         ("texinfo" ,texinfo)))
       (home-page "https://www.gnu.org/software/gcl/")
       (synopsis "A Common Lisp implementation")
       (description "GCL is an implementation of the Common Lisp language.  It
@@ -315,14 +317,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "1.4.4")
+    (version "1.4.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "1k6v5b8qv7vyxvh8asx6phf2hbapx5pp5p5j47hgnq123fwnh4fa"))
+        (base32 "120rnnz8367lk7ljqlf8xidm4b0d738xqsib4kq0q5ms5r7fzgvm"))
        (modules '((guix build utils)))
        (snippet
         ;; Add sbcl-bundle-systems to 'default-system-source-registry'.
@@ -332,16 +334,29 @@ an interpreter, a compiler, a debugger, and much more.")
            #t))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
-    ;; Bootstrap with CLISP.
     (native-inputs
-     `(("clisp" ,clisp)
+     ;; From INSTALL:
+     ;;     Supported build hosts are:
+     ;;       SBCL
+     ;;       CMUCL
+     ;;       CCL (formerly known as OpenMCL)
+     ;;       ABCL (recent versions only)
+     ;;       CLISP (only some versions: 2.44.1 is OK, 2.47 is not)
+     ;;       XCL
+     ;; CCL seems ideal then, but it unfortunately only builds reliably
+     ;; on some architectures.
+     `(,@(match (%current-system)
+           ((or "x86_64-linux" "i686-linux")
+            `(("ccl" ,ccl)))
+           (_
+            `(("clisp" ,clisp))))
        ("which" ,which)
        ("inetutils" ,inetutils)         ;for hostname(1)
        ("ed" ,ed)
-       ("texlive" ,texlive)
+       ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
        ("texinfo" ,texinfo)))
     (arguments
-     '(#:modules ((guix build gnu-build-system)
+     `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))
        #:phases
@@ -393,20 +408,28 @@ an interpreter, a compiler, a debugger, and much more.")
                   (string-append "#+nil ;disabled by Guix\n" all))
                  (("\\(deftest grent\\.[12]" all)
                   (string-append "#+nil ;disabled by Guix\n" all))))))
+         ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
+         ;; them in HOME, so it needs to be writeable.
+         (add-before 'build 'set-HOME
+           (lambda _ (setenv "HOME" "/tmp") #t))
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")
-             (zero? (system* "sh" "make.sh" "clisp"
-                             (string-append "--prefix="
-                                            (assoc-ref outputs "out"))))))
+             (invoke "sh" "make.sh" ,@(match (%current-system)
+                                        ((or "x86_64-linux" "i686-linux")
+                                         `("ccl"))
+                                        (_
+                                         `("clisp")))
+                     (string-append "--prefix="
+                                    (assoc-ref outputs "out")))))
          (replace 'install
            (lambda _
-             (zero? (system* "sh" "install.sh"))))
+             (invoke "sh" "install.sh")))
          (add-after 'build 'build-doc
            (lambda _
              (with-directory-excursion "doc/manual"
-               (and  (zero? (system* "make" "info"))
-                     (zero? (system* "make" "dist"))))))
+               (and  (invoke "make" "info")
+                     (invoke "make" "dist")))))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -530,8 +553,13 @@ statistical profiler, a code coverage tool, and many other extensions.")
                (install-file kernel libdir)
                (install-file heap libdir)
 
-               (let ((dirs '("lib" "library" "examples" "contrib"
-                             "tools" "objc-bridge")))
+               (let ((dirs '("lib" "library" "examples" "tools" "objc-bridge"
+                             ,@(match (%current-system)
+                                ("x86_64-linux"
+                                 '("x86-headers64"))
+                                ("i686-linux"
+                                 '("x86-headers"))
+                                (_ '())))))
                  (for-each copy-recursively
                            dirs
                            (map (cut string-append libdir <>) dirs)))
@@ -542,13 +570,12 @@ statistical profiler, a code coverage tool, and many other extensions.")
                    (display
                     (string-append
                      "#!" bash "/bin/sh\n"
-                     "CCL_DEFAULT_DIRECTORY=" libdir "\n"
-                     "export CCL_DEFAULT_DIRECTORY\n"
-                     "exec " libdir kernel "\n"))))
+                     "export CCL_DEFAULT_DIRECTORY=" libdir "\n"
+                     "exec -a \"$0\" " libdir kernel " \"$@\"\n"))))
                (chmod wrapper #o755))
              #t)))))
     (supported-systems '("i686-linux" "x86_64-linux" "armhf-linux"))
-    (home-page "http://ccl.clozure.com/")
+    (home-page "https://ccl.clozure.com/")
     (synopsis "Common Lisp implementation")
     (description "Clozure CL (often called CCL for short) is a Common Lisp
 implementation featuring fast compilation speed, native threads, a precise,
@@ -558,56 +585,6 @@ interface.")
     ;; applies to Lisp code according to them.
     (license (list license:lgpl2.1
                    license:clarified-artistic)))) ;TRIVIAL-LDAP package
-
-(define-public femtolisp
-  (let ((commit "68c5b1225572ecf2c52baf62f928063e5a30511b")
-        (revision "1"))
-    (package
-      (name "femtolisp")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/JeffBezanson/femtolisp.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "04rnwllxnl86zw8c6pwxznn49bvkvh0f1lfliy085vjzvlq3rgja"))))
-      ;; See "utils.h" for supported systems. Upstream bug:
-      ;; https://github.com/JeffBezanson/femtolisp/issues/25
-      (supported-systems
-       (fold delete %supported-systems
-             '("armhf-linux" "mips64el-linux" "aarch64-linux")))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags '("CC=gcc" "release")
-         #:test-target "test"
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure) ; No configure script
-           (replace 'install ; Makefile has no 'install phase
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (bin (string-append out "/bin")))
-                (install-file "flisp" bin)
-                #t)))
-           ;; The flisp binary is now available, run bootstrap to
-           ;; generate flisp.boot and afterwards runs make test.
-           (add-after 'install 'bootstrap-gen-and-test
-             (lambda* (#:key outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (bin (string-append out "/bin")))
-                (and
-                 (zero? (system* "./bootstrap.sh"))
-                 (install-file "flisp.boot" bin))))))))
-      (synopsis "Scheme-like lisp implementation")
-      (description
-       "@code{femtolisp} is a scheme-like lisp implementation with a
-simple, elegant Scheme dialect.  It is a lisp-1 with lexical scope.
-The core is 12 builtin special forms and 33 builtin functions.")
-      (home-page "https://github.com/JeffBezanson/femtolisp")
-      (license license:bsd-3))))
 
 (define-public lush2
   (package
@@ -952,9 +929,9 @@ from other CLXes around the net.")
      `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
        ("sbcl-cl-unicode" ,sbcl-cl-unicode)))))
 
-(define-public sbcl-stumpwm
+(define-public stumpwm
   (package
-    (name "sbcl-stumpwm")
+    (name "stumpwm")
     (version "18.05")
     (source (origin
               (method url-fetch)
@@ -970,7 +947,8 @@ from other CLXes around the net.")
               ("alexandria" ,sbcl-alexandria)))
     (outputs '("out" "lib"))
     (arguments
-     '(#:phases
+     '(#:asd-system-name "stumpwm"
+       #:phases
        (modify-phases %standard-phases
          (add-after 'create-symlinks 'build-program
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1003,17 +981,15 @@ for input.  These design decisions reflect the growing popularity of
 productive, customizable lisp based systems.")
     (home-page "https://github.com/stumpwm/stumpwm")
     (license license:gpl2+)
-    (properties `((ecl-variant . ,(delay ecl-stumpwm))))))
+    (properties `((cl-source-variant . ,(delay cl-stumpwm))))))
+
+(define-public sbcl-stumpwm
+  (deprecated-package "sbcl-stumpwm" stumpwm))
 
 (define-public cl-stumpwm
-  (sbcl-package->cl-source-package sbcl-stumpwm))
-
-(define-public ecl-stumpwm
-  (let ((base (sbcl-package->ecl-package sbcl-stumpwm)))
-    (package
-      (inherit base)
-      (outputs '("out"))
-      (arguments '()))))
+  (package
+    (inherit (sbcl-package->cl-source-package stumpwm))
+    (name "cl-stumpwm")))
 
 ;; The slynk that users expect to install includes all of slynk's contrib
 ;; modules.  Therefore, we build the base module and all contribs first; then
@@ -1292,16 +1268,16 @@ multiple inspectors with independent history.")
                          paths)
             #t)))))))
 
-(define-public sbcl-stumpwm+slynk
+(define-public stumpwm+slynk
   (package
-    (inherit sbcl-stumpwm)
-    (name "sbcl-stumpwm-with-slynk")
+    (inherit stumpwm)
+    (name "stumpwm-with-slynk")
     (outputs '("out"))
     (inputs
-     `(("stumpwm" ,sbcl-stumpwm "lib")
+     `(("stumpwm" ,stumpwm "lib")
        ("slynk" ,sbcl-slynk)))
     (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-stumpwm)
+     (substitute-keyword-arguments (package-arguments stumpwm)
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'build-program
@@ -1324,6 +1300,9 @@ multiple inspectors with independent history.")
            (delete 'create-asd-file)
            (delete 'cleanup)
            (delete 'create-symlinks)))))))
+
+(define-public sbcl-stumpwm+slynk
+  (deprecated-package "sbcl-stumpwm-with-slynk" stumpwm+slynk))
 
 (define-public sbcl-parse-js
   (let ((commit "fbadc6029bec7039602abfc06c73bb52970998f6")
@@ -2382,19 +2361,17 @@ new fiends in addition to old friends like @command{aif} and
          (sha256
           (base32
            "127v5avpz1i4m0lkaxqrq8hrl69rdazqaxf6s8awf0nd7wj2g4dp"))
-         (file-name (git-file-name "lift" version))))
+         (file-name (git-file-name "lift" version))
+         (modules '((guix build utils)))
+         (snippet
+          ;; Don't keep the bundled website
+          `(begin
+             (delete-file-recursively "website")
+             #t))))
       (build-system asdf-build-system/sbcl)
       (arguments
        ;; The tests require a debugger, but we run with the debugger disabled.
-       '(#:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           ;; Do this to ensure the 'reset-gzip-timestamps phase works.
-           (add-after 'unpack 'make-gzips-writeable
-             (lambda _
-               (for-each (lambda (file)
-                           (chmod file #o755))
-                         (find-files "." "\\.gz$")))))))
+       '(#:tests? #f))
       (synopsis "LIsp Framework for Testing")
       (description
        "The LIsp Framework for Testing (LIFT) is a unit and system test tool for LISP.
@@ -2403,7 +2380,7 @@ testcases are organized into hierarchical testsuites each of which can have
 its own fixture.  When run, a testcase can succeed, fail, or error.  LIFT
 supports randomized testing, benchmarking, profiling, and reporting.")
       (home-page "https://github.com/gwkkwg/lift")
-      (license license:x11-style))))
+      (license license:expat))))
 
 (define-public cl-lift
   (sbcl-package->cl-source-package sbcl-lift))
@@ -2663,7 +2640,6 @@ pattern-matching-like, but a char-by-char procedural parser.")
        "This package exports the following function to parse floating-point
 values from a string in Common Lisp.")
       (home-page "https://github.com/soemraws/parse-float")
-      ;; TODO: Missing license?
       (license license:public-domain))))
 
 (define-public cl-parse-float
@@ -3454,7 +3430,7 @@ is a library for creating graphical user interfaces.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/atlas-engineer/cl-webkit")
+               (url "https://github.com/jmercouris/cl-webkit")
                (commit commit)))
          (file-name (git-file-name "cl-webkit" version))
          (sha256
@@ -3476,7 +3452,7 @@ is a library for creating graphical user interfaces.")
                  (("libwebkit2gtk" all)
                   (string-append
                    (assoc-ref inputs "webkitgtk") "/lib/" all))))))))
-      (home-page "https://github.com/atlas-engineer/cl-webkit")
+      (home-page "https://github.com/jmercouris/cl-webkit")
       (synopsis "Binding to WebKitGTK+ for Common Lisp")
       (description
        "@command{cl-webkit} is a binding to WebKitGTK+ for Common Lisp,
@@ -3529,3 +3505,242 @@ Lisp, featuring:
 
 (define-public ecl-lparallel
   (sbcl-package->ecl-package sbcl-lparallel))
+
+(define-public sbcl-cl-markup
+  (let ((commit "e0eb7debf4bdff98d1f49d0f811321a6a637b390"))
+    (package
+      (name "sbcl-cl-markup")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/arielnetworks/cl-markup/")
+               (commit commit)))
+         (file-name (git-file-name "cl-markup" version))
+         (sha256
+          (base32
+           "10l6k45971dl13fkdmva7zc6i453lmq9j4xax2ci6pjzlc6xjhp7"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/arielnetworks/cl-markup/")
+      (synopsis "Markup generation library for Common Lisp")
+      (description
+       "A modern markup generation library for Common Lisp that features:
+
+@itemize
+@item Fast (even faster through compiling the code)
+@item Safety
+@item Support for multiple document types (markup, xml, html, html5, xhtml)
+@item Output with doctype
+@item Direct output to stream
+@end itemize\n")
+      (license license:lgpl3+))))
+
+(define-public cl-markup
+  (sbcl-package->cl-source-package sbcl-cl-markup))
+
+(define-public ecl-cl-markup
+  (sbcl-package->ecl-package sbcl-cl-markup))
+
+(define-public sbcl-cl-css
+  (let ((commit "8fe654c8f0cf95b300718101cce4feb517f78e2f"))
+    (package
+      (name "sbcl-cl-css")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/inaimathi/cl-css/")
+               (commit commit)))
+         (file-name (git-file-name "cl-css" version))
+         (sha256
+          (base32
+           "1lc42zi2sw11fl2589sc19nr5sd2p0wy7wgvgwaggxa5f3ajhsmd"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/inaimathi/cl-css/")
+      (synopsis "Non-validating, inline CSS generator for Common Lisp")
+      (description
+       "This is a dead-simple, non validating, inline CSS generator for Common
+Lisp.  Its goals are axiomatic syntax, simple implementation to support
+portability, and boilerplate reduction in CSS.")
+      (license license:expat))))
+
+(define-public cl-css
+  (sbcl-package->cl-source-package sbcl-cl-css))
+
+(define-public ecl-cl-markup
+  (sbcl-package->ecl-package sbcl-cl-css))
+
+(define-public sbcl-portable-threads
+  (let ((commit "c0e61a1faeb0583c80fd3f20b16cc4c555226920"))
+    (package
+      (name "sbcl-portable-threads")
+      (version (git-version "2.3" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/binghe/portable-threads/")
+               (commit commit)))
+         (file-name (git-file-name "portable-threads" version))
+         (sha256
+          (base32
+           "03fmxyarc0xf4kavwkfa0a2spkyfrz6hbgbi9y4q7ny5aykdyfaq"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(;; Tests seem broken.
+         #:tests? #f))
+      (home-page "https://github.com/binghe/portable-threads")
+      (synopsis "Portable threads (and scheduled and periodic functions) API for Common Lisp")
+      (description
+       "Portable Threads (and Scheduled and Periodic Functions) API for Common
+Lisp (from GBBopen project).")
+      (license license:asl2.0))))
+
+(define-public cl-portable-threads
+  (sbcl-package->cl-source-package sbcl-portable-threads))
+
+(define-public ecl-portable-threada
+  (sbcl-package->ecl-package sbcl-portable-threads))
+
+(define-public sbcl-usocket-boot0
+  ;; usocket's test rely on usocket-server which depends on usocket itself.
+  ;; We break this cyclic dependency with -boot0 that packages usocket.
+  (let ((commit "86e7efbfe50101931edf4b67cdcfa7e221ecfde9"))
+    (package
+      (name "sbcl-usocket-boot0")
+      (version (git-version "0.7.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/usocket/usocket/")
+               (commit commit)))
+         (file-name (git-file-name "usocket" version))
+         (sha256
+          (base32
+           "1lk6ipakrib7kdgzw44hrgmls9akp5pz4h35yynw0k5zwmmq6374"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("split-sequence" ,sbcl-split-sequence)))
+      (arguments
+       `(#:tests? #f
+         #:asd-system-name "usocket"))
+      (home-page "https://common-lisp.net/project/usocket/")
+      (synopsis "Universal socket library for Common Lisp (server side)")
+      (description
+       "This library strives to provide a portable TCP/IP and UDP/IP socket
+interface for as many Common Lisp implementations as possible, while keeping
+the abstraction and portability layer as thin as possible.")
+      (license license:expat))))
+
+(define-public sbcl-usocket-server
+  (package
+    (inherit sbcl-usocket-boot0)
+    (name "sbcl-usocket-server")
+    (inputs
+     `(("usocket" ,sbcl-usocket-boot0)
+       ("portable-threads" ,sbcl-portable-threads)))
+    (arguments
+     '(#:asd-system-name "usocket-server"))
+    (synopsis "Universal socket library for Common Lisp (server side)")))
+
+(define-public cl-usocket-server
+  (sbcl-package->cl-source-package sbcl-usocket-server))
+
+(define-public ecl-socket-server
+  (sbcl-package->ecl-package sbcl-usocket-server))
+
+(define-public sbcl-usocket
+  (package
+    (inherit sbcl-usocket-boot0)
+    (name "sbcl-usocket")
+    (arguments
+     ;; FIXME: Tests need network access?
+     `(#:tests? #f))
+    (native-inputs
+     ;; Testing only.
+     `(("usocket-server" ,sbcl-usocket-server)
+       ("rt" ,sbcl-rt)))))
+
+(define-public cl-usocket
+  (sbcl-package->cl-source-package sbcl-usocket))
+
+(define-public ecl-socket
+  (sbcl-package->ecl-package sbcl-usocket))
+
+(define-public sbcl-s-xml
+  (package
+    (name "sbcl-s-xml")
+    (version "3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://common-lisp.net/project/s-xml/s-xml.tgz")
+       (sha256
+        (base32
+         "061qcr0dzshsa38s5ma4ay924cwak2nq9gy59dw6v9p0qb58nzjf"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://common-lisp.net/project/s-xml/")
+    (synopsis "Simple XML parser implemented in Common Lisp")
+    (description
+     "S-XML is a simple XML parser implemented in Common Lisp.  This XML
+parser implementation has the following features:
+
+@itemize
+@item It works (handling many common XML usages).
+@item It is very small (the core is about 700 lines of code, including
+comments and whitespace).
+@item It has a core API that is simple, efficient and pure functional, much
+like that from SSAX (see also http://ssax.sourceforge.net).
+@item It supports different DOM models: an XSML-based one, an LXML-based one
+and a classic xml-element struct based one.
+@item It is reasonably time and space efficient (internally avoiding garbage
+generatation as much as possible).
+@item It does support CDATA.
+@item It should support the same character sets as your Common Lisp
+implementation.
+@item It does support XML name spaces.
+@end itemize
+
+This XML parser implementation has the following limitations:
+
+@itemize
+@item It does not support any special tags (like processing instructions).
+@item It is not validating, even skips DTD's all together.
+@end itemize\n")
+    (license license:lgpl3+)))
+
+(define-public cl-s-xml
+  (sbcl-package->cl-source-package sbcl-s-xml))
+
+(define-public ecl-s-xml
+  (sbcl-package->ecl-package sbcl-s-xml))
+
+(define-public sbcl-s-xml-rpc
+  (package
+    (name "sbcl-s-xml-rpc")
+    (version "7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://common-lisp.net/project/s-xml-rpc/s-xml-rpc.tgz")
+       (sha256
+        (base32
+         "02z7k163d51v0pzk8mn1xb6h5s6x64gjqkslhwm3a5x26k2gfs11"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("s-xml" ,sbcl-s-xml)))
+    (home-page "https://common-lisp.net/project/s-xml-rpc/")
+    (synopsis "Implementation of XML-RPC in Common Lisp for both client and server")
+    (description
+     "S-XML-RPC is an implementation of XML-RPC in Common Lisp for both
+client and server.")
+    (license license:lgpl3+)))
+
+(define-public cl-s-xml-rpc
+  (sbcl-package->cl-source-package sbcl-s-xml-rpc))
+
+(define-public ecl-s-xml-rpc
+  (sbcl-package->ecl-package sbcl-s-xml-rpc))

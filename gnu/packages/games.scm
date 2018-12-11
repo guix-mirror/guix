@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
@@ -35,6 +35,7 @@
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -572,7 +573,7 @@ automata.  The following features are available:
 (define-public meandmyshadow
   (package
     (name "meandmyshadow")
-    (version "0.4.1")
+    (version "0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/meandmyshadow/"
@@ -580,38 +581,24 @@ automata.  The following features are available:
                                   "-src.tar.gz"))
               (sha256
                (base32
-                "0wl5dc75qy001s6043cx0vr2l5y2qfv1cldqnwill9sfygqj9p95"))))
+                "1b6qf83vdfv8jwn2jq9ywmda2qn2f5914i7mwfy04m17wx593m3m"))
+              (patches (search-patches
+                        ;; This will not be needed in the next release.
+                        "meandmyshadow-define-paths-earlier.patch"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f ; there are no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-sdl'paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "cmake/Modules/FindSDL_gfx.cmake"
-               (("/usr/local/include/SDL")
-                (string-append (assoc-ref inputs "sdl")
-                               "/include/SDL")))
-             ;; Because SDL provides lib/libX11.so.6 we need to explicitly
-             ;; link with libX11, even though we're using the GL backend.
-             (substitute* "CMakeLists.txt"
-               (("\\$\\{X11_LIBRARIES\\}") "-lX11"))
-             #t)))))
+     `(#:tests? #f))                    ; there are no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("sdl" ,(sdl-union (list sdl
-                                sdl-image
-                                sdl-gfx
-                                sdl-mixer
-                                sdl-ttf)))
-       ("libx11" ,libx11) ; needed by sdl's libX11
+     `(("curl" ,curl)
        ("libarchive" ,libarchive)
-       ("openssl" ,openssl)
-       ("mesa" ,mesa)
-       ("glu" ,glu)
-       ("curl" ,curl)))
-    (home-page "http://meandmyshadow.sourceforge.net/")
+       ("lua" ,lua)
+       ("sdl" ,(sdl-union (list sdl2
+                                sdl2-image
+                                sdl2-mixer
+                                sdl2-ttf)))))
+    (home-page "https://acmepjz.github.io/meandmyshadow/")
     (synopsis "Puzzle/platform game")
     (description "Me and My Shadow is a puzzle/platform game in which you try
 to reach the exit by solving puzzles.  Spikes, moving blocks, fragile blocks
@@ -3272,7 +3259,7 @@ safety of the Chromium vessel.")
 (define-public tuxpaint
   (package
     (name "tuxpaint")
-    (version "0.9.22")                  ;keep VER_DATE below in sync
+    (version "0.9.23")                  ;keep VER_DATE below in sync
     (source
      (origin
        (method url-fetch)
@@ -3280,7 +3267,7 @@ safety of the Chromium vessel.")
                            version "/tuxpaint-" version ".tar.gz"))
        (sha256
         (base32
-         "1qrbrdck9yxpcg3si6jb9i11w8lw9h4hqad0pfaxgyiniqpr7gca"))
+         "09k9pxi88r3dx6dyjwf9h85d4qpva4i29qz63dc558hg9v21k69l"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3308,16 +3295,22 @@ safety of the Chromium vessel.")
        ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-ttf sdl-image)))))
     ;; TODO: Use system fonts rather than those in data/fonts
     (arguments
-     `(#:make-flags `("VER_DATE=2014-08-23"
+     `(#:make-flags `("VER_DATE=2018-09-02"
                       "GPERF=gperf" "CC=gcc"
                       "SDL_PCNAME=sdl SDL_image SDL_mixer SDL_ttf"
                       ,(string-append "PREFIX=" %output)
-                      "GNOME_PREFIX=$(PREFIX)"
+                      "KDE_PREFIX=$(PREFIX)/share/applications"
+                      "KDE_ICON_PREFIX=$(PREFIX)/share/icons/"
                       "COMPLETIONDIR=$(PREFIX)/etc/bash_completion.d")
        #:parallel-build? #f             ;fails on some systems
        #:tests? #f                      ;No tests
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ;no configure phase
+                  (add-before 'install 'no-sys-cache
+                    (lambda _           ;do not rebuild system conf cache
+                      (substitute* "Makefile"
+                        (("kbuildsycoca4") ""))
+                      #t))
                   (add-after 'install 'fix-import
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
@@ -3349,7 +3342,7 @@ your child be creative.")
 (define-public tuxpaint-stamps
   (package
     (name "tuxpaint-stamps")
-    (version "2014.08.23")
+    (version "2018.09.01")
     (source
      (origin
        (method url-fetch)
@@ -3358,7 +3351,7 @@ your child be creative.")
                            "/tuxpaint-stamps-" version ".tar.gz"))
        (sha256
         (base32
-         "0rhlwrjz44wp269v3rid4p8pi0i615pzifm1ym6va64gn1bms06q"))))
+         "1skr23k27yj3vgwfazpzxp90lb2a278gxrkr3bxw7az6zpkmb3yp"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("tar" ,tar)
@@ -3387,7 +3380,7 @@ with the \"Stamp\" tool within Tux Paint.")
 (define-public tuxpaint-config
   (package
     (name "tuxpaint-config")
-    (version "0.0.13")                  ;keep VER_DATE below in sync
+    (version "0.0.14")                  ;keep VER_DATE below in sync
     (source
      (origin
        (method url-fetch)
@@ -3395,7 +3388,7 @@ with the \"Stamp\" tool within Tux Paint.")
                            version "/tuxpaint-config-" version ".tar.gz"))
        (sha256
         (base32
-         "1z12s46mvy87qs3vgq9m0ki9pp21zqc52mmgphahpihw3s7haf6v"))))
+         "0zkgxk436nqcp43zghkfmh397c7dvh5bwn2as7gwvv208bzyij6g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -3407,7 +3400,7 @@ with the \"Stamp\" tool within Tux Paint.")
        ("libxft" ,libxft)
        ("mesa" ,mesa)))
     (arguments
-     `(#:make-flags `("VER_DATE=2014-08-23"
+     `(#:make-flags `("VER_DATE=2018-09-01"
                       "CONFDIR=/etc/tuxpaint" ;don't write to store
                       ,(string-append "PREFIX=" %output)
                       "GNOME_PREFIX=$(PREFIX)")
@@ -3658,18 +3651,18 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.4t")
+    (version "10.5")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.roguetemple.com/z/hyper/"
+                    "https://www.roguetemple.com/z/hyper/"
                     name (string-join (string-split version #\.) "")
                     "-src.tgz"))
               (sha256
                (base32
-                "0phqhmnzmc16a23qb4fkil0flzb86kibdckf1r35nc3l0k4193nn"))))
+                "04wk50f51xrb9vszwil4ivkfpy7xc6nw3gnp90hbna2zqi2jnvb8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3741,12 +3734,12 @@ throwing people around in pseudo-randomly generated buildings.")
            (method url-fetch)
            (uri
             (string-append
-             "http://www.roguetemple.com/z/hyper/" name
+             "https://www.roguetemple.com/z/hyper/" name
              (string-join (string-split version #\.) "")
              "-win.zip"))
            (sha256
             (base32
-             "1xd9v8zzgi8m5ar8g4gy1xx5zqwidz3gn1knz0lwib3kbxx4drpg"))))
+             "0r6xvnr7b56iv27n8z10qmxhsz5h7w6ayhxkz3xinlvch84bk708"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -3756,7 +3749,7 @@ throwing people around in pseudo-randomly generated buildings.")
                                       sdl-gfx
                                       sdl-mixer
                                       sdl-ttf)))))
-    (home-page "http://www.roguetemple.com/z/hyper/")
+    (home-page "https://www.roguetemple.com/z/hyper/")
     (synopsis "Non-euclidean graphical rogue-like game")
     (description
      "HyperRogue is a game in which the player collects treasures and fights
@@ -4018,7 +4011,7 @@ emerges from a sewer hole and pulls her below ground.")
 (define-public cdogs-sdl
   (package
     (name "cdogs-sdl")
-    (version "0.6.7")
+    (version "0.6.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4027,7 +4020,7 @@ emerges from a sewer hole and pulls her below ground.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1frafzsj3f83xkmn4llr7g728c82lcqi424ini1hv3gv5zjgpa15"))))
+                "1v0adxm4xsix6r6j9hs7vmss7pxrb37azwfazr54p1dmfz4s6rp8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -4153,31 +4146,54 @@ small robot living in the nano world, repair its maker.")
 (define-public teeworlds
   (package
     (name "teeworlds")
-    (version "0.6.4")
+    (version "0.7.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/teeworlds/teeworlds/"
-                                  "archive/" version "-release.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              ;; do not use auto-generated tarballs
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/teeworlds/teeworlds.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mqhp6xjl75l49050cid36wxyjn1qr0vjx1c709dfg1lkvmgs6l3"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (for-each delete-file-recursively
-                            '("src/engine/external/wavpack/"
-                              "src/engine/external/zlib/"))
+                "0jigg2yikihbivzs7hpljr0mghx1l9v4f1cdr8fbmqv2wb51ah8q"))
+              (modules '((guix build utils)
+                         (ice-9 ftw)
+                         (ice-9 regex)
+                         (srfi srfi-1)
+                         (srfi srfi-26)))
+              (snippet ; remove bundled libraries except md5
+               '(let ((base-dir "src/engine/external/"))
+                  (for-each (compose (cut delete-file-recursively <>)
+                                     (cut string-append base-dir <>))
+                            (remove (cut string-match "(^.)|(^md5$)" <>)
+                                    (scandir base-dir)))
                   #t))
               (patches
                (search-patches "teeworlds-use-latest-wavpack.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests included
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
+             ;; The bundled json-parser uses an old API.
+             ;; To use the latest non-bundled version, we need to pass the
+             ;; length of the data in all 'json_parse_ex' calls.
+             (define (use-latest-json-parser file)
+               (substitute* file
+                 (("engine/external/json-parser/json\\.h")
+                  "json-parser/json.h")
+                 (("json_parse_ex\\(&JsonSettings, pFileData, aError\\);")
+                  "json_parse_ex(&JsonSettings,
+                                 pFileData,
+                                 strlen(pFileData),
+                                 aError);")))
+
              ;; Embed path to assets.
              (substitute* "src/engine/shared/storage.cpp"
                (("#define DATA_DIR.*")
@@ -4187,50 +4203,68 @@ small robot living in the nano world, repair its maker.")
                                "\"")))
 
              ;; Bam expects all files to have a recent time stamp.
-             (for-each (lambda (file)
-                         (utime file 1 1))
+             (for-each (cut utime <> 1 1)
                        (find-files "."))
 
              ;; Do not use bundled libraries.
              (substitute* "bam.lua"
-               (("if config.zlib.value == 1 then")
-                "if true then")
-               (("wavpack = .*")
-                "wavpack = {}
-settings.link.libs:Add(\"wavpack\")\n"))
+               (("local json = Compile.+$")
+                "local json = nil
+settings.link.libs:Add(\"jsonparser\")")
+               (("local png = Compile.+$")
+                "local png = nil
+settings.link.libs:Add(\"pnglite\")")
+               (("local wavpack = Compile.+$")
+                "local wavpack = nil
+settings.link.libs:Add(\"wavpack\")")
+               (("if config\\.zlib\\.value == 1")
+                "if config.zlib.value"))
+             (substitute* "src/engine/client/graphics_threaded.cpp"
+               (("engine/external/pnglite/pnglite\\.h")
+                "pnglite.h"))
              (substitute* "src/engine/client/sound.cpp"
-               (("#include <engine/external/wavpack/wavpack.h>")
-                "#include <wavpack/wavpack.h>"))
+               (("engine/external/wavpack/wavpack\\.h")
+                "wavpack/wavpack.h"))
+             (for-each use-latest-json-parser
+                       '("src/game/client/components/countryflags.cpp"
+                         "src/game/client/components/menus_settings.cpp"
+                         "src/game/client/components/skins.cpp"
+                         "src/game/client/localization.cpp"
+                         "src/game/editor/auto_map.h"
+                         "src/game/editor/editor.cpp"))
              #t))
          (replace 'build
            (lambda _
-             (zero? (system* "bam" "-a" "-v" "release"))))
+             (invoke "bam" "-a" "-v" "conf=release")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (bin  (string-append out "/bin"))
-                    (data (string-append out "/share/teeworlds/data")))
-               (mkdir-p bin)
-               (mkdir-p data)
-               (for-each (lambda (file)
-                           (install-file file bin))
-                         '("teeworlds" "teeworlds_srv"))
-               (copy-recursively "data" data)
+             (let* ((arch ,(system->linux-architecture
+                            (or (%current-target-system)
+                                (%current-system))))
+                    (build (string-append "build/" arch "/release/"))
+                    (data-built (string-append build "data/"))
+                    (out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (data (string-append out "/share/teeworlds/data/")))
+               (for-each (cut install-file <> bin)
+                         (map (cut string-append build <>)
+                              '("teeworlds" "teeworlds_srv")))
+               (copy-recursively data-built data)
                #t))))))
-    ;; FIXME: teeworlds bundles the sources of "pnglite", a two-file PNG
-    ;; library without a build system.
     (inputs
      `(("freetype" ,freetype)
        ("glu" ,glu)
+       ("json-parser" ,json-parser)
        ("mesa" ,mesa)
-       ("sdl-union" ,(sdl-union (list sdl
-                                      sdl-mixer
-                                      sdl-image)))
+       ("pnglite" ,pnglite)
+       ("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-mixer" ,sdl2-mixer)
        ("wavpack" ,wavpack)
        ("zlib" ,zlib)))
     (native-inputs
      `(("bam" ,bam)
-       ("python" ,python-2)
+       ("python" ,python-wrapper)
        ("pkg-config" ,pkg-config)))
     (home-page "https://www.teeworlds.com")
     (synopsis "2D retro multiplayer shooter game")
@@ -5553,7 +5587,8 @@ quotation from a collection of quotes.")
                      Comment=Xonotic glx~@
                      Exec=~a/bin/xonotic-glx~@
                      TryExec=~@*~a/bin/xonotic-glx~@
-                     Icon=~@
+                     Icon=xonotic~@
+                     Categories=Game~@
                      Type=Application~%"
                            output)))
                (with-output-to-file
@@ -5565,7 +5600,8 @@ quotation from a collection of quotes.")
                      Comment=Xonotic sdl~@
                      Exec=~a/bin/xonotic-sdl~@
                      TryExec=~@*~a/bin/xonotic-sdl~@
-                     Icon=~@
+                     Icon=xonotic~@
+                     Categories=Game~@
                      Type=Application~%"
                            output)))
                (with-output-to-file
@@ -5577,7 +5613,8 @@ quotation from a collection of quotes.")
                      Comment=Xonotic~@
                      Exec=~a/bin/xonotic-glx~@
                      TryExec=~@*~a/bin/xonotic~@
-                     Icon=~@
+                     Icon=xonotic~@
+                     Categories=Game~@
                      Type=Application~%"
                            output)))
                #t)))
@@ -5617,8 +5654,8 @@ quotation from a collection of quotes.")
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (data (assoc-ref inputs "xonotic-data")))
-               (copy-recursively (string-append data "/share/xonotic")
-                                 (string-append out "/share/xonotic"))
+               (symlink (string-append data "/share/xonotic")
+                        (string-append out "/share/xonotic"))
                #t)))
          (add-after 'install-binaries 'wrap-binaries
            (lambda* (#:key outputs inputs #:allow-other-keys)

@@ -53,6 +53,7 @@
             nintendo-nes-classic-edition-installation-os
             novena-installation-os
             pine64-plus-installation-os
+            pinebook-installation-os
             rk3399-puma-installation-os
             wandboard-installation-os
             os-with-u-boot))
@@ -249,7 +250,7 @@ You have been warned.  Thanks for being so brave.\x1b[0m
           ;; The usual services.
           (syslog-service)
 
-          ;; The build daemon.  Register the hydra.gnu.org key as trusted.
+          ;; The build daemon.  Register the official server keys as trusted.
           ;; This allows the installation process to use substitutes by
           ;; default.
           (guix-service (guix-configuration (authorize-key? #t)))
@@ -470,6 +471,11 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
 
 (define pine64-plus-installation-os
   (embedded-installation-os u-boot-pine64-plus-bootloader
+                            "/dev/mmcblk0" ; SD card storage
+                            "ttyS0"))
+
+(define pinebook-installation-os
+  (embedded-installation-os u-boot-pinebook-bootloader
                             "/dev/mmcblk0" ; SD card storage
                             "ttyS0"))
 

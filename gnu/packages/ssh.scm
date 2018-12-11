@@ -67,16 +67,16 @@
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.7.6")
+    (version "0.7.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://git.libssh.org/projects/libssh.git")
-                    (commit (string-append "libssh-" version))))
+                     (url "https://git.libssh.org/projects/libssh.git")
+                     (commit (string-append "libssh-" version))))
               (patches (search-patches "libssh-hostname-parser-bug.patch"))
               (sha256
                (base32
-                "0slwqa36mhyb6brdv2jvb9fxp7rvsv3ziv67kaxx615jxn52l5pa"))
+                "07adxvhmnaq2l7sq7sn4sjlikbm1zdicq8lavq5yfila6jbx9z1y"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
@@ -134,14 +134,14 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "7.8p1")
+   (version "7.9p1")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1jj4f586r9lhakp2w0zv7j616d6x62m15q8l4nxq7haja6qlnj0s"))))
+               "1b8sy6v0b8v4ggmknwcqx3y1rjcpsll0f1f8f4vyv11x4ni3njvb"))))
    (build-system gnu-build-system)
    (native-inputs `(("groff" ,groff)))
    (inputs `(("openssl" ,openssl)

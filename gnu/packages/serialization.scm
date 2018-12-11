@@ -99,7 +99,6 @@ arbitrary data types and reversibly turns them into different representations,
 such as compact binary encodings, XML, or JSON.")
     (license license:bsd-3)))
 
-
 (define-public msgpack
   (package
     (name "msgpack")
@@ -132,13 +131,6 @@ such as compact binary encodings, XML, or JSON.")
     ;; zbuffer.hpp) which #include <zlib.h>.  However, 'guix gc --references'
     ;; does not detect a store reference to zlib since these headers are not
     ;; compiled.
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _
-             (invoke "autoreconf" "-vfi")
-             #t)))))
     (home-page "https://www.msgpack.org")
     (synopsis "Binary serialization library")
     (description "Msgpack is a library for C/C++ that implements binary
@@ -225,6 +217,26 @@ that implements both the msgpack and msgpack-rpc specifications.")
     (home-page "https://github.com/libmpack/libmpack-lua")
     (synopsis "Lua bindings for the libmpack binary serialization library")))
 
+(define-public lua5.1-libmpack
+  (package (inherit lua-libmpack)
+    (name "lua5.1-libmpack")
+    (arguments
+     (substitute-keyword-arguments (package-arguments lua-libmpack)
+       ((#:make-flags flags)
+        `(let* ((lua-version ,(package-version lua-5.1))
+                (lua-major+minor ,(version-major+minor (package-version lua-5.1))))
+           (list "CC=gcc"
+                 "USE_SYSTEM_LUA=yes"
+                 (string-append "MPACK_LUA_VERSION=" lua-version)
+                 (string-append "MPACK_LUA_VERSION_NOPATCH=" lua-major+minor)
+                 (string-append "PREFIX="
+                                (assoc-ref %outputs "out"))
+                 (string-append "LUA_CMOD_INSTALLDIR="
+                                (assoc-ref %outputs "out")
+                                "/lib/lua/" lua-major+minor))))))
+    (inputs
+     `(("lua" ,lua-5.1)))))
+
 (define-public lua5.2-libmpack
   (package (inherit lua-libmpack)
     (name "lua5.2-libmpack")
@@ -294,7 +306,7 @@ it a convenient format to store user input files.")
 (define-public capnproto
   (package
     (name "capnproto")
-    (version "0.6.1")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -302,7 +314,7 @@ it a convenient format to store user input files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "010s9yhq4531wvdfrdf2477zswhck6cjfby79w73rff3v06090l0"))))
+                "0hfdnhlbskagzgvby8wy6lrxj53zfzpfqimbhga68c0ji2yw1969"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -312,6 +324,14 @@ it a convenient format to store user input files.")
              ;; Workaround for test that tries to resolve port name from
              ;; /etc/services, which is not present in build environment.
              (substitute* "src/kj/async-io-test.c++" ((":http") ":80"))
+             #t))
+         (add-before 'check 'use-tmp-for-tempory-files
+           (lambda _
+             ;; Use /tmp for tempory files, as the default /var/tmp directory
+             ;; doesn't exist.
+             (substitute* "src/kj/filesystem-disk-test.c++"
+               (("VAR\\_TMP \"/var/tmp\"")
+                "VAR_TMP \"/tmp\""))
              #t)))))
     (home-page "https://capnproto.org")
     (synopsis "Capability-based RPC and serialization system")
@@ -418,7 +438,7 @@ to generate and parse.  The two primary functions are @code{cbor.loads} and
 (define-public flatbuffers
   (package
     (name "flatbuffers")
-    (version "1.9.0")
+    (version "1.10.0")
     (source
       (origin
         (method url-fetch)
@@ -426,7 +446,7 @@ to generate and parse.  The two primary functions are @code{cbor.loads} and
                             version ".tar.gz"))
         (sha256
          (base32
-          "1qs7sa9q4q6hs12yp875lvrv6393178qcmqs1ziwmjk088g4k9aw"))))
+          "0z4swldxs0s31hnkqdhsbfmc8vx3p7zsvmqaw4l31r2iikdy651p"))))
     (build-system cmake-build-system)
     (arguments
      '(#:build-type "Release"
@@ -435,7 +455,7 @@ to generate and parse.  The two primary functions are @code{cbor.loads} and
                             (assoc-ref %outputs "out") "/lib"))))
     (home-page "https://google.github.io/flatbuffers/")
     (synopsis "Memory-efficient serialization library")
-    (description "FlatBuffers is a cross platform serialization library for C++,
+    (description "FlatBuffers is a cross-platform serialization library for C++,
 C#, C, Go, Java, JavaScript, PHP, and Python.  It was originally created for
 game development and other performance-critical applications.")
     (license license:asl2.0)))

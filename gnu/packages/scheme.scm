@@ -66,6 +66,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages libedit)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
 (define (mit-scheme-source-directory system version)
@@ -205,98 +206,102 @@ features an integrated Emacs-like editor and a large runtime library.")
     (properties '((ftp-directory . "/gnu/mit-scheme/stable.pkg")))))
 
 (define-public bigloo
-  (package
-    (name "bigloo")
-    (version "4.3b")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "1x7xdgsls277zlf6gcaxs2cj62xj6yvb0qxh0ddmxfamvxba0cf4"))
-             ;; Remove bundled libraries.
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 (for-each delete-file-recursively
-                           '("gc" "gmp" "libuv"))
-                 #t))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:test-target "test"
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+  ;; Upstream modifies source tarballs in place, making significant changes
+  ;; long after the initial publication: <https://bugs.gnu.org/33525>.  For
+  ;; transparency, we give this "second 4.3b" release a different version
+  ;; number.
+  (let ((upstream-version "4.3b"))
+    (package
+      (name "bigloo")
+      (version "4.3b2")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo"
+                                    upstream-version ".tar.gz"))
+                (sha256
+                 (base32
+                  "02s0wrz5b1p0yqk9x6kax1vwzil7g9cyxfvl3vmy7fzznsza9gs4"))
+                ;; Remove bundled libraries.
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    (for-each delete-file-recursively
+                              '("gc" "gmp" "libuv"))
+                    #t))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
 
-             (substitute* "configure"
-               (("^shell=.*$")
-                (string-append "shell=" (which "bash") "\n"))
-               (("`date`") "0"))
-             (substitute* "autoconf/runtest.in"
-               ((", @DATE@") ""))
-             (substitute* "autoconf/osversion"
-               (("^version.*$") "version=\"\"\n"))
-             (substitute* "comptime/Makefile"
-               (("\\$\\(LDCOMPLIBS\\)")
-                "$(LDCOMPLIBS) $(LDFLAGS)"))
+               (substitute* "configure"
+                 (("^shell=.*$")
+                  (string-append "shell=" (which "bash") "\n"))
+                 (("`date`") "0"))
+               (substitute* "autoconf/runtest.in"
+                 ((", @DATE@") ""))
+               (substitute* "autoconf/osversion"
+                 (("^version.*$") "version=\"\"\n"))
+               (substitute* "comptime/Makefile"
+                 (("\\$\\(LDCOMPLIBS\\)")
+                  "$(LDCOMPLIBS) $(LDFLAGS)"))
 
-             ;; The `configure' script doesn't understand options
-             ;; of those of Autoconf.
-             (let ((out (assoc-ref outputs "out")))
-               (invoke "./configure"
-                       (string-append "--prefix=" out)
-                       ; use system libraries
-                       "--customgc=no"
-                       "--customunistring=no"
-                       "--customlibuv=no"
-                       (string-append"--mv=" (which "mv"))
-                       (string-append "--rm=" (which "rm"))
-                       "--cflags=-fPIC"
-                       (string-append "--ldflags=-Wl,-rpath="
-                                      (assoc-ref outputs "out")
-                                      "/lib/bigloo/" ,version)
-                       (string-append "--lispdir=" out
-                                      "/share/emacs/site-lisp")
-                       "--sharedbde=yes"
-                       "--sharedcompiler=yes"
-                       "--disable-patch"))))
-         (add-after 'install 'install-emacs-modes
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (dir (string-append out "/share/emacs/site-lisp")))
-               (invoke "make" "-C" "bmacs" "all" "install"
-                       (string-append "EMACSBRAND=emacs25")
-                       (string-append "EMACSDIR=" dir))))))))
-    (inputs
-     `(("emacs" ,emacs)                      ;UDE needs the X version of Emacs
-       ("libgc" ,libgc)
-       ("libunistring" ,libunistring)
-       ("libuv" ,libuv)
-       ("openssl" ,openssl)
-       ("sqlite" ,sqlite)
+               ;; The `configure' script doesn't understand options
+               ;; of those of Autoconf.
+               (let ((out (assoc-ref outputs "out")))
+                 (invoke "./configure"
+                         (string-append "--prefix=" out)
+                                                  ; use system libraries
+                         "--customgc=no"
+                         "--customunistring=no"
+                         "--customlibuv=no"
+                         (string-append"--mv=" (which "mv"))
+                         (string-append "--rm=" (which "rm"))
+                         "--cflags=-fPIC"
+                         (string-append "--ldflags=-Wl,-rpath="
+                                        (assoc-ref outputs "out")
+                                        "/lib/bigloo/" ,upstream-version)
+                         (string-append "--lispdir=" out
+                                        "/share/emacs/site-lisp")
+                         "--sharedbde=yes"
+                         "--sharedcompiler=yes"
+                         "--disable-patch"))))
+           (add-after 'install 'install-emacs-modes
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (dir (string-append out "/share/emacs/site-lisp")))
+                 (invoke "make" "-C" "bmacs" "all" "install"
+                         (string-append "EMACSBRAND=emacs25")
+                         (string-append "EMACSDIR=" dir))))))))
+      (inputs
+       `(("emacs" ,emacs)                     ;UDE needs the X version of Emacs
+         ("libgc" ,libgc)
+         ("libunistring" ,libunistring)
+         ("libuv" ,libuv)
+         ("openssl" ,openssl)
+         ("sqlite" ,sqlite)
 
-       ;; Optional APIs for which Bigloo has bindings.
-       ("avahi" ,avahi)
-       ("libphidget" ,libphidget)
-       ("pcre" ,pcre)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (propagated-inputs
-     `(("gmp" ,gmp)))                             ; bigloo.h refers to gmp.h
-    (home-page "http://www-sop.inria.fr/indes/fp/Bigloo/")
-    (synopsis "Efficient Scheme compiler")
-    (description
-     "Bigloo is a Scheme implementation devoted to one goal: enabling
-Scheme based programming style where C(++) is usually
-required.  Bigloo attempts to make Scheme practical by offering
-features usually presented by traditional programming languages
-but not offered by Scheme and functional programming.  Bigloo
-compiles Scheme modules.  It delivers small and fast stand alone
-binary executables.  Bigloo enables full connections between
-Scheme and C programs and between Scheme and Java programs.")
-    (license gpl2+)))
+         ;; Optional APIs for which Bigloo has bindings.
+         ("avahi" ,avahi)
+         ("libphidget" ,libphidget)
+         ("pcre" ,pcre)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (propagated-inputs
+       `(("gmp" ,gmp)))                            ; bigloo.h refers to gmp.h
+      (home-page "http://www-sop.inria.fr/indes/fp/Bigloo/")
+      (synopsis "Efficient Scheme compiler")
+      (description
+       "Bigloo is a Scheme implementation devoted to one goal: enabling Scheme
+based programming style where C(++) is usually required.  Bigloo attempts to
+make Scheme practical by offering features usually presented by traditional
+programming languages but not offered by Scheme and functional programming.
+Bigloo compiles Scheme modules.  It delivers small and fast stand alone binary
+executables.  Bigloo enables full connections between Scheme and C programs
+and between Scheme and Java programs.")
+      (license gpl2+))))
 
 (define-public hop
   (package
@@ -1095,3 +1100,53 @@ in-lining, unboxing, and flow-directed program-specific and
 program-point-specific low-level representation selection and code
 generation.")
       (license gpl2+))))
+
+(define-public femtolisp
+  (let ((commit "68c5b1225572ecf2c52baf62f928063e5a30511b")
+        (revision "1"))
+    (package
+      (name "femtolisp")
+      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/JeffBezanson/femtolisp.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "04rnwllxnl86zw8c6pwxznn49bvkvh0f1lfliy085vjzvlq3rgja"))))
+      ;; See "utils.h" for supported systems. Upstream bug:
+      ;; https://github.com/JeffBezanson/femtolisp/issues/25
+      (supported-systems
+       (fold delete %supported-systems
+             '("armhf-linux" "mips64el-linux" "aarch64-linux")))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags '("CC=gcc" "release")
+         #:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; No configure script
+           (replace 'install ; Makefile has no 'install phase
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin")))
+                (install-file "flisp" bin)
+                #t)))
+           ;; The flisp binary is now available, run bootstrap to
+           ;; generate flisp.boot and afterwards runs make test.
+           (add-after 'install 'bootstrap-gen-and-test
+             (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin")))
+                (and
+                 (zero? (system* "./bootstrap.sh"))
+                 (install-file "flisp.boot" bin))))))))
+      (synopsis "Scheme-like lisp implementation")
+      (description
+       "@code{femtolisp} is a scheme-like lisp implementation with a
+simple, elegant Scheme dialect.  It is a lisp-1 with lexical scope.
+The core is 12 builtin special forms and 33 builtin functions.")
+      (home-page "https://github.com/JeffBezanson/femtolisp")
+      (license bsd-3))))

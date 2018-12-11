@@ -58,7 +58,7 @@
 (define-public libmpdclient
   (package
     (name "libmpdclient")
-    (version "2.15")
+    (version "2.16")
     (source (origin
               (method url-fetch)
               (uri
@@ -67,7 +67,7 @@
                               "/libmpdclient-" version ".tar.xz"))
               (sha256
                (base32
-                "1la60ar6i4ghpscrlgm45kci9b74bvkpsfybhg0ygs4rzpwzdnxl"))))
+                "0r24cl3i9nvs6a47mvwaxk1kb5wmnhkhrw1q5cq9010fgjvdlszs"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -90,7 +90,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.20.21")
+    (version "0.20.23")
     (source (origin
               (method url-fetch)
               (uri
@@ -99,7 +99,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "1p2qrhdb1gzfv3y5dvvbc9s2wwmhg3azvzf8r02hzhk5q96pc8l3"))))
+                "1smg6hab4kwrzsw1k7vlpya3ampdk8psnmkrzxlgb43j4fgmygjh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -165,7 +165,7 @@ protocol.")
 (define-public mpd-mpc
   (package
     (name "mpd-mpc")
-    (version "0.30")
+    (version "0.31")
     (source (origin
               (method url-fetch)
               (uri
@@ -174,10 +174,12 @@ protocol.")
                               "/mpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1kkzhrypkp0v6xv4d6db415pd0h6jqki29kfpsnfkvrhhh55pz35"))))
+                "0b9bsn4sl26xc6wdcms51x9yxznkxkppaycn8gnv4rd1m21kwdv2"))))
     (build-system meson-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)))
     (synopsis "Music Player Daemon client")
     (description "MPC is a minimalist command line interface to MPD, the music
 player daemon.")
@@ -242,7 +244,7 @@ terminal using ncurses.")
                 "0m0mjb049sl62vx13h9waavysa30mk0rphacksnvf94n13la62v5"))))
     (build-system gnu-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)
-              ("boost"  ,boost)
+              ("boost"  ,boost-cxx14)
               ("readline" ,readline)
               ("ncurses" ,ncurses)
               ("taglib" ,taglib)

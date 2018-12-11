@@ -58,6 +58,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial))
@@ -65,7 +66,7 @@
 (define-public dnsmasq
   (package
     (name "dnsmasq")
-    (version "2.79")
+    (version "2.80")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -73,7 +74,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "07w6cw706yyahwvbvslhkrbjf2ynv567cgy9pal8bz8lrbsp9bbq"))))
+                "1fv3g8vikj3sn37x1j6qsywn09w1jipvlv34j3q5qrljbrwa5ayd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -363,7 +364,7 @@ to result in system-wide compromise.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
@@ -371,7 +372,7 @@ to result in system-wide compromise.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0gxqc4ynd2g1a5dwaazqh9n8injh49a7dz0l9bbxqgv47dnrvxvq"))))
+         "0p9w6spar5dfi7fplxjcq4394wldabaws0ns30cqq6sxqfwv6qn3"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
@@ -569,14 +570,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.7.2")
+    (version "2.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0cc4wgb02ch09x99a1fnr7vsdik8k920q7jafzcamjvy3kpb4w6b"))
+                "1pwjcv7hzhqawisibybma160k77a6f1v94xw6ay9c7j49vrw05w7"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -727,3 +728,56 @@ The client supports both dynamic and (near) static services, as well as MX
 record and alternative name management.  It caches the address, and only
 attempts the update when it has changed.")
     (license license:gpl2+)))
+
+(define-public hnsd
+  ;; There have been no releases yet, hence this commit.
+  (let ((revision "0")
+        (commit "895d89c25d316d18df9d374fe78aae3902bc89fb"))
+   (package
+     (name "hnsd")
+     (version (git-version "0.0" revision commit))
+     (source (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/handshake-org/hnsd")
+                     (commit commit)))
+               (sha256
+                (base32
+                 "0704y73sddn24jga9csw4gxyfb3pnrfnk0vdcph84n1h38490l16"))
+               (file-name (git-file-name name version))
+               (modules '((guix build utils)))
+               (snippet
+                '(begin
+                   ;; Delete the bundled copy of libuv.
+                   (delete-file-recursively "uv")
+                   (substitute* "configure.ac"
+                     (("AC_CONFIG_SUBDIRS\\(\\[uv\\]\\)") ""))
+                   (substitute* "Makefile.am"
+                     (("SUBDIRS = uv") "\n")
+                     (("\\$\\(top_builddir\\)/uv/libuv.la") "-luv")
+
+                     ;; Make sure the 'hnsd' binary is installed and
+                     ;; dynamically-linked.
+                     (("noinst_PROGRAMS") "bin_PROGRAMS")
+                     (("hnsd_LDFLAGS = -static") ""))
+
+                   ;; This script tries to chdir to "uv" and doesn't do more
+                   ;; than "autoreconf" so remove it.
+                   (delete-file "autogen.sh")
+                   #t))))
+     (build-system gnu-build-system)
+     (arguments
+      '(#:configure-flags '("--disable-static"))) ;no need for libhsk.a
+     (native-inputs
+      `(("autoconf" ,autoconf)
+        ("automake" ,automake)
+        ("libtool" ,libtool)))
+     (inputs
+      `(("unbound" ,unbound)
+        ("libuv" ,libuv)))
+     (home-page "https://www.handshake.org/")
+     (synopsis "Resolver daemon for the Handshake naming protocol")
+     (description
+      "@command{hnsd} is a @dfn{host name resolver} for the Handshake Naming
+System (HNS) peer-to-peer network.")
+     (license license:expat))))

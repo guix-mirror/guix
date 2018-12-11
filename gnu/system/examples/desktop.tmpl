@@ -26,7 +26,7 @@
           (type luks-device-mapping))))
 
   (file-systems (cons (file-system
-                        (device "my-root")
+                        (device (file-system-label "my-root"))
                         (mount-point "/")
                         (type "ext4")
                         (dependencies mapped-devices))

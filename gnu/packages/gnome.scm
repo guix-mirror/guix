@@ -31,6 +31,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,6 +96,7 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages inkscape)
   #:use-module (gnu packages ibus)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
@@ -151,6 +153,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages vpn)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
@@ -1321,9 +1324,13 @@ functionality was designed to be as reusable and portable as possible.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       ;; The programmer kindly gives us a hook to turn off deprecation
-       ;; warnings ...
-       '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
+       '(;; We don't need static libraries, plus they don't build reproducibly
+         ;; (non-deterministic ordering of .o files in the archive.)
+         "--disable-static"
+
+         ;; The programmer kindly gives us a hook to turn off deprecation
+         ;; warnings ...
+         "DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
        ;; ... which they then completly ignore !!
        #:phases
        (modify-phases %standard-phases
@@ -1343,7 +1350,8 @@ featuring mature C, C++ and Python bindings.")
     ;; Licence notice is unclear.  The Web page simply say "GPL" without giving
     ;; a version.  SOME of the code files have licence notices for GPLv2+.
     ;; The tarball contains files of the text of GPLv2 and LGPLv2.
-    (license license:gpl2+)))
+    (license license:gpl2+)
+    (properties `((upstream-name . "ORBit2")))))
 
 
 (define-public libbonobo
@@ -1371,7 +1379,14 @@ featuring mature C, C++ and Python bindings.")
            (lambda _
              (substitute* "activation-server/Makefile.in"
                (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
-             #t)))))
+             #t)))
+
+       ;; There's apparently a race condition between the server stub
+       ;; generation and linking of the example under 'samples/echo' that can
+       ;; lead do undefined references when building in parallel, as reported
+       ;; at <https://forums.gentoo.org/viewtopic-t-223376-start-550.html>.
+       ;; Thus, disable parallel builds.
+       #:parallel-build? #f))
     (inputs `(("popt" ,popt)
               ("libxml2" ,libxml2)))
     ;; The following are Required by the .pc file
@@ -2121,7 +2136,15 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.52.2.a")
+    (version "0.54.2.a")
+    (home-page "https://github.com/thestinger/vte-ng")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1r7d9m07cpdr4f7rw3yx33hmp4jmsk0dn5byq5wgksb2qjbc4ags"))))
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
@@ -2129,14 +2152,6 @@ editors, IDEs, etc.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ,@(package-native-inputs vte)))
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/thestinger/"
-                                  name "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1fd65mk7c87k03vhnb2ixkjvv9nja04mfq813iyjji1b11f2sh7v"))))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'bootstrap
@@ -2465,7 +2480,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.64.0")
+    (version "2.64.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2473,7 +2488,7 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "09z7g3spww3f84y8jmicdd6lqp360mbggpg5h1fq1v4p5ihcjnyr"))))
+                "1il6lyrmfi0hfh3ysw8w1qzc1rdz0igkb7dv6d8g5mmilnac3pbm"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -3631,7 +3646,7 @@ for application developers.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.26.1")
+    (version "3.26.2")
     (source
      (origin
        (method url-fetch)
@@ -3640,7 +3655,7 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "10n302fdp3lhkzbij5sbzmsnln738029xil6cnng2d4dxv4n1099"))
+         "1llyisls3pzf5bwkpxyfyxc2d3gpa09n5pjy7qsjdqrp3ya4k36g"))
        (patches (search-patches "totem-meson-easy-codec.patch"))))
     (build-system meson-build-system)
     (native-inputs
@@ -3752,7 +3767,7 @@ which can read a large number of file formats.")
                       "b182c6b9e1d09e601bac0b703cc5f8b159ebbc3a.patch"))
                 (sha256
                  (base32
-                  "17j45vyyr071ka3nckj2gycgyyv1j08fyrxw89jfdq2442nzrsiy")))))
+                  "06n87xgf927djmv1vshal84nqx7g8nwgljza3g2vydhy7g2n1csq")))))
             (sha256
              (base32
               "0hzcns8gf5yb0rm4ss8jd8qzarcaplp5cylk6plwilsqfvxj4xn2"))))
@@ -4098,15 +4113,15 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.38")
+    (version "0.9.45")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.gnome.org/World/eolie/"
-                                  "uploads/9814c06a1bc83ea09c3da8719a9ed11b/"
+                                  "uploads/020f3f686e2b938731752a1d9f5bfa7e/"
                                   "eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "10vrh91rapgfmqwc6jkcybpmlvn4q0y8bnklw3rddzigf9kvqsff"))))
+                "0371p7g13r0b7zjc48fdcil43ddwpmyvkd2a4vv6ifsqmny6kl42"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -4618,14 +4633,6 @@ configuration program to choose applications starting on login.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'set-paths 'work-around-gcc-7-include-path-issue
-           ;; FIXME: Work around a problem with gcc-7 includes (see
-           ;; <https://bugs.gnu.org/30756>).  Note that we use gcc-7
-           ;; to work around an internal compiler error in gcc-5.
-           (lambda _
-             (unsetenv "C_INCLUDE_PATH")
-             (unsetenv "CPLUS_INCLUDE_PATH")
-             #t))
          (add-before
           'check 'pre-check
           (lambda _
@@ -4643,11 +4650,7 @@ configuration program to choose applications starting on login.")
               ((".*expect\\(datestr\\).*") ""))
             #t)))))
     (native-inputs
-     `(("gcc" ,gcc-7) ; FIXME: Work around an internal compiler error in
-                      ; gcc-5.  Try removing this when our default compiler is
-                      ; no longer gcc-5.5.0, and also remove the
-                      ; 'work-around-gcc-7-include-path-issue' phase above.
-       ("glib:bin" ,glib "bin")       ; for glib-compile-resources
+     `(("glib:bin" ,glib "bin")       ; for glib-compile-resources
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)
        ;; For testing
@@ -6423,15 +6426,16 @@ functionality and behavior.")
 (define-public arc-theme
   (package
     (name "arc-theme")
-    (version "20170302")
+    (version "20181022")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/horst3180/arc-theme"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/NicoHood/arc-theme.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0igxpngnkf1wpsg872a9jg3c9f5z8afm312yfbillz16mk8w39cw"))))
+                "08951dk1irfadwpr3p323a4fprmxg53rk2r2niwq3v62ryhi3663"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -6442,16 +6446,20 @@ functionality and behavior.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("gtk+" ,gtk+)))
+       ("glib" ,glib "bin")             ; for glib-compile-resources
+       ("gnome-shell" ,gnome-shell)
+       ("gtk+" ,gtk+)
+       ("inkscape" ,inkscape)
+       ("optipng" ,optipng)
+       ("pkg-config" ,pkg-config)
+       ("sassc" ,sassc)))
     (synopsis "A flat GTK+ theme with transparent elements")
     (description "Arc is a flat theme with transparent elements for GTK 3, GTK
 2, and GNOME Shell which supports GTK 3 and GTK 2 based desktop environments
 like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
     (home-page "https://github.com/horst3180/arc-theme")
     ;; No "or later" language found.
-    (license license:gpl3)))
+    (license license:gpl3+)))
 
 (define-public faba-icon-theme
   (package

@@ -13,6 +13,7 @@
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,16 +68,14 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
-  #:use-module (gnu packages polkit)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
-  #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
 
@@ -229,109 +228,69 @@ the freedesktop.org XDG Base Directory specification.")
 (define-public elogind
   (package
     (name "elogind")
-    (version "232.4")
+    (version "239.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/elogind/elogind/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/elogind/elogind")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qcxian48z2dj5gfmp7brrngdydqf2jm00f4rjr5sy1myh8fy931"))
-              (patches (search-patches "elogind-glibc-2.27.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (use-modules (guix build utils))
-                  (substitute* "Makefile.am"
-                    ;; Avoid validation against DTD because the DTDs for
-                    ;; both doctype 4.2 and 4.5 are needed.
-                    (("XSLTPROC_FLAGS = ") "XSLTPROC_FLAGS = --novalid"))
-                  #t))))
-    (build-system gnu-build-system)
+                "1gipnbnlz5k3gxv33wyhi2zd94hlfa9lm360p8z6w5i9s8dzhf52"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:tests? #f ;FIXME: "make check" in the "po" directory fails.
-       #:configure-flags
-       (list (string-append "--with-udevrulesdir="
-                            (assoc-ref %outputs "out")
-                            "/lib/udev/rules.d")
-
-             ;; Let elogind be its own cgroup controller, rather than relying
-             ;; on systemd or OpenRC.  By default, 'configure' makes an
-             ;; incorrect guess.
-             "--with-cgroup-controller=elogind"
-
-             (string-append "--with-rootprefix="
-                            (assoc-ref %outputs "out"))
-             (string-append "--with-rootlibexecdir="
-                            (assoc-ref %outputs "out")
-                            "/libexec/elogind")
-             ;; These are needed to ensure that lto linking works.
-             "RANLIB=gcc-ranlib"
-             "AR=gcc-ar"
-             "NM=gcc-nm")
-       #:make-flags '("PKTTYAGENT=/run/current-system/profile/bin/pkttyagent")
+     `(#:configure-flags
+       (let* ((out (assoc-ref %outputs "out"))
+              (sysconf (string-append out "/etc"))
+              (libexec (string-append out "/libexec/elogind"))
+              (dbuspolicy (string-append out "/etc/dbus-1/system.d"))
+              (shepherd (assoc-ref %build-inputs "shepherd"))
+              (halt-path (string-append shepherd "/sbin/halt"))
+              (kexec-path "")           ;not available in Guix yet
+              (poweroff-path (string-append shepherd "/sbin/shutdown"))
+              (reboot-path (string-append shepherd "/sbin/reboot")))
+         (list
+          (string-append "-Drootprefix=" out)
+          (string-append "-Dsysconfdir=" sysconf)
+          (string-append "-Drootlibexecdir=" libexec)
+          (string-append "-Ddbuspolicydir=" dbuspolicy)
+          (string-append "-Dc_link_args=-Wl,-rpath=" libexec)
+          (string-append "-Dcpp_link_args=-Wl,-rpath=" libexec)
+          (string-append "-Dhalt-path=" halt-path)
+          (string-append "-Dkexec-path=" kexec-path)
+          (string-append "-Dpoweroff-path=" poweroff-path)
+          (string-append "-Dreboot-path=" reboot-path)
+          "-Dcgroup-controller=elogind"
+          ;; Disable some tests.
+          "-Dtests=false"
+          "-Dslow-tests=false"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-locale-header
+         (add-after 'unpack 'fix-pkttyagent-path
            (lambda _
-             ;; Fix compilation with glibc >= 2.26, which removed xlocale.h.
-             ;; This can be removed for elogind 234.
-             (substitute* "src/basic/parse-util.c"
-               (("xlocale\\.h") "locale.h"))
+             (substitute* "meson.build"
+               (("join_paths\\(bindir, 'pkttyagent'\\)")
+                "'\"/run/current-system/profile/bin/pkttyagent\"'"))
              #t))
-         (replace 'bootstrap
+         (add-after 'unpack 'change-pid-file-path
            (lambda _
-             (invoke "intltoolize" "--force" "--automake")
-             (invoke "autoreconf" "-vif")))
-         (add-before 'build 'fix-service-file
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Fix the file name of the 'elogind' binary in the D-Bus
-             ;; '.service' file.
-             (substitute* "src/login/org.freedesktop.login1.service"
-               (("^Exec=.*")
-                (string-append "Exec=" (assoc-ref %outputs "out")
-                               "/libexec/elogind/elogind\n")))
-             #t))
-         (add-after 'install 'add-libcap-to-search-path
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Add a missing '-L' for libcap in libelogind.la.  See
-             ;; <https://lists.gnu.org/archive/html/guix-devel/2017-09/msg00084.html>.
-             (let ((libcap (assoc-ref inputs "libcap"))
-                   (out    (assoc-ref outputs "out")))
-               (substitute* (string-append out "/lib/libelogind.la")
-                 (("-lcap")
-                  (string-append "-L" libcap "/lib -lcap")))
-               #t)))
-         (add-after 'unpack 'remove-uaccess-tag
-           (lambda _
-             ;; systemd supports a "uaccess" built-in tag, but eudev currently
-             ;; doesn't.  This leads to eudev warnings that we'd rather not
-             ;; see, so remove the reference to "uaccess."
-             (substitute* "src/login/73-seat-late.rules.in"
-               (("^TAG==\"uaccess\".*" line)
-                (string-append "# " line "\n")))
+             (substitute* "src/login/elogind.c"
+               (("\"/run/elogind.pid\"") "\"/run/systemd/elogind.pid\""))
              #t)))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("intltool" ,intltool)
-       ("gettext" ,gettext-minimal)
-       ("python" ,python)
+     `(("docbook-xml" ,docbook-xml)
+       ("docbook-xml-4.2" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
-       ("docbook-xml" ,docbook-xml)
-       ("xsltproc" ,libxslt)
-       ("m4" ,m4)
+       ("gettext" ,gettext-minimal)
+       ("gperf" ,gperf)
        ("libxml2" ,libxml2)                     ;for XML_CATALOG_FILES
+       ("m4" ,m4)
        ("pkg-config" ,pkg-config)
-
-       ;; Use gperf 3.0 to work around
-       ;; <https://github.com/wingo/elogind/issues/8>.
-       ("gperf" ,gperf-3.0)))
+       ("python" ,python)
+       ("xsltproc" ,libxslt)))
     (inputs
      `(("linux-pam" ,linux-pam)
-       ("linux-libre-headers" ,linux-libre-headers)
        ("libcap" ,libcap)
        ("shepherd" ,shepherd)                ;for 'halt' and 'reboot', invoked
                                              ;when pressing the power button

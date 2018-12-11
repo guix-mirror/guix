@@ -62,11 +62,6 @@
                                      #:target target)
                   #:guile-for-build (%guile-for-build)))
 
-(define-syntax-rule (test-assertm name exp)
-  (test-assert name
-    (run-with-store %store exp
-                    #:guile-for-build (%guile-for-build))))
-
 (define %extension-package
   ;; Example of a package to use when testing 'with-extensions'.
   (dummy-package "extension"
@@ -481,7 +476,15 @@
     (return (and (string=? (readlink (string-append out "/foo")) guile)
                  (string=? (readlink out2) file)
                  (equal? refs (list (dirname (dirname guile))))
-                 (equal? refs2 (list file))))))
+                 (equal? refs2 (list file))
+                 (null? (derivation-properties drv))))))
+
+(test-assertm "gexp->derivation properties"
+  (mlet %store-monad ((drv (gexp->derivation "foo"
+                                             #~(mkdir #$output)
+                                             #:properties '((type . test)))))
+    (return (equal? '((type . test))
+                    (derivation-properties drv)))))
 
 (test-assertm "gexp->derivation vs. grafts"
   (mlet* %store-monad ((graft?  (set-grafting #f))
@@ -679,6 +682,22 @@
   ((@@ (guix gexp) gexp-modules)
    #~(foo #$@(list (with-imported-modules '((foo)) #~+)
                    (with-imported-modules '((bar)) #~-)))))
+
+(test-assert "gexp-modules deletes duplicates"   ;<https://bugs.gnu.org/32966>
+  (let ((make-file (lambda ()
+                     ;; Use 'eval' to make sure we get an object that's not
+                     ;; 'eq?' nor 'equal?' due to the closures it embeds.
+                     (eval '(scheme-file "bar.scm" #~(define-module (bar)))
+                           (current-module)))))
+    (define result
+      ((@@ (guix gexp) gexp-modules)
+       (with-imported-modules `(((bar) => ,(make-file))
+                                ((bar) => ,(make-file))
+                                (foo) (foo))
+         #~+)))
+
+    (match result
+      (((('bar) '=> (? scheme-file?)) ('foo)) #t))))
 
 (test-equal "gexp-modules and literal Scheme object"
   '()

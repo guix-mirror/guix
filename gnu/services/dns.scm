@@ -684,7 +684,8 @@
   (string-delete #\? (symbol->string field-name)))
 
 (define (serialize-field field-name val)
-  (format #t "~a=~a\n" (uglify-field-name field-name) val))
+  (when (not (member field-name '(group secret-file user)))
+    (format #t "~a=~a\n" (uglify-field-name field-name) val)))
 
 (define (serialize-boolean field-name val)
   (serialize-field field-name (if val "yes" "no")))
@@ -763,9 +764,9 @@ manually.")
         (use-modules (guix build utils)
                      (ice-9 rdelim))
         (let ((ddclient-user
-               #$(passwd:uid (getpw (ddclient-configuration-user config))))
+               (passwd:uid (getpw #$(ddclient-configuration-user config))))
               (ddclient-group
-               #$(passwd:gid (getpw (ddclient-configuration-group config))))
+               (passwd:gid (getpw #$(ddclient-configuration-group config))))
               (ddclient-secret-file
                #$(ddclient-configuration-secret-file config)))
           ;; 'ddclient' complains about ddclient.conf file permissions, which

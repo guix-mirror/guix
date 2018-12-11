@@ -58,7 +58,8 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (ice-9 match))
 
 (define-public efl
   (package
@@ -139,12 +140,16 @@
     (arguments
      `(#:configure-flags '("--disable-silent-rules"
                            "--disable-systemd"
+                           "--with-profile=release"
                            "--enable-liblz4"
                            "--enable-xinput22"
                            "--enable-image-loader-webp"
                            "--enable-multisense"
-                           "--with-opengl=es"
-                           "--enable-egl"
+                           ,@(match (%current-system)
+                               ("armhf-linux"
+                                '("--with-opengl=es" "--with-egl"))
+                               (_
+                                '("--with-opengl=full")))
                            "--enable-harfbuzz"
                            ;; for wayland
                            "--enable-wayland"
@@ -178,7 +183,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.2.1")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -186,10 +191,9 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "1ii8332bl88l8md3gvz5dhi9bjpm6shyf14ck9kfyy7d56hp71mc"))
+                "07vw28inkimi9avp16j0rqcfqjq16081554qsv29pcqhz18xp59r"))
               (modules '((guix build utils)))
               ;; Remove the bundled fonts.
-              ;; TODO: Remove bundled lz4.
               (snippet
                '(begin
                   (delete-file-recursively "data/fonts")
@@ -271,7 +275,8 @@ Libraries with some extra bells and whistles.")
              (let ((xkeyboard (assoc-ref inputs "xkeyboard-config"))
                    (setxkbmap (assoc-ref inputs "setxkbmap"))
                    (utils     (assoc-ref inputs "util-linux"))
-                   (libc      (assoc-ref inputs "libc")))
+                   (libc      (assoc-ref inputs "libc"))
+                   (efl       (assoc-ref inputs "efl")))
                ;; We need to patch the path to 'base.lst' to be able
                ;; to switch the keyboard layout in E.
                (substitute* (list "src/modules/xkbswitch/e_mod_parse.c"
@@ -286,6 +291,9 @@ Libraries with some extra bells and whistles.")
                                   "src/modules/conf_intl/e_int_config_intl.c"
                                   "src/modules/wizard/page_010.c")
                  (("locale -a") (string-append libc "/bin/locale -a")))
+               (substitute* "src/bin/e_import_config_dialog.c"
+                 (("%s/edje_cc -v %s %s %s\", e_prefix_bin_get\\(\\)")
+                  (string-append efl "/bin/edje_cc -v %s %s %s\"")))
                (substitute* "src/modules/everything/evry_plug_apps.c"
                  (("/usr/bin/") ""))
                (substitute* "configure"

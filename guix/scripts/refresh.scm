@@ -179,24 +179,24 @@ specified with `--select'.\n"))
 
   (let* ((packages (fold-packages cons '()))
          (total    (length packages)))
-    (define covered
-      (fold (lambda (updater covered)
-              (let ((matches (count (upstream-updater-predicate updater)
-                                    packages)))
+    (define uncovered
+      (fold (lambda (updater uncovered)
+              (let ((matches (filter (upstream-updater-predicate updater)
+                                     packages)))
                 ;; TRANSLATORS: The parenthetical expression here is rendered
                 ;; like "(42% coverage)" and denotes the fraction of packages
                 ;; covered by the given updater.
                 (format #t (G_ "  - ~a: ~a (~2,1f% coverage)~%")
                         (upstream-updater-name updater)
                         (G_ (upstream-updater-description updater))
-                        (* 100. (/ matches total)))
-                (+ covered matches)))
-            0
+                        (* 100. (/ (length matches) total)))
+                (lset-difference eq? uncovered matches)))
+            packages
             (force %updaters)))
 
     (newline)
     (format #t (G_ "~2,1f% of the packages are covered by these updaters.~%")
-            (* 100. (/ covered total))))
+            (* 100. (/ (- total (length uncovered)) total))))
   (exit 0))
 
 (define (warn-no-updater package)
@@ -278,7 +278,12 @@ the latest known version of ~a (~a)~%")
 
 (define (all-packages)
   "Return the list of all the distro's packages."
-  (fold-packages cons '()
+  (fold-packages (lambda (package result)
+                   ;; Ignore deprecated packages.
+                   (if (package-superseded package)
+                       result
+                       (cons package result)))
+                 '()
                  #:select? (const #t)))           ;include hidden packages
 
 (define (list-dependents packages)

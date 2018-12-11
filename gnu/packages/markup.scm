@@ -173,7 +173,8 @@ convert it to structurally valid XHTML (or HTML).")
                 (string-append
                       "OTHERLDFLAGS = -lmarkdown -Wl,-rpath="
                       (assoc-ref inputs "discount")
-                      "/lib"))))))))
+                      "/lib")))
+             #t)))))
     (inputs
      `(("discount" ,discount)))
     (home-page

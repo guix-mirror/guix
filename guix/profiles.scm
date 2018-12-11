@@ -56,7 +56,7 @@
             profile-error-profile
             &profile-not-found-error
             profile-not-found-error?
-            &profile-collistion-error
+            &profile-collision-error
             profile-collision-error?
             profile-collision-error-entry
             profile-collision-error-conflict

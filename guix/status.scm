@@ -325,7 +325,19 @@ addition to build events."
     (display "\r" port))                          ;erase the spinner
   (match event
     (('build-started drv . _)
-     (format port (info (G_ "building ~a...")) drv)
+     (let ((properties (derivation-properties
+                        (read-derivation-from-file drv))))
+       (match (assq-ref properties 'type)
+         ('graft
+           (let ((count (match (assq-ref properties 'graft)
+                          (#f  0)
+                          (lst (or (assq-ref lst 'count) 0)))))
+             (format port (info (N_ "applying ~a graft for ~a..."
+                                    "applying ~a grafts for ~a..."
+                                    count))
+                     count drv)))
+         (_
+          (format port (info (G_ "building ~a...")) drv))))
      (newline port))
     (('build-succeeded drv . _)
      (when (or print-log? (not (extended-build-trace-supported?)))
@@ -393,6 +405,9 @@ addition to build events."
   expected hash: ~a
   actual hash:   ~a~%"))
              expected actual))
+    (('build-remote drv host _ ...)
+     (format port (info (G_ "offloading build of ~a to '~a'")) drv host)
+     (newline port))
     (('build-log pid line)
      (if (multiplexed-output-supported?)
          (if (not pid)

@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1251,18 +1252,57 @@ the tty to run, among other things."
                                 (string-concatenate
                                  (map cache->config caches)))))))
 
+(define (nscd-action-procedure nscd config option)
+  ;; XXX: This is duplicated from mcron; factorize.
+  #~(lambda (_ . args)
+      ;; Run 'nscd' in a pipe so we can explicitly redirect its output to
+      ;; 'current-output-port', which at this stage is bound to the client
+      ;; connection.
+      (let ((pipe (apply open-pipe* OPEN_READ #$nscd
+                         "-f" #$config #$option args)))
+        (let loop ()
+          (match (read-line pipe 'concat)
+            ((? eof-object?)
+             (catch 'system-error
+               (lambda ()
+                 (zero? (close-pipe pipe)))
+               (lambda args
+                 ;; There's a race with the SIGCHLD handler, which could
+                 ;; call 'waitpid' before 'close-pipe' above does.  If we
+                 ;; get ECHILD, that means we lost the race, but that's
+                 ;; fine.
+                 (or (= ECHILD (system-error-errno args))
+                     (apply throw args)))))
+            (line
+             (display line)
+             (loop)))))))
+
+(define (nscd-actions nscd config)
+  "Return Shepherd actions for NSCD."
+  ;; Make this functionality available as actions because that's a simple way
+  ;; to run the right 'nscd' binary with the right config file.
+  (list (shepherd-action
+         (name 'statistics)
+         (documentation "Display statistics about nscd usage.")
+         (procedure (nscd-action-procedure nscd config "--statistics")))
+        (shepherd-action
+         (name 'invalidate)
+         (documentation
+          "Invalidate the given cache--e.g., 'hosts' for host name lookups.")
+         (procedure (nscd-action-procedure nscd config "--invalidate")))))
+
 (define (nscd-shepherd-service config)
   "Return a shepherd service for CONFIG, an <nscd-configuration> object."
-  (let ((nscd.conf     (nscd.conf-file config))
+  (let ((nscd          (file-append (nscd-configuration-glibc config)
+                                    "/sbin/nscd"))
+        (nscd.conf     (nscd.conf-file config))
         (name-services (nscd-configuration-name-services config)))
     (list (shepherd-service
            (documentation "Run libc's name service cache daemon (nscd).")
            (provision '(nscd))
            (requirement '(user-processes))
            (start #~(make-forkexec-constructor
-                     (list #$(file-append (nscd-configuration-glibc config)
-                                          "/sbin/nscd")
-                           "-f" #$nscd.conf "--foreground")
+                     (list #$nscd "-f" #$nscd.conf "--foreground")
 
                      ;; Wait for the PID file.  However, the PID file is
                      ;; written before nscd is actually listening on its
@@ -1276,7 +1316,12 @@ the tty to run, among other things."
                                                   (string-append dir "/lib"))
                                                 (list #$@name-services))
                                            ":")))))
-           (stop #~(make-kill-destructor))))))
+           (stop #~(make-kill-destructor))
+           (modules `((ice-9 popen)               ;for the actions
+                      (ice-9 rdelim)
+                      (ice-9 match)
+                      ,@%default-modules))
+           (actions (nscd-actions nscd nscd.conf))))))
 
 (define nscd-activation
   ;; Actions to take before starting nscd.
@@ -1454,26 +1499,27 @@ starting at FIRST-UID, and under GID."
           1+
           1))
 
-(define (hydra-key-authorization key guix)
-  "Return a gexp with code to register KEY, a file containing a 'guix archive'
-public key, with GUIX."
+(define (hydra-key-authorization keys guix)
+  "Return a gexp with code to register KEYS, a list of files containing 'guix
+archive' public keys, with GUIX."
   #~(unless (file-exists? "/etc/guix/acl")
-      (let ((pid (primitive-fork)))
-        (case pid
-          ((0)
-           (let* ((key  #$key)
-                  (port (open-file key "r0b")))
-             (format #t "registering public key '~a'...~%" key)
-             (close-port (current-input-port))
-             (dup port 0)
-             (execl #$(file-append guix "/bin/guix")
-                    "guix" "archive" "--authorize")
-             (exit 1)))
-          (else
-           (let ((status (cdr (waitpid pid))))
-             (unless (zero? status)
-               (format (current-error-port) "warning: \
-failed to register hydra.gnu.org public key: ~a~%" status))))))))
+      (for-each (lambda (key)
+                  (let ((pid (primitive-fork)))
+                    (case pid
+                      ((0)
+                       (let* ((port (open-file key "r0b")))
+                         (format #t "registering public key '~a'...~%" key)
+                         (close-port (current-input-port))
+                         (dup port 0)
+                         (execl #$(file-append guix "/bin/guix")
+                                "guix" "archive" "--authorize")
+                         (primitive-exit 1)))
+                      (else
+                       (let ((status (cdr (waitpid pid))))
+                         (unless (zero? status)
+                           (format (current-error-port) "warning: \
+failed to register public key '~a': ~a~%" key status)))))))
+                '(#$@keys))))
 
 (define %default-authorized-guix-keys
   ;; List of authorized substitute keys.
@@ -1558,7 +1604,15 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                             '())
                      #$@(if tmpdir
                             (list (string-append "TMPDIR=" tmpdir))
-                            '()))
+                            '())
+
+                     ;; Make sure we run in a UTF-8 locale so that 'guix
+                     ;; offload' correctly restores nars that contain UTF-8
+                     ;; file names such as 'nss-certs'.  See
+                     ;; <https://bugs.gnu.org/32942>.
+                     (string-append "GUIX_LOCPATH="
+                                    #$glibc-utf8-locales "/lib/locale")
+                     "LC_ALL=en_US.utf8")
 
                #:log-file #$log-file))
            (stop #~(make-kill-destructor))))))
@@ -1585,10 +1639,9 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
      ;; otherwise call 'chown' here, but the problem is that on a COW overlayfs,
      ;; chown leads to an entire copy of the tree, which is a bad idea.
 
-     ;; Optionally authorize hydra.gnu.org's key.
+     ;; Optionally authorize substitute server keys.
      (if authorize-key?
-         #~(begin
-             #$@(map (cut hydra-key-authorization <> guix) keys))
+         (hydra-key-authorization keys guix)
          #~#f))))
 
 (define* (references-file item #:optional (name "references"))
@@ -2040,6 +2093,8 @@ This service is not part of @var{%base-services}."
                            (default (file-append shadow "/bin/login")))
   (login-arguments         kmscon-configuration-login-arguments
                            (default '("-p")))
+  (auto-login              kmscon-configuration-auto-login
+                           (default #f))
   (hardware-acceleration?  kmscon-configuration-hardware-acceleration?
                            (default #f))) ; #t causes failure
 
@@ -2051,14 +2106,20 @@ This service is not part of @var{%base-services}."
            (virtual-terminal (kmscon-configuration-virtual-terminal config))
            (login-program (kmscon-configuration-login-program config))
            (login-arguments (kmscon-configuration-login-arguments config))
+           (auto-login (kmscon-configuration-auto-login config))
            (hardware-acceleration? (kmscon-configuration-hardware-acceleration? config)))
 
        (define kmscon-command
          #~(list
             #$(file-append kmscon "/bin/kmscon") "--login"
             "--vt" #$virtual-terminal
+            "--no-switchvt" ;Prevent a switch to the virtual terminal.
             #$@(if hardware-acceleration? '("--hwaccel") '())
-            "--" #$login-program #$@login-arguments))
+            "--login" "--"
+            #$login-program #$@login-arguments
+            #$@(if auto-login
+                   #~(#$auto-login)
+                   #~())))
 
        (shepherd-service
         (documentation "kmscon virtual terminal")

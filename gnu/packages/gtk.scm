@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -304,6 +305,7 @@ functions which were removed.")
                      (string-append "-Wl,-rpath="
                                     (assoc-ref outputs "out") "/lib"))
              #t)))
+       #:python ,python-2 ;XXX: The bundled waf fails with Python 3.7.0.
        #:tests? #f)) ; no check target
     (inputs
      `(("gtk" ,gtk+-2)
@@ -1412,7 +1414,12 @@ information.")
                (string-append (assoc-ref inputs "docbook-xsl")
                               "/xml/xsl/docbook-xsl-"
                               ,(package-version docbook-xsl)
-                              "/html/chunk.xsl")))
+                              "/html/chunk.xsl"))
+              (("http://docbook.sourceforge.net/release/xsl/current/common/en.xml")
+               (string-append (assoc-ref inputs "docbook-xsl")
+                              "/xml/xsl/docbook-xsl-"
+                              ,(package-version docbook-xsl)
+                              "/common/en.xml")))
              #t))
          (add-after 'patch-gtk-doc-scan 'patch-test-out
            (lambda _
@@ -1630,6 +1637,33 @@ Parcellite and adds bugfixes and features.")
 it does not deal with windowing system surfaces, drawing, scene graphs, or
 input.")
     (license license:expat)))
+
+(define-public spread-sheet-widget
+  (package
+    (name "spread-sheet-widget")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://alpha.gnu.org/gnu/ssw/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1h93yyh2by6yrmkwqg38nd5knids05k5nqzcihc1hdwgzg3c4b8y"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib" ,glib "bin") ; for glib-genmarshal, etc.
+       ("pkg-config" ,pkg-config)))
+    ;; In 'Requires' of spread-sheet-widget.pc.
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)))
+    (home-page "https://www.gnu.org/software/ssw/")
+    (synopsis "Gtk+ widget for dealing with 2-D tabular data")
+    (description
+     "GNU Spread Sheet Widget is a library for Gtk+ which provides a widget for
+viewing and manipulating 2 dimensional tabular data in a manner similar to many
+popular spread sheet programs.")
+    (license license:gpl3+)))
 
 (define-public yad
   (package

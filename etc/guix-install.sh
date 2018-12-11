@@ -269,12 +269,13 @@ sys_create_store()
     fi
 
     _msg "${INF}Linking the root user's profile"
-    ln -sf /var/guix/profiles/per-user/root/guix-profile \
-       "${ROOT_HOME}/.guix-profile"
+    mkdir -p "${ROOT_HOME}/.config/guix"
+    ln -sf /var/guix/profiles/per-user/root/current-guix \
+       "${ROOT_HOME}/.config/guix/current"
 
-    GUIX_PROFILE="${ROOT_HOME}/.guix-profile"
+    GUIX_PROFILE="${ROOT_HOME}/.config/guix/current"
     source "${GUIX_PROFILE}/etc/profile"
-    _msg "${PAS}activated root profile at /root/.guix-profile"
+    _msg "${PAS}activated root profile at ${ROOT_HOME}/.config/guix/current"
 }
 
 sys_create_build_user()
@@ -317,18 +318,18 @@ sys_enable_guix_daemon()
 
     info_path="/usr/local/share/info"
     local_bin="/usr/local/bin"
-    var_guix="/var/guix/profiles/per-user/root/guix-profile"
+    var_guix="/var/guix/profiles/per-user/root/current-guix"
 
     case "$INIT_SYS" in
         upstart)
             { initctl reload-configuration;
-              cp "${ROOT_HOME}/.guix-profile/lib/upstart/system/guix-daemon.conf" \
+              cp "${ROOT_HOME}/.config/guix/current/lib/upstart/system/guix-daemon.conf" \
                  /etc/init/ &&
                   start guix-daemon; } &&
                 _msg "${PAS}enabled Guix daemon via upstart"
             ;;
         systemd)
-            { cp "${ROOT_HOME}/.guix-profile/lib/systemd/system/guix-daemon.service" \
+            { cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/guix-daemon.service" \
                  /etc/systemd/system/;
               chmod 664 /etc/systemd/system/guix-daemon.service;
               systemctl daemon-reload &&
@@ -338,7 +339,7 @@ sys_enable_guix_daemon()
             ;;
         NA|*)
             _msg "${ERR}unsupported init system; run the daemon manually:"
-            echo "  ${ROOT_HOME}/.guix-profile/bin/guix-daemon --build-users-group=guixbuild"
+            echo "  ${ROOT_HOME}/.config/guix/current/bin/guix-daemon --build-users-group=guixbuild"
             ;;
     esac
 
@@ -358,10 +359,10 @@ sys_authorize_build_farms()
     while true; do
         read -p "Permit downloading pre-built package binaries from the project's build farms? (yes/no) " yn
         case $yn in
-            [Yy]*) guix archive --authorize < "${ROOT_HOME}/.guix-profile/share/guix/hydra.gnu.org.pub" &&
+            [Yy]*) guix archive --authorize < "${ROOT_HOME}/.config/guix/current/share/guix/hydra.gnu.org.pub" &&
                          _msg "${PAS}Authorized public key for hydra.gnu.org";
-                   guix archive --authorize < "${ROOT_HOME}/.guix-profile/share/guix/berlin.guixsd.org.pub" &&
-                       _msg "${PAS}Authorized public key for berlin.guixsd.org";
+                   guix archive --authorize < "${ROOT_HOME}/.config/guix/current/share/guix/ci.guix.info.pub" &&
+                       _msg "${PAS}Authorized public key for ci.guix.info";
                    break;;
             [Nn]*) _msg "${INF}Skipped authorizing build farm public keys"
                    break;;

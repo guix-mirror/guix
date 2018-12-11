@@ -25,7 +25,7 @@
   #:use-module (guix build utils)
   #:use-module (guix build store-copy)
   #:use-module (guix build syscalls)
-  #:use-module ((guix store database) #:select (reset-timestamps))
+  #:use-module (guix store database)
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
   #:use-module (gnu system uuid)
@@ -190,6 +190,23 @@ the #:references-graphs parameter of 'derivation'."
         (begin
           (mkdir output)
           (copy-recursively "xchg" output)))))
+
+(define* (register-closure prefix closure
+                           #:key
+                           (deduplicate? #t) (reset-timestamps? #t)
+                           (schema (sql-schema)))
+  "Register CLOSURE in PREFIX, where PREFIX is the directory name of the
+target store and CLOSURE is the name of a file containing a reference graph as
+produced by #:references-graphs..  As a side effect, if RESET-TIMESTAMPS? is
+true, reset timestamps on store files and, if DEDUPLICATE? is true,
+deduplicates files common to CLOSURE and the rest of PREFIX."
+  (let ((items (call-with-input-file closure read-reference-graph)))
+    (register-items items
+                    #:prefix prefix
+                    #:deduplicate? deduplicate?
+                    #:reset-timestamps? reset-timestamps?
+                    #:registration-time %epoch
+                    #:schema schema)))
 
 
 ;;;
@@ -460,6 +477,11 @@ GRUB configuration and OS-DRV as the stuff in it."
                 "mnt=/tmp/root/mnt"
                 "-path-list" "-"
                 "--"
+
+                ;; XXX: Add padding to avoid I/O errors on i686:
+                ;; <https://bugs.gnu.org/33639>.
+                "-padding" "10m"
+
                 "-volid" (string-upcase volume-id)
                 (if volume-uuid
                     `("-volume_date" "uuid"

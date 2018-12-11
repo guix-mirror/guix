@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2016 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 David Thompson <davet@gnu.org>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -68,6 +68,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages image)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages slang)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages networking)
@@ -485,10 +486,7 @@ AM_SCM_LOG_FLAGS =  --no-auto-compile -s")
                  ;; FIXME: one of the database tests fails for unknown
                  ;; reasons.  It does not fail when run outside of Guix.
                  (("tests/database.scm") ""))
-               #t))
-           (add-after 'fix-bug-22 'autogen
-             (lambda _
-               (zero? (system* "sh" "autogen.sh")))))))
+               #t)))))
       (inputs
        `(("guile" ,guile-2.0)))
       (native-inputs
@@ -828,14 +826,6 @@ provides tight coupling to Guix.")
                (base32
                 "0qjjvadr7gibdq9jvwkmlkb4afsw9n2shfj9phpiadinxk3p4m2g"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autoreconf
-                    (lambda _
-                      ;; Repository comes with a broken symlink
-                      (delete-file "README")
-                      (symlink "README.org" "README")
-                      (zero? (system* "autoreconf" "-fi")))))))
     (native-inputs
      `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
@@ -908,16 +898,13 @@ for Guile\".")
     (home-page "https://github.com/aconchillo/guile-json")
     (source (origin
               (method url-fetch)
-              (uri (string-append home-page "/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "https://download.savannah.nongnu.org/releases/"
+                                  name "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "02kqv0q98fmchn7i4y7ycmrjlh4b2c93ij0z7k036qwpp204w4gh"))))
+                "15gnb84d7hpazqhskkf3g9z4r6knw54wfj4ch5270kakz1lp70c9"))))
     (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("pkg-config" ,pkg-config)
+    (native-inputs `(("pkg-config" ,pkg-config)
                      ("guile" ,guile-2.2)))
     (inputs `(("guile" ,guile-2.2)))
     (synopsis "JSON module for Guile")
@@ -1112,7 +1099,7 @@ Guile's foreign function interface.")
   (package
     (name "guile-sqlite3")
     (version "0.1.0")
-    (home-page "https://notabug.org/civodul/guile-sqlite3.git")
+    (home-page "https://notabug.org/guile-sqlite3/guile-sqlite3.git")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1141,14 +1128,14 @@ Guile's foreign function interface.")
 (define-public haunt
   (package
     (name "haunt")
-    (version "0.2.2")
+    (version "0.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/haunt/haunt-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nm00krmqq4zmqi2irh35dbf2cn6al58s620hijmhfvhgvdqznlp"))))
+                "056z4znikk83nr5mr0x2ac3iinqbywa2bvb37mhr566a1q50isfc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match) (ice-9 ftw)
@@ -1549,10 +1536,7 @@ $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
                         (("^guilesitedir =.*$")
                          "guilesitedir = \
 $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
-                      #t))
-                  (add-after 'unpack 'autoreconf
-                    (lambda _
-                      (zero? (system* "autoreconf" "-vfi")))))))
+                      #t)))))
     (home-page "https://github.com/artyom-poptsov/guile-dsv")
     (synopsis "DSV module for Guile")
     (description
@@ -2066,8 +2050,8 @@ convenient nested tree operations.")
     (license license:gpl3+)))
 
 (define-public guile-simple-zmq
-  (let ((commit "5bb66a0499f94006cfd18b58e80ad6623f911c31")
-        (revision "2"))
+  (let ((commit "68bedb6679716214fb9d3472da57544526f7a618")
+        (revision "3"))
     (package
       (name "guile-simple-zmq")
       (version (git-version "0.0.0" revision commit))
@@ -2079,7 +2063,7 @@ convenient nested tree operations.")
                (commit commit)))
          (sha256
           (base32
-           "0dj1brjqa7m4k71sf94aq26ca0la3nr894kfmjnqkpawqfp4dyaz"))
+           "1ad3xg69qqviy1f6dnlw0ysmfdbmp1jq65rfqb8nfd8dsrq2syli"))
          (file-name (git-file-name name version))))
       (build-system guile-build-system)
       (arguments
@@ -2242,5 +2226,94 @@ using S-expressions.")
      "This package provides a Guile library to communicate with a Debbugs bug
 tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
     (license license:gpl3+)))
+
+(define-public guile-email
+  (let ((commit "fa52eac55e5946db89621a6c583d2aa357864dee")
+        (revision "1"))
+    (package
+      (name "guile-email")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.systemreboot.net/guile-email")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1037mbz7qd9bzaqp8ysyhnl9ipd97fmj3b9jr8qfzx9179vvsj63"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (home-page "https://git.systemreboot.net/guile-email")
+      (synopsis "Guile email parser")
+      (description "This package provides an email parser written in pure
+Guile.")
+      (license license:agpl3+))))
+
+(define-public guile-debbugs-next
+  (let ((commit "75a331d561c8b6f8efcf16216dab961c17759efe")
+        (revision "1"))
+    (package (inherit guile-debbugs)
+      (name "guile-debbugs")
+      (version (git-version "0.0.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/guile-debbugs.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0br3mgbw41bpc9x57jlghl0i8dz9nl63r4wzs5l47aqszf84870y"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("guile" ,guile-2.2)
+         ("guile-email" ,guile-email))))))
+
+;; There has not been any release yet.
+(define-public guile-newt
+  (let ((commit "a73889c57b0572347f7641facdb1bcf08922feff")
+        (revision "2"))
+    (package
+      (name "guile-newt")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/mothacehe/guile-newt")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0k37vir22r2sq121lyy74grfai4643s7kr55z01k4j0bh27i06c3"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags
+         '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+      (inputs
+       `(("guile" ,guile-2.2)
+         ("newt" ,newt)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (synopsis "Guile bindings to Newt")
+      (description
+       "This package provides bindings for Newt, a programming library for
+color text mode, widget based user interfaces.  The bindings are written in pure
+Scheme by using Guile’s foreign function interface.")
+      (home-page "https://gitlab.com/mothacehe/guile-newt")
+      (license license:gpl3+))))
 
 ;;; guile.scm ends here

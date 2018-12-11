@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -28,6 +28,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -195,14 +196,14 @@ Interface} specification.")
     (name "nginx")
     ;; Consider updating the nginx-documentation package if the nginx package is
     ;; updated.
-    (version "1.14.0")
+    (version "1.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1d9c0avfpbwvzyg53b59ks8shpnrxnbnshcd7ziizflsyv5vw5ax"))))
+                "15wppq12qmq8acjs35xfj61czhf9cdc0drnl5mm8hcg3aihryb80"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -581,6 +582,37 @@ It aims to conform to RFC 7159.")
                  (substitute* (find-files "." "Makefile\\.in")
                    (("-Werror") ""))
                  #t))))))
+
+(define-public json-parser
+  (package
+    (name "json-parser")
+    (version "1.1.0")
+    (source (origin
+              ;; do not use auto-generated tarballs
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/udp/json-parser.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ls7z4fx0sq633s5bc0j1gh36sv087gmrgr7rza22wjq2d4606yf"))))
+    ;; FIXME: we should build the python bindings in a separate package
+    (build-system gnu-build-system)
+    ;; the tests are written for the python bindings which are not built here
+    (arguments '(#:tests? #f))
+    (home-page "https://github.com/udp/json-parser")
+    (synopsis "JSON parser written in ANSI C")
+    (description "This package provides a very low footprint JSON parser
+written in portable ANSI C.
+
+@itemize
+@item BSD licensed with no dependencies (i.e. just drop the C file into your
+project)
+@item Never recurses or allocates more memory than it needs
+@item Very simple API with operator sugar for C++
+@end itemize")
+    (license l:bsd-2)))
 
 (define-public qjson
   (package
@@ -1249,12 +1281,14 @@ minimum to provide high performance operation.")
          #:tests? #f
          #:phases
          (modify-phases %standard-phases
+           (delete 'bootstrap)
            (delete 'configure)
            (add-after 'unpack 'unpack-libsass-and-set-path
              (lambda* (#:key inputs #:allow-other-keys)
                (invoke "tar" "xvf" (assoc-ref inputs "libsass"))
                (setenv "SASS_LIBSASS_PATH"
-                       (string-append (getcwd) "/libsass-" ,version)))))))
+                       (string-append (getcwd) "/libsass-" ,version))
+               #t)))))
       (inputs
        `(("libsass" ,libsass)))
       (synopsis "CSS pre-processor")
@@ -3697,7 +3731,7 @@ library.")
 (define-public perl-www-mechanize
   (package
     (name "perl-www-mechanize")
-    (version "1.88")
+    (version "1.89")
     (source
      (origin
        (method url-fetch)
@@ -3705,7 +3739,7 @@ library.")
                            "WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
-         "0yd8a1zsfpbv5wr79x3iqmik9gvcd10iam9dfrdan4dri9vpxn9n"))))
+         "1mxx362vqiniw8vi6k3j7v9b1s7012irhfcblcz1p6jz9cjqi7mh"))))
     (build-system perl-build-system)
     (native-inputs                      ;only for tests
      `(("perl-cgi" ,perl-cgi)
@@ -3874,13 +3908,13 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.10")
+    (version "0.11")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "0yz3igqsiyqnjj1ngh199zicg3spx4kbmvl0wc8i8xahk6l9g06v"))))
+                "0yj3p1risf269n25dd56lqv82dsxv6a0aq4bcc1ddn9wv7h2xdfi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
@@ -3932,13 +3966,13 @@ directory.")
 (define-public r-htmlwidgets
   (package
     (name "r-htmlwidgets")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmlwidgets" version))
               (sha256
                (base32
-                "04c4d0mfcy3dkdlbxnaccpdgxvyxfdwfmmh5djim6v9hyg0j2z8s"))))
+                "04jsdh14l2zifbjpbbh23w7bxz1wpsas0zb2gy2zwv4yqamzzr7i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -4166,19 +4200,15 @@ It uses the uwsgi protocol for all the networking/interprocess communications.")
 (define-public jq
   (package
     (name "jq")
-    (version "1.5")
+    (version "1.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/stedolan/" name
-                                  "/releases/download/" name "-" version
-                                  "/" name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/stedolan/jq"
+                                  "/releases/download/jq-" version
+                                  "/jq-" version ".tar.gz"))
               (sha256
                (base32
-                "0g29kyz4ykasdcrb0zmbrp2jqs9kv1wz9swx849i2d1ncknbzln4"))
-              ;; This patch has been pushed and the vulnerability will be
-              ;; fixed in the next release after 1.5.
-              ;; https://github.com/stedolan/jq/issues/995
-              (patches (search-patches "jq-CVE-2015-8863.patch"))))
+                "1a76f46a652i2g333kfvrl6mp2w7whf6h1yly519izg4y967h9cn"))))
     (inputs
      `(("oniguruma" ,oniguruma)))
     (native-inputs
@@ -5607,13 +5637,13 @@ responsive, and powerful applications with minimal effort.")
 (define-public r-shinydashboard
   (package
     (name "r-shinydashboard")
-    (version "0.7.0")
+    (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "shinydashboard" version))
               (sha256
                (base32
-                "10yqcqqcxgfqwkmscqwvvgr710im583qsqnsqkfpisjvkqp10yqb"))))
+                "0khac8b27q3swdw07kl609hm0fjfjsjv591b388q99mqqr2rk92i"))))
     (build-system r-build-system)
     ;; The directory inst/AdminLTE/ contains a minified JavaScript file.
     ;; Regenerate it from the included sources.
@@ -5633,6 +5663,7 @@ responsive, and powerful applications with minimal effort.")
                      (dump-port minified port))))))))))
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
+       ("r-promises" ,r-promises)
        ("r-shiny" ,r-shiny)))
     (native-inputs
      `(("uglify-js" ,uglify-js)))
@@ -5643,6 +5674,35 @@ application framework for R, making it easy to create attractive dashboards.")
     ;; This package includes software that was released under the Expat
     ;; license, but the whole package is released under GPL version 2 or
     ;; later.
+    (license l:gpl2+)))
+
+(define-public r-shinyfiles
+  (package
+    (name "r-shinyfiles")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinyFiles" version))
+       (sha256
+        (base32
+         "0dlcjrw96x72grg6j915070x8x98l7629pn86gf148iknflm7gd5"))))
+    (properties `((upstream-name . "shinyFiles")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fs" ,r-fs)
+       ("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-shiny" ,r-shiny)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/thomasp85/shinyFiles")
+    (synopsis "Server-side file system viewer for Shiny")
+    (description
+     "This package provides functionality for client-side navigation of the
+server side file system in shiny apps.  In case the app is running locally
+this gives the user direct access to the file system without the need to
+\"download\" files to a temporary location.  Both file and folder selection as
+well as file saving is available.")
     (license l:gpl2+)))
 
 (define-public r-crosstalk
@@ -5699,7 +5759,7 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
 (define-public rss-bridge
   (package
     (name "rss-bridge")
-    (version "2018-03-11")
+    (version "2018-11-10")
     (source
      (origin
        (method url-fetch)
@@ -5708,7 +5768,7 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1ix15ck45yb659k63mhwxwia6qnm9nn8jw0bga85abrvk1rchjdn"))))
+         "1l9a82smh6k37bjvzbmkdlssxywlmr40ig4cykgsns1iiszwv4ia"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("gzip" ,gzip)
@@ -5745,6 +5805,7 @@ Instagram and YouTube.")
        (uri (git-reference
              (url "https://github.com/linkchecker/linkchecker")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "03ihjmc4bqxxqv71bb43r2f23sx0xnbq1k2fsg9fw05qa5s9x187"))))
@@ -6735,14 +6796,14 @@ compressed JSON header blocks.
                     (srfi srfi-26)
                     (ice-9 popen)
                     (ice-9 rdelim))
-
          #:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'autoconf
+           (add-before 'configure 'set-variables
              (lambda _
+               ;; This prevents a few warnings
                (setenv "GUILE_AUTO_COMPILE" "0")
                (setenv "XDG_CACHE_HOME" (getcwd))
-               (invoke "autoreconf" "-vif")))
+               #t))
            (add-after 'install 'wrap-program
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out      (assoc-ref outputs "out"))

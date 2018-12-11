@@ -12,6 +12,7 @@
 # Copyright © 2018 Nils Gillmann <ng0@n0.is>
 # Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 # Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+# Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -61,7 +62,9 @@ MODULES =					\
   guix/base16.scm				\
   guix/base32.scm				\
   guix/base64.scm				\
+  guix/ci.scm					\
   guix/cpio.scm					\
+  guix/docker.scm	   			\
   guix/records.scm				\
   guix/pki.scm					\
   guix/progress.scm				\
@@ -74,6 +77,7 @@ MODULES =					\
   guix/discovery.scm				\
   guix/git-download.scm				\
   guix/hg-download.scm				\
+  guix/swh.scm					\
   guix/monads.scm				\
   guix/monad-repl.scm				\
   guix/gexp.scm					\
@@ -100,6 +104,7 @@ MODULES =					\
   guix/build-system/android-ndk.scm		\
   guix/build-system/ant.scm			\
   guix/build-system/cargo.scm			\
+  guix/build-system/clojure.scm			\
   guix/build-system/cmake.scm			\
   guix/build-system/dub.scm			\
   guix/build-system/emacs.scm			\
@@ -172,6 +177,8 @@ MODULES =					\
   guix/build/syscalls.scm                       \
   guix/build/gremlin.scm			\
   guix/build/debug-link.scm			\
+  guix/build/clojure-build-system.scm		\
+  guix/build/clojure-utils.scm			\
   guix/build/emacs-utils.scm			\
   guix/build/java-utils.scm			\
   guix/build/lisp-utils.scm			\
@@ -181,15 +188,24 @@ MODULES =					\
   guix/build/make-bootstrap.scm			\
   guix/search-paths.scm				\
   guix/packages.scm				\
-  guix/import/print.scm				\
-  guix/import/utils.scm				\
-  guix/import/gnu.scm				\
-  guix/import/snix.scm				\
   guix/import/cabal.scm				\
+  guix/import/cpan.scm				\
   guix/import/cran.scm				\
-  guix/import/hackage.scm			\
+  guix/import/crate.scm				\
   guix/import/elpa.scm   			\
+  guix/import/gem.scm				\
+  guix/import/github.scm   			\
+  guix/import/gnome.scm				\
+  guix/import/gnu.scm				\
+  guix/import/hackage.scm			\
+  guix/import/json.scm				\
+  guix/import/opam.scm				\
+  guix/import/print.scm				\
+  guix/import/pypi.scm				\
+  guix/import/snix.scm				\
+  guix/import/stackage.scm			\
   guix/import/texlive.scm   			\
+  guix/import/utils.scm				\
   guix/scripts.scm				\
   guix/scripts/download.scm			\
   guix/scripts/perform-download.scm		\
@@ -201,6 +217,7 @@ MODULES =					\
   guix/scripts/hash.scm				\
   guix/scripts/pack.scm				\
   guix/scripts/pull.scm				\
+  guix/scripts/processes.scm			\
   guix/scripts/substitute.scm			\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
@@ -210,45 +227,28 @@ MODULES =					\
   guix/scripts/system/search.scm		\
   guix/scripts/lint.scm				\
   guix/scripts/challenge.scm			\
+  guix/scripts/import/crate.scm			\
   guix/scripts/import/cran.scm			\
-  guix/scripts/import/gnu.scm			\
-  guix/scripts/import/nix.scm			\
-  guix/scripts/import/hackage.scm		\
   guix/scripts/import/elpa.scm  		\
+  guix/scripts/import/gem.scm			\
+  guix/scripts/import/gnu.scm			\
+  guix/scripts/import/hackage.scm		\
+  guix/scripts/import/json.scm  		\
+  guix/scripts/import/nix.scm			\
+  guix/scripts/import/opam.scm			\
+  guix/scripts/import/pypi.scm			\
+  guix/scripts/import/stackage.scm		\
   guix/scripts/import/texlive.scm  		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
   guix/scripts/edit.scm				\
   guix/scripts/size.scm				\
   guix/scripts/graph.scm			\
+  guix/scripts/weather.scm			\
   guix/scripts/container.scm			\
   guix/scripts/container/exec.scm		\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
-
-if HAVE_GUILE_JSON
-
-MODULES +=					\
-  guix/ci.scm					\
-  guix/docker.scm	   			\
-  guix/import/cpan.scm				\
-  guix/import/crate.scm				\
-  guix/import/gem.scm				\
-  guix/import/github.scm   			\
-  guix/import/gnome.scm				\
-  guix/import/json.scm				\
-  guix/import/opam.scm				\
-  guix/import/pypi.scm				\
-  guix/import/stackage.scm			\
-  guix/scripts/import/crate.scm			\
-  guix/scripts/import/gem.scm			\
-  guix/scripts/import/json.scm  		\
-  guix/scripts/import/opam.scm			\
-  guix/scripts/import/pypi.scm			\
-  guix/scripts/import/stackage.scm		\
-  guix/scripts/weather.scm
-
-endif
 
 if HAVE_GUILE_SSH
 
@@ -279,10 +279,10 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 # Auxiliary files for packages.
 AUX_FILES =						\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
-  gnu/packages/aux-files/linux-libre/4.18-arm.conf	\
-  gnu/packages/aux-files/linux-libre/4.18-arm64.conf	\
-  gnu/packages/aux-files/linux-libre/4.18-i686.conf	\
-  gnu/packages/aux-files/linux-libre/4.18-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/4.19-arm.conf	\
+  gnu/packages/aux-files/linux-libre/4.19-arm64.conf	\
+  gnu/packages/aux-files/linux-libre/4.19-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.19-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.14-arm.conf	\
   gnu/packages/aux-files/linux-libre/4.14-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.14-x86_64.conf	\
@@ -329,7 +329,11 @@ SCM_TESTS =					\
   tests/base16.scm				\
   tests/base32.scm				\
   tests/base64.scm				\
+  tests/channels.scm				\
+  tests/cpan.scm				\
   tests/cpio.scm				\
+  tests/crate.scm				\
+  tests/gem.scm					\
   tests/pki.scm					\
   tests/print.scm				\
   tests/sets.scm				\
@@ -343,6 +347,7 @@ SCM_TESTS =					\
   tests/ui.scm					\
   tests/status.scm				\
   tests/records.scm				\
+  tests/processes.scm				\
   tests/upstream.scm				\
   tests/combinators.scm				\
   tests/discovery.scm				\
@@ -382,28 +387,22 @@ SCM_TESTS =					\
   tests/services.scm				\
   tests/scripts-build.scm			\
   tests/containers.scm				\
+  tests/opam.scm				\
   tests/pack.scm				\
+  tests/pypi.scm				\
   tests/import-utils.scm			\
   tests/store-database.scm			\
   tests/store-deduplication.scm
 
-if HAVE_GUILE_JSON
-
-SCM_TESTS += 					\
-  tests/pypi.scm				\
-  tests/opam.scm				\
-  tests/cpan.scm				\
-  tests/gem.scm					\
-  tests/crate.scm
-
-endif
-
 SH_TESTS =					\
   tests/guix-build.sh				\
+  tests/guix-build-branch.sh			\
   tests/guix-download.sh			\
   tests/guix-gc.sh				\
   tests/guix-hash.sh				\
   tests/guix-pack.sh				\
+  tests/guix-pack-localstatedir.sh		\
+  tests/guix-pack-relocatable.sh		\
   tests/guix-package.sh				\
   tests/guix-package-net.sh			\
   tests/guix-system.sh				\
@@ -460,8 +459,9 @@ check-system: $(GOBJECTS)
 
 # Public key used to sign substitutes from hydra.gnu.org & co.
 dist_pkgdata_DATA =				\
-  hydra.gnu.org.pub				\
-  berlin.guixsd.org.pub
+  etc/substitutes/hydra.gnu.org.pub		\
+  etc/substitutes/berlin.guixsd.org.pub		\
+  etc/substitutes/ci.guix.info.pub
 
 # Bash completion file.
 dist_bashcompletion_DATA = etc/completion/bash/guix	\
@@ -593,18 +593,17 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --enable-daemon				\
   ac_cv_guix_test_root="$(GUIX_TEST_ROOT)"
 
-# The self-contained tarball.  Add 'glibc-utf8-locales' along with glibc just
-# so 'etc/profile' defines 'GUIX_LOCPATH' pointing to a valid set of locales.
+# The self-contained tarball.
 guix-binary.%.tar.xz:
 	$(AM_V_GEN)GUIX_PACKAGE_PATH=					\
 	tarball=`$(top_builddir)/pre-inst-env guix pack -K -C xz	\
-	  -s "$*" --localstatedir guix glibc-utf8-locales		\
-	  -e  '(@@ (gnu packages commencement) glibc-final)'` ;		\
+	  -s "$*" --localstatedir --profile-name=current-guix guix` ;	\
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 
 dist-hook: $(distdir)/ChangeLog gen-AUTHORS gen-tarball-version
 dist-hook: assert-no-store-file-names
+dist-hook: doc-po-update
 
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
@@ -765,7 +764,7 @@ assert-no-store-file-names: $(distdir)/ChangeLog
 	  exit 1 ;								\
 	fi
 
-# Make sure hydra.gnu.org has the important binaries.
+# Make sure important substitutes are available.
 assert-binaries-available: $(GOBJECTS)
 	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"			\
 	  "$(top_srcdir)/build-aux/check-available-binaries.scm"

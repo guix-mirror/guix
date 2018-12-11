@@ -188,7 +188,15 @@ call THUNK."
              (save-module-excursion
               (lambda ()
                 (set-current-module user-module)
-                (start-repl))))
+                (and=> (getenv "HOME")
+                       (lambda (home)
+                         (let ((guile (string-append home "/.guile")))
+                           (when (file-exists? guile)
+                             (load guile)))))
+                ;; Do not exit repl on SIGINT.
+                ((@@ (ice-9 top-repl) call-with-sigint)
+                 (lambda ()
+                   (start-repl))))))
             ((machine)
              (machine-repl))
             (else

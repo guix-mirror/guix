@@ -327,7 +327,7 @@ sometimes even without using a single syscall.")
 (define-public perl-autovivification
   (package
     (name "perl-autovivification")
-    (version "0.16")
+    (version "0.18")
     (source
      (origin
        (method url-fetch)
@@ -335,7 +335,7 @@ sometimes even without using a single syscall.")
                            "autovivification-" version ".tar.gz"))
        (sha256
         (base32
-         "1422kw9fknv7rbjkgdfflg1q3mb69d3yryszp38dn0bgzkqhwkc1"))))
+         "01giacr2sx6b9bgfz6aqw7ndcnf08j8n6kwhm7880a94hmb9g69d"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/autovivification")
     (synopsis "Lexically disable autovivification")
@@ -2877,7 +2877,8 @@ interface for the RFC 2104 HMAC mechanism.")
          (add-after 'build 'set-permissions
            (lambda _
              ;; Make MD5.so read-write so it can be stripped.
-             (chmod "blib/arch/auto/Digest/MD5/MD5.so" #o755))))))
+             (chmod "blib/arch/auto/Digest/MD5/MD5.so" #o755)
+             #t)))))
     (home-page "https://metacpan.org/release/Digest-MD5")
     (synopsis "Perl interface to the MD-5 algorithm")
     (description
@@ -3003,7 +3004,7 @@ also known as JIS 2000.")
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-env
-           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1"))))))
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (home-page "https://metacpan.org/release/Encode-HanExtra")
     (synopsis "Additional Chinese encodings")
     (description "This Perl module provides Chinese encodings that are not
@@ -4278,7 +4279,8 @@ run interactively.  It also has an option to capture output/error buffers.")
                    (lambda _
                      ;; This test fails, and we're not really interested in
                      ;; it, so disable it.
-                     (delete-file "t/win32_compile.t"))))))
+                     (delete-file "t/win32_compile.t")
+                     #t)))))
     (home-page "https://metacpan.org/release/IPC-Run")
     (synopsis "Run system() and background procs w/ piping, redirs, ptys")
     (description "IPC::Run allows you run and interact with child processes
@@ -6867,7 +6869,8 @@ directory specifications in a cross-platform manner.")
              (substitute* "Cwd.pm"
                (("'/bin/pwd'")
                 (string-append "'" (assoc-ref inputs "coreutils")
-                               "/bin/pwd'"))))))))
+                               "/bin/pwd'")))
+             #t)))))
     (inputs
      `(("coreutils" ,coreutils)))
     (home-page "https://metacpan.org/release/PathTools")

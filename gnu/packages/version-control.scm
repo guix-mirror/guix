@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2015, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
@@ -146,14 +146,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.19.1")
+   (version "2.20.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1dfv43lmdnxz42504jc89sihbv1d4d6kgqcz3c5ji140kfm5cl1l"))))
+              "07yq186wb3wqvvmzhhsca57m979p7jprkk4h2a516jz1fd87755w"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -166,7 +166,11 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "1vn6pi9yvw7rnb9dvi1yjrvv39fqd1m9mwbaffqwizs3gaf91br7"))))))
+            "141n20migxaazy0vfkivjk6bzazi3ydyq7qkf6wmkg186l4amgbr"))))
+      ;; For subtree documentation.
+      ("asciidoc" ,asciidoc)
+      ("docbook-xsl" ,docbook-xsl)
+      ("xmlto" ,xmlto)))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -198,6 +202,7 @@ as well as the classic centralized workflow.")
               "send-email"                        ; for git-send-email
               "svn"                               ; git-svn
               "credential-netrc"                  ; git-credential-netrc
+              "subtree"                           ; git-subtree
               "gui"))                             ; gitk, git gui
    (arguments
     `(#:make-flags `("V=1"                        ;more verbose compilation
@@ -255,6 +260,26 @@ as well as the classic centralized workflow.")
           (lambda _
             ;; Add the "PM.stamp" to avoid "no rule to make target".
             (call-with-output-file "perl/PM.stamp" (const #t))
+            #t))
+        (add-after 'build 'build-subtree
+          (lambda* (#:key inputs #:allow-other-keys)
+            (with-directory-excursion "contrib/subtree"
+              (substitute* "Makefile"
+                ;; Apparently `xmlto' does not bother to looks up the stylesheets
+                ;; specified in the XML, unlike the above substitution.  Instead it
+                ;; uses a hard-coded URL.  Work around it here, but if this is
+                ;; common perhaps we should hardcode this path in xmlto itself.
+                (("\\$\\(XMLTO\\) -m \\$\\(MANPAGE_XSL\\) man")
+                 (string-append "$(XMLTO) -x "
+                                (string-append (assoc-ref inputs "docbook-xsl")
+                                               "/xml/xsl/docbook-xsl-"
+                                               ,(package-version docbook-xsl))
+                                "/manpages/docbook.xsl -m $(MANPAGE_XSL) man")))
+              (invoke "make")
+              (invoke "make" "install")
+              (invoke "make" "install-doc")
+              (substitute* "git-subtree"
+                (("/bin/sh") (which "sh"))))
             #t))
         (add-before 'check 'patch-tests
           (lambda _
@@ -316,6 +341,14 @@ as well as the classic centralized workflow.")
               (wrap-program (string-append netrc "/bin/git-credential-netrc")
                 `("PERL5LIB" ":" prefix
                   (,(string-append (assoc-ref outputs "out") "/share/perl5"))))
+              #t)))
+        (add-after 'install 'install-subtree
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((subtree (assoc-ref outputs "subtree")))
+              (install-file "contrib/subtree/git-subtree"
+                            (string-append subtree "/bin"))
+              (install-file "contrib/subtree/git-subtree.1"
+                            (string-append subtree "/share/man/man1"))
               #t)))
         (add-after 'install 'split
           (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -424,10 +457,74 @@ everything from small to very large projects with speed and efficiency.")
    (license license:gpl2)
    (home-page "https://git-scm.com/")))
 
+(define-public git-minimal
+  ;; The size of the closure of 'git-minimal' is two thirds that of 'git'.
+  ;; Its test suite runs slightly faster and most importantly it doesn't
+  ;; depend on packages that are expensive to build such as Subversion.
+  (package
+    (inherit git)
+    (name "git-minimal")
+    (arguments
+     (substitute-keyword-arguments (package-arguments git)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'patch-makefiles
+             (lambda _
+               (substitute* "Makefile"
+                 (("/usr/bin/perl") (which "perl")))
+               #t))
+           (delete 'build-subtree)
+           (delete 'split)
+           (delete 'install-man-pages)
+           (delete 'install-subtree)
+           (delete 'install-credential-netrc)
+           (add-before 'check 'delete-svn-test
+             (lambda _
+               ;; This test cannot run since we are not building 'git-svn'.
+               (delete-file "t/t9020-remote-svn.sh")
+               #t))
+           (add-after 'install 'remove-unusable-perl-commands
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out     (assoc-ref outputs "out"))
+                      (bin     (string-append out "/bin"))
+                      (libexec (string-append out "/libexec")))
+                 (for-each (lambda (file)
+                             (delete-file (string-append libexec
+                                                         "/git-core/" file)))
+                           '("git-svn" "git-cvsimport" "git-archimport"
+                             "git-cvsserver" "git-request-pull"
+                             "git-add--interactive" "git-cvsexportcommit"
+                             "git-instaweb" "git-send-email"))
+                 (delete-file (string-append bin "/git-cvsserver"))
+
+                 ;; These templates typically depend on Perl.  Remove them.
+                 (delete-file-recursively
+                  (string-append out "/share/git-core/templates/hooks"))
+
+                 ;; Gitweb depends on Perl as well.
+                 (delete-file-recursively
+                  (string-append out "/share/gitweb"))
+                 #t)))))
+       ((#:configure-flags flags)
+        ''())
+       ((#:disallowed-references lst '())
+        `(,perl ,@lst))))
+    (outputs '("out"))
+    (native-inputs
+     `(("native-perl" ,perl)
+       ("gettext" ,gettext-minimal)))
+    (inputs
+     `(("curl" ,curl)                             ;for HTTP(S) access
+       ("expat" ,expat)                           ;for 'git push' over HTTP(S)
+       ("openssl" ,openssl)
+       ("perl" ,perl)
+       ("zlib" ,zlib)
+       ("bash-for-tests" ,bash)))))
+
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.26.7")
+    (version "0.26.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -435,8 +532,9 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1vy4dnbvhcq3pw8n8zz6clnsv2xnkrichl8k96w3lb6yyk0lln35"))
-              (patches (search-patches "libgit2-mtime-0.patch"))
+                "15kp4sq72kh762bm7dgspyrk0a6siarvll3k7nrhs0xy77idf80g"))
+              (patches (search-patches "libgit2-mtime-0.patch"
+                                       "libgit2-oom-test.patch"))
 
               ;; Remove bundled software.
               (snippet '(begin
@@ -1119,14 +1217,14 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "4.6.2")
+    (version "4.7.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "1bv6wgcdx8glihjjfg22khhc52mclsn4kwfqvzbzlg0b42h4xl0w"))))
+               "1yq9r8s9jzj8hk2yizjk25s4w16yx9b8mbdj6wp8ld7j2r15kw4p"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require
@@ -1697,7 +1795,7 @@ modification time.")
 (define-public myrepos
   (package
     (name "myrepos")
-    (version "1.20171231")
+    (version "1.20180726")
     (source
      (origin
        (method git-fetch)
@@ -1706,15 +1804,34 @@ modification time.")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "10q7lpx152xnkk701fscn4dq99q9znnmv3bc2482khhjg7z8rps0"))
-       (patches (search-patches "myrepos-CVE-2018-7032.patch"))))
+        (base32 "0jphw61plm8cgklja6hs639xhdvxgvjwbr6jpvjwpp7hc5gmhms5"))))
     (build-system gnu-build-system)
-    (inputs
-     `(("perl" ,perl)))
     (arguments
      '(#:test-target "test"
-       #:phases (modify-phases %standard-phases (delete 'configure))
-       #:make-flags (list (string-append "PREFIX=" %output))))
+       #:make-flags (list (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'install 'wrap-webcheckout
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/webcheckout")
+                 `("PERL5LIB" ":" prefix
+                   ,(map (lambda (i) (string-append (assoc-ref inputs i)
+                                                    "/lib/perl5/site_perl"))
+                         '("perl-encode-locale" "perl-http-date"
+                           "perl-http-message" "perl-html-parser" "perl-libwww"
+                           "perl-uri" "perl-try-tiny"))))
+               #t))))))
+    (inputs
+     `(("perl" ,perl)
+       ("perl-encode-locale" ,perl-encode-locale)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-http-date" ,perl-http-date)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-uri" ,perl-uri)))
     (home-page "https://myrepos.branchable.com/")
     (synopsis "Multiple repository management tool")
     (description
@@ -2226,3 +2343,101 @@ used to keep a folder in sync between computers.")
     ;; The web app is released under the AGPLv3+.
     (license (list license:gpl3+
                    license:agpl3+))))
+
+(define-public git-when-merged
+  ;; Use an unreleased version to get a PY3 compatibility fix.
+  (let ((commit "ab6af7865a0ba55ba364a6c507e0be6f84f31c6d"))
+    (package
+      (name "git-when-merged")
+      (version (string-append "1.2.0-" (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mhagger/git-when-merged/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0iyk2psf97bc9h43m89p3xjmm79fsx99i7px29g4lcnmdy5kmz0p"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; there are no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (install-file "bin/git-when-merged"
+                             (string-append (assoc-ref outputs "out")
+                                            "/bin"))
+               #t))
+           (add-before 'install 'patch-git
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((git (string-append (assoc-ref inputs "git")
+                                         "/bin/git")))
+                 (substitute* "bin/git-when-merged"
+                   (("'git'") (string-append "'" git "'")))
+                 #t)))
+           (add-after 'install 'wrap-script
+             (lambda* (#:key outputs #:allow-other-keys)
+               (wrap-program (string-append (assoc-ref outputs "out")
+                                            "/bin/git-when-merged")
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+               #t)))))
+      (inputs
+       `(("git" ,git)
+         ("python" ,python-wrapper)))
+      (home-page "https://github.com/mhagger/git-when-merged")
+      (synopsis "Determine when a commit was merged into a Git branch")
+      (description "This Git extension defines a subcommand,
+@code{when-merged}, whose core operation is to find the merge that brought a
+given commit into the specified ref(s).  It has various options that control
+how information about the merge is displayed.")
+      (license license:gpl2+))))
+
+(define-public git-imerge
+  (package
+    (name "git-imerge")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/mhagger/git-imerge/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0a6ay8fpgz3yd84jc40w41x0rcfpan6bcq4wd1hxiiqwb51jysb2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; The are only manual test scripts.
+       #:make-flags (list (string-append "DESTDIR=" %output)
+                          "PREFIX=")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'patch-git
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((git (string-append (assoc-ref inputs "git")
+                                       "/bin/git")))
+               (substitute* "git-imerge"
+                 (("'git'") (string-append "'" git "'")))
+               #t)))
+         (add-after 'install 'wrap-script
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/git-imerge")
+               `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+             #t)))))
+    (inputs
+     `(("git" ,git)
+       ("python" ,python-wrapper)))
+    (home-page "https://github.com/mhagger/git-imerge")
+    (synopsis "Incremental merge for Git")
+    (description "This Git extension defines a subcommand, @code{imerge},
+which performs an incremental merge between two branches.  Its two primary
+design goals are to reduce the pain of resolving merge conflicts by finding
+the smallest possible conflicts and to allow a merge to be saved, tested,
+interrupted, published, and collaborated on while in progress.")
+    (license license:gpl2+)))

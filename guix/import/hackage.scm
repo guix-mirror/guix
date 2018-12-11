@@ -215,15 +215,18 @@ representation of a Cabal file as produced by 'read-cabal'."
      cabal))
 
   (define hackage-native-dependencies
-    ((compose (cut filter-dependencies <>
-                   (cabal-package-name cabal))
-              ;; FIXME: Check include-test-dependencies?
-              (lambda (cabal)
-                (append (if include-test-dependencies?
-                            (cabal-test-dependencies->names cabal)
-                            '())
-                        (cabal-custom-setup-dependencies->names cabal))))
-     cabal))
+    (lset-difference
+     equal?
+     ((compose (cut filter-dependencies <>
+                    (cabal-package-name cabal))
+               ;; FIXME: Check include-test-dependencies?
+               (lambda (cabal)
+                 (append (if include-test-dependencies?
+                             (cabal-test-dependencies->names cabal)
+                             '())
+                         (cabal-custom-setup-dependencies->names cabal))))
+      cabal)
+     hackage-dependencies))
 
   (define dependencies
     (map (lambda (name)

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -54,6 +54,8 @@
                     (default "/var/log/cuirass.log"))
   (cache-directory  cuirass-configuration-cache-directory ;string (dir-name)
                     (default "/var/cache/cuirass"))
+  (ttl              cuirass-configuration-ttl     ;integer
+                    (default (* 30 24 3600)))
   (user             cuirass-configuration-user ;string
                     (default "cuirass"))
   (group            cuirass-configuration-group ;string
@@ -86,6 +88,7 @@
          (group            (cuirass-configuration-group config))
          (interval         (cuirass-configuration-interval config))
          (database         (cuirass-configuration-database config))
+         (ttl              (cuirass-configuration-ttl config))
          (port             (cuirass-configuration-port config))
          (host             (cuirass-configuration-host config))
          (specs            (cuirass-configuration-specifications config))
@@ -102,6 +105,7 @@
                             "--specifications"
                             #$(scheme-file "cuirass-specs.scm" specs)
                             "--database" #$database
+                            "--ttl" #$(string-append (number->string ttl) "s")
                             "--port" #$(number->string port)
                             "--listen" #$host
                             "--interval" #$(number->string interval)

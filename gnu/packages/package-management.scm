@@ -101,9 +101,9 @@
   ;; Latest version of Guix, which may or may not correspond to a release.
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
-  (let ((version "0.15.0")
-        (commit "f9a8fce10f2d99efec7cb1dd0f6c5f0df9d1b2df")
-        (revision 6))
+  (let ((version "0.16.0")
+        (commit "6ddc63e599a26c302f74d0622f67cfd987f0dc5f")
+        (revision 3))
     (package
       (name "guix")
 
@@ -119,7 +119,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1733d5id0h44rrkyj9xw4fcqr1wawcfi8igpgk5wsn1iq4qqwv5f"))
+                  "0vzxrsfbr4phhy60m7pc6klb61whqc404c3x76ydj70xvi1xa0wz"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -316,6 +316,7 @@ the Nix package manager.")
     (inputs
      `(("gnutls" ,gnutls)
        ("guile-git" ,guile-git)
+       ("guile-json" ,guile-json)
        ("guile-gcrypt" ,guile-gcrypt)
        ,@(fold alist-delete (package-inputs guix)
                '("boot-guile" "boot-guile/i686" "util-linux"))))
@@ -387,7 +388,7 @@ the Nix package manager.")
        (propagated-inputs
         (fold alist-delete
               (package-propagated-inputs guix)
-              '("guile-json" "guile-ssh")))))))
+              '("guile-ssh")))))))
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical
@@ -568,13 +569,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "102")
+    (version "106")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0v2z98xx7n4viw12yq83flpb9ir5ahy1gn44pic0i3dam18xhcm6"))))
+                "0qrfp7nha2n2s9h5ibcf7rqji1amh4cqbcf80m6anim6p3ik26da"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -585,6 +586,12 @@ transactions from C or Python.")
                     (lambda _
                       (substitute* "setup.py"
                         (("'python-magic',") ""))))
+                  ;; This test is broken because our `file` package has a
+                  ;; bug in berkeley-db file type detection.
+                  (add-after 'unpack 'remove-berkeley-test
+                    (lambda _
+                      (delete-file "tests/comparators/test_berkeley_db.py")
+                      #t))
                   (add-after 'unpack 'embed-tool-references
                     (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "diffoscope/comparators/utils/compare.py"

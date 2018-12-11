@@ -1,0 +1,27 @@
+Fix build failure on glibc 2.28 where 'renameat2' would end up being
+declared twice: <https://github.com/systemd/casync/issues/166>.
+
+From 625244ca47e8ee1375d2d0092271bfd13b0913ea Mon Sep 17 00:00:00 2001
+From: Daniel Mack <daniel@zonque.org>
+Date: Tue, 13 Nov 2018 17:52:48 +0100
+Subject: [PATCH] meson.build: pass -D_GNU_SOURCE when checking for functions
+
+As described in #166, -D_GNU_SOURCE needs to be passed to the meson function
+availability checker. h/t to @tomeon for providing a link to the solution as
+well.
+---
+ meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/meson.build b/meson.build
+index f42ed16..c0f741e 100644
+--- a/meson.build
++++ b/meson.build
+@@ -78,6 +78,6 @@ foreach ident : [
+         ['copy_file_range',   '''#include <sys/syscall.h>
+                                  #include <unistd.h>'''],
+ ]
+-        have = cc.has_function(ident[0], prefix : ident[1])
++        have = cc.has_function(ident[0], args : '-D_GNU_SOURCE', prefix : ident[1])
+         conf.set10('HAVE_' + ident[0].to_upper(), have)
+ endforeach

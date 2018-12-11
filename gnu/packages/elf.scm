@@ -95,14 +95,14 @@ Executable and Linkable Format (@dfn{ELF}).  This includes @command{ld},
   (package
     (name "libabigail")
     (home-page "https://sourceware.org/libabigail/")
-    (version "1.4")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://sourceware.org/pub/" name
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "17r8i60lxykvdd9pdidmnvkzgf9k8zman0c1czl3zbx0znhlx497"))))
+                "0srfnkbm386sl2n85686nl28da6ksbs7jgnfks9k0n61c772aas4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static"

@@ -3,7 +3,7 @@
 
 (use-modules (gnu))
 (use-service-modules networking ssh)
-(use-package-modules screen ssh)
+(use-package-modules screen)
 
 (operating-system
   (host-name "komputilo")
@@ -40,7 +40,7 @@
                %base-user-accounts))
 
   ;; Globally-installed packages.
-  (packages (cons* screen openssh %base-packages))
+  (packages (cons screen %base-packages))
 
   ;; Add services to the baseline: a DHCP client and
   ;; an SSH server.

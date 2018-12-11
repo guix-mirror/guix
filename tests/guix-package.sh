@@ -106,6 +106,10 @@ guix package --show=guile | grep "^name: guile"
 # Ensure `--show' doesn't fail for packages with non-package inputs.
 guix package --show=texlive
 
+# Fail for non-existent packages or package/version pairs.
+if guix package --show=does-not-exist; then false; else true; fi
+if guix package --show=emacs@42; then false; else true; fi
+
 # Search.
 LC_MESSAGES=C
 export LC_MESSAGES

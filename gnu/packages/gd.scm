@@ -142,7 +142,7 @@ you can create PNG images on the fly or modify existing files.")
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-env
-           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1"))))))
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs

@@ -40,7 +40,8 @@
             graft-derivation/shallow
 
             %graft?
-            set-grafting))
+            set-grafting
+            grafting?))
 
 (define-record-type* <graft> graft make-graft
   graft?
@@ -122,6 +123,10 @@ are not recursively applied to dependencies of DRV."
   (define add-label
     (cut cons "x" <>))
 
+  (define properties
+    `((type . graft)
+      (graft (count . ,(length grafts)))))
+
   (match grafts
     ((($ <graft> sources source-outputs targets target-outputs) ...)
      (let ((sources (zip sources source-outputs))
@@ -139,7 +144,13 @@ are not recursively applied to dependencies of DRV."
                                                 ,@(append (map add-label sources)
                                                           (map add-label targets)))
                                      #:outputs outputs
-                                     #:local-build? #t)))))
+
+                                     ;; Grafts are computationally cheap so no
+                                     ;; need to offload or substitute.
+                                     #:local-build? #t
+                                     #:substitutable? #f
+
+                                     #:properties properties)))))
 (define (item->deriver store item)
   "Return two values: the derivation that led to ITEM (a store item), and the
 name of the output of that derivation ITEM corresponds to (for example
@@ -327,6 +338,11 @@ DRV, and graft DRV itself to refer to those grafted dependencies."
 it otherwise.  It returns the previous setting."
   (lambda (store)
     (values (%graft? enable?) store)))
+
+(define (grafting?)
+  "Return a Boolean indicating whether grafting is enabled."
+  (lambda (store)
+    (values (%graft?) store)))
 
 ;; Local Variables:
 ;; eval: (put 'with-cache 'scheme-indent-function 1)

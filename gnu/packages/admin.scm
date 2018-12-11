@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
@@ -45,6 +45,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
@@ -125,7 +126,9 @@
      `(("libgcrypt" ,libgcrypt)
        ("libgpg-error" ,libgpg-error)
        ("libmhash" ,libmhash)
+       ("pcre:static" ,pcre "static")
        ("pcre" ,pcre)
+       ("zlib:static" ,zlib "static")
        ("zlib" ,zlib)))
     (synopsis "File and directory integrity checker")
     (description
@@ -225,13 +228,15 @@ interface and is based on GNU Guile.")
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
            (lambda _
-             (chdir ,(string-append  name "-" version))))
+             (chdir ,(string-append name "-" version))
+             #t))
          (delete 'configure)
          (add-before 'build 'patch
            (lambda _
              (substitute* "src/error.h"
                (("extern int errno;")
-                "#include <errno.h>"))))
+                "#include <errno.h>"))
+             #t))
          (replace 'build
            (lambda _
              (invoke "package/compile")))
@@ -241,7 +246,8 @@ interface and is based on GNU Guile.")
                     (bin (string-append out "/bin")))
                (for-each (lambda (file)
                            (install-file file bin))
-                         (find-files "command"))))))))
+                         (find-files "command")))
+             #t)))))
     (synopsis "Tools for managing UNIX style services")
     (description
      "@code{daemontools} is a collection of tools for managing UNIX
@@ -963,7 +969,7 @@ at once based on a Perl regular expression.")
                       #t))
                   (add-after 'install 'install-info
                     (lambda _
-                      (zero? (system* "make" "install-info")))))))
+                      (invoke "make" "install-info"))))))
     (native-inputs `(("texinfo" ,texinfo)
                      ("util-linux" ,util-linux))) ; for 'cal'
     (home-page "https://www.gnu.org/software/rottlog/")
@@ -979,7 +985,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.25p1")
+    (version "1.8.26")
     (source (origin
               (method url-fetch)
               (uri
@@ -989,7 +995,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0nqri46d4dpycj96zin2f2wszmhm7q9mr68hhj9sp81pgmx9rjcx"))
+                "1qpyyfga8rs02p3186sns8qvh2bzwa48ka845nrcqh83dyd23nj0"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1094,7 +1100,8 @@ commands and their arguments.")
       CFLAGS += $(shell pkg-config libnl-3.0 --cflags)
       CONFIG_LIBNL32=y
       CONFIG_READLINE=y\n" port)
-               (close-port port))))
+               (close-port port))
+             #t))
          (add-after 'install 'install-man-pages
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -1233,11 +1240,10 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
                ;; It's an old configure script that doesn't understand
                ;; the extra options we pass.
                (setenv "CONFIG_SHELL" (which "bash"))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
-                         (string-append "--mandir=" out
-                                        "/share/man")))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--mandir=" out
+                                      "/share/man"))))))
        #:tests? #f))
     (home-page "https://www.kernel.org") ; really, no home page
     (synopsis "Send a wake-on-LAN packet")
@@ -1339,25 +1345,30 @@ system is under heavy load.")
 (define-public detox
   (package
     (name "detox")
-    (version "1.2.0")
+    (version "1.3.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/detox/detox/" version
-                                  "/detox-" version ".tar.bz2"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dharple/detox.git")
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "1y6vvjqsg54kl49cry73jbfhr04s7wjs779vrr9zrq6kww7dkymb"))))
+                "1dd608c7g65s5lj02cddvani3q9kzirddgkjqa22ap9d4f8b9xgr"))))
     (build-system gnu-build-system)
-    ;; Both flex and popt are used in this case for their runtime libraries
-    ;; (libfl and libpopt).
-    (inputs
-     `(("flex" ,flex)
-       ("popt" ,popt)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("flex" ,flex)))
     (arguments
-     `(#:configure-flags `(,(string-append "--with-popt="
-                                           (assoc-ref %build-inputs "popt")))
-       #:tests? #f))                    ;no 'check' target
-    (home-page "http://detox.sourceforge.net")
+     `(#:tests? #f                    ;no 'check' target
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'delete-configure
+                    ;; The "configure" script is present, but otherwise the
+                    ;; project is not bootstrapped: missing install-sh and
+                    ;; Makefile.in, so delete it so the bootstrap phase will
+                    ;; take over.
+                    (lambda _ (delete-file "configure") #t)))))
+    (home-page "https://github.com/dharple/detox")
     (synopsis "Clean up file names")
     (description
      "Detox is a program that renames files to make them easier to work with
@@ -1589,14 +1600,14 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.5.7")
+    (version "2.7.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "0wbsjjx3xjlm8g50a9j9c6p9rn23jx32yn1234bf5rmj1qgy3p85"))
+         "0p1n6yyc632522fl2r247p0jg4mncc7z4hqngzbh1zxq3dcb12s9"))
        (patches (search-patches "ansible-wrap-program-hack.patch"))))
     (build-system python-build-system)
     (native-inputs
@@ -1622,6 +1633,34 @@ ad hoc task execution, and multinode orchestration---including trivializing
 things like zero-downtime rolling updates with load balancers.")
     (license license:gpl3+)))
 
+(define-public emacs-ansible-doc
+  (let ((commit "86083a7bb2ed0468ca64e52076b06441a2f8e9e0"))
+    (package
+      (name "emacs-ansible-doc")
+      (version (git-version "0.4" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lunaryorn/ansible-doc.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0lap404ch74w99n3xip176jr42b38xhyzkfnkyqg0g3wk2cd3aq8"))))
+      (build-system emacs-build-system)
+      ;; Unmaintained by upstream.
+      (home-page "https://github.com/lunaryorn/ansible-doc.el")
+      (synopsis "Ansible documentation for Emacs")
+      (description
+       "This package provides an Ansible documentation for GNU Emacs.
+
+@code{ansible-doc} allows you to view the documentation of an Ansible
+module and @code{ansible-doc-mode} minor mode adds documentation
+lookup to YAML Mode.  You could enable the mode with @code{(add-hook
+'yaml-mode-hook #'ansible-doc-mode)}.")
+      (license license:gpl3+))))
+
 (define-public cpulimit
   (package
     (name "cpulimit")
@@ -1639,20 +1678,18 @@ things like zero-downtime rolling updates with load balancers.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure)
-                  (replace
-                   'build
-                   (lambda _
-                     (zero? (system* "make" "CC=gcc" "-Csrc"))))
-                  (replace
-                   'check
-                   (lambda _
-                     (zero? (system* "make" "CC=gcc" "-Ctests"))))
-                  (replace
-                   'install
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let* ((out (assoc-ref outputs "out"))
-                            (bin (string-append out "/bin")))
-                       (install-file "src/cpulimit" bin)))))))
+                  (replace 'build
+                    (lambda _
+                      (invoke "make" "CC=gcc" "-Csrc")))
+                  (replace 'check
+                    (lambda _
+                      (invoke "make" "CC=gcc" "-Ctests")))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin")))
+                        (install-file "src/cpulimit" bin))
+                      #t)))))
     (home-page "https://github.com/opsengine/cpulimit")
     (synopsis "Limit CPU usage")
     (description
@@ -1861,10 +1898,9 @@ done with the @code{auditctl} utility.")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (define (make out . args)
-               (unless (zero? (apply system* "make"
-                                     (string-append "prefix=" out)
-                                     args))
-                 (error "make failed")))
+               (apply invoke "make"
+                      (string-append "prefix=" out)
+                      args))
              (define (python-path dir)
                (string-append dir "/lib/python2.7/site-packages"))
              (let ((out (assoc-ref outputs "out"))
@@ -1878,13 +1914,14 @@ done with the @code{auditctl} utility.")
                (make ndiff "install-ndiff")
                (wrap-program (string-append ndiff "/bin/ndiff")
                  `("PYTHONPATH" prefix
-                   (,(python-path ndiff)))))))
+                   (,(python-path ndiff)))))
+             #t))
          ;; These are the tests that do not require network access.
          (replace 'check
-           (lambda _ (zero? (system* "make"
-                                     "check-nse"
-                                     "check-ndiff"
-                                     "check-dns")))))
+           (lambda _ (invoke "make"
+                             "check-nse"
+                             "check-ndiff"
+                             "check-dns"))))
        ;; Nmap can't cope with out-of-source building.
        #:out-of-source? #f))
     (home-page "https://nmap.org/")
@@ -2190,15 +2227,15 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
              #t))
          (replace 'build
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* "make" "tools" "misc" make-flags))))
+             (apply invoke "make" "tools" "misc" make-flags)))
          (add-after 'build 'build-armhf
            (lambda* (#:key make-flags #:allow-other-keys)
              (setenv "LIBRARY_PATH" #f)
-             (zero? (apply system* "make" "target-tools" make-flags))))
+             (apply invoke "make" "target-tools" make-flags)))
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* "make" "install-all" "install-misc"
-                           make-flags)))))))
+             (apply invoke "make" "install-all" "install-misc"
+                    make-flags))))))
     (home-page "https://github.com/linux-sunxi/sunxi-tools")
     (synopsis "Hardware management tools for Allwinner computers")
     (description "This package contains tools for Allwinner devices:
@@ -2452,26 +2489,20 @@ make it a perfect utility on modern distros.")
     (version "1.7.2")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/01org/thermal_daemon/archive/v"
-                          version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
-      (sha256 (base32
-               "15a6vb67y5wsmf0irrq7sxam18yqpz64130k83ryf24mp40h661b"))))
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/01org/thermal_daemon")
+             (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "1cs2pq8xvfnsvrhg2bxawk4kn3z1qmfrnpnhs178pvfbglzh15hc"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (invoke "sh" "autogen.sh")
-             #t)))
-       #:configure-flags
+     `(#:configure-flags
        (let ((out      (assoc-ref %outputs "out")))
          (list (string-append "--sysconfdir="
                               out "/etc")
-               (string-append "--with-udev-dir="
-                              out "/lib/udev")
                (string-append "--with-dbus-sys-dir="
                               out "/etc/dbus-1/system.d")
                "--localstatedir=/var"))))
@@ -2843,3 +2874,82 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
     (description "This package provides tools to manage clients of the
 Logitech Unifying Receiver.")
     (license license:gpl2)))
+
+(define-public lynis
+  (package
+    (name "lynis")
+    (version "2.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/CISOfy/lynis")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0rzc0y8lk22bymf56249jzmllki2lh0rz5in4lkrc5fkmp29c2wv"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove proprietary plugins. As of now, all plugins supplied with
+           ;; lynis are proprietary. In the future, if free plugins are
+           ;; provided, whitelist them from deletion.
+           (for-each delete-file (find-files "plugins"))
+           #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(;; For tests
+       ("lynis-sdk"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/CISOfy/lynis-sdk")
+                 (commit "3310aef4f2b3dd97d166c96ad0253c89c4ad390d")))
+           (file-name (git-file-name "lynis-sdk" version))
+           (sha256
+            (base32
+             "0sqsrm5wal742yrwps8bqb8a8lxd93n4b93n3kkm1b30nbs25g7y"))))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "lynis"
+               (("/usr/share/lynis")
+                (string-append (assoc-ref outputs "out") "/share/lynis")))
+             (substitute* "include/functions"
+               (("/usr/local/etc/lynis")
+                (string-append (assoc-ref outputs "out") "/etc/lynis")))
+             #t))
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "lynis" (string-append out "/bin/"))
+               (install-file "default.prf" (string-append out "/etc/lynis"))
+               (for-each
+                (lambda (dir)
+                  (copy-recursively dir (string-append out "/share/lynis/" dir)))
+                (list "db" "include" "plugins"))
+               (install-file "lynis.8" (string-append out "/share/man/man8"))
+               #t)))
+         (replace 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "lynis-sdk") "../lynis-sdk")
+             (setenv "LANG" "en_US.UTF-8")
+             (let ((lynis-dir (getcwd)))
+               (with-directory-excursion "../lynis-sdk"
+                 (substitute* "config"
+                   (("\\.\\./lynis") lynis-dir))
+                 (substitute* "unit-tests/tests-language-translations.sh"
+                   (("\\.\\./lynis") lynis-dir))
+                 (invoke "sh" "lynis-devkit" "run" "unit-tests"))))))))
+    (home-page "https://cisofy.com/lynis/")
+    (synopsis "Security auditing tool")
+    (description "Lynis is a security auditing tool.  It performs an in-depth
+security scan and runs on the system itself.  The primary goal is to test
+security defenses and provide tips for further system hardening.  It will also
+scan for general system information, vulnerable software packages, and
+possible configuration issues.")
+    (license license:gpl3+)))

@@ -4,6 +4,8 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +31,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
@@ -39,33 +42,30 @@
 (define-public bam
   (package
     (name "bam")
-    (version "0.4.0")
+    (version "0.5.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "http://github.com/downloads/matricks/"
-                                  "bam/bam-" version ".tar.bz2"))
+              ;; do not use auto-generated tarballs
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/matricks/bam.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0z90wvyd4nfl7mybdrv9dsd4caaikc6fxw801b72gqi1m9q0c0sn"))))
+                "13br735ig7lygvzyfd15fc2rdygrqm503j6xj5xkrl1r7w2wipq6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:make-flags `("CC=gcc"
+                      ,(string-append "INSTALL_PREFIX="
+                                      (assoc-ref %outputs "out")))
+       #:test-target "test"
+       #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (zero? (system* "bash" "make_unix.sh"))))
-         (replace 'check
-           (lambda _
-             (zero? (system* "python" "scripts/test.py"))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
-               (mkdir-p bin)
-               (install-file "bam" bin)
-               #t))))))
+         (delete 'configure))))
     (native-inputs
      `(("python" ,python-2)))
+    (inputs
+     `(("lua" ,lua)))
     (home-page "https://matricks.github.io/bam/")
     (synopsis "Fast and flexible build system")
     (description "Bam is a fast and flexible build system.  Bam uses Lua to
@@ -97,6 +97,63 @@ provide information on how a given compilation unit is processed.  With this,
 it is easy to re-run the compilation with alternate programs.  Bear is used to
 generate such a compilation database.")
     (license license:gpl3+)))
+
+(define-public gn
+  (let ((commit "f73698ebb33e26a0bf120e2b55d12528fd1dbe7d")
+        (revision "1481"))          ;as returned by `git describe`, used below
+    (package
+      (name "gn")
+      (version (git-version "0.0" revision commit))
+      (home-page "https://gn.googlesource.com/gn")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "078ydwak4424bkqh3hd7q955zxp2c3qlw44lsb29i8jqap140f9d"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ;FIXME: How to run?
+         #:phases (modify-phases %standard-phases
+                    (add-before 'configure 'set-build-environment
+                      (lambda _
+                        (setenv "CC" "gcc") (setenv "CXX" "g++")
+                        (setenv "AR" "ar")
+                        #t))
+                    (replace 'configure
+                      (lambda _
+                        (invoke "python" "build/gen.py" "--no-sysroot"
+                                "--no-last-commit-position")))
+                    (add-after 'configure 'create-last-commit-position
+                      (lambda _
+                        ;; Create "last_commit_position.h" to avoid a dependency
+                        ;; on 'git' (and the checkout..).
+                        (call-with-output-file "out/last_commit_position.h"
+                          (lambda (port)
+                            (format port
+                                    "#define LAST_COMMIT_POSITION \"~a (~a)\"\n"
+                                    ,revision ,(string-take commit 8))
+                            #t))))
+                    (replace 'build
+                      (lambda _
+                        (invoke "ninja" "-C" "out" "gn"
+                                "-j" (number->string (parallel-job-count)))))
+                    (replace 'install
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (let ((out (assoc-ref outputs "out")))
+                          (install-file "out/gn" (string-append out "/bin"))
+                          #t))))))
+      (native-inputs
+       `(("ninja" ,ninja)
+         ("python" ,python-2)))
+      (synopsis "Generate Ninja build files")
+      (description
+       "GN is a tool that collects information about a project from @file{.gn}
+files and generates build instructions for the Ninja build system.")
+      ;; GN is distributed as BSD-3, but bundles some files from ICU using the
+      ;; X11 license.
+      (license (list license:bsd-3 license:x11)))))
 
 (define-public meson
   (package

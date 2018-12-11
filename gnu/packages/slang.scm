@@ -50,13 +50,21 @@
                '(begin
                   (substitute* "src/Makefile.in"
                     (("/bin/ln") "ln"))
-                  (substitute* "configure"
-                    (("-ltermcap") ""))
                   #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-tests? #f
-       #:parallel-build? #f)) ; there's at least one race
+       #:parallel-build? #f  ; there's at least one race
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'substitute-before-config
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((ncurses (assoc-ref inputs "ncurses")))
+               (substitute* "configure"
+                 (("MISC_TERMINFO_DIRS=\"\"")
+                  (string-append "MISC_TERMINFO_DIRS="
+                                 "\"" ncurses "/share/terminfo" "\"")))
+               #t))))))
     (inputs
      `(("readline" ,readline)
        ("zlib" ,zlib)

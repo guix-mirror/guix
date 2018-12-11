@@ -18,6 +18,7 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
+;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -361,14 +362,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "2.3.1")
+    (version "2.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "0ijdck30p7jv8a0zwv8b7d30ciqrmmps62lm63l4k776vihrnkdz"))))
+         "013qx2hz0jv79yzfzpn0r2kk33i5qy3sdnzgwiv5779d18snblwi"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -383,14 +384,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "2.3.1")
+    (version "2.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1mnzf168vlxirq7fw9dm9zbvma7z8phc9cl5bffw5916m0y1244d"))))
+         "1pc60dksi9w9mshl6cvn7gdjazbp3pmydy3qp9wgy5wzd8n0b9h5"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -637,7 +638,7 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
 (define-public python-pynacl
   (package
     (name "python-pynacl")
-    (version "1.2.1")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -648,7 +649,7 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
                         #t))
        (sha256
         (base32
-         "1ada3qr83cliap6dk897vnvjkynij1kjqbwizdbgarazlyh8zlz0"))))
+         "0330wyvggm19xhmwmz9rrr97lzbv3siwfy50gmax3vvgs7nh0q8c"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -850,16 +851,15 @@ in userspace)
 (define-public python-m2crypto
   (package
     (name "python-m2crypto")
-    (version "0.29.0")
+    (version "0.30.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "M2Crypto" version))
        (sha256
-        (base32 "1h16gpilrnlzc0iyj1mnd1iqh8wchzjsxjqw9n344glimg2s5zm0"))))
+        (base32 "1iizrpkn4c2n70nvcjqlmnk6fz3vddkrjmwavz1zlsnwv8f7bcm1"))))
     (build-system python-build-system)
     (inputs `(("openssl" ,openssl)))
-    (propagated-inputs `(("python-typing" ,python-typing)))
     (home-page "https://gitlab.com/m2crypto/m2crypto")
     (synopsis "Python crypto and TLS toolkit")
     (description "@code{M2Crypto} is a complete Python wrapper for OpenSSL
@@ -869,10 +869,15 @@ extensions to Python's httplib, urllib, and xmlrpclib; unforgeable HMAC'ing
 AuthCookies for web session management; FTP/TLS client and server; S/MIME;
 M2Crypto can also be used to provide TLS for Twisted.  Smartcards supported
 through the Engine interface.")
+    (properties `((python2-variant . ,(delay python2-m2crypto))))
     (license license:expat)))
 
 (define-public python2-m2crypto
-  (package-with-python2 python-m2crypto))
+  (let ((m2crypto (package-with-python2
+                   (strip-python2-variant python-m2crypto))))
+    (package (inherit m2crypto)
+             (propagated-inputs
+              `(("python2-typing" ,python2-typing))))))
 
 (define-public python-pylibscrypt
   (package
@@ -966,3 +971,33 @@ been constructed to maintain extensive documentation on how to use
     (description "This is a set of Python bindings for the scrypt key
 derivation function.")
     (license license:bsd-2)))
+
+(define-public python-service-identity
+  (package
+    (name "python-service-identity")
+    (version "17.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "service_identity" version))
+       (sha256
+        (base32
+         "1aq24cn3nnsjr9g797dayhx4g653h6bd41ksqhidzq0rvarzn0a0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyasn1-modules" ,python-pyasn1-modules)
+       ("python-pyopenssl" ,python-pyopenssl)))
+    (home-page "https://service-identity.readthedocs.io/")
+    (synopsis "Service identity verification for PyOpenSSL")
+    (description
+     "@code{service_identity} aspires to give you all the tools you need
+for verifying whether a certificate is valid for the intended purposes.
+In the simplest case, this means host name verification.  However,
+service_identity implements RFC 6125 fully and plans to add other
+relevant RFCs too.")
+    (license license:expat)))
+
+(define-public python2-service-identity
+  (package-with-python2 python-service-identity))

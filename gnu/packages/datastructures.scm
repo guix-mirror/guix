@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,29 @@ implementation.  Available structures are lists, queues, stacks, hash tables,
 binary trees, binary search trees, red-black trees, 2D arrays, permutations
 and heaps.")
     (license license:gpl2+)))
+
+(define-public marisa
+  (package
+    (name "marisa")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/s-yata/marisa-trie"
+                           "/releases/download/v" version "/" name "-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "19ifrcmnbr9whaaf4ly3s9ndyiq9sjqhnfkrxbz9zsb44w2n36hf"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/s-yata/marisa-trie")
+    (synopsis "Trie data structure C++ library")
+    (description "Matching Algorithm with Recursively Implemented
+StorAge (MARISA) is a static and space-efficient trie data structure C++
+library.")
+
+    ;; Dual-licensed, according to docs/readme.en.html (source files lack
+    ;; copyright/license headers.)
+    (license (list license:bsd-2 license:lgpl2.1+))))
 
 (define-public sparsehash
   (package

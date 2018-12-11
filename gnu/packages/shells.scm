@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -414,10 +414,7 @@ use of experts and novices alike.")
                                              "/rx")))
                  (delete-file-recursively "rx")
                  (symlink rxpath "rx"))
-               #t))
-           (add-after 'unpack 'autoreconf
-             (lambda _
-               (invoke "autoreconf"))))))
+               #t)))))
       (inputs
        `(("scheme48" ,scheme48)
          ("scheme48-rx" ,scheme48-rx)))
@@ -569,30 +566,30 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
 (define-public loksh
   (package
     (name "loksh")
-    (version "6.3")
+    (version "6.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dimkr/loksh/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dimkr/loksh.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0i1b60g1p19s5cnzz0nmjzjnxywm9szzyp1rcwfcx3gmzvrwr2sc"))))
+        (base32 "1d92cf5iadj1vwg0wwksaq1691zaxjrd2y4qygj4sdd25zsahj6p"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libbsd" ,libbsd)))
+     `(("libbsd" ,libbsd)
+       ("ncurses" ,ncurses)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:tests? #f ;No tests included
+     `(#:tests? #f                      ; no tests included
        #:make-flags (list "CC=gcc" "HAVE_LIBBSD=1"
-                          (string-append "DESTDIR="
-                                         (assoc-ref %outputs "out"))
-                          "PREFIX=")
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ;No configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://github.com/dimkr/loksh")
     (synopsis "Korn Shell from OpenBSD")
     (description

@@ -77,22 +77,26 @@ provides the Maven plugin generating the component metadata.")))
 (define-public maven-resolver-api
   (package
     (name "maven-resolver-api")
-    (version "1.1.1")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/apache/maven-resolver/"
                                   "archive/maven-resolver-" version ".tar.gz"))
               (sha256
                (base32
-                "0rpvdg3qr1j88gw0ankf0wnwfyq6238mdlm7s39vf5jrcvhdgwcl"))))
+                "0gfkf8g5zbjh6ciq3dnby9m5irhrbyc7d2jzic9l8xx6hl61q6mm"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-resolver-api.jar"
        #:source-dir "maven-resolver-api/src/main/java"
        #:test-dir "maven-resolver-api/src/test"))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)))
+     `(("java-asm" ,java-asm)
+       ("java-cglib" ,java-cglib)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-junit" ,java-junit)
+       ("java-mockito-1" ,java-mockito-1)
+       ("java-objenesis" ,java-objenesis)))
     (home-page "https://github.com/apache/maven-resolver")
     (synopsis "Maven repository system API")
     (description "This package contains the API for the maven repository system.")
@@ -164,12 +168,14 @@ ease usage of the repository system.")))
              (mkdir-p "build/classes/META-INF/sisu")
              (with-output-to-file "build/classes/META-INF/sisu/javax.inject.Named"
                (lambda _
-                 (display "org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory\n"))))))))
+                 (display "org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory\n")))
+             #t)))))
     (inputs
      `(("maven-resolver-api" ,maven-resolver-api)
        ("maven-resolver-spi" ,maven-resolver-spi)
        ("maven-resolver-util" ,maven-resolver-util)
-       ("java-javax-inject" ,java-javax-inject)))
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-slf4j-api" ,java-slf4j-api)))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)
@@ -198,28 +204,28 @@ for repositories using URI-based layouts.")))
                    (string-append
                      ;; Build this list by looking for files containing "@Named"
                      "org.eclipse.aether.internal.impl.DefaultArtifactResolver\n"
-                     "org.eclipse.aether.internal.impl.DefaultTransporterProvider\n"
-                     "org.eclipse.aether.internal.impl.DefaultUpdatePolicyAnalyzer\n"
-                     "org.eclipse.aether.internal.impl.slf4j.Slf4jLoggerFactory\n"
-                     "org.eclipse.aether.internal.impl.DefaultRepositorySystem\n"
-                     "org.eclipse.aether.internal.impl.LoggerFactoryProvider\n"
-                     "org.eclipse.aether.internal.impl.DefaultFileProcessor\n"
-                     "org.eclipse.aether.internal.impl.DefaultLocalRepositoryProvider\n"
-                     "org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory\n"
-                     "org.eclipse.aether.internal.impl.DefaultDeployer\n"
-                     "org.eclipse.aether.internal.impl.DefaultMetadataResolver\n"
-                     "org.eclipse.aether.internal.impl.DefaultInstaller\n"
-                     "org.eclipse.aether.internal.impl.Maven2RepositoryLayoutFactory\n"
-                     "org.eclipse.aether.internal.impl.DefaultSyncContextFactory\n"
-                     "org.eclipse.aether.internal.impl.DefaultOfflineController\n"
-                     "org.eclipse.aether.internal.impl.EnhancedLocalRepositoryManagerFactory\n"
-                     "org.eclipse.aether.internal.impl.DefaultRepositoryLayoutProvider\n"
-                     "org.eclipse.aether.internal.impl.DefaultRemoteRepositoryManager\n"
-                     "org.eclipse.aether.internal.impl.DefaultRepositoryEventDispatcher\n"
-                     "org.eclipse.aether.internal.impl.DefaultRepositoryConnectorProvider\n"
-                     "org.eclipse.aether.internal.impl.DefaultUpdateCheckManager\n"
+                     "org.eclipse.aether.internal.impl.collect.DefaultDependencyCollector\n"
                      "org.eclipse.aether.internal.impl.DefaultChecksumPolicyProvider\n"
-                     "org.eclipse.aether.internal.impl.DefaultDependencyCollector\n"))))
+                     "org.eclipse.aether.internal.impl.DefaultDeployer\n"
+                     "org.eclipse.aether.internal.impl.DefaultFileProcessor\n"
+                     "org.eclipse.aether.internal.impl.DefaultInstaller\n"
+                     "org.eclipse.aether.internal.impl.DefaultLocalRepositoryProvider\n"
+                     "org.eclipse.aether.internal.impl.DefaultMetadataResolver\n"
+                     "org.eclipse.aether.internal.impl.DefaultOfflineController\n"
+                     "org.eclipse.aether.internal.impl.DefaultRemoteRepositoryManager\n"
+                     "org.eclipse.aether.internal.impl.DefaultRepositoryConnectorProvider\n"
+                     "org.eclipse.aether.internal.impl.DefaultRepositoryEventDispatcher\n"
+                     "org.eclipse.aether.internal.impl.DefaultRepositoryLayoutProvider\n"
+                     "org.eclipse.aether.internal.impl.DefaultRepositorySystem\n"
+                     "org.eclipse.aether.internal.impl.DefaultSyncContextFactory\n"
+                     "org.eclipse.aether.internal.impl.DefaultTransporterProvider\n"
+                     "org.eclipse.aether.internal.impl.DefaultUpdateCheckManager\n"
+                     "org.eclipse.aether.internal.impl.DefaultUpdatePolicyAnalyzer\n"
+                     "org.eclipse.aether.internal.impl.EnhancedLocalRepositoryManagerFactory\n"
+                     "org.eclipse.aether.internal.impl.LoggerFactoryProvider\n"
+                     "org.eclipse.aether.internal.impl.Maven2RepositoryLayoutFactory\n"
+                     "org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory\n"
+                     "org.eclipse.aether.internal.impl.slf4j.Slf4jLoggerFactory"))))
              #t)))))
     (inputs
      `(("maven-resolver-api" ,maven-resolver-api)
@@ -306,6 +312,7 @@ for repositories using URI-based layouts.")))
        ("java-plexus-component-annotation" ,java-plexus-component-annotations)
        ("java-plexus-classworld" ,java-plexus-classworlds)
        ("java-plexus-plexus-util" ,java-plexus-utils)
+       ("java-slf4j-api" ,java-slf4j-api)
        ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
        ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)))
     (native-inputs
@@ -675,13 +682,13 @@ gets and puts artifacts through HTTP(S) using Apache HttpClient-4.x.")))
 (define-public maven-artifact
   (package
     (name "maven-artifact")
-    (version "3.5.4")
+    (version "3.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.apache.org/dist/maven/"
                                   "maven-3/" version "/source/"
                                   "apache-maven-" version "-src.tar.gz"))
-              (sha256 (base32 "1xg20g87svzzscbn7m92c2njvrr61va1dija2x2w7m5v4hdizfpk"))
+              (sha256 (base32 "17jrqfqwn569jgnv8m4pqc27csssb0rf6mznpq61l5bnbd6hl75k"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -915,8 +922,8 @@ inheritance, interpolation, @dots{}")))
        ("java-asm" ,java-asm)
        ("sisu-inject" ,java-eclipse-sisu-inject)
        ("javax-inject" ,java-javax-inject)
-       ("xmlunit" ,java-xmlunit)
-       ("xmlunit" ,java-xmlunit-legacy)
+       ("java-xmlunit" ,java-xmlunit)
+       ("java-xmlunit-matchers" ,java-xmlunit-matchers)
        ("xbean" ,java-geronimo-xbean-reflect)
        ("classworlds" ,java-plexus-classworlds)))
     (description "Apache Maven is a software project management and comprehension

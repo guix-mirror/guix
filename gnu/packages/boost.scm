@@ -122,6 +122,16 @@ across a broad spectrum of applications.")
     (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
 
+;; Some programs need Boost to be built with C++14 support.
+(define-public boost-cxx14
+  (package (inherit boost)
+    (arguments
+      (substitute-keyword-arguments (package-arguments boost)
+        ((#:make-flags flags)
+         `(append ,flags
+                  '("cxxflags=-std=c++14")))))
+    (properties '((hidden? . #t)))))
+
 (define-public boost-for-mysql
   ;; Older version for MySQL 5.7.23.
   (package
@@ -182,14 +192,14 @@ Boost.Thread.")
 (define-public mdds
   (package
     (name "mdds")
-    (version "1.3.1")
+    (version "1.4.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "http://kohei.us/files/mdds/src/mdds-" version ".tar.bz2"))
              (sha256
               (base32
-               "18g511z1lgfxrga2ld9yr95phmyfbd3ymbv4q5g5lyjn4ljcvf6w"))))
+               "10cw6irdm6d15nxnys2v5akp8yz52qijpcjvw0frwq7nz5d3vki5"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("boost" ,boost))) ; inclusion of header files

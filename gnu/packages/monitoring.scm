@@ -32,6 +32,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix utils)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages check)
@@ -39,6 +40,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages image)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages networking)
@@ -403,3 +405,27 @@ WSGI and the node exporter textfile collector.")
 written in Go with pluggable metric collectors.")
       (home-page "https://github.com/prometheus/node_exporter")
       (license license:asl2.0))))
+
+(define-public fswatch
+  (package
+    (name "fswatch")
+    (version "1.13.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                      (url "https://github.com/emcrisostomo/fswatch.git")
+                      (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0r9m3rysqa1kdgghv2i6sv4zrd0v8idsbrp627ys642dl39svir3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)))
+    (synopsis "File system monitor")
+    (description "This package provides a file system monitor.")
+    (home-page "https://github.com/emcrisostomo/fswatch")
+    (license license:gpl3+)))

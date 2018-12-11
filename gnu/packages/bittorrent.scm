@@ -1,13 +1,14 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -54,6 +56,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
@@ -214,14 +217,14 @@ Transmission BitTorrent daemon.")
     (name "transmission-remote-cli")
     (version "1.7.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/fagga/"
-                                  "transmission-remote-cli/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fagga/transmission-remote-cli.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1y0hkpcjf6jw9xig8yf484hbhy63nip0pkchx401yxj81m25l4z9"))))
+                "09w9f8vrm61lapin8fmq4rgahr95y3c6wss10g0fgd0kl16f895v"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2 ; only supports Python 2
@@ -338,13 +341,14 @@ downloads, download scheduling, download rate limiting.")
     (name "mktorrent")
     (version "1.1")
     (source (origin
-              (method url-fetch)
-              (file-name (string-append name "-" version ".tar.gz"))
-              (uri (string-append "https://github.com/Rudde/mktorrent/archive/v"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Rudde/mktorrent.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1j9qc4fxa9isnaygqk6jazsiklqywl2wcs95b8dx01963407bx6h"))))
+                "17pdc5mandl739f8q26n5is8ga56s83aqcrwhlnnplbxwx2inidr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -371,17 +375,17 @@ and will take advantage of multiple processor cores where possible.")
 (define-public libtorrent-rasterbar
   (package
     (name "libtorrent-rasterbar")
-    (version "1.1.8")
+    (version "1.1.11")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
-                "https://github.com/arvidn/libtorrent/releases/download/libtorrent-"
+                "https://github.com/arvidn/libtorrent/releases/download/libtorrent_"
                 (string-join (string-split version #\.) "_")
                 "/libtorrent-rasterbar-" version ".tar.gz"))
               (sha256
                (base32
-                "0pcdy26l5ivcs78y2bqh2qca83ikzjfchw5815xh69qf8g88zgvb"))))
+                "0isqidr11fnhybr0wvk0qxd97jaikmh8fx9h89b84yd2gyxdw8vw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -393,7 +397,18 @@ and will take advantage of multiple processor cores where possible.")
              "CXXFLAGS=-std=c++11")     ; Use std::chrono instead of boost
        #:make-flags (list
                      (string-append "LDFLAGS=-Wl,-rpath="
-                                    (assoc-ref %outputs "out") "/lib"))))
+                                    (assoc-ref %outputs "out") "/lib"))
+       #:phases (modify-phases %standard-phases
+           (add-after 'unpack 'compile-python-c++11
+             (lambda _
+               ;; Make sure the Python bindings are compiled in C++ mode to
+               ;; avoid undefined references as mentioned in
+               ;; <https://github.com/qbittorrent/qBittorrent/issues/638>.
+               ;; XXX: This can be removed for 1.2+.
+               (substitute* "bindings/python/setup.py"
+                 (("\\+ target_specific\\(\\)\\,")
+                  "+ target_specific() + ['-std=c++11'],"))
+               #t)))))
     (inputs `(("boost" ,boost)
               ("openssl" ,openssl)))
     (native-inputs `(("python" ,python-2)
@@ -448,3 +463,40 @@ It aims to be a good alternative to all other BitTorrent clients out there.
 qBittorrent is fast, stable and provides unicode support as well as many
 features.")
     (license l:gpl2+)))
+
+(define-public deluge
+  (package
+    (name "deluge")
+    (version "1.3.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://download.deluge-torrent.org/source/deluge-"
+             version ".tar.xz"))
+       (sha256
+        (base32
+         "0b7rri4x0wrcj7rjghrnw1kfrsd5i7i6aq85dsg5dg1w1qa0ar59"))))
+    (build-system python-build-system)
+    (inputs
+     `(("libtorrent" ,libtorrent-rasterbar)
+       ("python2-chardet" ,python2-chardet)
+       ("python2-pygtk" ,python2-pygtk)
+       ("python2-pyopenssl" ,python2-pyopenssl)
+       ("python2-pyxdg" ,python2-pyxdg)
+       ("python2-service-identity" ,python2-service-identity)
+       ("python2-twisted" ,python2-twisted)))
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://www.deluge-torrent.org/")
+    (synopsis  "Fully-featured cross-platform ​BitTorrent client")
+    (description
+     "Deluge contains the common features to BitTorrent clients such as
+Protocol Encryption, DHT, Local Peer Discovery (LSD), Peer Exchange
+(PEX), UPnP, NAT-PMP, Proxy support, Web seeds, global and per-torrent
+speed limits.  Deluge heavily utilises the ​libtorrent library.  It is
+designed to run as both a normal standalone desktop application and as a
+​client-server.")
+    (license l:gpl3+)))

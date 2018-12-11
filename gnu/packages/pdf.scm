@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -34,6 +34,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -58,6 +59,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -80,6 +82,7 @@
 (define-public poppler
   (package
    (name "poppler")
+   (replacement poppler/fixed)
    (version "0.68.0")
    (source (origin
             (method url-fetch)
@@ -129,6 +132,14 @@
    (license license:gpl2+)
    (home-page "https://poppler.freedesktop.org/")))
 
+(define poppler/fixed
+  (package
+    (inherit poppler)
+    (source (origin
+              (inherit (package-source poppler))
+              (patches (append (origin-patches (package-source poppler))
+                               (search-patches "poppler-CVE-2018-19149.patch")))))))
+
 (define-public poppler-data
   (package
     (name "poppler-data")
@@ -160,14 +171,14 @@ When present, Poppler is able to correctly render CJK and Cyrillic text.")
                    license:gpl2))))
 
 (define-public poppler-qt4
-  (package (inherit poppler)
+  (package/inherit poppler
    (name "poppler-qt4")
    (inputs `(("qt-4" ,qt-4)
              ,@(package-inputs poppler)))
    (synopsis "Qt4 frontend for the Poppler PDF rendering library")))
 
 (define-public poppler-qt5
-  (package (inherit poppler)
+  (package/inherit poppler
    (name "poppler-qt5")
    (inputs `(("qtbase" ,qtbase)
              ,@(package-inputs poppler)))
@@ -225,26 +236,23 @@ Poppler PDF rendering library.")
    (name "libharu")
    (version "2.3.0")
    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/libharu/libharu/archive/"
-                                 "RELEASE_"
-                                 (string-join (string-split version #\.) "_")
-                                 ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/libharu/libharu.git")
+                   (commit (string-append
+                            "RELEASE_"
+                            (string-join (string-split version #\.) "_")))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1lm4v539y9cb1lvbq387j57sy7yxda3yv8b1pk8m6zazbp66i7lg"))))
+               "15s9hswnl3qqi7yh29jyrg0hma2n99haxznvcywmsp8kjqlyg75q"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
       (list (string-append "--with-zlib="
                            (assoc-ref %build-inputs "zlib"))
             (string-append "--with-png="
-                           (assoc-ref %build-inputs "libpng")))
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'autogen
-          (lambda _ (invoke "autoreconf" "-vif"))))))
+                           (assoc-ref %build-inputs "libpng")))))
    (inputs
     `(("zlib" ,zlib)
       ("libpng" ,libpng)))
@@ -417,17 +425,15 @@ using the DjVuLibre library.")
 (define-public zathura-pdf-mupdf
   (package
     (name "zathura-pdf-mupdf")
-    (version "0.3.3")
+    (version "0.3.4")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://pwmt.org/projects/zathura-pdf-mupdf"
                               "/download/zathura-pdf-mupdf-" version ".tar.xz"))
-              (patches
-               (search-patches "zathura-pdf-mupdf-link-to-jpeg-libraries.patch"))
               (sha256
                (base32
-                "1zbdqimav4wfgimpy3nfzl10qj7vyv23rdy2z5z7z93jwbp2rc2j"))))
+                "166d5nz47ixzwj4pixsd5fd9qvjf5v34cdqi3p72vr23pswk2hyn"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("jbig2dec" ,jbig2dec)
@@ -439,17 +445,9 @@ using the DjVuLibre library.")
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f                      ; package does not contain tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-plugin-directory
-           ;; Something of a regression in 0.3.3: the new Meson build system
-           ;; now hard-codes an incorrect plugin directory.  Fix it.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "meson.build"
-               (("(install_dir:).*" _ key)
-                (string-append key
-                               "'" (assoc-ref outputs "out") "/lib/zathura'\n")))
-             #t)))))
+       #:configure-flags (list (string-append "-Dplugindir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/zathura"))))
     (home-page "https://pwmt.org/projects/zathura-pdf-mupdf/")
     (synopsis "PDF support for zathura (mupdf backend)")
     (description "The zathura-pdf-mupdf plugin adds PDF support to zathura
@@ -559,7 +557,8 @@ interaction.")
                                   "/podofo-" version ".tar.gz"))
               (sha256
                (base32
-                "0wj0y4zcmj4q79wrn3vv3xq4bb0vhhxs8yifafwy9f2sjm83c5p9"))))
+                "0wj0y4zcmj4q79wrn3vv3xq4bb0vhhxs8yifafwy9f2sjm83c5p9"))
+              (patches (search-patches "podofo-cmake-3.12.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -598,7 +597,7 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.13.0")
+    (version "1.14.0")
     (source
       (origin
         (method url-fetch)
@@ -606,9 +605,17 @@ extracting content or merging files.")
                             name "-" version "-source.tar.xz"))
         (sha256
          (base32
-          "0129k92bav692l6lyw10ryldx7h2f9khjpgnp3f3n4fdsph9hrkl"))
+          "1psnz02w5p7wc1s1ma7vvjmkjfy641xvsh9ykaqzkk84dflnjgk0"))
         (modules '((guix build utils)))
-        (snippet '(begin (delete-file-recursively "thirdparty") #t))))
+        (snippet
+         ;; We keep lcms2 since it is different than our lcms.
+         '(begin
+            (for-each
+              (lambda (dir)
+                (delete-file-recursively (string-append "thirdparty/" dir)))
+              '("curl" "freeglut" "freetype" "harfbuzz" "jbig2dec"
+                "libjpeg" "mujs" "openjpeg" "zlib"))
+                #t))))
     (build-system gnu-build-system)
     (inputs
       `(("curl" ,curl)
@@ -629,6 +636,8 @@ extracting content or merging files.")
       '(#:tests? #f ; no check target
         #:make-flags (list "CC=gcc"
                            "XCFLAGS=-fpic"
+                           "USE_SYSTEM_LIBS=yes"
+                           "USE_SYSTEM_MUJS=yes"
                            (string-append "prefix=" (assoc-ref %outputs "out")))
         #:phases (modify-phases %standard-phases
                   (delete 'configure))))
@@ -643,7 +652,11 @@ listing the table of contents and hyperlinks.
 The library ships with a rudimentary X11 viewer, and a set of command
 line tools for batch rendering @command{pdfdraw}, rewriting files
 @command{pdfclean}, and examining the file structure @command{pdfshow}.")
-    (license license:agpl3+)))
+    (license (list license:agpl3+
+                   license:bsd-3 ; resources/cmaps
+                   license:x11 ; thirdparty/lcms2
+                   license:silofl1.1 ; resources/fonts/{han,noto,sil,urw}
+                   license:asl2.0)))) ; resources/fonts/droid
 
 (define-public qpdf
   (package
@@ -864,14 +877,14 @@ the framebuffer.")
     (name "pdf2svg")
     (version "0.2.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/dawbarton/pdf2svg/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dawbarton/pdf2svg.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "12pa1pajirnlrkz2il3h4l30lc2prryk1qr132jk6z9y1c3qdcag"))))
+                "14ffdm4y26imq99wjhkrhy9lp33165xci1l5ndwfia8hz53bl02k"))))
     (build-system gnu-build-system)
     (inputs
      `(("cairo" ,cairo)
@@ -988,7 +1001,7 @@ PDF.  Indeed @command{pdfposter} was inspired by @command{poster}.")
 (define-public pdfgrep
   (package
     (name "pdfgrep")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
@@ -996,7 +1009,7 @@ PDF.  Indeed @command{pdfposter} was inspired by @command{poster}.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "02qcl5kmr5qzjfc99qpbpfb1890bxlrq3r208gnding51zrmb09c"))))
+         "1fia10djcxxl7n9jw2prargw4yzbykk6izig2443ycj9syhxrwqf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1011,4 +1024,42 @@ PDF.  Indeed @command{pdfposter} was inspired by @command{poster}.")
 Support some GNU grep options as file name output, page number output,
 optional case insensitivity, count occurrences, color highlights and search in
 multiple files.")
+    (license license:gpl2+)))
+
+(define-public pdfpc
+  (package
+    (name "pdfpc")
+    (version "4.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pdfpc/pdfpc.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1rmsrpf5vlqhnyyrhq8apndny88ld2qvfjx6258653pqbimv7mx5"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))          ; no test target
+    (inputs
+     `(("cairo" ,cairo)
+       ("gtk+" ,gtk+)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("libgee" ,libgee)
+       ("poppler" ,poppler)
+       ("pango" ,pango)
+       ("vala" ,vala)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://pdfpc.github.io/")
+    (synopsis "Presenter console with multi-monitor support for PDF files")
+    (description
+     "pdfpc is a presentation viewer application which uses multi-monitor
+output to provide meta information to the speaker during the presentation.  It
+is able to show a normal presentation window on one screen, while showing a
+more sophisticated overview on the other one providing information like a
+picture of the next slide, as well as the left over time till the end of the
+presentation.  The input files processed by pdfpc are PDF documents.")
     (license license:gpl2+)))

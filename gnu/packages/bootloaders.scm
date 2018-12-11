@@ -34,6 +34,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages firmware)
@@ -316,6 +317,8 @@ menu to select one of the installed operating systems.")
       (home-page "https://www.syslinux.org")
       (synopsis "Lightweight Linux bootloader")
       (description "Syslinux is a lightweight Linux bootloader.")
+      ;; The Makefile specifically targets i386 and x86_64 using nasm.
+      (supported-systems '("i686-linux" "x86_64-linux"))
       (license (list license:gpl2+
                      license:bsd-3 ; gnu-efi/*
                      license:bsd-4 ; gnu-efi/inc/* gnu-efi/lib/*
@@ -361,7 +364,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2018.09")
+    (version "2018.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -369,12 +372,13 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0s122kyz1svvs2yjzj4j9qravl3ra4vn0fjqgski7rlczqyg56w3"))))
+                "0znkwljfwwn4y7j20pzz4ilqw8znphrfxns0x1lwdzh3xbr96z3k"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
        ("dtc" ,dtc)
        ("flex" ,flex)
+       ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("python-2" ,python-2)
        ("python2-coverage" ,python2-coverage)
@@ -553,8 +557,8 @@ board-independent tools.")))
 (define-public u-boot-beagle-bone-black
   (make-u-boot-package "am335x_boneblack" "arm-linux-gnueabihf"))
 
-(define-public u-boot-pine64-plus
-  (let ((base (make-u-boot-package "pine64_plus" "aarch64-linux-gnu")))
+(define-public (make-u-boot-sunxi64-package board triplet)
+  (let ((base (make-u-boot-package board triplet)))
     (package
       (inherit base)
       (arguments
@@ -572,8 +576,27 @@ board-independent tools.")))
                     )
                   #t))))))
       (native-inputs
-       `(("firmware" ,arm-trusted-firmware-pine64-plus)
+       `(("firmware" ,arm-trusted-firmware-sun50i-a64)
          ,@(package-native-inputs base))))))
+
+(define-public u-boot-pine64-plus
+  (make-u-boot-sunxi64-package "pine64_plus" "aarch64-linux-gnu"))
+
+(define-public u-boot-pinebook
+  (let ((base (make-u-boot-sunxi64-package "pinebook" "aarch64-linux-gnu")))
+    (package
+      (inherit base)
+      (source (origin
+              (inherit (package-source u-boot))
+              (patches (search-patches
+                        ;; Add patches to enable Pinebook support from sunxi
+                        ;; maintainer tree: git://git.denx.de/u-boot-sunxi.git
+                        "u-boot-pinebook-a64-update-dts.patch"
+                        "u-boot-pinebook-syscon-node.patch"
+                        "u-boot-pinebook-mmc-calibration.patch"
+                        "u-boot-pinebook-video-bridge.patch"
+                        "u-boot-pinebook-r_i2c-controller.patch"
+                        "u-boot-pinebook-dts.patch")))))))
 
 (define-public u-boot-bananapi-m2-ultra
   (make-u-boot-package "Bananapi_M2_Ultra" "arm-linux-gnueabihf"))

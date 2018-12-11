@@ -243,17 +243,17 @@ easy.")
 (define-public snap
   (package
     (name "snap")
-    (version "4.2.1.4")
+    (version "4.2.2.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/jmoenig/Snap--Build-Your-Own-Blocks.git")
+             (url "https://github.com/jmoenig/Snap.git")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0yc0w0cdhvi0nwqqrann2v3y0n7shxh7irgixqvlavp4k49d7aqj"))))
+         "0bay08yr58qj8wzpjg33gdj78rfhyskfzidknpdl3cr1jrj6i4p9"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -265,7 +265,7 @@ easy.")
                 (share (string-append out "/share/snap")))
            (copy-recursively source share)
            ;; Replace the sole minified file in the package.
-           (with-directory-excursion share
+           (with-directory-excursion (string-append share "/src")
              (delete-file "FileSaver.min.js")
              (symlink (string-append (assoc-ref %build-inputs "js-filesaver")
                                      "/share/javascript/FileSaver.min.js")

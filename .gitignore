@@ -90,7 +90,7 @@
 /nix/config.h.in
 /nix/nix-daemon/nix-daemon.cc
 /nix/nix-setuid-helper/nix-setuid-helper.cc
-/nix/scripts/guix-authenticate
+/nix/scripts/authenticate
 /nix/scripts/list-runtime-roots
 /nix/scripts/offload
 /nix/scripts/substitute

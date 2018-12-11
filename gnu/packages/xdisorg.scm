@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -131,14 +131,15 @@ program.")
     (name "xclip")
     (version "0.13")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/astrand/xclip"
-                            "/archive/" version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32
-           "0n7pczk9vv30zf8qfln8ba3hnif9yfdxg0m84djac469wc28hnya"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/astrand/xclip.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0q0hmvcjlv8arhh1pzhja2wglyj6n7z209jnpnzd281kqqv4czcs"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                              ;there is no test suite
@@ -243,7 +244,8 @@ X11 (yet).")
                (mkdir-p (string-append out "/lib"))
                (setenv "PREFIX" out)
                (setenv "LDFLAGS" (string-append "-Wl,-rpath=" out "/lib"))
-               (setenv "CC" "gcc")))))))
+               (setenv "CC" "gcc")
+               #t))))))
     (native-inputs `(("perl" ,perl))) ; for pod2man
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
@@ -477,7 +479,7 @@ move windows, switch between desktops, etc.).")
                     (doc (string-append out "/share/doc/scrot")))
                (mkdir-p doc)
                (invoke "make" "install"
-                        (string-append "docsdir=" doc))))))))
+                       (string-append "docsdir=" doc))))))))
     (inputs
      `(("libx11" ,libx11)
        ("giblib" ,giblib)))
@@ -496,14 +498,14 @@ of the screen selected by mouse.")
     (name "slop")
     (version "7.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/naelstrof/slop/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/naelstrof/slop.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kpdrikgpjb4fpxalb6pjcih5njv1w9cnrjj5612ywdv1q5mjs48"))))
+                "0fgd8a2dqkg64all0f96sca92sdss9r3pzmv5kck46b99z2325z6"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
@@ -529,14 +531,14 @@ selection's dimensions to stdout.")
     (name "maim")
     (version "5.5.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/naelstrof/maim/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/naelstrof/maim.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "14zdhsx1cndg5m8wbv1rqmza7wgknwfj5h0knzxg3p2jkjw66i95"))))
+                "14mfxdm39kc5jk8wysrzx05ag2g4sk9l24i8m5pzqn8j611150v3"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
@@ -848,15 +850,15 @@ within a single process.")
   (package
     (name "xcape")
     (version "1.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/alols/" name
-                            "/archive/v" version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32
-            "0898zc3vwxia00h9kfknpf7jygxgwggrx8v5mxc31w4lzn2dhzm2"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alols/xcape.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "09a05cxgrip6nqy1qmwblamp2bhknqnqmxn7i2a1rgxa0nba95dm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -1004,7 +1006,8 @@ color temperature should be set to match the lamps in your room.")
            (lambda _
              (substitute* '("driver/Makefile.in" "po/Makefile.in.in")
                (("@GTK_DATADIR@") "@datadir@")
-               (("@PO_DATADIR@") "@datadir@")))))
+               (("@PO_DATADIR@") "@datadir@"))
+             #t)))
        #:configure-flags '("--with-pam" "--with-proc-interrupts"
                            "--without-readdisplay")
        #:make-flags (list (string-append "AD_DIR="
@@ -1164,7 +1167,8 @@ by name.")
          (add-after 'unpack 'fix-installation-prefix
            (lambda _
              (substitute* "CMakeLists.txt"
-               (("/etc") "${CMAKE_INSTALL_PREFIX}/etc")))))))
+               (("/etc") "${CMAKE_INSTALL_PREFIX}/etc"))
+             #t)))))
     (inputs
      `(("gtk+" ,gtk+-2)
        ("imlib2" ,imlib2)
@@ -1338,15 +1342,11 @@ invert colors on a specific display/screen.")
     (build-system gnu-build-system)
     (arguments '(#:configure-flags `("--enable-sound"
                                      "--enable-wave"
-                                     "--enable-alsa")
-                 #:phases (modify-phases %standard-phases
-                           (add-before 'configure 'autoreconf
-                             (lambda _
-                               (invoke "autoreconf" "-vfi"))))))
-   (native-inputs `(("autoconf" ,autoconf)
-                    ("automake" ,automake)
-                    ("pkg-config" ,pkg-config)
-                    ("perl" ,perl)))
+                                     "--enable-alsa")))
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("pkg-config" ,pkg-config)
+                     ("perl" ,perl)))
     (inputs `(("libx11" ,libx11)
               ("alsa-lib" ,alsa-lib)))
     (synopsis "Daemon that performs an action every time the X11 bell is rung")
@@ -1521,3 +1521,37 @@ the X11 clipboard")
 the numlock key in X11.  It can be called from the user's initialization files
 to automatically turn it on on login.")
     (license license:expat)))
+
+(define-public xrandr-invert-colors
+  (package
+    (name "xrandr-invert-colors")
+    (version "0.01")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/zoltanp/xrandr-invert-colors.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1br3x9vr6xm4ika06n8cfxx1b3wdchdqvyzjl4y1chmivrml8x9h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc")
+       #:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin")))
+               (install-file "xrandr-invert-colors.bin" bin)
+               #t))))))
+    (inputs
+     `(("libxrandr" ,libxrandr)))
+    (home-page "https://github.com/zoltanp/xrandr-invert-colors")
+    (synopsis "Invert display colors")
+    (description "This package provides a small utility for inverting the
+colors on all monitors attached to an XRandR-capable X11 display server.")
+    (license license:gpl3+)))

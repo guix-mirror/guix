@@ -164,7 +164,9 @@ do not treat collisions in MANIFEST as an error."
                               count)
                        count)
                (display-search-paths entries (list profile)
-                                     #:kind 'prefix))))))))
+                                     #:kind 'prefix)))
+
+        (warn-about-disk-space profile))))))
 
 
 ;;;
@@ -769,9 +771,13 @@ processed, #f otherwise."
       (('show requested-name)
        (let-values (((name version)
                      (package-name->name+version requested-name)))
-         (leave-on-EPIPE
-          (for-each (cute package->recutils <> (current-output-port))
-                    (find-packages-by-name name version)))
+         (match (find-packages-by-name name version)
+           (()
+            (leave (G_ "~a~@[@~a~]: package not found~%") name version))
+           (packages
+            (leave-on-EPIPE
+             (for-each (cute package->recutils <> (current-output-port))
+                       packages))))
          #t))
 
       (('search-paths kind)

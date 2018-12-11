@@ -43,14 +43,6 @@
 (define read-elf
   (compose parse-elf get-bytevector-all))
 
-(define %store
-  (open-connection-for-tests))
-
-(define-syntax-rule (test-assertm name exp)
-  (test-assert name
-    (run-with-store %store exp
-                    #:guile-for-build (%guile-for-build))))
-
 
 (test-begin "debug-link")
 

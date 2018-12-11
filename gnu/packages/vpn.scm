@@ -48,27 +48,17 @@
 (define-public gvpe
   (package
     (name "gvpe")
-    (version "3.0")
+    (version "3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gvpe/gvpe-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1v61mj25iyd91z0ir7cmradkkcm1ffbk52c96v293ibsvjs2s2hf"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Remove the outdated bundled copy of glibc's getopt, which
-                  ;; provides a 'getopt' declaration that conflicts with that
-                  ;; of glibc 2.26.
-                  (substitute* "lib/Makefile.in"
-                    (("getopt1?\\.(c|h|\\$\\(OBJEXT\\))") ""))
-                  (for-each delete-file
-                            '("lib/getopt.h" "lib/getopt.c"))
-                  #t))))
+                "1cz8n75ksl0l908zc5l3rnfm1hv7130s2w8710799fr5sxrdbszi"))))
     (build-system gnu-build-system)
     (home-page "http://software.schmorp.de/pkg/gvpe.html")
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("openssl" ,openssl)
               ("zlib" ,zlib)))
     (synopsis "Secure VPN among multiple nodes over an untrusted network")
@@ -312,14 +302,14 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
 (define-public tinc
   (package
     (name "tinc")
-    (version "1.0.33")
+    (version "1.0.35")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://tinc-vpn.org/packages/"
+              (uri (string-append "https://tinc-vpn.org/packages/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1x0hpfz13vn4pl6dcpnls6xq3rfcbdsg90awcfn53ijb8k35svvz"))))
+                "0pl92sdwrkiwgll78x0ww06hfljd07mkwm62g8x17qn3gha3pj0q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -328,7 +318,7 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
     (inputs `(("zlib" ,zlib)
               ("lzo" ,lzo)
               ("openssl" ,openssl)))
-    (home-page "http://tinc-vpn.org")
+    (home-page "https://tinc-vpn.org")
     (synopsis "Virtual Private Network (VPN) daemon")
     (description
      "Tinc is a VPN that uses tunnelling and encryption to create a secure

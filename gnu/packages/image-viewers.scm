@@ -28,6 +28,7 @@
 (define-module (gnu packages image-viewers)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -60,7 +61,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "2.28")
+    (version "3.1.1")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -68,7 +69,7 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1nfka7w6pzj2bbwx8vydr2wwm7z8mrbqiy1xrq97c1g5bxy2vlhk"))))
+                "1sy8z6rv5sy1bhk3846hgfdy96wdi874yr2fnxfprks46qp29l31"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -191,14 +192,14 @@ It is the default image viewer on LXDE desktop environment.")
     (name "sxiv")
     (version "24")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/muennich/sxiv/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/muennich/sxiv.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "044i077li6m4zsz2fswlcdi2m0sbr9mwws1h3k1zjaln29fw87ai"))))
+                "020n1bdxbzqncprh8a4rnjzc4frp335yxbqh5w6dr970f7n5qm8d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -287,13 +288,14 @@ your images.  Among its features are:
     (version "2.4.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/posva/catimg/archive"
-                           "/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/posva/catimg.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rwgbq2imd5l4nql5hrz7rr5f4gz8aad1amlf0j3cxir8slpbd1y"))))
+         "1sk74nfc1aklg784pzknr37dyz4k7h9fck3mifpn43rav5qy2zpy"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

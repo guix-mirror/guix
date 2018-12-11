@@ -522,13 +522,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.27.1")
+    (version "0.29.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "142gynlfx7yv0sdba3gpdxlnhg9chhz7hpdxdrp630z17h1bk9ri"))))
+                "0z5l966b1asbcdzl77bmywf22c1q0xill00jj7qyml9wx2nh7qm2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -579,7 +579,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0anh3vjy9sif1bkp25nj76ii37xx8hh0igcx60ppag12xlabsw1m"))))
+                "14i6yrcb9s7ygy99gccfc8jscymi24xb72s5lgg9b2y40z909ikg"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -826,7 +826,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.13.0")
+    (version "2.14.1")
     (source
      (origin
        (method url-fetch)
@@ -836,7 +836,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "1nh6xfyxs3mnnpgc6pancvdhv6ihz9lhsxdlg90gqa8n5r6lwfsr"))))
+         "07f6xn77w5rd6fhq5s1dmna3czs4chk5j2s6wkj366cvikawp2gi"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

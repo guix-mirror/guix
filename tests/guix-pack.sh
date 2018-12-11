@@ -29,39 +29,27 @@ fi
 
 guix pack --version
 
-# Starting from commit 66e9944e078cbb9e0d618377dd6df6e639640efa, 'guix pack'
-# produces derivations that refer to guile-sqlite3 and libgcrypt.  To make
-# that relatively inexpensive, run the test in the user's global store if
-# possible, on the grounds that binaries may already be there or can be built
-# or downloaded inexpensively.
-
-NIX_STORE_DIR="`guile -c '(use-modules (guix config))(display %storedir)'`"
-localstatedir="`guile -c '(use-modules (guix config))(display %localstatedir)'`"
-GUIX_DAEMON_SOCKET="$localstatedir/guix/daemon-socket/socket"
-export NIX_STORE_DIR GUIX_DAEMON_SOCKET
-
-if ! guile -c '(use-modules (guix)) (exit (false-if-exception (open-connection)))'
-then
-    exit 77
-fi
+# Use --no-substitutes because we need to verify we can do this ourselves.
+GUIX_BUILD_OPTIONS="--no-substitutes"
+export GUIX_BUILD_OPTIONS
 
 # Build a tarball with no compression.
-guix pack --compression=none guile-bootstrap
+guix pack --compression=none --bootstrap guile-bootstrap
 
 # Build a tarball (with compression).  Check that '-e' works as well.
-out1="`guix pack guile-bootstrap`"
-out2="`guix pack -e '(@ (gnu packages bootstrap) %bootstrap-guile)'`"
+out1="`guix pack --bootstrap guile-bootstrap`"
+out2="`guix pack --bootstrap -e '(@ (gnu packages bootstrap) %bootstrap-guile)'`"
 test -n "$out1"
 test "$out1" = "$out2"
 
 # Build a tarball with a symlink.
-the_pack="`guix pack -S /opt/gnu/bin=bin guile-bootstrap`"
+the_pack="`guix pack --bootstrap -S /opt/gnu/bin=bin guile-bootstrap`"
 
 # Try to extract it.  Note: we cannot test whether /opt/gnu/bin/guile itself
 # exists because /opt/gnu/bin may be an absolute symlink to a store item that
 # has been GC'd.
 test_directory="`mktemp -d`"
-trap 'rm -rf "$test_directory"' EXIT
+trap 'chmod -Rf +w "$test_directory"; rm -rf "$test_directory"' EXIT
 cd "$test_directory"
 tar -xf "$the_pack"
 test -L opt/gnu/bin

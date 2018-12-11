@@ -1222,6 +1222,18 @@ static void checkSecrecy(const Path & path)
 }
 
 
+static std::string runAuthenticationProgram(const Strings & args)
+{
+    /* Use the 'authenticate' script from 'LIBEXECDIR/guix' or just
+       'LIBEXECDIR', depending on whether we're uninstalled or not.  */
+    const bool installed = getenv("GUIX_UNINSTALLED") == NULL;
+    const string program = settings.nixLibexecDir
+	+ (installed ? "/guix" : "")
+	+ "/authenticate";
+
+    return runProgram(program, false, args);
+}
+
 void LocalStore::exportPath(const Path & path, bool sign,
     Sink & sink)
 {
@@ -1276,7 +1288,8 @@ void LocalStore::exportPath(const Path & path, bool sign,
         args.push_back(secretKey);
         args.push_back("-in");
         args.push_back(hashFile);
-        string signature = runProgram(OPENSSL_PATH, true, args);
+
+        string signature = runAuthenticationProgram(args);
 
         writeString(signature, hashAndWriteSink);
 
@@ -1366,7 +1379,7 @@ Path LocalStore::importPath(bool requireSignature, Source & source)
             args.push_back("-pubin");
             args.push_back("-in");
             args.push_back(sigFile);
-            string hash2 = runProgram(OPENSSL_PATH, true, args);
+            string hash2 = runAuthenticationProgram(args);
 
             /* Note: runProgram() throws an exception if the signature
                is invalid. */

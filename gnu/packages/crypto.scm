@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -94,7 +94,7 @@ communication, encryption, decryption, signatures, etc.")
 (define-public libmd
   (package
     (name "libmd")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
             (method url-fetch)
             (uri
@@ -105,7 +105,7 @@ communication, encryption, decryption, signatures, etc.")
                              version ".tar.xz")))
             (sha256
              (base32
-              "1iv45npzv0gncjgcpx5m081861zdqxw667ysghqb8721yrlyl6pj"))))
+              "0waclg2d5qin3r26gy5jvy4584ik60njc8pqbzwk0lzq3j9ynkp1"))))
     (build-system gnu-build-system)
     (synopsis "Message Digest functions from BSD systems")
     (description
@@ -164,34 +164,31 @@ OpenBSD tool of the same name.")
                                           "See base64.c in the distribution for
                                            the license from IBM.")))))
 
-
 (define-public opendht
   (package
     (name "opendht")
     (version "0.6.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        (string-append
-         "https://github.com/savoirfairelinux/" name
-         "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (delete-file-recursively "src/argon2")
-           (substitute* "src/Makefile.am"
-             (("./argon2/libargon2.la") "")
-             (("SUBDIRS = argon2") ""))
-           (substitute* "src/crypto.cpp"
-             (("argon2/argon2.h") "argon2.h"))
-           (substitute* "configure.ac"
-             (("src/argon2/Makefile") ""))
-           #t))
-       (sha256
-        (base32
-         "09yvkmbqbym3b5md4n96qc1s9sf2n8ji404hagih45rmsj49599x"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/savoirfairelinux/opendht.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "src/argon2")
+                  (substitute* "src/Makefile.am"
+                    (("./argon2/libargon2.la") "")
+                    (("SUBDIRS = argon2") ""))
+                  (substitute* "src/crypto.cpp"
+                    (("argon2/argon2.h") "argon2.h"))
+                  (substitute* "configure.ac"
+                    (("src/argon2/Makefile") ""))
+                  #t))
+              (sha256
+               (base32
+                "1akk613f18rc8kqs0cxdm34iq7wwc9kffhgp5rng09arwlw8gw3w"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
@@ -206,11 +203,7 @@ OpenBSD tool of the same name.")
        ("automake" ,automake)
        ("libtool" ,libtool)))
     (arguments
-     `(#:configure-flags '("--disable-tools" "--disable-python")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autoconf
-                    (lambda _
-                      (zero? (system* "autoreconf" "-vfi")))))))
+     `(#:configure-flags '("--disable-tools" "--disable-python")))
     (home-page "https://github.com/savoirfairelinux/opendht/")
     (synopsis "Distributed Hash Table (DHT) library")
     (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may

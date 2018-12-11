@@ -82,7 +82,7 @@ lexically, just dynamically.")
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-env
-           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1"))))))
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
     (propagated-inputs
      `(("perl-importer" ,perl-importer)
        ("perl-term-table" ,perl-term-table)

@@ -211,6 +211,10 @@ which allows users to view a desktop computing environment.")
       `(#:configure-flags
         '("--enable-lz4"
           "--enable-automated-tests")
+
+        ;; Several tests appear to be opening the same sockets concurrently.
+        #:parallel-tests? #f
+
         #:phases (modify-phases %standard-phases
                    (add-before 'check 'use-empty-ssl-cert-file
                      (lambda _ (setenv "SSL_CERT_FILE" "/dev/null") #t)))))
@@ -250,7 +254,7 @@ Internet and from a wide variety of machine architectures.")
          (add-after 'unpack 'patch-spice-vdagent.desktop
            (lambda* (#:key outputs #:allow-other-keys)
             (substitute* "data/spice-vdagent.desktop"
-              (("Exec=/usr/bin/spice-vdagent\n")
+              (("Exec=/usr/bin/spice-vdagent")
                (string-append "Exec=" (assoc-ref outputs "out")
                               "/bin/spice-vdagent")))
              #t)))))

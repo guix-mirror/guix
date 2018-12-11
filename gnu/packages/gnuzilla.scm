@@ -39,6 +39,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -417,7 +418,12 @@ in the Mozilla clients.")
              (setenv "DOMSUF" "(none)")
              (setenv "USE_IP" "TRUE")
              (setenv "IP_ADDRESS" "127.0.0.1")
-             (invoke "./nss/tests/all.sh")))
+
+             ;; The "PayPalEE.cert" certificate expires every six months,
+             ;; leading to test failures:
+             ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=609734>.  To
+             ;; work around that, set the time to roughly the release date.
+             (invoke "faketime" "2018-09-01" "./nss/tests/all.sh")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -453,7 +459,8 @@ in the Mozilla clients.")
      `(("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (propagated-inputs `(("nspr" ,nspr))) ; required by nss.pc.
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs `(("perl" ,perl)
+                     ("libfaketime" ,libfaketime))) ;for tests
 
     ;; The NSS test suite takes around 48 hours on Loongson 3A (MIPS) when
     ;; another build is happening concurrently on the same machine.
@@ -482,43 +489,33 @@ security standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "60.2.0-gnu1")
+    (version "60.3.0-gnu1")
     (source
      (origin
       (method url-fetch)
-      ;; Temporary URL pending official release:
-      (uri "https://alpha.gnu.org/gnu/gnuzilla/60.2.0/icecat-60.2.0-gnu1.tar.bz2")
-      #;
       (uri (string-append "mirror://gnu/gnuzilla/"
                           (first (string-split version #\-))
                           "/" name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "0lqx7g79x15941rhjr3qsfwsny6vzc7d7abdmvjy6jjbqkqlc1zl"))
+        "0icnl64nxcyf7dprpdpygxhabsvyhps8c3ixysj9bcdlj9q34ib1"))
       (patches
        (list
         (search-patch  "icecat-avoid-bundled-libraries.patch")
         (search-patch  "icecat-use-system-graphite2+harfbuzz.patch")
         (search-patch  "icecat-use-system-media-libs.patch")
-        (mozilla-patch "icecat-CVE-2018-12385.patch"      "80a4a7ef2813" "1vgcbimpnfjqj934v0cryq1g13xac3wfmd4jyhcb5s60x8xyssf5")
-        (search-patch  "icecat-CVE-2018-12383.patch")
-        (mozilla-patch "icecat-bug-1489744.patch"         "6546ee839d30" "11mhvj77r789b428bfxqq5wdx8yr7lbrdjzr8qjj6fw197pldn51")
-        (mozilla-patch "icecat-CVE-2018-12386.patch"      "4808fcb2e6ca" "05sc881l7sh8bag8whd2ggdn198lskqcxq8f41scfpqscw6xs5d5")
-        (mozilla-patch "icecat-CVE-2018-12387.patch"      "b8f5c37486e1" "0lvmbh126m695kgdbasy1y5xh9n1j08cwdhn071mgvj6yn8cns5z")
-        (mozilla-patch "icecat-bug-1464751.patch"         "d5d00faf0465" "1mj7dbb06brwrk0mvap0z4lfl2hwz1cj6dwjvdrisxm046pdw98i")
-        (mozilla-patch "icecat-bug-1472538.patch"         "11462f2b98f2" "1nxgh0plzilylx8r73r7d74pv66qwjqxmd7nqii33p0snl2jjfzs")
-        (mozilla-patch "icecat-bug-1478685.patch"         "098585dc86fc" "1b0x4qdh6isvffmibvc8ad8z62m3iky9q6jq0z6gyvn8q252cqal")
-        (mozilla-patch "icecat-bug-1486080.patch"         "3f8d57d936ea" "0pz2c18wcgj44v0j8my9xbm90m4bsjcvzmavj569fi8bh6s6zz8p")
-        (mozilla-patch "icecat-bug-1423278.patch"         "878ceaee5634" "0i47s5nvrx9vqbnj6s9y9f4ffww20p8nviqa6frg676y1188xlyl")
-        (mozilla-patch "icecat-bug-1442010.patch"         "87be1b98ec9a" "15f4l18c7hz9aqn89gg3dwmdidfwgn10dywgpzydm8mps45amx7j")
-        (mozilla-patch "icecat-bug-1484559.patch"         "99e58b5307ce" "02fdgbliwzi2r2376wg6k1rky1isfka0smac4ii2cll01jhpfrn6")
-        (mozilla-patch "icecat-bug-1487098.patch"         "f25ce451a492" "18nzg39iyxza1686180qk9cc88l5j2hf1h35d62lrqmdgd9vcj33")
-        (mozilla-patch "icecat-bug-1484905.patch"         "35c26bc231df" "0qh8d4z6y03h5xh7djci26a01l6zq667lg2k11f6zzg7z2j0h67x")
-        (mozilla-patch "icecat-bug-1488061.patch"         "050d0cfa8e3d" "05ql798ynbyz5pvyri4b95j4ixmgnny3zl7sd2ckfrrbm9mxh627")
-        (mozilla-patch "icecat-bug-1434963-pt1.patch"     "1e6dad87efed" "1v00a6cmgswjk54041jyv1ib129fxshpzwk6mn6lr0v5hylk3bx9")
-        (mozilla-patch "icecat-bug-1434963-pt2.patch"     "6558c46df9ea" "0vdy9dm9w5k1flhcfxwvvff0aa415b5mgmmq5r37i83686768xfb")
-        (mozilla-patch "icecat-bug-1434963-pt3.patch"     "686fcfa8abd6" "0ihqr11aq4b0y7mx7bwn8yzn25mv3k2gdphm951mj1g85qg35ann")
-        (mozilla-patch "icecat-bug-1491132.patch"         "14120e0c74d6" "188c5fbhqqhmlk88p70l6d97skh7xy4jhqdby1ri3h9ix967515j")))
+        (mozilla-patch "icecat-bug-1464061.patch"         "d28761dbff18" "1f58rzwx4s1af66fdwn9lgkcd1ksmq8kn8imvf78p90jqi24h7b4")
+        (mozilla-patch "icecat-bug-1479853.patch"         "4faeb696dd06" "12891xx9c15s6kby6d3zk64v5nqgaq7sw597zv1fkd3a6x69hlva")
+        (mozilla-patch "icecat-bug-1488295.patch"         "12ba39f69876" "1piyq44f0xa0a9z2748aqwpaziaxwp61d86gyhalbyag8lcxfb3p")
+        (mozilla-patch "icecat-bug-1500011.patch"         "a0adabeedf26" "0f5wazha3zxzhy2j8f93hx62l9p02b1p40vi07qah3ar67h4ccj9")
+        (mozilla-patch "icecat-bug-1503082.patch"         "19604eb26230" "1wqxgph4z14ijhk2j2m4av5p6gx72d02lzz83q6yy0k065kw8psb")
+        (mozilla-patch "icecat-bug-1499861.patch"         "98737ab09270" "0fyl6wv0jxcxpkfpsff46y93k49n8lrw0k7c1p45g8da015dx27a")
+        (mozilla-patch "icecat-bug-1504452.patch"         "1cf7d80355d5" "19jp4x32vyxam54d1r9fm7jwf6krhhf3xazfqmxb9aw4iwdil7dl")
+        (mozilla-patch "icecat-bug-1494752.patch"         "c264774b8913" "1hxyi131x8jwawrq90cgkph833iv9ixrdrgzl1r978gbzwq10xz2")
+        (mozilla-patch "icecat-bug-1477773.patch"         "ec13fda7c9b0" "0zj7aylgw55g0y7plaafn5gq8jwcsdr1bpdxacs0hq914nm8zy9z")
+        (mozilla-patch "icecat-bug-1500759.patch"         "5e1a9644aeef" "1qimrpgyrd8zkiri7w57j0aymk20y9b34am5w7rvr6qj1lhrbfla")
+        (mozilla-patch "icecat-bug-1485655.patch"         "9055726e2d89" "1pppxr94zqh6zmi2mn1ih21qap09vk5ivbhnwxqr8iszvygjg44g")
+        (mozilla-patch "icecat-bug-1410214.patch"         "9e641345e2ef" "0542xss2jdb8drh4g50cfy32l300x69dyywgx3dqs03vgr3qplxy")))
       (modules '((guix build utils)))
       (snippet
        '(begin

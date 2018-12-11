@@ -128,7 +128,9 @@ data units.")
                      ;; running in a TTY:
                      ;; https://github.com/pimutils/khal/issues/683
                      "not test_printics_read_from_stdin "
-                     "and not test_import_from_stdin")))))))
+                     "and not test_import_from_stdin "
+                     ;; https://github.com/pimutils/khal/issues/825
+                     "and not test_description_and_location_and_categories")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)

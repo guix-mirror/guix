@@ -26,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages assembly)
+  #:use-module (gnu packages authentication)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -35,6 +36,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages disk)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages jemalloc)
@@ -51,18 +53,19 @@
 (define-public ceph
   (package
     (name "ceph")
-    (version "12.2.5")
+    (version "13.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.ceph.com/tarballs/ceph-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ydc3mfvc0vpnpfnfmissvsrsj4jyxgzc2pcl1a4vdr3bwkcglp3"))
+                "0h483n9iy0fkbqrhf7k0dzspwdpcaswkjwmc5n5c600fr6s1v9pk"))
               (patches
                (search-patches "ceph-skip-unittest_blockdev.patch"
                                "ceph-skip-collect-sys-info-test.patch"
-                               "ceph-rocksdb-compat.patch"
+                               "ceph-detect-rocksdb.patch"
+                               "ceph-volume-respect-PATH.patch"
                                "ceph-disable-cpu-optimizations.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -76,7 +79,7 @@
                               ;"src/zstd"
                               ;"src/civetweb"
                               "src/test/downloads"
-                              "src/dpdk"
+                              "src/rapidjson"
                               "src/spdk"
                               "src/rocksdb"
                               "src/boost"))
@@ -100,13 +103,14 @@
                               (assoc-ref %build-inputs "keyutils") "/include")
                "-DCMAKE_INSTALL_LOCALSTATEDIR=/var"
                "-DENABLE_SHARED=ON"
-               "-DWITH_EMBEDDED=OFF"
                "-DWITH_SYSTEM_ROCKSDB=ON"
                "-DWITH_SYSTEM_BOOST=ON"
                "-DWITH_PYTHON3=ON"
                ;; TODO: Enable these when available in Guix.
+               "-DWITH_MGR_DASHBOARD_FRONTEND=OFF"       ;requires node + nodeenv
                "-DWITH_BABELTRACE=OFF"
                "-DWITH_LTTNG=OFF"
+               "-DWITH_SPDK=OFF"
                "-DWITH_XFS=OFF"
                "-DWITH_XIO=OFF"
                ;; Use jemalloc instead of tcmalloc.
@@ -184,9 +188,6 @@
                ;; /tmp/ceph-disk-virtualenv/bin/ceph-disk, but somehow
                ;; src/ceph-disk/CMakeLists.txt fails to create it.
                (substitute* "src/test/CMakeLists.txt"
-                 ;; FIXME: "create cannot load compressor of type zlib"
-                 ;; "libceph_zlib.so: undefined symbol: isal_deflate"
-                 (("^add_subdirectory\\(compressor\\)") "")
                  ;; FIXME: These tests fails because `ceph-disk'
                  ;; is not available.
                  (("^add_ceph_test\\(test-ceph-helpers\\.sh.*$") "\n")
@@ -235,6 +236,11 @@
                  (("^add_ceph_test\\(osd-copy-from\\.sh.*$") "\n")
                  (("^add_ceph_test\\(osd-fast-mark-down\\.sh.*$") "\n"))
                #t)))
+         (add-before 'configure 'gcc-workaround
+           (lambda _
+             (unsetenv "C_INCLUDE_PATH")
+             (unsetenv "CPLUS_INCLUDE_PATH")
+             #t))
          (add-before 'check 'set-check-environment
            (lambda _
              ;; Run tests in parallel.
@@ -262,28 +268,28 @@
          (add-after 'install 'wrap-python-scripts
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (ceph (string-append out "/bin/ceph"))
-                    (ceph-disk (string-append out "/bin/ceph-disk"))
-                    (ceph-detect-init (string-append
-                                       out "/bin/ceph-detect-init"))
-
+                    (scripts '("ceph" "ceph-mgr" "ceph-volume"
+                               "ceph-detect-init"
+                               "ceph-disk")) ;deprecated
                     (prettytable (assoc-ref inputs "python2-prettytable"))
-
+                    (six (assoc-ref inputs "python2-six"))
                     (sitedir (lambda (package)
                                (string-append package
                                               "/lib/python2.7/site-packages")))
                     (PYTHONPATH (string-append
                                  (sitedir out) ":"
+                                 (sitedir six) ":"
                                  (sitedir prettytable))))
                (for-each (lambda (executable)
-                           (wrap-program executable
+                           (wrap-program (string-append out "/bin/" executable)
                              `("PYTHONPATH" ":" prefix (,PYTHONPATH))))
-                         (list ceph ceph-disk ceph-detect-init))
+                         scripts)
                #t))))))
     (outputs
      '("out" "lib"))
     (native-inputs
-     `(("gperf" ,gperf)
+     `(("gcc" ,gcc-7)                      ;7 or later is required
+       ("gperf" ,gperf)
        ("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)
        ("python-sphinx" ,python-sphinx)
@@ -315,7 +321,7 @@
        ("python2-testtools" ,python2-testtools)
        ("python2-tox" ,python2-tox)))
     (inputs
-     `(("boost" ,boost)
+     `(("boost" ,boost-cxx14)
        ("curl" ,curl)
        ("cryptsetup" ,cryptsetup)
        ("expat" ,expat)
@@ -329,13 +335,16 @@
        ("libatomic-ops" ,libatomic-ops)
        ("lua" ,lua)
        ("lz4" ,lz4)
+       ("oath-toolkit" ,oath-toolkit)
        ("openldap" ,openldap)
        ("openssl" ,openssl)
        ("nss" ,nss)
        ("parted" ,parted)
        ("python@2" ,python-2)
        ("python2-prettytable" ,python2-prettytable)      ;used by ceph_daemon.py
+       ("python2-six" ,python2-six)                      ;for ceph-mgr + plugins
        ("python@3" ,python-3)
+       ("rapidjson" ,rapidjson)
        ("rocksdb" ,rocksdb)
        ("snappy" ,snappy)
        ("udev" ,eudev)

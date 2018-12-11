@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -71,12 +71,14 @@
     (name "tilda")
     (version "1.4.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/lanoxx/tilda/archive/"
-                                  "tilda-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/lanoxx/tilda.git")
+                    (commit (string-append "tilda-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0w2hry2bqcqrkik4l100b1a9jlsih6sq8zwhfpl8zzfq20i00lfs"))))
+                "154rsldqjv2m1bddisb930qicb0y35kx7bxq392n2hn68jr2pxkj"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -104,7 +106,7 @@ configurable through a graphical wizard.")
 (define-public termite
   (package
     (name "termite")
-    (version "13")
+    (version "14")
     (source
       (origin
         (method git-fetch)
@@ -116,7 +118,7 @@ configurable through a graphical wizard.")
         (file-name (string-append name "-" version "-checkout"))
         (sha256
          (base32
-          "02cn70ygl93ghhkhs3xdxn5b1yadc255v3yp8cmhhyzsv5027hvj"))))
+          "0dmz9rpc2fdvcwhcmjnhb48ixn403gxpq03g334d1hgjw2hsyx7x"))))
     (build-system gnu-build-system)
     (arguments
       `(#:phases
@@ -187,96 +189,113 @@ text-based approach to terminal recording.")
     (license license:gpl3)))
 
 (define-public libtsm
-  (package
-    (name "libtsm")
-    (version "3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://freedesktop.org/software/kmscon/releases/"
-                    "libtsm-" version ".tar.xz"))
-              (sha256
-               (base32
-                "01ygwrsxfii0pngfikgqsb4fxp8n1bbs47l7hck81h9b9bc1ah8i"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("libxkbcommon" ,libxkbcommon)))
-    (synopsis "Xterm state machine library")
-    (description "TSM is a state machine for DEC VT100-VT520 compatible
+  (let ((commit "f70e37982f382b03c6939dac3d5f814450bda253")
+        (revision "1"))
+    (package
+      (name "libtsm")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                ;; The freedesktop repository is no longer maintained.
+                (uri (git-reference
+                      (url (string-append "https://github.com/Aetf/" name))
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0mwn91i5h5d518i1s05y7hzv6bc13vzcvxszpfh77473iwg4wprx"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:configure-flags '("-DBUILD_TESTING=ON")))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("libxkbcommon" ,libxkbcommon)
+         ("check" ,check)))
+      (synopsis "Xterm state machine library")
+      (description "TSM is a state machine for DEC VT100-VT520 compatible
 terminal emulators.  It tries to support all common standards while keeping
 compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
-    (home-page "https://www.freedesktop.org/wiki/Software/libtsm")
-    ;; Hash table implementation is lgpl2.1+ licensed.
-    ;; The wcwidth implementation in external/wcwidth.{h,c} uses a license
-    ;; derived from ISC.
-    ;; UCS-4 to UTF-8 encoding is copied from "terminology" which is released
-    ;; under the bsd 2 license.
-    (license (list license:expat license:lgpl2.1+ license:isc license:bsd-2))))
+      (home-page "https://www.freedesktop.org/wiki/Software/libtsm")
+      ;; Hash table implementation is lgpl2.1+ licensed.
+      ;; The wcwidth implementation in external/wcwidth.{h,c} uses a license
+      ;; derived from ISC.
+      ;; UCS-4 to UTF-8 encoding is copied from "terminology" which is released
+      ;; under the bsd 2 license.
+      (license (list license:expat license:lgpl2.1+ license:isc license:bsd-2)))))
 
 (define-public kmscon
-  (package
-    (name "kmscon")
-    (version "8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://freedesktop.org/software/kmscon/releases/"
-                    "kmscon-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0axfwrp3c8f4gb67ap2sqnkn75idpiw09s35wwn6kgagvhf1rc0a"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Use elogind instead of systemd.
-               '(begin
-                  (substitute* "configure"
-                    (("libsystemd-daemon libsystemd-login")
-                     "libelogind"))
-                  (substitute* "src/uterm_systemd.c"
-                    (("#include <systemd/sd-login.h>")
-                     "#include <elogind/sd-login.h>")
-                    ;; We don't have this header.
-                    (("#include <systemd/sd-daemon\\.h>")
-                     "")
-                    ;; Replace the call to 'sd_booted' by the truth value.
-                    (("sd_booted\\(\\)")
-                     "1"))
-                  #t))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("libxslt" ,libxslt)                       ;to build the man page
-       ("libxml2" ,libxml2)                       ;for XML_CATALOG_FILES
-       ("docbook-xsl" ,docbook-xsl)))
-    (inputs
-     `(("libdrm" ,libdrm)
-       ("libtsm" ,libtsm)
-       ("libxkbcommon" ,libxkbcommon)
-       ("logind" ,elogind)
-       ("mesa" ,mesa)
-       ("pango" ,pango)
-       ("udev" ,eudev)))
-    (synopsis "Linux KMS-based terminal emulator")
-    (description "Kmscon is a terminal emulator based on Linux's @dfn{kernel
+  (let ((commit "01dd0a231e2125a40ceba5f59fd945ff29bf2cdc")
+        (revision "1"))
+    (package
+      (name "kmscon")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                ;; The freedesktop repository is no longer maintained.
+                (uri (git-reference
+                      (url (string-append "https://github.com/Aetf/" name))
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0q62kjsvy2iwy8adfiygx2bfwlh83rphgxbis95ycspqidg9py87"))
+                (modules '((guix build utils)))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (replace 'bootstrap
+                      (lambda _
+                        (setenv "NOCONFIGURE" "indeed")
+                        (invoke "sh" "autogen.sh")))
+                    ;; Use elogind instead of systemd.
+                    (add-before 'configure 'remove-systemd
+                      (lambda _
+                        (substitute* "configure"
+                          (("libsystemd-daemon libsystemd-login")
+                           "libelogind"))
+                        (substitute* "src/uterm_systemd.c"
+                          (("#include <systemd/sd-login.h>")
+                           "#include <elogind/sd-login.h>")
+                          ;; We don't have this header.
+                          (("#include <systemd/sd-daemon\\.h>")
+                           "")
+                          ;; Replace the call to 'sd_booted' by the truth value.
+                          (("sd_booted\\(\\)")
+                           "1")))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("libxslt" ,libxslt)                       ;to build the man page
+         ("libxml2" ,libxml2)                       ;for XML_CATALOG_FILES
+         ("docbook-xsl" ,docbook-xsl)))
+      (inputs
+       `(("libdrm" ,libdrm)
+         ("libtsm" ,libtsm)
+         ("libxkbcommon" ,libxkbcommon)
+         ("logind" ,elogind)
+         ("mesa" ,mesa)
+         ("pango" ,pango)
+         ("udev" ,eudev)))
+      (synopsis "Linux KMS-based terminal emulator")
+      (description "Kmscon is a terminal emulator based on Linux's @dfn{kernel
 mode setting} (KMS).  It can replace the in-kernel virtual terminal (VT)
 implementation with a user-space console.  Compared to the Linux console,
 kmscon provides enhanced features including XKB-compatible internationalized
 keyboard support, UTF-8 input/font support, hardware-accelerated rendering,
 multi-seat support, a replacement for @command{mingetty}, and more.")
-    (home-page "https://www.freedesktop.org/wiki/Software/kmscon")
-    ;; Hash table implementation is lgpl2.1+ licensed.
-    ;; The wcwidth implementation in external/wcwidth.{h,c} uses a license
-    ;; derived from ISC.
-    ;; UCS-4 to UTF-8 encoding is copied from "terminology" which is released
-    ;; under the bsd 2 license.
-    ;; Unifont-Font is from http://unifoundry.com/unifont.html and licensed
-    ;; under the terms of the GNU GPL.
-    (license (list license:expat license:lgpl2.1+ license:bsd-2
-                   license:gpl2+))
-    (supported-systems (filter (cut string-suffix? "-linux" <>)
-                               %supported-systems))))
+      (home-page "https://www.freedesktop.org/wiki/Software/kmscon")
+      ;; Hash table implementation is lgpl2.1+ licensed.
+      ;; The wcwidth implementation in external/wcwidth.{h,c} uses a license
+      ;; derived from ISC.
+      ;; UCS-4 to UTF-8 encoding is copied from "terminology" which is released
+      ;; under the bsd 2 license.
+      ;; Unifont-Font is from http://unifoundry.com/unifont.html and licensed
+      ;; under the terms of the GNU GPL.
+      (license (list license:expat license:lgpl2.1+ license:bsd-2
+                     license:gpl2+))
+      (supported-systems (filter (cut string-suffix? "-linux" <>)
+                                 %supported-systems)))))
 
 (define-public libtermkey
   (package
@@ -312,14 +331,14 @@ combining, and so on, with a simple interface.")
     (name "picocom")
     (version "2.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/npat-efault/picocom"
-                    "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/npat-efault/picocom.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1knl6dglnrynx1fhy21nylw56i1q3dkizkgxzkq42mb7ilah8f9y"))))
+                "06b2ic34dnxc73cprc5imi3iamlhsv623sbg9vj5h5rvs586dwjx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("CC=gcc")
@@ -383,13 +402,14 @@ has no notion of what's interesing, but it's very good at that notifying part.")
     (version "1.2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/mauke/unibilium/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mauke/unibilium.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1hbf011d8nzsp7c96fidjiq8yw8zlxf6f1s050ii2yyampvb8ib0"))))
+         "11mbfijdrvbmdlmxs8j4vij78ki0vna89yg3r9n9g1i6j45hiq2r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -856,13 +876,14 @@ per-line fullscreen terminal rendering, and keyboard input event reporting.")
     (version "2.2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/tmate-io/tmate/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tmate-io/tmate.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01f3hhm3x0sd6apyb1ajkjfdfvq5m2759w00yp2slr9fyicsrhnr"))))
+         "0pfl9vrswzim9ydi1n652h3rax2zrmy6sqkp0r09yy3lw83h4y1r"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)

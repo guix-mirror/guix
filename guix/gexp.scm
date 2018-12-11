@@ -211,7 +211,12 @@ OBJ must be an object that has an associated gexp compiler, such as a
     (#f
      (raise (condition (&gexp-input-error (input obj)))))
     (lower
-     (lower obj system target))))
+     ;; Cache in STORE the result of lowering OBJ.
+     (mlet %store-monad ((graft? (grafting?)))
+       (mcached (let ((lower (lookup-compiler obj)))
+                  (lower obj system target))
+                obj
+                system target graft?)))))
 
 (define-syntax define-gexp-compiler
   (syntax-rules (=> compiler expander)
@@ -506,9 +511,10 @@ whether this should be considered a \"native\" input or not."
 
 (set-record-type-printer! <gexp-output> write-gexp-output)
 
-(define (gexp-attribute gexp self-attribute)
+(define* (gexp-attribute gexp self-attribute #:optional (equal? equal?))
   "Recurse on GEXP and the expressions it refers to, summing the items
-returned by SELF-ATTRIBUTE, a procedure that takes a gexp."
+returned by SELF-ATTRIBUTE, a procedure that takes a gexp.  Use EQUAL? as the
+second argument to 'delete-duplicates'."
   (if (gexp? gexp)
       (delete-duplicates
        (append (self-attribute gexp)
@@ -524,13 +530,29 @@ returned by SELF-ATTRIBUTE, a procedure that takes a gexp."
                                           lst))
                              (_
                               '()))
-                           (gexp-references gexp))))
+                           (gexp-references gexp)))
+       equal?)
       '()))                                       ;plain Scheme data type
 
 (define (gexp-modules gexp)
   "Return the list of Guile module names GEXP relies on.  If (gexp? GEXP) is
 false, meaning that GEXP is a plain Scheme object, return the empty list."
-  (gexp-attribute gexp gexp-self-modules))
+  (define (module=? m1 m2)
+    ;; Return #t when M1 equals M2.  Special-case '=>' specs because their
+    ;; right-hand side may not be comparable with 'equal?': it's typically a
+    ;; file-like object that embeds a gexp, which in turn embeds closure;
+    ;; those closures may be 'eq?' when running compiled code but are unlikely
+    ;; to be 'eq?' when running on 'eval'.  Ignore the right-hand side to
+    ;; avoid this discrepancy.
+    (match m1
+      (((name1 ...) '=> _)
+       (match m2
+         (((name2 ...) '=> _) (equal? name1 name2))
+         (_ #f)))
+      (_
+       (equal? m1 m2))))
+
+  (gexp-attribute gexp gexp-self-modules module=?))
 
 (define (gexp-extensions gexp)
   "Return the list of Guile extensions (packages) GEXP relies on.  If (gexp?
@@ -609,6 +631,8 @@ names and file names suitable for the #:allowed-references argument to
                            allowed-references disallowed-references
                            leaked-env-vars
                            local-build? (substitutable? #t)
+                           (properties '())
+
                            deprecation-warnings
                            (script-name (string-append name "-builder")))
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
@@ -766,7 +790,8 @@ The other arguments are as for 'derivation'."
                       #:disallowed-references disallowed
                       #:leaked-env-vars leaked-env-vars
                       #:local-build? local-build?
-                      #:substitutable? substitutable?))))
+                      #:substitutable? substitutable?
+                      #:properties properties))))
 
 (define* (gexp-inputs exp #:key native?)
   "Return the input list for EXP.  When NATIVE? is true, return only native

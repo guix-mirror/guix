@@ -211,16 +211,16 @@ COCOMO model or user-provided parameters.")
 (define-public cloc
   (package
     (name "cloc")
-    (version "1.78")
+    (version "1.80")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/AlDanial/cloc/releases/download/" version
+             "https://github.com/AlDanial/cloc/releases/download/v" version
              "/cloc-" version ".tar.gz"))
        (sha256
         (base32
-         "1j9lwy9xf43kpv1csqdxzch6y1hnsv881ddqd357f8v58dhr4s68"))))
+         "0rqxnaskg5b736asyzfda1113zvpkajyqjf49vl9wgzf1r9m6bq8"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)
@@ -231,8 +231,8 @@ COCOMO model or user-provided parameters.")
        ("perl-regexp-common" ,perl-regexp-common)))
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (delete 'build)
+                  (delete 'configure)   ; nothing to configure
+                  (delete 'build)       ; nothing to build
                   (replace 'install
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out")))
@@ -540,18 +540,20 @@ independent targets.")
 (define-public uncrustify
   (package
     (name "uncrustify")
-    (version "0.67")
+    (version "0.68.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/uncrustify/uncrustify/archive/"
-                    "uncrustify-" version ".zip"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/uncrustify/uncrustify/")
+                    (commit (string-append name "-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0n13kq0nsm35fxhdp0f275n4x0w88hdv3bdjy0hgvv42x0dx5zyp"))))
+                "0gf6vjcfy8pl7idvwsd500ffj9hri62q0n79kpb6cnfprrqpbgf4"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("unzip" ,unzip)))
+     `(("unzip" ,unzip)
+       ("python" ,python-wrapper)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

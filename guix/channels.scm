@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix store)
   #:use-module (guix i18n)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:autoload   (guix self) (whole-package)
@@ -47,6 +49,7 @@
             channel-instance-checkout
 
             latest-channel-instances
+            checkout->channel-instance
             latest-channel-derivation
             channel-instances->manifest
             channel-instances->derivation))
@@ -72,7 +75,6 @@
   (commit    channel-commit (default #f))
   (location  channel-location
              (default (current-source-location)) (innate)))
-;; TODO: Add a way to express dependencies among channels.
 
 (define %default-channels
   ;; Default list of channels.
@@ -92,6 +94,12 @@
   (commit    channel-instance-commit)
   (checkout  channel-instance-checkout))
 
+(define-record-type <channel-metadata>
+  (channel-metadata version dependencies)
+  channel-metadata?
+  (version       channel-metadata-version)
+  (dependencies  channel-metadata-dependencies))
+
 (define (channel-reference channel)
   "Return the \"reference\" for CHANNEL, an sexp suitable for
 'latest-repository-commit'."
@@ -99,20 +107,101 @@
     (#f      `(branch . ,(channel-branch channel)))
     (commit  `(commit . ,(channel-commit channel)))))
 
-(define (latest-channel-instances store channels)
+(define (read-channel-metadata instance)
+  "Return a channel-metadata record read from the channel INSTANCE's
+description file, or return #F if the channel instance does not include the
+file."
+  (let* ((source (channel-instance-checkout instance))
+         (meta-file (string-append source "/.guix-channel")))
+    (and (file-exists? meta-file)
+         (and-let* ((raw (call-with-input-file meta-file read))
+                    (version (and=> (assoc-ref raw 'version) first))
+                    (dependencies (or (assoc-ref raw 'dependencies) '())))
+           (channel-metadata
+            version
+            (map (lambda (item)
+                   (let ((get (lambda* (key #:optional default)
+                                (or (and=> (assoc-ref item key) first) default))))
+                     (and-let* ((name (get 'name))
+                                (url (get 'url))
+                                (branch (get 'branch "master")))
+                       (channel
+                        (name name)
+                        (branch branch)
+                        (url url)
+                        (commit (get 'commit))))))
+                 dependencies))))))
+
+(define (channel-instance-dependencies instance)
+  "Return the list of channels that are declared as dependencies for the given
+channel INSTANCE."
+  (match (read-channel-metadata instance)
+    (#f '())
+    (($ <channel-metadata> version dependencies)
+     dependencies)))
+
+(define* (latest-channel-instances store channels #:optional (previous-channels '()))
   "Return a list of channel instances corresponding to the latest checkouts of
-CHANNELS."
-  (map (lambda (channel)
-         (format (current-error-port)
-                 (G_ "Updating channel '~a' from Git repository at '~a'...~%")
-                 (channel-name channel)
-                 (channel-url channel))
-         (let-values (((checkout commit)
-                       (latest-repository-commit store (channel-url channel)
-                                                 #:ref (channel-reference
-                                                        channel))))
-           (channel-instance channel commit checkout)))
-       channels))
+CHANNELS and the channels on which they depend.  PREVIOUS-CHANNELS is a list
+of previously processed channels."
+  ;; Only process channels that are unique, or that are more specific than a
+  ;; previous channel specification.
+  (define (ignore? channel others)
+    (member channel others
+            (lambda (a b)
+              (and (eq? (channel-name a) (channel-name b))
+                   (or (channel-commit b)
+                       (not (or (channel-commit a)
+                                (channel-commit b))))))))
+  ;; Accumulate a list of instances.  A list of processed channels is also
+  ;; accumulated to decide on duplicate channel specifications.
+  (match (fold (lambda (channel acc)
+                 (match acc
+                   ((#:channels previous-channels #:instances instances)
+                    (if (ignore? channel previous-channels)
+                        acc
+                        (begin
+                          (format (current-error-port)
+                                  (G_ "Updating channel '~a' from Git repository at '~a'...~%")
+                                  (channel-name channel)
+                                  (channel-url channel))
+                          (let-values (((checkout commit)
+                                        (latest-repository-commit store (channel-url channel)
+                                                                  #:ref (channel-reference
+                                                                         channel))))
+                            (let ((instance (channel-instance channel commit checkout)))
+                              (let-values (((new-instances new-channels)
+                                            (latest-channel-instances
+                                             store
+                                             (channel-instance-dependencies instance)
+                                             previous-channels)))
+                                `(#:channels
+                                  ,(append (cons channel new-channels)
+                                           previous-channels)
+                                  #:instances
+                                  ,(append (cons instance new-instances)
+                                           instances))))))))))
+               `(#:channels ,previous-channels #:instances ())
+               channels)
+    ((#:channels channels #:instances instances)
+     (let ((instance-name (compose channel-name channel-instance-channel)))
+       ;; Remove all earlier channel specifications if they are followed by a
+       ;; more specific one.
+       (values (delete-duplicates instances
+                                  (lambda (a b)
+                                    (eq? (instance-name a) (instance-name b))))
+               channels)))))
+
+(define* (checkout->channel-instance checkout
+                                     #:key commit
+                                     (url checkout) (name 'guix))
+  "Return a channel instance for CHECKOUT, which is assumed to be a checkout
+of COMMIT at URL.  Use NAME as the channel name."
+  (let* ((commit  (or commit (make-string 40 #\0)))
+         (channel (channel (name name)
+                           (commit commit)
+                           (url url))))
+    (channel-instance channel commit checkout)))
 
 (define %self-build-file
   ;; The file containing code to build Guix.  This serves the same purpose as
@@ -223,8 +312,21 @@ INSTANCES."
           (lambda (instance)
             (if (eq? instance core-instance)
                 (return core)
-                (build-channel-instance instance
-                                        (cons core dependencies))))
+                (match (channel-instance-dependencies instance)
+                  (()
+                   (build-channel-instance instance
+                                           (cons core dependencies)))
+                  (channels
+                   (mlet %store-monad ((dependencies-derivation
+                                        (latest-channel-derivation
+                                         ;; %default-channels is used here to
+                                         ;; ensure that the core channel is
+                                         ;; available for channels declared as
+                                         ;; dependencies.
+                                         (append channels %default-channels))))
+                     (build-channel-instance instance
+                                             (cons dependencies-derivation
+                                                   (cons core dependencies))))))))
           instances)))
 
 (define (whole-package-for-legacy name modules)

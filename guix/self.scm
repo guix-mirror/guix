@@ -206,21 +206,22 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                (local-file file #:recursive? #t)))
        (find-files (string-append directory "/" sub-directory) pred)))
 
-(define* (sub-directory item sub-directory)
-  "Return SUB-DIRECTORY within ITEM, which may be a file name or a file-like
-object."
+(define* (file-append* item file #:key (recursive? #t))
+  "Return FILE within ITEM, which may be a file name or a file-like object.
+When ITEM is a plain file name (a string), simply return a 'local-file'
+record with the new file name."
   (match item
     ((? string?)
      ;; This is the optimal case: we return a new "source".  Thus, a
      ;; derivation that depends on this sub-directory does not depend on ITEM
      ;; itself.
-     (local-file (string-append item "/" sub-directory)
-                 #:recursive? #t))
+     (local-file (string-append item "/" file)
+                 #:recursive? recursive?))
     ;; TODO: Add 'local-file?' case.
     (_
      ;; In this case, anything that refers to the result also depends on ITEM,
      ;; which isn't great.
-     (file-append item "/" sub-directory))))
+     (file-append item "/" file))))
 
 (define* (locale-data source domain
                       #:optional (directory domain))
@@ -238,7 +239,7 @@ DOMAIN, a gettext domain."
                        (ice-9 match) (ice-9 ftw))
 
           (define po-directory
-            #+(sub-directory source (string-append "po/" directory)))
+            #+(file-append* source (string-append "po/" directory)))
 
           (define (compile language)
             (let ((gmo (string-append #$output "/" language "/LC_MESSAGES/"
@@ -272,11 +273,15 @@ DOMAIN, a gettext domain."
     (module-ref (resolve-interface '(gnu packages graphviz))
                 'graphviz))
 
+  (define glibc-utf8-locales
+    (module-ref (resolve-interface '(gnu packages base))
+                'glibc-utf8-locales))
+
   (define documentation
-    (sub-directory source "doc"))
+    (file-append* source "doc"))
 
   (define examples
-    (sub-directory source "gnu/system/examples"))
+    (file-append* source "gnu/system/examples"))
 
   (define build
     (with-imported-modules '((guix build utils))
@@ -290,7 +295,7 @@ DOMAIN, a gettext domain."
           ;; doesn't change at each commit?
           (call-with-output-file "version.texi"
             (lambda (port)
-              (let ((version "0.0-git)"))
+              (let ((version "0.0-git"))
                 (format port "
 @set UPDATED 1 January 1970
 @set UPDATED-MONTH January 1970
@@ -334,6 +339,10 @@ DOMAIN, a gettext domain."
                             #:log (%make-void-port "w"))
           (delete-file-recursively "images")
           (symlink (string-append #$output "/images") "images")
+
+          ;; Provide UTF-8 locales needed by the 'xspara.c' code in makeinfo.
+          (setenv "GUIX_LOCPATH"
+                  #+(file-append glibc-utf8-locales "/lib/locale"))
 
           (for-each (lambda (texi)
                       (unless (string=? "guix.texi" texi)
@@ -404,11 +413,32 @@ load path."
                       (apply guix-main (command-line))))
                 #:guile guile))
 
+(define (miscellaneous-files source)
+  "Return data files taken from SOURCE."
+  (file-mapping "guix-misc"
+                `(("etc/bash_completion.d/guix"
+                   ,(file-append* source "/etc/completion/bash/guix"))
+                  ("etc/bash_completion.d/guix-daemon"
+                   ,(file-append* source "/etc/completion/bash/guix-daemon"))
+                  ("share/zsh/site-functions/_guix"
+                   ,(file-append* source "/etc/completion/zsh/_guix"))
+                  ("share/fish/vendor_completions.d/guix.fish"
+                   ,(file-append* source "/etc/completion/fish/guix.fish"))
+                  ("share/guix/hydra.gnu.org.pub"
+                   ,(file-append* source
+                                  "/etc/substitutes/hydra.gnu.org.pub"))
+                  ("share/guix/berlin.guixsd.org.pub"
+                   ,(file-append* source
+                                  "/etc/substitutes/berlin.guixsd.org.pub"))
+                  ("share/guix/ci.guix.info.pub"  ;alias
+                   ,(file-append* source "/etc/substitutes/berlin.guixsd.org.pub")))))
+
 (define* (whole-package name modules dependencies
                         #:key
                         (guile-version (effective-version))
                         compiled-modules
-                        info daemon guile
+                        info daemon miscellany
+                        guile
                         (command (guix-command modules
                                                #:dependencies dependencies
                                                #:guile guile
@@ -422,6 +452,7 @@ assumed to be part of MODULES."
                  (with-imported-modules '((guix build utils))
                    #~(begin
                        (use-modules (guix build utils))
+
                        (mkdir-p (string-append #$output "/bin"))
                        (symlink #$command
                                 (string-append #$output "/bin/guix"))
@@ -440,6 +471,10 @@ assumed to be part of MODULES."
                            (symlink #$info
                                     (string-append #$output
                                                    "/share/info"))))
+
+                       (when #$miscellany
+                         (copy-recursively #$miscellany #$output
+                                           #:log (%make-void-port "w")))
 
                        ;; Object files.
                        (when #$compiled-modules
@@ -666,6 +701,7 @@ assumed to be part of MODULES."
                                                'guix-daemon)
 
                           #:info (info-manual source)
+                          #:miscellany (miscellaneous-files source)
                           #:guile-version guile-version)))
         ((= 0 pull-version)
          ;; Legacy 'guix pull': return the .scm and .go files as one

@@ -1,0 +1,36 @@
+From a0a0c6a43b88d946f2b5484892cf0209bd7c0e68 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?G=C3=A1bor=20Boskovits?= <boskovits@gmail.com>
+Date: Sat, 8 Dec 2018 21:25:31 +0100
+Subject: [PATCH] Make idlj respect SOURCE_DATE_EPOCH.
+
+---
+ .../sun/tools/corba/se/idl/toJavaPortable/Util.java | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/src/java.corba/share/classes/com/sun/tools/corba/se/idl/toJavaPortable/Util.java b/src/java.corba/share/classes/com/sun/tools/corba/se/idl/toJavaPortable/Util.java
+index 7397619f2..583d6b8e4 100644
+--- a/src/java.corba/share/classes/com/sun/tools/corba/se/idl/toJavaPortable/Util.java
++++ b/src/java.corba/share/classes/com/sun/tools/corba/se/idl/toJavaPortable/Util.java
+@@ -1146,7 +1146,18 @@ public class Util extends com.sun.tools.corba.se.idl.Util
+     else
+       formatter.setTimeZone (java.util.TimeZone.getDefault ());
+ 
+-    stream.println ("* " + formatter.format (new Date ()));
++    try {
++	String epoch = System.getenv("SOURCE_DATE_EPOCH");
++	if(epoch != null) {
++	    long unixTime = Long.parseLong(epoch);
++	    stream.println ("* " + formatter.format (new Date (unixTime*1000L)));
++	} else {
++	    stream.println ("* " + formatter.format (new Date ()));
++	}
++    } catch (Exception e) {
++	//in case of error fall back to default
++	stream.println ("* " + formatter.format (new Date ()));
++    }
+ 
+     // <daz>
+     ///////////////
+-- 
+2.19.2
+

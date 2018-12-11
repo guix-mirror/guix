@@ -43,7 +43,7 @@
 (define-public patchutils
   (package
     (name "patchutils")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
       (method url-fetch)
@@ -51,8 +51,8 @@
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0g5df00cj4nczrmr4k791l7la0sq2wnf8rn981fsrz1f3d2yix4i"))
-      (patches (search-patches "patchutils-xfail-gendiff-tests.patch"))))
+        "0xp8mcfyi5nmb5a2zi5ibmyshxkb1zv1dgmnyn413m7ahgdx8mfg"))
+      (patches (search-patches "patchutils-test-perms.patch"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments
@@ -61,10 +61,8 @@
        (modify-phases %standard-phases
          (add-before 'check 'patch-test-scripts
            (lambda _
-             (let ((echo (which "echo")))
-               (substitute*
-                   (find-files "tests" "^run-test$")
-                 (("/bin/echo") echo)))
+             (substitute* (find-files "tests" "^run-test$")
+               (("/bin/echo") (which "echo")))
              #t))
          (add-after 'install 'wrap-program
            ;; Point installed scripts to the utilities they need.
@@ -104,8 +102,8 @@ listing the files modified by a patch.")
        (base32
         "06b816m2gz9jfif7k9v2hrm7fz76zjg5pavf7hd3ifybwn4cgjzn"))
       (patches (search-patches "quilt-test-fix-regex.patch"
-                               "quilt-compat-getopt-fix-second-separator.patch"
-                               "quilt-compat-getopt-fix-option-with-nondigit-param.patch"))))
+                               "quilt-getopt-second-separator.patch"
+                               "quilt-getopt-nondigit-param.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gnu-gettext)))

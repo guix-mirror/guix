@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -356,7 +356,7 @@ target that libc."
              ,@(package-arguments glibc/hurd-headers))
          ((#:phases phases)
           `(modify-phases ,phases
-             (add-before 'pre-configure 'set-cross-headers-path
+             (add-after 'unpack 'set-cross-headers-path
                (lambda* (#:key inputs #:allow-other-keys)
                  (let* ((mach (assoc-ref inputs "gnumach-headers"))
                         (hurd (assoc-ref inputs "hurd-headers"))
@@ -426,17 +426,9 @@ target that libc."
                      (xheaders (cross-kernel-headers target)))
   "Return a libc cross-built for TARGET, a GNU triplet.  Use XGCC and
 XBINUTILS and the cross tool chain."
-  (define (cross-libc-for-target target)
-    "Return libc depending on TARGET."
-    (match target
-      ((or "i586-pc-gnu" "i586-gnu") glibc/hurd)
-      (_ glibc/linux)))
-
-  ;; Use (cross-libc-for-target ...) to determine the correct libc to use.
-
   (if (cross-newlib? target)
       (native-libc target)
-      (let ((libc (cross-libc-for-target target)))
+      (let ((libc glibc))
         (package (inherit libc)
           (name (string-append "glibc-cross-" target))
           (arguments
@@ -457,7 +449,9 @@ XBINUTILS and the cross tool chain."
                  ,@(package-arguments libc))
              ((#:configure-flags flags)
               `(cons ,(string-append "--host=" target)
-                   ,flags))
+                     ,(if (hurd-triplet? target)
+                          `(cons "--disable-werror" ,flags)
+                          flags)))
              ((#:phases phases)
               `(modify-phases ,phases
                  (add-before 'configure 'set-cross-kernel-headers-path

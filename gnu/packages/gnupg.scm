@@ -41,6 +41,8 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages enlightenment)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
@@ -220,14 +222,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.10")
+    (version "2.2.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "05f9804g72pffdxgvxjmjzkfcpjg1x221g9rwcr8fi51hrxd77br"))))
+                "1ncwqjhcxh46fgkp84g2lhf91amcha7abk6wdm1kagzm7q93wv29"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -833,6 +835,34 @@ software.")))
      `(#:configure-flags '("CXXFLAGS=-std=gnu++11")))
   (description
    "Pinentry provides a console and a Qt GUI that allows users to enter a
+passphrase when @code{gpg} is run and needs it.")))
+
+(define-public pinentry-efl
+  (package
+    (inherit pinentry-tty)
+    (name "pinentry-efl")
+    (source
+      (origin
+        (inherit (package-source pinentry-tty))
+        (patches (search-patches "pinentry-efl.patch"))))
+    (arguments
+     '(#:configure-flags '("--enable-pinentry-efl")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _
+             (invoke "sh" "autogen.sh"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ,@(package-native-inputs pinentry-tty)))
+    (inputs
+     `(("efl" ,efl)
+       ,@(package-inputs pinentry-tty)))
+    (description
+   "Pinentry provides a console and a graphical interface for the
+@dfn{Enlightenment Foundation Libraries} (EFL) that allows users to enter a
 passphrase when @code{gpg} is run and needs it.")))
 
 (define-public pinentry

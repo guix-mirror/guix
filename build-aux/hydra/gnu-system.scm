@@ -187,14 +187,14 @@ system.")
                                           (bootloader u-boot-bootloader)
                                           (target #f))))
                             #:disk-image-size
-                            (* 1024 MiB))))))
+                            (* 1500 MiB))))))
           (list (->job 'usb-image
                        (run-with-store store
                          (mbegin %store-monad
                            (set-guile-for-build (default-guile))
                            (system-disk-image installation-os
                                               #:disk-image-size
-                                              (* 1024 MiB)))))
+                                              (* 1500 MiB)))))
                 (->job 'iso9660-image
                        (run-with-store store
                          (mbegin %store-monad

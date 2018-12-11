@@ -115,6 +115,12 @@ UI builder called FLUID that can be used to create applications in minutes.")
        #:configure-flags '("--enable-gl")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'setup-waf
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((waf (assoc-ref inputs "waf")))
+              (delete-file "waf")
+              (copy-file (string-append waf "/bin/waf") "waf"))
+            #t))
          (add-before 'configure 'set-ldflags
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "LDFLAGS"
@@ -123,7 +129,8 @@ UI builder called FLUID that can be used to create applications in minutes.")
              #t)))))
     (inputs
      `(("libjpeg" ,libjpeg)
-       ("glu" ,glu)))
+       ("glu" ,glu)
+       ("waf" ,python-waf)))
     ;; ntk.pc lists "x11" and "xft" in Requires.private, and "cairo" in
     ;; Requires.
     (propagated-inputs

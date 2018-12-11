@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,11 +72,23 @@ COMPRESS? is true, compress it using GZIP.  On success, return OUTPUT."
                                #:file->header cpio:file->cpio-header*)))
 
   (or (not compress?)
-      ;; Use '--no-name' so that gzip records neither a file name nor a time
-      ;; stamp in its output.
-      (and (zero? (system* gzip "--best" "--no-name" output))
-           (rename-file (string-append output ".gz")
-                        output))
+
+      ;; Gzip insists on adding a '.gz' suffix and does nothing if the input
+      ;; file already has that suffix.  Shuffle files around to placate it.
+      (let* ((gz-suffix? (string-suffix? ".gz" output))
+             (sans-gz    (if gz-suffix?
+                             (string-drop-right output 3)
+                             output)))
+        (when gz-suffix?
+          (rename-file output sans-gz))
+        ;; Use '--no-name' so that gzip records neither a file name nor a time
+        ;; stamp in its output.
+        (and (zero? (system* gzip "--best" "--no-name" sans-gz))
+             (begin
+               (unless gz-suffix?
+                 (rename-file (string-append output ".gz") output))
+               output)))
+
       output))
 
 (define (cache-compiled-file-name file)
@@ -139,6 +151,12 @@ REFERENCES-GRAPHS."
 
     (write-cpio-archive output "." #:gzip gzip))
 
+  ;; Make sure directories are writable so we can delete files.
+  (for-each make-file-writable
+            (find-files "contents"
+                        (lambda (file stat)
+                          (eq? 'directory (stat:type stat)))
+                        #:directories? #t))
   (delete-file-recursively "contents"))
 
 ;;; linux-initrd.scm ends here

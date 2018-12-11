@@ -6,6 +6,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,14 +48,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.3.4.8")
+    (version "0.3.4.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "08qhzcmzxp5xr2l5721vagksqnnbrzzzy5hmz5y9r8lrq2r4qsl2"))))
+               "0jhnvnp08hsfrzgsvg5xnfxyaw3nzgg9h24cwbwnz6iby20i05qs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-gcc-hardening"
@@ -140,14 +141,6 @@ rejects UDP traffic from the application you're using.")
        #:configure-flags (list (string-append "--sysconfdir="
                                               (assoc-ref %outputs "out")
                                               "/etc/privoxy"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _
-             ;; Unfortunately, this is not a tarball produced by
-             ;; "make dist".
-             (invoke "autoreconf" "-vfi")
-             #t)))
        #:tests? #f))
     (inputs
      `(("w3m" ,w3m)
@@ -172,13 +165,14 @@ networks.")
     (version "0.9.2")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/micahflee/onionshare/archive/v"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/micahflee/onionshare.git")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "02iv7dg15da57gy3zvfchnwwpr21n1gva7mqwpwr958ni2034smk"))))
+          "1nzr6m3jp04p1i8b652s27zv0xhybl3zwcn5r6l9h0f7d7x4iglv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

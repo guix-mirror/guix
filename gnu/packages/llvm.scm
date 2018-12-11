@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
@@ -8,6 +8,8 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +33,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
@@ -66,6 +69,7 @@
                            "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
                            "-DBUILD_SHARED_LIBS:BOOL=TRUE"
                            "-DLLVM_ENABLE_FFI:BOOL=TRUE"
+                           "-DLLVM_REQUIRES_RTTI=1" ; For some third-party utilities
                            "-DLLVM_INSTALL_UTILS=ON") ; Needed for rustc.
 
        ;; Don't use '-g' during the build, to save space.
@@ -91,16 +95,25 @@ languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
     (license license:ncsa)))
 
-(define-public llvm-with-rtti
-  (package (inherit llvm)
-    (name "llvm-with-rtti")
+;; FIXME: This package is here to prevent many rebuilds on x86_64 and i686
+;; from commit fc9dbf41311d99d0fd8befc789ea7c0e35911890.  Update users of
+;; this in the next rebuild cycle.
+(define-public llvm-without-rtti
+  (package
+    (inherit llvm)
     (arguments
-     (substitute-keyword-arguments (package-arguments llvm)
-       ((#:configure-flags flags)
-        `(append '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
-                   "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
-                   "-DLLVM_REQUIRES_RTTI=1")
-                 ,flags))))))
+     `(#:configure-flags '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
+                           "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
+                           "-DBUILD_SHARED_LIBS:BOOL=TRUE"
+                           "-DLLVM_ENABLE_FFI:BOOL=TRUE"
+                           "-DLLVM_INSTALL_UTILS=ON")
+       #:build-type "Release"
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'shared-lib-workaround
+                    (lambda _
+                      (setenv "LD_LIBRARY_PATH"
+                              (string-append (getcwd) "/lib"))
+                      #t)))))))
 
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))
@@ -223,7 +236,30 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
                           (substitute* "lib/Driver/ToolChains.cpp"
                             (("@GLIBC_LIBDIR@")
                              (string-append libc "/lib")))))
-                       #t))))))
+                       #t)))
+                  (add-after 'install 'install-clean-up-/share/clang
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (compl-dir (string-append
+                                         out "/etc/bash_completion.d")))
+                        (with-directory-excursion (string-append out
+                                                                 "/share/clang")
+                          (for-each
+                            (lambda (file)
+                              (when (file-exists? file)
+                                (delete-file file)))
+                            ;; Delete extensions for proprietary text editors.
+                            '("clang-format-bbedit.applescript"
+                              "clang-format-sublime.py"
+                              ;; Delete Emacs extensions: see their respective Emacs
+                              ;; Guix package instead.
+                              "clang-rename.el" "clang-format.el"))
+                          ;; Install bash completion.
+                          (when (file-exists?  "bash-autocomplete.sh")
+                            (mkdir-p compl-dir)
+                            (rename-file "bash-autocomplete.sh"
+                                         (string-append compl-dir "/clang")))))
+                      #t)))))
 
     ;; Clang supports the same environment variables as GCC.
     (native-search-paths
@@ -427,3 +463,49 @@ code analysis tools.")
     (description
      "This package provides a Python binding to LLVM for use in Numba.")
     (license license:bsd-3)))
+
+(define-public emacs-clang-format
+  (package
+    (inherit clang)
+    (name "emacs-clang-format")
+    (build-system emacs-build-system)
+    (inputs
+     `(("clang" ,clang)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "clang")))
+               (copy-file "tools/clang-format/clang-format.el" "clang-format.el")
+               (emacs-substitute-variables "clang-format.el"
+                 ("clang-format-executable"
+                  (string-append clang "/bin/clang-format"))))
+             #t)))))
+    (synopsis "Format code using clang-format")
+    (description "This package allows to filter code through @code{clang-format}
+to fix its formatting.  @code{clang-format} is a tool that formats
+C/C++/Obj-C code according to a set of style options, see
+@url{http://clang.llvm.org/docs/ClangFormatStyleOptions.html}.")))
+
+(define-public emacs-clang-rename
+  (package
+    (inherit clang)
+    (name "emacs-clang-rename")
+    (build-system emacs-build-system)
+    (inputs
+     `(("clang" ,clang)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "clang")))
+               (copy-file "tools/clang-rename/clang-rename.el" "clang-rename.el")
+               (emacs-substitute-variables "clang-rename.el"
+                 ("clang-rename-binary"
+                  (string-append clang "/bin/clang-rename"))))
+             #t)))))
+    (synopsis "Rename every occurrence of a symbol using clang-rename")
+    (description "This package renames every occurrence of a symbol at point
+using @code{clang-rename}.")))

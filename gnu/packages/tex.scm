@@ -199,7 +199,7 @@
             ;; FIXME: This test fails on 32-bit architectures since Glibc 2.28:
             ;; <https://bugzilla.redhat.com/show_bug.cgi?id=1631847>.
             (substitute* "texk/web2c/omegafonts/check.test"
-              (("^\\./omfonts -ofm2opl \\$srcdir/tests/check tests/xcheck || exit 1")
+              (("^\\./omfonts -ofm2opl \\$srcdir/tests/check tests/xcheck \\|\\| exit 1")
                "./omfonts -ofm2opl $srcdir/tests/check tests/xcheck || exit 77"))
             #t))
         (add-after 'install 'postint
@@ -2287,6 +2287,44 @@ space-stripped macros.")
      "This package defines a command @code{\\captionof} for putting a caption
 to something that's not a float.")
     (license license:lppl)))
+
+(define-public texlive-latex-doi
+  (package
+    (name "texlive-latex-doi")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/doi"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0378rdmrgr2lzbfi4qqy4dfpj5im20diyd8z8b9m4mlg05r7wgnb"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/doi")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/doi")
+    (synopsis "Create correct hyperlinks for DOI numbers")
+    (description
+     "You can hyperlink DOI numbers to doi.org.  However, some publishers have
+elected to use nasty characters in their DOI numbering scheme (@code{<},
+@code{>}, @code{_} and @code{;} have all been spotted).  This will either
+upset LaTeX, or your PDF reader.  This package contains a single user-level
+command @code{\\doi{}}, which takes a DOI number, and creates a correct
+hyperlink to the target of the DOI.")
+    ;; Any version of the LPPL.
+    (license license:lppl1.3+)))
 
 (define-public texlive-latex-etoolbox
   (package
@@ -4751,3 +4789,154 @@ Since every package has its own version number, the version number quoted only
 refers to the version of scrbook, scrreprt, scrartcl, scrlttr2 and
 typearea (which are the main parts of the bundle).")
     (license license:lppl1.3+)))
+
+(define-public texlive-generic-listofitems
+  (package
+    (name "texlive-generic-listofitems")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/generic/listofitems"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1k50z6ixgwwzy84mi0dr5vcjah5p7wvgq66y45bilm91a4m8sgla"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/listofitems")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/listofitems")
+    (synopsis "Grab items in lists using user-specified seperation character")
+    (description
+     "This package allows one to capture all the items of a list, for which
+the parsing character has been selected by the user, and to access any of
+these items with a simple syntax.")
+    (license license:lppl1.3c+)))
+
+(define-public texlive-latex-readarray
+  (package
+    (name "texlive-latex-readarray")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/readarray"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0c53k180ivn1n7fz3ngvd2w1i5dw3kxml0n64vhki88xsylz7lxp"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/readarray")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (propagated-inputs
+     `(("texlive-generic-listofitems" ,texlive-generic-listofitems)))
+    (home-page "https://www.ctan.org/pkg/readarray")
+    (synopsis "Read, store and recall array-formatted data")
+    (description
+     "This package allows the user to input formatted data into elements of a
+2-D or 3-D array and to recall that data at will by individual cell number.
+The data can be but need not be numerical in nature.  It can be, for example,
+formatted text.")
+    (license license:lppl1.3)))
+
+(define-public texlive-latex-verbatimbox
+  (package
+    (name "texlive-latex-verbatimbox")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/verbatimbox"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0qh1cgvfs463zsi2pjg490gj0mkjfdpfc381j10cbb5la304psna"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/verbatimbox")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (propagated-inputs
+     `(("texlive-latex-readarray" ,texlive-latex-readarray)))
+    (home-page "https://www.ctan.org/pkg/verbatimbox")
+    (synopsis "Deposit verbatim text in a box")
+    (description
+     "The package provides a @code{verbbox} environment to place its contents
+into a globally available box, or into a box specified by the user.  The
+global box may then be used in a variety of situations (for example, providing
+a replica of the @code{boxedverbatim} environment itself).  A valuable use is
+in places where the standard @code{verbatim} environment (which is based on a
+@code{trivlist}) may not appear.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-latex-examplep
+  (package
+    (name "texlive-latex-examplep")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/examplep"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0fsvvmz68ij0zwfzrny6x13d92grxr4ap59lxgah4smbkccd6s27"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/examplep")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/examplep")
+    (synopsis "Verbatim phrases and listings in LaTeX")
+    (description
+     "Examplep provides sophisticated features for typesetting verbatim source
+code listings, including the display of the source code and its compiled LaTeX
+or METAPOST output side-by-side, with automatic width detection and enabled
+page breaks (in the source), without the need for specifying the source twice.
+Special care is taken that section, page and footnote numbers do not interfere
+with the main document.  For typesetting short verbatim phrases, a replacement
+for the @code{\\verb} command is also provided in the package, which can be
+used inside tables and moving arguments such as footnotes and section
+titles.")
+    ;; No version of the GPL is specified.
+    (license license:gpl3+)))

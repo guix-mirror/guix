@@ -20,11 +20,14 @@
 (define-module (guix git)
   #:use-module (git)
   #:use-module (git object)
+  #:use-module (guix i18n)
   #:use-module (guix base32)
   #:use-module (gcrypt hash)
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix records)
+  #:use-module (guix gexp)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -33,7 +36,12 @@
   #:use-module (srfi srfi-35)
   #:export (%repository-cache-directory
             update-cached-checkout
-            latest-repository-commit))
+            latest-repository-commit
+
+            git-checkout
+            git-checkout?
+            git-checkout-url
+            git-checkout-branch))
 
 (define %repository-cache-directory
   (make-parameter (string-append (cache-directory #:ensure? #f)
@@ -154,6 +162,7 @@ data, respectively [<branch name> | <sha1> | <tag name>]."
 
 (define* (latest-repository-commit store url
                                    #:key
+                                   (log-port (%make-void-port "w"))
                                    (cache-directory
                                     (%repository-cache-directory))
                                    (ref '(branch . "master")))
@@ -164,11 +173,14 @@ REF is pair whose key is [branch | commit | tag] and value the associated
 data, respectively [<branch name> | <sha1> | <tag name>].
 
 Git repositories are kept in the cache directory specified by
-%repository-cache-directory parameter."
+%repository-cache-directory parameter.
+
+Log progress and checkout info to LOG-PORT."
   (define (dot-git? file stat)
     (and (string=? (basename file) ".git")
          (eq? 'directory (stat:type stat))))
 
+  (format log-port "updating checkout of '~a'...~%" url)
   (let*-values
       (((checkout commit)
         (update-cached-checkout url
@@ -177,6 +189,58 @@ Git repositories are kept in the cache directory specified by
                                 (url-cache-directory url cache-directory)))
        ((name)
         (url+commit->name url commit)))
+    (format log-port "retrieved commit ~a~%" commit)
     (values (add-to-store store name #t "sha256" checkout
                           #:select? (negate dot-git?))
             commit)))
+
+
+;;;
+;;; Checkouts.
+;;;
+
+;; Representation of the "latest" checkout of a branch or a specific commit.
+(define-record-type* <git-checkout>
+  git-checkout make-git-checkout
+  git-checkout?
+  (url     git-checkout-url)
+  (branch  git-checkout-branch (default "master"))
+  (commit  git-checkout-commit (default #f)))
+
+(define* (latest-repository-commit* url #:key ref log-port)
+  ;; Monadic variant of 'latest-repository-commit'.
+  (lambda (store)
+    ;; The caller--e.g., (guix scripts build)--may not handle 'git-error' so
+    ;; translate it into '&message' conditions that we know will be properly
+    ;; handled.
+    (catch 'git-error
+      (lambda ()
+        (values (latest-repository-commit store url
+                                          #:ref ref #:log-port log-port)
+                store))
+      (lambda (key error . _)
+        (raise (condition
+                (&message
+                 (message
+                  (match ref
+                    (('commit . commit)
+                     (format #f (G_ "cannot fetch commit ~a from ~a: ~a")
+                             commit url (git-error-message error)))
+                    (('branch . branch)
+                     (format #f (G_ "cannot fetch branch '~a' from ~a: ~a")
+                             branch url (git-error-message error)))
+                    (_
+                     (format #f (G_ "Git failure while fetching ~a: ~a")
+                             url (git-error-message error))))))))))))
+
+(define-gexp-compiler (git-checkout-compiler (checkout <git-checkout>)
+                                             system target)
+  ;; "Compile" CHECKOUT by updating the local checkout and adding it to the
+  ;; store.
+  (match checkout
+    (($ <git-checkout> url branch commit)
+     (latest-repository-commit* url
+                                #:ref (if commit
+                                          `(commit . ,commit)
+                                          `(branch . ,branch))
+                                #:log-port (current-error-port)))))

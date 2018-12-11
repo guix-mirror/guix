@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.51")
+    (version "0.14.54")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,12 +38,19 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "17phn8l2afhgzh0q9ambi28awj2m905sr1bicq2wc7ghypk5vgqh"))
-              (modules '((guix build utils)))
-              ;; Delete bundled ("vendored") free software source code.
-              (snippet '(begin
-                          (delete-file-recursively "vendor")
-                          #t))))
+                "1pfjckwsrhy8lbmy42fawgh1gcfmjbh3dfxx05w5yjxnpd1g2z6r"))
+              ;; Since the update to Go 1.11, Go programs have been keeping
+              ;; spurious references to all their dependencies:
+              ;; <https://bugs.gnu.org/33620>.
+              ;; For Syncthing, this increases the size of the 'out' closure
+              ;; from 87.6 MiB to 253.5 MiB.  So, we use the bundled
+              ;; dependencies until the bug is resolved.
+;              (modules '((guix build utils)))
+;              ;; Delete bundled ("vendored") free software source code.
+;              (snippet '(begin
+;                          (delete-file-recursively "vendor")
+;                          #t))
+              ))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
@@ -63,7 +70,7 @@
              #t))
 
          (replace 'build
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda _
              (with-directory-excursion "src/github.com/syncthing/syncthing"
                (invoke "go" "run" "build.go" "-no-upgrade"))))
 
@@ -107,48 +114,6 @@
                (delete-file (string-append out man "/man1/strelaysrv.1"))
                (delete-file (string-append utils man "/man1/syncthing.1"))
              #t))))))
-    ;; When updating Syncthing, check 'vendor/manifest' in the source
-    ;; distribution to ensure we are using the correct versions of these
-    ;; dependencies.
-    (inputs
-     `(("go-github-com-audriusbutkevicius-cli"
-        ,go-github-com-audriusbutkevicius-cli)
-       ("go-github-com-audriusbutkevicius-go-nat-pmp"
-        ,go-github-com-audriusbutkevicius-go-nat-pmp)
-       ("go-github-com-audriusbutkevicius-pfilter"
-        ,go-github-com-audriusbutkevicius-pfilter)
-       ("go-github-com-bkaradzic-go-lz4" ,go-github-com-bkaradzic-go-lz4)
-       ("go-github-com-calmh-du" ,go-github-com-calmh-du)
-       ("go-github-com-calmh-xdr" ,go-github-com-calmh-xdr)
-       ("go-github-com-prometheus-union" ,(go-github-com-prometheus-union))
-       ("go-github-com-chmduquesne-rollinghash-adler32"
-        ,go-github-com-chmduquesne-rollinghash-adler32)
-       ("go-github-com-gobwas-glob" ,go-github-com-gobwas-glob)
-       ("go-github-com-gogo-protobuf-union"
-        ,(go-github-com-gogo-protobuf-union))
-       ("go-github-com-golang-groupcache-lru"
-        ,go-github-com-golang-groupcache-lru)
-       ("go-github-com-jackpal-gateway" ,go-github-com-jackpal-gateway)
-       ("go-github-com-kballard-go-shellquote"
-        ,go-github-com-kballard-go-shellquote)
-       ("go-github-com-lib-pq" ,go-github-com-lib-pq)
-       ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
-       ("go-github-com-oschwald-geoip2-golang"
-        ,go-github-com-oschwald-geoip2-golang)
-       ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
-       ("go-github-com-rcrowley-go-metrics" ,go-github-com-rcrowley-go-metrics)
-       ("go-github-com-sasha-s-go-deadlock" ,go-github-com-sasha-s-go-deadlock)
-       ("go-github-com-syncthing-notify" ,go-github-com-syncthing-notify)
-       ("go-github-com-syndtr-goleveldb" ,go-github-com-syndtr-goleveldb)
-       ("go-github-com-thejerf-suture" ,go-github-com-thejerf-suture)
-       ("go-github-com-vitrun-qart" ,(go-github-com-vitrun-qart-union))
-       ("go-golang-org-x-crypto" ,(go-golang-org-x-crypto-union))
-       ("go-golang-org-x-net-union" ,(go-golang-org-x-net-union))
-       ("go-golang-org-x-text" ,(go-golang-org-x-text-union))
-       ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)
-       ("go-gopkg.in-ldap.v2" ,go-gopkg.in-ldap.v2)
-       ;; For tests
-       ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
     (synopsis "Decentralized continuous file system synchronization")
     (description "Syncthing is a peer-to-peer file synchronization tool that
 supports a wide variety of computing platforms.  It uses the Block Exchange
@@ -298,100 +263,6 @@ structs in the Go programming language.")
       (home-page "https://github.com/gobwas/glob")
       (license expat))))
 
-(define* (go-github-com-gogo-protobuf-union
-           #:optional (packages (list go-github-com-gogo-protobuf
-                                      go-github-com-gogo-protobuf-protoc-gen-gogo)))
-  (package
-    (name "go-github-com-gogo-protobuf-union")
-    (version (package-version go-github-com-gogo-protobuf))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder (begin
-                   (use-modules (ice-9 match)
-                                (guix build union))
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)
-                      #t)))))
-    (inputs (map (lambda (package)
-                   (list (package-name package) package))
-                 packages))
-    (synopsis "Union of Go protobuf libraries")
-    (description "This is a union of Go protobuf libraries")
-    (home-page (package-home-page go-github-com-gogo-protobuf))
-    (license (package-license go-github-com-gogo-protobuf))))
-
-(define-public go-github-com-gogo-protobuf
-  (let ((commit "160de10b2537169b5ae3e7e221d28269ef40d311")
-        (revision "2"))
-    (package
-      (name "go-github-com-gogo-protobuf")
-      (version (git-version "0.5" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/gogo/protobuf")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0hxq28sgxym04rv0q40gpwkh4ni359q21hq3g78wwxwx4qfd4zwm"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/gogo/protobuf/proto"
-         #:unpack-path "github.com/gogo/protobuf"))
-      (propagated-inputs
-       `(("go-github-com-gogo-protobuf-protoc-gen-gogo"
-          ,go-github-com-gogo-protobuf-protoc-gen-gogo)))
-      (synopsis "Protocol Buffers for Go with Gadgets")
-      (description "Gogoprotobuf is a fork of golang/protobuf with extra code
-generation features.  This code generation is used to achieve:
-@itemize
-@item fast marshalling and unmarshalling
-@item more canonical Go structures
-@item goprotobuf compatibility
-@item less typing by optionally generating extra helper code
-@item peace of mind by optionally generating test and benchmark code
-@item other serialization formats
-@end itemize")
-      (home-page "https://github.com/gogo/protobuf")
-      (license bsd-3))))
-
-(define-public go-github-com-gogo-protobuf-protoc-gen-gogo
-  (let ((commit "efccd33a0c20aa078705571d5ddbfa14c8395a63")
-        (revision "0"))
-    (package
-      (name "go-github-com-gogo-protobuf-protoc-gen-gogo")
-      (version (git-version "0.2" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/gogo/protobuf")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "09kfa3aqmhh7p0rc6wd4fw5cjccidsk9vgcy13albv0g8vnbmmgw"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/gogo/protobuf/protoc-gen-gogo"
-         #:unpack-path "github.com/gogo/protobuf"))
-      (synopsis "Protocol Buffers for Go with Gadgets")
-      (description "Gogoprotobuf is a fork of golang/protobuf with extra code
-generation features.  This code generation is used to achieve:
-@itemize
-@item fast marshalling and unmarshalling
-@item more canonical Go structures
-@item goprotobuf compatibility
-@item less typing by optionally generating extra helper code
-@item peace of mind by optionally generating test and benchmark code
-@item other serialization formats
-@end itemize")
-      (home-page "https://github.com/gogo/protobuf")
-      (license bsd-3))))
 
 (define-public go-github-com-golang-groupcache-lru
   (let ((commit "84a468cf14b4376def5d68c722b139b881c450a4")
@@ -822,44 +693,6 @@ generation.")
       (home-page "https://github.com/vitrun/qart")
       (license bsd-3))))
 
-;; Go searches for library modules by looking in the GOPATH environment
-;; variable.  This variable is a list of paths.  However, Go does not
-;; keep searching on GOPATH if it tries and fails to import a module.
-;; So, we use a union for packages sharing a namespace.
-(define* (go-golang-org-x-crypto-union #:optional
-                                    (packages (list go-golang-org-x-crypto-blowfish
-                                                    go-golang-org-x-crypto-bcrypt
-                                                    go-golang-org-x-crypto-tea
-                                                    go-golang-org-x-crypto-xtea
-                                                    go-golang-org-x-crypto-pbkdf2
-                                                    go-golang-org-x-crypto-twofish
-                                                    go-golang-org-x-crypto-cast5
-                                                    go-golang-org-x-crypto-salsa20)))
-  (package
-    (name "go-golang-org-x-crypto")
-    (version (package-version go-golang-org-x-crypto-bcrypt))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder (begin
-                   (use-modules (ice-9 match)
-                                (guix build union))
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)
-                      #t)))))
-    (inputs (map (lambda (package)
-                   (list (package-name package) package))
-                 packages))
-    (synopsis "Union of the Go x crypto libraries")
-    (description "A union of the Golang cryptographic libraries.  A
-union is required because `go build` assumes that all of the headers and
-libraries are in the same directory.")
-    (home-page (package-home-page go-golang-org-x-crypto-bcrypt))
-    (license (package-license go-golang-org-x-crypto-bcrypt))))
-
 (define* (go-golang-org-x-net-union #:optional
                                  (packages (list go-golang-org-x-net-ipv4
                                                  go-golang-org-x-net-bpf
@@ -1032,7 +865,16 @@ the current goroutine's ID.")
                   "0bg26pfg25vr16jmczig2m493mja2nxjxyswz3hha7avxw20rpi5"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "github.com/AudriusButkevicius/cli"))
+       '(#:import-path "github.com/AudriusButkevicius/cli"
+         ;; Tests don't pass "vet" on go-1.11.  See
+         ;; https://github.com/AudriusButkevicius/cli/pull/1.
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "test"
+                       "-vet=off"
+                       import-path))))))
       (synopsis "Library for building command-line interfaces in Go")
       (description "This package provides a library for building command-line
 interfaces in Go.")
@@ -1064,8 +906,8 @@ using sh's word-splitting rules.")
       (license expat))))
 
 (define-public go-github-com-syncthing-notify
-  (let ((commit "b76b45868a77e7800dd06cce61101af9c4274bcc")
-        (revision "2"))
+  (let ((commit "116c45bb5ad48777321e4984d1320d56889b6097")
+        (revision "3"))
     (package
       (name "go-github-com-syncthing-notify")
       (version (git-version "0.0.0" revision commit))
@@ -1077,7 +919,7 @@ using sh's word-splitting rules.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1xxkzaxygxxr51i2kdxsdaqb5i95hqpkw4kcr75wmsp914slw2q9"))))
+                  "14bh95pkhwmnc65bnv08p3y4flj1j7f6xxr2cgmlwrphnlp9yhl9"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/syncthing/notify"))
@@ -1229,7 +1071,14 @@ message streaming.")
                       (string-append (assoc-ref outputs "out")
                                      "/src/github.com/prometheus/common/expfmt/testdata/")
                       ".*\\.gz$"))
-               #t)))))
+               #t))
+           (replace 'check
+             ;; Tests don't pass "vet" on go-1.11.  See
+             ;; https://github.com/syncthing/syncthing/issues/5311.
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "test"
+                       "-vet=off"
+                       import-path))))))
       (propagated-inputs
        `(("go-github-com-golang-protobuf-proto"
           ,go-github-com-golang-protobuf-proto)
@@ -1304,11 +1153,11 @@ server tools for Prometheus metrics.")
       (license asl2.0))))
 
 (define-public go-github-com-client-golang-prometheus
-  (let ((commit "180b8fdc22b4ea7750bcb43c925277654a1ea2f3")
+  (let ((commit "7e9098b20fb8e103a7a5691878272d7e3d703663")
         (revision "0"))
     (package
       (name "go-github-com-prometheus-client-golang-prometheus")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "0.9.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1317,11 +1166,12 @@ server tools for Prometheus metrics.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1kkfx1j9ka18ydsmdi2cdy3hs39c22b39mbc4laykmj2x93lmbdp"))))
+                  "09q8hlvgyn58hn8fmmj535hrwhqc1215czwzf7fhaqpa9zamj4w1"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/prometheus/client_golang/prometheus"
-         #:unpack-path "github.com/prometheus/client_golang"))
+         #:unpack-path "github.com/prometheus/client_golang"
+         #:tests? #f)) ; 'TestHandler' test fails in this non-critical dependency
       (propagated-inputs
        `(("go-github-com-beorn7-perks-quantile"
           ,go-github-com-beorn7-perks-quantile)
@@ -1383,7 +1233,16 @@ Prometheus HTTP API.")
                 "1y8bvzbxpw0lfnn7pbcdwzqj4l90qj6xf88dvv9pxd9yl5g6cskx"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "gopkg.in/asn1-ber.v1"))
+     '(#:import-path "gopkg.in/asn1-ber.v1"
+       ;; Tests don't pass "vet" on go-1.11.  See
+       ;; https://github.com/go-asn1-ber/asn1-ber/issues/20.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key import-path #:allow-other-keys)
+             (invoke "go" "test"
+                     "-vet=off"
+                     import-path))))))
     (synopsis "ASN.1 BER encoding and decoding in Go")
     (description "This package provides ASN.1 BER encoding and decoding in the
 Go language.")

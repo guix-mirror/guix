@@ -303,14 +303,14 @@ wrapper for accessing libusb-1.0.")
 (define-public libmtp
   (package
     (name "libmtp")
-    (version "1.1.15")
+    (version "1.1.16")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/libmtp/libmtp/" version
                                  "/libmtp-" version ".tar.gz"))
              (sha256
               (base32
-               "089h79nkz7wcr3lbqi7025l8p75hbp0aigxk3wdk2zkm8q5r0h6h"))))
+               "185vh9bds6dcy00ycggg69g4v7m3api40zv8vrcfb3fk3vfzjs2v"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

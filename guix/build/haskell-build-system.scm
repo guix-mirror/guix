@@ -239,7 +239,7 @@ given Haskell package."
           (list (string-append "--gen-pkg-config=" config-file))))
     (run-setuphs "register" params)
     ;; The conf file is created only when there is a library to register.
-    (unless (file-exists? config-file)
+    (when (file-exists? config-file)
       (mkdir-p config-dir)
       (let* ((config-file-name+id
               (call-with-ascii-input-file config-file (cut grep id-rx <>))))

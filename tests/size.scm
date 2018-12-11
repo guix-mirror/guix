@@ -30,14 +30,6 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64))
 
-(define %store
-  (open-connection-for-tests))
-
-(define-syntax-rule (test-assertm name exp)
-  (test-assert name
-    (run-with-store %store exp
-                    #:guile-for-build (%guile-for-build))))
-
 
 (test-begin "size")
 

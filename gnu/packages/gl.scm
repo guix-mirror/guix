@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -49,6 +49,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -177,12 +178,13 @@ Polygon meshes, and Extruded polygon meshes.")
     (version "1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/divVerent/s2tc/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/divVerent/s2tc.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0ibfdib277fhbqvxzan0bmglwnsl1y1rw2g8skvz82l1sfmmn752"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1fg323fk7wlv2xh6lw66wswgcv6qi8aaadk7c28h2f2lj1s7njnf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -190,12 +192,6 @@ Polygon meshes, and Extruded polygon meshes.")
        ("libtool" ,libtool)))
     (inputs
      `(("mesa-headers" ,mesa-headers)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-          (lambda _
-            (zero? (system* "sh" "autogen.sh")))))))
     (home-page "https://github.com/divVerent/s2tc")
     (synopsis "S3 Texture Compression implementation")
     (description
@@ -259,7 +255,8 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
             ((or "x86_64-linux" "i686-linux")
-             `(("llvm" ,llvm)))
+             ;; FIXME: Change to 'llvm' in the next rebuild cycle.
+             `(("llvm" ,llvm-without-rtti)))
             (_
              `()))
         ("makedepend" ,makedepend)
@@ -728,13 +725,14 @@ mixed vector/bitmap output.")
     (version "2.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/VirtualGL/virtualgl/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/VirtualGL/virtualgl.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ck1d0w19cgyqvrb9mdlj6l5db90xf18yln71kdninlqxvpgj6h7"))))
+         "0di2igj2bhwb153fndgxks7y57pyhp0gj31n47j93gb7lxc9qcck"))))
     (arguments
      `(#:tests? #f                      ; no tests are available
        #:configure-flags (list

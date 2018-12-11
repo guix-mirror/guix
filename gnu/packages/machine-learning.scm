@@ -8,6 +8,8 @@
 ;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -300,7 +302,9 @@ networks) based on simulation of (stochastic) flow in graphs.")
          "1l5jbhwjpsj38x8b9698hfpkv75h8hn3kj0gihjhn8ym2cwwv110"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:phases
+     `(#:ocaml ,ocaml-4.02
+       #:findlib ,ocaml4.02-findlib
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-paths
            (lambda _
@@ -328,15 +332,17 @@ algorithm.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://www.imbs-luebeck.de/imbs/sites/default/files/u59/"
-             "randomjungle-" version ".tar_.gz"))
+             "https://www.imbs.uni-luebeck.de/fileadmin/files/Software"
+             "/randomjungle/randomjungle-" version ".tar_.gz"))
+       (patches (search-patches "randomjungle-disable-static-build.patch"))
        (sha256
         (base32
          "12c8rf30cla71swx2mf4ww9mfd8jbdw5lnxd7dxhyw1ygrvg6y4w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "--with-boost="
+       (list "--disable-static"
+             (string-append "--with-boost="
                             (assoc-ref %build-inputs "boost")))
        #:phases
        (modify-phases %standard-phases
@@ -356,7 +362,7 @@ algorithm.")
     ;; Non-portable assembly instructions are used so building fails on
     ;; platforms other than x86_64 or i686.
     (supported-systems '("x86_64-linux" "i686-linux"))
-    (home-page "http://www.imbs-luebeck.de/imbs/de/node/227/")
+    (home-page "https://www.imbs.uni-luebeck.de/forschung/software/details.html#c224")
     (synopsis "Implementation of the Random Forests machine learning method")
     (description
      "Random Jungle is an implementation of Random Forests.  It is supposed to
@@ -489,7 +495,7 @@ sample proximities between pairs of cases.")
      `(("python" ,python)
        ("numpy" ,python-numpy)
        ("r-minimal" ,r-minimal)
-       ("octave" ,octave)
+       ("octave" ,octave-cli)
        ("swig" ,swig)
        ("eigen" ,eigen)
        ("hdf5" ,hdf5)
@@ -703,7 +709,7 @@ computing environments.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.19.2")
+    (version "0.20.1")
     (source
      (origin
        (method git-fetch)
@@ -713,9 +719,7 @@ computing environments.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1dk9hdj01c0bny4ps78b7869fjw9gr6qklxf6wyql8h6nh4k19xm"))
-       (patches (search-patches
-                 "python-scikit-learn-fix-test-non-determinism.patch"))))
+         "0fkhwg3xn1s7ln9q1szq6kwc4jhwvjh8w4kmv9wcrqy7cq3lbv0d"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -726,11 +730,11 @@ computing environments.")
            (lambda _
              ;; Restrict OpenBLAS threads to prevent segfaults while testing!
              (setenv "OPENBLAS_NUM_THREADS" "1")
-             ;; Disable tests that require network access
-             (delete-file "sklearn/datasets/tests/test_mldata.py")
-             (delete-file "sklearn/datasets/tests/test_rcv1.py")
-             (invoke "pytest" "sklearn")
-             #t))
+
+             ;; Some tests require write access to $HOME.
+             (setenv "HOME" "/tmp")
+
+             (invoke "pytest" "sklearn" "-m" "not network")))
          ;; FIXME: This fails with permission denied
          (delete 'reset-gzip-timestamps))))
     (inputs
@@ -750,24 +754,7 @@ data analysis.")
     (license license:bsd-3)))
 
 (define-public python2-scikit-learn
-  (let ((parent (package-with-python2 python-scikit-learn)))
-    (package (inherit parent)
-      (arguments
-       (substitute-keyword-arguments (package-arguments parent)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (replace 'check
-               (lambda _
-                 ;; Restrict OpenBLAS threads to prevent segfaults while testing!
-                 (setenv "OPENBLAS_NUM_THREADS" "1")
-                 ;; Some tests expect to be able to write to HOME.
-                 (setenv "HOME" "/tmp")
-                 ;; Disable tests that require network access
-                 (delete-file "sklearn/datasets/tests/test_kddcup99.py")
-                 (delete-file "sklearn/datasets/tests/test_mldata.py")
-                 (delete-file "sklearn/datasets/tests/test_rcv1.py")
-                 (invoke "pytest" "sklearn")
-                 #t)))))))))
+  (package-with-python2 python-scikit-learn))
 
 (define-public python-autograd
   (let* ((commit "442205dfefe407beffb33550846434baa90c4de7")

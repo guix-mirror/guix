@@ -36,6 +36,7 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix build-system go)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages gcc)
@@ -46,7 +47,9 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
   #:use-module (ice-9 match)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:export (go-github-com-gogo-protobuf-union)
+  #:export (go-golang-org-x-crypto-union))
 
 ;; According to https://golang.org/doc/install/gccgo, gccgo-4.8.2 includes a
 ;; complete go-1.1.2 implementation, gccgo-4.9 includes a complete go-1.2
@@ -516,14 +519,25 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  (substitute* (find-files "cmd" "\\.go")
                    (("/lib(64)?/ld-linux.*\\.so\\.[0-9]") loader))
                  #t)))
+           ;; Prevent installation of the build cache, which contains store
+           ;; references to most of the tools used to build Go and would
+           ;; unnecessarily increase the size of Go's closure if it was
+           ;; installed.
+           ;; TODO This should be moved into the 'install' phase when Go 1.9 is
+           ;; removed.
+           (add-before 'install 'delete-extraneous-files
+             (lambda _
+               (delete-file-recursively "../pkg/obj")
+               #t))
            (replace 'set-bootstrap-variables
              (lambda* (#:key outputs inputs #:allow-other-keys)
                ;; Tell the build system where to find the bootstrap Go.
                (let ((go  (assoc-ref inputs "go")))
                  (setenv "GOROOT_BOOTSTRAP" go)
-                 (setenv "GOGC" "400"))))))))))
+                 (setenv "GOGC" "400")
+                 #t)))))))))
 
-(define-public go go-1.9)
+(define-public go go-1.11)
 
 (define-public go-github-com-alsm-ioprogress
   (let ((commit "063c3725f436e7fba0c8f588547bee21ffec7ac5")
@@ -618,7 +632,16 @@ way of specifying command line options.")
                   "1sv15sri99szkdz1bkh0ir46w9n8prrwx5hfai13nrhkawfyfy10"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "gopkg.in/tomb.v2"))
+       '(#:import-path "gopkg.in/tomb.v2"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-source
+             (lambda _
+               ;; Add a missing % to fix the compilation of this test
+               (substitute* "src/gopkg.in/tomb.v2/tomb_test.go"
+                 (("t.Fatalf\\(`Killf\\(\"BO%s")
+                  "t.Fatalf(`Killf(\"BO%%s"))
+               #t)))))
       (synopsis "@code{tomb} handles clean goroutine tracking and termination")
       (description
        "The @code{tomb} package handles clean goroutine tracking and
@@ -995,6 +1018,97 @@ symmetric-key block cipher.")
 Tiny Encryption Algorithm (XTEA) block cipher.")
       (home-page "https://go.googlesource.com/crypto/")
       (license license:bsd-3))))
+
+(define-public go-golang-org-x-crypto-ed25519
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-ed25519")
+    (arguments
+     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
+       ((#:import-path _)
+        "golang.org/x/crypto/ed25519")))
+    (synopsis "ED25519 in Go")
+    (description "This package provides a Go implementation of the ED25519
+signature algorithm.")))
+
+(define-public go-golang-org-x-crypto-ripemd160
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-ripemd160")
+    (arguments
+     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
+       ((#:import-path _)
+        "golang.org/x/crypto/ripemd160")))
+    (synopsis "RIPEMD-160 in Go")
+    (description "This package provides a Go implementation of the RIPEMD-160
+hash algorithm.")))
+
+(define-public go-golang-org-x-crypto-blake2s
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-blake2s")
+    (arguments
+     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
+       ((#:import-path _)
+        "golang.org/x/crypto/blake2s")))
+    (synopsis "BLAKE2s in Go")
+    (description "This package provides a Go implementation of the BLAKE2s
+hash algorithm.")))
+
+(define-public go-golang-org-x-crypto-sha3
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-sha3")
+    (arguments
+     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
+       ((#:import-path _)
+        "golang.org/x/crypto/sha3")))
+    (synopsis "SHA-3 in Go")
+    (description "This package provides a Go implementation of the SHA-3
+fixed-output-length hash functions and the SHAKE variable-output-length hash
+functions defined by FIPS-202.")))
+
+;; Go searches for library modules by looking in the GOPATH environment
+;; variable.  This variable is a list of paths.  However, Go does not
+;; keep searching on GOPATH if it tries and fails to import a module.
+;; So, we use a union for packages sharing a namespace.
+(define* (go-golang-org-x-crypto-union #:optional
+                                    (packages (list go-golang-org-x-crypto-blowfish
+                                                    go-golang-org-x-crypto-bcrypt
+                                                    go-golang-org-x-crypto-tea
+                                                    go-golang-org-x-crypto-xtea
+                                                    go-golang-org-x-crypto-pbkdf2
+                                                    go-golang-org-x-crypto-twofish
+                                                    go-golang-org-x-crypto-cast5
+                                                    go-golang-org-x-crypto-salsa20
+                                                    go-golang-org-x-crypto-ed25519
+                                                    go-golang-org-x-crypto-ripemd160
+                                                    go-golang-org-x-crypto-blake2s
+                                                    go-golang-org-x-crypto-sha3)))
+  (package
+    (name "go-golang-org-x-crypto")
+    (version (package-version go-golang-org-x-crypto-bcrypt))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (guix build union))
+                   (match %build-inputs
+                     (((names . directories) ...)
+                      (union-build (assoc-ref %outputs "out")
+                                   directories)
+                      #t)))))
+    (inputs (map (lambda (package)
+                   (list (package-name package) package))
+                 packages))
+    (synopsis "Union of the Go x crypto libraries")
+    (description "A union of the Golang cryptographic libraries.  A
+union is required because `go build` assumes that all of the headers and
+libraries are in the same directory.")
+    (home-page (package-home-page go-golang-org-x-crypto-bcrypt))
+    (license (package-license go-golang-org-x-crypto-bcrypt))))
 
 (define-public go-golang-org-x-net-ipv4
   (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
@@ -1474,31 +1588,6 @@ Features include:
       (synopsis "Atomic boolean library for Go code")
       (description "This package is atomic boolean library for Go code,
 optimized for performance yet simple to use.")
-      (license license:expat))))
-
-(define-public go-github-com-urfave-cli
-  (let ((commit "cfb38830724cc34fedffe9a2a29fb54fa9169cd1")
-        (revision "0"))
-    (package
-      (name "go-github-com-urfave-cli")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/urfave/cli.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0y6f4sbzkiiwrxbl15biivj8c7qwxnvm3zl2dd3mw4wzg4x10ygj"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/urfave/cli"))
-      (home-page "https://github.com/urfave/cli")
-      (synopsis "Library for building command-line interfaces in Go")
-      (description "This package provides a library for building command-line
-interfaces in Go.")
       (license license:expat))))
 
 (define-public go-github-com-blang-semver
@@ -2081,26 +2170,28 @@ generate ANSI colored strings.")
           (base32
            "1d9hr29i36cza98afj3g6rs3l7xbkprwzz0blcxsr9dd7nak20di"))))
       (build-system go-build-system)
-      (native-inputs
+      ;; From go-1.10 onward, "pkg" compiled libraries are not re-used, so
+      ;; when this package required as input for another one, it will have to
+      ;; be built again.  Thus its CGO requirements must be made available in
+      ;; the environment, that is, they must be propagated.
+      (propagated-inputs
        `(("lua" ,lua)))
       (arguments
        `(#:unpack-path "github.com/aarzilli/golua"
          #:import-path "github.com/aarzilli/golua/lua"
          #:phases
          (modify-phases %standard-phases
-           (replace 'build
-             (lambda* (#:key import-path #:allow-other-keys)
-               (invoke "go" "install"
-                       "-v"  ; print the name of packages as they are compiled
-                       "-x"  ; print each command as it is invoked
-                       "-ldflags=-s -w" ; strip the symbol table and debug
-                       "-tags" "llua" ; Latest Lua on Guix does not have a version number.
-                       import-path)))
-           (replace 'check
-             (lambda* (#:key import-path #:allow-other-keys)
-               (invoke "go" "test"
-                       "-tags" "llua" ; Latest Lua on Guix does not have a version number.
-                       import-path))))))
+           ;; While it's possible to fix the CGO_LDFLAGS with the "-tags"
+           ;; command line argument, go-1.10+ does not re-use the produced pkg
+           ;; for dependencies, which means we would need to propagate the
+           ;; same "-tags" argument to all golua referrers.  A substitution is
+           ;; more convenient here.  We also need to propagate the lua
+           ;; dependency to make it available to referrers.
+           (add-after 'unpack 'fix-lua-ldflags
+             (lambda _
+               (substitute* "src/github.com/aarzilli/golua/lua/lua.go"
+                 (("#cgo linux,!llua,!luaa LDFLAGS: -llua5.3")
+                  "#cgo linux,!llua,!luaa LDFLAGS: -llua")))))))
       (home-page "https://github.com/aarzilli/golua")
       (synopsis "Go Bindings for the Lua C API")
       (description "This package provides @code{lua}, a Go module that can
@@ -2348,12 +2439,917 @@ and lookup requests.  Browse requests are not supported yet.")
           (base32
            "1cpjqnrviwflz150g78iir5ndrp3hh7a93zbp4dwbg6sb2q141p2"))))
       (build-system go-build-system)
-      (native-inputs
+      ;; From go-1.10 onward, "pkg" compiled libraries are not re-used, so
+      ;; when this package required as input for another one, it will have to
+      ;; be built again.  Thus its CGO requirements must be made available in
+      ;; the environment, that is, they must be propagated.
+      (propagated-inputs
        `(("pkg-config" ,pkg-config)
          ("taglib" ,taglib)))
       (arguments
-       `(#:import-path "github.com/wtolson/go-taglib"))
+       `(#:import-path "github.com/wtolson/go-taglib"
+         ;; Tests don't pass "vet" on go-1.11.  See
+         ;; https://github.com/wtolson/go-taglib/issues/12.
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "test"
+                       "-vet=off"
+                       import-path))))))
       (home-page "https://github.com/wtolson/go-taglib")
       (synopsis "Go wrapper for taglib")
       (description "Go wrapper for taglib")
       (license license:unlicense))))
+
+(define* (go-github-com-gogo-protobuf-union
+           #:optional (packages (list go-github-com-gogo-protobuf
+                                      go-github-com-gogo-protobuf-protoc-gen-gogo)))
+  (package
+    (name "go-github-com-gogo-protobuf-union")
+    (version (package-version go-github-com-gogo-protobuf))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (guix build union))
+                   (match %build-inputs
+                     (((names . directories) ...)
+                      (union-build (assoc-ref %outputs "out")
+                                   directories)
+                      #t)))))
+    (inputs (map (lambda (package)
+                   (list (package-name package) package))
+                 packages))
+    (synopsis "Union of Go protobuf libraries")
+    (description "This is a union of Go protobuf libraries")
+    (home-page (package-home-page go-github-com-gogo-protobuf))
+    (license (package-license go-github-com-gogo-protobuf))))
+
+(define-public go-github-com-gogo-protobuf
+  (let ((commit "160de10b2537169b5ae3e7e221d28269ef40d311")
+        (revision "2"))
+    (package
+      (name "go-github-com-gogo-protobuf")
+      (version (git-version "0.5" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/gogo/protobuf")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0hxq28sgxym04rv0q40gpwkh4ni359q21hq3g78wwxwx4qfd4zwm"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/gogo/protobuf/proto"
+         #:unpack-path "github.com/gogo/protobuf"))
+      (propagated-inputs
+       `(("go-github-com-gogo-protobuf-protoc-gen-gogo"
+          ,go-github-com-gogo-protobuf-protoc-gen-gogo)))
+      (synopsis "Protocol Buffers for Go with Gadgets")
+      (description "Gogoprotobuf is a fork of golang/protobuf with extra code
+generation features.  This code generation is used to achieve:
+@itemize
+@item fast marshalling and unmarshalling
+@item more canonical Go structures
+@item goprotobuf compatibility
+@item less typing by optionally generating extra helper code
+@item peace of mind by optionally generating test and benchmark code
+@item other serialization formats
+@end itemize")
+      (home-page "https://github.com/gogo/protobuf")
+      (license license:bsd-3))))
+
+(define-public go-github-com-gogo-protobuf-protoc-gen-gogo
+  (let ((commit "efccd33a0c20aa078705571d5ddbfa14c8395a63")
+        (revision "0"))
+    (package
+      (name "go-github-com-gogo-protobuf-protoc-gen-gogo")
+      (version (git-version "0.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/gogo/protobuf")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "09kfa3aqmhh7p0rc6wd4fw5cjccidsk9vgcy13albv0g8vnbmmgw"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/gogo/protobuf/protoc-gen-gogo"
+         #:unpack-path "github.com/gogo/protobuf"))
+      (synopsis "Protocol Buffers for Go with Gadgets")
+      (description "Gogoprotobuf is a fork of golang/protobuf with extra code
+generation features.  This code generation is used to achieve:
+@itemize
+@item fast marshalling and unmarshalling
+@item more canonical Go structures
+@item goprotobuf compatibility
+@item less typing by optionally generating extra helper code
+@item peace of mind by optionally generating test and benchmark code
+@item other serialization formats
+@end itemize")
+      (home-page "https://github.com/gogo/protobuf")
+      (license license:bsd-3))))
+
+(define-public go-github-com-gogo-protobuf-proto
+  (let ((commit
+          "fd322a3c49630fe6d05737e2b7d9426e6680e28d")
+        (revision "0"))
+    (package
+      (name "go-github-com-gogo-protobuf-proto")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/gogo/protobuf.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "1zi85584dy91hyrwpanygz1pppi0chn3hzzv128i83i6j45a5fp9"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:unpack-path "github.com/gogo/protobuf"
+         #:import-path "github.com/gogo/protobuf/proto"))
+      (native-inputs `())
+      (home-page "https://github.com/gogo/protobuf")
+      (synopsis "XXX")
+      (description "XXX")
+      (license license:expat))))
+
+(define-public go-github-com-libp2p-go-flow-metrics
+  (let ((commit "7e5a55af485341567f98d6847a373eb5ddcdcd43")
+        (revision "0"))
+    (package
+      (name "go-github-com-libp2p-go-flow-metrics")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/libp2p/go-flow-metrics.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1p87iyk6q6f3g3xkncssx400qlld8f2z93qiz8m1f97grfyhjif1"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/libp2p/go-flow-metrics"
+         ;; TODO: Tests hang.
+         #:tests? #f))
+      (home-page
+       "https://github.com/libp2p/go-flow-metrics")
+      (synopsis "Simple library for tracking flow metrics")
+      (description "A simple alternative to rcrowley's @command{go-metrics}
+that's a lot faster (and only does simple bandwidth metrics).")
+      (license license:expat))))
+
+(define-public go-github-com-davecgh-go-spew
+  (let ((commit "d8f796af33cc11cb798c1aaeb27a4ebc5099927d")
+        (revision "0"))
+    (package
+      (name "go-github-com-davecgh-go-spew")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/davecgh/go-spew.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "19z27f306fpsrjdvkzd61w1bdazcdbczjyjck177g33iklinhpvx"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:unpack-path "github.com/davecgh/go-spew"
+         #:import-path "github.com/davecgh/go-spew/spew"))
+      (home-page "https://github.com/davecgh/go-spew")
+      (synopsis "Deep pretty printer for Go data structures to aid in debugging")
+      (description "Package @command{spew} implements a deep pretty printer
+for Go data structures to aid in debugging.
+
+A quick overview of the additional features spew provides over the built-in printing facilities for Go data types are as follows:
+
+@itemize
+@item Pointers are dereferenced and followed.
+@item Circular data structures are detected and handled properly.
+@item Custom Stringer/error interfaces are optionally invoked, including on
+unexported types.
+@item Custom types which only implement the Stringer/error interfaces via a
+pointer receiver are optionally invoked when passing non-pointer variables.
+@item Byte arrays and slices are dumped like the hexdump -C command which
+includes offsets, byte values in hex, and ASCII output (only when using Dump
+style).
+@end itemize\n")
+      (license license:isc))))
+
+(define-public go-github-com-btcsuite-btclog
+  (let ((commit "84c8d2346e9fc8c7b947e243b9c24e6df9fd206a")
+        (revision "0"))
+    (package
+      (name "go-github-com-btcsuite-btclog")
+      (version (git-version "0.0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/btcsuite/btclog.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "02dl46wcnfpg9sqvg0ipipkpnd7lrf4fnvb9zy56jqa7mfcwc7wk"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/btcsuite/btclog"))
+      (home-page "https://github.com/btcsuite/btclog")
+      (synopsis "Subsystem aware logger for Go")
+      (description "Package @command{btclog} defines a logger interface and
+provides a default implementation of a subsystem-aware leveled logger
+implementing the same interface.")
+      (license license:isc))))
+
+(define-public go-github-com-btcsuite-btcd-btcec
+  (let ((commit "67e573d211ace594f1366b4ce9d39726c4b19bd0")
+        (revision "0"))
+    (package
+      (name "go-github-com-btcsuite-btcd-btcec")
+      (version (git-version "0.12.0-beta" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/btcsuite/btcd.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "04s92gsy71w1jirlr5lkk9y6r5cparbas7nmf6ywbp7kq7fn8ajn"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:unpack-path "github.com/btcsuite/btcd"
+         #:import-path "github.com/btcsuite/btcd/btcec"))
+      (native-inputs
+       `(("go-github-com-davecgh-go-spew" ,go-github-com-davecgh-go-spew)))
+      (home-page "https://github.com/btcsuite/btcd")
+      (synopsis "Elliptic curve cryptography to work with Bitcoin")
+      (description "Package @command{btcec} implements elliptic curve
+cryptography needed for working with Bitcoin (secp256k1 only for now).  It is
+designed so that it may be used with the standard crypto/ecdsa packages
+provided with Go.  A comprehensive suite of test is provided to ensure proper
+functionality.  Package @command{btcec} was originally based on work from
+ThePiachu which is licensed under the same terms as Go, but it has
+signficantly diverged since then.  The @command{btcsuite} developers original
+is licensed under the liberal ISC license.
+
+Although this package was primarily written for btcd, it has intentionally
+been designed so it can be used as a standalone package for any projects
+needing to use secp256k1 elliptic curve cryptography.")
+      (license license:isc))))
+
+(define-public go-github-com-minio-sha256-simd
+  (let ((commit "51976451ce1942acbb55707a983ed232fa027110")
+        (revision "0"))
+    (package
+      (name "go-github-com-minio-sha256-simd")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/minio/sha256-simd.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0kaxvpidf6ygkkb06vi95pirll31jnmywhyalfjvf7djhim2wr8f"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/minio/sha256-simd"))
+      (home-page "https://github.com/minio/sha256-simd")
+      (synopsis "Accelerate SHA256 computations in pure Go")
+      (description "Accelerate SHA256 computations in pure Go using AVX512 and
+AVX2 for Intel and ARM64 for ARM.  On AVX512 it provides an up to 8x
+improvement (over 3 GB/s per core) in comparison to AVX2.
+
+This package is designed as a replacement for @command{crypto/sha256}.  For
+Intel CPUs it has two flavors for AVX512 and AVX2 (AVX/SSE are also
+supported).  For ARM CPUs with the Cryptography Extensions, advantage is taken
+of the SHA2 instructions resulting in a massive performance improvement.
+
+This package uses Golang assembly.  The AVX512 version is based on the Intel's
+\"multi-buffer crypto library for IPSec\" whereas the other Intel
+implementations are described in \"Fast SHA-256 Implementations on Intel
+Architecture Processors\" by J. Guilford et al.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-libp2p-go-libp2p-crypto
+  (let ((commit "7240b40a3ddc47c4d17c15baabcbe45e5219171b")
+        (revision "0"))
+    (package
+      (name "go-github-com-libp2p-go-libp2p-crypto")
+      (version (git-version "2.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/libp2p/go-libp2p-crypto.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0qwpy57qv5143l9dlfwfvpqsxdd2i4zwnawx1w4pmgxxim3nw1wb"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/libp2p/go-libp2p-crypto"))
+      (native-inputs
+       `(("go-golang-org-x-crypto-ed25519" ,go-golang-org-x-crypto-ed25519)
+         ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
+         ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
+         ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)))
+      (home-page
+       "https://github.com/libp2p/go-libp2p-crypto")
+      (synopsis "Various cryptographic utilities used by IPFS")
+      (description "Various cryptographic utilities used by IPFS")
+      (license license:expat))))
+
+(define-public go-github-com-mr-tron-base58
+  (let ((commit "d724c80ecac7b49e4e562d58b2b4f4ee4ed8c312")
+        (revision "0"))
+    (package
+      (name "go-github-com-mr-tron-base58")
+      (version (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mr-tron/base58.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "12qhgnn9wf3c1ang16r4i778whk4wsrj7d90h2xgmz4fi1469rqa"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:unpack-path "github.com/mr-tron/base58"
+         #:import-path "github.com/mr-tron/base58/base58"))
+      (home-page "https://github.com/mr-tron/base58")
+      (synopsis "Fast implementation of base58 encoding on Golang")
+      (description "Fast implementation of base58 encoding on Golang.  A
+trivial @command{big.Int} encoding benchmark results in 6 times faster
+encoding and 8 times faster decoding.")
+      (license license:expat))))
+
+(define-public go-github-com-gxed-hashland-keccakpg
+  (let ((commit "d9f6b97f8db22dd1e090fd0bbbe98f09cc7dd0a8")
+        (revision "0"))
+    (package
+      (name "go-github-com-gxed-hashland-keccakpg")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gxed/hashland.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1q23y4lacsz46k9gmgfw4iwwydw36j2601rbidmmswl94grpc386"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:unpack-path "github.com/gxed/hashland"
+         #:import-path "github.com/gxed/hashland/keccakpg"))
+      (home-page "https://github.com/gxed/hashland")
+      (synopsis "Implements the Keccak (SHA-3) hash algorithm in Go")
+      (description "Package @command{keccak} implements the Keccak (SHA-3)
+hash algorithm.  See http://keccak.noekeon.org.")
+      (license license:expat))))
+
+(define-public go-github-com-minio-blake2b-simd
+  (let ((commit "3f5f724cb5b182a5c278d6d3d55b40e7f8c2efb4")
+        (revision "0"))
+    (package
+      (name "go-github-com-minio-blake2b-simd")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/minio/blake2b-simd.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0b6jbnj62c0gmmfd4zdmh8xbg01p80f13yygir9xprqkzk6fikmd"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/minio/blake2b-simd"))
+      (home-page "https://github.com/minio/blake2b-simd")
+      (synopsis "Fast hashing in pure Go of BLAKE2b with SIMD instructions")
+      (description "This package was initially based on the pure go BLAKE2b
+implementation of Dmitry Chestnykh and merged with the (cgo dependent) AVX
+optimized BLAKE2 implementation (which in turn is based on the official
+implementation.  It does so by using Go's Assembler for amd64 architectures
+with a golang only fallback for other architectures.
+
+In addition to AVX there is also support for AVX2 as well as SSE.  Best
+performance is obtained with AVX2 which gives roughly a 4X performance
+increase approaching hashing speeds of 1GB/sec on a single core.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-spaolacci-murmur3
+  (let ((commit "f09979ecbc725b9e6d41a297405f65e7e8804acc")
+        (revision "0"))
+    (package
+      (name "go-github-com-spaolacci-murmur3")
+      (version (git-version "1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/spaolacci/murmur3.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1lv3zyz3jy2d76bhvvs8svygx66606iygdvwy5cwc0p5z8yghq25"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/spaolacci/murmur3"))
+      (home-page "https://github.com/spaolacci/murmur3")
+      (synopsis "Native MurmurHash3 Go implementation")
+      (description "Native Go implementation of Austin Appleby's third
+MurmurHash revision (aka MurmurHash3).
+
+Reference algorithm has been slightly hacked as to support the streaming mode
+required by Go's standard Hash interface.")
+      (license license:bsd-3))))
+
+(define-public go-github-com-multiformats-go-multihash
+  (let ((commit "97cdb562a04c6ef66d8ed40cd62f8fbcddd396d6")
+        (revision "0"))
+    (package
+      (name "go-github-com-multiformats-go-multihash")
+      (version (git-version "1.0.8" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/multiformats/go-multihash.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "02wd9akrwy4y5m0nig9m24p14bjjgb4n1djydrq8cm4yhbvjrrk0"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/multiformats/go-multihash"))
+      (native-inputs
+       `(("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
+         ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
+         ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
+         ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
+         ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
+         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+      (home-page "https://github.com/multiformats/go-multihash")
+      (synopsis "Multihash implementation in Go")
+      (description "Multihash implementation in Go.")
+      (license license:expat))))
+
+(define-public go-github-com-libp2p-go-libp2p-peer
+  (let ((commit "993d742bc29dcf4894b7730ba610fd78900be76c")
+        (revision "0"))
+    (package
+      (name "go-github-com-libp2p-go-libp2p-peer")
+      (version (git-version "2.3.8" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/libp2p/go-libp2p-peer.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1h96qjdi0i1wbr0jliap2903mycphas3ny0zdrm77yca9plcnphh"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/libp2p/go-libp2p-peer"))
+      (native-inputs
+       `(("go-github-com-libp2p-go-libp2p-crypto" ,go-github-com-libp2p-go-libp2p-crypto)
+         ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
+         ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
+         ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
+         ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
+         ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
+         ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
+         ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
+         ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
+         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+      (home-page "https://github.com/libp2p/go-libp2p-peer")
+      (synopsis "PKI based identities for use in go-libp2p")
+      (description "PKI based identities for use in @command{go-libp2p}.")
+      (license license:expat))))
+
+(define-public go-github-com-libp2p-go-libp2p-protocol
+  (let ((commit "b29f3d97e3a2fb8b29c5d04290e6cb5c5018004b")
+        (revision "0"))
+    (package
+      (name "go-github-com-libp2p-go-libp2p-protocol")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/libp2p/go-libp2p-protocol.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1xgjfnx9zcqglg9li29wdqywsp8hz22wx6phns9zscni2jsfidld"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path
+         "github.com/libp2p/go-libp2p-protocol"))
+      (home-page "https://github.com/libp2p/go-libp2p-protocol")
+      (synopsis "Type for protocol strings in Golang")
+      (description "Just a type for protocol strings.  Nothing more.")
+      (license license:expat))))
+
+(define-public go-github-com-libp2p-go-libp2p-metrics
+  (let ((commit "a10ff6e75dae3c868023867e8caa534a04bdc624")
+        (revision "0"))
+    (package
+      (name "go-github-com-libp2p-go-libp2p-metrics")
+      (version (git-version "2.1.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/libp2p/go-libp2p-metrics.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "05wy0cq4h6yg9bzgapcvm2criwriicbswx80ma82gyn4a9fdrk8m"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/libp2p/go-libp2p-metrics"))
+      (native-inputs
+       `(("go-github-com-libp2p-go-flow-metrics" ,go-github-com-libp2p-go-flow-metrics)
+         ("go-github-com-libp2p-go-libp2p-peer" ,go-github-com-libp2p-go-libp2p-peer)
+         ("go-github-com-libp2p-go-libp2p-protocol" ,go-github-com-libp2p-go-libp2p-protocol)
+         ("go-github-com-libp2p-go-libp2p-crypto" ,go-github-com-libp2p-go-libp2p-crypto)
+         ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
+         ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
+         ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
+         ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
+         ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
+         ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
+         ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
+         ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
+         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+      (home-page "https://github.com/libp2p/go-libp2p-metrics")
+      (synopsis "Connection wrapper for go-libp2p that provides bandwidth metrics")
+      (description "A connection wrapper for @command{go-libp2p} that provides bandwidth
+statistics for wrapped connections.")
+      (license license:expat))))
+
+(define-public go-github-com-mitchellh-go-homedir
+  (let ((commit "ae18d6b8b3205b561c79e8e5f69bff09736185f4")
+        (revision "0"))
+    (package
+      (name "go-github-com-mitchellh-go-homedir")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mitchellh/go-homedir.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0f0z0aa4wivk4z1y503dmnw0k0g0g403dly8i4q263gfshs82sbq"))))
+      (build-system go-build-system)
+      (arguments
+       (quote (#:import-path "github.com/mitchellh/go-homedir"
+               ;; TODO: Tests fail because it tries to access home.
+               #:tests? #f)))
+      (home-page "https://github.com/mitchellh/go-homedir")
+      (synopsis "Go library for detecting and expanding the user's home directory without cgo")
+      (description "This is a Go library for detecting the user's home
+directory without the use of @command{cgo}, so the library can be used in
+cross-compilation environments.
+
+Usage is simple, just call homedir.Dir() to get the home directory for a user,
+and homedir.Expand() to expand the @command{~} in a path to the home
+directory.
+
+Why not just use @command{os/user}?  The built-in @command{os/user} package
+requires cgo on Darwin systems.  This means that any Go code that uses that
+package cannot cross compile.  But 99% of the time the use for
+@command{os/user} is just to retrieve the home directory, which we can do for
+the current user without cgo.  This library does that, enabling
+cross-compilation.")
+      (license license:expat))))
+
+(define-public go-github-com-multiformats-go-multiaddr
+  (let ((commit "fe1c46f8be5af4aff4db286e08839295bd922efb")
+        (revision "0"))
+    (package
+      (name "go-github-com-multiformats-go-multiaddr")
+      (version (git-version "1.3.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/multiformats/go-multiaddr.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0p5f8h098a4yjjmzsgqs7vhx1iqifb8izwg3559cr4h7clkpzznh"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path
+         "github.com/multiformats/go-multiaddr"))
+      (native-inputs
+       `(("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
+         ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
+         ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
+         ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
+         ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
+         ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
+         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+      (home-page "https://github.com/multiformats/go-multiaddr")
+      (synopsis "Composable and future-proof network addresses")
+      (description "Multiaddr is a standard way to represent addresses that
+does the following:
+
+@itemize
+@item Support any standard network protocols.
+@item Self-describe (include protocols).
+@item Have a binary packed format.
+@item Have a nice string representation.
+@item Encapsulate well.
+@end itemize\n")
+      (license license:expat))))
+
+(define-public go-github-com-multiformats-go-multiaddr-net
+  (let ((commit "1cb9a0e8a6de3c8a10f6cee60d01d793603c4f7e")
+        (revision "0"))
+    (package
+      (name "go-github-com-multiformats-go-multiaddr-net")
+      (version (git-version "1.6.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/multiformats/go-multiaddr-net.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1ypgi47xdz3bh8lh7f8cmk7w3ql9g4izx5l3kzdg9gda1xn5zxq3"))))
+      (build-system go-build-system)
+      (arguments
+       (quote (#:import-path "github.com/multiformats/go-multiaddr-net"
+               ;; TODO: Tests fail because they try to access the network.
+               #:tests? #f)))
+      (native-inputs
+       `(("go-github-com-multiformats-go-multiaddr" ,go-github-com-multiformats-go-multiaddr)
+         ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
+         ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
+         ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
+         ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
+         ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
+         ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
+         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+      (home-page "https://github.com/multiformats/go-multiaddr-net")
+      (synopsis "Multiaddress net tools")
+      (description "This package provides Multiaddr specific versions of
+common functions in stdlib's @command{net} package.  This means wrappers of
+standard net symbols like @command{net.Dial} and @command{net.Listen}, as well
+as conversion to and from @command{net.Addr}.")
+      (license license:expat))))
+
+(define-public go-github-com-whyrusleeping-tar-utils
+  (let ((commit "8c6c8ba81d5c71fd69c0f48dbde4b2fb422b6dfc")
+        (revision "0"))
+    (package
+      (name "go-github-com-whyrusleeping-tar-utils")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/whyrusleeping/tar-utils.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "14jjdw3yics0k467xsyk388684wdpi0bbx8nqj0y4pqxa0s0in6s"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path
+         "github.com/whyrusleeping/tar-utils"))
+      (home-page "https://github.com/whyrusleeping/tar-utils")
+      (synopsis "Tar utilities extracted from go-ipfs codebase")
+      (description "Tar utilities extracted from @command{go-ipfs} codebase.")
+      (license license:expat))))
+
+(define-public go-github-com-cheekybits-is
+  (let ((commit "68e9c0620927fb5427fda3708222d0edee89eae9")
+        (revision "0"))
+    (package
+      (name "go-github-com-cheekybits-is")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cheekybits/is.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1mkbyzhwq3rby832ikq00nxv3jnckxsm3949wkxd8ya9js2jmg4d"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/cheekybits/is"))
+      (home-page "https://github.com/cheekybits/is")
+      (synopsis "Mini testing helper for Go")
+      (description "A mini testing helper for Go.
+
+@itemize
+@item It has a simple interface (@command{is.OK} and @command{is.Equal}).
+@item It plugs into existing Go toolchain (uses @command{testing.T}).
+@item It's obvious for newcomers.
+@item It also gives you @command{is.Panic} and @command{is.PanicWith} helpers
+- because testing panics is ugly.
+@end itemize\n")
+      (license license:expat))))
+
+(define-public go-github-com-sabhiram-go-gitignore
+  (let ((commit "d3107576ba9425fc1c85f4b3569c4631b805a02e")
+        (revision "0"))
+    (package
+      (name "go-github-com-sabhiram-go-gitignore")
+      (version (git-version "1.0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sabhiram/go-gitignore.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1rdwyxgcsiwgmlqnc3k6h300mzlvjc3j21np4yh1h476wc8dvl0l"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path
+         "github.com/sabhiram/go-gitignore"))
+      (native-inputs
+       `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+      (home-page "https://github.com/sabhiram/go-gitignore")
+      (synopsis "Gitignore parser for Go")
+      (description "A @command{.gitignore} parser for Go.")
+      (license license:expat))))
+
+(define-public go-github-com-urfave-cli
+  (let ((commit "934abfb2f102315b5794e15ebc7949e4ca253920")
+        (revision "0"))
+    (package
+      (name "go-github-com-urfave-cli")
+      (version (git-version "1.19.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/urfave/cli.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0c5r8pgj3k48dfcwj8lw3cxkwkl8vh0fhvz5snfdwd0bcxdqx1yq"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/urfave/cli"))
+      (home-page "https://github.com/urfave/cli")
+      (synopsis "Simple, fast, and fun package for building command line apps in Go")
+      (description "@command{cli} is a simple, fast, and fun package for
+building command line apps in Go.  The goal is to enable developers to write
+fast and distributable command line applications in an expressive way.")
+      (license license:expat))))
+
+(define-public go-github-com-whyrusleeping-json-filter
+  (let ((commit "ff25329a9528f01c5175414f16cc0a6a162a5b8b")
+        (revision "0"))
+    (package
+      (name "go-github-com-whyrusleeping-json-filter")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/whyrusleeping/json-filter.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0cai0drvx4c8j686l908vpcsz3mw3vxi3ziz94b0f3c5ylpj07j7"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path
+         "github.com/whyrusleeping/json-filter"))
+      (home-page "https://github.com/whyrusleeping/json-filter")
+      (synopsis "Library to query JSON objects marshalled into map[string]interface")
+      (description "A library to query JSON objects marshalled into
+@command{map[string]interface{}}.")
+      (license license:expat))))
+
+(define-public go-github-com-whyrusleeping-progmeter
+  (let ((commit "f3e57218a75b913eff88d49a52c1debf9684ea04")
+        (revision "0"))
+    (package
+      (name "go-github-com-whyrusleeping-progmeter")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/whyrusleeping/progmeter.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0xs8rz6yhpvj9512c5v3b8dwr2kivywnyyfxzdfbr6fy1xc8zskb"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path
+         "github.com/whyrusleeping/progmeter"))
+      (home-page "https://github.com/whyrusleeping/progmeter")
+      (synopsis "Progress meter for Go")
+      (description "Progress meter for Go.")
+      (license license:expat))))
+
+(define-public go-github-com-whyrusleeping-stump
+  (let ((commit "206f8f13aae1697a6fc1f4a55799faf955971fc5")
+        (revision "0"))
+    (package
+      (name "go-github-com-whyrusleeping-stump")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/whyrusleeping/stump.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1s40qdppjnk8gijk7x6kbviiqz62nz3h6gic2q9cwcmq8r5isw7n"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/whyrusleeping/stump"))
+      (home-page "https://github.com/whyrusleeping/stump")
+      (synopsis "Very basic logging package for Go")
+      (description "A simple log library, for when you don't really care to
+have super fancy logs.")
+      (license license:expat))))
+
+(define-public go-github-com-kr-fs
+  (let ((commit "1455def202f6e05b95cc7bfc7e8ae67ae5141eba")
+        (revision "0"))
+    (package
+      (name "go-github-com-kr-fs")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kr/fs.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "11zg176x9hr9q7fsk95r6q0wf214gg4czy02slax4x56n79g6a7q"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/kr/fs"))
+      (home-page "https://github.com/kr/fs")
+      (synopsis "Filesystem-related functions for Go")
+      (description "Package fs provides filesystem-related functions.")
+      (license license:bsd-3))))

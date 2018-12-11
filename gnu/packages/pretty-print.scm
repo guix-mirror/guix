@@ -244,7 +244,7 @@ seen in a terminal.")
 (define-public highlight
   (package
     (name "highlight")
-    (version "3.42")
+    (version "3.47")
     (source
      (origin
        (method url-fetch)
@@ -252,7 +252,7 @@ seen in a terminal.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "07iihzy8ckzdrxqd6bzbij4hy4mmlixibjnjviqfihd0hh1q30m5"))))
+         "0xidf8755lnx55x6p4ajgg4l145akjqswny41483fvg5lpa41i6f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

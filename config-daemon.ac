@@ -120,15 +120,7 @@ if test "x$guix_build_daemon" = "xyes"; then
 
   dnl Determine the appropriate default list of substitute URLs (GnuTLS
   dnl is required so we can default to 'https'.)
-  case "x$host_cpu" in
-    xaarch64)
-      # Currently only berlin.guixsd.org provides aarch64 binaries.
-      guix_substitute_urls="https://berlin.guixsd.org"
-      ;;
-    *)
-      guix_substitute_urls="https://mirror.hydra.gnu.org"
-      ;;
-  esac
+  guix_substitute_urls="https://ci.guix.info"
 
   AC_MSG_CHECKING([for default substitute URLs])
   AC_MSG_RESULT([$guix_substitute_urls])
@@ -163,8 +155,8 @@ if test "x$guix_build_daemon" = "xyes"; then
     [chmod +x nix/scripts/download])
   AC_CONFIG_FILES([nix/scripts/substitute],
     [chmod +x nix/scripts/substitute])
-  AC_CONFIG_FILES([nix/scripts/guix-authenticate],
-    [chmod +x nix/scripts/guix-authenticate])
+  AC_CONFIG_FILES([nix/scripts/authenticate],
+    [chmod +x nix/scripts/authenticate])
   AC_CONFIG_FILES([nix/scripts/offload],
     [chmod +x nix/scripts/offload])
 fi

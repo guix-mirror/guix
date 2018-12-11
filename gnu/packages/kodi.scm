@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages gnunet)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages image)
@@ -62,6 +64,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages textutils)
@@ -75,11 +78,12 @@
   #:use-module (gnu packages assembly))
 
 (define-public crossguid
-  (let ((commit "8f399e8bd4252be9952f3dfa8199924cc8487ca4"))
+  (let ((commit "fef89a4174a7bf8cd99fa9154864ce9e8e3bf989")
+        (revision "2"))
     (package
       (name "crossguid")
-      (version (string-append "0.0-1." (string-take commit 7)))
-      ;; There's no official release.  Just a Git repository.
+      (version (string-append "0.0-" revision "." (string-take commit 7)))
+      ;; This is the commit that Kodi wants.
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -88,13 +92,12 @@
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1i29y207qqddvaxbn39pk2fbh3gx8zvdprfp35wasj9rw2wjk3s9"))))
+                  "1blrkc7zcqrqcr5msvhyhm98s2jvm9hr0isqs4288q2r4mdnrfq0"))))
       (build-system gnu-build-system)
       (arguments
        '(#:phases
          (modify-phases %standard-phases
            (delete 'configure)          ; no configure script
-           ;; There's no build system here, so we have to do it ourselves.
            (replace 'build
              (lambda _
                (invoke "g++" "-c" "guid.cpp" "-o" "guid.o"
@@ -129,7 +132,7 @@ generator library for C++.")
 ;; of the standard build process. To make things easier, we bootstrap
 ;; and patch shebangs here, so we don't have to worry about it later.
 (define libdvdnav/kodi
-  (let ((commit "6.0.0-Leia-Alpha-1"))
+  (let ((commit "6.0.0-Leia-Alpha-3"))
     (package
       (name "libdvdnav-bootstrapped")
       (version commit)
@@ -141,7 +144,7 @@ generator library for C++.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1xiyfgf8v8aknlxlzsvk6pbzkhclz0hbh3s1b0w6ivkng2k310j9"))))
+                  "0qwlf4lgahxqxk1r2pzl866mi03pbp7l1fc0rk522sc0ak2s9jhb"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f
@@ -164,7 +167,7 @@ generator library for C++.")
       (license license:gpl2+))))
 
 (define libdvdread/kodi
-  (let ((commit "6.0.0-Leia-Alpha-1"))
+  (let ((commit "6.0.0-Leia-Alpha-3"))
     (package
       (name "libdvdread-bootstrapped")
       (version commit)
@@ -176,7 +179,7 @@ generator library for C++.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1c3g18n2vwhgcfz3dka1pmw58bnv2ram7xjvizfiykb3sgi9zfwp"))))
+                  "1xxn01mhkdnp10cqdr357wx77vyzfb5glqpqyg8m0skyi75aii59"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f
@@ -199,7 +202,7 @@ generator library for C++.")
       (license (list license:gpl2+ license:lgpl2.1+)))))
 
 (define libdvdcss/kodi
-  (let ((commit "1.4.1-Leia-Alpha-1"))
+  (let ((commit "1.4.2-Leia-Beta-5"))
     (package
       (name "libdvdcss-bootstrapped")
       (version commit)
@@ -211,7 +214,7 @@ generator library for C++.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "0adafwsawxssj3nilkql447v0l4a2584rdpmy5rfjmznh91lykgh"))))
+                  "0j41ydzx0imaix069s3z07xqw9q95k7llh06fc27dcn6f7b8ydyl"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f
@@ -233,28 +236,53 @@ generator library for C++.")
       (description (package-description libdvdcss))
       (license license:gpl2+))))
 
+(define-public fstrcmp
+  (package
+    (name "fstrcmp")
+    (version "0.7.D001")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://fstrcmp.sourceforge.net/fstrcmp-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "0xilghiy3mz78bjmfldi39qyy7jvw5b6wafsx370lw401y2qw0g4"))))
+    (build-system gnu-build-system)
+    (home-page "http://fstrcmp.sourceforge.net/")
+    (arguments
+     '(#:configure-flags '("SH=sh")))
+    (native-inputs
+     `(("ghostscript" ,ghostscript) ; ps2pdf
+       ("groff" ,groff)
+       ("libtool" ,libtool)
+       ("which" ,which)))
+    (synopsis "fuzzy comparison of strings")
+    (description
+     "The fstrcmp project provides a library that is used to make fuzzy
+comparisons of strings and byte arrays, including multi-byte character strings.
+This can be useful in error messages, enabling the suggestion of likely valid
+alternatives. In compilers, this can reduce the cascade of secondary errors.")
+    (license license:gpl3+)))
+
 (define-public kodi
-  ;; We package the git version because the current released
-  ;; version was cut while the cmake transition was in turmoil.
-  (let ((commit "ec16dbca4dcf2923f53f819695a6d47c52e68d74")
-        (revision "8"))
   (package
     (name "kodi")
-    (version (git-version "18.0_alpha" revision commit))
+    (version "18.0rc1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/xbmc/xbmc.git")
-                    (commit commit)))
+                    (commit (string-append version "-Leia"))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rxg752cl59124cfpfwmyjldn6qpq5jginxddpzvgagfadf10i4d"))
+                "0xzzp4x8l0ywx8aq93a1323il6wwslmgdbhasv0r8zp3w1c0wqf1"))
               (snippet
                '(begin
                   (use-modules (guix build utils))
                   (for-each delete-file-recursively
-                            '("project/BuildDependencies/bin/"
+                            '("project/BuildDependencies/"
                               ;; TODO: Purge these jars.
                               ;;"tools/codegenerator/groovy"
                               ;; And these sources:
@@ -317,8 +345,8 @@ generator library for C++.")
                 (string-append (assoc-ref inputs "tzdata")
                                "/share/zoneinfo")))
 
-             ;; Don't phone home to check for updates.¬
-             (substitute* "system/addon-manifest.xml"¬
+             ;; Don't phone home to check for updates.
+             (substitute* "system/addon-manifest.xml"
                (("<addon optional=\\\"true\\\">service.xbmc.versioncheck</addon>")
                 ""))
 
@@ -370,10 +398,12 @@ generator library for C++.")
        ("eudev" ,eudev)
        ("ffmpeg" ,ffmpeg)
        ("flac" ,flac)
+       ("flatbuffers" ,flatbuffers)
        ("fmt" ,fmt)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("fribidi" ,fribidi)
+       ("fstrcmp" ,fstrcmp)
        ("giflib" ,giflib)
        ("glew" ,glew)
        ("gnutls" ,gnutls)
@@ -427,7 +457,7 @@ plug-in system.")
                    license:expat                  ;cpluff, dbwrappers
                    license:public-domain          ;cpluff/examples
                    license:bsd-3                  ;misc, gtest
-                   license:bsd-2)))))             ;xbmc/freebsd
+                   license:bsd-2))))              ;xbmc/freebsd
 
 (define-public kodi-cli
   (let ((commit "104dc23b2a993c8e6db8c46f4f8bec24b146549b") ; Add support for

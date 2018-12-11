@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;;
-;;; Check whether important binaries are available at hydra.gnu.org.
+;;; Check whether important binaries are available.
 ;;;
 
 (use-modules (guix store)

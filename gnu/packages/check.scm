@@ -26,7 +26,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -51,6 +51,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages time)
@@ -250,7 +251,7 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
              ;; the build environment. Hence assuming-failure test fails.
              (delete-file "yarn.tests/assuming-failure.script")
              (delete-file "yarn.tests/assuming-failure.stdout")
-             (zero? (system* "python" "setup.py" "check")))))))
+             (invoke "python" "setup.py" "check"))))))
     (native-inputs
      `(("python2-coverage-test-runner" ,python2-coverage-test-runner)))
     (propagated-inputs
@@ -293,13 +294,13 @@ format.")
 (define-public cppcheck
   (package
     (name "cppcheck")
-    (version "1.84")
+    (version "1.85")
     (source (origin
       (method url-fetch)
       (uri (string-append "https://github.com/danmar/cppcheck/archive/"
                           version ".tar.gz"))
       (sha256
-       (base32 "1ibz07dgs1dpfb8bmjh3qsma37wl5p6s6b4qlv5ccpshj4yjk9ma"))
+       (base32 "18qlddf1i9bk5nnvy1v2nfxjd46y8wvp3rqz2hrfxjxsyvrfq5yw"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (home-page "http://cppcheck.sourceforge.net")
@@ -715,8 +716,8 @@ and many external plugins.")
             ;; options taken from tox.ini
             ;; TODO: make "--restructuredtext" tests pass. They currently fail
             ;; with "Duplicate implicit target name"
-            (zero? (system* "python" "./setup.py" "check"
-                            "--strict" "--metadata")))))))
+            (invoke "python" "./setup.py" "check"
+                    "--strict" "--metadata"))))))
     (propagated-inputs
      `(("python-coverage" ,python-coverage)
        ("python-pytest" ,python-pytest)))
@@ -1100,8 +1101,8 @@ python-fixtures package instead.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "python" "-m" "testtools.run"
-                             "fixtures.test_suite")))))))
+             (invoke "python" "-m" "testtools.run"
+                     "fixtures.test_suite"))))))
     (propagated-inputs
      ;; Fixtures uses pbr at runtime to check versions, etc.
      `(("python-pbr" ,python-pbr)
@@ -1341,20 +1342,20 @@ the last py.test invocation.")
 (define-public python-pytest-localserver
   (package
     (name "python-pytest-localserver")
-    (version "0.4.1")
+    (version "0.5.0")
     (source (origin
-             (method url-fetch)
-             (uri (pypi-uri "pytest-localserver" version))
-             (sha256
-              (base32
-               "08f06rvj31wqf0vgmd1waya87r7vy6x8ck48lxl3dxy83q5gcam7"))))
+              (method url-fetch)
+              (uri (pypi-uri "pytest-localserver" version))
+              (sha256
+               (base32
+                "1hpgpxrpfq5c731ndnsay2lc0y9nh2wy9fn1f83s3z8xkn82fm1s"))))
     (build-system python-build-system)
     (arguments
-      `(#:phases (modify-phases %standard-phases
+     '(#:phases
+       (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "py.test" "--genscript=runtests.py"))
-             (zero? (system* "py.test")))))))
+             (invoke "py.test" "-v"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-requests" ,python-requests)
@@ -1425,7 +1426,8 @@ normally the case.")
                 "1rshs1japfmwgar98yrkq4hg4z2q76hlnq7w2n3lfbjnscn1jd9b"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-flake8" ,python-flake8)
+     `(;; FIXME: Change to python-flake8 in the next rebuild cycle.
+       ("python-flake8" ,python-flake8-3.5)
        ("python-pytest" ,python-pytest-bootstrap)))
     (propagated-inputs
      `(("python-attrs" ,python-attrs-bootstrap)
@@ -1522,7 +1524,7 @@ failures.")
              ;; It's easier to run tests after install.
              ;; Make installed package available for running the tests
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "py.test" "-vv")))))))
+             (invoke "py.test" "-vv"))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-pytest" ,python-pytest)
@@ -1559,7 +1561,7 @@ failures.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "./testrun")))))))
+             (invoke "./testrun"))))))
     (propagated-inputs
      `(("python2-coverage" ,python2-coverage)))
     (home-page "https://liw.fi/coverage-test-runner/")
@@ -1605,9 +1607,9 @@ statements in the module it tests.")
                               (string-append (getenv "PYTHONPATH") ":" work))
                       (copy-recursively "." work)
                       (with-directory-excursion "/tmp"
-                        (zero? (system* "python" "-m" "unittest" "discover"
-                                        "-s" (string-append work "/pylint/test")
-                                        "-p" "*test_*.py")))))))))
+                        (invoke "python" "-m" "unittest" "discover"
+                                "-s" (string-append work "/pylint/test")
+                                "-p" "*test_*.py"))))))))
     (home-page "https://github.com/PyCQA/pylint")
     (synopsis "Python source code analyzer which looks for coding standard
 errors")
@@ -1840,7 +1842,8 @@ tests written in a natural language style, backed up by Python code.")
            (lambda _
              (substitute* "setup.py"
                (("'wheel'") "")                ; We don't use it.
-               (("'ordereddict==1.1'") ""))))))) ; Python >= 2.7 has it built-in.
+               (("'ordereddict==1.1'") ""))    ; Python >= 2.7 has it built-in.
+             #t)))))
     (propagated-inputs
      `(("behave" ,behave)
        ("python-requests" ,python-requests)))
@@ -2086,3 +2089,42 @@ aspects of UnitTest++.  UnitTest++ is mostly standard C++ and makes minimal use
 of advanced library and language features, which means it should be easily
 portable to just about any platform.")
     (license license:expat)))
+
+(define-public libfaketime
+  (package
+    (name "libfaketime")
+    (version "0.9.7")
+    (home-page "https://github.com/wolfcw/libfaketime")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1cin1pqwpsswcv7amiwijirvcg3x1zf2l00s1x84nxc5602fzr5c"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (setenv "CC" "gcc")
+                        (setenv "PREFIX" out)
+                        #t)))
+                  (add-before 'check 'pre-check
+                    (lambda _
+                      (substitute* "test/functests/test_exclude_mono.sh"
+                        (("/bin/bash") (which "bash")))
+                      #t)))
+       #:test-target "test"))
+    (native-inputs
+     `(("perl" ,perl)))                           ;for tests
+    (synopsis "Fake the system time for single applications")
+    (description
+     "The libfaketime library allows users to modify the system time that an
+application \"sees\".  It is meant to be loaded using the dynamic linker's
+@code{LD_PRELOAD} environment variable.  The @command{faketime} command
+provides a simple way to achieve this.")
+    (license license:gpl2)))

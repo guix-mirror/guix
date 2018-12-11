@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 208 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,20 @@
              (sha256
               (base32
                "1hmai3422iaqnp34kkzxdnywl7n7pvlxp11vrw66ybxn9wxg90c1"))
-             (patches (search-patches "diffutils-gets-undeclared.patch"))))
+             (patches (search-patches "diffutils-gets-undeclared.patch"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 (substitute* (find-files "lib" "\\.c$")
+                   (("#if defined _IO_ftrylockfile")
+                    "#if defined _IO_EOF_SEEN"))
+                 (substitute* "lib/stdio-impl.h"
+                   (("^/\\* BSD stdio derived implementations")
+                    (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
+                                   "# define _IO_IN_BACKUP 0x100\n"
+                                   "#endif\n\n"
+                                   "/* BSD stdio derived implementations")))
+                 #t))))
     (build-system gnu-build-system)
     (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "https://www.gnu.org/software/idutils/")

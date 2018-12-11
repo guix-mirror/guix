@@ -816,6 +816,12 @@ warning."
       (warning (G_ "at least ~,1h MB needed but only ~,1h MB available in ~a~%")
                (/ need 1e6) (/ free 1e6) directory))))
 
+(define (graft-derivation? drv)
+  "Return true if DRV is definitely a graft derivation, false otherwise."
+  (match (assq-ref (derivation-properties drv) 'type)
+    ('graft #t)
+    (_ #f)))
+
 (define* (show-what-to-build store drv
                              #:key dry-run? (use-substitutes? #t)
                              (mode (build-mode normal)))
@@ -865,7 +871,11 @@ report what is prerequisites are available for download."
                                           (append-map
                                            substitutable-references
                                            download))))
-                     download)))
+                     download))
+                ((graft build)
+                 (partition (compose graft-derivation?
+                                     read-derivation-from-file)
+                            build)))
     (define installed-size
       (reduce + 0 (map substitutable-nar-size download)))
 
@@ -898,7 +908,12 @@ report what is prerequisites are available for download."
                           "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
                           (length download))
                       (null? download)
-                      (map substitutable-path download))))
+                      (map substitutable-path download)))
+          (format (current-error-port)
+                  (N_ "~:[The following graft would be made:~%~{   ~a~%~}~;~]"
+                      "~:[The following grafts would be made:~%~{   ~a~%~}~;~]"
+                      (length graft))
+                  (null? graft) graft))
         (begin
           (format (current-error-port)
                   (N_ "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
@@ -918,7 +933,12 @@ report what is prerequisites are available for download."
                           "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
                           (length download))
                       (null? download)
-                      (map substitutable-path download)))))
+                      (map substitutable-path download)))
+          (format (current-error-port)
+                  (N_ "~:[The following graft will be made:~%~{   ~a~%~}~;~]"
+                      "~:[The following grafts will be made:~%~{   ~a~%~}~;~]"
+                      (length graft))
+                  (null? graft) graft)))
 
     (check-available-space installed-size)
 

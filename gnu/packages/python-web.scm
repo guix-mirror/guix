@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
@@ -60,6 +60,7 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-1))
@@ -67,22 +68,17 @@
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
-    (version "3.1.3")
+    (version "3.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
         (base32
-         "1b888lggmyf2d08rfayq9khszzc0pav1z70ssc0b4d9kkr4g1klz"))))
+         "1ykm6kdjkrg556j0zd7dx2l1rsrbh0d9g27ivr6dmaahz9pyrbsi"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))                    ;FIXME: 2 errors, 2084 passed
-    (native-inputs
-     `(("python-async-generator" ,python-async-generator)
-       ("python-pytest" ,python-pytest)
-       ("python-pytest-capturelog" ,python-pytest-capturelog)
-       ("python-pytest-mock" ,python-pytest-mock)))
+     `(#:tests? #f))                    ;missing pytest-timeout
     (propagated-inputs
      `(("python-aiodns" ,python-aiodns)
        ("python-async-timeout" ,python-async-timeout)
@@ -255,6 +251,43 @@ other HTTP libraries.")
 (define-public python2-httplib2
   (package-with-python2 python-httplib2))
 
+(define-public python-mechanicalsoup
+  (package
+    (name "python-mechanicalsoup")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "MechanicalSoup" version))
+       (sha256
+        (base32 "0k59wwk75q7nz6i6gynvzhagy02ql0bv7py3qqcwgjw7607yq4i7"))))
+    (build-system python-build-system)
+    (arguments
+     ;; TODO: Enable tests when python-flake8@3.5 hits master.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-lxml" ,python-lxml)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    ;; (native-inputs
+    ;;  ;; For tests.
+    ;;  `(("python-pytest-flake8" ,python-pytest-flake8)
+    ;;    ("python-pytest-httpbin" ,python-pytest-httpbin)
+    ;;    ("python-pytest-mock" ,python-pytest-mock)
+    ;;    ("python-pytest-runner" ,python-pytest-runner)
+    ;;    ("python-requests-mock" ,python-requests-mock)))
+    (home-page "https://mechanicalsoup.readthedocs.io/")
+    (synopsis "Python library for automating website interaction")
+    (description
+     "MechanicalSoup is a Python library for automating interaction with
+websites.  It automatically stores and sends cookies, follows redirects, and can
+follow links and submit forms.  It doesn’t do JavaScript.")
+    (license license:expat)))
+
+(define-public python2-mechanicalsoup
+  (package-with-python2 python-mechanicalsoup))
+
 (define-public python-sockjs-tornado
   (package
     (name "python-sockjs-tornado")
@@ -405,7 +438,15 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
     (arguments
      ;; The tests attempt to access external web servers, so we cannot run
      ;; them.  Furthermore, they are skipped altogether when using Python 2.
-     '(#:tests? #f))
+     '(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                    (add-before 'build 'configure-tls-backend
+                      (lambda _
+                        ;; XXX: PycURL fails to automatically determine which TLS
+                        ;; backend to use when cURL is built with --disable-static.
+                        ;; See setup.py and <https://github.com/pycurl/pycurl/pull/147>.
+                        (setenv "PYCURL_SSL_LIBRARY" "gnutls")
+                        #t)))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-bottle" ,python-bottle)))
@@ -1724,7 +1765,10 @@ library.")
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (invoke "py.test" "src/geventhttpclient/tests" "-v")
+             (invoke "py.test"  "src/geventhttpclient/tests" "-v"
+                     ;; Append the test modules to sys.path to avoid
+                     ;; namespace conflict which breaks SSL tests.
+                     "--import-mode=append")
              #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -1945,6 +1989,31 @@ transfers.")
        `(("python2-futures" ,python2-futures)
          ,@(package-native-inputs base))))))
 
+(define-public python-slimit
+  (package
+    (name "python-slimit")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "slimit" version ".zip"))
+       (sha256
+        (base32
+         "02vj2x728rs1127q2nc27frrqra4fczivnb7gch6n5lzi7pxqczl"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (propagated-inputs
+     `(("python-ply" ,python-ply)))
+    (home-page "https://slimit.readthedocs.io/")
+    (synopsis "JavaScript minifier, parser and lexer written in Python")
+    (description
+     "SlimIt is a JavaScript minifier written in Python.  It compiles
+JavaScript into more compact code so that it downloads and runs faster.
+SlimIt also provides a library that includes a JavaScript parser, lexer,
+pretty printer and a tree visitor.")
+    (license license:expat)))
+
 (define-public python-flask-restful
   (package
     (name "python-flask-restful")
@@ -2129,6 +2198,25 @@ It comes with safe defaults and easily configurable options.")
 
 (define-public python2-flask-htmlmin
   (package-with-python2 python-flask-htmlmin))
+
+(define-public python-jsmin
+  (package
+    (name "python-jsmin")
+    (version "2.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jsmin" version))
+       (sha256
+        (base32
+         "0fsmqbjvpxvff0984x7c0y8xmf49ax9mncz48b9xjx8wrnr9kpxn"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/tikitu/jsmin/")
+    (synopsis "Python JavaScript minifier")
+    (description
+     "@code{jsmin} is a JavaScript minifier, usable from both Python code and
+on the command line.")
+    (license license:expat)))
 
 (define-public python-flask-login
   (package
@@ -2590,19 +2678,25 @@ available in Django, but is a standalone package.")
 (define-public python-paste
   (package
     (name "python-paste")
-    (version "2.0.3")
+    (version "3.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Paste" version))
        (sha256
         (base32
-         "062jk0nlxf6lb2wwj6zc20rlvrwsnikpkh90y0dn8cjch93s6ii3"))
-       (patches (search-patches "python-paste-remove-website-test.patch"
-                                "python-paste-remove-timing-test.patch"))))
+         "01w26w9jyfkh0mfydhfz3dwy3pj3fw7mzvj0lna3vs8hyx1hwl0n"))
+       (patches (search-patches "python-paste-remove-timing-test.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; This test calls out to the internet.
+           (delete-file "tests/test_proxy.py") #t))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (home-page "http://pythonpaste.org")
