@@ -53,7 +53,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.2.12")
+    (version "7.3.0")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -61,7 +61,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1qbz2j9kzqxxp0mmx02zavvz20ji7izqdnri25g1mrwyhz60974q"))
+                "1db0lm84hynilrjj3k1s7skp1y2gl4ip1ihr7662i2xgannmq6bx"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -74,7 +74,7 @@
                             ;;"fileinfo/libmagic" ; This is a patched version of libmagic.
                             '("gd/libgd"
                               "mbstring/oniguruma"
-                              "pcre/pcrelib"
+                              "pcre/pcre2lib"
                               "sqlite3/libsqlite"
                               "xmlrpc/libxmlrpc"
                               "zip/lib"))
@@ -175,11 +175,6 @@
 
              (substitute* "ext/standard/tests/streams/bug60602.phpt"
                (("'ls'") (string-append "'" (which "ls") "'")))
-
-             ;; The expected output is slightly different from what is given,
-             ;; in a section that's not related to the actual test
-             (substitute* "sapi/cli/tests/upload_2G.phpt"
-               (("Test\\\\n") "Test\n\n"))
 
              ;; Drop tests that are known to fail.
              (for-each delete-file
@@ -291,7 +286,10 @@
                          "ext/ldap/tests/ldap_set_option_error.phpt"
 
                          ;; Sometimes cannot start the LDAP server.
-                         "ext/ldap/tests/bug76248.phpt"))
+                         "ext/ldap/tests/bug76248.phpt"
+
+                         ;; Bug #76909 preg_match difference between 7.3 and < 7.3
+                         "ext/pcre/tests/bug76909.phpt"))
 
              ;; Skip tests requiring network access.
              (setenv "SKIP_ONLINE_TESTS" "1")
@@ -324,7 +322,7 @@
        ("oniguruma" ,oniguruma-5)
        ("openldap" ,openldap)
        ("openssl" ,openssl)
-       ("pcre" ,pcre)
+       ("pcre" ,pcre2)
        ("postgresql" ,postgresql)
        ("readline" ,readline)
        ("sqlite" ,sqlite)
