@@ -12782,3 +12782,36 @@ interactive session association with the current contexts (project, directory,
 buffers).  While sesman can be used to manage arbitrary sessions, it primary
 targets the Emacs based IDEs (CIDER, ESS, Geiser, Robe, SLIME etc.)")
     (license license:gpl3+)))
+
+(define-public emacs-buttercup
+  (package
+    (name "emacs-buttercup")
+    (version "1.16")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jorgenschaefer/emacs-buttercup.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0dckgcyzsav6ld78bcyrrygy1cz1jvqgav6vy8f6klpmk3r8xrl1"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-bin
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "bin/buttercup"
+                           (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (home-page "https://github.com/jorgenschaefer/emacs-buttercup")
+    (synopsis "Behavior driven emacs lisp testing framework")
+    (description "Buttercup is a behavior-driven development framework for
+testing Emacs Lisp code.  It allows to group related tests so they can share
+common set-up and tear-down code, and allows the programmer to \"spy\" on
+functions to ensure they are called with the right arguments during testing.")
+    (license license:gpl3+)))
