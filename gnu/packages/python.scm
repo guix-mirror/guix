@@ -8417,31 +8417,35 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
 (define-public python-celery
   (package
     (name "python-celery")
-    (version "3.1.24")
+    (version "4.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "celery" version))
        (sha256
         (base32
-         "0yh2prhdnx2dgkb67a5drj12hh2zvzx5f611p7mqqg01ydghif4r"))))
+         "0y66rz7z8dfcgs3s0qxmdddlaq57bzbgxgfz896nbp14grkv9nkp"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     '(;; TODO The tests fail with Python 3.7
+       ;; https://github.com/celery/celery/issues/4849
+       #:tests? #f
+       #:phases
        (modify-phases %standard-phases
-         ;; These tests break with Python 3.5:
-         ;; https://github.com/celery/celery/issues/2897#issuecomment-253066295
-         (replace 'check
+         (add-after 'unpack 'patch-requirements
            (lambda _
-             (zero?
-               (system* "nosetests" "--exclude=^test_safe_to_remove.*")))))))
+             (substitute* "requirements/test.txt"
+               (("pytest>=3\\.0,<3\\.3")
+                "pytest>=3.0"))
+             #t)))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-case" ,python-case)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-pytz" ,python-pytz)
        ("python-billiard" ,python-billiard)
        ("python-kombu" ,python-kombu)))
-    (home-page "http://celeryproject.org")
+    (home-page "https://celeryproject.org")
     (synopsis "Distributed Task Queue")
     (description "Celery is an asynchronous task queue/job queue based on
 distributed message passing.  It is focused on real-time operation, but
