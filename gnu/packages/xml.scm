@@ -145,6 +145,12 @@ hierarchical form with variable field lengths.")
                                     (rename-file ar (string-append dst "/"
                                                                    (basename ar))))
                                   (find-files src "\\.a$"))
+
+                        ;; Remove reference to the static library from the .la
+                        ;; file such that Libtool does the right thing when both
+                        ;; the shared and static variants are available.
+                        (substitute* (string-append src "/libxml2.la")
+                          (("^old_library='libxml2.a'") "old_library=''"))
                         #t))))))
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
