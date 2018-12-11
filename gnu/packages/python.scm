@@ -9226,6 +9226,13 @@ graphviz.")
                            (setenv "CPATH"
                                    (string-append greenlet "/" python)))))
                       #t))
+                  (add-before 'check 'skip-timer-test
+                    (lambda _
+                      ;; XXX: Skip 'TestTimerResolution', which appears to be
+                      ;; unreliable.
+                      (substitute* "src/greentest/test__core_timer.py"
+                                   (("not greentest.RUNNING_ON_CI") "False"))
+                      #t))
                   (replace 'check
                     (lambda _
                       ;; Make sure the build directory is on PYTHONPATH.
@@ -9266,17 +9273,6 @@ to provide a high-level synchronous API on top of the libev event loop.")
                (strip-python2-variant python-gevent))))
     (package
       (inherit base)
-      (arguments
-       (substitute-keyword-arguments (package-arguments base)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-before 'check 'skip-timer-test
-               (lambda _
-                 ;; XXX: Skip 'TestTimerResolution', which appears to be
-                 ;; unreliable.
-                 (substitute* "src/greentest/test__core_timer.py"
-                   (("not greentest.RUNNING_ON_CI") "False"))
-                 #t))))))
       (native-inputs `(,@(package-native-inputs python-gevent)
                        ("python-mock" ,python2-mock))))))
 
