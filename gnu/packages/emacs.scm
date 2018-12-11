@@ -7893,7 +7893,7 @@ want to use it.")
      ;; "tracking.el" is a library extracted from Circe package.  It requires
      ;; "shorten.el".
      `(#:include '("^shorten.el$" "^tracking.el$")
-       #:tests? #f))                    ;tests require buttercup
+       ,@(package-arguments emacs-circe)))
     (home-page "https://github.com/jorgenschaefer/circe/wiki/Tracking")
     (synopsis "Buffer tracking library")
     (description "@code{tracking.el} provides a way for different modes to
