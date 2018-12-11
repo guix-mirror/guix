@@ -24,6 +24,8 @@ partprobe, and then 2) resizing the filesystem with resize2fs.\n"))
   (timezone "Etc/UTC")
   (locale "en_US.utf8")
 
+(firmware '())
+
   ;; Assuming /dev/sdX is the target hard disk, and "my-root" is
   ;; the label of the target root file system.
   (bootloader (bootloader-configuration
