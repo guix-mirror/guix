@@ -62,6 +62,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages rust)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
@@ -620,6 +621,8 @@ security standards.")
       ;; Icecat 60 checkes for rust>=1.24
      `(("rust" ,rust-1.24)
        ("cargo" ,rust-1.24 "cargo")
+       ("llvm" ,llvm-3.9.1)
+       ("clang" ,clang-3.9.1)
        ("perl" ,perl)
        ("python" ,python-2) ; Python 3 not supported
        ("python2-pysqlite" ,python2-pysqlite)
@@ -639,7 +642,7 @@ security standards.")
 
        #:imported-modules ,%cargo-build-system-modules ;for `generate-checksums'
 
-       #:configure-flags '("--enable-default-toolkit=cairo-gtk3"
+       #:configure-flags `("--enable-default-toolkit=cairo-gtk3"
 
                            "--with-distribution-id=org.gnu"
 
@@ -653,13 +656,24 @@ security standards.")
                            "--disable-eme"
                            "--disable-gconf"
 
-                           ;; Stylo requires LLVM/clang.  For now, disable it.
-                           "--disable-stylo"
-
                            ;; Building with debugging symbols takes ~5GiB, so
                            ;; disable it.
                            "--disable-debug"
                            "--disable-debug-symbols"
+
+                           ;; Clang is needed to build Stylo, Mozilla's new
+                           ;; CSS engine.  We must specify the clang paths
+                           ;; manually, because otherwise the Mozilla build
+                           ;; system looks in the directories returned by
+                           ;; llvm-config --bindir and llvm-config --libdir,
+                           ;; which return paths in the llvm package where
+                           ;; clang is not found.
+                           ,(string-append "--with-clang-path="
+                                           (assoc-ref %build-inputs "clang")
+                                           "/bin/clang")
+                           ,(string-append "--with-libclang-path="
+                                           (assoc-ref %build-inputs "clang")
+                                           "/lib")
 
                            ;; Hack to work around missing
                            ;; "unofficial" branding in icecat.
@@ -754,6 +768,20 @@ security standards.")
                     (generate-checksums dir null-file)))
                 (find-files "third_party/rust" ".cargo-checksum.json")))
              #t))
+         (add-before 'configure 'augment-CPLUS_INCLUDE_PATH
+           (lambda* (#:key build inputs #:allow-other-keys)
+             ;; Here, we add additional entries to CPLUS_INCLUDE_PATH, to work
+             ;; around a problem that otherwise occurs when attempting to
+             ;; build Stylo, which requires Rust and Clang.  Without these
+             ;; additional entries, errors occur during the build indicating
+             ;; that the <cstddef> and "c++config.h" headers cannot be found.
+             ;; Note that the 'build' keyword argument contains the GNU
+             ;; triplet, e.g. "x86_64-unknown-linux-gnu".
+             (let ((gcc (assoc-ref inputs "gcc")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-append gcc "/include/c++" ":"
+                                      gcc "/include/c++/" build ":"
+                                      (getenv "CPLUS_INCLUDE_PATH"))))))
          (replace
           'configure
           ;; configure does not work followed by both "SHELL=..." and
@@ -770,6 +798,7 @@ security standards.")
               (setenv "SHELL" bash)
               (setenv "CONFIG_SHELL" bash)
               (setenv "AUTOCONF" (which "autoconf")) ; must be autoconf-2.13
+              (setenv "CC" "gcc")  ; apparently needed when Stylo is enabled
               (mkdir "../build")
               (chdir "../build")
               (format #t "build directory: ~s~%" (getcwd))
