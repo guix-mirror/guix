@@ -3264,3 +3264,23 @@ API.  It includes bindings for Python, Ruby, and other languages.")
 helps you create the film you have always dreamed of.  Easily add sub-titles,
 transitions, and effects and then export your film to many common formats.")
     (license license:gpl3+)))
+
+(define-public dav1d
+  (package
+    (name "dav1d")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://downloads.videolan.org/pub/videolan/"
+                            "dav1d/" version "/dav1d-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0dw0liday8cbyrirhm6bgzhxg4cdy66nspfkdlq338gdsfqcvrsc"))))
+    (build-system meson-build-system)
+    (native-inputs `(("nasm" ,nasm)))
+    (home-page "https://code.videolan.org/videolan/dav1d")
+    (synopsis "AV1 decoder")
+    (description "dav1d is a new AV1 cross-platform decoder, and focused on
+speed and correctness.")
+    (license license:bsd-2)))
