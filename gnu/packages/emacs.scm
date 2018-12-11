@@ -7860,6 +7860,19 @@ value of the access token.")
         (base32
          "10gi14kwxd81blddpvqh95lgmpbfgp0m955naxix3bs3r6a75n4s"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("buttercup" "-L" ".")
+       #:phases
+       (modify-phases %standard-phases
+         ;; The HOME environment variable should be set to an existing
+         ;; directory for the tests to succeed.
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)))
     ;; In order to securely connect to an IRC server using TLS, Circe requires
     ;; the GnuTLS binary.
     (propagated-inputs
