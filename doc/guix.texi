@@ -16298,6 +16298,37 @@ Configuration snippet added as-is to the BitlBee configuration file.
 @end table
 @end deftp
 
+@subsubheading Quassel Service
+
+@cindex IRC (Internet Relay Chat)
+@url{https://quassel-irc.org/,Quassel} is a distributed IRC client,
+meaning that one or more clients can attach to and detach from the
+central core.
+
+@defvr {Scheme Variable} quassel-service-type
+This is the service type for the @url{https://quassel-irc.org/,Quassel}
+IRC backend daemon.  Its value is a @code{quassel-configuration}
+(see below).
+@end defvr
+
+@deftp {Data Type} quassel-configuration
+This is the configuration for Quassel, with the following fields:
+
+@table @asis
+@item @code{quassel} (default: @code{quassel})
+The Quassel package to use.
+
+@item @code{interface} (default: @code{"::,0.0.0.0"})
+@item @code{port} (default: @code{4242})
+Listen on the network interface(s) corresponding to the IPv4 or IPv6
+interfaces specified in the comma delimited @var{interface}, on
+@var{port}.
+
+@item @code{loglevel} (default: @code{"Info"})
+The level of logging desired.  Accepted values are Debug, Info, Warning
+and Error.
+@end table
+@end deftp
 
 @node Telephony Services
 @subsubsection Telephony Services

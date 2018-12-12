@@ -22,6 +22,8 @@
 (define-module (gnu services messaging)
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages irc)
+  #:use-module (gnu packages tls)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services configuration)
@@ -50,7 +52,10 @@
             bitlbee-configuration
             bitlbee-configuration?
             bitlbee-service
-            bitlbee-service-type))
+            bitlbee-service-type
+
+            quassel-configuration
+            quassel-service-type))
 
 ;;; Commentary:
 ;;;
@@ -895,3 +900,86 @@ configuration file."
             (bitlbee bitlbee)
             (interface interface) (port port)
             (extra-settings extra-settings))))
+
+
+;;;
+;;; Quassel.
+;;;
+
+(define-record-type* <quassel-configuration>
+  quassel-configuration make-quassel-configuration
+  quassel-configuration?
+  (quassel quassel-configuration-quassel
+           (default quassel))
+  (interface quassel-configuration-interface
+             (default "::,0.0.0.0"))
+  (port quassel-configuration-port
+        (default 4242))
+  (loglevel quassel-configuration-loglevel
+            (default "Info")))
+
+(define quassel-shepherd-service
+  (match-lambda
+    (($ <quassel-configuration> quassel interface port loglevel)
+     (with-imported-modules (source-module-closure
+                              '((gnu build shepherd)
+                                (gnu system file-systems)))
+       (list (shepherd-service
+               (provision '(quassel))
+               (requirement '(user-processes networking))
+               (modules '((gnu build shepherd)
+                          (gnu system file-systems)))
+               (start #~(make-forkexec-constructor/container
+                          (list #$(file-append quassel "/bin/quasselcore")
+                                "--configdir=/var/lib/quassel"
+                                "--logfile=/var/log/quassel/core.log"
+                                (string-append "--loglevel=" #$loglevel)
+                                (string-append "--port=" (number->string #$port))
+                                (string-append "--listen=" #$interface))
+                          #:mappings (list (file-system-mapping
+                                             (source "/var/lib/quassel")
+                                             (target source)
+                                             (writable? #t))
+                                           (file-system-mapping
+                                             (source "/var/log/quassel")
+                                             (target source)
+                                             (writable? #t)))))
+               (stop  #~(make-kill-destructor))))))))
+
+(define %quassel-account
+  (list (user-group (name "quassel") (system? #t))
+        (user-account
+          (name "quasselcore")
+          (group "quassel")
+          (system? #t)
+          (comment "Quassel daemon user")
+          (home-directory "/var/lib/quassel")
+          (shell (file-append shadow "/sbin/nologin")))))
+
+(define %quassel-activation
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/var/lib/quassel")
+      (mkdir-p "/var/log/quassel")
+      (let ((cert "/var/lib/quassel/quasselCert.pem"))
+        (unless (file-exists? cert)
+          (invoke #$(file-append openssl "/bin/openssl")
+                  "req" "-x509" "-nodes" "-batch" "-days" "680" "-newkey"
+                  "rsa" "-keyout" cert "-out" cert)))))
+
+(define quassel-service-type
+  (service-type (name 'quassel)
+                (extensions
+                  (list (service-extension shepherd-root-service-type
+                                           quassel-shepherd-service)
+                        (service-extension profile-service-type
+                                           (compose list quassel-configuration-quassel))
+                        (service-extension account-service-type
+                                           (const %quassel-account))
+                        (service-extension activation-service-type
+                                           (const %quassel-activation))))
+                (default-value (quassel-configuration))
+                (description
+                 "Run @url{https://quassel-irc.org/,quasselcore}, the backend
+for the distributed IRC client quassel, which allows you to connect from
+multiple machines simultaneously.")))

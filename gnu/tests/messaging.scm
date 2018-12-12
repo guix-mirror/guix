@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,8 @@
   #:use-module (guix store)
   #:use-module (guix modules)
   #:export (%test-prosody
-            %test-bitlbee))
+            %test-bitlbee
+            %test-quassel))
 
 (define (run-xmpp-test name xmpp-service pid-file create-account)
   "Run a test of an OS running XMPP-SERVICE, which writes its PID to PID-FILE."
@@ -239,3 +241,53 @@
    (name "bitlbee")
    (description "Connect to a BitlBee IRC server.")
    (value (run-bitlbee-test))))
+
+(define (run-quassel-test)
+  (define os
+    (marionette-operating-system
+      (simple-operating-system (service dhcp-client-service-type)
+                               (service quassel-service-type))
+     #:imported-modules (source-module-closure
+                         '((gnu services herd)))))
+
+  (define vm
+    (virtual-machine
+      (operating-system os)
+      (port-forwardings `((4242 . 4242)))))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (srfi srfi-64)
+                       (gnu build marionette))
+
+          (define marionette
+            (make-marionette (list #$vm)))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "quassel")
+
+          (test-assert "service started"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'quassel))
+             marionette))
+
+          (test-assert "certificate file"
+            (marionette-eval
+              '(file-exists? "/var/lib/quassel/quasselCert.pem")
+              marionette))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "quassel-test" test))
+
+(define %test-quassel
+  (system-test
+   (name "quassel")
+   (description "Connect to a quassel IRC server.")
+   (value (run-quassel-test))))
