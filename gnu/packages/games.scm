@@ -2306,7 +2306,7 @@ world}, @uref{http://evolonline.org, Evol Online} and
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.7.1")
+    (version "1.8.0")
     (source
      (origin (method url-fetch)
              (uri (string-append "http://binaries.openttd.org/releases/"
@@ -2323,7 +2323,7 @@ world}, @uref{http://evolonline.org, Evol Online} and
                          "02d1xmb75yv4x6rfnvxk3vvq4l3lvvwr2pfsdzn7lzalic51ziqh")))))
              (sha256
               (base32
-               "0dhv5bbbg1dmmq7fi3xss0a9jq2rqgb5sf9fsqzlsjcdm590j6b1"))
+               "0zq8xdg0k92p3s4j9x76591zaqz7k9ra69q008m209vdfffjvly2"))
              (modules '((guix build utils)))
              (snippet
               ;; The DOS port contains proprietary software.
@@ -2353,7 +2353,7 @@ world}, @uref{http://evolonline.org, Evol Online} and
                        configure-flags))))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("allegro" ,allegro-4)
+     `(("allegro" ,allegro)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("icu4c" ,icu4c)

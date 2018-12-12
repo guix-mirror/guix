@@ -429,6 +429,7 @@ using the DjVuLibre library.")
     (inputs
      `(("jbig2dec" ,jbig2dec)
        ("libjpeg" ,libjpeg)
+       ("mujs", mujs)
        ("mupdf" ,mupdf)
        ("openjpeg" ,openjpeg)
        ("openssl" ,openssl)
@@ -438,7 +439,18 @@ using the DjVuLibre library.")
      `(#:tests? #f                      ; package does not contain tests
        #:configure-flags (list (string-append "-Dplugindir="
                                               (assoc-ref %outputs "out")
-                                              "/lib/zathura"))))
+                                              "/lib/zathura")
+                               "-Dlink-external=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'add-mujs-to-dependencies
+           (lambda _
+             ;; Add mujs to the 'build_dependencies'.
+             (substitute* "meson.build"
+               (("^  libopenjp2 = dependency.*" x)
+                (string-append x "  mujs = cc.find_library('mujs')\n"))
+               (("^    libopenjp2")
+                "    libopenjp2, mujs")))))))
     (home-page "https://pwmt.org/projects/zathura-pdf-mupdf/")
     (synopsis "PDF support for zathura (mupdf backend)")
     (description "The zathura-pdf-mupdf plugin adds PDF support to zathura

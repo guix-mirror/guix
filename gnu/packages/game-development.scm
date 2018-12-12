@@ -652,6 +652,8 @@ etc.")
               (uri (string-append "https://github.com/liballeg/allegro5/releases"
                                   "/download/" version "/allegro-"
                                   version ".tar.gz"))
+              (patches (search-patches
+                        "allegro-fix-compilation-mesa-18.2.5-and-later.patch"))
               (sha256
                (base32
                 "1w9a5yqi5q03b2qvmx5ff90paz0xbr9cy7i7f0xiqa65ava66q9l"))))

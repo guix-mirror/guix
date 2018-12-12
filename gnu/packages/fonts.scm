@@ -622,7 +622,7 @@ languages, plus Greek and Cyrillic.")
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "11.0.02")
+    (version "11.0.03")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -630,16 +630,14 @@ languages, plus Greek and Cyrillic.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1di8i44c163b9l5f08jcrjfijnqz0j7p7hpfvf8dcms6cm6s4wvy"))))
+                "171zhm52c4rzpn19qcq4n9nyfbcjl38v50zslhvgpjdcmc5jvhav"))))
     (build-system gnu-build-system)
-    (outputs '("out" ; TrueType version
-               "pcf" ; PCF (bitmap) version
-               "psf" ; PSF (console) version
-               "bin" ; Utilities to manipulate '.hex' format
-               ))
+    (outputs '("out"   ; TrueType version
+               "pcf"   ; PCF (bitmap) version
+               "psf"   ; PSF (console) version
+               "bin")) ; Utilities to manipulate '.hex' format
     (arguments
-     '(#:parallel-build? #f ; parallel build fails
-       #:tests? #f          ; no check target
+     '(#:tests? #f          ; no check target
        #:phases
        (modify-phases %standard-phases
          (replace

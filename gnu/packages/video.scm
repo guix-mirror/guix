@@ -1496,7 +1496,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.4.1")
+    (version "3.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1505,7 +1505,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0axgb95lx81psgrb2a5rfdd8gl4mhsrzf41jas6l58d1xkaj54ri"))))
+                "1s7hv2a46cx2nbdykrijqfh8hdkf3zqn6q8sg3ajnnc5agaspyrg"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -3264,3 +3264,23 @@ API.  It includes bindings for Python, Ruby, and other languages.")
 helps you create the film you have always dreamed of.  Easily add sub-titles,
 transitions, and effects and then export your film to many common formats.")
     (license license:gpl3+)))
+
+(define-public dav1d
+  (package
+    (name "dav1d")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://downloads.videolan.org/pub/videolan/"
+                            "dav1d/" version "/dav1d-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0dw0liday8cbyrirhm6bgzhxg4cdy66nspfkdlq338gdsfqcvrsc"))))
+    (build-system meson-build-system)
+    (native-inputs `(("nasm" ,nasm)))
+    (home-page "https://code.videolan.org/videolan/dav1d")
+    (synopsis "AV1 decoder")
+    (description "dav1d is a new AV1 cross-platform decoder, and focused on
+speed and correctness.")
+    (license license:bsd-2)))

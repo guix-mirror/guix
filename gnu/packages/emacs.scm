@@ -4807,7 +4807,7 @@ indentation (space indentation only).
 (define-public emacs-elpy
   (package
     (name "emacs-elpy")
-    (version "1.26.0")
+    (version "1.27.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4816,7 +4816,7 @@ indentation (space indentation only).
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0wynzp5xmrgiggmam82n6lfaiqmfl4n3ccpsgnh86r6pbsmssxjk"))))
+                "1b76y0kzk7s9ya8k9bpsgn31i9l0rxs4iz6lg7snhjgh03k0ssgv"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons* "^elpy/[^/]+\\.py$" "^snippets\\/" %default-include)
@@ -5214,26 +5214,28 @@ target will call @code{compile} on it.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "0.15.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/clojure-emacs/cider/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1j5hlmi14ypszv1f9nvq0jjlz7i742flg0ny3055l7i4x089xx6g"))))
+    (version "0.18.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clojure-emacs/cider.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1m9kc88vga3q5d731qnpngnsa0n57pf21k3hll20rw8rggrx4vdn"))))
     (build-system emacs-build-system)
     (arguments
      '(#:exclude                        ; Don't exclude 'cider-test.el'.
        '("^\\.dir-locals\\.el$" "^test/")))
     (propagated-inputs
      `(("emacs-clojure-mode" ,emacs-clojure-mode)
+       ("emacs-sesman" ,emacs-sesman)
        ("emacs-spinner" ,emacs-spinner)
        ("emacs-pkg-info" ,emacs-pkg-info)
        ("emacs-queue" ,emacs-queue)))
-    (home-page "https://cider.readthedocs.org/")
+    (home-page "https://cider.readthedocs.io/")
     (synopsis "Clojure development environment for Emacs")
     (description
      "CIDER (Clojure Interactive Development Environment that Rocks) aims to
@@ -12737,3 +12739,29 @@ Emacs.")
 rooms.  It also provides an API which allows Emacs to seamlessly create
 RPC channels with users and other software.")
       (license license:gpl3+))))
+
+(define-public emacs-sesman
+  (package
+    (name "emacs-sesman")
+    (version "0.3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vspinu/sesman.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0r32f8ma9ddczxrrdz0nadp14j3zmk10q1ch02gb82synkx3xdra"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")))
+    (home-page "https://github.com/vspinu/sesman")
+    (synopsis "Session manager for Emacs based IDEs")
+    (description "Sesman provides facilities for session management and
+interactive session association with the current contexts (project, directory,
+buffers).  While sesman can be used to manage arbitrary sessions, it primary
+targets the Emacs based IDEs (CIDER, ESS, Geiser, Robe, SLIME etc.)")
+    (license license:gpl3+)))

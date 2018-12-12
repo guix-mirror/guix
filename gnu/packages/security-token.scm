@@ -51,6 +51,7 @@
   #:use-module (gnu packages tex)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
 
 (define-public ccid
@@ -306,4 +307,37 @@ and other operations.  It includes a library and a command-line tool.")
     ;; The file ykcs11/pkcs11.h also declares an additional, very short free
     ;; license for that one file.  Please see it for details.  The vast
     ;; majority of files are licensed under bsd-2.
+    (license license:bsd-2)))
+
+(define-public yubikey-personalization
+  (package
+    (name "yubikey-personalization")
+    (version "1.19.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://developers.yubico.com/" name
+                    "/Releases/ykpers-" version ".tar.gz"))
+              (sha256
+               (base32
+                "104lc0nnqdr365fa7c4vrq67rxp1dp8idndsh9jlhnj9dnhszj1b"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list (string-append "--with-udevrulesdir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/udev/rules.d"))))
+    (inputs
+     `(("json-c" ,json-c)
+       ("libusb" ,libusb)
+       ;; The library "libyubikey" is also known as "yubico-c".
+       ("libyubikey" ,libyubikey)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("eudev" ,eudev)))
+    (home-page "https://developers.yubico.com/yubikey-personalization/")
+    (synopsis "Library and tools to personalize YubiKeys")
+    (description
+     "The YubiKey Personalization package contains a C library and command
+line tools for personalizing YubiKeys.  You can use these to set an AES key,
+retrieve a YubiKey's serial number, and so forth.")
     (license license:bsd-2)))

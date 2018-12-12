@@ -1820,6 +1820,8 @@ new Date();"))
               (sha256
                (base32
                 "0zywq2203b4hx4jms9vbwvjcj1d3k2v3qpx4s33729fkpmid97r4"))
+              (patches (search-patches
+                        "openjdk-10-idlj-reproducibility.patch"))
               (modules '((guix build utils)))
               (snippet
                 `(begin

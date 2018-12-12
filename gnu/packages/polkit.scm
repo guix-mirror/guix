@@ -49,6 +49,7 @@
              (uri (string-append
                    "https://www.freedesktop.org/software/polkit/releases/"
                    name "-" version ".tar.gz"))
+             (patches (search-patches "polkit-CVE-2018-19788.patch"))
              (sha256
               (base32
                "0c91y61y4gy6p91cwbzg32dhavw4b7fflg370rimqhdxpzdfr1rg"))

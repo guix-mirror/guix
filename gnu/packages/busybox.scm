@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl))
 
@@ -102,3 +104,41 @@ any small or embedded system.")
     (home-page "https://www.busybox.net")
     ;; Some files are gplv2+
     (license gpl2)))
+
+(define-public toybox
+  (package
+    (name "toybox")
+    (version "0.7.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://landley.net/toybox/downloads/toybox-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1mlqv5hsvy8ii6m698hq6rc316klwv44jlr034knwg6bk1lf2qj9"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-environment-variables
+           (lambda _
+             (setenv "CC" (which "gcc"))
+             (setenv "HOSTCC" (which "gcc"))
+             #t))
+         (replace 'configure
+           (lambda _ (invoke "make" "defconfig")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "make"
+                       (string-append "PREFIX=" out)
+                       "install")))))
+       #:test-target "tests"))
+    (native-inputs `(("bc" ,bc)))
+    (synopsis "Many common UNIX utilities in a single executable")
+    (description "ToyBox combines tiny versions of many common UNIX utilities
+into a single small executable.  It provides a fairly complete environment for
+any small or embedded system.")
+    (home-page "https://landley.net/toybox/")
+    (license bsd-2)))

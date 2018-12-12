@@ -28,7 +28,7 @@
 (define-public mtools
   (package
     (name "mtools")
-    (version "4.0.21")
+    (version "4.0.23")
     (source
      (origin
       (method url-fetch)
@@ -36,7 +36,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1kybydx74qgbwpnjvjn49msf8zipchl43d4cq8zzwcyvfkdzw7h2"))))
+        "1qwfxzr964fasxlzhllahk8mzh7c82s808wvly95dsqsflkdp27i"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/mtools/")
     (synopsis "Access MS-DOS disks without mounting")

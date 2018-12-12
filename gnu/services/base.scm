@@ -1604,7 +1604,15 @@ failed to register public key '~a': ~a~%" key status)))))))
                             '())
                      #$@(if tmpdir
                             (list (string-append "TMPDIR=" tmpdir))
-                            '()))
+                            '())
+
+                     ;; Make sure we run in a UTF-8 locale so that 'guix
+                     ;; offload' correctly restores nars that contain UTF-8
+                     ;; file names such as 'nss-certs'.  See
+                     ;; <https://bugs.gnu.org/32942>.
+                     (string-append "GUIX_LOCPATH="
+                                    #$glibc-utf8-locales "/lib/locale")
+                     "LC_ALL=en_US.utf8")
 
                #:log-file #$log-file))
            (stop #~(make-kill-destructor))))))

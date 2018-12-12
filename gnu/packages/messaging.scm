@@ -93,6 +93,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -588,6 +589,12 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
      `(#:test-target "test_nogui"
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'add-plugin-dirs
+           (lambda _
+             (substitute* "gajim/common/configpaths.py"
+               (("_paths\\['PLUGINS_USER'\\]")
+                "_paths['PLUGINS_USER'],os.getenv('GAJIM_PLUGIN_PATH')"))
+             #t))
          (add-after 'install 'wrap-gi-typelib-path
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -625,6 +632,18 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                  (,(string-append (assoc-ref inputs "gtk+")
                                   "/share/glib-2.0/schemas"))))
              #t)))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GAJIM_PLUGIN_PATH")
+            (separator #f)              ;single entry
+            (files '("share/gajim/plugins")))
+           ;; Gajim needs to use the propagated inputs of its plugins.
+           (search-path-specification
+            (variable "PYTHONPATH")
+            (files (list (string-append
+                          "lib/python"
+                          (version-major+minor (package-version python))
+                          "/site-packages"))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("python-docutils" ,python-docutils)
@@ -636,7 +655,6 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
        ("gtkspell3" ,gtkspell3)
        ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("libsecret" ,libsecret)
-       ("python-axolotl" ,python-axolotl)
        ("python-cssutils" ,python-cssutils)
        ("python-dbus" ,python-dbus)
        ("python-gnupg" ,python-gnupg)
@@ -656,6 +674,41 @@ for group chat (with Multi-User Chat protocol), invitation, chat to group chat
 transformation; audio and video conferences; file transfer; TLS, GPG and
 end-to-end encryption support; XML console.")
     (license license:gpl3)))
+
+(define-public gajim-omemo
+  (package
+    (name "gajim-omemo")
+    (version "2.6.23")
+    (source (origin
+              (method url-fetch/zipbomb)
+              (uri (string-append
+                    "https://ftp.gajim.org/plugins_releases/omemo_"
+                    version ".zip"))
+              (sha256
+               (base32
+                "134zbscbcnhx4smad0ryvx3ngkqlsspafqf0kk8y2d3vcd9bf3pa"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share (in-vicinity out "share/gajim/plugins"))
+                (source (assoc-ref %build-inputs "source")))
+           (mkdir-p share)
+           (copy-recursively source share)
+           #t))))
+    (propagated-inputs
+     `(("python-axolotl" ,python-axolotl)))
+    (home-page
+     "https://dev.gajim.org/gajim/gajim-plugins/wikis/OmemoGajimPlugin")
+    (synopsis "Gajim OMEMO plugin")
+    (description
+     "This package provides the Gajim OMEMO plugin.  OMEMO is an XMPP
+Extension Protocol (XEP) for secure multi-client end-to-end encryption based
+on Axolotl and PEP.")
+    (license license:gpl3+)))
 
 (define-public dino
   ;; The only release tarball is for version 0.0, but it is very old and fails

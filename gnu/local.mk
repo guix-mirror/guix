@@ -146,6 +146,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/documentation.scm		\
   %D%/packages/dunst.scm			\
   %D%/packages/dvtm.scm				\
+  %D%/packages/easyrpg.scm			\
   %D%/packages/ebook.scm			\
   %D%/packages/ed.scm				\
   %D%/packages/education.scm			\
@@ -606,7 +607,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/blast+-fix-makefile.patch		\
   %D%/packages/patches/blender-newer-ffmpeg.patch		\
   %D%/packages/patches/boost-fix-icu-build.patch		\
-  %D%/packages/patches/borg-respect-storage-quota.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/calibre-use-packaged-feedparser.patch	\
@@ -1007,6 +1007,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/openbabel-fix-crash-on-nwchem-output.patch	\
   %D%/packages/patches/opencascade-oce-glibc-2.26.patch		\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
+  %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
   %D%/packages/patches/openldap-CVE-2017-9287.patch		\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/opensmtpd-fix-crash.patch		\
@@ -1051,6 +1052,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/plink-endian-detection.patch		\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\
   %D%/packages/patches/podofo-cmake-3.12.patch			\
+  %D%/packages/patches/polkit-CVE-2018-19788.patch		\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
   %D%/packages/patches/portmidi-modular-build.patch		\
   %D%/packages/patches/postgresql-disable-resolve_symlinks.patch	\

@@ -3037,6 +3037,39 @@ the new and upgraded packages that are listed, some like @code{my-gimp} and
 @code{my-emacs-with-cool-features} might come from
 @code{my-personal-packages}, while others come from the Guix default channel.
 
+@cindex dependencies, channels
+@cindex meta-data, channels
+@subsection Declaring Channel Dependencies
+
+Channel authors may decide to augment a package collection provided by other
+channels.  They can declare their channel to be dependent on other channels in
+a meta-data file @file{.guix-channel}, which is to be placed in the root of
+the channel repository.
+
+The meta-data file should contain a simple S-expression like this:
+
+@lisp
+(channel
+ (version 0)
+ (dependencies
+  (channel
+   (name 'some-collection)
+   (url "https://example.org/first-collection.git"))
+  (channel
+   (name 'some-other-collection)
+   (url "https://example.org/second-collection.git")
+   (branch "testing"))))
+@end lisp
+
+In the above example this channel is declared to depend on two other channels,
+which will both be fetched automatically.  The modules provided by the channel
+will be compiled in an environment where the modules of all these declared
+channels are available.
+
+For the sake of reliability and maintainability, you should avoid dependencies
+on channels that you don't control, and you should aim to keep the number of
+dependencies to a minimum.
+
 @subsection Replicating Guix
 
 @cindex pinning, channels
