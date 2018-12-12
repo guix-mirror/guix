@@ -461,7 +461,7 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (version "4.0.9")
+   (version "4.0.10")
    (source
      (origin
        (method url-fetch)
@@ -469,11 +469,7 @@ extracting icontainer icon files.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1kfg4q01r4mqn7dj63ifhi6pmqzbf4xax6ni6kkk81ri5kndwyvf"))
-       (patches (search-patches "libtiff-CVE-2017-9935.patch"
-                                "libtiff-CVE-2017-18013.patch"
-                                "libtiff-CVE-2018-8905.patch"
-                                "libtiff-CVE-2018-10963.patch"))))
+         "1r4np635gr6zlc0bic38dzvxia6iqzcrary4n1ylarzpr8fd2lic"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
