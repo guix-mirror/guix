@@ -584,9 +584,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 
          (setvbuf (current-output-port) _IOLBF)
          (let* ((out        (assoc-ref %outputs "out"))
+                (bindir     (string-append out "/bin"))
                 (libdir     (string-append out "/lib"))
                 (mes        (assoc-ref %build-inputs "mes")))
 
+           (copy-recursively (string-append mes "/bin") bindir)
            (copy-recursively (string-append mes "/lib") libdir)
            (copy-recursively (string-append mes "/share/mes/lib") libdir)
            (for-each remove-store-references
