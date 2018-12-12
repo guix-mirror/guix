@@ -76,7 +76,9 @@
   #:use-module (gnu packages cups)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages xdisorg))
+  #:use-module (gnu packages xdisorg)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public atk
   (package
@@ -471,12 +473,15 @@ highlighting and other features typical of a source code editor.")
              ;; ERROR:pixbuf-jpeg.c:74:test_type9_rotation_exif_tag:
              ;; assertion failed (error == NULL): Data differ
              ;; (gdk-pixbuf-error-quark, 0)
-             ((".*'pixbuf-jpeg'.*") "")
-             ;; Extend the timeout of the test suite.
-             ;; TODO: Check upstreaming effort:
-             ;; https://gitlab.gnome.org/GNOME/gdk-pixbuf/merge_requests/21
-             (("300") "1800"))
+             ((".*'pixbuf-jpeg'.*") ""))
            #t))
+        ;; The slow tests take longer than the specified timeout.
+        ,@(if (any (cute string=? <> (%current-system))
+                   '("armhf-linux" "aarch64-linux"))
+            '((replace 'check
+              (lambda _
+                (invoke "meson" "test" "--timeout-multiplier" "5"))))
+            '())
         (add-before 'configure 'aid-install-script
           (lambda* (#:key outputs #:allow-other-keys)
             ;; "build-aux/post-install.sh" invokes `gdk-pixbuf-query-loaders`
