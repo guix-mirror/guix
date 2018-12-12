@@ -221,7 +221,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "18.2.6")
+    (version "18.3.1")
     (source
       (origin
         (method url-fetch)
@@ -233,7 +233,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "04nwxykmc80gicmal0zkk8is34rmbqawmfckirqhrps9h97zmfly"))
+          "0qyw9dj2p9n91qzc4ylck2an7ibssjvzi2bjcpv2ajk851yq47sv"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system gnu-build-system)
@@ -265,8 +265,8 @@ also known as DXTn or DXTC) for Mesa.")
         ("wayland-protocols" ,wayland-protocols)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
-        ("python" ,python-2)
-        ("python2-mako" ,python2-mako)
+        ("python" ,python)
+        ("python-mako" ,python-mako)
         ("which" ,(@ (gnu packages base) which))))
     (arguments
      `(#:configure-flags
