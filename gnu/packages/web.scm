@@ -520,6 +520,8 @@ libraries for working with JNLP applets.")
               (base32
                "1lp1mv8pjp5yziws66cy0dhpcam4bbjqhffk13v4vgdybp674pb4"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (home-page "http://www.digip.org/jansson/")
     (synopsis "JSON C library")
     (description
