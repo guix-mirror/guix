@@ -456,7 +456,7 @@ highlighting and other features typical of a source code editor.")
               "0ixfmnxjylx06mjaw116apymwi1a8rnkmkbbvqaxxg2pfwy9fl6x"))))
    (build-system meson-build-system)
    (arguments
-    '(#:configure-flags '("-Dinstalled-tests=false")
+    `(#:configure-flags '("-Dinstalled_tests=false")
       #:phases
       (modify-phases %standard-phases
         (add-after
