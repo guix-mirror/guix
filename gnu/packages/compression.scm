@@ -425,6 +425,23 @@ compressed with pbzip2 can be decompressed with bzip2).")
              (base32
               "0ibi2zsfaz6l756spjwc5rayf4ckgc9hwmy8qinppcyk4svz64mm"))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'move-static-lib
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out    (assoc-ref outputs "out"))
+                  (static (assoc-ref outputs "static")))
+              (mkdir-p (string-append static "/lib"))
+              (rename-file (string-append out "/lib/liblzma.a")
+                           (string-append static "/lib/liblzma.a"))
+              ;; Remove reference to the static library from the .la file
+              ;; so Libtool does the right thing when both the shared and
+              ;; static library is available.
+              (substitute* (string-append out "/lib/liblzma.la")
+                (("^old_library='liblzma.a'") "old_library=''"))
+              #t))))))
+   (outputs '("out" "static"))
    (synopsis "General-purpose data compression")
    (description
     "XZ Utils is free general-purpose data compression software with high

@@ -159,6 +159,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                "LDFLAGS = -static"))
                             #t))))))))
         (xz (package (inherit xz)
+              (outputs '("out"))
               (arguments
                `(#:strip-flags '("--strip-all")
                  #:phases (modify-phases %standard-phases
