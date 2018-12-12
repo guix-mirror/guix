@@ -97,7 +97,7 @@ chk_require()
 
     gpg --list-keys ${OPENPGP_SIGNING_KEY_ID} >/dev/null 2>&1 || (
         _err "${ERR}Missing OpenPGP public key.  Fetch it with this command:"
-        echo "  gpg --keyserver pgp.mit.edu --recv-keys ${OPENPGP_SIGNING_KEY_ID}"
+        echo "  gpg --keyserver pool.sks-keyservers.net --recv-keys ${OPENPGP_SIGNING_KEY_ID}"
         exit 1
     )
 }
