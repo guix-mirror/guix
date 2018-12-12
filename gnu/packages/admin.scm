@@ -2953,3 +2953,36 @@ security defenses and provide tips for further system hardening.  It will also
 scan for general system information, vulnerable software packages, and
 possible configuration issues.")
     (license license:gpl3+)))
+
+(define-public ngrep
+  (package
+    (name "ngrep")
+    (version "1.47")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jpr5/ngrep/")
+             (commit (string-append "V" (string-replace-substring version "." "_")))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1x2fyd7wdqlj1r76ilal06cl2wmbz0ws6i3ys204sbjh1cj6dcl7"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libpcap" ,libpcap)))
+    (arguments
+     `(#:tests? #f ;; No tests.
+       #:configure-flags (list (string-append "--with-pcap-includes="
+                                              (assoc-ref %build-inputs "libpcap")
+                                              "/include/pcap"))))
+    (home-page "https://github.com/jpr5/ngrep/")
+    (synopsis "Grep-like utility to search for network packets on an interface")
+    (description "@command{ngrep} is like GNU grep applied to the network
+layer.  It's a PCAP-based tool that allows you to specify an extended regular
+or hexadecimal expression to match against data payloads of packets.  It
+understands many kinds of protocols, including IPv4/6, TCP, UDP, ICMPv4/6,
+IGMP and Raw, across a wide variety of interface types, and understands BPF
+filter logic in the same fashion as more common packet sniffing tools, such as
+tcpdump and snoop.")
+    (license license:bsd-3)))
