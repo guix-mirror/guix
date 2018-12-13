@@ -2612,7 +2612,7 @@ thanks to the use of namespaces.")
 (define-public singularity
   (package
     (name "singularity")
-    (version "2.5.1")
+    (version "2.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/singularityware/singularity/"
@@ -2620,7 +2620,7 @@ thanks to the use of namespaces.")
                                   "/singularity-" version ".tar.gz"))
               (sha256
                (base32
-                "0f28dgf2qcy8ljjfix7p9q36q12j7rxyicfzzi4n0fl8zr8ab88g"))))
+                "1whx0hqqi1326scgdxxxa1d94vn95mnq0drid6s8wdp84ni4d3gk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
