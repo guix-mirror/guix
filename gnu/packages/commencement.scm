@@ -81,7 +81,7 @@
 ;;;
 ;;; Code:
 
-(define %fake-bootstrap? #t)  ; cheat using Guile (instead of Mes) in MesCC
+(define %fake-bootstrap? #f)  ; cheat using Guile (instead of Mes) in MesCC
                               ; for speed-up?
 
 (define mes-boot0
