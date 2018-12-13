@@ -697,16 +697,14 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
         ,(bootstrap-origin
           (origin
             (method url-fetch)
-            (uri (map
-                  (cute string-append <>
-                        "/i686-linux/20181020/"
-                        "mes-minimal-stripped-0.18-0.08f04f5-i686-linux.tar.xz")
-                 %bootstrap-base-urls))
+            (uri (string-append
+                  "http://lilypond.org/janneke/guix/20181214/"
+                  "mes-minimal-stripped-0.18-1.a155a0a-i686-linux.tar.xz"))
             (sha256
              (match (%current-system)
                ((or "i686-linux" "x86_64-linux")
                 (base32
-                 "0qwpby91hp6afmg5ibdrrk3fw85zxdazfk7rhrdsihsfzqwmfhfx")))))))))
+                 "06nzpryzh1blldlfdg256176cs3g1qyn3qs9yabzlbx7ps5pq3h3")))))))))
     (synopsis "Bootstrap binaries of Mes")
     (description synopsis)
     (home-page #f)
