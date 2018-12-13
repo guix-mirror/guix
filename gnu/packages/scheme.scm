@@ -80,7 +80,7 @@
 (define-public mit-scheme
   (package
     (name "mit-scheme")
-    (version "9.2")
+    (version "10.1.3")
     (source #f)                                   ; see below
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
@@ -100,10 +100,7 @@
              ;; Delete these dangling symlinks since they break
              ;; `patch-shebangs'.
              (for-each delete-file
-                       (append '("src/lib/shim-config.scm")
-                               (find-files "src/lib/lib" "\\.so$")
-                               (find-files "src/lib" "^liarc-")
-                               (find-files "src/compiler" "^make\\.")))
+                       (find-files "src/compiler" "^make\\."))
              (chdir "src")
              #t))
          ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
@@ -128,9 +125,6 @@
                  (invoke bin/sh "./configure"
                          (string-append "--prefix=" out)
                          (string-append "SHELL=" bin/sh))
-                 (substitute* '("Makefile" "make-common")
-                   (("/lib/mit-scheme/doc")
-                    (string-append "/share/doc/" ,name "-" ,version)))
                  #t))))
          (add-after 'build 'build-doc
            (lambda* _
@@ -147,11 +141,11 @@
                (with-directory-excursion "../doc"
                  (for-each (lambda (target)
                              (invoke "make" target))
-                           '("install-config" "install-info-gz" "install-man"
+                           '("install-info-gz" "install-man"
                              "install-html" "install-pdf")))
                (mkdir-p new-doc/mit-scheme-dir)
                (copy-recursively
-                (string-append old-doc-dir "/" ,name "-" ,version)
+                (string-append old-doc-dir "/" ,name)
                 new-doc/mit-scheme-dir)
                (delete-file-recursively old-doc-dir)
                #t))))))
@@ -177,24 +171,21 @@
                                 ("x86_64-linux"
                                  (string-append version "-x86-64"))
                                 ("i686-linux"
-                                 (string-append version "-i386"))
-                                (_
-                                 (string-append "c-" version)))
+                                 (string-append version "-i386")))
                               ".tar.gz"))
           (sha256
            (match (%current-system)
              ("x86_64-linux"
               (base32
-               "1skzxxhr0iq96bf0j5m7mvf3i4sppfyfa6gpqn34mwgkw1fx8274"))
+               "03m7cc035w3avs91j2pcz9f15ssgvgp3rm045d1vbydqrkzfyw8k"))
              ("i686-linux"
               (base32
-               "1fmlpnhf5a75db93phajh4ysbdgrgl72v45lk3kznriprl0a7jc6"))
-             (_
-              (base32
-               "0w5ib5vsidihb4hb6fma3sp596ykr8izagm57axvgd6lqzwicsjg"))))))))
+               "05sjyz90xxfnmi87qv8x0yx0fcallnzl1dciygdafp317pn489is"))))))))
 
     ;; Fails to build on MIPS, see <http://bugs.gnu.org/18221>.
-    (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
+    ;; Also, the portable C version of MIT/GNU Scheme did not work in time for
+    ;; release in version 10.1.
+    (supported-systems '("x86_64-linux" "i686-linux"))
 
     (home-page "https://www.gnu.org/software/mit-scheme/")
     (synopsis "A Scheme implementation with integrated editor and debugger")
