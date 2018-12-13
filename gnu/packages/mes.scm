@@ -61,8 +61,8 @@ extensive examples, including parsers for the Javascript and C99 languages.")
 (define-public mes
   (let ((triplet "i686-unknown-linux-gnu")
         (version "0.18")
-        (revision "0")
-        (commit "08f04f559670d9e8f57eb03bb9b13f4d0b81cedf"))
+        (revision "1")
+        (commit "a155a0a9a2d941b15c1b98e5cce787de40a8dacd"))
     (package
       (name "mes")
       (version (string-append version "-" revision "." (string-take commit 7)))
@@ -74,7 +74,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                       ".tar.gz"))
                 (sha256
                  (base32
-                  "1b7wz9k38pfrz707pd4p8s54q903jr167q73ya7qkna89sxj3wna"))))
+                  "14siwfwg0zlf1pa4ah8s08gsxqcazhydbwa9qvybb0knxs27aicn"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
