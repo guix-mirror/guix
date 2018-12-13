@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -210,6 +210,46 @@ a file for NARINFO."
                                                 "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
            (lambda ()
              (guix-substitute "--query"))))))))
+
+(test-equal "query narinfo with signature over nothing"
+  ;; The signature is computed over the empty string, not over the important
+  ;; parts, so the narinfo must be ignored.
+  ""
+
+  (with-narinfo (string-append "Signature: " (signature-field "") "\n"
+                                %narinfo "\n")
+    (string-trim-both
+     (with-output-to-string
+       (lambda ()
+         (with-input-from-string (string-append "have " (%store-prefix)
+                                                "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+           (lambda ()
+             (guix-substitute "--query"))))))))
+
+(test-equal "query narinfo with signature over irrelevant bits"
+  ;; The signature is valid but it does not cover the
+  ;; StorePath/NarHash/References tuple and is thus irrelevant; the narinfo
+  ;; must be ignored.
+  ""
+
+  (let ((prefix (string-append "StorePath: " (%store-prefix)
+                               "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo
+URL: example.nar
+Compression: none\n")))
+    (with-narinfo (string-append prefix
+                                 "Signature: " (signature-field prefix) "
+NarHash: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+NarSize: 42
+References: bar baz
+Deriver: " (%store-prefix) "/foo.drv
+System: mips64el-linux\n")
+      (string-trim-both
+       (with-output-to-string
+         (lambda ()
+           (with-input-from-string (string-append "have " (%store-prefix)
+                                                  "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+             (lambda ()
+               (guix-substitute "--query")))))))))
 
 (test-equal "query narinfo signed with authorized key"
   (string-append (%store-prefix) "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
