@@ -7,7 +7,7 @@
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -2795,12 +2795,12 @@ to BMP, JPEG or PNG image formats.")
              ;; of Debian's Maxima package.
              ;; If Maxima can successfully run this, the binary to be installed
              ;; should be fine.
-             (zero?
-              (system
-               (string-append "./maxima-local "
-                              "--lisp=gcl "
-                              "--batch-string=\"run_testsuite();\" "
-                              "| grep -q \"No unexpected errors found\"")))))
+             (invoke "sh" "-c"
+                     (string-append
+                      "./maxima-local "
+                      "--lisp=gcl "
+                      "--batch-string=\"run_testsuite();\" "
+                      "| grep -q \"No unexpected errors found\""))))
          ;; Make sure the doc and emacs files are found in the
          ;; standard location.  Also configure maxima to find gnuplot
          ;; without having it on the PATH.
