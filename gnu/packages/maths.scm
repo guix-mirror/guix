@@ -3707,7 +3707,13 @@ set.")
      `(("doc++" ,doc++)
        ("netpbm" ,netpbm)
        ("perl" ,perl)                   ;needed to run 'ppmquant' during tests
-       ("texlive" ,texlive)             ;full package required for fonts
+       ("texlive" ,(texlive-union (list texlive-generic-xypic
+                                        texlive-fonts-xypic
+                                        texlive-latex-hyperref
+                                        texlive-latex-oberdiek
+                                        texlive-generic-ifxetex
+                                        texlive-latex-url
+                                        texlive-bibtex)))
        ("ghostscript" ,ghostscript)))
     (inputs
      `(("blas" ,openblas)
@@ -3724,6 +3730,12 @@ set.")
                            "--with-blas")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'set-HOME
+           (lambda _
+             ;; FIXME: texlive-union does not find the built
+             ;; metafonts, so it tries to generate them in HOME.
+             (setenv "HOME" "/tmp")
+             #t))
          (add-before 'configure 'chdir-src
            (lambda _ (chdir "src")))
          (replace 'configure
@@ -3738,7 +3750,7 @@ set.")
                                           configure-flags)))))))
          (add-after 'build 'build-docs
            (lambda _
-             (zero? (system* "make" "-Cdocs" "pdf" "html"))))
+             (invoke "make" "-Cdocs" "pdf" "html")))
          (replace 'check
            (lambda _
              (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/hypre/lib"))
