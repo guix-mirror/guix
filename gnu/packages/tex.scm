@@ -4011,10 +4011,27 @@ e-TeX.")
        (begin
          (use-modules (guix build utils))
          (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/generic/pdftex")))
+                                      "/share/texmf-dist/tex/generic/pdftex"))
+               (target-map (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/fonts/map/pdftex")))
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
+           (mkdir-p target-map)
+           (copy-recursively (assoc-ref %build-inputs "pdftex-map") target-map)
            #t))))
+    (native-inputs
+     `(("pdftex-map"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/map/pdftex"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-map-" version "-checkout"))
+           (sha256
+            (base32
+             "197z9kx3bpnz58f5xrn5szyvmb3fxqq12y5sc4dw4jnm3xll8ji2"))))))
     (home-page "https://www.ctan.org/pkg/pdftex")
     (synopsis "TeX extension for direct creation of PDF")
     (description
