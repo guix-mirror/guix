@@ -171,7 +171,9 @@
                                 ("x86_64-linux"
                                  (string-append version "-x86-64"))
                                 ("i686-linux"
-                                 (string-append version "-i386")))
+                                 (string-append version "-i386"))
+                                (_
+                                 (string-append "c-" version)))
                               ".tar.gz"))
           (sha256
            (match (%current-system)
