@@ -345,7 +345,7 @@ programming in Scheme.")
       (native-inputs
        `(("chez-scheme" ,chez-scheme)
          ("chez-web" ,chez-web)
-         ("texlive" ,texlive)))
+         ("texlive" ,(texlive-union (list texlive-generic-pdftex)))))
       (arguments
        `(#:tests? #f              ; no tests
          #:phases
@@ -361,11 +361,16 @@ programming in Scheme.")
                     (string-append var chez-h)))
                  #t)))
            (add-before 'build 'tangle
-             (lambda _
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "TEXINPUTS"
+                       (string-append
+                        (getcwd) ":"
+                        (assoc-ref inputs "chez-web") "/share/texmf-local/tex/generic:"
+                        ":"))
                ;; just using "make" tries to build the .c files before
                ;; they are created.
-               (and (zero? (system* "make" "sockets"))
-                    (zero? (system* "make")))))
+               (and (invoke "make" "sockets")
+                    (invoke "make"))))
            (replace 'build
              (lambda* (#:key outputs inputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
