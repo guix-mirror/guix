@@ -81,73 +81,19 @@
 ;;;
 ;;; Code:
 
-(define %fake-bootstrap? #f)  ; cheat using Guile (instead of Mes) in MesCC
-                              ; for speed-up?
-
-(define mes-boot0
-  (let ((version "0.18")
-        (revision "0")
-        (commit #f))
-    (package
-      (inherit mes)
-      (name "mes-boot0")
-      (version (if commit (string-append version "-" revision "." (string-take commit 7))
-                   version))
-      (source (if commit
-                  (origin
-                    (method url-fetch)
-                    (uri (string-append "https://gitlab.com/janneke/mes"
-                                        "/-/archive/" commit
-                                        "/mes-" commit ".tar.gz"))
-                    (sha256
-                     (base32
-                      "1whbzahv16bwhavr2azqli0dcbk29p9rsqfbjl69la135z8vgdhx")))
-                  (package-source mes)))
-      (native-inputs '())
-      (propagated-inputs '()))))
-
-(define nyacc-boot
-  (let ((version "0.86.0")
-        (revision "0")
-        (commit #f))
-    (package
-      (inherit nyacc)
-      (name "nyacc-boot")
-      (version
-       (if commit
-           (string-append version "-" revision "." (string-take commit 7))
-           version))
-      (source
-       (if commit
-           (origin
-             (method url-fetch)
-             (uri (string-append "https://gitlab.com/janneke/nyacc"
-                                 "/-/archive/" commit
-                                 "/nyacc-" commit ".tar.gz"))
-             (sha256
-              (base32
-               "0dlcqmchhl57nh7f0v6qb1kkbi7zbs3b185hcqv57fhb60b7rgcq")))
-           (package-source nyacc))))))
-
 (define mes-boot
   (package-with-bootstrap-guile
    (package
      (inherit mes)
-     (version (package-version mes-boot0))
-     (source (package-source mes-boot0))
      (name "mes-boot")
      (inputs '())
      (propagated-inputs '())
      (native-inputs
       `(("mescc-tools" ,%bootstrap-mescc-tools)
-        ("nyacc-source" ,(package-source nyacc-boot))
+        ("nyacc-source" ,(package-source nyacc))
 
         ("coreutils" , %bootstrap-coreutils&co)
-        ("bootstrap-mes" ,%bootstrap-mes)
-        ,@(if %fake-bootstrap?  ; cheat: fast non-bootstrap testing with Guile
-              `(("guile" ,%bootstrap-guile)
-                ("srfi-43" ,%srfi-43)) ; guile-2.0.9 lacks srfi-43; cherry-pick
-              '())))
+        ("bootstrap-mes" ,%bootstrap-mes)))
      (arguments
       `(#:implicit-inputs? #f
         #:guile ,%bootstrap-guile
@@ -181,35 +127,12 @@
                         (string-append "--prefix=" out))
                 (setenv "MES" "src/mes")
                 (setenv "MESCC" "scripts/mescc")
-                (when ,%fake-bootstrap? ; Cheat using Guile+Nyacc+MesCC; ~30 times faster
-                  (let ((dir (with-directory-excursion ".." (getcwd)))
-                        (guile (assoc-ref %build-inputs "guile"))
-                        (srfi-43 (assoc-ref %build-inputs "srfi-43")))
-                    (setenv "MES" "guile")
-                    (setenv "GUILE_AUTO_COMPILE" "1")
-                    (setenv "GUILE_LOAD_COMPILED_PATH"
-                            (string-append guile "/lib/guile/2.0/ccache"))
-                    (setenv "GUILE_LOAD_PATH"
-                            (string-append (string-append dir "/nyacc-source/module")
-                                           ":" dir
-                                           ":" guile "/share/guile/2.0/"))
-                    ;; these fail with guile-2.0
-                    (when srfi-43
-                      (delete-file "tests/srfi-9.test")
-                      (delete-file "tests/srfi-43.test"))
-                    ;; give auto-compile a home -- massive speed-up
-                    (mkdir-p "/tmp/home")
-                    (setenv "HOME" "/tmp/home")))
                 #t)))
           (replace 'build
             (lambda _
               (invoke "sh" "build.sh")))
           (replace 'check
             (lambda _
-              (when ,%fake-bootstrap?
-                ;; break with guile-2.0
-                (delete-file "scaffold/boot/50-primitive-load.scm")
-                (delete-file "scaffold/boot/51-module.scm"))
               (and
                (setenv "MES_ARENA" "100000000")
                (setenv "DIFF" "sh scripts/diff.scm")
@@ -263,14 +186,10 @@
        (native-inputs
         `(("mes" ,mes-boot)
           ("mescc-tools" ,%bootstrap-mescc-tools)
-          ("nyacc-source" ,(package-source nyacc-boot))
+          ("nyacc-source" ,(package-source nyacc))
 
           ("coreutils" , %bootstrap-coreutils&co)
-          ("bootstrap-mes" ,%bootstrap-mes)
-          ,@(if %fake-bootstrap? ; cheat: fast non-bootstrap testing with Guile
-                `(("guile" ,%bootstrap-guile)
-                  ("srfi-43" ,%srfi-43)) ; guile-2.0.9 lacks srfi-43; cherry-pick
-                '())))
+          ("bootstrap-mes" ,%bootstrap-mes)))
        (arguments
         `(#:implicit-inputs? #f
           #:guile ,%bootstrap-guile
@@ -325,27 +244,9 @@
                   (setenv "PREPROCESS" "1")
                   (setenv "MES_ARENA" "70000000")
                   (setenv "MES_MAX_ARENA" "70000000")
-
-                  (if ,%fake-bootstrap?
-                      (begin ; Cheat using Guile+Nyacc+MesCC; ~30 times faster
-                        (setenv "MES" "guile")
-                        (setenv "GUILE_AUTO_COMPILE" "1")
-                        (setenv "GUILE_LOAD_COMPILED_PATH"
-                                (string-append guile "/lib/guile/2.0/ccache"))
-                        (setenv "GUILE_LOAD_PATH"
-                                (string-append dir
-                                               ":" guile "/share/guile/2.0/"
-                                               ":" dir "/nyacc-source/module"
-                                               ":" mes "/share/mes/guile"))
-
-                        ;; give auto-compile a home -- massive speed-up
-                        (mkdir-p "/tmp/home")
-                        (setenv "HOME" "/tmp/home"))
-
-                      (begin       ; True bootstrap build with Mes+Nyacc+MesCC
-                        (setenv "MES" "mes")
-                        (setenv "GUILE_LOAD_PATH" "nyacc")
-                        (symlink (string-append "../nyacc-source/module") "nyacc")))
+                  (setenv "MES" "mes")
+                  (setenv "GUILE_LOAD_PATH" "nyacc")
+                  (symlink (string-append "../nyacc-source/module") "nyacc")
                   (invoke "sh" "configure"
                           "--prefix=$PREFIX"
                           (string-append "--elfinterp=" interpreter)
