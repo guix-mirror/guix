@@ -22953,6 +22953,9 @@ appear in the @code{operating-system} declaration actually exist
 needed at boot time are listed in @code{initrd-modules} (@pxref{Initial
 RAM Disk}).  Passing this option skips these tests altogether.
 
+@cindex on-error
+@cindex on-error strategy
+@cindex error strategy
 @item --on-error=@var{strategy}
 Apply @var{strategy} when an error occurs when reading @var{file}.
 @var{strategy} may be one of the following:
