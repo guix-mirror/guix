@@ -5192,3 +5192,36 @@ for use with LaTeX is available in @code{freenfss}, part of
 @command{psnfss}. ")
     (license (license:non-copyleft (string-append "http://mirrors.ctan.org/"
                                                   "fonts/charter/readme.charter")))))
+
+(define-public texlive-context-base
+  (package
+    (name "texlive-context-base")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/context/base"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0zwl0cg6pka13i26dpqh137391f3j9sk69cpvwrm4ivsa0rqnw6g"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/context/case")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/context")
+    (synopsis "Full featured, parameter driven macro package for TeX")
+    (description "A full featured, parameter driven macro package, which fully
+supports advanced interactive documents.  See the ConTeXt garden for a wealth
+of support information.")
+    (license license:gpl2+)))
