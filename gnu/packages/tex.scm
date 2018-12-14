@@ -5054,3 +5054,39 @@ TeX).")
     (synopsis "Fonts for XY-pic")
     (description "This package provides the XY-pic fonts.")
     (license license:gpl3+)))
+
+(define-public texlive-bibtex
+  (package
+    (name "texlive-bibtex")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "svn://www.tug.org/texlive/tags/"
+                                 %texlive-tag "/Master/texmf-dist/"
+                                 "/bibtex"))
+             (revision %texlive-revision)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1gk9q22fcb2fa1ql6cf9yw505x6a6axdzzfxbsya7nkrph860af8"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/bibtex")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/bibtex")
+    (synopsis "Process bibliographies for LaTeX")
+    (description
+     "BibTeX allows the user to store his citation data in generic form, while
+printing citations in a document in the form specified by a BibTeX style, to
+be specified in the document itself (one often needs a LaTeX citation-style
+package, such as @command{natbib} as well).")
+    (license license:knuth)))
