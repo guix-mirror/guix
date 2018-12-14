@@ -59,22 +59,17 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (license (list gpl3+ lgpl3+))))
 
 (define-public mes
-  (let ((triplet "i686-unknown-linux-gnu")
-        (version "0.18")
-        (revision "1")
-        (commit "a155a0a9a2d941b15c1b98e5cce787de40a8dacd"))
+  (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version (string-append version "-" revision "." (string-take commit 7)))
+      (version "0.19")
       (source (origin
                 (method url-fetch)
-                (uri (string-append
-                      "https://git.savannah.gnu.org/cgit/mes.git/snapshot/"
-                      name "-" commit
-                      ".tar.gz"))
+                (uri (string-append "mirror://gnu/mes/"
+                                    "mes-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "14siwfwg0zlf1pa4ah8s08gsxqcazhydbwa9qvybb0knxs27aicn"))))
+                  "15h4yhaywdc0djpjlin2jz1kzahpqxfki0r0aav1qm9nxxmnp1l0"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
@@ -97,11 +92,11 @@ extensive examples, including parsers for the Javascript and C99 languages.")
        `(#:strip-binaries? #f))  ; binutil's strip b0rkes MesCC/M1/hex2 binaries
       (synopsis "Scheme interpreter and C compiler for full source bootstrapping")
       (description
-       "GNU Mes--Maxwell Equations of Software--brings the Reduced
-Binary Seed bootstrap to GuixSD and aims to help create full source
-bootstrapping for GNU/Linux distributions.  It consists of a mutual
-self-hosting Scheme interpreter in C and a Nyacc-based C compiler in
-Scheme and is compatible with Guile.")
+       "GNU Mes--Maxwell Equations of Software--brings the Reduced Binary Seed
+bootstrap to Guix and aims to help create full source bootstrapping for
+GNU/Linux distributions.  It consists of a mutual self-hosting Scheme
+interpreter in C and a Nyacc-based C compiler in Scheme and is compatible with
+Guile.")
       (home-page "https://gnu.org/software/mes")
       (license gpl3+))))
 
