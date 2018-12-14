@@ -99,24 +99,38 @@ LINK-PREFIX."
 (define* (replace-with-link target to-replace
                             #:key (swap-directory (dirname target)))
   "Atomically replace the file TO-REPLACE with a link to TARGET.  Use
-SWAP-DIRECTORY as the directory to store temporary hard links.
+SWAP-DIRECTORY as the directory to store temporary hard links.  Upon ENOSPC
+and EMLINK, TO-REPLACE is left unchanged.
 
 Note: TARGET, TO-REPLACE, and SWAP-DIRECTORY must be on the same file system."
-  (let* ((temp-link (get-temp-link target swap-directory))
-         (parent    (dirname to-replace))
-         (stat      (stat parent)))
-    (make-file-writable parent)
+  (define temp-link
     (catch 'system-error
       (lambda ()
-        (rename-file temp-link to-replace)
-
-        ;; Restore PARENT's mtime and permissions.
-        (set-file-time parent stat)
-        (chmod parent (stat:mode stat)))
+        (get-temp-link target swap-directory))
       (lambda args
-        (delete-file temp-link)
-        (unless (= EMLINK (system-error-errno args))
-          (apply throw args))))))
+        ;; We get ENOSPC when we can't fit an additional entry in
+        ;; SWAP-DIRECTORY.
+        (if (= ENOSPC (system-error-errno args))
+            #f
+            (apply throw args)))))
+
+  ;; If we couldn't create TEMP-LINK, that's OK: just don't do the
+  ;; replacement, which means TO-REPLACE won't be deduplicated.
+  (when temp-link
+    (let* ((parent (dirname to-replace))
+           (stat   (stat parent)))
+      (make-file-writable parent)
+      (catch 'system-error
+        (lambda ()
+          (rename-file temp-link to-replace))
+        (lambda args
+          (delete-file temp-link)
+          (unless (= EMLINK (system-error-errno args))
+            (apply throw args))))
+
+      ;; Restore PARENT's mtime and permissions.
+      (set-file-time parent stat)
+      (chmod parent (stat:mode stat)))))
 
 (define* (deduplicate path hash #:key (store %store-directory))
   "Check if a store item with sha256 hash HASH already exists.  If so,
