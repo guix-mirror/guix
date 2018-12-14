@@ -63,14 +63,14 @@ extensive examples, including parsers for the Javascript and C99 languages.")
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version "0.18")
+      (version "0.19")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "mirror://gnu/mes/"
                                     "mes-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "1dsaaqyanzsq9m5wrcd2bjhb3qd6928c9q97rg5r730pyqjwxyxf"))))
+                  "15h4yhaywdc0djpjlin2jz1kzahpqxfki0r0aav1qm9nxxmnp1l0"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
@@ -93,10 +93,11 @@ extensive examples, including parsers for the Javascript and C99 languages.")
        `(#:strip-binaries? #f))  ; binutil's strip b0rkes MesCC/M1/hex2 binaries
       (synopsis "Scheme interpreter and C compiler for full source bootstrapping")
       (description
-       "GNU Mes [Maxwell Equations of Software] aims to create full source
-bootstrapping for GuixSD.  It consists of a mutual self-hosting [close to
-Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
-[Guile] Scheme.")
+       "GNU Mes--Maxwell Equations of Software--brings the Reduced Binary Seed
+bootstrap to Guix and aims to help create full source bootstrapping for
+GNU/Linux distributions.  It consists of a mutual self-hosting Scheme
+interpreter in C and a Nyacc-based C compiler in Scheme and is compatible with
+Guile.")
       (home-page "https://gnu.org/software/mes")
       (license gpl3+))))
 
