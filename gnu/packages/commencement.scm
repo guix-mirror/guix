@@ -81,11 +81,36 @@
 ;;;
 ;;; Code:
 
+(define mes-boot0
+  (let ((version "0.18")
+        (revision "1")
+        (commit "a155a0a9a2d941b15c1b98e5cce787de40a8dacd"))
+    (package
+      (inherit mes)
+      (name "mes-boot0")
+      (version (if commit (string-append version "-" revision "." (string-take commit 7))
+                   version))
+      (source (if commit
+                  (origin
+                (method url-fetch)
+                (uri (string-append
+                      "https://git.savannah.gnu.org/cgit/mes.git/snapshot/"
+                      "mes" "-" commit
+                      ".tar.gz"))
+                (sha256
+                 (base32
+                  "14siwfwg0zlf1pa4ah8s08gsxqcazhydbwa9qvybb0knxs27aicn")))
+                  (package-source mes)))
+      (native-inputs '())
+      (propagated-inputs '()))))
+
 (define mes-boot
   (package-with-bootstrap-guile
    (package
      (inherit mes)
      (name "mes-boot")
+     (version (package-version mes-boot0))
+     (source (package-source mes-boot0))
      (inputs '())
      (propagated-inputs '())
      (native-inputs
