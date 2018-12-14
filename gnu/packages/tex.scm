@@ -4975,3 +4975,82 @@ titles.")
 Xy-pic works with most formats (including LaTeX, AMS-LaTeX, AMS-TeX, and plain
 TeX).")
     (license license:gpl3+)))
+
+(define-public texlive-fonts-xypic
+  (package
+    (name "texlive-fonts-xypic")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/source/public/xypic"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0p20v1257kwsqnrk98cdhhiz2viv8l3ly4xay4by0an3j37m9xs3"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source" . "fonts/source/public/xypic")
+                       ("xypic-afm" . "fonts/afm/public/xypic")
+                       ("xypic-type1" . "fonts/type1/public/xypic")
+                       ("xypic-enc" . "fonts/enc/dvips/xypic"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (native-inputs
+     `(("xypic-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/public/xypic"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "149xdijxp8lw3s0qv2aqxxxyyn748z57dpr596rjvkqdffpnsddh"))))
+       ("xypic-type1"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/type1/public/xypic"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-type1-" version "-checkout"))
+           (sha256
+            (base32
+             "1bln89wib7g3hcv2jny3qi6jb73k9d2vbgx3wnnjwp3ryg0846if"))))
+       ("xypic-enc"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/enc/dvips/xypic"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-enc-" version "-checkout"))
+           (sha256
+            (base32
+             "0yi8vms3203l3p5slnhrrlzzp0f0jw77fkcvcaicrz2vmw9z99x7"))))))
+    (home-page "https://www.ctan.org/pkg/xypic")
+    (synopsis "Fonts for XY-pic")
+    (description "This package provides the XY-pic fonts.")
+    (license license:gpl3+)))
