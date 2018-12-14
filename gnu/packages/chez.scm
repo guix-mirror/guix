@@ -279,7 +279,15 @@ and 32-bit PowerPC architectures.")
       (build-system gnu-build-system)
       (native-inputs
        `(("chez-scheme" ,chez-scheme)
-         ("texlive" ,texlive)))
+         ("ghostscript" ,ghostscript)
+         ("texlive" ,(texlive-union (list texlive-latex-oberdiek
+                                          texlive-generic-epsf
+                                          texlive-metapost
+                                          texlive-fonts-charter
+                                          texlive-generic-pdftex
+                                          texlive-context-base
+                                          texlive-fonts-cm
+                                          texlive-tex-plain)))))
       (arguments
        `(#:make-flags (list (string-append "PREFIX=" %output)
                             (string-append "DOCDIR=" %output "/share/doc/"
@@ -289,6 +297,12 @@ and 32-bit PowerPC architectures.")
                       #:tests? #f        ; no tests
                       #:phases
                       (modify-phases %standard-phases
+                        (add-before 'build 'set-HOME
+                          (lambda _
+                            ;; FIXME: texlive-union does not find the built
+                            ;; metafonts, so it tries to generate them in HOME.
+                            (setenv "HOME" "/tmp")
+                            #t))
                         ;; This package has a custom "bootstrap" script that
                         ;; is meant to be run from the Makefile.
                         (delete 'bootstrap)
