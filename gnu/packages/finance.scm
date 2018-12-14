@@ -886,7 +886,7 @@ main features are:
 (define-public silkaj
   (package
     (name "silkaj")
-    (version "0.6.0")
+    (version "0.6.1")
     (source
      (origin
        (method git-fetch)
@@ -896,7 +896,7 @@ main features are:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "02n028rz1pshgh7w0af3b291r8lwvhzskm1q98d991gr8rscvad2"))))
+         "0a99gbgdd7m9wisqhqpfyaim0rlv9gkp8gmrppkagqf6j0683igh"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;no test
