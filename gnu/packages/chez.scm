@@ -88,7 +88,8 @@
        ("zlib:static" ,zlib "static")
        ("stex" ,stex)))
     (native-inputs
-     `(("texlive" ,texlive)
+     `(("texlive" ,(texlive-union (list texlive-latex-oberdiek
+                                        texlive-generic-epsf)))
        ("ghostscript" ,ghostscript)
        ("netpbm" ,netpbm)))
     (native-search-paths
