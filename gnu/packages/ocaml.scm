@@ -642,9 +642,6 @@ the OCaml core distribution.")
             (variable "COQPATH")
             (files (list "lib/coq/user-contrib")))))
     (build-system ocaml-build-system)
-    (native-inputs
-     `(("texlive" ,texlive)
-       ("hevea" ,hevea)))
     (inputs
      `(("lablgtk" ,lablgtk)
        ("python" ,python-2)
