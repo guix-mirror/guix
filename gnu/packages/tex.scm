@@ -5123,3 +5123,72 @@ printing citations in a document in the form specified by a BibTeX style, to
 be specified in the document itself (one often needs a LaTeX citation-style
 package, such as @command{natbib} as well).")
     (license license:knuth)))
+
+(define-public texlive-fonts-charter
+  (package
+    (name "texlive-fonts-charter")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/type1/bitstrea/charter"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0yvib45xxff3jm5270zij4q888pivbc18cqs7lz4pqfhn1am4wnv"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source" . "fonts/type1/bitstrea/charter")
+                       ("charter-afm" . "fonts/afm/bitstrea/charter")
+                       ("charter-tfm" . "fonts/tfm/bitstrea/charter"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (native-inputs
+     `(("charter-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/bitstrea/charter"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "02nbkqrlr3vypnzslmr7dxg1353mmc0rl4ynx0s6qbvf313fq76a"))))
+       ("charter-tfm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/tfm/bitstrea/charter"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-tfm-" version "-checkout"))
+           (sha256
+            (base32
+             "0j7ci9vprivbhac70aq0z7m23hqcpx1g0i3wp1k0h8ilhimj80xk"))))))
+    (home-page "https://www.ctan.org/pkg/charter")
+    (synopsis "Charter fonts for TeX")
+    (description "A commercial text font donated for the common good.  Support
+for use with LaTeX is available in @code{freenfss}, part of
+@command{psnfss}. ")
+    (license (license:non-copyleft (string-append "http://mirrors.ctan.org/"
+                                                  "fonts/charter/readme.charter")))))
