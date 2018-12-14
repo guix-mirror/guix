@@ -4940,3 +4940,38 @@ used inside tables and moving arguments such as footnotes and section
 titles.")
     ;; No version of the GPL is specified.
     (license license:gpl3+)))
+
+(define-public texlive-generic-xypic
+  (package
+    (name "texlive-generic-xypic")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "svn://www.tug.org/texlive/tags/"
+                                 %texlive-tag "/Master/texmf-dist/"
+                                 "/tex/generic/xypic"))
+             (revision %texlive-revision)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1g5cyxwdfznq4lk9zl6fkjkapmhmwd2cm4m5aibxj20qgwnaggfz"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/xypic")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/xypic")
+    (synopsis "Flexible diagramming macros for TeX")
+    (description
+     "A package for typesetting a variety of graphs and diagrams with TeX.
+Xy-pic works with most formats (including LaTeX, AMS-LaTeX, AMS-TeX, and plain
+TeX).")
+    (license license:gpl3+)))
