@@ -289,6 +289,9 @@ and 32-bit PowerPC architectures.")
                       #:tests? #f        ; no tests
                       #:phases
                       (modify-phases %standard-phases
+                        ;; This package has a custom "bootstrap" script that
+                        ;; is meant to be run from the Makefile.
+                        (delete 'bootstrap)
                         (replace 'configure
                           (lambda* _
                             (copy-file "config.mk.template" "config.mk")
