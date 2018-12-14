@@ -382,7 +382,9 @@ Take a look at the profile reported by @command{guix size}
 (@pxref{Invoking guix size}).  This will allow you to notice references
 to other packages unwillingly retained.  It may also help determine
 whether to split the package (@pxref{Packages with Multiple Outputs}),
-and which optional dependencies should be used.
+and which optional dependencies should be used.  In particular, avoid adding
+@command{texlive} as a dependency: because of its extreme size, use
+@command{texlive-tiny} or @command{texlive-union} instead.
 
 @item
 For important changes, check that dependent package (if applicable) are
@@ -476,16 +478,6 @@ necessarily identical from one generation to the next, so in this case it's
 often better to clone the repository.  Don't use the @command{name} field in
 the URL: it is not very useful and if the name changes, the URL will probably
 be wrong.
-
-@item
-Try to minimize the weight of the inputs to make the transitive closure as
-small as possible (@pxref{Invoking guix size}).  Use @command{native-inputs}
-and @command{inputs} appropriately.  It's sometimes sufficient to use the
-@command{-minimal} version of a package as input, e.g. @command{bash-minimal}
-instead of @command{bash}.  In particular, avoid adding @command{texlive} as a
-dependency: because of its extreme size, it's both heavy on the build farms
-and on the users who would like to build or hack the package from source.  Use
-@command{texlive-tiny} or @command{texlive-union} instead.
 
 @end enumerate
 
