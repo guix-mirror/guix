@@ -993,7 +993,7 @@ libpanel, librsvg and quartz.")
      `(("ocaml" ,ocaml-4.02)
        ;; For documentation
        ("ghostscript" ,ghostscript)
-       ("texlive" ,texlive)
+       ("texlive" ,texlive-tiny)
        ("hevea" ,hevea)
        ("lynx" ,lynx)
        ("which" ,which)))
