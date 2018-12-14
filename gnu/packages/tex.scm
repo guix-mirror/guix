@@ -609,20 +609,36 @@ documents.")
                        (find-files "." "cm(.*[0-9]+.*|inch)\\.mf$"))
              #t))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (tfm (string-append
                           out "/share/texmf-dist/fonts/tfm/public/cm"))
-                    (mf  (string-append
-                          out "/share/texmf-dist/fonts/source/public/cm")))
+                    (mf (string-append
+                         out "/share/texmf-dist/fonts/source/public/cm"))
+                    (type1 (string-append
+                            out "/share/texmf-dist/fonts/type1/public/amsfonts/cm")))
                (for-each (cut install-file <> tfm)
                          (find-files "build" "\\.*"))
                (for-each (cut install-file <> mf)
                          (find-files "." "\\.mf"))
+               (mkdir-p type1)
+               (copy-recursively (assoc-ref inputs "cm-type1") type1)
                #t))))))
     (native-inputs
      `(("texlive-bin" ,texlive-bin)
-       ("texlive-metafont-base" ,texlive-metafont-base)))
+       ("texlive-metafont-base" ,texlive-metafont-base)
+       ("cm-type1"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/type1/public/amsfonts/cm"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-type1-" version "-checkout"))
+           (sha256
+            (base32
+             "12jyl9jp3hidifa4l5pmi47p71d5mb5kj5rknxkygilix8yz2iy6"))))))
     (home-page "https://www.ctan.org/pkg/cm")
     (synopsis "Computer Modern fonts for TeX")
     (description "This package provides the Computer Modern fonts by Donald
