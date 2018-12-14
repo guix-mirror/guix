@@ -265,7 +265,7 @@ This package contains the binaries.")
          (let* ((root (string-append (assoc-ref %outputs "out")
                                      "/share/texmf-dist"))
                 (dvips (string-append root "/dvips"))
-                (maps  (string-append root "/fonts/map/dvips/tetex"))
+                (maps  (string-append root "/fonts/map/dvips"))
                 (encs  (string-append root "/fonts/enc/dvips/base")))
            (mkdir-p dvips)
            (copy-recursively (assoc-ref %build-inputs "source") dvips)
@@ -281,12 +281,12 @@ This package contains the binaries.")
            (uri (svn-reference
                  (url (string-append "svn://www.tug.org/texlive/tags/"
                                      %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/map/dvips/tetex"))
+                                     "/fonts/map/dvips"))
                  (revision %texlive-revision)))
            (file-name (string-append "dvips-font-maps-" version "-checkout"))
            (sha256
             (base32
-             "100208pg7q6lj7swiq9p9287nn6b64bl62bnlaxpjni9y2kdrqy5"))))
+             "09hply3nmy24ilnc6cl8q70jcqxvq6bwri572kms008ini3h9vqh"))))
        ("dvips-base-enc"
         ,(origin
            (method svn-fetch)
