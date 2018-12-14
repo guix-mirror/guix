@@ -6674,6 +6674,28 @@ containing words from the rime project.")
 and cangjie.")
     (license license:gpl2+)))
 
+(define-public emacs-posframe
+  (package
+    (name "emacs-posframe")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/posframe-" version ".el"))
+       (sha256
+        (base32
+         "1h8vvxvsg41vc1nnglqjs2q0k1yzfsn72skga9s76qa3zxmx6kds"))))
+    (build-system emacs-build-system)
+    ;; emacs-minimal does not include the function font-info
+    (arguments `(#:emacs ,emacs))
+    (home-page "https://github.com/tumashu/posframe")
+    (synopsis "Pop a posframe (a child frame) at point")
+    (description "@code{emacs-posframe} can pop a posframe at point.  A
+posframe is a child frame displayed within its root window's buffer.
+@code{emacs-posframe} is fast and works well with CJK languages.")
+    (license license:gpl3+)))
+
 (define-public emacs-el2org
   (package
     (name "emacs-el2org")
