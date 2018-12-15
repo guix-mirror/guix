@@ -967,16 +967,17 @@ from other CLXes around the net.")
 (define-public stumpwm
   (package
     (name "stumpwm")
-    (version "18.05")
+    (version "18.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/stumpwm/stumpwm/archive/"
                     version ".tar.gz"))
               (sha256
-               (base32 "1n2gaab3lwgf5r1hmwdcw13dkv9xdd7drn2shx28kfxvhdc9kbb9"))
+               (base32 "177gxfk4c127i9crghx6fmkipznhgylvzgnjb2pna38g21gg6s39"))
               (file-name (string-append "stumpwm-" version ".tar.gz"))))
     (build-system asdf-build-system/sbcl)
+    (native-inputs `(("fiasco" ,sbcl-fiasco)))
     (inputs `(("cl-ppcre" ,sbcl-cl-ppcre)
               ("clx" ,sbcl-clx)
               ("alexandria" ,sbcl-alexandria)))
