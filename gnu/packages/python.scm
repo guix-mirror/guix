@@ -56,6 +56,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
+;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10707,9 +10708,16 @@ useful as a validator for JSON data.")
         (base32
          "090vdksbz341f7ljvr0zswblw4lspa8qaiikzyjkf318arpxmil9"))))
     (build-system python-build-system)
-    ;; Test suite requires python-setuptools
-    (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-pythonpath
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append
+                      (getcwd) "/test/"
+                      ":" (getenv "PYTHONPATH")))
+             #t)))))
     (home-page
      "https://github.com/eliben/pyelftools")
     (synopsis
