@@ -771,6 +771,42 @@ thin compatibility layer for gray streams.")
 (define-public ecl-trivial-gray-streams
   (sbcl-package->ecl-package sbcl-trivial-gray-streams))
 
+(define-public sbcl-fiasco
+  (let ((commit "d62f7558b21addc89f87e306f65d7f760632655f")
+        (revision "1"))
+    (package
+      (name "sbcl-fiasco")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/joaotavora/fiasco.git")
+               (commit commit)))
+         (file-name (git-file-name "fiasco" version))
+         (sha256
+          (base32
+           "1zwxs3d6iswayavcmb49z2892xhym7n556d8dnmvalc32pm9bkjh"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+      (synopsis "Simple and powerful test framework for Common Lisp")
+      (description "A Common Lisp test framework that treasures your failures,
+logical continuation of Stefil.  It focuses on interactive debugging.")
+      (home-page "https://github.com/joaotavora/fiasco")
+      ;; LICENCE specifies this is public-domain unless the legislation
+      ;; doesn't allow or recognize it.  In that case it falls back to a
+      ;; permissive licence.
+      (license (list license:public-domain
+                     (license:x11-style "file://LICENCE"))))))
+
+(define-public cl-fiasco
+  (sbcl-package->cl-source-package sbcl-fiasco))
+
+(define-public ecl-fiasco
+  (sbcl-package->ecl-package sbcl-fiasco))
+
 (define-public sbcl-flexi-streams
   (package
     (name "sbcl-flexi-streams")
