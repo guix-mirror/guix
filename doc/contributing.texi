@@ -383,8 +383,8 @@ Take a look at the profile reported by @command{guix size}
 to other packages unwillingly retained.  It may also help determine
 whether to split the package (@pxref{Packages with Multiple Outputs}),
 and which optional dependencies should be used.  In particular, avoid adding
-@command{texlive} as a dependency: because of its extreme size, use
-@command{texlive-tiny} or @command{texlive-union} instead.
+@code{texlive} as a dependency: because of its extreme size, use
+@code{texlive-tiny} or @code{texlive-union} instead.
 
 @item
 For important changes, check that dependent package (if applicable) are
