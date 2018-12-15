@@ -13,7 +13,7 @@ namespace nix {
 
 /* The default location of the daemon socket, relative to nixStateDir.
    The socket is in a directory to allow you to control access to the
-   Nix daemon by setting the mode/ownership of the directory
+   build daemon by setting the mode/ownership of the directory
    appropriately.  (This wouldn't work on the socket itself since it
    must be deleted and recreated on startup.) */
 #define DEFAULT_SOCKET_PATH "/daemon-socket/socket"
