@@ -548,55 +548,31 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            ((#:make-flags flags)
             `(cons "CC=gcc -static" ,flags)))))))
 
-(define %mes-minimal
+(define-public %mes-minimal-stripped
   ;; A minimal Mes without documentation dependencies, for bootstrap.
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (inherit mes)
-      (name "mes-minimal")
+      (name "mes-minimal-stripped")
       (native-inputs
        `(("guile" ,guile-2.2)))
       (arguments
        `(#:system "i686-linux"
          #:strip-binaries? #f
+         #:configure-flags '("--mes")
          #:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'optional-dot
+           (add-after 'install 'strip-install
              (lambda _
-               (substitute* "configure"
-                 (("#:version-option \"-V\"" all)
-                  (string-append all "#:optional? #t")))))))))))
-
-(define-public %mes-minimal-stripped
-  ;; The subset of Mes files needed for bootstrap.
-  (package
-    (inherit %mes-minimal)
-    (name "mes-minimal-stripped")
-    (build-system trivial-build-system)
-    (source #f)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (srfi srfi-1)
-                      (srfi srfi-26)
-                      (guix build utils))
-
-         (setvbuf (current-output-port) _IOLBF)
-         (let* ((out        (assoc-ref %outputs "out"))
-                (bindir     (string-append out "/bin"))
-                (libdir     (string-append out "/lib"))
-                (mes        (assoc-ref %build-inputs "mes")))
-
-           (copy-recursively (string-append mes "/bin") bindir)
-           (copy-recursively (string-append mes "/lib") libdir)
-           (copy-recursively (string-append mes "/share/mes/lib") libdir)
-           (for-each remove-store-references
-                     (remove (lambda (file) (or (string-suffix? ".h" file)
-                                                (string-suffix? ".c" file)))
-                             (find-files out ".*")))
-           #t))))
-    (inputs `(("mes" ,%mes-minimal)))))
+               (let* ((out (assoc-ref %outputs "out"))
+                      (share (string-append out "/share")))
+                 (delete-file-recursively (string-append out "/lib/guile"))
+                 (delete-file-recursively (string-append share "/guile"))
+                 (delete-file-recursively (string-append share "/mes/scaffold"))
+                 (for-each
+                  delete-file
+                  (find-files (string-append share  "/mes/lib")
+                              "\\.(h|c)")))))))))))
 
 (define %guile-static
   ;; A statically-linked Guile that is relocatable--i.e., it can search
