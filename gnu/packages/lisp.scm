@@ -168,8 +168,7 @@
        `(("gmp" ,gmp)
          ("readline" ,readline)))
       (native-inputs
-       `(("gcc" ,gcc-4.9)
-         ("m4" ,m4)
+       `(("m4" ,m4)
          ("texinfo" ,texinfo)))
       (home-page "https://www.gnu.org/software/gcl/")
       (synopsis "A Common Lisp implementation")
