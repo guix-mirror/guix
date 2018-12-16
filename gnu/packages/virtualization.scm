@@ -72,6 +72,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system python)
@@ -769,7 +770,7 @@ Machine Protocol.")
 (define-public lookingglass
   (package
    (name "lookingglass")
-   (version "a11")
+   (version "a12")
    (source
     (origin
      (method url-fetch)
@@ -778,8 +779,8 @@ Machine Protocol.")
      (file-name (string-append name "-" version))
      (sha256
       (base32
-       "11qwyp332l66sqksqa0z9439yi4accmbq7wjc6kikc5fimdh9wk5"))))
-   (build-system gnu-build-system)
+       "0x57chx83f8pq56d9sfxmc9p4qjm9nqvdyamj41bmy145mxw5w3m"))))
+   (build-system cmake-build-system)
    (inputs `(("fontconfig" ,fontconfig)
              ("glu" ,glu)
              ("mesa" ,mesa)
@@ -794,16 +795,17 @@ Machine Protocol.")
     `(#:tests? #f ;; No tests are available.
       #:make-flags '("CC=gcc")
       #:phases (modify-phases %standard-phases
-                 (replace 'configure
+                 (add-before 'configure 'chdir-to-client
                    (lambda* (#:key outputs #:allow-other-keys)
                      (chdir "client")
                      #t))
                  (replace 'install
                    (lambda* (#:key outputs #:allow-other-keys)
-                     (install-file "bin/looking-glass-client"
+                     (install-file "looking-glass-client"
                                    (string-append (assoc-ref outputs "out")
                                                   "/bin"))
-                     #t)))))
+                     #t))
+                 )))
    (home-page "https://looking-glass.hostfission.com")
    (synopsis "KVM Frame Relay (KVMFR) implementation")
    (description "Looking Glass allows the use of a KVM (Kernel-based Virtual
