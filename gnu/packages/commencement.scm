@@ -159,8 +159,8 @@
   ;; ported to 0.9.27, alas the resulting tcc is buggy.  Once MesCC is more
   ;; mature, this package should use the 0.9.27 sources (or later).
   (let ((version "0.9.26")
-        (revision "5")
-        (commit "c7b3f59d1a71e71b470f859b20f0cfe840f3954d"))
+        (revision "6")
+        (commit "c004e9a34fb026bb44d211ab98bb768e79900eef"))
     (package-with-bootstrap-guile
      (package
        (inherit tcc)
@@ -173,7 +173,7 @@
                                      "/tinycc-" commit ".tar.gz"))
                  (sha256
                   (base32
-                   "1agz5w5q6dm51n63hsxii33hxdghmdiacbb5zzxzac3aarfxjb2m"))))
+                   "1hmzn1pq0x22ppd80hyrn5qzqq94mxd0ychzj6vrr2vnj2frjv5b"))))
        (build-system gnu-build-system)
        (supported-systems '("i686-linux" "x86_64-linux"))
        (inputs '())
@@ -194,7 +194,6 @@
             (add-after 'unpack 'unpack-seeds
               (lambda* (#:key outputs #:allow-other-keys)
                 (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
-                       (srfi-43 (assoc-ref %build-inputs "srfi-43"))
                        (nyacc-source (assoc-ref %build-inputs "nyacc-source"))
                        (bootstrap-mes (assoc-ref %build-inputs "bootstrap-mes")))
                   (setenv "PATH" (string-append
@@ -205,17 +204,13 @@
                      (mkdir-p "nyacc-source")
                      (invoke "tar" "--strip=1" "-C" "nyacc-source"
                              "-xvf" nyacc-source)
-                     (symlink (string-append bootstrap-mes "/lib") "mes-seed")
-                     (or (not srfi-43)
-                         (and (mkdir-p "srfi")
-                              (copy-file srfi-43 "srfi/srfi-43.scm")
-                              #t)))))))
+                     (symlink (string-append bootstrap-mes "/share/mes/lib") "mes-seed")
+                     #t)))))
             (replace 'configure
               (lambda* (#:key outputs #:allow-other-keys)
                 (let* ((out (assoc-ref %outputs "out"))
                        (dir (with-directory-excursion ".." (getcwd)))
                        (coreutils (assoc-ref %build-inputs "coreutils"))
-                       (guile (assoc-ref %build-inputs "guile"))
                        (mes (assoc-ref %build-inputs "mes"))
                        (mescc-tools (assoc-ref %build-inputs "mescc-tools"))
                        (libc (assoc-ref %build-inputs "libc"))
@@ -226,22 +221,18 @@
                   (setenv "PATH" (string-append
                                   coreutils "/bin"
                                   ":" mes "/bin"
-                                  (if guile (string-append ":" guile "/bin")
-                                      "")
                                   ":" mescc-tools "/bin"))
+                  (format (current-error-port) "PATH=~s\n" (getenv "PATH"))
 
                   (setenv "PREFIX" out)
-                  (setenv "MESCC" (string-append mes "/bin/mescc"))
                   (symlink (string-append mes "/share/mes") "mes")
+                  (symlink (string-append "../nyacc-source/module") "nyacc")
                   (setenv "MES_PREFIX" "mes")
-                  (setenv "OBJDUMP" "true")
-                  (setenv "ONE_SOURCE" "1")
-                  (setenv "PREPROCESS" "1")
-                  (setenv "MES_ARENA" "70000000")
-                  (setenv "MES_MAX_ARENA" "70000000")
+                  (setenv "MES_ARENA" "100000000")
+                  (setenv "MES_MAX_ARENA" "100000000")
+                  (setenv "MES_STACK" "10000000")
                   (setenv "MES" "mes")
                   (setenv "GUILE_LOAD_PATH" "nyacc")
-                  (symlink (string-append "../nyacc-source/module") "nyacc")
                   (invoke "sh" "configure"
                           "--prefix=$PREFIX"
                           (string-append "--elfinterp=" interpreter)
@@ -249,10 +240,13 @@
                           "--tccdir=."))))
             (replace 'build
               (lambda _
-                (invoke "sh" "build.sh")))
+                (substitute* "bootstrap.sh"
+                  (("^    cmp") "#    cmp"))
+                (invoke "sh" "bootstrap.sh")))
             (replace 'check
               (lambda _
                 (setenv "DIFF" "diff.scm")
+                (setenv "OBJDUMP" "true")
                 ;; fail fast tests
                 ;; (invoke "sh" "test.sh" "mes/scaffold/tests/30-strlen")
                 ;; (invoke "sh" "-x" "test.sh" "mes/scaffold/tinycc/00_assignment")
