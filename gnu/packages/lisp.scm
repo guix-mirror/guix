@@ -69,6 +69,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages webkit)
+  #:use-module (gnu packages xdisorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-19))
 
@@ -3780,3 +3781,42 @@ client and server.")
 
 (define-public ecl-s-xml-rpc
   (sbcl-package->ecl-package sbcl-s-xml-rpc))
+
+(define-public sbcl-trivial-clipboard
+  (let ((commit "10209a79b6016a4c60820269e5a522d4c11ba21b"))
+    (package
+      (name "sbcl-trivial-clipboard")
+      (version "0.0.0.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/snmsts/trivial-clipboard")
+               (commit commit)))
+         (sha256
+          (base32
+           "1dn4ayhj3aw4dqbg7m3zhn4p2zgn5xp6m66988jnlh13447ap03k"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("xclip" ,xclip)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/text.lisp"
+                 (("xclip") (string-append
+                             (assoc-ref inputs "xclip") "/bin/xclip"))))))))
+      (home-page "https://github.com/snmsts/trivial-clipboard")
+      (synopsis "Access system clipboard in Common Lisp")
+      (description
+       "@command{trivial-clipboard} gives access to the system clipboard.")
+      (license license:expat))))
+
+(define-public cl-trivial-clipboard
+  (sbcl-package->cl-source-package sbcl-trivial-clipboard))
+
+(define-public ecl-trivial-clipboard
+  (sbcl-package->ecl-package sbcl-trivial-clipboard))
