@@ -4074,13 +4074,14 @@ exclusion algorithms are typical examples of such systems.")
     (name "elemental")
     (version "0.87.7")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/elemental/Elemental/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/elemental/Elemental.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nfp82w22pi8x8fg9sc37z8kf84dqi1dhxp8bbk7571y4aygvv3v"))))
+                "1687xpjjzig27y2pnqv7hv09smpijyfdpz7qjgmcxf4shfajlfkc"))))
     (build-system cmake-build-system)
     (home-page "http://libelemental.org")
     (native-inputs
