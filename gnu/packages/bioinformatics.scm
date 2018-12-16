@@ -11390,7 +11390,10 @@ remove biased methylation positions for RRBS sequence files.")
                     (out    (assoc-ref outputs "out"))
                     (bin    (string-append out "/bin/"))
                     (target (string-append
-                             out "/lib/python2.7/site-packages/gess/")))
+                             out "/lib/python"
+                             ,(version-major+minor
+                                (package-version python))
+                             "/site-packages/gess/")))
                (mkdir-p target)
                (copy-recursively "." target)
                ;; Make GESS.py executable
