@@ -1887,7 +1887,7 @@ done with the @code{auditctl} utility.")
     ;; TODO Add zenmap output.
     (outputs '("out" "ndiff"))
     (arguments
-     '(#:configure-flags '("--without-zenmap")
+     `(#:configure-flags '("--without-zenmap")
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-Makefile
@@ -1903,7 +1903,10 @@ done with the @code{auditctl} utility.")
                       (string-append "prefix=" out)
                       args))
              (define (python-path dir)
-               (string-append dir "/lib/python2.7/site-packages"))
+               (string-append dir "/lib/python"
+                              ,(version-major+minor
+                                 (package-version python))
+                              "/site-packages"))
              (let ((out (assoc-ref outputs "out"))
                    (ndiff (assoc-ref outputs "ndiff")))
                (for-each mkdir-p (list out ndiff))
