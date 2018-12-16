@@ -89,6 +89,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages search)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages glib)
@@ -1731,13 +1732,13 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.11.4")
+    (version "0.12.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1shhlq6ljbd8095hd82v4mw56rjcfxf1ymmgknbgh8gix02nsxw1"))))
+                "01y52qmab4cw9wmx87aahnxbyaxrxw8j2wx06mpcqsfvgk8d54wi"))))
     (build-system python-build-system)
     (arguments
       `(#:phases
@@ -1748,14 +1749,17 @@ maintained.")
                      (doc (string-append out "/share/doc/khard")))
                 (copy-recursively "misc/khard" doc)
                 #t))))
-        ;; FIXME: check phase fails with
-        ;; "Config file /tmp/.config/khard/khard.conf not available"
+        ;; Tests are currently only runnable without preexisting data on
+        ;; the development branch:
+        ;; https://github.com/scheibler/khard/issues/176
         #:tests? #f))
     (propagated-inputs
-     `(("python-vobject" ,python-vobject)
+     `(("python-atomicwrites" ,python-atomicwrites)
+       ("python-configobj" ,python-configobj)
        ("python-pyyaml" ,python-pyyaml)
-       ("python-atomicwrites" ,python-atomicwrites)
-       ("python-configobj" ,python-configobj)))
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-unidecode" ,python-unidecode)
+       ("python-vobject" ,python-vobject)))
     (synopsis "Console address book using CardDAV")
     (description "Khard is an address book for the console.  It creates, reads,
 modifies and removes CardDAV address book entries at your local machine.  For
