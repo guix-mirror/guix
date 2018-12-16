@@ -4104,8 +4104,8 @@ exclusion algorithms are typical examples of such systems.")
                            "-DCMAKE_INSTALL_LIBDIR=lib"
                            "-DGFORTRAN_LIB=gfortran")
        #:phases (modify-phases %standard-phases
-		  (add-before 'check 'mpi-setup
-		    ,%openmpi-setup)
+                  (add-before 'check 'mpi-setup
+                    ,%openmpi-setup)
                   (add-before 'check 'setup-tests
                     (lambda _
                       ;; Parallelism is done at the MPI layer.
@@ -4116,7 +4116,7 @@ exclusion algorithms are typical examples of such systems.")
                       ;; Tests are installed, with no easy configuration
                       ;; switch to prevent this, so delete them.
                       (delete-file-recursively
-                       (string-append (assoc-ref outputs "out") "/bin"))
+                        (string-append (assoc-ref outputs "out") "/bin"))
                       #t)))))
     (synopsis "Dense and sparse-direct linear algebra and optimization")
     (description "Elemental is a modern C++ library for distributed-memory
