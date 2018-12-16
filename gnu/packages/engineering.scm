@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Theodoros Foradis <theodoros@foradis.org>
@@ -691,8 +691,8 @@ language.")
          (method url-fetch)
          (file-name (string-append name "-" version ".tar.xz"))
          (uri (string-append
-                "https://launchpad.net/kicad/5.0/" version "/+download/" name
-                "-" version ".tar.xz"))
+                "https://launchpad.net/kicad/" (version-major+minor version)
+                "/" version "/+download/" name "-" version ".tar.xz"))
          (sha256
           (base32 "17nqjszyvd25wi6550j981whlnb1wxzmlanljdjihiki53j84x9p"))))
       (build-system cmake-build-system)
@@ -711,7 +711,9 @@ language.")
                ;; headers in the wxwidgets store item, but in wxPython.
                (string-append "-DCMAKE_CXX_FLAGS=-I"
                               (assoc-ref %build-inputs "wxpython")
-                              "/include/wx-3.0")
+                              "/include/wx-"
+                             ,(version-major+minor
+                                (package-version python2-wxpython)))
                "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE"
                "-DKICAD_SPICE=TRUE"
                ;; TODO: Enable this when CA certs are working with curl.
@@ -733,7 +735,10 @@ language.")
                       (file (string-append out "/bin/kicad"))
                       (path (string-append
                              out
-                             "/lib/python2.7/site-packages:"
+                             "/lib/python"
+                             ,(version-major+minor
+                                (package-version python))
+                             "/site-packages:"
                              (getenv "PYTHONPATH"))))
                  (wrap-program file
                    `("PYTHONPATH" ":" prefix (,path))
