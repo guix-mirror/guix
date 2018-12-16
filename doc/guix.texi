@@ -11308,6 +11308,7 @@ Run @var{udev}, which populates the @file{/dev} directory dynamically.
 udev rules can be provided as a list of files through the @var{rules}
 variable.  The procedures @var{udev-rule} and @var{file->udev-rule} from
 @code{(gnu services base)} simplify the creation of such rule files.
+@end deffn
 
 @deffn {Scheme Procedure} udev-rule [@var{file-name} @var{contents}]
 Return a udev-rule file named @var{file-name} containing the rules
@@ -11325,6 +11326,9 @@ upon detecting a USB device with a given product identifier.
                    "ATTR@{product@}==\"Example\", "
                    "RUN+=\"/path/to/script\"")))
 @end example
+
+The @command{herd rules udev} command, as root, returns the name of the
+directory containing all the active udev rules.
 @end deffn
 
 Here we show how the default @var{udev-service} can be extended with it.
@@ -11406,7 +11410,6 @@ well as in the @var{groups} field of the @var{operating-system} record.
        (rules (cons* android-udev-rules
               (udev-configuration-rules config))))))))
 @end example
-@end deffn
 
 @defvr {Scheme Variable} urandom-seed-service-type
 Save some entropy in @var{%random-seed-file} to seed @file{/dev/urandom}
