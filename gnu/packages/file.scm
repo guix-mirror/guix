@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   (package
     (name "file")
     (version "5.33")
+    (replacement file/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.astron.com/pub/file/file-"
@@ -51,3 +53,10 @@ extensions to tell you the type of a file, but looks at the actual contents
 of the file.  This package provides the libmagic library.")
    (license bsd-2)
    (home-page "https://www.darwinsys.com/file/")))
+
+(define file/fixed
+  (package
+    (inherit file)
+    (source
+      (origin (inherit (package-source file))
+              (patches (search-patches "file-CVE-2018-10360.patch"))))))
