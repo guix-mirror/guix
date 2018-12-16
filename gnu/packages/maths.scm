@@ -3971,6 +3971,7 @@ as equations, scalars, vectors, and matrices.")
               (method git-fetch)
               (uri (git-reference (url home-page)
                                   (commit (string-append "z3-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1vr57bwx40sd5riijyrhy70i2wnv9xrdihf6y5zdz56yq88rl48f"))))
