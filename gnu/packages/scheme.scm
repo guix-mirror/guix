@@ -182,7 +182,10 @@
                "03m7cc035w3avs91j2pcz9f15ssgvgp3rm045d1vbydqrkzfyw8k"))
              ("i686-linux"
               (base32
-               "05sjyz90xxfnmi87qv8x0yx0fcallnzl1dciygdafp317pn489is"))))))))
+               "05sjyz90xxfnmi87qv8x0yx0fcallnzl1dciygdafp317pn489is"))
+             (_
+               (base32
+                ""))))))))
 
     ;; Fails to build on MIPS, see <http://bugs.gnu.org/18221>.
     ;; Also, the portable C version of MIT/GNU Scheme did not work in time for
