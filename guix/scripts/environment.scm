@@ -162,6 +162,8 @@ COMMAND or an interactive shell in that environment.\n"))
   (newline)
   (show-build-options-help)
   (newline)
+  (show-transformation-options-help)
+  (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "
@@ -261,7 +263,9 @@ COMMAND or an interactive shell in that environment.\n"))
          (option '("bootstrap") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'bootstrap? #t result)))
-         %standard-build-options))
+
+         (append %transformation-options
+                 %standard-build-options)))
 
 (define (pick-all alist key)
   "Return a list of values in ALIST associated with KEY."
@@ -274,7 +278,7 @@ COMMAND or an interactive shell in that environment.\n"))
             (_ memo)))
         '() alist))
 
-(define (options/resolve-packages opts)
+(define (options/resolve-packages store opts)
   "Return OPTS with package specification strings replaced by manifest entries
 for the corresponding packages."
   (define (manifest-entry=? e1 e2)
@@ -282,15 +286,21 @@ for the corresponding packages."
          (string=? (manifest-entry-output e1)
                    (manifest-entry-output e2))))
 
+  (define transform
+    (cut (options->transformation opts) store <>))
+
+  (define* (package->manifest-entry* package #:optional (output "out"))
+    (package->manifest-entry (transform package) output))
+
   (define (packages->outputs packages mode)
     (match packages
       ((? package? package)
        (if (eq? mode 'ad-hoc-package)
-           (list (package->manifest-entry package))
+           (list (package->manifest-entry* package))
            (package-environment-inputs package)))
       (((? package? package) (? string? output))
        (if (eq? mode 'ad-hoc-package)
-           (list (package->manifest-entry package output))
+           (list (package->manifest-entry* package output))
            (package-environment-inputs package)))
       ((lst ...)
        (append-map (cut packages->outputs <> mode) lst))))
@@ -301,7 +311,7 @@ for the corresponding packages."
                   (('package 'ad-hoc-package (? string? spec))
                    (let-values (((package output)
                                  (specification->package+output spec)))
-                     (list (package->manifest-entry package output))))
+                     (list (package->manifest-entry* package output))))
                   (('package 'package (? string? spec))
                    (package-environment-inputs
                     (specification->package+output spec)))
@@ -654,7 +664,6 @@ message if any test fails."
                                ;; within the container.
                                '("/bin/sh")
                                (list %default-shell))))
-           (manifest   (options/resolve-packages opts))
            (mappings   (pick-all opts 'file-system-mapping)))
 
       (when container? (assert-container-features))
@@ -666,6 +675,9 @@ message if any test fails."
 
       (with-store store
         (with-status-report print-build-event
+          (define manifest
+            (options/resolve-packages store opts))
+
           (set-build-options-from-command-line store opts)
 
           ;; Use the bootstrap Guile when requested.

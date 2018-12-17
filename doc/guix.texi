@@ -8350,7 +8350,8 @@ guix environment --container --share=$HOME=/exchange --ad-hoc guile -- guile
 
 @command{guix environment}
 also supports all of the common build options that @command{guix
-build} supports (@pxref{Common Build Options}).
+build} supports (@pxref{Common Build Options}) as well as package
+transformation options (@pxref{Package Transformation Options}).
 
 
 @node Invoking guix publish

@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -117,6 +117,18 @@ fi
 # Make sure we can build the environment of 'guix'.  There may be collisions
 # in its profile (e.g., for 'gzip'), but we have to accept them.
 guix environment guix --bootstrap -n
+
+# Try program transformation options.
+mkdir "$tmpdir/emacs-36.8"
+drv="`guix environment --ad-hoc emacs -n 2>&1 | grep 'emacs.*\.drv'`"
+transformed_drv="`guix environment --ad-hoc emacs --with-source="$tmpdir/emacs-36.8" -n 2>&1 | grep 'emacs.*\.drv'`"
+test -n "$drv"
+test "$drv" != "$transformed_drv"
+case "$transformed_drv" in
+    *-emacs-36.8.drv) true;;
+    *)                false;;
+esac
+rmdir "$tmpdir/emacs-36.8"
 
 if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then
