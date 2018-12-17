@@ -1608,8 +1608,7 @@ of supported upstream metrics systems simultaneously.")
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "1fsif2jmkrrgiawsd8r6sxrqvh01fvrmdhas0p540a6i9fby3yda"))
-       (patches (search-patches "ansible-wrap-program-hack.patch"))))
+         "1fsif2jmkrrgiawsd8r6sxrqvh01fvrmdhas0p540a6i9fby3yda"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -1626,6 +1625,42 @@ of supported upstream metrics systems simultaneously.")
        ("python-jinja2" ,python-jinja2)
        ("python-pyyaml" ,python-pyyaml)
        ("python-paramiko" ,python-paramiko)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Several ansible commands (ansible-config, ansible-console, etc.)
+         ;; are just symlinks to a single ansible executable. The ansible
+         ;; executable behaves differently based on the value of
+         ;; sys.argv[0]. This does not work well with our wrap phase, and
+         ;; therefore the following two phases are required as a workaround.
+         (add-after 'unpack 'hide-wrapping
+           (lambda _
+             ;; Overwrite sys.argv[0] to hide the wrapper script from it.
+             (substitute* "bin/ansible"
+               (("import traceback" all)
+                (string-append all "
+import re
+sys.argv[0] = re.sub(r'\\.([^/]*)-real$', r'\\1', sys.argv[0])
+")))
+             #t))
+         (add-after 'wrap 'fix-symlinks
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (subprogram)
+                  ;; The symlinks point to the ansible wrapper script. Make
+                  ;; them point to the real executable (.ansible-real).
+                  (delete-file (string-append out "/bin/.ansible-" subprogram "-real"))
+                  (symlink (string-append out "/bin/.ansible-real")
+                           (string-append out "/bin/.ansible-" subprogram "-real"))
+                  ;; The wrapper scripts of the symlinks invoke the ansible
+                  ;; wrapper script. Fix them to invoke the correct executable.
+                  (substitute* (string-append out "/bin/ansible-" subprogram)
+                    (("/bin/ansible")
+                     (string-append "/bin/.ansible-" subprogram "-real"))))
+                (list "config" "console" "doc" "galaxy"
+                      "inventory" "playbook" "pull" "vault")))
+             #t)))))
     (home-page "https://www.ansible.com/")
     (synopsis "Radically simple IT automation")
     (description "Ansible is a radically simple IT automation system.  It
