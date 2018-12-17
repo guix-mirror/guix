@@ -384,7 +384,13 @@ functional, imperative and object-oriented styles of programming.")
                        ;; Use bwrap from the store directly.
                        (substitute* "src/state/shellscripts/bwrap.sh"
                          (("-v bwrap") (string-append "-v " bwrap))
-                         (("exec bwrap") (string-append "exec " bwrap)))
+                         (("exec bwrap") (string-append "exec " bwrap))
+                         ;; Mount /gnu and /run/current-system in the
+                         ;; isolated environment when building with opam.
+                         ;; This is necessary for packages to find external
+                         ;; dependencies, such as a C compiler, make, etc...
+                         (("^add_mounts ro /usr")
+                          "add_mounts ro /gnu /run/current-system /usr"))
                        (substitute* "src/client/opamInitDefaults.ml"
                          (("\"bwrap\"") (string-append "\"" bwrap "\"")))
                        ;; Build dependencies
