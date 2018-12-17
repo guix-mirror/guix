@@ -3985,6 +3985,12 @@ as equations, scalars, vectors, and matrices.")
                             "/lib/python2.7/site-packages"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-compatability
+           ;; Versions after 4.8.3 have immintrin.h IFDEFed for Windows only.
+           (lambda _
+             (substitute* "src/util/mpz.cpp"
+               (("#include <immintrin.h>") ""))
+             #t))
          (add-before 'configure 'bootstrap
            (lambda _
              (zero?
