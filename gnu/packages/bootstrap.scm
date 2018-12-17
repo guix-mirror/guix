@@ -50,8 +50,7 @@
             %bootstrap-glibc
             %bootstrap-inputs
             %bootstrap-mescc-tools
-            %bootstrap-mes
-            %srfi-43))
+            %bootstrap-mes))
 
 ;;; Commentary:
 ;;;
@@ -712,15 +711,6 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
     (home-page #f)
     (license gpl3+)))
 
-(define %srfi-43
-  (origin
-    (method url-fetch)
-    (uri "http://git.savannah.gnu.org/cgit/guile.git/plain/module/srfi/srfi-43.scm?h=stable-2.0")
-    (file-name "srfi-43.scm")
-    (sha256
-     (base32
-      "0rnkppwdkxbzkgp9s9ccmby9f7p3ijxjlmvj0pzqxwmrmpy7jwmb"))))
-
 (define (%bootstrap-inputs)
   ;; The initial, pre-built inputs.  From now on, we can start building our
   ;; own packages.
@@ -728,8 +718,7 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
         ((or "i686-linux" "x86_64-linux")
          `(("linux-libre-headers" ,%bootstrap-linux-libre-headers)
            ("bootstrap-mescc-tools" ,%bootstrap-mescc-tools)
-           ("mes" ,%bootstrap-mes)
-           ("srfi-43" ,%srfi-43 )))
+           ("mes" ,%bootstrap-mes)))
         (_
          `(("libc" ,%bootstrap-glibc)
            ("gcc" ,%bootstrap-gcc)
