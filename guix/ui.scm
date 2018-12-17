@@ -502,14 +502,19 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
            (list (strerror (car errno)) file)
            (list errno))))
 
-(define-syntax-rule (error-reporting-wrapper proc (args ...) file)
+(define-syntax apply-formals
+  (syntax-rules ()
+    ((_ proc (args ...)) (proc args ...))
+    ((_ proc (arg1 args ... . rest)) (apply proc arg1 args ... rest))))
+
+(define-syntax-rule (error-reporting-wrapper proc formals file)
   "Wrap PROC such that its 'system-error' exceptions are augmented to mention
 FILE."
   (let ((real-proc (@ (guile) proc)))
-    (lambda (args ...)
+    (lambda formals
       (catch 'system-error
         (lambda ()
-          (real-proc args ...))
+          (apply-formals real-proc formals))
         (augmented-system-error-handler file)))))
 
 (set! symlink
@@ -528,6 +533,8 @@ FILE."
 (set! delete-file
   (error-reporting-wrapper delete-file (file) file))
 
+(set! execlp
+  (error-reporting-wrapper execlp (filename . args) filename))
 
 (define (make-regexp* regexp . flags)
   "Like 'make-regexp' but error out if REGEXP is invalid, reporting the error
