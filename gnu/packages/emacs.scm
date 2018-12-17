@@ -11274,7 +11274,7 @@ device tree files.")
 (define-public emacs-daemons
   (package
     (name "emacs-daemons")
-    (version "1.2.0")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
@@ -11284,7 +11284,7 @@ device tree files.")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "00ijgm22ck76gw0x79krl05yy0m8a502yfakazfy5xhpn1zi6ab7"))))
+         "00bkzfaw3bqykcks610vk9wlpa2z360xn32bpsrycacwfv29j7g4"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/cbowdon/daemons.el")
     (synopsis "Emacs UI for managing init system services")
