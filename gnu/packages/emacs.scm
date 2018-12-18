@@ -1820,7 +1820,7 @@ management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
 (define-public emacs-build-farm
   (package
     (name "emacs-build-farm")
-    (version "0.2.1")
+    (version "0.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1829,7 +1829,7 @@ management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1a4ky0hca26p7f3i2c2s5517ygkyaaz52vs0vxy6f5q95rhlgdhd"))))
+                "0i0bwbav5861j2y15j9nd5m9rdqg9q97zgcbld8pivr9nyxy63lz"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("bui" ,emacs-bui)
