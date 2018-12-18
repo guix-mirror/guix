@@ -585,12 +585,12 @@ Info search path.)
 
 @item
 @cindex substitutes, authorization thereof
-To use substitutes from @code{hydra.gnu.org} or one of its mirrors
+To use substitutes from @code{@value{SUBSTITUTE-SERVER}} or one of its mirrors
 (@pxref{Substitutes}), authorize them:
 
 @example
 # guix archive --authorize < \
-     ~root/.config/guix/current/share/guix/hydra.gnu.org.pub
+     ~root/.config/guix/current/share/guix/@value{SUBSTITUTE-SERVER}.pub
 @end example
 
 @item
