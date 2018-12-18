@@ -3053,10 +3053,10 @@ The meta-data file should contain a simple S-expression like this:
  (version 0)
  (dependencies
   (channel
-   (name 'some-collection)
+   (name some-collection)
    (url "https://example.org/first-collection.git"))
   (channel
-   (name 'some-other-collection)
+   (name some-other-collection)
    (url "https://example.org/second-collection.git")
    (branch "testing"))))
 @end lisp
