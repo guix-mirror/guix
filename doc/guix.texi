@@ -17805,7 +17805,7 @@ A simple services setup for nginx with php can look like this:
                            (root "/srv/http/")
                            (locations
                             (list (nginx-php-location)))
-                           (https-port #f)
+                           (listen '("80"))
                            (ssl-certificate #f)
                            (ssl-certificate-key #f)))
                  %base-services))
