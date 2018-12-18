@@ -1721,7 +1721,7 @@ and stored in memory.")
 (define-public emacs-bui
   (package
     (name "emacs-bui")
-    (version "1.2.0")
+    (version "1.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1730,7 +1730,7 @@ and stored in memory.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0ixia5s41f2nbal3wsixacbhbc0mk9yb75ir1amqakip30sq4apv"))))
+                "0sszdl4kvqbihdh8d7mybpp0d8yw2p3gyiipjcxz9xhvvmw3ww4x"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("dash" ,emacs-dash)))
