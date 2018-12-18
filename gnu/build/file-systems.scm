@@ -535,10 +535,13 @@ were found."
          (sleep 3)
          (reboot))
         ('fatal-error
-         (format (current-error-port)
-                 "File system check on ~a failed; spawning Bourne-like REPL~%"
+         (format (current-error-port) "File system check on ~a failed~%"
                  device)
-         (start-repl %bournish-language)))
+
+         ;; Spawn a REPL only if someone would be able to interact with it.
+         (when (isatty? (current-input-port))
+           (format (current-error-port) "Spawning Bourne-like REPL.~%")
+           (start-repl %bournish-language))))
       (format (current-error-port)
               "No file system check procedure for ~a; skipping~%"
               device)))
