@@ -541,7 +541,13 @@ were found."
          ;; Spawn a REPL only if someone would be able to interact with it.
          (when (isatty? (current-input-port))
            (format (current-error-port) "Spawning Bourne-like REPL.~%")
-           (start-repl %bournish-language))))
+
+           ;; 'current-output-port' is typically connected to /dev/klog (in
+           ;; PID 1), but here we want to make sure we talk directly to the
+           ;; user.
+           (with-output-to-file "/dev/console"
+             (lambda ()
+               (start-repl %bournish-language))))))
       (format (current-error-port)
               "No file system check procedure for ~a; skipping~%"
               device)))
