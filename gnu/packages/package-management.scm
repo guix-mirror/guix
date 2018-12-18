@@ -934,15 +934,15 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2018.7")
+    (version "2018.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/ostreedev/ostree/releases/download/v"
-                    version "/libostree-" version ".tar.xz"))
+                    (version-major+minor version) "/libostree-" version ".tar.xz"))
               (sha256
                (base32
-                "1nc310lv36psxn5yslkxlgi9gjxwqpwqzkg2pldgpwrlv6gkagj8"))))
+                "01mygpkbl9sk2vr3hjbpih6qlg8lwx0q5lklm09f7jfwfpnwyqzj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
