@@ -1,0 +1,20 @@
+Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+
+This patch forces the use of adaptive-wrap. This feature is optional but we
+prefer to enable it by default.
+
+diff --git a/wordnut.el b/wordnut.el
+index 0ae86ad..72f9221 100644
+--- a/wordnut.el
++++ b/wordnut.el
+@@ -4,6 +4,7 @@
+ (require 'subr-x)
+ (require 'outline)
+ (require 'imenu)
++(require 'adaptive-wrap)
+ 
+ (require 'wordnut-history)
+ 
+-- 
+2.17.1
+

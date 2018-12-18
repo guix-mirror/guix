@@ -12828,3 +12828,29 @@ testing Emacs Lisp code.  It allows to group related tests so they can share
 common set-up and tear-down code, and allows the programmer to \"spy\" on
 functions to ensure they are called with the right arguments during testing.")
     (license license:gpl3+)))
+
+(define-public emacs-wordnut
+  (let ((commit "feac531404041855312c1a046bde7ea18c674915")
+        (revision "0"))
+    (package
+      (name "emacs-wordnut")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/gromnitsky/wordnut")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "1jl0b6g64a9w0q7bfvwha67vgws5xd15b7mkfyb5gkz3pymqhfxn"))
+                (patches
+                 (search-patches "emacs-wordnut-require-adaptive-wrap.patch"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("wordnet" ,wordnet)
+         ("emacs-adaptive-wrap" ,emacs-adaptive-wrap)))
+      (synopsis "Major mode for WordNet")
+      (description "This Emacs package provides an interface for
+@code{wordnet}.  Features include completion, if the query is not found
+too ambiguous and navigation in the result buffer.")
+      (license license:gpl3+))))
