@@ -976,7 +976,9 @@ from other CLXes around the net.")
                     version ".tar.gz"))
               (sha256
                (base32 "177gxfk4c127i9crghx6fmkipznhgylvzgnjb2pna38g21gg6s39"))
-              (file-name (string-append "stumpwm-" version ".tar.gz"))))
+              (file-name (string-append "stumpwm-" version ".tar.gz"))
+              (patches
+               (search-patches "stumpwm-fix-broken-read-one-line.patch"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs `(("fiasco" ,sbcl-fiasco)))
     (inputs `(("cl-ppcre" ,sbcl-cl-ppcre)
