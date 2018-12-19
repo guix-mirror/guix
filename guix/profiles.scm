@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -788,7 +788,10 @@ MANIFEST."
 
   (gexp->derivation "info-dir" build
                     #:local-build? #t
-                    #:substitutable? #f))
+                    #:substitutable? #f
+                    #:properties
+                    `((type . profile-hook)
+                      (hook . info-dir))))
 
 (define (ghc-package-cache-file manifest)
   "Return a derivation that builds the GHC 'package.cache' file for all the
@@ -842,7 +845,10 @@ entries of MANIFEST, or #f if MANIFEST does not have any GHC packages."
              (map manifest-entry-name (manifest-entries manifest)))
         (gexp->derivation "ghc-package-cache" build
                           #:local-build? #t
-                          #:substitutable? #f)
+                          #:substitutable? #f
+                          #:properties
+                          `((type . profile-hook)
+                            (hook . ghc-package-cache)))
         (return #f))))
 
 (define (ca-certificate-bundle manifest)
@@ -910,7 +916,10 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
 
   (gexp->derivation "ca-certificate-bundle" build
                     #:local-build? #t
-                    #:substitutable? #f))
+                    #:substitutable? #f
+                    #:properties
+                    `((type . profile-hook)
+                      (hook . ca-certificate-bundle))))
 
 (define (glib-schemas manifest)
   "Return a derivation that unions all schemas from manifest entries and
@@ -960,7 +969,10 @@ creates the Glib 'gschemas.compiled' file."
     (if %glib
         (gexp->derivation "glib-schemas" build
                           #:local-build? #t
-                          #:substitutable? #f)
+                          #:substitutable? #f
+                          #:properties
+                          `((type . profile-hook)
+                            (hook . glib-schemas)))
         (return #f))))
 
 (define (gtk-icon-themes manifest)
@@ -1016,7 +1028,10 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
     (if %gtk+
         (gexp->derivation "gtk-icon-themes" build
                           #:local-build? #t
-                          #:substitutable? #f)
+                          #:substitutable? #f
+                          #:properties
+                          `((type . profile-hook)
+                            (hook . gtk-icon-themes)))
         (return #f))))
 
 (define (gtk-im-modules manifest)
@@ -1088,7 +1103,10 @@ for both major versions of GTK+."
       (if (or gtk+ gtk+-2)
           (gexp->derivation "gtk-im-modules" gexp
                             #:local-build? #t
-                            #:substitutable? #f)
+                            #:substitutable? #f
+                            #:properties
+                            `((type . profile-hook)
+                              (hook . gtk-im-modules)))
           (return #f)))))
 
 (define (xdg-desktop-database manifest)
@@ -1126,7 +1144,10 @@ MIME type."
     (if glib
         (gexp->derivation "xdg-desktop-database" build
                           #:local-build? #t
-                          #:substitutable? #f)
+                          #:substitutable? #f
+                          #:properties
+                          `((type . profile-hook)
+                            (hook . xdg-desktop-database)))
         (return #f))))
 
 (define (xdg-mime-database manifest)
@@ -1165,7 +1186,10 @@ entries.  It's used to query the MIME type of a given file."
     (if glib
         (gexp->derivation "xdg-mime-database" build
                           #:local-build? #t
-                          #:substitutable? #f)
+                          #:substitutable? #f
+                          #:properties
+                          `((type . profile-hook)
+                            (hook . xdg-mime-database)))
         (return #f))))
 
 ;; Several font packages may install font files into same directory, so
@@ -1236,7 +1260,10 @@ files for the fonts of the @var{manifest} entries."
                                 (guix build union)
                                 (srfi srfi-26))
                     #:local-build? #t
-                    #:substitutable? #f))
+                    #:substitutable? #f
+                    #:properties
+                    `((type . profile-hook)
+                      (hook . fonts-dir))))
 
 (define (manual-database manifest)
   "Return a derivation that builds the manual page database (\"mandb\") for
@@ -1306,7 +1333,10 @@ the entries in MANIFEST."
                     ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=29654#23>.
                     #:env-vars `(("MALLOC_PERTURB_" . "1"))
 
-                    #:local-build? #t))
+                    #:local-build? #t
+                    #:properties
+                    `((type . profile-hook)
+                      (hook . manual-database))))
 
 (define %default-profile-hooks
   ;; This is the list of derivation-returning procedures that are called by
