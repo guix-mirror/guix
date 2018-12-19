@@ -862,7 +862,22 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
     (build-system python-build-system)
     (arguments
      ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
-     `(#:tests? #f))
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-documentation
+           (lambda _
+             (invoke "make" "docs")))
+         (add-after 'build-documentation 'install-documentation
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name)))
+               (mkdir-p doc)
+               (copy-recursively "docs/_build/html" doc))
+             #t)))))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
     (propagated-inputs
      `(("python-aiohttp" ,python-aiohttp)
        ("python-attr" ,python-attr)
