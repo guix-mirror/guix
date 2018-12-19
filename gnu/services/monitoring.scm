@@ -530,15 +530,14 @@ $DB['PASSWORD'] = '" (if (string-null? db-password)
                              (raise (condition
                                      (&message
                                       (message "\
-You must provide either 'db-secret-file' or 'db-password'."))))
+you must provide either 'db-secret-file' or 'db-password'"))))
                              (string-trim-both
                               (with-input-from-file db-secret-file
                                 read-string)))
                          (begin
-                           (display-hint "
-Consider use `db-secret-file' instead of `db-password' and unset
-`db-password' for security in `zabbix-front-end-configuration'.
-")
+                           (display-hint "\
+Consider using @code{db-secret-file} instead of @code{db-password} and unset
+@code{db-password} for security in @code{zabbix-front-end-configuration}.")
                            db-password)) "';
 
 // Schema name. Used for IBM DB2 and PostgreSQL.
