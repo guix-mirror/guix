@@ -847,7 +847,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.50.0")
+    (version "0.51.0")
     (source
      (origin
        (method git-fetch)
@@ -858,7 +858,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0f24ihglmzphy30pgc49w0rxmsjc76mgcggg078cfsz7xrrk13gf"))))
+         "074mh2kh3s00ib0h99050ss3j4c51v57py6dzm7crida6l0iydbv"))))
     (build-system python-build-system)
     (arguments
      ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
