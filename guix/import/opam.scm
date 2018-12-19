@@ -33,7 +33,8 @@
   #:use-module (guix utils)
   #:use-module (guix import utils)
   #:use-module ((guix licenses) #:prefix license:)
-  #:export (opam->guix-package))
+  #:export (opam->guix-package
+            opam-recursive-import))
 
 ;; Define a PEG parser for the opam format
 (define-peg-pattern SP none (or " " "\n"))
@@ -128,7 +129,6 @@ path to the repository."
     (else (string-append "ocaml-" name))))
 
 (define (metadata-ref file lookup)
-  (pk 'file file 'lookup lookup)
   (fold (lambda (record acc)
           (match record
             ((record key val)
@@ -166,6 +166,21 @@ path to the repository."
     (('conditional-value val condition)
      (if (native? condition) (dependency->input val) ""))))
 
+(define (dependency->name dependency)
+  (match dependency
+    (('string-pat str) str)
+    (('conditional-value val condition)
+     (dependency->name val))))
+
+(define (dependency-list->names lst)
+  (filter
+    (lambda (name)
+      (not (or
+             (string-prefix? "conf-" name)
+             (equal? name "ocaml")
+             (equal? name "findlib"))))
+    (map dependency->name lst)))
+
 (define (ocaml-names->guix-names names)
   (map ocaml-name->guix-name
        (remove (lambda (name)
@@ -193,32 +208,41 @@ path to the repository."
 (define (opam->guix-package name)
   (and-let* ((repository (get-opam-repository))
              (version (find-latest-version name repository))
-             (file (string-append repository "/packages/" name "/" name "." (pk 'version version) "/opam"))
+             (file (string-append repository "/packages/" name "/" name "." version "/opam"))
              (opam-content (get-metadata file))
-             (url-dict (metadata-ref (pk 'metadata opam-content) "url"))
+             (url-dict (metadata-ref opam-content "url"))
              (source-url (metadata-ref url-dict "src"))
              (requirements (metadata-ref opam-content "depends"))
+             (dependencies (dependency-list->names requirements))
              (inputs (dependency-list->inputs (depends->inputs requirements)))
              (native-inputs (dependency-list->inputs (depends->native-inputs requirements))))
         (call-with-temporary-output-file
           (lambda (temp port)
             (and (url-fetch source-url temp)
-                 `(package
-                    (name ,(ocaml-name->guix-name name))
-                    (version ,(metadata-ref opam-content "version"))
-                    (source
-                      (origin
-                        (method url-fetch)
-                        (uri ,source-url)
-                        (sha256 (base32 ,(guix-hash-url temp)))))
-                    (build-system ocaml-build-system)
-                    ,@(if (null? inputs)
-                        '()
-                        `((inputs ,(list 'quasiquote inputs))))
-                    ,@(if (null? native-inputs)
-                        '()
-                        `((native-inputs ,(list 'quasiquote native-inputs))))
-                    (home-page ,(metadata-ref opam-content "homepage"))
-                    (synopsis ,(metadata-ref opam-content "synopsis"))
-                    (description ,(metadata-ref opam-content "description"))
-                    (license #f)))))))
+                 (values
+                  `(package
+                     (name ,(ocaml-name->guix-name name))
+                     (version ,(metadata-ref opam-content "version"))
+                     (source
+                       (origin
+                         (method url-fetch)
+                         (uri ,source-url)
+                         (sha256 (base32 ,(guix-hash-url temp)))))
+                     (build-system ocaml-build-system)
+                     ,@(if (null? inputs)
+                         '()
+                         `((inputs ,(list 'quasiquote inputs))))
+                     ,@(if (null? native-inputs)
+                         '()
+                         `((native-inputs ,(list 'quasiquote native-inputs))))
+                     (home-page ,(metadata-ref opam-content "homepage"))
+                     (synopsis ,(metadata-ref opam-content "synopsis"))
+                     (description ,(metadata-ref opam-content "description"))
+                     (license #f))
+                  dependencies))))))
+
+(define (opam-recursive-import package-name)
+  (recursive-import package-name #f
+                    #:repo->guix-package (lambda (name repo)
+                                           (opam->guix-package name))
+                    #:guix-name ocaml-name->guix-name))

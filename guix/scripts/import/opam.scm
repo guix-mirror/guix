@@ -25,6 +25,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
+  #:use-module (srfi srfi-41)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (guix-import-opam))
@@ -43,6 +44,8 @@ Import and convert the opam package for PACKAGE-NAME.\n"))
   (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "
+  -r, --recursive        import packages recursively"))
+  (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
@@ -56,6 +59,9 @@ Import and convert the opam package for PACKAGE-NAME.\n"))
          (option '(#\V "version") #f #f
                  (lambda args
                    (show-version-and-exit "guix import opam")))
+         (option '(#\r "recursive") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'recursive #t result)))
          %standard-import-options))
 
 
@@ -81,11 +87,22 @@ Import and convert the opam package for PACKAGE-NAME.\n"))
                            (reverse opts))))
     (match args
       ((package-name)
-       (let ((sexp (opam->guix-package package-name)))
-         (unless sexp
-           (leave (G_ "failed to download meta-data for package '~a'~%")
-                  package-name))
-         sexp))
+       (if (assoc-ref opts 'recursive)
+           ;; Recursive import
+           (map (match-lambda
+                  ((and ('package ('name name) . rest) pkg)
+                   `(define-public ,(string->symbol name)
+                      ,pkg))
+                  (_ #f))
+                (reverse
+                 (stream->list
+                  (opam-recursive-import package-name))))
+           ;; Single import
+           (let ((sexp (opam->guix-package package-name)))
+             (unless sexp
+               (leave (G_ "failed to download meta-data for package '~a'~%")
+                      package-name))
+             sexp)))
       (()
        (leave (G_ "too few arguments~%")))
       ((many ...)
