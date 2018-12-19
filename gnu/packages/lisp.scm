@@ -978,6 +978,8 @@ from other CLXes around the net.")
                (base32 "177gxfk4c127i9crghx6fmkipznhgylvzgnjb2pna38g21gg6s39"))
               (file-name (string-append "stumpwm-" version ".tar.gz"))
               (patches
+               ;; This patch is included in the post-18.11 git master tree
+               ;; and can be removed when we move to the next release.
                (search-patches "stumpwm-fix-broken-read-one-line.patch"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs `(("fiasco" ,sbcl-fiasco)))
