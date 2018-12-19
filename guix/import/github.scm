@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (guix utils)
   #:use-module ((guix download) #:prefix download:)
+  #:use-module ((guix git-download) #:prefix download:)
   #:use-module (guix import utils)
   #:use-module (guix import json)
   #:use-module (guix packages)
@@ -52,6 +54,7 @@ false if none is recognized"
                                       (github-user-slash-repository url)))
               (repo    (github-repository url)))
           (cond
+           ((string-suffix? ".git" url) url)
            ((string-suffix? (string-append "/tarball/v" version) url)
             (string-append prefix "/tarball/v" new-version))
            ((string-suffix? (string-append "/tarball/" version) url)
@@ -86,26 +89,29 @@ false if none is recognized"
            (#t #f))) ; Some URLs are not recognised.
         #f))
 
-  (let ((source-url (and=> (package-source old-package) origin-uri))
+  (let ((source-uri (and=> (package-source old-package) origin-uri))
         (fetch-method (and=> (package-source old-package) origin-method)))
-    (if (eq? fetch-method download:url-fetch)
-        (match source-url
-          ((? string?)
-           (updated-url source-url))
-          ((source-url ...)
-           (find updated-url source-url)))
-        #f)))
+    (cond
+     ((eq? fetch-method download:url-fetch)
+      (match source-uri
+             ((? string?)
+              (updated-url source-uri))
+             ((source-uri ...)
+              (find updated-url source-uri))))
+     ((eq? fetch-method download:git-fetch)
+      (updated-url (download:git-reference-url source-uri)))
+     (else #f))))
 
 (define (github-package? package)
   "Return true if PACKAGE is a package from GitHub, else false."
-  (not (eq? #f (updated-github-url package "dummy"))))
+  (->bool (updated-github-url package "dummy")))
 
 (define (github-repository url)
   "Return a string e.g. bedtools2 of the name of the repository, from a string
 URL of the form 'https://github.com/arq5x/bedtools2/archive/v2.24.0.tar.gz'"
   (match (string-split (uri-path (string->uri url)) #\/)
     ((_ owner project . rest)
-     (string-append project))))
+     (string-append (basename project ".git")))))
 
 (define (github-user-slash-repository url)
   "Return a string e.g. arq5x/bedtools2 of the owner and the name of the
@@ -113,7 +119,7 @@ repository separated by a forward slash, from a string URL of the form
 'https://github.com/arq5x/bedtools2/archive/v2.24.0.tar.gz'"
   (match (string-split (uri-path (string->uri url)) #\/)
     ((_ owner project . rest)
-     (string-append owner "/" project))))
+     (string-append owner "/" (basename project ".git")))))
 
 (define %github-token
   ;; Token to be passed to Github.com to avoid the 60-request per hour
@@ -213,6 +219,8 @@ https://github.com/settings/tokens"))
     (match (origin-uri origin)
       ((? string? url)
        url)                                       ;surely a github.com URL
+      ((? download:git-reference? ref)
+       (download:git-reference-url ref))
       ((urls ...)
        (find (cut string-contains <> "github.com") urls))))
 
