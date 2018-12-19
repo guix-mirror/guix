@@ -7392,6 +7392,22 @@ are many packages, though, for which it lacks a method to determine
 whether a new upstream release is available.  However, the mechanism is
 extensible, so feel free to get in touch with us to add a new method!
 
+@table @code
+
+@item --recursive
+Consider the packages specified, and all the packages upon which they depend.
+
+@example
+$ guix refresh --recursive coreutils
+gnu/packages/acl.scm:35:2: warning: no updater for acl
+gnu/packages/m4.scm:30:12: info: 1.4.18 is already the latest version of m4
+gnu/packages/xml.scm:68:2: warning: no updater for expat
+gnu/packages/multiprecision.scm:40:12: info: 6.1.2 is already the latest version of gmp
+@dots{}
+@end example
+
+@end table
+
 Sometimes the upstream name differs from the package name used in Guix,
 and @command{guix refresh} needs a little help.  Most updaters honor the
 @code{upstream-name} property in package definitions, which can be used
@@ -7564,6 +7580,22 @@ hop@@2.4.0 geiser@@0.4 notmuch@@0.18 mu@@0.9.9.5 cflow@@1.4 idutils@@4.6 @dots{}
 
 The command above lists a set of packages that could be built to check
 for compatibility with an upgraded @code{flex} package.
+
+@table @code
+
+@item --list-transitive
+List all the packages which one or more packages depend upon.
+
+@example
+$ guix refresh --list-transitive flex
+flex@2.6.4 depends on the following 25 packages: perl@5.28.0 help2man@1.47.6
+bison@3.0.5 indent@2.2.10 tar@1.30 gzip@1.9 bzip2@1.0.6 xz@5.2.4 file@5.33 @dote{}
+@end example
+
+@end table
+
+The command above lists a set of packages which, when changed, would cause
+@code{flex} to be rebuilt.
 
 The following options can be used to customize GnuPG operation:
 
