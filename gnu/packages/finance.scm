@@ -889,12 +889,15 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
     (home-page "https://git.duniter.org/clients/python/duniterpy")
     (synopsis "Python implementation of Duniter API")
     (description "@code{duniterpy} is an implementation of
-@uref{https://github.com/duniter/duniter/, duniter} API. Its
+@uref{https://github.com/duniter/duniter/, duniter} API.  Its
 main features are:
 @itemize
-@item Supports Duniter's Basic Merkle API and protocol
-@item Asynchronous
+@item Support Duniter's Basic Merkle API and protocol
+@item Asynchronous/synchronous without threads
+@item Support HTTP, HTTPS and Web Socket transport for Basic Merkle API
+@item Support Elasticsearch Duniter4j API
 @item Duniter signing key
+@item Sign/verify and encrypt/decrypt messages with the Duniter credentials
 @end itemize")
     (license license:gpl3+)))
 
