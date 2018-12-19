@@ -42,7 +42,8 @@
             %opam-updater))
 
 ;; Define a PEG parser for the opam format
-(define-peg-pattern SP none (or " " "\n"))
+(define-peg-pattern comment none (and "#" (* STRCHR) "\n"))
+(define-peg-pattern SP none (or " " "\n" comment))
 (define-peg-pattern SP2 body (or " " "\n"))
 (define-peg-pattern QUOTE none "\"")
 (define-peg-pattern QUOTE2 body "\"")
