@@ -27,14 +27,19 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (web uri)
+  #:use-module (guix build-system)
+  #:use-module (guix build-system ocaml)
   #:use-module (guix http-client)
   #:use-module (guix git)
   #:use-module (guix ui)
+  #:use-module (guix packages)
+  #:use-module (guix upstream)
   #:use-module (guix utils)
   #:use-module (guix import utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:export (opam->guix-package
-            opam-recursive-import))
+            opam-recursive-import
+            %opam-updater))
 
 ;; Define a PEG parser for the opam format
 (define-peg-pattern SP none (or " " "\n"))
@@ -205,11 +210,17 @@ path to the repository."
       (list dependency (list 'unquote (string->symbol dependency))))
     (ocaml-names->guix-names lst)))
 
-(define (opam->guix-package name)
+(define (opam-fetch name)
   (and-let* ((repository (get-opam-repository))
              (version (find-latest-version name repository))
-             (file (string-append repository "/packages/" name "/" name "." version "/opam"))
-             (opam-content (get-metadata file))
+             (file (string-append repository "/packages/" name "/" name "." version "/opam")))
+    `(("metadata" ,@(get-metadata file))
+      ("version" . ,version))))
+
+(define (opam->guix-package name)
+  (and-let* ((opam-file (opam-fetch name))
+             (version (assoc-ref opam-file "version"))
+             (opam-content (assoc-ref opam-file "metadata"))
              (url-dict (metadata-ref opam-content "url"))
              (source-url (metadata-ref url-dict "src"))
              (requirements (metadata-ref opam-content "depends"))
@@ -222,7 +233,7 @@ path to the repository."
                  (values
                   `(package
                      (name ,(ocaml-name->guix-name name))
-                     (version ,(metadata-ref opam-content "version"))
+                     (version ,version)
                      (source
                        (origin
                          (method url-fetch)
@@ -246,3 +257,41 @@ path to the repository."
                     #:repo->guix-package (lambda (name repo)
                                            (opam->guix-package name))
                     #:guix-name ocaml-name->guix-name))
+
+(define (guix-package->opam-name package)
+  "Given an OCaml PACKAGE built from OPAM, return the name of the
+package in OPAM."
+  (let ((upstream-name (assoc-ref
+                         (package-properties package)
+                         'upstream-name))
+        (name (package-name package)))
+    (cond
+      (upstream-name upstream-name)
+      ((string-prefix? "ocaml-" name) (substring name 6))
+      (else name))))
+
+(define (opam-package? package)
+  "Return true if PACKAGE is an OCaml package from OPAM"
+  (and
+    (equal? (build-system-name (package-build-system package)) 'ocaml)
+    (not (string-prefix? "ocaml4" (package-name package)))))
+
+(define (latest-release package)
+  "Return an <upstream-source> for the latest release of PACKAGE."
+  (and-let* ((opam-name (guix-package->opam-name package))
+             (opam-file (opam-fetch opam-name))
+             (version (assoc-ref opam-file "version"))
+             (opam-content (assoc-ref opam-file "metadata"))
+             (url-dict (metadata-ref opam-content "url"))
+             (source-url (metadata-ref url-dict "src")))
+    (upstream-source
+      (package (package-name package))
+      (version version)
+      (urls (list source-url)))))
+
+(define %opam-updater
+  (upstream-updater
+    (name 'opam)
+    (description "Updater for OPAM packages")
+    (pred opam-package?)
+    (latest latest-release)))
