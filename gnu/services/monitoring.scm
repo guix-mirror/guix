@@ -29,9 +29,11 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix records)
+  #:use-module ((guix ui) #:select (display-hint))
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-35)
   #:export (darkstat-configuration
             prometheus-node-exporter-configuration
             darkstat-service-type
@@ -525,16 +527,16 @@ $DB['DATABASE'] = '" db-name "';
 $DB['USER']     = '" db-user "';
 $DB['PASSWORD'] = '" (if (string-null? db-password)
                          (if (string-null? db-secret-file)
-                             (display "Provide a `db-secret-file' \
-or `db-password' field.
-"
-                                      (current-error-port))
+                             (raise (condition
+                                     (&message
+                                      (message "\
+You must provide either 'db-secret-file' or 'db-password'."))))
                              (string-trim-both
                               (with-input-from-file db-secret-file
                                 read-string)))
                          (begin
-                           (display "
-Hint: Consider use `db-secret-file' instead of `db-password' and unset
+                           (display-hint "
+Consider use `db-secret-file' instead of `db-password' and unset
 `db-password' for security in `zabbix-front-end-configuration'.
 ")
                            db-password)) "';
