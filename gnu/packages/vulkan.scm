@@ -163,16 +163,16 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version "1.1.92.0")
+    (version "1.1.96")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/KhronosGroup/Vulkan-Headers/"
-             "archive/sdk-" version ".tar.gz"))
+             "archive/v" version ".tar.gz"))
        (sha256
         (base32
-         "06bgiz1dnp57597vd26r2smsadpcnr425n9gfdbp6xm4wba4l5l9"))))
+         "1mr15v7d7lxi7qjkgwyvy2s3a5k2xd7y8x40dd2al3a3c4chl2y2"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; No tests.
@@ -186,17 +186,16 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    ;; TODO: Inherit from vulkan-headers when version numbers match again
-    (version "1.1.92.1")
+    (version (package-version vulkan-headers))
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://github.com/KhronosGroup/Vulkan-Loader/"
-             "archive/sdk-" version ".tar.gz"))
+             "archive/v" version ".tar.gz"))
        (sha256
         (base32
-         "1kx07ypbwnmn6cxv9z0vbngq5l83f1sffzh7wmkzrl69y1cmazi0"))))
+         "11jg678sj8yykr3n1km0638l6737iyhsl4x4q1zwbwyiifm0w89z"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
@@ -249,10 +248,10 @@ and the ICD.")
        (method url-fetch)
        (uri (string-append
              "https://github.com/KhronosGroup/Vulkan-Tools/"
-             "archive/sdk-" version ".tar.gz"))
+             "archive/v" version ".tar.gz"))
        (sha256
         (base32
-         "0yd9dgkyradlk9gx0ps65nans7b29jg5c67b4m34ghpmy933dwx6"))))
+         "066v0vfhcqcwzlijvvs3jrbldp5kdqgwydkn7k2wrbcgynr77h8q"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)
