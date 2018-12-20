@@ -298,12 +298,13 @@ format.")
     (name "cppcheck")
     (version "1.85")
     (source (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/danmar/cppcheck/archive/"
-                          version ".tar.gz"))
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/danmar/cppcheck")
+             (commit version)))
+      (file-name (git-file-name name version))
       (sha256
-       (base32 "18qlddf1i9bk5nnvy1v2nfxjd46y8wvp3rqz2hrfxjxsyvrfq5yw"))
-      (file-name (string-append name "-" version ".tar.gz"))))
+       (base32 "1mk2zxypx7lq34y4i0xxgwqg6prhdzldzqmlzzr5j4safpsjynrs"))))
     (build-system cmake-build-system)
     (home-page "http://cppcheck.sourceforge.net")
     (synopsis "Static C/C++ code analyzer")
