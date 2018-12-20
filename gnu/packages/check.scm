@@ -210,12 +210,14 @@ multi-paradigm automated test framework for C++ and Objective-C.")
     (version "1.12.2")
     (home-page "https://github.com/catchorg/Catch2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/catchorg/Catch2")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0g2ysxc6adqca5wh7nsicnxb9wkxg75cd5izjsl39rcj0v903gr7"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1gdp5wm8khn02g2miz381llw3191k7309qj8s3jd6sasj01rhf23"))))
     (build-system cmake-build-system)
     (synopsis "Automated test framework for C++ and Objective-C")
     (description "Catch2 stands for C++ Automated Test Cases in Headers and is
