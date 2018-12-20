@@ -98,8 +98,10 @@
                (("\"lib64\"") "\"lib\"")
                ;; TODO: Base the following on values taken from Qt
                ;; Install plugins into lib/qt5/plugins
-               (("_define_relative\\(QTPLUGINDIR LIBDIR \"plugins\"")
-                "_define_relative(QTPLUGINDIR LIBDIR \"qt5/plugins\"")
+               ;; TODO: Check if this is okay for Android, too
+               ;; (see comment in KDEInstallDirs.cmake)
+               (("_define_relative\\(QTPLUGINDIR \"\\$\\{_pluginsDirParent}\" \"plugins\"")
+                "_define_relative(QTPLUGINDIR \"${_pluginsDirParent}\" \"qt5/plugins\"")
                ;; Install imports into lib/qt5/imports
                (("_define_relative\\(QTQUICKIMPORTSDIR QTPLUGINDIR \"imports\"")
                 "_define_relative(QTQUICKIMPORTSDIR LIBDIR \"qt5/imports\"")
