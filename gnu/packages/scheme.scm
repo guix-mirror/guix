@@ -37,6 +37,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages libevent)
@@ -85,8 +86,7 @@
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                                ; no "check" target
-       #:modules ((guix build gnu-build-system)
+     `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))
        #:phases
@@ -102,6 +102,20 @@
              (for-each delete-file
                        (find-files "src/compiler" "^make\\."))
              (chdir "src")
+             #t))
+         (add-after 'unpack 'patch-/bin/sh
+           (lambda _
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (substitute* '("../tests/ffi/autogen.sh"
+                            "../tests/ffi/autobuild.sh"
+                            "../tests/ffi/test-ffi.sh"
+                            "../tests/runtime/test-process.scm"
+                            "runtime/unxprm.scm")
+               (("/bin/sh") (which "sh"))
+               (("\\./autogen\\.sh")
+                (string-append (which "sh") " autogen.sh"))
+               (("\\./configure")
+                (string-append (which "sh") " configure")))
              #t))
          ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
          ;; them in HOME, so it needs to be writeable.
@@ -150,7 +164,11 @@
                (delete-file-recursively old-doc-dir)
                #t))))))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-tex-texinfo)))
+     `(;; Autoconf, Automake, and Libtool are necessary for the FFI tests.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
        ("texinfo" ,texinfo)
        ("m4" ,m4)))
     (inputs
