@@ -573,7 +573,7 @@ automata.  The following features are available:
 (define-public meandmyshadow
   (package
     (name "meandmyshadow")
-    (version "0.5")
+    (version "0.5a")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/meandmyshadow/"
@@ -581,10 +581,7 @@ automata.  The following features are available:
                                   "-src.tar.gz"))
               (sha256
                (base32
-                "1b6qf83vdfv8jwn2jq9ywmda2qn2f5914i7mwfy04m17wx593m3m"))
-              (patches (search-patches
-                        ;; This will not be needed in the next release.
-                        "meandmyshadow-define-paths-earlier.patch"))))
+                "0i98v6cgmpsxy7mbb0s2y6f6qq6mkwzk2nrv1nz39ncf948aky2h"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
