@@ -454,23 +454,6 @@ XBINUTILS and the cross tool chain."
                           flags)))
              ((#:phases phases)
               `(modify-phases ,phases
-                 ;; XXX: The hack below allows us to make sure the
-                 ;; 'apply-hurd-patch' phase gets added in the first
-                 ;; cross-libc, but does *not* get added twice subsequently
-                 ;; when cross-building another libc.
-                 ,@(if (and (hurd-triplet? target)
-                            (not (hurd-target?)))
-                       `((add-after 'unpack 'apply-hurd-patch
-                           (lambda* (#:key inputs native-inputs
-                                     #:allow-other-keys)
-                             ;; TODO: Move this to 'patches' field.
-                             (let ((patch (or (assoc-ref native-inputs
-                                                         "hurd-magic-pid-patch")
-                                              (assoc-ref inputs
-                                                         "hurd-magic-pid-patch"))))
-                               (invoke "patch" "-p1" "--force" "--input"
-                                       patch)))))
-                       '())
                  (add-before 'configure 'set-cross-kernel-headers-path
                    (lambda* (#:key inputs #:allow-other-keys)
                      (let* ((kernel (assoc-ref inputs "kernel-headers"))
@@ -494,9 +477,7 @@ XBINUTILS and the cross tool chain."
                            ,@(if (hurd-triplet? target)
                                  `(("cross-mig"
                                     ,@(assoc-ref (package-native-inputs xheaders)
-                                                 "cross-mig"))
-                                   ("hurd-magic-pid-patch"
-                                    ,(search-patch "glibc-hurd-magic-pid.patch")))
+                                                 "cross-mig")))
                                  '())
                            ,@(package-inputs libc)     ;FIXME: static-bash
                            ,@(package-native-inputs libc)))))))
