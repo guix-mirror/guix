@@ -2098,13 +2098,13 @@ retried.")
     (name "unittest-cpp")
     (version "2.0.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/unittest-cpp/unittest-cpp/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/unittest-cpp/unittest-cpp")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
-               (base32 "1fgmna2la7z4pwwy2gd10gpgi2q1fk89npjfvkmzvhkxhyc231bl"))))
+               (base32 "0sxb3835nly1jxn071f59fwbdzmqi74j040r81fanxyw3s1azw0i"))))
     (arguments
      `(#:tests? #f))                     ; It's run after build automatically.
     (build-system cmake-build-system)
