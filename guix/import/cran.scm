@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -23,6 +23,7 @@
   #:use-module (ice-9 regex)
   #:use-module ((ice-9 rdelim) #:select (read-string read-line))
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (ice-9 receive)
@@ -180,9 +181,9 @@ from ~s: ~a (~s)~%"
      ;; Currently, the bioconductor project does not offer a way to access a
      ;; package's DESCRIPTION file over HTTP, so we determine the version,
      ;; download the source tarball, and then extract the DESCRIPTION file.
-     (let* ((version (latest-bioconductor-package-version name))
-            (url     (car (bioconductor-uri name version)))
-            (tarball (with-store store (download-to-store store url))))
+     (and-let* ((version (latest-bioconductor-package-version name))
+                (url     (car (bioconductor-uri name version)))
+                (tarball (with-store store (download-to-store store url))))
        (call-with-temporary-directory
         (lambda (dir)
           (parameterize ((current-error-port (%make-void-port "rw+"))
@@ -346,8 +347,12 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
    (lambda* (package-name #:optional (repo 'cran))
      "Fetch the metadata for PACKAGE-NAME from REPO and return the `package'
 s-expression corresponding to that package, or #f on failure."
-     (and=> (fetch-description repo package-name)
-            (cut description->package repo <>)))))
+     (let ((description (fetch-description repo package-name)))
+       (if (and (not description)
+                (eq? repo 'bioconductor))
+           ;; Retry import from CRAN
+           (cran->guix-package package-name 'cran)
+           (description->package repo description))))))
 
 (define* (cran-recursive-import package-name #:optional (repo 'gnu))
   (recursive-import package-name repo
