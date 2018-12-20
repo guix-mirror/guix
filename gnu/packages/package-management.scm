@@ -990,47 +990,48 @@ the bootloader configuration.")
 
 (define-public flatpak
   (package
-  (name "flatpak")
-  (version "1.1.0")
-  (source
-   (origin
-    (method url-fetch)
-    (uri (string-append "https://github.com/flatpak/flatpak/releases/download/"
-                        version "/flatpak-" version ".tar.xz"))
-    (sha256
-     (base32
-      "0bkjwh49kajyd78vdh0g9arb352a7rccaifas9zxa78phhja2v2p"))))
-  (build-system gnu-build-system)
-  (arguments
-   '(#:tests? #f ;; Tests fail due to trying to create files where it can't.
-     #:configure-flags (list
-                        "--enable-documentation=no" ;; FIXME
-                        "--enable-system-helper=no"
-                        "--localstatedir=/var"
-                        (string-append "--with-system-bubblewrap=" (assoc-ref
-                                       %build-inputs "bubblewrap") "/bin/bwrap"))))
-  (native-inputs `(("bison" ,bison)
-                   ("gettext" ,gnu-gettext)
-                   ("glib:bin" ,glib "bin") ; for glib-mkenums and gdbus-codegen
-                   ("gobject-introspection" ,gobject-introspection)
-                   ("libcap" ,libcap)
-                   ("pkg-config" ,pkg-config)))
-  (inputs `(("appstream-glib" ,appstream-glib)
-            ("bubblewrap" ,bubblewrap)
-            ("gdk-pixbuf" ,gdk-pixbuf)
-            ("gpgme" ,gpgme)
-            ("json-glib" ,json-glib)
-            ("libarchive" ,libarchive)
-            ("libostree" ,libostree)
-            ("libseccomp" ,libseccomp)
-            ("libsoup" ,libsoup)
-            ("libxau" ,libxau)
-            ("libxml2" ,libxml2)
-            ("nettle" ,nettle)
-            ("util-linux" ,util-linux)))
-  (home-page "https://flatpak.org")
-  (synopsis "System for building, distributing, and running sandboxed desktop
+   (name "flatpak")
+   (version "1.1.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/flatpak/flatpak/releases/download/"
+                         version "/flatpak-" version ".tar.xz"))
+     (sha256
+      (base32
+       "0bkjwh49kajyd78vdh0g9arb352a7rccaifas9zxa78phhja2v2p"))))
+   (build-system gnu-build-system)
+   (arguments
+    '(#:tests? #f ;; Tests fail due to trying to create files where it can't.
+      #:configure-flags (list
+                         "--enable-documentation=no" ;; FIXME
+                         "--enable-system-helper=no"
+                         "--localstatedir=/var"
+                         (string-append "--with-system-bubblewrap="
+                                        (assoc-ref %build-inputs "bubblewrap")
+                                        "/bin/bwrap"))))
+   (native-inputs `(("bison" ,bison)
+                    ("gettext" ,gnu-gettext)
+                    ("glib:bin" ,glib "bin") ; for glib-mkenums + gdbus-codegen
+                    ("gobject-introspection" ,gobject-introspection)
+                    ("libcap" ,libcap)
+                    ("pkg-config" ,pkg-config)))
+   (inputs `(("appstream-glib" ,appstream-glib)
+             ("bubblewrap" ,bubblewrap)
+             ("gdk-pixbuf" ,gdk-pixbuf)
+             ("gpgme" ,gpgme)
+             ("json-glib" ,json-glib)
+             ("libarchive" ,libarchive)
+             ("libostree" ,libostree)
+             ("libseccomp" ,libseccomp)
+             ("libsoup" ,libsoup)
+             ("libxau" ,libxau)
+             ("libxml2" ,libxml2)
+             ("nettle" ,nettle)
+             ("util-linux" ,util-linux)))
+   (home-page "https://flatpak.org")
+   (synopsis "System for building, distributing, and running sandboxed desktop
 applications")
-  (description "Flatpak is a system for building, distributing, and running
+   (description "Flatpak is a system for building, distributing, and running
 sandboxed desktop applications on GNU/Linux.")
-  (license license:lgpl2.1+)))
+   (license license:lgpl2.1+)))
