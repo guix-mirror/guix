@@ -1577,25 +1577,25 @@ identical visual appearance.")
 
 (define-public grim
   (package
-  (name "grim")
-  (version "1.0")
-  (source
-   (origin
-    (method url-fetch)
-    (uri (string-append "https://github.com/emersion/grim/archive/v" version
-                        ".tar.gz"))
-    (file-name (string-append name "-" version ".tar.gz"))
-    (sha256
-     (base32 "0xkk5nqyp1px0sxz4asmchznc0q39wdx1b67ql741k8aj815km0f"))))
-  (build-system meson-build-system)
-  (native-inputs `(("pkg-config" ,pkg-config)))
-  (inputs `(("cairo" ,cairo)
-            ("libjpeg-turbo" ,libjpeg-turbo)
-            ("scdoc" ,scdoc)
-            ("wayland" ,wayland)
-            ("wayland-protocols" ,wayland-protocols)))
-  (home-page "https://github.com/emersion/grim")
-  (synopsis "Create screenshots from a Wayland compositor")
-  (description "grim can create screenshots from a Wayland compositor.")
-  ;; MIT license.
-  (license license:expat)))
+   (name "grim")
+   (version "1.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/emersion/grim/archive/v" version
+                         ".tar.gz"))
+     (file-name (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32 "0xkk5nqyp1px0sxz4asmchznc0q39wdx1b67ql741k8aj815km0f"))))
+   (build-system meson-build-system)
+   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs `(("cairo" ,cairo)
+             ("libjpeg-turbo" ,libjpeg-turbo)
+             ("scdoc" ,scdoc)
+             ("wayland" ,wayland)
+             ("wayland-protocols" ,wayland-protocols)))
+   (home-page "https://github.com/emersion/grim")
+   (synopsis "Create screenshots from a Wayland compositor")
+   (description "grim can create screenshots from a Wayland compositor.")
+   ;; MIT license.
+   (license license:expat)))
