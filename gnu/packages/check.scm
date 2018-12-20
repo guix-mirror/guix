@@ -306,6 +306,8 @@ format.")
       (sha256
        (base32 "1mk2zxypx7lq34y4i0xxgwqg6prhdzldzqmlzzr5j4safpsjynrs"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBUILD_TESTS=ON")))
     (home-page "http://cppcheck.sourceforge.net")
     (synopsis "Static C/C++ code analyzer")
     (description "Cppcheck is a static code analyzer for C and C++.  Unlike
