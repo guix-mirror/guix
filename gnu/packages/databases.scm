@@ -24,7 +24,7 @@
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
@@ -1183,6 +1183,7 @@ changes.")
 (define-public sqlite
   (package
    (name "sqlite")
+   (replacement sqlite-3.26.0)
    (version "3.24.0")
    (source (origin
             (method url-fetch)
@@ -1219,9 +1220,29 @@ widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license license:public-domain)))
 
+(define-public sqlite-3.26.0
+  (package (inherit sqlite)
+    (version "3.26.0")
+    (source (origin
+              (method url-fetch)
+              (uri (let ((numeric-version
+                          (match (string-split version #\.)
+                            ((first-digit other-digits ...)
+                             (string-append first-digit
+                                            (string-pad-right
+                                             (string-concatenate
+                                              (map (cut string-pad <> 2 #\0)
+                                                   other-digits))
+                                             6 #\0))))))
+                     (string-append "https://sqlite.org/2018/sqlite-autoconf-"
+                                    numeric-version ".tar.gz")))
+              (sha256
+               (base32
+                "0pdzszb4sp73hl36siiv3p300jvfvbcdxi2rrmkwgs6inwznmajx"))))))
+
 ;; This is used by Tracker.
 (define-public sqlite-with-fts5
-  (package (inherit sqlite)
+  (package/inherit sqlite
     (name "sqlite-with-fts5")
     (arguments
      (substitute-keyword-arguments (package-arguments sqlite)
@@ -1230,7 +1251,7 @@ is in the public domain.")
 
 ;; This is used by Qt.
 (define-public sqlite-with-column-metadata
-  (package (inherit sqlite)
+  (package/inherit sqlite
     (name "sqlite-with-column-metadata")
     (arguments
      (substitute-keyword-arguments (package-arguments sqlite)

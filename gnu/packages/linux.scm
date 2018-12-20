@@ -400,8 +400,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.19.8")
-(define %linux-libre-hash "1rmgf3sbcyb47s3sagac7zrrpznq0vlcbzjzlzir95biy7lbswb3")
+(define %linux-libre-version "4.19.10")
+(define %linux-libre-hash "1gazdjnm9hhsclc6l7g7rn9545m1gdil1zxrziihs71hi20rx1pf")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -423,8 +423,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.87")
-(define %linux-libre-4.14-hash "1013h3qbsq76vlhrbl3gci25jbwydzm7k0bg08fbq42qrhjq92ak")
+(define %linux-libre-4.14-version "4.14.89")
+(define %linux-libre-4.14-hash "12n6qpcng7c7vdb1p3p914bn3g2namaam6d55ipvz0dv5k283h75")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -433,14 +433,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.144"
-                    "1jckikf1j294gr3sf43bfy3h34q3yqbqgqbj9l0px427h3n2vgkk"
+  (make-linux-libre "4.9.146"
+                    "0z1jdpa5z3kcgl29am19rvips03w7hr106rc3p9rzggblr623dy5"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.166"
-                    "1pb6hk141hzf6yf2423h0jfv9bjq09cynsp1xbm12mxayn637xmm"
+  (make-linux-libre "4.4.168"
+                    "12wb8fjmgkal1s4sfkfa5gi8bza22ah4p762gl33v4qc9nvjmmpf"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -2612,7 +2612,7 @@ thanks to the use of namespaces.")
 (define-public singularity
   (package
     (name "singularity")
-    (version "2.5.1")
+    (version "2.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/singularityware/singularity/"
@@ -2620,7 +2620,7 @@ thanks to the use of namespaces.")
                                   "/singularity-" version ".tar.gz"))
               (sha256
                (base32
-                "0f28dgf2qcy8ljjfix7p9q36q12j7rxyicfzzi4n0fl8zr8ab88g"))))
+                "1whx0hqqi1326scgdxxxa1d94vn95mnq0drid6s8wdp84ni4d3gk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

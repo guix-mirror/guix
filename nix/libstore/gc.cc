@@ -21,7 +21,7 @@ static string tempRootsDir = "temproots";
 static string gcRootsDir = "gcroots";
 
 
-/* Acquire the global GC lock.  This is used to prevent new Nix
+/* Acquire the global GC lock.  This is used to prevent new build
    processes from starting after the temporary root files have been
    read.  To be precise: when they try to create a new temporary root
    file, they will block until the garbage collector has finished /
@@ -92,12 +92,12 @@ Path addPermRoot(StoreAPI & store, const Path & _storePath,
 
     if (isInStore(gcRoot))
         throw Error(format(
-                "creating a garbage collector root (%1%) in the Nix store is forbidden "
+                "creating a garbage collector root (%1%) in the store is forbidden "
                 "(are you running nix-build inside the store?)") % gcRoot);
 
     if (indirect) {
         /* Don't clobber the link if it already exists and doesn't
-           point to the Nix store. */
+           point to the store. */
         if (pathExists(gcRoot) && (!isLink(gcRoot) || !isInStore(readLink(gcRoot))))
             throw Error(format("cannot create symlink `%1%'; already exists") % gcRoot);
         makeSymlink(gcRoot, storePath);

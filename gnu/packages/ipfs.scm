@@ -218,17 +218,27 @@ written in Go.")
     (version "0.4.18")
     (source
      (origin
-       (method url-fetch)
+       (method url-fetch/tarbomb)
        (uri (string-append
              "https://dist.ipfs.io/go-ipfs/v" version
              "/go-ipfs-source.tar.gz"))
        (sha256
         (base32
-         "19hfgbyn5sr1bw0cwm3gsjz0w3b3vh3mmkax1906raah30lavj1x"))))
+         "19hfgbyn5sr1bw0cwm3gsjz0w3b3vh3mmkax1906raah30lavj1x"))
+       (file-name (string-append name "-" version "-source"))))
     (build-system go-build-system)
     (arguments
      '(#:unpack-path "github.com/ipfs/go-ipfs"
-       #:import-path "github.com/ipfs/go-ipfs/cmd/ipfs"))
+       #:import-path "github.com/ipfs/go-ipfs/cmd/ipfs"
+       #:phases (modify-phases %standard-phases
+                  (add-before 'reset-gzip-timestamps 'make-files-writable
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Make sure .gz files are writable so that the
+                      ;; 'reset-gzip-timestamps' phase can do its work.
+                      (let ((out (assoc-ref outputs "out")))
+                        (for-each make-file-writable
+                                  (find-files out "\\.gz$"))
+                        #t))))))
     (home-page "https://ipfs.io")
     (synopsis "Go implementation of IPFS, a peer-to-peer hypermedia protocol")
     (description "IPFS is a global, versioned, peer-to-peer filesystem.  It

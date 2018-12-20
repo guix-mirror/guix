@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -162,7 +162,7 @@ networks.")
 (define-public onionshare
   (package
     (name "onionshare")
-    (version "0.9.2")
+    (version "1.3.1")
     (source
       (origin
         (method git-fetch)
@@ -172,7 +172,7 @@ networks.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1nzr6m3jp04p1i8b652s27zv0xhybl3zwcn5r6l9h0f7d7x4iglv"))))
+          "02zic4cxwrcfdg22dq9c2rzni3l18wynjxd38scc59s37vlw7w2r"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -181,55 +181,24 @@ networks.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out        (assoc-ref outputs "out"))
                     (onionshare (string-append out "/share/onionshare")))
-               (substitute* "onionshare/strings.py"
-                 ;; correct the locale directory
-                 (("helpers.get_resource_path\\('locale'\\)")
-                  (string-append "'" onionshare "/locale'")))
-               (substitute* "onionshare/helpers.py"
-                 ;; correct the location of version.txt
-                 (("get_resource_path\\('version.txt'\\)")
-                  (string-append "'" onionshare "/version.txt'"))
-                 (("get_resource_path\\('wordlist.txt'\\)")
-                  (string-append "'" onionshare "/wordlist.txt'")))
-               (substitute* "onionshare/web.py"
-                 ;; fix the location of the html files
-                 (("helpers.get_resource_path\\('html/denied.html'\\)")
-                  (string-append "'" onionshare "/html/denied.html'"))
-                 (("helpers.get_resource_path\\('html/404.html'\\)")
-                  (string-append "'" onionshare "/html/404.html'"))
-                 (("helpers.get_resource_path\\('html/index.html'\\)")
-                  (string-append "'" onionshare "/html/index.html'")))
-               (substitute* "onionshare_gui/file_selection.py"
-                 ;; fancy box image in the GUI
-                 (("helpers.get_resource_path\\('images/drop_files.png'\\)")
-                  (string-append "'" onionshare "/images/drop_files.png'")))
-               (substitute* "onionshare_gui/server_status.py"
-                 (("helpers.get_resource_path\\('images/server_stopped.png'\\)")
-                  (string-append "'" onionshare "/images/server_stopped.png'"))
-                 (("helpers.get_resource_path\\('images/server_working.png'\\)")
-                  (string-append "'" onionshare "/images/server_working.png'"))
-                 (("helpers.get_resource_path\\('images/server_started.png'\\)")
-                  (string-append "'" onionshare "/images/server_started.png'")))
-               (substitute* "onionshare_gui/onionshare_gui.py"
-                  ;; for the icon on the GUI
-                 (("helpers.get_resource_path\\('images/logo.png'\\)")
-                  (string-append "'" onionshare "/images/logo.png'")))
-               (substitute* '("setup.py" "onionshare/helpers.py")
+               (substitute* '("setup.py" "onionshare/common.py")
                  (("sys.prefix,") (string-append "'" out "',")))
                (substitute* "setup.py"
                  ;; for the nautilus plugin
                  (("/usr/share/nautilus") "share/nautilus"))
-             #t)))
+               (substitute* "install/onionshare.desktop"
+                 (("/usr") out))
+               #t)))
          (delete 'check)
          (add-before 'strip 'tests
            ;; After all the patching we run the tests after installing.
            ;; This is also a known issue:
            ;; https://github.com/micahflee/onionshare/issues/284
            (lambda _
-             (invoke "nosetests" "test")
+             (invoke "pytest" "test")
              #t)))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)))
     (inputs
      `(("python-flask" ,python-flask)
        ("python-nautilus" ,python-nautilus)

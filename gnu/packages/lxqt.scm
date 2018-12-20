@@ -513,7 +513,7 @@ of other programs.")
        ("liblxqt" ,liblxqt)
        ("libqtxdg" ,libqtxdg)
        ("libstatgrab" ,libstatgrab)
-       ("libsysstat", libsysstat)
+       ("libsysstat" ,libsysstat)
        ("libxcomposite" ,libxcomposite)
        ("libxdamage" ,libxdamage)
        ("libxkbcommon" ,libxkbcommon)
@@ -700,7 +700,7 @@ Qt with LXQt.")
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qttools", qttools)
+       ("qttools" ,qttools)
        ("lxqt-build-tools" ,lxqt-build-tools)))
     (arguments
      '(#:tests? #f                      ; no tests

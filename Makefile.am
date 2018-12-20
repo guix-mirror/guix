@@ -107,6 +107,7 @@ MODULES =					\
   guix/build-system/clojure.scm			\
   guix/build-system/cmake.scm			\
   guix/build-system/dub.scm			\
+  guix/build-system/dune.scm			\
   guix/build-system/emacs.scm			\
   guix/build-system/font.scm			\
   guix/build-system/go.scm			\
@@ -144,6 +145,7 @@ MODULES =					\
   guix/build/cargo-build-system.scm		\
   guix/build/cmake-build-system.scm		\
   guix/build/dub-build-system.scm		\
+  guix/build/dune-build-system.scm		\
   guix/build/emacs-build-system.scm		\
   guix/build/meson-build-system.scm		\
   guix/build/minify-build-system.scm		\

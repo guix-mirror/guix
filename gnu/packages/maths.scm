@@ -3707,7 +3707,13 @@ set.")
      `(("doc++" ,doc++)
        ("netpbm" ,netpbm)
        ("perl" ,perl)                   ;needed to run 'ppmquant' during tests
-       ("texlive" ,texlive)             ;full package required for fonts
+       ("texlive" ,(texlive-union (list texlive-generic-xypic
+                                        texlive-fonts-xypic
+                                        texlive-latex-hyperref
+                                        texlive-latex-oberdiek
+                                        texlive-generic-ifxetex
+                                        texlive-latex-url
+                                        texlive-bibtex)))
        ("ghostscript" ,ghostscript)))
     (inputs
      `(("blas" ,openblas)
@@ -3724,6 +3730,12 @@ set.")
                            "--with-blas")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'set-HOME
+           (lambda _
+             ;; FIXME: texlive-union does not find the built
+             ;; metafonts, so it tries to generate them in HOME.
+             (setenv "HOME" "/tmp")
+             #t))
          (add-before 'configure 'chdir-src
            (lambda _ (chdir "src")))
          (replace 'configure
@@ -3738,7 +3750,7 @@ set.")
                                           configure-flags)))))))
          (add-after 'build 'build-docs
            (lambda _
-             (zero? (system* "make" "-Cdocs" "pdf" "html"))))
+             (invoke "make" "-Cdocs" "pdf" "html")))
          (replace 'check
            (lambda _
              (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/hypre/lib"))
@@ -3959,6 +3971,7 @@ as equations, scalars, vectors, and matrices.")
               (method git-fetch)
               (uri (git-reference (url home-page)
                                   (commit (string-append "z3-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1vr57bwx40sd5riijyrhy70i2wnv9xrdihf6y5zdz56yq88rl48f"))))
@@ -3972,6 +3985,12 @@ as equations, scalars, vectors, and matrices.")
                             "/lib/python2.7/site-packages"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-compatability
+           ;; Versions after 4.8.3 have immintrin.h IFDEFed for Windows only.
+           (lambda _
+             (substitute* "src/util/mpz.cpp"
+               (("#include <immintrin.h>") ""))
+             #t))
          (add-before 'configure 'bootstrap
            (lambda _
              (zero?
@@ -4055,13 +4074,14 @@ exclusion algorithms are typical examples of such systems.")
     (name "elemental")
     (version "0.87.7")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/elemental/Elemental/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/elemental/Elemental.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nfp82w22pi8x8fg9sc37z8kf84dqi1dhxp8bbk7571y4aygvv3v"))))
+                "1687xpjjzig27y2pnqv7hv09smpijyfdpz7qjgmcxf4shfajlfkc"))))
     (build-system cmake-build-system)
     (home-page "http://libelemental.org")
     (native-inputs
@@ -4085,8 +4105,8 @@ exclusion algorithms are typical examples of such systems.")
                            "-DCMAKE_INSTALL_LIBDIR=lib"
                            "-DGFORTRAN_LIB=gfortran")
        #:phases (modify-phases %standard-phases
-		  (add-before 'check 'mpi-setup
-		    ,%openmpi-setup)
+                  (add-before 'check 'mpi-setup
+                    ,%openmpi-setup)
                   (add-before 'check 'setup-tests
                     (lambda _
                       ;; Parallelism is done at the MPI layer.
@@ -4097,7 +4117,7 @@ exclusion algorithms are typical examples of such systems.")
                       ;; Tests are installed, with no easy configuration
                       ;; switch to prevent this, so delete them.
                       (delete-file-recursively
-                       (string-append (assoc-ref outputs "out") "/bin"))
+                        (string-append (assoc-ref outputs "out") "/bin"))
                       #t)))))
     (synopsis "Dense and sparse-direct linear algebra and optimization")
     (description "Elemental is a modern C++ library for distributed-memory

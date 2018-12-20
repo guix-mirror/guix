@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 
 (define-module (gnu packages chemistry)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (gnu packages)
@@ -55,7 +57,7 @@
                                "avogadro-boost148.patch"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f
+     `(#:tests? #f
        #:configure-flags
        (list "-DENABLE_GLSL=ON"
              (string-append "-DPYTHON_LIBRARIES="
@@ -63,7 +65,9 @@
                             "/lib")
              (string-append "-DPYTHON_INCLUDE_DIRS="
                             (assoc-ref %build-inputs "python")
-                            "/include/python2.7"))
+                            "/include/python"
+                            ,(version-major+minor
+                               (package-version python))))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-python-lib-path
@@ -76,7 +80,10 @@
                (("^.*OUTPUT_VARIABLE.*")
                 (string-append "set(PYTHON_LIB_PATH \""
                                (assoc-ref outputs "out")
-                               "/lib/python2.7/site-packages\")")))
+                               "/lib/python"
+                               ,(version-major+minor
+                                  (package-version python))
+                               "/site-packages\")")))
              #t))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -85,7 +92,10 @@
                (setenv "PYTHONPATH"
                        (string-append
                         (assoc-ref outputs "out")
-                        "/lib/python2.7/site-packages:"
+                        "/lib/python"
+                        ,(version-major+minor
+                           (package-version python))
+                        "/site-packages:"
                         (getenv "PYTHONPATH")))
                (wrap-program (string-append out "/bin/avogadro")
                  `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))))

@@ -142,6 +142,7 @@
             php-fpm-configuration-log-file
             php-fpm-configuration-process-manager
             php-fpm-configuration-display-errors
+            php-fpm-configuration-timezone
             php-fpm-configuration-workers-log-file
             php-fpm-configuration-file
 
@@ -773,6 +774,8 @@ of index files."
                     (default (php-fpm-dynamic-process-manager-configuration)))
   (display-errors   php-fpm-configuration-display-errors
                     (default #f))
+  (timezone         php-fpm-configuration-timezone
+                    (default #f))
   (workers-log-file php-fpm-configuration-workers-log-file
                     (default (string-append "/var/log/php"
                                             (version-major (package-version php))
@@ -827,7 +830,7 @@ of index files."
        (shell (file-append shadow "/sbin/nologin")))))))
 
 (define (default-php-fpm-config socket user group socket-user socket-group
-          pid-file log-file pm display-errors workers-log-file)
+          pid-file log-file pm display-errors timezone workers-log-file)
   (apply mixed-text-file "php-fpm.conf"
          (flatten
           "[global]\n"
@@ -839,6 +842,10 @@ of index files."
           "listen =" socket "\n"
           "listen.owner =" socket-user "\n"
           "listen.group =" socket-group "\n"
+
+          (if timezone
+              (string-append "php_admin_value[date.timezone] = \"" timezone "\"\n")
+              "")
 
           (match pm
             (($ <php-fpm-dynamic-process-manager-configuration>
@@ -879,7 +886,8 @@ of index files."
 (define php-fpm-shepherd-service
   (match-lambda
     (($ <php-fpm-configuration> php socket user group socket-user socket-group
-                                pid-file log-file pm display-errors workers-log-file file)
+                                pid-file log-file pm display-errors
+                                timezone workers-log-file file)
      (list (shepherd-service
             (provision '(php-fpm))
             (documentation "Run the php-fpm daemon.")
@@ -890,27 +898,27 @@ of index files."
                         #$(or file
                               (default-php-fpm-config socket user group
                                 socket-user socket-group pid-file log-file
-                                pm display-errors workers-log-file)))
+                                pm display-errors timezone workers-log-file)))
                       #:pid-file #$pid-file))
             (stop #~(make-kill-destructor)))))))
 
-(define php-fpm-activation
-  (match-lambda
-    (($ <php-fpm-configuration> _ _ user _ _ _ _ log-file _ _ workers-log-file _)
-     #~(begin
-         (use-modules (guix build utils))
-         (let* ((user (getpwnam #$user))
-                (touch (lambda (file-name)
-                         (call-with-output-file file-name (const #t))))
-                (init-log-file
-                 (lambda (file-name)
-                   (when #$workers-log-file
-                     (when (not (file-exists? file-name))
-                       (touch file-name))
-                     (chown file-name (passwd:uid user) (passwd:gid user))
-                     (chmod file-name #o660)))))
-           (init-log-file #$log-file)
-           (init-log-file #$workers-log-file))))))
+(define (php-fpm-activation config)
+  #~(begin
+      (use-modules (guix build utils))
+      (let* ((user (getpwnam #$(php-fpm-configuration-user config)))
+             (touch (lambda (file-name)
+                      (call-with-output-file file-name (const #t))))
+             (workers-log-file
+              #$(php-fpm-configuration-workers-log-file config))
+             (init-log-file
+              (lambda (file-name)
+                (when workers-log-file
+                  (when (not (file-exists? file-name))
+                    (touch file-name))
+                  (chown file-name (passwd:uid user) (passwd:gid user))
+                  (chmod file-name #o660)))))
+        (init-log-file #$(php-fpm-configuration-log-file config))
+        (init-log-file workers-log-file))))
 
 
 (define php-fpm-service-type

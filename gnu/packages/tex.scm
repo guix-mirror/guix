@@ -265,7 +265,7 @@ This package contains the binaries.")
          (let* ((root (string-append (assoc-ref %outputs "out")
                                      "/share/texmf-dist"))
                 (dvips (string-append root "/dvips"))
-                (maps  (string-append root "/fonts/map/dvips/tetex"))
+                (maps  (string-append root "/fonts/map/dvips"))
                 (encs  (string-append root "/fonts/enc/dvips/base")))
            (mkdir-p dvips)
            (copy-recursively (assoc-ref %build-inputs "source") dvips)
@@ -281,12 +281,12 @@ This package contains the binaries.")
            (uri (svn-reference
                  (url (string-append "svn://www.tug.org/texlive/tags/"
                                      %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/map/dvips/tetex"))
+                                     "/fonts/map/dvips"))
                  (revision %texlive-revision)))
            (file-name (string-append "dvips-font-maps-" version "-checkout"))
            (sha256
             (base32
-             "100208pg7q6lj7swiq9p9287nn6b64bl62bnlaxpjni9y2kdrqy5"))))
+             "09hply3nmy24ilnc6cl8q70jcqxvq6bwri572kms008ini3h9vqh"))))
        ("dvips-base-enc"
         ,(origin
            (method svn-fetch)
@@ -609,20 +609,36 @@ documents.")
                        (find-files "." "cm(.*[0-9]+.*|inch)\\.mf$"))
              #t))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (tfm (string-append
                           out "/share/texmf-dist/fonts/tfm/public/cm"))
-                    (mf  (string-append
-                          out "/share/texmf-dist/fonts/source/public/cm")))
+                    (mf (string-append
+                         out "/share/texmf-dist/fonts/source/public/cm"))
+                    (type1 (string-append
+                            out "/share/texmf-dist/fonts/type1/public/amsfonts/cm")))
                (for-each (cut install-file <> tfm)
                          (find-files "build" "\\.*"))
                (for-each (cut install-file <> mf)
                          (find-files "." "\\.mf"))
+               (mkdir-p type1)
+               (copy-recursively (assoc-ref inputs "cm-type1") type1)
                #t))))))
     (native-inputs
      `(("texlive-bin" ,texlive-bin)
-       ("texlive-metafont-base" ,texlive-metafont-base)))
+       ("texlive-metafont-base" ,texlive-metafont-base)
+       ("cm-type1"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/type1/public/amsfonts/cm"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-type1-" version "-checkout"))
+           (sha256
+            (base32
+             "12jyl9jp3hidifa4l5pmi47p71d5mb5kj5rknxkygilix8yz2iy6"))))))
     (home-page "https://www.ctan.org/pkg/cm")
     (synopsis "Computer Modern fonts for TeX")
     (description "This package provides the Computer Modern fonts by Donald
@@ -3995,10 +4011,27 @@ e-TeX.")
        (begin
          (use-modules (guix build utils))
          (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/generic/pdftex")))
+                                      "/share/texmf-dist/tex/generic/pdftex"))
+               (target-map (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/fonts/map/pdftex")))
            (mkdir-p target)
            (copy-recursively (assoc-ref %build-inputs "source") target)
+           (mkdir-p target-map)
+           (copy-recursively (assoc-ref %build-inputs "pdftex-map") target-map)
            #t))))
+    (native-inputs
+     `(("pdftex-map"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/map/pdftex"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-map-" version "-checkout"))
+           (sha256
+            (base32
+             "197z9kx3bpnz58f5xrn5szyvmb3fxqq12y5sc4dw4jnm3xll8ji2"))))))
     (home-page "https://www.ctan.org/pkg/pdftex")
     (synopsis "TeX extension for direct creation of PDF")
     (description
@@ -4940,3 +4973,255 @@ used inside tables and moving arguments such as footnotes and section
 titles.")
     ;; No version of the GPL is specified.
     (license license:gpl3+)))
+
+(define-public texlive-generic-xypic
+  (package
+    (name "texlive-generic-xypic")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "svn://www.tug.org/texlive/tags/"
+                                 %texlive-tag "/Master/texmf-dist/"
+                                 "/tex/generic/xypic"))
+             (revision %texlive-revision)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1g5cyxwdfznq4lk9zl6fkjkapmhmwd2cm4m5aibxj20qgwnaggfz"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/generic/xypic")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/xypic")
+    (synopsis "Flexible diagramming macros for TeX")
+    (description
+     "A package for typesetting a variety of graphs and diagrams with TeX.
+Xy-pic works with most formats (including LaTeX, AMS-LaTeX, AMS-TeX, and plain
+TeX).")
+    (license license:gpl3+)))
+
+(define-public texlive-fonts-xypic
+  (package
+    (name "texlive-fonts-xypic")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/source/public/xypic"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0p20v1257kwsqnrk98cdhhiz2viv8l3ly4xay4by0an3j37m9xs3"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source" . "fonts/source/public/xypic")
+                       ("xypic-afm" . "fonts/afm/public/xypic")
+                       ("xypic-type1" . "fonts/type1/public/xypic")
+                       ("xypic-enc" . "fonts/enc/dvips/xypic"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (native-inputs
+     `(("xypic-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/public/xypic"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "149xdijxp8lw3s0qv2aqxxxyyn748z57dpr596rjvkqdffpnsddh"))))
+       ("xypic-type1"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/type1/public/xypic"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-type1-" version "-checkout"))
+           (sha256
+            (base32
+             "1bln89wib7g3hcv2jny3qi6jb73k9d2vbgx3wnnjwp3ryg0846if"))))
+       ("xypic-enc"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/enc/dvips/xypic"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-enc-" version "-checkout"))
+           (sha256
+            (base32
+             "0yi8vms3203l3p5slnhrrlzzp0f0jw77fkcvcaicrz2vmw9z99x7"))))))
+    (home-page "https://www.ctan.org/pkg/xypic")
+    (synopsis "Fonts for XY-pic")
+    (description "This package provides the XY-pic fonts.")
+    (license license:gpl3+)))
+
+(define-public texlive-bibtex
+  (package
+    (name "texlive-bibtex")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url (string-append "svn://www.tug.org/texlive/tags/"
+                                 %texlive-tag "/Master/texmf-dist/"
+                                 "/bibtex"))
+             (revision %texlive-revision)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1gk9q22fcb2fa1ql6cf9yw505x6a6axdzzfxbsya7nkrph860af8"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/bibtex")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/bibtex")
+    (synopsis "Process bibliographies for LaTeX")
+    (description
+     "BibTeX allows the user to store his citation data in generic form, while
+printing citations in a document in the form specified by a BibTeX style, to
+be specified in the document itself (one often needs a LaTeX citation-style
+package, such as @command{natbib} as well).")
+    (license license:knuth)))
+
+(define-public texlive-fonts-charter
+  (package
+    (name "texlive-fonts-charter")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/type1/bitstrea/charter"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0yvib45xxff3jm5270zij4q888pivbc18cqs7lz4pqfhn1am4wnv"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source" . "fonts/type1/bitstrea/charter")
+                       ("charter-afm" . "fonts/afm/bitstrea/charter")
+                       ("charter-tfm" . "fonts/tfm/bitstrea/charter"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (native-inputs
+     `(("charter-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/bitstrea/charter"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "02nbkqrlr3vypnzslmr7dxg1353mmc0rl4ynx0s6qbvf313fq76a"))))
+       ("charter-tfm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/tfm/bitstrea/charter"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-tfm-" version "-checkout"))
+           (sha256
+            (base32
+             "0j7ci9vprivbhac70aq0z7m23hqcpx1g0i3wp1k0h8ilhimj80xk"))))))
+    (home-page "https://www.ctan.org/pkg/charter")
+    (synopsis "Charter fonts for TeX")
+    (description "A commercial text font donated for the common good.  Support
+for use with LaTeX is available in @code{freenfss}, part of
+@command{psnfss}. ")
+    (license (license:non-copyleft (string-append "http://mirrors.ctan.org/"
+                                                  "fonts/charter/readme.charter")))))
+
+(define-public texlive-context-base
+  (package
+    (name "texlive-context-base")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/context/base"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0zwl0cg6pka13i26dpqh137391f3j9sk69cpvwrm4ivsa0rqnw6g"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/context/case")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/context")
+    (synopsis "Full featured, parameter driven macro package for TeX")
+    (description "A full featured, parameter driven macro package, which fully
+supports advanced interactive documents.  See the ConTeXt garden for a wealth
+of support information.")
+    (license license:gpl2+)))

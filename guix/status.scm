@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -289,6 +290,31 @@ on."
    ("^(.*)(warning)([[:blank:]]*)(:)(.*)"
     RESET  MAGENTA   BOLD        BOLD BOLD)))
 
+(define (hook-message hook-type)
+  "Return a human-readable string for the profile hook type HOOK-TYPE."
+  (match hook-type
+    ('info-dir
+     (G_ "building directory of Info manuals..."))
+    ('ghc-package-cache
+     (G_ "building GHC package cache..."))
+    ('ca-certificate-bundle
+     (G_ "building CA certificate bundle..."))
+    ('glib-schemas
+     (G_ "generating GLib schema cache..."))
+    ('gtk-icon-themes
+     (G_ "creating GTK+ icon theme cache..."))
+    ('gtk-im-modules
+     (G_ "building cache files for GTK+ input methods..."))
+    ('xdg-desktop-database
+     (G_ "building XDG desktop file cache..."))
+    ('xdg-mime-database
+     (G_ "building XDG MIME database..."))
+    ('fonts-dir
+     (G_ "building fonts directory..."))
+    ('manual-database
+     (G_ "building database for manual pages..."))
+    (_ #f)))
+
 (define* (print-build-event event old-status status
                             #:optional (port (current-error-port))
                             #:key
@@ -336,6 +362,13 @@ addition to build events."
                                     "applying ~a grafts for ~a..."
                                     count))
                      count drv)))
+         ('profile-hook
+          (let ((hook-type (assq-ref properties 'hook)))
+            (or (and=> (hook-message hook-type)
+                       (lambda (msg)
+                         (format port (info msg))))
+                (format port (info (G_ "running profile hook of type '~a'..."))
+                        hook-type))))
          (_
           (format port (info (G_ "building ~a...")) drv))))
      (newline port))

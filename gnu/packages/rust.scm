@@ -191,6 +191,8 @@ safety and thread safety guarantees.")
     (source (rust-source version "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"
             #:patches '("rust-1.19-mrustc.patch")))
     (outputs '("out" "cargo"))
+    (properties '((timeout . 72000)               ;20 hours
+                  (max-silent-time . 18000)))     ;5 hours (for armel)
     (arguments
      `(#:imported-modules ,%cargo-build-system-modules ;for `generate-checksums'
        #:modules ((guix build utils) (ice-9 match) (guix build gnu-build-system))
@@ -427,6 +429,7 @@ safety and thread safety guarantees.")
     (package
       (inherit base-rust)
       (outputs '("out" "doc" "cargo"))
+      (properties '())
       (arguments
        (substitute-keyword-arguments (package-arguments rust-1.19)
          ((#:phases phases)

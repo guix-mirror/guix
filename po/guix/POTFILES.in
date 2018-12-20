@@ -7,6 +7,7 @@ gnu/system.scm
 gnu/services/shepherd.scm
 gnu/system/mapped-devices.scm
 gnu/system/shadow.scm
+guix/import/opam.scm
 guix/scripts.scm
 guix/scripts/build.scm
 guix/discovery.scm

@@ -474,7 +474,7 @@ static void performOp(bool trusted, unsigned int clientVersion,
 	    /* Repairing is not atomic, so disallowed for "untrusted"
 	       clients.  */
             if (mode == bmRepair && !trusted)
-                throw Error("repairing is not supported when building through the Nix daemon");
+                throw Error("repairing is a privileged operation");
         }
         startWork();
         store->buildPaths(drvs, mode);
@@ -801,7 +801,7 @@ static void processConnection(bool trusted)
             stopWork(false, e.msg(), GET_PROTOCOL_MINOR(clientVersion) >= 8 ? e.status : 0);
             if (!errorAllowed) throw;
         } catch (std::bad_alloc & e) {
-            stopWork(false, "Nix daemon out of memory", GET_PROTOCOL_MINOR(clientVersion) >= 8 ? 1 : 0);
+            stopWork(false, "build daemon out of memory", GET_PROTOCOL_MINOR(clientVersion) >= 8 ? 1 : 0);
             throw;
         }
 
@@ -955,7 +955,7 @@ static void acceptConnection(int fdSocket)
                 processConnection(trusted);
 
                 exit(0);
-            }, false, "unexpected Nix daemon error: ", true);
+            }, false, "unexpected build daemon error: ", true);
 
     } catch (Interrupted & e) {
 	throw;

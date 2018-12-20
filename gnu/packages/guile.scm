@@ -45,6 +45,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages flex)
@@ -288,7 +289,19 @@ without requiring the source code to be rewritten.")
                    (substitute* "module/Makefile.in"
                      (("language/elisp/boot\\.el")
                       "\n"))
-                   #t)))))
+                   #t))
+               ,@(if (hurd-target?)
+                     `((add-after 'unpack 'allow-madvise-ENOSYS
+                         (lambda _
+                           ;; Do not warn about ENOSYS on 'madvise'.  This is
+                           ;; what Guile commit
+                           ;; 45e4ace6603e00b297e6542362273041aebe7305 does.
+                           ;; TODO: Remove for Guile >= 2.2.5.
+                           (substitute* "libguile/vm.c"
+                             (("perror \\(\"madvise failed\"\\)")
+                              "if (errno != ENOSYS) perror (\"madvised failed\");"))
+                           #t)))
+                     '()))))
          (package-arguments guile-2.0)))))
 
 (define-public guile-2.2/fixed

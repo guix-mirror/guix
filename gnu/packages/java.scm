@@ -301,7 +301,7 @@ JNI.")
      `(("jikes" ,jikes)
        ("jamvm" ,jamvm-1-bootstrap)
        ("unzip" ,unzip)
-       ("zip", zip)))
+       ("zip" ,zip)))
     (home-page "http://ant.apache.org")
     (synopsis "Build tool for Java")
     (description

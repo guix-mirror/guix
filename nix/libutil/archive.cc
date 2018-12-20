@@ -260,7 +260,7 @@ void parseDump(ParseSink & sink, Source & source)
            decoded.  Ignore and throw the exception below. */
     }
     if (version != archiveVersion1)
-        throw badArchive("input doesn't look like a Nix archive");
+        throw badArchive("input doesn't look like a normalized archive");
     parse(sink, source, "");
 }
 

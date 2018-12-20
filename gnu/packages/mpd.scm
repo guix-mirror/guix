@@ -216,7 +216,7 @@ player daemon.")
                     (c++  (string-append gcc "/include/c++")))
                (setenv path (string-append c++ ":" (getenv path)))
                #t))))))
-    (inputs `(("gcc", gcc-8)            ; for its C++14 support
+    (inputs `(("gcc" ,gcc-8)            ; for its C++14 support
               ("boost" ,boost)
               ("pcre" ,pcre)
               ("libmpdclient" ,libmpdclient)

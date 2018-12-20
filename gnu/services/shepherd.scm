@@ -281,7 +281,17 @@ stored."
                             (start service)))
                         '#$(append-map shepherd-service-provision
                                        (filter shepherd-service-auto-start?
-                                               services)))))))
+                                               services)))
+
+              ;; Hang up stdin.  At this point, we assume that 'start' methods
+              ;; that required user interaction on the console (e.g.,
+              ;; 'cryptsetup open' invocations, post-fsck emergency REPL) have
+              ;; completed.  User interaction becomes impossible after this
+              ;; call; this avoids situations where services wrongfully lead
+              ;; PID 1 to read from stdin (the console), which users may not
+              ;; have access to (see <https://bugs.gnu.org/23697>).
+              (redirect-port (open-input-file "/dev/null")
+                             (current-input-port))))))
 
     (scheme-file "shepherd.conf" config)))
 

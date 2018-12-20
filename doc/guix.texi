@@ -585,12 +585,12 @@ Info search path.)
 
 @item
 @cindex substitutes, authorization thereof
-To use substitutes from @code{hydra.gnu.org} or one of its mirrors
+To use substitutes from @code{@value{SUBSTITUTE-SERVER}} or one of its mirrors
 (@pxref{Substitutes}), authorize them:
 
 @example
 # guix archive --authorize < \
-     ~root/.config/guix/current/share/guix/hydra.gnu.org.pub
+     ~root/.config/guix/current/share/guix/@value{SUBSTITUTE-SERVER}.pub
 @end example
 
 @item
@@ -3053,10 +3053,10 @@ The meta-data file should contain a simple S-expression like this:
  (version 0)
  (dependencies
   (channel
-   (name 'some-collection)
+   (name some-collection)
    (url "https://example.org/first-collection.git"))
   (channel
-   (name 'some-other-collection)
+   (name some-other-collection)
    (url "https://example.org/second-collection.git")
    (branch "testing"))))
 @end lisp
@@ -4510,6 +4510,27 @@ parameter specifies in abstract terms the flags passed to the compiler;
 it defaults to @code{"RelWithDebInfo"} (short for ``release mode with
 debugging information''), which roughly means that code is compiled with
 @code{-O2 -g}, as is the case for Autoconf-based packages by default.
+@end defvr
+
+@defvr {Scheme Variable} dune-build-system
+This variable is exported by @code{(guix build-system dune)}.  It
+supports builds of packages using @uref{https://dune.build/, Dune}, a build
+tool for the OCaml programming language.  It is implemented as an extension
+of the @code{ocaml-build-system} which is described below.  As such, the
+@code{#:ocaml} and @code{#:findlib} parameters can be passed to this build
+system.
+
+It automatically adds the @code{dune} package to the set of inputs.
+Which package is used can be specified with the @code{#:dune}
+parameter.
+
+There is no @code{configure} phase because dune packages typically don't
+need to be configured.  The @code{#:build-flags} parameter is taken as a
+list of flags passed to the @code{dune} command during the build.
+
+The @code{#:jbuild?} parameter can be passed to use the @code{jbuild}
+command instead of the more recent @code{dune} command while building
+a package.  Its default value is @code{#f}.
 @end defvr
 
 @defvr {Scheme Variable} go-build-system
@@ -8350,7 +8371,8 @@ guix environment --container --share=$HOME=/exchange --ad-hoc guile -- guile
 
 @command{guix environment}
 also supports all of the common build options that @command{guix
-build} supports (@pxref{Common Build Options}).
+build} supports (@pxref{Common Build Options}) as well as package
+transformation options (@pxref{Package Transformation Options}).
 
 
 @node Invoking guix publish
@@ -11308,6 +11330,7 @@ Run @var{udev}, which populates the @file{/dev} directory dynamically.
 udev rules can be provided as a list of files through the @var{rules}
 variable.  The procedures @var{udev-rule} and @var{file->udev-rule} from
 @code{(gnu services base)} simplify the creation of such rule files.
+@end deffn
 
 @deffn {Scheme Procedure} udev-rule [@var{file-name} @var{contents}]
 Return a udev-rule file named @var{file-name} containing the rules
@@ -11325,6 +11348,9 @@ upon detecting a USB device with a given product identifier.
                    "ATTR@{product@}==\"Example\", "
                    "RUN+=\"/path/to/script\"")))
 @end example
+
+The @command{herd rules udev} command, as root, returns the name of the
+directory containing all the active udev rules.
 @end deffn
 
 Here we show how the default @var{udev-service} can be extended with it.
@@ -11406,7 +11432,6 @@ well as in the @var{groups} field of the @var{operating-system} record.
        (rules (cons* android-udev-rules
               (udev-configuration-rules config))))))))
 @end example
-@end deffn
 
 @defvr {Scheme Variable} urandom-seed-service-type
 Save some entropy in @var{%random-seed-file} to seed @file{/dev/urandom}
@@ -16662,6 +16687,325 @@ Bind the web interface to the specified address.
 @end table
 @end deftp
 
+@subsubheading Zabbix server
+@cindex zabbix zabbix-server
+Zabbix provides monitoring metrics, among others network utilization, CPU load
+and disk space consumption:
+
+@itemize
+@item High performance, high capacity (able to monitor hundreds of thousands of devices).
+@item Auto-discovery of servers and network devices and interfaces.
+@item Low-level discovery, allows to automatically start monitoring new items, file systems or network interfaces among others.
+@item Distributed monitoring with centralized web administration.
+@item Native high performance agents.
+@item SLA, and ITIL KPI metrics on reporting.
+@item High-level (business) view of monitored resources through user-defined visual console screens and dashboards.
+@item Remote command execution through Zabbix proxies.
+@end itemize
+
+@c %start of fragment
+
+Available @code{zabbix-server-configuration} fields are:
+
+@deftypevr {@code{zabbix-server-configuration} parameter} package zabbix-server
+The zabbix-server package.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string user
+User who will run the Zabbix server.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} group group
+Group who will run the Zabbix server.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string db-host
+Database host name.
+
+Defaults to @samp{"127.0.0.1"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string db-name
+Database name.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string db-user
+Database user.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string db-password
+Database password.  Please, use @code{include-files} with
+@code{DBPassword=SECRET} inside a specified file instead.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} number db-port
+Database port.
+
+Defaults to @samp{5432}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string log-type
+Specifies where log messages are written to:
+
+@itemize @bullet
+@item
+@code{system} - syslog.
+
+@item
+@code{file} - file specified with @code{log-file} parameter.
+
+@item
+@code{console} - standard output.
+
+@end itemize
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string log-file
+Log file name for @code{log-type} @code{file} parameter.
+
+Defaults to @samp{"/var/log/zabbix/server.log"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string pid-file
+Name of PID file.
+
+Defaults to @samp{"/var/run/zabbix/zabbix_server.pid"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string ssl-ca-location
+The location of certificate authority (CA) files for SSL server
+certificate verification.
+
+Defaults to @samp{"/etc/ssl/certs/ca-certificates.crt"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string ssl-cert-location
+Location of SSL client certificates.
+
+Defaults to @samp{"/etc/ssl/certs"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} string extra-options
+Extra options will be appended to Zabbix server configuration file.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-server-configuration} parameter} include-files include-files
+You may include individual files or all files in a directory in the
+configuration file.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@c %end of fragment
+
+@subsubheading Zabbix agent
+@cindex zabbix zabbix-agent
+
+Zabbix agent gathers information for Zabbix server.
+
+@c %start of fragment
+
+Available @code{zabbix-agent-configuration} fields are:
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} package zabbix-agent
+The zabbix-agent package.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} string user
+User who will run the Zabbix agent.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} group group
+Group who will run the Zabbix agent.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} string hostname
+Unique, case sensitive hostname which is required for active checks and
+must match hostname as configured on the server.
+
+Defaults to @samp{"Zabbix server"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} string log-type
+Specifies where log messages are written to:
+
+@itemize @bullet
+@item
+@code{system} - syslog.
+
+@item
+@code{file} - file specified with @code{log-file} parameter.
+
+@item
+@code{console} - standard output.
+
+@end itemize
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} string log-file
+Log file name for @code{log-type} @code{file} parameter.
+
+Defaults to @samp{"/var/log/zabbix/agent.log"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} string pid-file
+Name of PID file.
+
+Defaults to @samp{"/var/run/zabbix/zabbix_agent.pid"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} list server
+List of IP addresses, optionally in CIDR notation, or hostnames of
+Zabbix servers and Zabbix proxies.  Incoming connections will be
+accepted only from the hosts listed here.
+
+Defaults to @samp{("127.0.0.1")}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} list server-active
+List of IP:port (or hostname:port) pairs of Zabbix servers and Zabbix
+proxies for active checks.  If port is not specified, default port is
+used.  If this parameter is not specified, active checks are disabled.
+
+Defaults to @samp{("127.0.0.1")}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} string extra-options
+Extra options will be appended to Zabbix server configuration file.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-agent-configuration} parameter} include-files include-files
+You may include individual files or all files in a directory in the
+configuration file.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@c %end of fragment
+
+@subsubheading Zabbix front-end
+@cindex zabbix zabbix-front-end
+
+This service provides a WEB interface to Zabbix server.
+
+@c %start of fragment
+
+Available @code{zabbix-front-end-configuration} fields are:
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} nginx-server-configuration-list nginx
+NGINX configuration.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-host
+Database host name.
+
+Defaults to @samp{"localhost"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} number db-port
+Database port.
+
+Defaults to @samp{5432}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-name
+Database name.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-user
+Database user.
+
+Defaults to @samp{"zabbix"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-password
+Database password.  Please, use @code{db-secret-file} instead.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} string db-secret-file
+Secret file which will be appended to @file{zabbix.conf.php} file.  This
+file contains credentials for use by Zabbix front-end.  You are expected
+to create it manually.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} string zabbix-host
+Zabbix server hostname.
+
+Defaults to @samp{"localhost"}.
+
+@end deftypevr
+
+@deftypevr {@code{zabbix-front-end-configuration} parameter} number zabbix-port
+Zabbix server port.
+
+Defaults to @samp{10051}.
+
+@end deftypevr
+
+
+@c %end of fragment
+
 @node Kerberos Services
 @subsubsection Kerberos Services
 @cindex Kerberos
@@ -17414,6 +17758,8 @@ Determines whether php errors and warning should be sent to clients
 and displayed in their browsers.
 This is useful for local php development, but a security risk for public sites,
 as error messages can reveal passwords and personal data.
+@item @code{timezone} (default @code{#f})
+Specifies @code{php_admin_value[date.timezone]} parameter.
 @item @code{workers-logfile} (default @code{(string-append "/var/log/php" (version-major (package-version php)) "-fpm.www.log")})
 This file will log the @code{stderr} outputs of php worker processes.
 Can be set to @code{#f} to disable logging.
@@ -17480,7 +17826,7 @@ A simple services setup for nginx with php can look like this:
                            (root "/srv/http/")
                            (locations
                             (list (nginx-php-location)))
-                           (https-port #f)
+                           (listen '("80"))
                            (ssl-certificate #f)
                            (ssl-certificate-key #f)))
                  %base-services))
@@ -22628,6 +22974,9 @@ appear in the @code{operating-system} declaration actually exist
 needed at boot time are listed in @code{initrd-modules} (@pxref{Initial
 RAM Disk}).  Passing this option skips these tests altogether.
 
+@cindex on-error
+@cindex on-error strategy
+@cindex error strategy
 @item --on-error=@var{strategy}
 Apply @var{strategy} when an error occurs when reading @var{file}.
 @var{strategy} may be one of the following:

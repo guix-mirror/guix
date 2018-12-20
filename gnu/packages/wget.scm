@@ -45,7 +45,7 @@
 (define-public wget
   (package
     (name "wget")
-    (version "1.19.5")
+    (version "1.20")
     (source
      (origin
       (method url-fetch)
@@ -53,7 +53,7 @@
                           version ".tar.lz"))
       (sha256
        (base32
-        "0xfaxmlnih7dhkyks5wi4vrn0n1xshmy6gx6fb2k1120sprydyr9"))))
+        "07k8yd8rdn27x5fbzlnsz4db7z7qnisiqhs7r1b5wzy2b9b0zf5h"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

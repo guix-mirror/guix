@@ -537,14 +537,19 @@ requested using POOL."
         (not-found request))))
 
 (define* (render-nar/cached store cache request store-item
-                            #:key (compression %no-compression))
+                            #:key ttl (compression %no-compression))
   "Respond to REQUEST with a nar for STORE-ITEM.  If the nar is in CACHE,
-return it; otherwise, return 404."
+return it; otherwise, return 404.  When TTL is true, use it as the
+'Cache-Control' expiration time."
   (let ((cached (nar-cache-file cache store-item
                                 #:compression compression)))
     (if (file-exists? cached)
         (values `((content-type . (application/octet-stream
                                    (charset . "ISO-8859-1")))
+                  ,@(if ttl
+                        `((cache-control (max-age . ,ttl)))
+                        '())
+
                   ;; XXX: We're not returning the actual contents, deferring
                   ;; instead to 'http-write'.  This is a hack to work around
                   ;; <http://bugs.gnu.org/21093>.
@@ -819,6 +824,7 @@ blocking."
                                      %default-gzip-compression))))
                  (if cache
                      (render-nar/cached store cache request store-item
+                                        #:ttl narinfo-ttl
                                         #:compression compression)
                      (render-nar store request store-item
                                  #:compression compression)))
@@ -829,6 +835,7 @@ blocking."
            (if (nar-path? components)
                (if cache
                    (render-nar/cached store cache request store-item
+                                      #:ttl narinfo-ttl
                                       #:compression %no-compression)
                    (render-nar store request store-item
                                #:compression %no-compression))

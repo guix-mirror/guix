@@ -47,12 +47,13 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages base)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
@@ -60,11 +61,13 @@
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages django)
   #:use-module (gnu packages dns)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
-  #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gdb)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -80,35 +83,31 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages search)
-  #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages compression)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages flex)
-  #:use-module (gnu packages gdb)
-  #:use-module (gnu packages man)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages search)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages screen)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages networking)
+  #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
-  #:use-module (gnu packages w3m)
-  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages xml)
   #:use-module ((guix licenses)
                 #:select (fdl1.1+
                            agpl3+
@@ -1731,13 +1730,13 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.11.4")
+    (version "0.12.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1shhlq6ljbd8095hd82v4mw56rjcfxf1ymmgknbgh8gix02nsxw1"))))
+                "01y52qmab4cw9wmx87aahnxbyaxrxw8j2wx06mpcqsfvgk8d54wi"))))
     (build-system python-build-system)
     (arguments
       `(#:phases
@@ -1748,14 +1747,17 @@ maintained.")
                      (doc (string-append out "/share/doc/khard")))
                 (copy-recursively "misc/khard" doc)
                 #t))))
-        ;; FIXME: check phase fails with
-        ;; "Config file /tmp/.config/khard/khard.conf not available"
+        ;; Tests are currently only runnable without preexisting data on
+        ;; the development branch:
+        ;; https://github.com/scheibler/khard/issues/176
         #:tests? #f))
     (propagated-inputs
-     `(("python-vobject" ,python-vobject)
+     `(("python-atomicwrites" ,python-atomicwrites)
+       ("python-configobj" ,python-configobj)
        ("python-pyyaml" ,python-pyyaml)
-       ("python-atomicwrites" ,python-atomicwrites)
-       ("python-configobj" ,python-configobj)))
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-unidecode" ,python-unidecode)
+       ("python-vobject" ,python-vobject)))
     (synopsis "Console address book using CardDAV")
     (description "Khard is an address book for the console.  It creates, reads,
 modifies and removes CardDAV address book entries at your local machine.  For
@@ -2595,14 +2597,14 @@ servers.  The 4rev1 and 4 versions of IMAP are supported.")
 (define-public urlscan
   (package
     (name "urlscan")
-    (version "0.9.0")
+    (version "0.9.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urlscan" version))
         (sha256
          (base32
-          "133f28bisr4xj0nihpwpil8dyadss62mp8qgqdyzd676hg9xjfyc"))))
+          "0vpdyrx51sg9a8kswa7ibbcgcpvc7r03aq8x4n4c7v2xg0v3c7wb"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-urwid" ,python-urwid)))

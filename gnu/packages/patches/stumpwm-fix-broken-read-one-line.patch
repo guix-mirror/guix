@@ -1,0 +1,45 @@
+From a13db62a4da06426cf2eb2376d1a3723b5ee52d5 Mon Sep 17 00:00:00 2001
+From: Vasily Postnicov <shamaz.mazum@gmail.com>
+Date: Fri, 14 Dec 2018 20:01:53 +0300
+Subject: [PATCH] READ-ONE-LINE: Turn COMPLETIONS into a keyword argument
+
+This keeps READ-ONE-line backwards compatible to changes prior
+dae0422811771d179077b9336618f2b19be85b7b. Currently both
+ARGUMENT-POP-OR-READ and ARGUMENT-POP-REST-OR-READ are still being
+called with the previous lambda list. Update the calls to the
+READ-ONE-LINE that used the 'new' lambda list, COMPLETING-READ and
+YES-OR-NO-P.
+
+Closes #538
+---
+ input.lisp | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/input.lisp b/input.lisp
+index b698a368..7904b35f 100644
+--- a/input.lisp
++++ b/input.lisp
+@@ -307,10 +307,13 @@ passed the substring to complete on and is expected to return a list
+ of matches. If require-match argument is non-nil then the input must
+ match with an element of the completions."
+   (check-type completions (or list function symbol))
+-  (let ((line (read-one-line screen prompt completions :initial-input initial-input :require-match require-match)))
++  (let ((line (read-one-line screen prompt
++                             :completions completions
++                             :initial-input initial-input
++                             :require-match require-match)))
+     (when line (string-trim " " line))))
+ 
+-(defun read-one-line (screen prompt completions &key (initial-input "") require-match password)
++(defun read-one-line (screen prompt &key completions (initial-input "") require-match password)
+   "Read a line of input through stumpwm and return it. Returns nil if the user aborted."
+   (let ((*input-last-command* nil)
+         (*input-completions* completions)
+@@ -842,6 +845,7 @@ user presses 'y'"
+ user presses 'yes'"
+   (loop for line = (read-one-line (current-screen)
+                                   (format nil "~a(yes or no) " message)
++                                  :completions
+                                   '("yes" "no"))
+         until (find line '("yes" "no") :test 'string-equal)
+         do (message "Please answer yes or no")

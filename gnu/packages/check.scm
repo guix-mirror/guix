@@ -1414,6 +1414,30 @@ normally the case.")
 (define-public python2-pytest-subtesthack
   (package-with-python2 python-pytest-subtesthack))
 
+(define-public python-pytest-sugar
+  (package
+    (name "python-pytest-sugar")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-sugar" version))
+       (sha256
+        (base32
+         "1asq7yc4g8bx2sn7yy974mhc9ywvaihasjab4inkirdwn9s7mn7w"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-packaging" ,python-packaging)
+       ("python-pytest" ,python-pytest)
+       ("python-termcolor" ,python-termcolor)))
+    (home-page "https://pivotfinland.com/pytest-sugar/")
+    (synopsis "Plugin for pytest that changes the default look and feel")
+    (description
+     "@code{pytest-sugar} is a plugin for py.test that changes the default
+look and feel of py.test, using a progress bar and showing failures and errors
+instantly.")
+    (license license:bsd-3)))
+
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")

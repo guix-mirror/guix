@@ -51,7 +51,7 @@ void checkStoreNotSymlink()
         if (S_ISLNK(st.st_mode))
             throw Error(format(
                 "the path `%1%' is a symlink; "
-                "this is not allowed for the Nix store and its parent directories")
+                "this is not allowed for the store and its parent directories")
                 % path);
         path = dirOf(path);
     }
@@ -153,7 +153,7 @@ LocalStore::LocalStore(bool reserveSpace)
     }
 
     if (!lockFile(globalLock, ltRead, false)) {
-        printMsg(lvlError, "waiting for the big Nix store lock...");
+        printMsg(lvlError, "waiting for the big store lock...");
         lockFile(globalLock, ltRead, true);
     }
 
@@ -161,7 +161,7 @@ LocalStore::LocalStore(bool reserveSpace)
        upgrade.  */
     int curSchema = getSchema();
     if (curSchema > nixSchemaVersion)
-        throw Error(format("current Nix store schema is version %1%, but I only support %2%")
+        throw Error(format("current store schema is version %1%, but I only support %2%")
             % curSchema % nixSchemaVersion);
 
     else if (curSchema == 0) { /* new store */
@@ -222,13 +222,13 @@ int LocalStore::getSchema()
 void LocalStore::openDB(bool create)
 {
     if (access(settings.nixDBPath.c_str(), R_OK | W_OK))
-        throw SysError(format("Nix database directory `%1%' is not writable") % settings.nixDBPath);
+        throw SysError(format("store database directory `%1%' is not writable") % settings.nixDBPath);
 
-    /* Open the Nix database. */
+    /* Open the store database. */
     string dbPath = settings.nixDBPath + "/db.sqlite";
     if (sqlite3_open_v2(dbPath.c_str(), &db.db,
             SQLITE_OPEN_READWRITE | (create ? SQLITE_OPEN_CREATE : 0), 0) != SQLITE_OK)
-        throw Error(format("cannot open Nix database `%1%'") % dbPath);
+        throw Error(format("cannot open store database `%1%'") % dbPath);
 
     if (sqlite3_busy_timeout(db, 60 * 60 * 1000) != SQLITE_OK)
         throwSQLiteError(db, "setting timeout");
@@ -316,8 +316,8 @@ void LocalStore::openDB(bool create)
 }
 
 
-/* To improve purity, users may want to make the Nix store a read-only
-   bind mount.  So make the Nix store writable for this process. */
+/* To improve purity, users may want to make the store a read-only
+   bind mount.  So make the store writable for this process. */
 void LocalStore::makeStoreWritable()
 {
 #if HAVE_UNSHARE && HAVE_STATVFS && HAVE_SYS_MOUNT_H && defined(MS_BIND) && defined(MS_REMOUNT)
@@ -325,7 +325,7 @@ void LocalStore::makeStoreWritable()
     /* Check if /nix/store is on a read-only mount. */
     struct statvfs stat;
     if (statvfs(settings.nixStore.c_str(), &stat) != 0)
-        throw SysError("getting info about the Nix store mount point");
+        throw SysError("getting info about the store mount point");
 
     if (stat.f_flag & ST_RDONLY) {
         if (unshare(CLONE_NEWNS) == -1)
@@ -420,8 +420,8 @@ static void canonicalisePathMetaData_(const Path & path, uid_t fromUid, InodesSe
        lchown if available, otherwise don't bother.  Wrong ownership
        of a symlink doesn't matter, since the owning user can't change
        the symlink and can't delete it because the directory is not
-       writable.  The only exception is top-level paths in the Nix
-       store (since that directory is group-writable for the Nix build
+       writable.  The only exception is top-level paths in the
+       store (since that directory is group-writable for the build
        users group); we check for this case below. */
     if (st.st_uid != geteuid()) {
 #if HAVE_LCHOWN
@@ -1347,7 +1347,7 @@ Path LocalStore::importPath(bool requireSignature, Source & source)
 
     unsigned int magic = readInt(hashAndReadSource);
     if (magic != EXPORT_MAGIC)
-        throw Error("Nix archive cannot be imported; wrong format");
+        throw Error("normalized archive cannot be imported; wrong format");
 
     Path dstPath = readStorePath(hashAndReadSource);
 
@@ -1476,7 +1476,7 @@ void LocalStore::invalidatePathChecked(const Path & path)
 
 bool LocalStore::verifyStore(bool checkContents, bool repair)
 {
-    printMsg(lvlError, format("reading the Nix store..."));
+    printMsg(lvlError, format("reading the store..."));
 
     bool errors = false;
 
@@ -1564,7 +1564,7 @@ void LocalStore::verifyPath(const Path & path, const PathSet & store,
     done.insert(path);
 
     if (!isStorePath(path)) {
-        printMsg(lvlError, format("path `%1%' is not in the Nix store") % path);
+        printMsg(lvlError, format("path `%1%' is not in the store") % path);
         invalidatePath(path);
         return;
     }

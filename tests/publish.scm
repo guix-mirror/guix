@@ -411,10 +411,12 @@ FileSize: ~a~%"
                                (random-text))))
   (test-equal "with cache, uncompressed"
     (list #t
+          (* 42 3600)                             ;TTL on narinfo
           `(("StorePath" . ,item)
             ("URL" . ,(string-append "nar/" (basename item)))
             ("Compression" . "none"))
           200                                     ;nar/…
+          (* 42 3600)                             ;TTL on nar/…
           (path-info-nar-size
            (query-path-info %store item))         ;FileSize
           404)                                    ;nar/gzip/…
@@ -423,7 +425,7 @@ FileSize: ~a~%"
        (let ((thread (with-separate-output-ports
                       (call-with-new-thread
                        (lambda ()
-                         (guix-publish "--port=6796" "-C2"
+                         (guix-publish "--port=6796" "-C2" "--ttl=42h"
                                        (string-append "--cache=" cache)))))))
          (wait-until-ready 6796)
          (let* ((base     "http://localhost:6796/")
@@ -437,13 +439,19 @@ FileSize: ~a~%"
            (and (= 404 (response-code response))
 
                 (wait-for-file cached)
-                (let* ((body         (http-get-port url))
+                (let* ((response     (http-get url))
+                       (body         (http-get-port url))
                        (compressed   (http-get (string-append base "nar/gzip/"
                                                               (basename item))))
                        (uncompressed (http-get (string-append base "nar/"
                                                               (basename item))))
                        (narinfo      (recutils->alist body)))
                   (list (file-exists? nar)
+                        (match (assq-ref (response-headers response)
+                                         'cache-control)
+                          ((('max-age . ttl)) ttl)
+                          (_ #f))
+
                         (filter (lambda (item)
                                   (match item
                                     (("Compression" . _) #t)
@@ -452,6 +460,11 @@ FileSize: ~a~%"
                                     (_ #f)))
                                 narinfo)
                         (response-code uncompressed)
+                        (match (assq-ref (response-headers uncompressed)
+                                         'cache-control)
+                          ((('max-age . ttl)) ttl)
+                          (_ #f))
+
                         (string->number
                          (assoc-ref narinfo "FileSize"))
                         (response-code compressed))))))))))

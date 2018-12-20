@@ -62,6 +62,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages rust)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
@@ -506,16 +507,36 @@ security standards.")
         (search-patch  "icecat-use-system-media-libs.patch")
         (mozilla-patch "icecat-bug-1464061.patch"         "d28761dbff18" "1f58rzwx4s1af66fdwn9lgkcd1ksmq8kn8imvf78p90jqi24h7b4")
         (mozilla-patch "icecat-bug-1479853.patch"         "4faeb696dd06" "12891xx9c15s6kby6d3zk64v5nqgaq7sw597zv1fkd3a6x69hlva")
-        (mozilla-patch "icecat-bug-1488295.patch"         "12ba39f69876" "1piyq44f0xa0a9z2748aqwpaziaxwp61d86gyhalbyag8lcxfb3p")
-        (mozilla-patch "icecat-bug-1500011.patch"         "a0adabeedf26" "0f5wazha3zxzhy2j8f93hx62l9p02b1p40vi07qah3ar67h4ccj9")
-        (mozilla-patch "icecat-bug-1503082.patch"         "19604eb26230" "1wqxgph4z14ijhk2j2m4av5p6gx72d02lzz83q6yy0k065kw8psb")
-        (mozilla-patch "icecat-bug-1499861.patch"         "98737ab09270" "0fyl6wv0jxcxpkfpsff46y93k49n8lrw0k7c1p45g8da015dx27a")
-        (mozilla-patch "icecat-bug-1504452.patch"         "1cf7d80355d5" "19jp4x32vyxam54d1r9fm7jwf6krhhf3xazfqmxb9aw4iwdil7dl")
-        (mozilla-patch "icecat-bug-1494752.patch"         "c264774b8913" "1hxyi131x8jwawrq90cgkph833iv9ixrdrgzl1r978gbzwq10xz2")
+        (mozilla-patch "icecat-CVE-2018-17466.patch"      "12ba39f69876" "1piyq44f0xa0a9z2748aqwpaziaxwp61d86gyhalbyag8lcxfb3p")
+        (mozilla-patch "icecat-CVE-2018-18498.patch"      "a0adabeedf26" "0f5wazha3zxzhy2j8f93hx62l9p02b1p40vi07qah3ar67h4ccj9")
+        (mozilla-patch "icecat-CVE-2018-12405-pt01.patch" "19604eb26230" "1wqxgph4z14ijhk2j2m4av5p6gx72d02lzz83q6yy0k065kw8psb")
+        (mozilla-patch "icecat-CVE-2018-18492.patch"      "98737ab09270" "0fyl6wv0jxcxpkfpsff46y93k49n8lrw0k7c1p45g8da015dx27a")
+        (mozilla-patch "icecat-CVE-2018-18493.patch"      "1cf7d80355d5" "19jp4x32vyxam54d1r9fm7jwf6krhhf3xazfqmxb9aw4iwdil7dl")
+        (mozilla-patch "icecat-CVE-2018-12405-pt02.patch" "c264774b8913" "1hxyi131x8jwawrq90cgkph833iv9ixrdrgzl1r978gbzwq10xz2")
         (mozilla-patch "icecat-bug-1477773.patch"         "ec13fda7c9b0" "0zj7aylgw55g0y7plaafn5gq8jwcsdr1bpdxacs0hq914nm8zy9z")
-        (mozilla-patch "icecat-bug-1500759.patch"         "5e1a9644aeef" "1qimrpgyrd8zkiri7w57j0aymk20y9b34am5w7rvr6qj1lhrbfla")
+        (mozilla-patch "icecat-CVE-2018-12405-pt03.patch" "5e1a9644aeef" "1qimrpgyrd8zkiri7w57j0aymk20y9b34am5w7rvr6qj1lhrbfla")
         (mozilla-patch "icecat-bug-1485655.patch"         "9055726e2d89" "1pppxr94zqh6zmi2mn1ih21qap09vk5ivbhnwxqr8iszvygjg44g")
-        (mozilla-patch "icecat-bug-1410214.patch"         "9e641345e2ef" "0542xss2jdb8drh4g50cfy32l300x69dyywgx3dqs03vgr3qplxy")))
+        (mozilla-patch "icecat-bug-1410214.patch"         "9e641345e2ef" "0542xss2jdb8drh4g50cfy32l300x69dyywgx3dqs03vgr3qplxy")
+        (mozilla-patch "icecat-CVE-2018-12405-pt04.patch" "6398541ec302" "1c2yi7mkg3d5afxsgj9fp3zq8yhkmphrll5d60d5xsdv88kqqiyf")
+        (mozilla-patch "icecat-bug-1496736.patch"         "3bed863ee656" "038k7jk3yp16410crwfdvhyb2vis49c6bplrfr83v51885cqldar")
+        (mozilla-patch "icecat-bug-1498765.patch"         "a08c8493ba19" "0bwg4vg03j962lb9q8ihpiy4rmygykf1q9ij8x7h34q7hg43yjya")
+        (mozilla-patch "icecat-CVE-2018-12405-pt05.patch" "ee204e26690e" "1scs45xhlr1mwv6x2q6n22363f42by8cjmifqwzlikggs21f5mcq")
+        (mozilla-patch "icecat-bug-1507035.patch"         "cec8b58ab3fe" "1f131ibpkrhsa44l822hnm5qgvapbs3i9pj25iimdwvr933winz8")
+        (mozilla-patch "icecat-bug-1501680.patch"         "282c6bb81562" "1zgw7l5zmni8468y3f6cip1nlw63cfdd9vv9b00cbrgy96d1q2cp")
+        (mozilla-patch "icecat-bug-1500310.patch"         "b3a439a26186" "0mrjxcmrlv04fyl36dwxk97dw08g2hlikvw2hfa1l0y8zsc4bgw8")
+        (mozilla-patch "icecat-bug-1500366.patch"         "abd59256c4e3" "1jgwh2v4kwb6kf2h7mwf128w1k1jj119bfhlgqpmn9ami35wpzf3")
+        (mozilla-patch "icecat-bug-1493080.patch"         "a7cabf306d05" "1n7wv67rcaz8wj31jc77ssjdj3kb61gdg7pigj828c5z2cgns1k5")
+        (mozilla-patch "icecat-CVE-2018-12405-pt06.patch" "8bbf80948b50" "1nvc69zgz9nvbw1pwxkil1fx4cxxpr6bsjrpp6l2kv7jhgax1bqk")
+        (mozilla-patch "icecat-bug-1507564.patch"         "60619cc47b10" "09fanqr08kqgraw4xp7y2az4jc7ia8nn200rqjfj20vmkyjz97j3")
+        (mozilla-patch "icecat-bug-1507730.patch"         "dd0f01818b9c" "14ziq1bm72n58xrvsgzpjj5z6ifpvi70r5jfhbkbj69mf4y4cx2z")
+        (mozilla-patch "icecat-CVE-2018-12405-pt07.patch" "a73a46ddc848" "1bvvyav3xyn6rgn6haicinxn0dasl9dyc1i37fyb7wr5wcpahybs")
+        (mozilla-patch "icecat-CVE-2018-18494.patch"      "a72ec8e21577" "095zghmwdcbaid5426p9vpl757d8sfbsvgn201bjm7nhm03m4z7i")
+        (mozilla-patch "icecat-CVE-2018-12405-pt08.patch" "b6d0fc61fd0b" "0059avawxi4s4747plybjsjq8j2h4z7amw05p28xyg95a2njwnaa")
+        (mozilla-patch "icecat-bug-1499028.patch"         "a62ede2dd3bc" "0ikmnibni8bdvpr9p42wskyyic08vzqdz5qr028bqzyg5119gily")
+        (mozilla-patch "icecat-bug-1426574.patch"         "0db86656655b" "0kmccb4ccdzbzncwklx7w1bg7r61zwl2wnfp67vl27hm9xykbck7")
+        (mozilla-patch "icecat-CVE-2018-12405-pt09.patch" "20e31905de62" "0b5a441645wy3q4asaygvdq0inrxmxrh33cpgdp6ngflq9p2i6h0")
+        (mozilla-patch "icecat-CVE-2018-12405-pt10.patch" "c2832f98fe51" "0b4jfjfdyrihwjdfavd54hn9kdg2f017lmfr7mj2llp71flxwwj7")
+        (mozilla-patch "icecat-bug-1511495.patch"         "d428d2b8f585" "1f9xs0bjhbphvkv60cnvz34sr2rv38jzvi47wh3nablg41yjpdrk")))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -620,6 +641,8 @@ security standards.")
       ;; Icecat 60 checkes for rust>=1.24
      `(("rust" ,rust-1.24)
        ("cargo" ,rust-1.24 "cargo")
+       ("llvm" ,llvm-3.9.1)
+       ("clang" ,clang-3.9.1)
        ("perl" ,perl)
        ("python" ,python-2) ; Python 3 not supported
        ("python2-pysqlite" ,python2-pysqlite)
@@ -639,7 +662,7 @@ security standards.")
 
        #:imported-modules ,%cargo-build-system-modules ;for `generate-checksums'
 
-       #:configure-flags '("--enable-default-toolkit=cairo-gtk3"
+       #:configure-flags `("--enable-default-toolkit=cairo-gtk3"
 
                            "--with-distribution-id=org.gnu"
 
@@ -653,13 +676,24 @@ security standards.")
                            "--disable-eme"
                            "--disable-gconf"
 
-                           ;; Stylo requires LLVM/clang.  For now, disable it.
-                           "--disable-stylo"
-
                            ;; Building with debugging symbols takes ~5GiB, so
                            ;; disable it.
                            "--disable-debug"
                            "--disable-debug-symbols"
+
+                           ;; Clang is needed to build Stylo, Mozilla's new
+                           ;; CSS engine.  We must specify the clang paths
+                           ;; manually, because otherwise the Mozilla build
+                           ;; system looks in the directories returned by
+                           ;; llvm-config --bindir and llvm-config --libdir,
+                           ;; which return paths in the llvm package where
+                           ;; clang is not found.
+                           ,(string-append "--with-clang-path="
+                                           (assoc-ref %build-inputs "clang")
+                                           "/bin/clang")
+                           ,(string-append "--with-libclang-path="
+                                           (assoc-ref %build-inputs "clang")
+                                           "/lib")
 
                            ;; Hack to work around missing
                            ;; "unofficial" branding in icecat.
@@ -754,6 +788,20 @@ security standards.")
                     (generate-checksums dir null-file)))
                 (find-files "third_party/rust" ".cargo-checksum.json")))
              #t))
+         (add-before 'configure 'augment-CPLUS_INCLUDE_PATH
+           (lambda* (#:key build inputs #:allow-other-keys)
+             ;; Here, we add additional entries to CPLUS_INCLUDE_PATH, to work
+             ;; around a problem that otherwise occurs when attempting to
+             ;; build Stylo, which requires Rust and Clang.  Without these
+             ;; additional entries, errors occur during the build indicating
+             ;; that the <cstddef> and "c++config.h" headers cannot be found.
+             ;; Note that the 'build' keyword argument contains the GNU
+             ;; triplet, e.g. "x86_64-unknown-linux-gnu".
+             (let ((gcc (assoc-ref inputs "gcc")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-append gcc "/include/c++" ":"
+                                      gcc "/include/c++/" build ":"
+                                      (getenv "CPLUS_INCLUDE_PATH"))))))
          (replace
           'configure
           ;; configure does not work followed by both "SHELL=..." and
@@ -770,6 +818,7 @@ security standards.")
               (setenv "SHELL" bash)
               (setenv "CONFIG_SHELL" bash)
               (setenv "AUTOCONF" (which "autoconf")) ; must be autoconf-2.13
+              (setenv "CC" "gcc")  ; apparently needed when Stylo is enabled
               (mkdir "../build")
               (chdir "../build")
               (format #t "build directory: ~s~%" (getcwd))

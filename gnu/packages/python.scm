@@ -56,6 +56,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
+;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -902,6 +903,29 @@ version identifier.")
 (define-public python2-semantic-version
   (package-with-python2 python-semantic-version))
 
+(define-public python-serpent
+  (package
+    (name "python-serpent")
+    (version "1.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "serpent" version))
+       (sha256
+        (base32
+         "04p9dsrm5pv8vhk3flvih55kgvlzpi38hlaykdiakddmgwqw93bg"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/irmen/Serpent")
+    (synopsis "Serializer for literal Python expressions")
+    (description
+     "Serpent provides ast.literal_eval() compatible object tree
+serialization.  It serializes an object tree into bytes (utf-8 encoded string)
+that can be decoded and then passed as-is to ast.literal_eval() to rebuild it
+as the original object tree.  As such it is safe to send serpent data to other
+machines over the network for instance (because only safe literals are
+encoded).")
+    (license license:expat)))
+
 (define-public python-setuptools
   (package
     (name "python-setuptools")
@@ -1041,6 +1065,32 @@ for additional processing.")
 
 (define-public python2-capturer
   (package-with-python2 python-capturer))
+
+(define-public python-case
+  (package
+    (name "python-case")
+    (version "1.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "case" version))
+       (sha256
+        (base32
+         "1cagg06vfph864s6l5jb0zqliwxh647bki8j6lf4a4qrv40jnhs8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-six" ,python-six)
+       ("python-unittest2" ,python-unittest2)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)))
+    (home-page "https://github.com/celery/case")
+    (synopsis "Unittest utilities and convenience methods")
+    (description
+     "The @code{case} package provides utilities on top of unittest, including
+some helpful Python 2 compatibility convenience methods.")
+    (license license:bsd-3)))
 
 (define-public python-verboselogs
   (package
@@ -2261,6 +2311,30 @@ object.")
 
 (define-public python2-pyyaml
   (package-with-python2 python-pyyaml))
+
+(define-public python-vine
+  (package
+    (name "python-vine")
+    (version "1.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "vine" version))
+       (sha256
+        (base32
+         "0wkskb2hb494v9gixqnf4bl972p4ibcmxdykzpwjlfa5picns4aj"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-case" ,python-case)))
+    (home-page "https://github.com/celery/vine")
+    (synopsis "Promises for Python")
+    (description
+     "@code{vine} provides a special implementation of promises in that it can
+be used both for \"promise of a value\" and lazy evaluation.  The biggest
+upside for this is that everything in a promise can also be a promise,
+e.g. filters, callbacks and errbacks can all be promises.")
+    (license license:bsd-3)))
 
 (define-public python-virtualenv
   (package
@@ -8190,18 +8264,21 @@ and provides a uniform API regardless of which JSON implementation is used.")
 (define-public python-amqp
   (package
     (name "python-amqp")
-    (version "1.4.9")
+    (version "2.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "amqp" version))
        (sha256
         (base32
-         "06n6q0kxhjnbfz3vn8x9yz09lwmn1xi9d6wxp31h5jbks0b4vsid"))))
+         "1sv600dgqwpimr6i1g59y9hpn50mc236gdqkr7zin13kvlpx0g87"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)
+     `(("python-case" ,python-case)
+       ("python-pytest-sugar" ,python-pytest-sugar)
        ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-vine" ,python-vine)))
     (home-page "https://github.com/celery/py-amqp")
     (synopsis
      "Low-level AMQP client for Python (fork of amqplib)")
@@ -8255,23 +8332,26 @@ applications.")
 (define-public python-kombu
   (package
     (name "python-kombu")
-    (version "3.0.37")
+    (version "4.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "kombu" version))
        (sha256
         (base32
-         "0l16chb314gpq2v7fh94a22c30lcv6w3ylmhsa60bldlcq6a0r70"))))
+         "15k8f7mzqr049sg9vi48m19vjykviafk3f0p5xzgw9by0x0kyxjj"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)))
+       ("python-case" ,python-case)
+       ("python-pyro4" ,python-pyro4)
+       ("python-pytest-sugar" ,python-pytest-sugar)
+       ("python-pytz" ,python-pytz)))
     (propagated-inputs
      `(("python-anyjson" ,python-anyjson)
        ("python-amqp" ,python-amqp)
        ("python-redis" ,python-redis)))
-    (home-page "http://kombu.readthedocs.org")
+    (home-page "https://kombu.readthedocs.io")
     (synopsis "Message passing library for Python")
     (description "The aim of Kombu is to make messaging in Python as easy as
 possible by providing an idiomatic high-level interface for the AMQ protocol,
@@ -8297,17 +8377,18 @@ RabbitMQ messaging server is the most popular implementation.")
 (define-public python-billiard
   (package
     (name "python-billiard")
-    (version "3.3.0.23")
+    (version "3.5.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "billiard" version))
        (sha256
         (base32
-         "02wxsc6bhqvzh8j6w758kvgqbnj14l796mvmrcms8fgfamd2lak9"))))
+         "03msmapj3s5zgqk87d646mafz7a01h5bm2wijalgpi0s80ks5na2"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-case" ,python-case)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/celery/billiard")
     (synopsis
      "Python multiprocessing fork with improvements and bugfixes")
@@ -8331,31 +8412,35 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
 (define-public python-celery
   (package
     (name "python-celery")
-    (version "3.1.24")
+    (version "4.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "celery" version))
        (sha256
         (base32
-         "0yh2prhdnx2dgkb67a5drj12hh2zvzx5f611p7mqqg01ydghif4r"))))
+         "0y66rz7z8dfcgs3s0qxmdddlaq57bzbgxgfz896nbp14grkv9nkp"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     '(;; TODO The tests fail with Python 3.7
+       ;; https://github.com/celery/celery/issues/4849
+       #:tests? #f
+       #:phases
        (modify-phases %standard-phases
-         ;; These tests break with Python 3.5:
-         ;; https://github.com/celery/celery/issues/2897#issuecomment-253066295
-         (replace 'check
+         (add-after 'unpack 'patch-requirements
            (lambda _
-             (zero?
-               (system* "nosetests" "--exclude=^test_safe_to_remove.*")))))))
+             (substitute* "requirements/test.txt"
+               (("pytest>=3\\.0,<3\\.3")
+                "pytest>=3.0"))
+             #t)))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-case" ,python-case)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-pytz" ,python-pytz)
        ("python-billiard" ,python-billiard)
        ("python-kombu" ,python-kombu)))
-    (home-page "http://celeryproject.org")
+    (home-page "https://celeryproject.org")
     (synopsis "Distributed Task Queue")
     (description "Celery is an asynchronous task queue/job queue based on
 distributed message passing.  It is focused on real-time operation, but
@@ -10617,9 +10702,16 @@ useful as a validator for JSON data.")
         (base32
          "090vdksbz341f7ljvr0zswblw4lspa8qaiikzyjkf318arpxmil9"))))
     (build-system python-build-system)
-    ;; Test suite requires python-setuptools
-    (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-pythonpath
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append
+                      (getcwd) "/test/"
+                      ":" (getenv "PYTHONPATH")))
+             #t)))))
     (home-page
      "https://github.com/eliben/pyelftools")
     (synopsis
@@ -13252,6 +13344,28 @@ such as figshare or Zenodo.")
 
 (define-public python2-semver
   (package-with-python2 python-semver))
+
+(define-public python-pyro4
+  (package
+    (name "python-pyro4")
+    (version "4.74")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Pyro4" version))
+       (sha256
+        (base32
+         "0pzp7c6q3vvkxq0wy9lr6wd5wky40sajz69g697i5rb2q497pvc9"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-serpent" ,python-serpent)))
+    (home-page "https://pyro4.readthedocs.io")
+    (synopsis "Distributed object middleware for Python")
+    (description
+     "Pyro enables you to build applications in which objects can talk to each
+other over the network.  You can just use normal Python method calls to call
+objects on other machines, also known as remote procedure calls (RPC).")
+    (license license:expat)))
 
 (define-public python2-pyro
   (package
