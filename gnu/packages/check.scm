@@ -1254,13 +1254,14 @@ C/C++, R, and more, and uploads it to the @code{codecov.io} service.")
     (version "0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/jupyter/testpath/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/jupyter/testpath")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "04kh3fgvmqz6cfcw79q70qwjz7ib7lxm27cc548iy2rpr33qqf55"))))
+         "0r4iiizjql6ny1ln7ciw7rrbjadz1s9zrf2hl0xkgnh3ypd8936f"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; this package does not even have a setup.py
