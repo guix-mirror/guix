@@ -2066,17 +2066,15 @@ retried.")
     (name "python-pyhamcrest")
     (version "1.9.0")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append
-                "https://github.com/hamcrest/PyHamcrest/archive/V"
-                version
-                ".tar.gz"))
-              (file-name
-               (string-append name "-" version ".tar.gz"))
+              ;; Tests not distributed from pypi release.
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/hamcrest/PyHamcrest")
+                     (commit (string-append "V" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lqjajhwf7x7igvvnj5p1cm31y9njy07qby94w18kl6zwbdjqrwy"))))
+                "01qnzj9qnzz0y78qa3ing24ssvszb0adw59xc4qqmdn5wryy606b"))))
     (native-inputs                      ; All native inputs are for tests
      `(("python-pytest-cov" ,python-pytest-cov)
        ("python-mock" ,python-mock)
