@@ -1287,17 +1287,10 @@ MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in
 
 bootstrapdir = $(guilemoduledir)/%D%/packages/bootstrap
-bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux
 bootstrap_i686_linuxdir = $(bootstrapdir)/i686-linux
 bootstrap_armhf_linuxdir = $(bootstrapdir)/armhf-linux
 bootstrap_aarch64_linuxdir = $(bootstrapdir)/aarch64-linux
 bootstrap_mips64el_linuxdir = $(bootstrapdir)/mips64el-linux
-
-dist_bootstrap_x86_64_linux_DATA =		\
-  %D%/packages/bootstrap/x86_64-linux/bash	\
-  %D%/packages/bootstrap/x86_64-linux/mkdir	\
-  %D%/packages/bootstrap/x86_64-linux/tar	\
-  %D%/packages/bootstrap/x86_64-linux/xz
 
 dist_bootstrap_i686_linux_DATA =		\
   %D%/packages/bootstrap/i686-linux/bash	\
