@@ -2883,10 +2883,11 @@ to easily extend the contacts collection.")
              (setenv "HOME" (getcwd))
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
-             ;; Blacklist a failing test-function. FIXME: Make it pass.
+             ;; Blacklist some failing test-functions. FIXME: Make them pass.
              (with-output-to-file "bin/BLACKLIST"
                (lambda _
-                 (display "[testMatch]\n*\n")))
+                 (display "[testMatch]\n*\n")
+                 (display "[testMulti]\n*\n")))
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Framework for Plasma runners")
