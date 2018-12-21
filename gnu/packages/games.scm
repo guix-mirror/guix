@@ -146,6 +146,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages networking)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system haskell)
@@ -5904,3 +5905,43 @@ access to game controllers.  It supports the de-facto standard gamepads as
 defined by the W3C standard Gamepad specification or as implemented by the SDL
 GameController.")
     (license license:lgpl2.1+)))
+
+(define-public quadrapassel
+  (package
+    (name "quadrapassel")
+    (version "3.31.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "08i01nsgfb502xzzrrcxxbs7awb0j1h4c08vmj0j18ipa1sz8vb8"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
+       ("gettext" ,gnu-gettext)
+       ("glib" ,glib "bin")             ;for glib-compile-resources
+       ("itstool" ,itstool)
+       ("libxml2" ,libxml2)             ;for xmllint
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("clutter" ,clutter)
+       ("clutter-gtk" ,clutter-gtk)
+       ("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libmanette" ,libmanette)
+       ("librsvg" ,librsvg)))
+    (home-page "https://wiki.gnome.org/Apps/Quadrapassel")
+    (synopsis "GNOME version of Tetris")
+    (description "Quadrapassel comes from the classic falling-block game,
+Tetris.  The goal of the game is to create complete horizontal lines of
+blocks, which will disappear.  The blocks come in seven different shapes made
+from four blocks each: one straight, two L-shaped, one square, and two
+S-shaped.  The blocks fall from the top center of the screen in a random
+order.  You rotate the blocks and move them across the screen to drop them in
+complete lines.  You score by dropping blocks fast and completing lines.  As
+your score gets higher, you level up and the blocks fall faster.")
+    (license license:gpl2+)))
