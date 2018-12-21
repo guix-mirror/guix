@@ -392,33 +392,31 @@ MACHINE."
                (build-requirements-features requirements)
                (build-machine-features machine))))
 
-(define (machine-load machine)
-  "Return the load of MACHINE, divided by the number of parallel builds
-allowed on MACHINE.  Return +∞ if MACHINE is unreachable."
-  ;; Note: This procedure is costly since it creates a new SSH session.
-  (match (false-if-exception (open-ssh-session machine))
-    ((? session? session)
-     (let* ((pipe (open-remote-pipe* session OPEN_READ
-                                     "cat" "/proc/loadavg"))
-            (line (read-line pipe)))
-       (close-port pipe)
-       (disconnect! session)
+(define (node-load node)
+  "Return the load on NODE.  Return +∞ if NODE is misbehaving."
+  (let ((line (node-eval node
+                         '(begin
+                            (use-modules (ice-9 rdelim))
+                            (call-with-input-file "/proc/loadavg"
+                              read-string)))))
+    (if (eof-object? line)
+        +inf.0 ;MACHINE does not respond, so assume it is infinitely loaded
+        (match (string-tokenize line)
+          ((one five fifteen . x)
+           (string->number one))
+          (x
+           +inf.0)))))
 
-       (if (eof-object? line)
-           +inf.0 ;MACHINE does not respond, so assume it is infinitely loaded
-           (match (string-tokenize line)
-             ((one five fifteen . x)
-              (let* ((raw        (string->number one))
-                     (jobs       (build-machine-parallel-builds machine))
-                     (normalized (/ raw jobs)))
-                (format (current-error-port) "load on machine '~a' is ~s\
+(define (normalized-load machine load)
+  "Divide LOAD by the number of parallel builds of MACHINE."
+  (if (rational? load)
+      (let* ((jobs       (build-machine-parallel-builds machine))
+             (normalized (/ load jobs)))
+        (format (current-error-port) "load on machine '~a' is ~s\
  (normalized: ~s)~%"
-                        (build-machine-name machine) raw normalized)
-                normalized))
-             (x
-              +inf.0)))))        ;something's fishy about MACHINE, so avoid it
-    (x
-     +inf.0)))                      ;failed to connect to MACHINE, so avoid it
+                (build-machine-name machine) load normalized)
+        normalized)
+      load))
 
 (define (machine-lock-file machine hint)
   "Return the name of MACHINE's lock file for HINT."
@@ -484,21 +482,25 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
       (match machines+slots
         (((best slot) others ...)
          ;; Return the best machine unless it's already overloaded.
-         ;; Note: We call 'machine-load' only as a last resort because it is
+         ;; Note: We call 'node-load' only as a last resort because it is
          ;; too costly to call it once for every machine.
-         (if (< (machine-load best) 2.)
-             (match others
-               (((machines slots) ...)
-                ;; Release slots from the uninteresting machines.
-                (for-each release-build-slot slots)
+         (let* ((session (false-if-exception (open-ssh-session best)))
+                (node    (and session (make-node session)))
+                (load    (and node (normalized-load best (node-load node)))))
+           (when session (disconnect! session))
+           (if (and node (< load 2.))
+               (match others
+                 (((machines slots) ...)
+                  ;; Release slots from the uninteresting machines.
+                  (for-each release-build-slot slots)
 
-                ;; The caller must keep SLOT to protect it from GC and to
-                ;; eventually release it.
-                (values best slot)))
-             (begin
-               ;; BEST is overloaded, so try the next one.
-               (release-build-slot slot)
-               (loop others))))
+                  ;; The caller must keep SLOT to protect it from GC and to
+                  ;; eventually release it.
+                  (values best slot)))
+               (begin
+                 ;; BEST is overloaded, so try the next one.
+                 (release-build-slot slot)
+                 (loop others)))))
         (()
          (values #f #f))))))
 
@@ -689,16 +691,18 @@ machine."
     (info (G_ "getting status of ~a build machines defined in '~a'...~%")
           (length machines) machine-file)
     (for-each (lambda (machine)
-                (let* ((node (make-node (open-ssh-session machine)))
-                       (uts (node-eval node '(uname))))
+                (let* ((session (open-ssh-session machine))
+                       (node    (make-node session))
+                       (uts     (node-eval node '(uname)))
+                       (load    (node-load node)))
+                  (disconnect! session)
                   (format #t "~a~%  kernel: ~a ~a~%  architecture: ~a~%\
   host name: ~a~%  normalized load: ~a~%"
                           (build-machine-name machine)
                           (utsname:sysname uts) (utsname:release uts)
                           (utsname:machine uts)
                           (utsname:nodename uts)
-                          (parameterize ((current-error-port (%make-void-port "rw+")))
-                                        (machine-load machine)))))
+                          load)))
               machines)))
 
 
