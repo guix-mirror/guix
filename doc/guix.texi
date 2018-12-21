@@ -2120,7 +2120,8 @@ availability of packages:
 @itemx -s @var{regexp}
 @cindex searching for packages
 List the available packages whose name, synopsis, or description matches
-@var{regexp}, sorted by relevance.  Print all the metadata of matching packages in
+@var{regexp} (in a case-insensitive fashion), sorted by relevance.
+Print all the metadata of matching packages in
 @code{recutils} format (@pxref{Top, GNU recutils databases,, recutils,
 GNU recutils manual}).
 
