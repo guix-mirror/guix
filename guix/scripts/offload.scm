@@ -321,6 +321,13 @@ hook."
     (set-port-revealed! port 1)
     port))
 
+(define (node-free-disk-space node)
+  "Return the free disk space, in bytes, in NODE's store."
+  (node-eval node
+             `(begin
+                (use-modules (guix build syscalls))
+                (free-disk-space ,(%store-prefix)))))
+
 (define* (transfer-and-offload drv machine
                                #:key
                                (inputs '())
@@ -391,6 +398,12 @@ MACHINE."
        (lset<= string=?
                (build-requirements-features requirements)
                (build-machine-features machine))))
+
+(define %minimum-disk-space
+  ;; Minimum disk space required on the build machine for a build to be
+  ;; offloaded.  This keeps us from offloading to machines that are bound to
+  ;; run out of disk space.
+  (* 100 (expt 2 20)))                            ;100 MiB
 
 (define (node-load node)
   "Return the load on NODE.  Return +∞ if NODE is misbehaving."
@@ -486,9 +499,10 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
          ;; too costly to call it once for every machine.
          (let* ((session (false-if-exception (open-ssh-session best)))
                 (node    (and session (make-node session)))
-                (load    (and node (normalized-load best (node-load node)))))
+                (load    (and node (normalized-load best (node-load node))))
+                (space   (and node (node-free-disk-space node))))
            (when session (disconnect! session))
-           (if (and node (< load 2.))
+           (if (and node (< load 2.) (>= space %minimum-disk-space))
                (match others
                  (((machines slots) ...)
                   ;; Release slots from the uninteresting machines.
@@ -498,7 +512,13 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
                   ;; eventually release it.
                   (values best slot)))
                (begin
-                 ;; BEST is overloaded, so try the next one.
+                 ;; BEST is unsuitable, so try the next one.
+                 (when (and space (< space %minimum-disk-space))
+                   (format (current-error-port)
+                           "skipping machine '~a' because it is low \
+on disk space (~,2f MiB free)~%"
+                           (build-machine-name best)
+                           (/ space (expt 2 20) 1.)))
                  (release-build-slot slot)
                  (loop others)))))
         (()
@@ -694,15 +714,17 @@ machine."
                 (let* ((session (open-ssh-session machine))
                        (node    (make-node session))
                        (uts     (node-eval node '(uname)))
-                       (load    (node-load node)))
+                       (load    (node-load node))
+                       (free    (node-free-disk-space node)))
                   (disconnect! session)
                   (format #t "~a~%  kernel: ~a ~a~%  architecture: ~a~%\
-  host name: ~a~%  normalized load: ~a~%"
+  host name: ~a~%  normalized load: ~a~%  free disk space: ~,2f MiB~%"
                           (build-machine-name machine)
                           (utsname:sysname uts) (utsname:release uts)
                           (utsname:machine uts)
                           (utsname:nodename uts)
-                          load)))
+                          load
+                          (/ free (expt 2 20) 1.))))
               machines)))
 
 
