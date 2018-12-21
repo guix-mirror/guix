@@ -367,9 +367,19 @@ MACHINE."
                      (derivation-file-name drv)
                      (build-machine-name machine)
                      (nix-protocol-error-message c))
-             ;; Use exit code 100 for a permanent build failure.  The daemon
-             ;; interprets other non-zero codes as transient build failures.
-             (primitive-exit 100)))
+             (let* ((space (false-if-exception
+                            (node-free-disk-space (make-node session)))))
+
+               ;; Use exit code 100 for a permanent build failure.  The daemon
+               ;; interprets other non-zero codes as transient build failures.
+               (if (and space (< space (* 10 (expt 2 20))))
+                   (begin
+                     (format (current-error-port)
+                             (G_ "build failure may have been caused by lack \
+of free disk space on '~a'~%")
+                             (build-machine-name machine))
+                     (primitive-exit 1))
+                   (primitive-exit 100)))))
     (parameterize ((current-build-output-port (build-log-port)))
       (build-derivations store (list drv))))
 
