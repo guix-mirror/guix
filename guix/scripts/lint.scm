@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,8 +45,10 @@
   #:use-module (guix cve)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 receive)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
+  #:use-module (web client)
   #:use-module (web uri)
   #:use-module ((guix build download)
                 #:select (maybe-expand-mirrors
@@ -74,6 +77,7 @@
             check-source
             check-source-file-name
             check-mirror-url
+            check-github-url
             check-license
             check-vulnerabilities
             check-for-updates
@@ -773,6 +777,37 @@ descriptions maintained upstream."
       (let ((uris (origin-uris origin)))
         (for-each check-mirror-uri uris)))))
 
+(define (check-github-url package)
+  "Check whether PACKAGE uses source URLs that redirect to GitHub."
+  (define (follow-redirect uri)
+    (receive (response body) (http-head uri)
+      (case (response-code response)
+        ((301 302)
+         (uri->string (assoc-ref (response-headers response) 'location)))
+        (else #f))))
+
+  (define (follow-redirects-to-github uri)
+    (cond
+     ((string-prefix? "https://github.com/" uri) uri)
+     ((string-prefix? "http" uri)
+      (and=> (follow-redirect uri) follow-redirects-to-github))
+     ;; Do not attempt to follow redirects on URIs other than http and https
+     ;; (such as mirror, file)
+     (else #f)))
+
+  (let ((origin (package-source package)))
+    (when (and (origin? origin)
+               (eqv? (origin-method origin) url-fetch))
+      (for-each
+       (lambda (uri)
+         (and=> (follow-redirects-to-github uri)
+                (lambda (github-uri)
+                  (emit-warning
+                   package
+                   (format #f (G_ "URL should be '~a'") github-uri)
+                   'source))))
+       (origin-uris origin)))))
+
 (define (check-derivation package)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
   (define (try system)
@@ -1055,6 +1090,10 @@ or a list thereof")
      (name        'mirror-url)
      (description "Suggest 'mirror://' URLs")
      (check       check-mirror-url))
+   (lint-checker
+     (name        'github-uri)
+     (description "Suggest GitHub URIs")
+     (check       check-github-url))
    (lint-checker
      (name        'source-file-name)
      (description "Validate file names of sources")

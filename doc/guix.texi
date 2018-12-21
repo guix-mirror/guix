@@ -7660,12 +7660,14 @@ Identify inputs that should most likely be native inputs.
 @item source
 @itemx home-page
 @itemx mirror-url
+@itemx github-url
 @itemx source-file-name
 Probe @code{home-page} and @code{source} URLs and report those that are
-invalid.  Suggest a @code{mirror://} URL when applicable.  Check that
-the source file name is meaningful, e.g.@: is not
-just a version number or ``git-checkout'', without a declared
-@code{file-name} (@pxref{origin Reference}).
+invalid.  Suggest a @code{mirror://} URL when applicable.  If the
+@code{source} URL redirects to a GitHub URL, recommend usage of the GitHub
+URL.  Check that the source file name is meaningful, e.g.@: is not just a
+version number or ``git-checkout'', without a declared @code{file-name}
+(@pxref{origin Reference}).
 
 @item cve
 @cindex security vulnerabilities
