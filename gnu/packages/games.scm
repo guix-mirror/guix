@@ -149,6 +149,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system haskell)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial))
@@ -5874,3 +5875,32 @@ libraries.  AIFF sound effects and music in MOD and OGG formats are supported
 when packaged in Blorb container files or optionally from individual files.")
       (home-page "http://frotz.sourceforge.net")
       (license license:gpl2+))))
+
+(define-public libmanette
+  (package
+    (name "libmanette")
+    (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "14vqz30p4693yy3yxs0gj858x25sl2kawib1g9lj8g5frgl0hd82"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("glib" ,glib "bin")             ; for glib-compile-resources
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("libevdev" ,libevdev)
+       ("libgudev" ,libgudev)))
+    (home-page "https://wiki.gnome.org/Apps/Games")
+    (synopsis "Game controller library")
+    (description "Libmanette is a small GObject library giving you simple
+access to game controllers.  It supports the de-facto standard gamepads as
+defined by the W3C standard Gamepad specification or as implemented by the SDL
+GameController.")
+    (license license:lgpl2.1+)))
