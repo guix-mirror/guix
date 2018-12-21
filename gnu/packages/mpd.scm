@@ -189,16 +189,16 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.32")
+    (version "0.33")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "http://musicpd.org/download/ncmpc/"
-                              (car (string-split version #\.))
+                              (version-major version)
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1b01q1pcaw5yyhvmlffc3h0r3w8qy7rhn55a7xj4qkcfqvs8ap08"))))
+                "19fp7xkpai4lq3vmpbppgh3ism7lg2sibv237c0sl5a0hls4mq4l"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
