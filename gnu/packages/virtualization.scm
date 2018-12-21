@@ -72,6 +72,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
@@ -387,14 +388,14 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "4.3.0")
+    (version "4.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1dy243dqaj174hcka0my7q781wf0dvyi7f9328nwnplqicnf4cd5"))))
+                "0v17zzyyb25nn9l18v5244myg7590dp6ppwgi8xysipifc0q77bz"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest
@@ -438,6 +439,8 @@ manage system or application containers.")
                #t))))))
     (inputs
      `(("libxml2" ,libxml2)
+       ("eudev" ,eudev)
+       ("libpciaccess" ,libpciaccess)
        ("gnutls" ,gnutls)
        ("dbus" ,dbus)
        ("qemu" ,qemu)
