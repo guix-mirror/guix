@@ -90,12 +90,12 @@
          ("knotifyconfig" ,knotifyconfig)
          ("kfilemetadata" ,kfilemetadata)
          ("kdoctools" ,kdoctools)
-         ("kdeclarative", kdeclarative)
-         ("qtdeclarative", qtdeclarative)
-         ("qtquickcontrols", qtquickcontrols)
-         ("kiconthemes", kiconthemes)
+         ("kdeclarative" ,kdeclarative)
+         ("qtdeclarative" ,qtdeclarative)
+         ("qtquickcontrols" ,qtquickcontrols)
+         ("kiconthemes" ,kiconthemes)
          ("qtgraphicaleffects" ,qtgraphicaleffects)
-         ("kplotting", kplotting)))
+         ("kplotting" ,kplotting)))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
@@ -112,7 +112,7 @@
                      ,(map (lambda (label)
                              (string-append (assoc-ref inputs label)
                                             "/lib/qt5/plugins/"))
-                           '("qtbase", "qtsvg")))
+                           '("qtbase" "qtsvg")))
                    `("FREI0R_PATH" ":" =
                      (,(string-append frei0r "/lib/frei0r-1/")))
                    `("QT_QPA_PLATFORM_PLUGIN_PATH" ":" =

@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -450,8 +451,8 @@ such as:
   (let ((base (make-arm-trusted-firmware "sun50i_a64"))
         ;; Use unreleased version which enables additional features needed for
         ;; LCD support
-        (commit "cabe0a31801e99e7abb84d2114ded6bb56f3c71e")
-        (revision "1"))
+        (commit "98aab97484b27e40aa74a93e5d1c1ac037a7e0b8")
+        (revision "2"))
     (package
       (inherit base)
       (name "arm-trusted-firmware-sun50i-a64")
@@ -465,7 +466,7 @@ such as:
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "0srw2zj3vn5d2fwzjpwa5h70d5bwvb79jnpdvmd395npv0gxshdz")))))))
+            "0z5si034vcn4m68zaixc5v8fs1c7vxbh7n4hggxs55p0jg01dan5")))))))
 
 (define-public arm-trusted-firmware-puma-rk3399
   (let ((base (make-arm-trusted-firmware "rk3399"))

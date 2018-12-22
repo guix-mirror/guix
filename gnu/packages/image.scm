@@ -22,6 +22,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   ;; To provide gcc@5 and gcc@6, to work around <http://bugs.gnu.org/24703>.
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
@@ -58,6 +60,7 @@
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages perl)
@@ -73,6 +76,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system r)
   #:use-module (guix build-system scons)
@@ -1566,3 +1570,28 @@ identical visual appearance.")
     (description
      "Jp2a is a small utility that converts JPEG images to ASCII.")
     (license license:gpl2)))
+
+(define-public grim
+  (package
+   (name "grim")
+   (version "1.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/emersion/grim/archive/v" version
+                         ".tar.gz"))
+     (file-name (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32 "0xkk5nqyp1px0sxz4asmchznc0q39wdx1b67ql741k8aj815km0f"))))
+   (build-system meson-build-system)
+   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs `(("cairo" ,cairo)
+             ("libjpeg-turbo" ,libjpeg-turbo)
+             ("scdoc" ,scdoc)
+             ("wayland" ,wayland)
+             ("wayland-protocols" ,wayland-protocols)))
+   (home-page "https://github.com/emersion/grim")
+   (synopsis "Create screenshots from a Wayland compositor")
+   (description "grim can create screenshots from a Wayland compositor.")
+   ;; MIT license.
+   (license license:expat)))

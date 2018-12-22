@@ -210,12 +210,14 @@ multi-paradigm automated test framework for C++ and Objective-C.")
     (version "1.12.2")
     (home-page "https://github.com/catchorg/Catch2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/catchorg/Catch2")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0g2ysxc6adqca5wh7nsicnxb9wkxg75cd5izjsl39rcj0v903gr7"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1gdp5wm8khn02g2miz381llw3191k7309qj8s3jd6sasj01rhf23"))))
     (build-system cmake-build-system)
     (synopsis "Automated test framework for C++ and Objective-C")
     (description "Catch2 stands for C++ Automated Test Cases in Headers and is
@@ -294,15 +296,18 @@ format.")
 (define-public cppcheck
   (package
     (name "cppcheck")
-    (version "1.85")
+    (version "1.86")
     (source (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/danmar/cppcheck/archive/"
-                          version ".tar.gz"))
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/danmar/cppcheck")
+             (commit version)))
+      (file-name (git-file-name name version))
       (sha256
-       (base32 "18qlddf1i9bk5nnvy1v2nfxjd46y8wvp3rqz2hrfxjxsyvrfq5yw"))
-      (file-name (string-append name "-" version ".tar.gz"))))
+       (base32 "0jr4aah72c7wy94a8vlj3k050rx6pmc7m9nvmll1jwbscxj5f7ff"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBUILD_TESTS=ON")))
     (home-page "http://cppcheck.sourceforge.net")
     (synopsis "Static C/C++ code analyzer")
     (description "Cppcheck is a static code analyzer for C and C++.  Unlike
@@ -1249,13 +1254,14 @@ C/C++, R, and more, and uploads it to the @code{codecov.io} service.")
     (version "0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/jupyter/testpath/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/jupyter/testpath")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "04kh3fgvmqz6cfcw79q70qwjz7ib7lxm27cc548iy2rpr33qqf55"))))
+         "0r4iiizjql6ny1ln7ciw7rrbjadz1s9zrf2hl0xkgnh3ypd8936f"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; this package does not even have a setup.py
@@ -2060,17 +2066,15 @@ retried.")
     (name "python-pyhamcrest")
     (version "1.9.0")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append
-                "https://github.com/hamcrest/PyHamcrest/archive/V"
-                version
-                ".tar.gz"))
-              (file-name
-               (string-append name "-" version ".tar.gz"))
+              ;; Tests not distributed from pypi release.
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/hamcrest/PyHamcrest")
+                     (commit (string-append "V" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lqjajhwf7x7igvvnj5p1cm31y9njy07qby94w18kl6zwbdjqrwy"))))
+                "01qnzj9qnzz0y78qa3ing24ssvszb0adw59xc4qqmdn5wryy606b"))))
     (native-inputs                      ; All native inputs are for tests
      `(("python-pytest-cov" ,python-pytest-cov)
        ("python-mock" ,python-mock)
@@ -2094,13 +2098,13 @@ retried.")
     (name "unittest-cpp")
     (version "2.0.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/unittest-cpp/unittest-cpp/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/unittest-cpp/unittest-cpp")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
-               (base32 "1fgmna2la7z4pwwy2gd10gpgi2q1fk89npjfvkmzvhkxhyc231bl"))))
+               (base32 "0sxb3835nly1jxn071f59fwbdzmqi74j040r81fanxyw3s1azw0i"))))
     (arguments
      `(#:tests? #f))                     ; It's run after build automatically.
     (build-system cmake-build-system)

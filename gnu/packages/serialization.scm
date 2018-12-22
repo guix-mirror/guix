@@ -444,6 +444,7 @@ to generate and parse.  The two primary functions are @code{cbor.loads} and
         (method url-fetch)
         (uri (string-append "https://github.com/google/flatbuffers/archive/v"
                             version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
           "0z4swldxs0s31hnkqdhsbfmc8vx3p7zsvmqaw4l31r2iikdy651p"))))

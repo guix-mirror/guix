@@ -50,6 +50,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
@@ -68,8 +69,10 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages vim)
+  #:use-module (gnu packages virtualization)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
@@ -102,8 +105,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.16.0")
-        (commit "6ddc63e599a26c302f74d0622f67cfd987f0dc5f")
-        (revision 3))
+        (commit "bdf860c2e99077d431da0cc1db4fc14db2a35d31")
+        (revision 6))
     (package
       (name "guix")
 
@@ -119,7 +122,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0vzxrsfbr4phhy60m7pc6klb61whqc404c3x76ydj70xvi1xa0wz"))
+                  "0876y2pjcrwb3ynxqlpkn3pxx2iil8hrzdadh23jd6jbhvm087q1"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -934,15 +937,15 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2018.7")
+    (version "2018.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/ostreedev/ostree/releases/download/v"
-                    version "/libostree-" version ".tar.xz"))
+                    (version-major+minor version) "/libostree-" version ".tar.xz"))
               (sha256
                (base32
-                "1nc310lv36psxn5yslkxlgi9gjxwqpwqzkg2pldgpwrlv6gkagj8"))))
+                "01mygpkbl9sk2vr3hjbpih6qlg8lwx0q5lklm09f7jfwfpnwyqzj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -984,3 +987,51 @@ tools that combines a \"git-like\" model for committing and downloading
 bootable filesystem trees, along with a layer for deploying them and managing
 the bootloader configuration.")
     (license license:lgpl2.0+)))
+
+(define-public flatpak
+  (package
+   (name "flatpak")
+   (version "1.1.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/flatpak/flatpak/releases/download/"
+                         version "/flatpak-" version ".tar.xz"))
+     (sha256
+      (base32
+       "0bkjwh49kajyd78vdh0g9arb352a7rccaifas9zxa78phhja2v2p"))))
+   (build-system gnu-build-system)
+   (arguments
+    '(#:tests? #f ;; Tests fail due to trying to create files where it can't.
+      #:configure-flags (list
+                         "--enable-documentation=no" ;; FIXME
+                         "--enable-system-helper=no"
+                         "--localstatedir=/var"
+                         (string-append "--with-system-bubblewrap="
+                                        (assoc-ref %build-inputs "bubblewrap")
+                                        "/bin/bwrap"))))
+   (native-inputs `(("bison" ,bison)
+                    ("gettext" ,gnu-gettext)
+                    ("glib:bin" ,glib "bin") ; for glib-mkenums + gdbus-codegen
+                    ("gobject-introspection" ,gobject-introspection)
+                    ("libcap" ,libcap)
+                    ("pkg-config" ,pkg-config)))
+   (inputs `(("appstream-glib" ,appstream-glib)
+             ("bubblewrap" ,bubblewrap)
+             ("gdk-pixbuf" ,gdk-pixbuf)
+             ("gpgme" ,gpgme)
+             ("json-glib" ,json-glib)
+             ("libarchive" ,libarchive)
+             ("libostree" ,libostree)
+             ("libseccomp" ,libseccomp)
+             ("libsoup" ,libsoup)
+             ("libxau" ,libxau)
+             ("libxml2" ,libxml2)
+             ("nettle" ,nettle)
+             ("util-linux" ,util-linux)))
+   (home-page "https://flatpak.org")
+   (synopsis "System for building, distributing, and running sandboxed desktop
+applications")
+   (description "Flatpak is a system for building, distributing, and running
+sandboxed desktop applications on GNU/Linux.")
+   (license license:lgpl2.1+)))

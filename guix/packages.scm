@@ -870,14 +870,14 @@ OVERRIDES."
 SYSTEM."
   ;; FIXME: This memoization should be associated with the open store, because
   ;; otherwise it breaks when switching to a different store.
-  (let ((vals (call-with-values thunk list)))
+  (let ((result (thunk)))
     ;; Use `hashq-set!' instead of `hash-set!' because `hash' returns the
     ;; same value for all structs (as of Guile 2.0.6), and because pointer
     ;; equality is sufficient in practice.
     (hashq-set! cache package
-                `((,system ,@vals)
+                `((,system . ,result)
                   ,@(or (hashq-ref cache package) '())))
-    (apply values vals)))
+    result))
 
 (define-syntax cached
   (syntax-rules (=>)
@@ -889,10 +889,8 @@ Return the cached result when available."
        (match (hashq-ref cache package)
          ((alist (... ...))
           (match (assoc-ref alist key)
-            ((vals (... ...))
-             (apply values vals))
-            (#f
-             (cache! cache package key thunk))))
+            (#f (cache! cache package key thunk))
+            (value value)))
          (#f
           (cache! cache package key thunk)))))
     ((_ package system body ...)

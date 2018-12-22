@@ -69,6 +69,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages webkit)
+  #:use-module (gnu packages xdisorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-19))
 
@@ -168,8 +169,7 @@
        `(("gmp" ,gmp)
          ("readline" ,readline)))
       (native-inputs
-       `(("gcc" ,gcc-4.9)
-         ("m4" ,m4)
+       `(("m4" ,m4)
          ("texinfo" ,texinfo)))
       (home-page "https://www.gnu.org/software/gcl/")
       (synopsis "A Common Lisp implementation")
@@ -772,6 +772,42 @@ thin compatibility layer for gray streams.")
 (define-public ecl-trivial-gray-streams
   (sbcl-package->ecl-package sbcl-trivial-gray-streams))
 
+(define-public sbcl-fiasco
+  (let ((commit "d62f7558b21addc89f87e306f65d7f760632655f")
+        (revision "1"))
+    (package
+      (name "sbcl-fiasco")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/joaotavora/fiasco.git")
+               (commit commit)))
+         (file-name (git-file-name "fiasco" version))
+         (sha256
+          (base32
+           "1zwxs3d6iswayavcmb49z2892xhym7n556d8dnmvalc32pm9bkjh"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+      (synopsis "Simple and powerful test framework for Common Lisp")
+      (description "A Common Lisp test framework that treasures your failures,
+logical continuation of Stefil.  It focuses on interactive debugging.")
+      (home-page "https://github.com/joaotavora/fiasco")
+      ;; LICENCE specifies this is public-domain unless the legislation
+      ;; doesn't allow or recognize it.  In that case it falls back to a
+      ;; permissive licence.
+      (license (list license:public-domain
+                     (license:x11-style "file://LICENCE"))))))
+
+(define-public cl-fiasco
+  (sbcl-package->cl-source-package sbcl-fiasco))
+
+(define-public ecl-fiasco
+  (sbcl-package->ecl-package sbcl-fiasco))
+
 (define-public sbcl-flexi-streams
   (package
     (name "sbcl-flexi-streams")
@@ -932,16 +968,21 @@ from other CLXes around the net.")
 (define-public stumpwm
   (package
     (name "stumpwm")
-    (version "18.05")
+    (version "18.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/stumpwm/stumpwm/archive/"
                     version ".tar.gz"))
               (sha256
-               (base32 "1n2gaab3lwgf5r1hmwdcw13dkv9xdd7drn2shx28kfxvhdc9kbb9"))
-              (file-name (string-append "stumpwm-" version ".tar.gz"))))
+               (base32 "177gxfk4c127i9crghx6fmkipznhgylvzgnjb2pna38g21gg6s39"))
+              (file-name (string-append "stumpwm-" version ".tar.gz"))
+              (patches
+               ;; This patch is included in the post-18.11 git master tree
+               ;; and can be removed when we move to the next release.
+               (search-patches "stumpwm-fix-broken-read-one-line.patch"))))
     (build-system asdf-build-system/sbcl)
+    (native-inputs `(("fiasco" ,sbcl-fiasco)))
     (inputs `(("cl-ppcre" ,sbcl-cl-ppcre)
               ("clx" ,sbcl-clx)
               ("alexandria" ,sbcl-alexandria)))
@@ -3744,3 +3785,45 @@ client and server.")
 
 (define-public ecl-s-xml-rpc
   (sbcl-package->ecl-package sbcl-s-xml-rpc))
+
+(define-public sbcl-trivial-clipboard
+  (let ((commit "5af3415d1484e6d69a1b5c178f24680d9fd01796"))
+    (package
+      (name "sbcl-trivial-clipboard")
+      (version (git-version "0.0.0.0" "2" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/snmsts/trivial-clipboard")
+               (commit commit)))
+         (file-name (git-file-name "trivial-clipboard" version))
+         (sha256
+          (base32
+           "1gb515z5yq6h5548pb1fwhmb0hhq1ssyb78pvxh4alq799xipxs9"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("xclip" ,xclip)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/text.lisp"
+                 (("\\(executable-find \"xclip\"\\)")
+                  (string-append "(executable-find \""
+                                 (assoc-ref inputs "xclip")
+                                 "/bin/xclip\")"))))))))
+      (home-page "https://github.com/snmsts/trivial-clipboard")
+      (synopsis "Access system clipboard in Common Lisp")
+      (description
+       "@command{trivial-clipboard} gives access to the system clipboard.")
+      (license license:expat))))
+
+(define-public cl-trivial-clipboard
+  (sbcl-package->cl-source-package sbcl-trivial-clipboard))
+
+(define-public ecl-trivial-clipboard
+  (sbcl-package->ecl-package sbcl-trivial-clipboard))

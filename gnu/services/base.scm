@@ -1967,7 +1967,15 @@ item of @var{packages}."
          (respawn? #f)
          ;; We need additional modules.
          (modules `((gnu build linux-boot)
-                    ,@%default-modules))))))))
+                    ,@%default-modules))
+
+         (actions (list (shepherd-action
+                         (name 'rules)
+                         (documentation "Display the directory containing
+the udev rules in use.")
+                         (procedure #~(lambda (_)
+                                        (display #$rules)
+                                        (newline))))))))))))
 
 (define udev-service-type
   (service-type (name 'udev)

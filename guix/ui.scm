@@ -502,14 +502,19 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
            (list (strerror (car errno)) file)
            (list errno))))
 
-(define-syntax-rule (error-reporting-wrapper proc (args ...) file)
+(define-syntax apply-formals
+  (syntax-rules ()
+    ((_ proc (args ...)) (proc args ...))
+    ((_ proc (arg1 args ... . rest)) (apply proc arg1 args ... rest))))
+
+(define-syntax-rule (error-reporting-wrapper proc formals file)
   "Wrap PROC such that its 'system-error' exceptions are augmented to mention
 FILE."
   (let ((real-proc (@ (guile) proc)))
-    (lambda (args ...)
+    (lambda formals
       (catch 'system-error
         (lambda ()
-          (real-proc args ...))
+          (apply-formals real-proc formals))
         (augmented-system-error-handler file)))))
 
 (set! symlink
@@ -528,6 +533,8 @@ FILE."
 (set! delete-file
   (error-reporting-wrapper delete-file (file) file))
 
+(set! execlp
+  (error-reporting-wrapper execlp (filename . args) filename))
 
 (define (make-regexp* regexp . flags)
   "Like 'make-regexp' but error out if REGEXP is invalid, reporting the error
@@ -822,6 +829,12 @@ warning."
     ('graft #t)
     (_ #f)))
 
+(define (profile-hook-derivation? drv)
+  "Return true if DRV is definitely a profile hook derivation, false otherwise."
+  (match (assq-ref (derivation-properties drv) 'type)
+    ('profile-hook #t)
+    (_ #f)))
+
 (define* (show-what-to-build store drv
                              #:key dry-run? (use-substitutes? #t)
                              (mode (build-mode normal)))
@@ -872,10 +885,28 @@ report what is prerequisites are available for download."
                                            substitutable-references
                                            download))))
                      download))
-                ((graft build)
-                 (partition (compose graft-derivation?
-                                     read-derivation-from-file)
-                            build)))
+                ((graft hook build)
+                 (match (fold (lambda (file acc)
+                                (let ((drv (read-derivation-from-file file)))
+                                  (match acc
+                                    ((#:graft graft #:hook hook #:build build)
+                                     (cond
+                                      ((graft-derivation? drv)
+                                       `(#:graft ,(cons file graft)
+                                         #:hook ,hook
+                                         #:build ,build))
+                                      ((profile-hook-derivation? drv)
+                                       `(#:graft ,graft
+                                         #:hook ,(cons file hook)
+                                         #:build ,build))
+                                      (else
+                                       `(#:graft ,graft
+                                         #:hook ,hook
+                                         #:build ,(cons file build))))))))
+                              '(#:graft () #:hook () #:build ())
+                              build)
+                   ((#:graft graft #:hook hook #:build build)
+                    (values graft hook build)))))
     (define installed-size
       (reduce + 0 (map substitutable-nar-size download)))
 
@@ -913,7 +944,12 @@ report what is prerequisites are available for download."
                   (N_ "~:[The following graft would be made:~%~{   ~a~%~}~;~]"
                       "~:[The following grafts would be made:~%~{   ~a~%~}~;~]"
                       (length graft))
-                  (null? graft) graft))
+                  (null? graft) graft)
+          (format (current-error-port)
+                  (N_ "~:[The following profile hook would be built:~%~{   ~a~%~}~;~]"
+                      "~:[The following profile hooks would be built:~%~{   ~a~%~}~;~]"
+                      (length hook))
+                  (null? hook) hook))
         (begin
           (format (current-error-port)
                   (N_ "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
@@ -938,7 +974,12 @@ report what is prerequisites are available for download."
                   (N_ "~:[The following graft will be made:~%~{   ~a~%~}~;~]"
                       "~:[The following grafts will be made:~%~{   ~a~%~}~;~]"
                       (length graft))
-                  (null? graft) graft)))
+                  (null? graft) graft)
+          (format (current-error-port)
+                  (N_ "~:[The following profile hook will be built:~%~{   ~a~%~}~;~]"
+                      "~:[The following profile hooks will be built:~%~{   ~a~%~}~;~]"
+                      (length hook))
+                  (null? hook) hook)))
 
     (check-available-space installed-size)
 

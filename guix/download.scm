@@ -411,17 +411,11 @@
               (object->string %content-addressed-mirrors)))
 
 (define built-in-builders*
-  (let ((cache (make-weak-key-hash-table)))
+  (let ((proc (store-lift built-in-builders)))
     (lambda ()
       "Return, as a monadic value, the list of built-in builders supported by
-the daemon."
-      (lambda (store)
-        ;; Memoize the result to avoid repeated RPCs.
-        (values (or (hashq-ref cache store)
-                    (let ((result (built-in-builders store)))
-                      (hashq-set! cache store result)
-                      result))
-                store)))))
+the daemon; cache the return value."
+      (mcached (proc) built-in-builders))))
 
 (define* (built-in-download file-name url
                             #:key system hash-algo hash

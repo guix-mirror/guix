@@ -95,6 +95,21 @@ languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
     (license license:ncsa)))
 
+;; TODO: Build Mesa with LLVM 7 in the next staging cycle.
+;; TODO: Make LLVM 7 the default LLVM once Clang is also upgraded.
+(define-public llvm-7.0.0
+  (package (inherit llvm)
+    (name "llvm")
+    (version "7.0.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://llvm.org/releases/"
+                          version "/llvm-" version ".src.tar.xz"))
+      (sha256
+       (base32
+        "08p27wv1pr9ql2zc3f3qkkymci46q7myvh8r5ijippnbwr2gihcb"))))))
+
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))
   (package

@@ -681,6 +681,18 @@ store.")
 
       #:tests? #f                                 ; XXX
       #:phases (modify-phases %standard-phases
+                 ,@(if (hurd-target?)
+                       `((add-after 'unpack 'apply-hurd-patch
+                           (lambda* (#:key inputs native-inputs
+                                     #:allow-other-keys)
+                             ;; TODO: Move this to 'patches' field.
+                             (let ((patch (or (assoc-ref native-inputs
+                                                         "hurd-magic-pid-patch")
+                                              (assoc-ref inputs
+                                                         "hurd-magic-pid-patch"))))
+                               (invoke "patch" "-p1" "--force" "--input"
+                                       patch)))))
+                       '())
                  (add-before
                   'configure 'pre-configure
                   (lambda* (#:key inputs native-inputs outputs
@@ -806,7 +818,9 @@ store.")
 
                     ,@(if (hurd-target?)
                           `(("mig" ,mig)
-                            ("perl" ,perl))
+                            ("perl" ,perl)
+                            ("hurd-magic-pid-patch"
+                             ,(search-patch "glibc-hurd-magic-pid.patch")))
                           '())))
 
    (native-search-paths

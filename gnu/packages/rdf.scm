@@ -299,7 +299,7 @@ ideal (e.g. in LV2 implementations or embedded applications).")
 (define-public python-rdflib
   (package
     (name "python-rdflib")
-    (version "4.1.2")
+    (version "4.2.2")
     (source
       (origin
         (method url-fetch)
@@ -307,15 +307,12 @@ ideal (e.g. in LV2 implementations or embedded applications).")
               "https://pypi.python.org/packages/source/r/rdflib/rdflib-"
               version
               ".tar.gz"))
-        (patches
-          ;; The patch has no effect under Python 3.
-          (search-patches "python2-rdflib-drop-sparqlwrapper.patch"))
         (sha256
           (base32
-            "0kvaf332cqbi47rqzlpdx4mbkvw12mkrzkj8n9l19wk713d4py9w"))))
+            "0398c714znnhaa2x7v51b269hk20iz073knq2mvmqp2ma92z27fs"))))
     (build-system python-build-system)
     (arguments
-     '(;; FIXME: Three test failures. Try uncommenting the below next update.
+     '(;; FIXME: Three test failures. Should be fixed next release.
        #:tests? #f))
        ;; #:phases
        ;; (modify-phases %standard-phases
@@ -323,7 +320,7 @@ ideal (e.g. in LV2 implementations or embedded applications).")
        ;;     (lambda _
        ;;       ;; Run tests from the build directory so python3 only
        ;;       ;; sees the installed 2to3 version.
-       ;;       (zero? (system* "nosetests" "--where=./build/src")))))
+       ;;       (zero? (system* "nosetests" "--where=./build/src")))))))
     (native-inputs
      `(("python-nose" ,python-nose)))
     (propagated-inputs

@@ -112,9 +112,9 @@ void LocalStore::optimisePath_(OptimiseStats & stats, const Path & path, InodeHa
 #endif
         ) return;
 
-    /* Sometimes SNAFUs can cause files in the Nix store to be
+    /* Sometimes SNAFUs can cause files in the store to be
        modified, in particular when running programs as root under
-       NixOS (example: $fontconfig/var/cache being modified).  Skip
+       GuixSD (example: $fontconfig/var/cache being modified).  Skip
        those files.  FIXME: check the modification time. */
     if (S_ISREG(st.st_mode) && (st.st_mode & S_IWUSR)) {
         printMsg(lvlError, format("skipping suspicious writable file `%1%'") % path);

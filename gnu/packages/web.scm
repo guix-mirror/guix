@@ -3065,7 +3065,7 @@ select or poll.")
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-needs" ,perl-test-needs)
-       ("perl-test-requiresinternet", perl-test-requiresinternet)))
+       ("perl-test-requiresinternet" ,perl-test-requiresinternet)))
     (propagated-inputs
      `(("perl-encode-locale" ,perl-encode-locale)
        ("perl-file-listing" ,perl-file-listing)

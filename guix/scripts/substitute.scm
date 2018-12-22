@@ -392,12 +392,21 @@ No authentication and authorization checks are performed here!"
 (define (narinfo-sha256 narinfo)
   "Return the sha256 hash of NARINFO as a bytevector, or #f if NARINFO lacks a
 'Signature' field."
+  (define %mandatory-fields
+    ;; List of fields that must be signed.  If they are not signed, the
+    ;; narinfo is considered unsigned.
+    '("StorePath" "NarHash" "References"))
+
   (let ((contents (narinfo-contents narinfo)))
     (match (string-contains contents "Signature:")
       (#f #f)
       (index
-       (let ((above-signature (string-take contents index)))
-         (sha256 (string->utf8 above-signature)))))))
+       (let* ((above-signature (string-take contents index))
+              (signed-fields (match (call-with-input-string above-signature
+                                      fields->alist)
+                               (((fields . values) ...) fields))))
+         (and (every (cut member <> signed-fields) %mandatory-fields)
+              (sha256 (string->utf8 above-signature))))))))
 
 (define* (valid-narinfo? narinfo #:optional (acl (current-acl))
                          #:key verbose?)

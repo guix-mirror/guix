@@ -545,7 +545,7 @@ void UserLock::acquire()
 
             /* Sanity check... */
             if (uid == getuid() || uid == geteuid())
-                throw Error(format("the Nix user should not be a member of `%1%'")
+                throw Error(format("the build user should not be a member of `%1%'")
                     % settings.buildUsersGroup);
 
             /* Get the list of supplementary groups of this build user.  This
@@ -989,7 +989,7 @@ void DerivationGoal::init()
     trace("init");
 
     if (settings.readOnlyMode)
-        throw Error(format("cannot build derivation `%1%' - no write access to the Nix store") % drvPath);
+        throw Error(format("cannot build derivation `%1%' - no write access to the store") % drvPath);
 
     /* The first thing to do is to make sure that the derivation
        exists.  If it doesn't, it may be created through a
@@ -1287,7 +1287,7 @@ void DerivationGoal::tryToBuild()
         }
 
     /* Obtain locks on all output paths.  The locks are automatically
-       released when we exit this function or Nix crashes.  If we
+       released when we exit this function or the client crashes.  If we
        can't acquire the lock, then continue; hopefully some other
        goal can start a build, and if not, the main loop will sleep a
        few seconds and then retry this goal. */
@@ -1706,7 +1706,7 @@ void DerivationGoal::startBuilder()
     Path homeDir = "/homeless-shelter";
     env["HOME"] = homeDir;
 
-    /* Tell the builder where the Nix store is.  Usually they
+    /* Tell the builder where the store is.  Usually they
        shouldn't care, but this is useful for purity checking (e.g.,
        the compiler or linker might only want to accept paths to files
        in the store or in the build directory). */
@@ -1827,9 +1827,9 @@ void DerivationGoal::startBuilder()
     if (useChroot) {
 #if CHROOT_ENABLED
         /* Create a temporary directory in which we set up the chroot
-           environment using bind-mounts.  We put it in the Nix store
+           environment using bind-mounts.  We put it in the store
            to ensure that we can create hard-links to non-directory
-           inputs in the fake Nix store in the chroot (see below). */
+           inputs in the fake store in the chroot (see below). */
         chrootRootDir = drvPath + ".chroot";
         if (pathExists(chrootRootDir)) deletePath(chrootRootDir);
 
@@ -1888,11 +1888,11 @@ void DerivationGoal::startBuilder()
         dirsInChroot[tmpDirInSandbox] = tmpDir;
 
         /* Make the closure of the inputs available in the chroot,
-           rather than the whole Nix store.  This prevents any access
+           rather than the whole store.  This prevents any access
            to undeclared dependencies.  Directories are bind-mounted,
            while other inputs are hard-linked (since only directories
            can be bind-mounted).  !!! As an extra security
-           precaution, make the fake Nix store only writable by the
+           precaution, make the fake store only writable by the
            build user. */
         Path chrootStoreDir = chrootRootDir + settings.nixStore;
         createDirs(chrootStoreDir);
@@ -2387,12 +2387,12 @@ void DerivationGoal::registerOutputs()
         if (useChroot) {
             actualPath = chrootRootDir + path;
             if (pathExists(actualPath)) {
-                /* Move output paths from the chroot to the Nix store. */
+                /* Move output paths from the chroot to the store. */
                 if (buildMode == bmRepair)
                     replaceValidPath(path, actualPath);
                 else
                     if (buildMode != bmCheck && rename(actualPath.c_str(), path.c_str()) == -1)
-                        throw SysError(format("moving build output `%1%' from the chroot to the Nix store") % path);
+                        throw SysError(format("moving build output `%1%' from the chroot to the store") % path);
             }
             if (buildMode != bmCheck) actualPath = path;
         } else {
@@ -2975,7 +2975,7 @@ void SubstitutionGoal::init()
     }
 
     if (settings.readOnlyMode)
-        throw Error(format("cannot substitute path `%1%' - no write access to the Nix store") % storePath);
+        throw Error(format("cannot substitute path `%1%' - no write access to the store") % storePath);
 
     subs = settings.substituters;
 

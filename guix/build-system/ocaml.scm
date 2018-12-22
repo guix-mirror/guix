@@ -31,6 +31,9 @@
             package-with-ocaml4.02
             strip-ocaml4.01-variant
             strip-ocaml4.02-variant
+            default-findlib
+            default-ocaml
+            lower
             ocaml-build
             ocaml-build-system))
 
@@ -76,6 +79,13 @@
   (let ((module (resolve-interface '(gnu packages ocaml))))
     (module-ref module 'ocaml-findlib)))
 
+(define (default-dune-build-system)
+  "Return the dune-build-system."
+
+  ;; Do not use `@' to avoid introducing circular dependencies.
+  (let ((module (resolve-interface '(guix build-system dune))))
+    (module-ref module 'dune-build-system)))
+
 (define (default-ocaml4.01)
   (let ((ocaml (resolve-interface '(gnu packages ocaml))))
     (module-ref ocaml 'ocaml-4.01)))
@@ -119,7 +129,8 @@ pre-defined variants."
       => force)
 
      ;; Otherwise build the new package object graph.
-     ((eq? (package-build-system p) ocaml-build-system)
+     ((or (eq? (package-build-system p) ocaml-build-system)
+          (eq? (package-build-system p) (default-dune-build-system)))
       (package
         (inherit p)
         (location (package-location p))
@@ -138,7 +149,8 @@ pre-defined variants."
      (else p)))
 
   (define (cut? p)
-    (or (not (eq? (package-build-system p) ocaml-build-system))
+    (or (not (or (eq? (package-build-system p) ocaml-build-system)
+                 (eq? (package-build-system p) (default-dune-build-system))))
         (package-variant p)))
 
   (package-mapping transform cut?))

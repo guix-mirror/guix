@@ -123,6 +123,21 @@ initialization step, such as entering a LUKS passphrase."
                          #f))))
              marionette))
 
+          (test-eq "stdin is /dev/null"
+            'eof
+            ;; Make sure services can no longer read from stdin once the
+            ;; system has booted.
+            (marionette-eval
+             `(begin
+                (use-modules (gnu services herd))
+                (start 'user-processes)
+                ((@@ (gnu services herd) eval-there)
+                 '(let ((result (read (current-input-port))))
+                    (if (eof-object? result)
+                        'eof
+                        result))))
+             marionette))
+
           (test-assert "shell and user commands"
             ;; Is everything in $PATH?
             (zero? (marionette-eval '(system "

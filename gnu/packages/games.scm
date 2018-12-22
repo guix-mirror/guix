@@ -146,9 +146,11 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages networking)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system haskell)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial))
@@ -573,7 +575,7 @@ automata.  The following features are available:
 (define-public meandmyshadow
   (package
     (name "meandmyshadow")
-    (version "0.5")
+    (version "0.5a")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/meandmyshadow/"
@@ -581,10 +583,7 @@ automata.  The following features are available:
                                   "-src.tar.gz"))
               (sha256
                (base32
-                "1b6qf83vdfv8jwn2jq9ywmda2qn2f5914i7mwfy04m17wx593m3m"))
-              (patches (search-patches
-                        ;; This will not be needed in the next release.
-                        "meandmyshadow-define-paths-earlier.patch"))))
+                "0i98v6cgmpsxy7mbb0s2y6f6qq6mkwzk2nrv1nz39ncf948aky2h"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -5877,3 +5876,72 @@ libraries.  AIFF sound effects and music in MOD and OGG formats are supported
 when packaged in Blorb container files or optionally from individual files.")
       (home-page "http://frotz.sourceforge.net")
       (license license:gpl2+))))
+
+(define-public libmanette
+  (package
+    (name "libmanette")
+    (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "14vqz30p4693yy3yxs0gj858x25sl2kawib1g9lj8g5frgl0hd82"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("glib" ,glib "bin")             ; for glib-compile-resources
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("libevdev" ,libevdev)
+       ("libgudev" ,libgudev)))
+    (home-page "https://wiki.gnome.org/Apps/Games")
+    (synopsis "Game controller library")
+    (description "Libmanette is a small GObject library giving you simple
+access to game controllers.  It supports the de-facto standard gamepads as
+defined by the W3C standard Gamepad specification or as implemented by the SDL
+GameController.")
+    (license license:lgpl2.1+)))
+
+(define-public quadrapassel
+  (package
+    (name "quadrapassel")
+    (version "3.31.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "08i01nsgfb502xzzrrcxxbs7awb0j1h4c08vmj0j18ipa1sz8vb8"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
+       ("gettext" ,gnu-gettext)
+       ("glib" ,glib "bin")             ;for glib-compile-resources
+       ("itstool" ,itstool)
+       ("libxml2" ,libxml2)             ;for xmllint
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("clutter" ,clutter)
+       ("clutter-gtk" ,clutter-gtk)
+       ("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libmanette" ,libmanette)
+       ("librsvg" ,librsvg)))
+    (home-page "https://wiki.gnome.org/Apps/Quadrapassel")
+    (synopsis "GNOME version of Tetris")
+    (description "Quadrapassel comes from the classic falling-block game,
+Tetris.  The goal of the game is to create complete horizontal lines of
+blocks, which will disappear.  The blocks come in seven different shapes made
+from four blocks each: one straight, two L-shaped, one square, and two
+S-shaped.  The blocks fall from the top center of the screen in a random
+order.  You rotate the blocks and move them across the screen to drop them in
+complete lines.  You score by dropping blocks fast and completing lines.  As
+your score gets higher, you level up and the blocks fall faster.")
+    (license license:gpl2+)))

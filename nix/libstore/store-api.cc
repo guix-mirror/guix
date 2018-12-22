@@ -32,14 +32,14 @@ bool isStorePath(const Path & path)
 void assertStorePath(const Path & path)
 {
     if (!isStorePath(path))
-        throw Error(format("path `%1%' is not in the Nix store") % path);
+        throw Error(format("path `%1%' is not in the store") % path);
 }
 
 
 Path toStorePath(const Path & path)
 {
     if (!isInStore(path))
-        throw Error(format("path `%1%' is not in the Nix store") % path);
+        throw Error(format("path `%1%' is not in the store") % path);
     Path::size_type slash = path.find('/', settings.nixStore.size() + 1);
     if (slash == Path::npos)
         return path;
@@ -80,7 +80,7 @@ void checkStoreName(const string & name)
 
    where
 
-   <store> = the location of the Nix store, usually /nix/store
+   <store> = the location of the store, usually /gnu/store
    
    <name> = a human readable name for the path, typically obtained
      from the name attribute of the derivation, or the name of the

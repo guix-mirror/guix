@@ -2298,6 +2298,22 @@ data and settings.")
        ("cairo" ,cairo)))
     (native-inputs
      `(("texlive" ,texlive)
+       ;; TODO: Replace texlive with minimal texlive-union.
+       ;; ("texlive" ,(texlive-union (list texlive-latex-doi
+       ;;                             texlive-latex-hyperref
+       ;;                             texlive-latex-oberdiek
+       ;;                             texlive-generic-ifxetex
+       ;;                             texlive-latex-url
+       ;;                             texlive-latex-pgf
+       ;;                             texlive-latex-examplep
+       ;;                             texlive-latex-natbib
+       ;;                             texlive-latex-verbatimbox
+       ;;                             texlive-latex-ms
+       ;;                             texlive-latex-xcolor
+       ;;                             texlive-fonts-amsfonts
+       ;;                             texlive-latex-amsfonts
+       ;;                             ;; ...
+       ;;                             )))
        ("imagemagick" ,imagemagick)))
     (home-page "http://dorina.mdc-berlin.de/public/rajewsky/discrover/")
     (synopsis "Discover discriminative nucleotide sequence motifs")
@@ -11390,7 +11406,10 @@ remove biased methylation positions for RRBS sequence files.")
                     (out    (assoc-ref outputs "out"))
                     (bin    (string-append out "/bin/"))
                     (target (string-append
-                             out "/lib/python2.7/site-packages/gess/")))
+                             out "/lib/python"
+                             ,(version-major+minor
+                                (package-version python))
+                             "/site-packages/gess/")))
                (mkdir-p target)
                (copy-recursively "." target)
                ;; Make GESS.py executable

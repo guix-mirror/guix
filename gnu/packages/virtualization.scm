@@ -72,6 +72,8 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system python)
@@ -95,16 +97,14 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "3.0.0")
+    (version "3.1.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
-             (patches (search-patches "qemu-CVE-2018-16847.patch"
-                                      "qemu-CVE-2018-16867.patch"))
              (sha256
               (base32
-               "04sp3f1gp4bdb913jf7fw761njaqp2l32wgipp1sapmxx17zcyld"))))
+               "1z5bd5nfyjvhfi1s95labc82y4hjdjjkdabw931362ls0zghh1ba"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
@@ -388,14 +388,14 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "4.3.0")
+    (version "4.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1dy243dqaj174hcka0my7q781wf0dvyi7f9328nwnplqicnf4cd5"))))
+                "0v17zzyyb25nn9l18v5244myg7590dp6ppwgi8xysipifc0q77bz"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest
@@ -439,6 +439,8 @@ manage system or application containers.")
                #t))))))
     (inputs
      `(("libxml2" ,libxml2)
+       ("eudev" ,eudev)
+       ("libpciaccess" ,libpciaccess)
        ("gnutls" ,gnutls)
        ("dbus" ,dbus)
        ("qemu" ,qemu)
@@ -521,13 +523,13 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "4.1.0")
+    (version "4.10.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "libvirt-python" version))
               (sha256
                (base32
-                "1ixqhxjkczl8vk9wjx4cknw4374cw5nnsacbd2s755kpd0ys7hny"))))
+                "11fipj9naihgc9afc8bz5hi05xa1shp4qcy170sa18p3sl4zljb9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -559,7 +561,7 @@ virtualization library.")
 (define-public virt-manager
   (package
     (name "virt-manager")
-    (version "1.5.1")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://virt-manager.org/download/sources"
@@ -567,11 +569,10 @@ virtualization library.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ardmd4sxdmd57y7qpka44gf09c1yq2g0xs074d3k1h925crv27f"))))
+                "1b48xbrx99mfiv80c60k3ydzkpcpbq57c8h8dl0gnffmnzbs8vzb"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:use-setuptools? #f ; Uses custom distutils 'install' command.
+     `(#:use-setuptools? #f ; Uses custom distutils 'install' command.
        ;; Some of the tests seem to require network access to install virtual
        ;; machines.
        #:tests? #f
@@ -628,12 +629,12 @@ virtualization library.")
        ("libosinfo" ,libosinfo)
        ("vte" ,vte)
        ("gobject-introspection" ,gobject-introspection)
-       ("python2-libvirt" ,python2-libvirt)
-       ("python2-requests" ,python2-requests)
-       ("python2-ipaddr" ,python2-ipaddr)
-       ("python2-pycairo" ,python2-pycairo)
-       ("python2-pygobject" ,python2-pygobject)
-       ("python2-libxml2" ,python2-libxml2)
+       ("python-libvirt" ,python-libvirt)
+       ("python-requests" ,python-requests)
+       ("python-ipaddress" ,python-ipaddress)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-libxml2" ,python-libxml2)
        ("spice-gtk" ,spice-gtk)))
     ;; virt-manager searches for qemu-img or kvm-img in the PATH.
     (propagated-inputs
@@ -771,7 +772,7 @@ Machine Protocol.")
 (define-public lookingglass
   (package
    (name "lookingglass")
-   (version "a11")
+   (version "a12")
    (source
     (origin
      (method url-fetch)
@@ -780,8 +781,8 @@ Machine Protocol.")
      (file-name (string-append name "-" version))
      (sha256
       (base32
-       "11qwyp332l66sqksqa0z9439yi4accmbq7wjc6kikc5fimdh9wk5"))))
-   (build-system gnu-build-system)
+       "0x57chx83f8pq56d9sfxmc9p4qjm9nqvdyamj41bmy145mxw5w3m"))))
+   (build-system cmake-build-system)
    (inputs `(("fontconfig" ,fontconfig)
              ("glu" ,glu)
              ("mesa" ,mesa)
@@ -796,16 +797,17 @@ Machine Protocol.")
     `(#:tests? #f ;; No tests are available.
       #:make-flags '("CC=gcc")
       #:phases (modify-phases %standard-phases
-                 (replace 'configure
+                 (add-before 'configure 'chdir-to-client
                    (lambda* (#:key outputs #:allow-other-keys)
                      (chdir "client")
                      #t))
                  (replace 'install
                    (lambda* (#:key outputs #:allow-other-keys)
-                     (install-file "bin/looking-glass-client"
+                     (install-file "looking-glass-client"
                                    (string-append (assoc-ref outputs "out")
                                                   "/bin"))
-                     #t)))))
+                     #t))
+                 )))
    (home-page "https://looking-glass.hostfission.com")
    (synopsis "KVM Frame Relay (KVMFR) implementation")
    (description "Looking Glass allows the use of a KVM (Kernel-based Virtual

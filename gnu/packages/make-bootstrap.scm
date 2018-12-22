@@ -382,6 +382,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                 (parameterize ((%current-target-system #f))
                                   (cross-libc target)))
                                glibc)))))
+      (native-inputs '())
+      (propagated-inputs '())
 
       ;; Only one output.
       (outputs '("out")))))

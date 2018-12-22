@@ -88,7 +88,8 @@
        ("zlib:static" ,zlib "static")
        ("stex" ,stex)))
     (native-inputs
-     `(("texlive" ,texlive)
+     `(("texlive" ,(texlive-union (list texlive-latex-oberdiek
+                                        texlive-generic-epsf)))
        ("ghostscript" ,ghostscript)
        ("netpbm" ,netpbm)))
     (native-search-paths
@@ -278,7 +279,15 @@ and 32-bit PowerPC architectures.")
       (build-system gnu-build-system)
       (native-inputs
        `(("chez-scheme" ,chez-scheme)
-         ("texlive" ,texlive)))
+         ("ghostscript" ,ghostscript)
+         ("texlive" ,(texlive-union (list texlive-latex-oberdiek
+                                          texlive-generic-epsf
+                                          texlive-metapost
+                                          texlive-fonts-charter
+                                          texlive-generic-pdftex
+                                          texlive-context-base
+                                          texlive-fonts-cm
+                                          texlive-tex-plain)))))
       (arguments
        `(#:make-flags (list (string-append "PREFIX=" %output)
                             (string-append "DOCDIR=" %output "/share/doc/"
@@ -288,6 +297,15 @@ and 32-bit PowerPC architectures.")
                       #:tests? #f        ; no tests
                       #:phases
                       (modify-phases %standard-phases
+                        (add-before 'build 'set-HOME
+                          (lambda _
+                            ;; FIXME: texlive-union does not find the built
+                            ;; metafonts, so it tries to generate them in HOME.
+                            (setenv "HOME" "/tmp")
+                            #t))
+                        ;; This package has a custom "bootstrap" script that
+                        ;; is meant to be run from the Makefile.
+                        (delete 'bootstrap)
                         (replace 'configure
                           (lambda* _
                             (copy-file "config.mk.template" "config.mk")
@@ -327,7 +345,7 @@ programming in Scheme.")
       (native-inputs
        `(("chez-scheme" ,chez-scheme)
          ("chez-web" ,chez-web)
-         ("texlive" ,texlive)))
+         ("texlive" ,(texlive-union (list texlive-generic-pdftex)))))
       (arguments
        `(#:tests? #f              ; no tests
          #:phases
@@ -343,11 +361,16 @@ programming in Scheme.")
                     (string-append var chez-h)))
                  #t)))
            (add-before 'build 'tangle
-             (lambda _
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "TEXINPUTS"
+                       (string-append
+                        (getcwd) ":"
+                        (assoc-ref inputs "chez-web") "/share/texmf-local/tex/generic:"
+                        ":"))
                ;; just using "make" tries to build the .c files before
                ;; they are created.
-               (and (zero? (system* "make" "sockets"))
-                    (zero? (system* "make")))))
+               (and (invoke "make" "sockets")
+                    (invoke "make"))))
            (replace 'build
              (lambda* (#:key outputs inputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))

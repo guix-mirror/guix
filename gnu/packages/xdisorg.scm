@@ -24,6 +24,7 @@
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,8 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
@@ -1555,3 +1558,57 @@ to automatically turn it on on login.")
     (description "This package provides a small utility for inverting the
 colors on all monitors attached to an XRandR-capable X11 display server.")
     (license license:gpl3+)))
+
+(define-public sct
+  (package
+    (name "sct")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.umaxx.net/dl/sct-"
+                       version ".tar.gz"))
+       (sha256
+        (base32
+         "0r57z9ki8pvxhawfxys0v5h85z2x211sqxki0xvk1bga88ryldlv"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list "CC=gcc")
+       #:tests? #f ; No tests exist.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-sctd-paths
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (coreutils (assoc-ref inputs "coreutils"))
+                   (inetutils (assoc-ref inputs "inetutils"))
+                   (sed (assoc-ref inputs "sed")))
+               (substitute* "sctd.sh"
+                 (("\\$\\(which sct\\)") (string-append out "/bin/sct"))
+                 (("date") (string-append coreutils "/bin/date"))
+                 (("printf") (string-append coreutils "/bin/printf"))
+                 (("sleep") (string-append coreutils "/bin/sleep"))
+                 (("logger") (string-append inetutils "/bin/logger"))
+                 (("sed") (string-append sed "/bin/sed"))))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "sct" (string-append out "/bin"))
+               (install-file "sctd.sh" (string-append out "/bin"))
+               (install-file "sct.1" (string-append out "/man/man1"))
+               (install-file "sctd.1" (string-append out "/man/man1"))
+               (rename-file (string-append out "/bin/sctd.sh")
+                            (string-append out "/bin/sctd"))
+               #t))))))
+    (inputs
+     `(("coreutils" ,coreutils) ; sctd uses "date", "printf" and "sleep"
+       ("inetutils" ,inetutils) ; sctd uses "logger"
+       ("libxrandr" ,libxrandr)
+       ("sed" ,sed))) ; sctd uses "sed"
+    (home-page "https://www.umaxx.net")
+    (synopsis "Set the color temperature of the screen")
+    (description "@code{sct} is a lightweight utility to set the color
+temperature of the screen.")
+    (license license:bsd-3)))

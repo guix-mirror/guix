@@ -993,7 +993,8 @@ Some ACTIONS support additional ARGS.\n"))
                          instead of reading FILE, when applicable"))
   (display (G_ "
       --on-error=STRATEGY
-                         apply STRATEGY when an error occurs while reading FILE"))
+                         apply STRATEGY (one of nothing-special, backtrace,
+                         or debug) when an error occurs while reading FILE"))
   (display (G_ "
       --file-system-type=TYPE
                          for 'disk-image', produce a root file system of TYPE

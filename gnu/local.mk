@@ -579,7 +579,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegisub-boost68.patch                    \
   %D%/packages/patches/agg-am_c_prototype.patch			\
   %D%/packages/patches/amule-crypto-6.patch			\
-  %D%/packages/patches/ansible-wrap-program-hack.patch		\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\
   %D%/packages/patches/antlr3-3_3-fix-java8-compilation.patch	\
@@ -672,6 +671,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/emacs-realgud-fix-configure-ac.patch	\
+  %D%/packages/patches/emacs-wordnut-require-adaptive-wrap.patch	\
   %D%/packages/patches/enlightenment-fix-setuid-path.patch	\
   %D%/packages/patches/erlang-man-path.patch			\
   %D%/packages/patches/eudev-rules-directory.patch		\
@@ -753,6 +753,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-allow-kernel-2.6.32.patch		\
   %D%/packages/patches/glibc-bootstrap-system.patch		\
   %D%/packages/patches/glibc-hidden-visibility-ldconfig.patch	\
+  %D%/packages/patches/glibc-hurd-magic-pid.patch		\
   %D%/packages/patches/glibc-ldd-x86_64.patch			\
   %D%/packages/patches/glibc-locales.patch			\
   %D%/packages/patches/glibc-memchr-overflow-i686.patch		\
@@ -954,7 +955,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mcrypt-CVE-2012-4409.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4426.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
-  %D%/packages/patches/meandmyshadow-define-paths-earlier.patch	\
   %D%/packages/patches/mesa-skip-disk-cache-test.patch		\
   %D%/packages/patches/meson-for-build-rpath.patch		\
   %D%/packages/patches/metabat-fix-compilation.patch		\
@@ -1101,8 +1101,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
-  %D%/packages/patches/qemu-CVE-2018-16847.patch 		\
-  %D%/packages/patches/qemu-CVE-2018-16867.patch 		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
@@ -1165,6 +1163,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
   %D%/packages/patches/synfigstudio-fix-ui-with-gtk3.patch 	\
+  %D%/packages/patches/stumpwm-fix-broken-read-one-line.patch	\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\
   %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
   %D%/packages/patches/t1lib-CVE-2011-1552+.patch		\

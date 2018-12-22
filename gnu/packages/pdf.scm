@@ -429,7 +429,7 @@ using the DjVuLibre library.")
     (inputs
      `(("jbig2dec" ,jbig2dec)
        ("libjpeg" ,libjpeg)
-       ("mujs", mujs)
+       ("mujs" ,mujs)
        ("mupdf" ,mupdf)
        ("openjpeg" ,openjpeg)
        ("openssl" ,openssl)

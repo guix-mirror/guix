@@ -21,6 +21,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu system)
+  #:use-module (guix inferior)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix gexp)
@@ -905,10 +906,17 @@ listed in OS.  The C library expects to find it under
 
 (define (kernel->boot-label kernel)
   "Return a label for the bootloader menu entry that boots KERNEL."
-  (string-append "GNU with "
-                 (string-titlecase (package-name kernel)) " "
-                 (package-version kernel)
-                 " (beta)"))
+  (cond ((package? kernel)
+         (string-append "GNU with "
+                        (string-titlecase (package-name kernel)) " "
+                        (package-version kernel)
+                        " (beta)"))
+        ((inferior-package? kernel)
+         (string-append "GNU with "
+                        (string-titlecase (inferior-package-name kernel))
+                        (inferior-package-version kernel)
+                        " (beta)"))
+        (else "GNU")))
 
 (define (store-file-system file-systems)
   "Return the file system object among FILE-SYSTEMS that contains the store."

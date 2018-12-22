@@ -846,6 +846,14 @@ bytevector) as its internal buffer, and a thunk to flush this output port."
                                           write #f #f flush)
           flush))
 
+(define profiled?
+  (let ((profiled
+         (or (and=> (getenv "GUIX_PROFILING") string-tokenize)
+             '())))
+    (lambda (component)
+      "Return true if COMPONENT profiling is active."
+      (member component profiled))))
+
 (define %rpc-calls
   ;; Mapping from RPC names (symbols) to invocation counts.
   (make-hash-table))
@@ -1504,24 +1512,55 @@ and RESULT is typically its derivation."
              (object-cache (vhash-consq object (cons result keys)
                                         (nix-server-object-cache store)))))))
 
+(define record-cache-lookup!
+  (if (profiled? "object-cache")
+      (let ((fresh    0)
+            (lookups  0)
+            (hits     0))
+        (register-profiling-hook!
+         "object-cache"
+         (lambda ()
+           (format (current-error-port) "Store object cache:
+  fresh caches: ~5@a
+  lookups:      ~5@a
+  hits:         ~5@a (~,1f%)~%"
+                   fresh lookups hits
+                   (if (zero? lookups)
+                       100.
+                       (* 100. (/ hits lookups))))))
+
+        (lambda (hit? cache)
+          (set! fresh
+            (if (eq? cache vlist-null)
+                (+ 1 fresh)
+                fresh))
+          (set! lookups (+ 1 lookups))
+          (set! hits (if hit? (+ hits 1) hits))))
+      (lambda (x y)
+        #t)))
+
 (define* (lookup-cached-object object #:optional (keys '()))
   "Return the cached object in the store connection corresponding to OBJECT
 and KEYS.  KEYS is a list of additional keys to match against, and which are
 compared with 'equal?'.  Return #f on failure and the cached result
 otherwise."
   (lambda (store)
-    ;; Escape as soon as we find the result.  This avoids traversing the whole
-    ;; vlist chain and significantly reduces the number of 'hashq' calls.
-    (values (let/ec return
-              (vhash-foldq* (lambda (item result)
-                              (match item
-                                ((value . keys*)
-                                 (if (equal? keys keys*)
-                                     (return value)
-                                     result))))
-                            #f object
-                            (nix-server-object-cache store)))
-            store)))
+    (let* ((cache (nix-server-object-cache store))
+
+           ;; Escape as soon as we find the result.  This avoids traversing
+           ;; the whole vlist chain and significantly reduces the number of
+           ;; 'hashq' calls.
+           (value (let/ec return
+                    (vhash-foldq* (lambda (item result)
+                                    (match item
+                                      ((value . keys*)
+                                       (if (equal? keys keys*)
+                                           (return value)
+                                           result))))
+                                  #f object
+                                  cache))))
+      (record-cache-lookup! value cache)
+      (values value store))))
 
 (define* (%mcached mthunk object #:optional (keys '()))
   "Bind the monadic value returned by MTHUNK, which supposedly corresponds to

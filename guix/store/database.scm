@@ -79,6 +79,15 @@ as specified by SQL-SCHEMA."
 create it and initialize it as a new database."
   (let ((new? (not (file-exists? file)))
         (db   (sqlite-open file)))
+    ;; Turn DB in "write-ahead log" mode, which should avoid SQLITE_LOCKED
+    ;; errors when we have several readers: <https://www.sqlite.org/wal.html>.
+    (sqlite-exec db "PRAGMA journal_mode=WAL;")
+
+    ;; Install a busy handler such that, when the database is locked, sqlite
+    ;; retries until 30 seconds have passed, at which point it gives up and
+    ;; throws SQLITE_BUSY.
+    (sqlite-exec db "PRAGMA busy_timeout = 30000;")
+
     (dynamic-wind noop
                   (lambda ()
                     (when new?

@@ -24,7 +24,7 @@
 ;;; Copyright © 2017, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
-;;; Copyright © 2017 Feng Shu <tumashu@163.com>
+;;; Copyright © 2017, 2018 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
@@ -1729,7 +1729,7 @@ and stored in memory.")
 (define-public emacs-bui
   (package
     (name "emacs-bui")
-    (version "1.2.0")
+    (version "1.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1738,7 +1738,7 @@ and stored in memory.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0ixia5s41f2nbal3wsixacbhbc0mk9yb75ir1amqakip30sq4apv"))))
+                "0sszdl4kvqbihdh8d7mybpp0d8yw2p3gyiipjcxz9xhvvmw3ww4x"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("dash" ,emacs-dash)))
@@ -1828,7 +1828,7 @@ management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
 (define-public emacs-build-farm
   (package
     (name "emacs-build-farm")
-    (version "0.2.1")
+    (version "0.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1837,7 +1837,7 @@ management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1a4ky0hca26p7f3i2c2s5517ygkyaaz52vs0vxy6f5q95rhlgdhd"))))
+                "0i0bwbav5861j2y15j9nd5m9rdqg9q97zgcbld8pivr9nyxy63lz"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("bui" ,emacs-bui)
@@ -5370,8 +5370,8 @@ extensions.")
       (license license:gpl3+))))
 
 (define-public emacs-evil-collection
-  (let ((commit "abc9dd60f71ccc1f24803a12d853f84b4a8b258c")
-        (revision "4"))
+  (let ((commit "4e1f0e0b17153d460805a0da90d6191d66b2673d")
+        (revision "5"))
     (package
       (name "emacs-evil-collection")
       (version (git-version "0.0.1" revision commit))
@@ -5383,7 +5383,7 @@ extensions.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "0c9l93vrsl6kzx8gg305dq8qkb2dr3s10fww7lh382911pdmsh7v"))))
+                  "11d5ppdnb2y2mwsdd9g62h7zds962kw3nss89zv5iwgcf9f1fb5x"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
@@ -6660,27 +6660,50 @@ containing words from the rime project.")
 (define-public emacs-pyim
   (package
     (name "emacs-pyim")
-    (version "1.6.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/tumashu/pyim/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0hfg8q9hcjifvnlghw2g94dfxfirms2psq2ghqb28fhkf0lks13r"))))
+    (version "1.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tumashu/pyim")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "16rma4cv7xgky0g3x4an27v30jdi6i1sqw43cl99zhkqvp43l3f9"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
        ("emacs-pyim-basedict" ,emacs-pyim-basedict)
        ("emacs-popup" ,emacs-popup)
-       ("emacs-pos-tip" ,emacs-pos-tip)))
+       ("emacs-posframe" ,emacs-posframe)))
     (home-page "https://github.com/tumashu/pyim")
     (synopsis "Chinese input method")
     (description "Chinese input method which supports quanpin, shuangpin, wubi
 and cangjie.")
     (license license:gpl2+)))
+
+(define-public emacs-posframe
+  (package
+    (name "emacs-posframe")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/posframe-" version ".el"))
+       (sha256
+        (base32
+         "1h8vvxvsg41vc1nnglqjs2q0k1yzfsn72skga9s76qa3zxmx6kds"))))
+    (build-system emacs-build-system)
+    ;; emacs-minimal does not include the function font-info
+    (arguments `(#:emacs ,emacs))
+    (home-page "https://github.com/tumashu/posframe")
+    (synopsis "Pop a posframe (a child frame) at point")
+    (description "@code{emacs-posframe} can pop a posframe at point.  A
+posframe is a child frame displayed within its root window's buffer.
+@code{emacs-posframe} is fast and works well with CJK languages.")
+    (license license:gpl3+)))
 
 (define-public emacs-el2org
   (package
@@ -6867,16 +6890,17 @@ built on top of XELB.")
 (define-public emacs-switch-window
   (package
     (name "emacs-switch-window")
-    (version "1.5.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/dimitri/switch-window/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "07f99apxscwvsp2bjxsbi462c433kcglrjh6xl0gyafs1nvvvnd8"))))
+    (version "1.6.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dimitri/switch-window")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0rci96asgamr6qp6nkyr5vwrnslswjxcjd96yccy4aivh0g66yfg"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/dimitri/switch-window")
     (synopsis "Emacs window switch tool")
@@ -6888,17 +6912,18 @@ other operations.")
 (define-public emacs-exwm-x
   (package
     (name "emacs-exwm-x")
-    (version "1.8.1")
+    (version "1.9.0")
     (synopsis "Derivative window manager based on EXWM")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/tumashu/exwm-x/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0ali1100aacq4zbvcck80h51pvw204jlxhn4aikkqq4ngbx03kkr"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tumashu/exwm-x")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03l3dl7s1qys1kkh40rm1sfx7axy1b8sf5f6nyksj9ps6d30p5i4"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-exwm" ,emacs-exwm)
@@ -7843,6 +7868,19 @@ value of the access token.")
         (base32
          "10gi14kwxd81blddpvqh95lgmpbfgp0m955naxix3bs3r6a75n4s"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("buttercup" "-L" ".")
+       #:phases
+       (modify-phases %standard-phases
+         ;; The HOME environment variable should be set to an existing
+         ;; directory for the tests to succeed.
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)))
     ;; In order to securely connect to an IRC server using TLS, Circe requires
     ;; the GnuTLS binary.
     (propagated-inputs
@@ -7863,7 +7901,7 @@ want to use it.")
      ;; "tracking.el" is a library extracted from Circe package.  It requires
      ;; "shorten.el".
      `(#:include '("^shorten.el$" "^tracking.el$")
-       #:tests? #f))                    ;tests require buttercup
+       ,@(package-arguments emacs-circe)))
     (home-page "https://github.com/jorgenschaefer/circe/wiki/Tracking")
     (synopsis "Buffer tracking library")
     (description "@code{tracking.el} provides a way for different modes to
@@ -10241,7 +10279,7 @@ downloading manager for Emacs.")
 (define-public emacs-helpful
   (package
     (name "emacs-helpful")
-    (version "0.13")
+    (version "0.15")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -10250,7 +10288,7 @@ downloading manager for Emacs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "11kj04y1fa3vnw2991cyqf6adz6bb3hlrdkvypjnmpb0s64q64b6"))))
+                "1xmvhphzb4hbg647dz4lafy6hd19b7bk3lxni6irqrzdsrclhzn6"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-elisp-refs" ,emacs-elisp-refs)))
@@ -11244,7 +11282,7 @@ device tree files.")
 (define-public emacs-daemons
   (package
     (name "emacs-daemons")
-    (version "1.2.0")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
@@ -11254,7 +11292,7 @@ device tree files.")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "00ijgm22ck76gw0x79krl05yy0m8a502yfakazfy5xhpn1zi6ab7"))))
+         "00bkzfaw3bqykcks610vk9wlpa2z360xn32bpsrycacwfv29j7g4"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/cbowdon/daemons.el")
     (synopsis "Emacs UI for managing init system services")
@@ -12765,3 +12803,62 @@ interactive session association with the current contexts (project, directory,
 buffers).  While sesman can be used to manage arbitrary sessions, it primary
 targets the Emacs based IDEs (CIDER, ESS, Geiser, Robe, SLIME etc.)")
     (license license:gpl3+)))
+
+(define-public emacs-buttercup
+  (package
+    (name "emacs-buttercup")
+    (version "1.16")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jorgenschaefer/emacs-buttercup.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0dckgcyzsav6ld78bcyrrygy1cz1jvqgav6vy8f6klpmk3r8xrl1"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-bin
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "bin/buttercup"
+                           (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (home-page "https://github.com/jorgenschaefer/emacs-buttercup")
+    (synopsis "Behavior driven emacs lisp testing framework")
+    (description "Buttercup is a behavior-driven development framework for
+testing Emacs Lisp code.  It allows to group related tests so they can share
+common set-up and tear-down code, and allows the programmer to \"spy\" on
+functions to ensure they are called with the right arguments during testing.")
+    (license license:gpl3+)))
+
+(define-public emacs-wordnut
+  (let ((commit "feac531404041855312c1a046bde7ea18c674915")
+        (revision "0"))
+    (package
+      (name "emacs-wordnut")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/gromnitsky/wordnut")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "1jl0b6g64a9w0q7bfvwha67vgws5xd15b7mkfyb5gkz3pymqhfxn"))
+                (patches
+                 (search-patches "emacs-wordnut-require-adaptive-wrap.patch"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("wordnet" ,wordnet)
+         ("emacs-adaptive-wrap" ,emacs-adaptive-wrap)))
+      (synopsis "Major mode for WordNet")
+      (description "This Emacs package provides an interface for
+@code{wordnet}.  Features include completion, if the query is not found
+too ambiguous and navigation in the result buffer.")
+      (license license:gpl3+))))

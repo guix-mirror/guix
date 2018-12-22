@@ -731,17 +731,19 @@ environment variable name like \"XDG_CONFIG_HOME\"; SUFFIX is a suffix like
 ;;; Source location.
 ;;;
 
-(define (absolute-dirname file)
-  "Return the absolute name of the directory containing FILE, or #f upon
+(define absolute-dirname
+  ;; Memoize to avoid repeated 'stat' storms from 'search-path'.
+  (mlambda (file)
+    "Return the absolute name of the directory containing FILE, or #f upon
 failure."
-  (match (search-path %load-path file)
-    (#f #f)
-    ((? string? file)
-     ;; If there are relative names in %LOAD-PATH, FILE can be relative and
-     ;; needs to be canonicalized.
-     (if (string-prefix? "/" file)
-         (dirname file)
-         (canonicalize-path (dirname file))))))
+    (match (search-path %load-path file)
+      (#f #f)
+      ((? string? file)
+       ;; If there are relative names in %LOAD-PATH, FILE can be relative and
+       ;; needs to be canonicalized.
+       (if (string-prefix? "/" file)
+           (dirname file)
+           (canonicalize-path (dirname file)))))))
 
 (define-syntax current-source-directory
   (lambda (s)

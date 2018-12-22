@@ -847,7 +847,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.50.0")
+    (version "0.51.0")
     (source
      (origin
        (method git-fetch)
@@ -858,11 +858,26 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0f24ihglmzphy30pgc49w0rxmsjc76mgcggg078cfsz7xrrk13gf"))))
+         "074mh2kh3s00ib0h99050ss3j4c51v57py6dzm7crida6l0iydbv"))))
     (build-system python-build-system)
     (arguments
      ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
-     `(#:tests? #f))
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-documentation
+           (lambda _
+             (invoke "make" "docs")))
+         (add-after 'build-documentation 'install-documentation
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name)))
+               (mkdir-p doc)
+               (copy-recursively "docs/_build/html" doc))
+             #t)))))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
     (propagated-inputs
      `(("python-aiohttp" ,python-aiohttp)
        ("python-attr" ,python-attr)
@@ -874,19 +889,22 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
     (home-page "https://git.duniter.org/clients/python/duniterpy")
     (synopsis "Python implementation of Duniter API")
     (description "@code{duniterpy} is an implementation of
-@uref{https://github.com/duniter/duniter/, duniter} API. Its
+@uref{https://github.com/duniter/duniter/, duniter} API.  Its
 main features are:
 @itemize
-@item Supports Duniter's Basic Merkle API and protocol
-@item Asynchronous
+@item Support Duniter's Basic Merkle API and protocol
+@item Asynchronous/synchronous without threads
+@item Support HTTP, HTTPS and Web Socket transport for Basic Merkle API
+@item Support Elasticsearch Duniter4j API
 @item Duniter signing key
+@item Sign/verify and encrypt/decrypt messages with the Duniter credentials
 @end itemize")
     (license license:gpl3+)))
 
 (define-public silkaj
   (package
     (name "silkaj")
-    (version "0.6.0")
+    (version "0.6.1")
     (source
      (origin
        (method git-fetch)
@@ -896,7 +914,7 @@ main features are:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "02n028rz1pshgh7w0af3b291r8lwvhzskm1q98d991gr8rscvad2"))))
+         "0a99gbgdd7m9wisqhqpfyaim0rlv9gkp8gmrppkagqf6j0683igh"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;no test

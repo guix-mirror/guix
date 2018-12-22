@@ -3274,6 +3274,7 @@ setUrl, setUserAgent and call.")
        ("phonon" ,phonon)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
+       ("qtquickcontrols2" ,qtquickcontrols2)
        ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
        ("solid" ,solid)))
@@ -3381,7 +3382,7 @@ workspace.")
 (define-public kdelibs4support
   (package
     (name "kdelibs4support")
-    (version "5.42.0")
+    (version "5.49.0")
     (source
      (origin
        (method url-fetch)
@@ -3390,7 +3391,7 @@ workspace.")
              (version-major+minor version) "/portingAids/"
              name "-" version ".tar.xz"))
        (sha256
-        (base32 "0aiig8akn6bdxrqdl96xjjy2pxw8hhfrsalbkkzyhh06j794snfb"))))
+        (base32 "1cz70c77l66lbw4fbgmfbq1fldybqxsiay2pg9risgqp3ra8wahi"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("dbus" ,dbus)
@@ -3495,7 +3496,7 @@ http://community.kde.org/Frameworks/Porting_Notes should help with this.")
 (define-public khtml
   (package
     (name "khtml")
-    (version "5.42.0")
+    (version "5.49.0")
     (source
      (origin
        (method url-fetch)
@@ -3504,7 +3505,7 @@ http://community.kde.org/Frameworks/Porting_Notes should help with this.")
              (version-major+minor version) "/portingAids/"
              name "-" version ".tar.xz"))
        (sha256
-        (base32 "1bfslndxvad0zgzr22w2mz1xwavix9bh5qrrv8dpshlh043bwr3l"))))
+        (base32 "0k9m2pgq64grmgc6ywpzfnn65h8wfkkiwjbmz2mwbf2yi9c1ky64"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -3554,7 +3555,7 @@ technology and using KJS for JavaScript support.")
 (define-public kjs
   (package
     (name "kjs")
-    (version "5.42.0")
+    (version "5.49.0")
     (source
      (origin
        (method url-fetch)
@@ -3563,7 +3564,7 @@ technology and using KJS for JavaScript support.")
              (version-major+minor version) "/portingAids/"
              name "-" version ".tar.xz"))
        (sha256
-        (base32 "1m26sb2qyrcgmpkw76k2yv5my2pkhld96vw6aaqm77q90faw734g"))))
+        (base32 "057ikyi4wffjvxdyk08hmj7h8vmbwbcxv98apmjzgsd611zvx5p0"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -3587,7 +3588,7 @@ support.")
 (define-public kjsembed
   (package
     (name "kjsembed")
-    (version "5.42.0")
+    (version "5.49.0")
     (source
      (origin
        (method url-fetch)
@@ -3596,7 +3597,7 @@ support.")
              (version-major+minor version) "/portingAids/"
              name "-" version ".tar.xz"))
        (sha256
-        (base32 "10w4w4ncwr245bv1ii4sh154w91ghfz0l60k89j50lsydpcqcp3a"))))
+        (base32 "0qddjkfm6f0f5dynqvi3l23mgyfdbk4xzg967sj3a2qlq423ah0m"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -3616,7 +3617,7 @@ QObjects, so you can script your applications.")
 (define-public kmediaplayer
   (package
     (name "kmediaplayer")
-    (version "5.42.0")
+    (version "5.49.0")
     (source
      (origin
        (method url-fetch)
@@ -3625,7 +3626,7 @@ QObjects, so you can script your applications.")
              (version-major+minor version) "/portingAids/"
              name "-" version ".tar.xz"))
        (sha256
-        (base32 "1k1pjc0cz36gs0pl2pxw8f9f82xkbqyy320nfyhan5waxbl1qd5n"))))
+        (base32 "0hbx48ivj4i96yagd9n9vd22ycsljrvijm6nfms4x7z7jr49flrx"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -3662,7 +3663,7 @@ KParts instead.")
 (define-public kross
   (package
     (name "kross")
-    (version "5.42.0")
+    (version "5.49.0")
     (source
      (origin
        (method url-fetch)
@@ -3671,7 +3672,7 @@ KParts instead.")
              (version-major+minor version) "/portingAids/"
              name "-" version ".tar.xz"))
        (sha256
-        (base32 "1aqqwby6jslimpvx42d4n6gjsjc8l82gmsq5ajpv9zkkk91dqfqi"))))
+        (base32 "194zcf499fkwk3wcs3kc3l0fi9h8gn5yqh6gxrgiyn6iyy9a4qdz"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)

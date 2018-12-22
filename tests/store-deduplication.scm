@@ -48,7 +48,7 @@
                        (put-bytevector port data))))
                  identical)
        ;; Make the parent of IDENTICAL read-only.  This should not prevent
-       ;; deduplication for inserting its hard link.
+       ;; deduplication from inserting its hard link.
        (chmod (dirname (second identical)) #o544)
 
        (call-with-output-file unique
@@ -63,5 +63,47 @@
                  (stat:ino (stat (car identical))))
               (stat:nlink (stat unique))
               (map (compose stat:nlink stat) identical))))))
+
+(test-equal "deduplicate, ENOSPC"
+  (cons* #f                                       ;inode comparison
+         (append (make-list 3 4)
+                 (make-list 7 1)))                ;'nlink' values
+
+  ;; In this scenario the first 3 files are properly deduplicated and then we
+  ;; simulate a full '.links' directory where link(2) gets ENOSPC, thereby
+  ;; preventing deduplication of the subsequent files.
+  (call-with-temporary-directory
+   (lambda (store)
+     (let ((true-link link)
+           (links     0)
+           (data1     (string->utf8 "Hello, world!"))
+           (data2     (string->utf8 "Hi, world!"))
+           (identical (map (lambda (n)
+                             (string-append store "/" (number->string n)
+                                            "/a/b/c"))
+                           (iota 10)))
+           (populate  (lambda (data)
+                        (lambda (file)
+                          (mkdir-p (dirname file))
+                          (call-with-output-file file
+                            (lambda (port)
+                              (put-bytevector port data)))))))
+       (for-each (populate data1) (take identical 5))
+       (for-each (populate data2) (drop identical 5))
+       (dynamic-wind
+         (lambda ()
+           (set! link (lambda (old new)
+                        (set! links (+ links 1))
+                        (if (<= links 3)
+                            (true-link old new)
+                            (throw 'system-error "link" "~A" '("Whaaat?!")
+                                   (list ENOSPC))))))
+         (lambda ()
+           (deduplicate store (nar-sha256 store) #:store store))
+         (lambda ()
+           (set! link true-link)))
+
+       (cons (apply = (map (compose stat:ino stat) identical))
+             (map (compose stat:nlink stat) identical))))))
 
 (test-end "store-deduplication")

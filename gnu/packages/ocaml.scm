@@ -63,6 +63,7 @@
   #:use-module (gnu packages web-browsers)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (guix build-system dune)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
   #:use-module (guix download)
@@ -384,7 +385,13 @@ functional, imperative and object-oriented styles of programming.")
                        ;; Use bwrap from the store directly.
                        (substitute* "src/state/shellscripts/bwrap.sh"
                          (("-v bwrap") (string-append "-v " bwrap))
-                         (("exec bwrap") (string-append "exec " bwrap)))
+                         (("exec bwrap") (string-append "exec " bwrap))
+                         ;; Mount /gnu and /run/current-system in the
+                         ;; isolated environment when building with opam.
+                         ;; This is necessary for packages to find external
+                         ;; dependencies, such as a C compiler, make, etc...
+                         (("^add_mounts ro /usr")
+                          "add_mounts ro /gnu /run/current-system /usr"))
                        (substitute* "src/client/opamInitDefaults.ml"
                          (("\"bwrap\"") (string-append "\"" bwrap "\"")))
                        ;; Build dependencies
@@ -642,9 +649,6 @@ the OCaml core distribution.")
             (variable "COQPATH")
             (files (list "lib/coq/user-contrib")))))
     (build-system ocaml-build-system)
-    (native-inputs
-     `(("texlive" ,texlive)
-       ("hevea" ,hevea)))
     (inputs
      `(("lablgtk" ,lablgtk)
        ("python" ,python-2)
@@ -996,7 +1000,7 @@ libpanel, librsvg and quartz.")
      `(("ocaml" ,ocaml-4.02)
        ;; For documentation
        ("ghostscript" ,ghostscript)
-       ("texlive" ,texlive)
+       ("texlive" ,texlive-tiny)
        ("hevea" ,hevea)
        ("lynx" ,lynx)
        ("which" ,which)))
@@ -1561,26 +1565,13 @@ following a very simple s-expression syntax.")
               (sha256
                (base32
                 "01zjp1q4hryqaxv4apkjd868fycz2kf887r6lkb6x2a545h1lh7f"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
      `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "jbuilder" "build" "@install")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "jbuilder" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))))
+       #:jbuild? #t))
     (propagated-inputs
      `(("ocamlbuild" ,ocamlbuild)
        ("ocaml-result" ,ocaml-result)))
-    (native-inputs
-     `(("dune" ,dune)))
     (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
     (synopsis "OCaml parsetree convertor")
     (description "This library converts between parsetrees of different OCaml
@@ -1601,60 +1592,9 @@ functions to the next and/or previous version.")
               (sha256
                (base32
                 "1x2xfjpkzbcz4rza1d7gh3ipliw6jqfcklbsln82v3561qgkqgmh"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "dune" "build" "@install")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))))
-    (native-inputs
-     `(("dune" ,dune)))
-    (propagated-inputs
-     `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)))
-    (home-page "https://github.com/let-def/ppx_tools_versioned")
-    (synopsis "Variant of ppx_tools")
-    (description "This package is a variant of ppx_tools based on
-ocaml-migrate-parsetree")
-    (license license:expat)))
-
-(define-public ocaml-ppx-tools-versioned
-  (package
-    (name "ocaml-ppx-tools-versioned")
-    (version "5.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml-ppx/"
-                                  "ppx_tools_versioned/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1x2xfjpkzbcz4rza1d7gh3ipliw6jqfcklbsln82v3561qgkqgmh"))))
-    (build-system ocaml-build-system)
-    (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "dune" "build" "@install")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))))
-    (native-inputs
-     `(("dune" ,dune)))
+     `(#:test-target "."))
     (propagated-inputs
      `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)))
     (home-page "https://github.com/let-def/ppx_tools_versioned")
@@ -1675,31 +1615,19 @@ ocaml-migrate-parsetree")
               (sha256
                (base32
                 "15jjk2pq1vx311gl49s5ag6x5y0654x35w75z07g7kr2q334hqps"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (native-inputs
      `(("camlp4" ,camlp4)
        ("time" ,time)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("bisect" ,ocaml-bisect)
-       ("dune" ,dune)))
+       ("bisect" ,ocaml-bisect)))
     (propagated-inputs
      `(("camlp4" ,camlp4)
        ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
     (arguments
      `(#:tests? #f; Tests fail to build
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "jbuilder" "build" "@install")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))))
+       #:jbuild? #t))
     (properties
       `((ocaml4.02-variant . ,(delay ocaml4.02-bitstring))))
     (home-page "https://github.com/xguerin/bitstring")
@@ -1725,44 +1653,45 @@ powerful.")
                  (base32
                   "0vy8ibrxccii1jbsk5q6yh1kxjigqvi7lhhcmizvd5gfhf7mfyc8"))
                 (patches (search-patches "ocaml-bitstring-fix-configure.patch"))))
-    (arguments
-     `(#:ocaml ,ocaml-4.02
-       #:findlib ,ocaml4.02-findlib
-       #:configure-flags
-       (list "CAMLP4OF=camlp4of" "--enable-coverage")
-       #:make-flags
-       (list (string-append "BISECTLIB="
-                            (assoc-ref %build-inputs "bisect")
-                            "/lib/ocaml/site-lib")
-             (string-append "OCAMLCFLAGS=-g -I "
-                            (assoc-ref %build-inputs "camlp4")
-                            "/lib/ocaml/site-lib/camlp4 -I "
-                            "$(BISECTLIB)/bisect")
-             (string-append "OCAMLOPTFLAGS=-g -I "
-                            (assoc-ref %build-inputs "camlp4")
-                            "/lib/ocaml/site-lib/camlp4 -I "
-                            "$(BISECTLIB)/bisect"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'link-lib
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (stubs (string-append out
-                                          "/lib/ocaml/site-lib/stubslibs"))
-                    (lib (string-append out
-                                        "/lib/ocaml/site-lib/bitstring")))
-               (mkdir-p stubs)
-               (symlink (string-append lib "/dllbitstring.so")
-                        (string-append stubs "/dllbitstring.so")))
-             #t))
-         (add-before 'configure 'fix-configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "Makefile.in"
-               (("@abs_top_builddir@")
-                (string-append "@abs_top_builddir@:" (getenv "LIBRARY_PATH"))))
-             (substitute* "configure"
-               (("-/bin/sh") (string-append "-" (assoc-ref inputs "bash")
-                                            "/bin/sh"))))))))
+      (build-system ocaml-build-system)
+      (arguments
+       `(#:ocaml ,ocaml-4.02
+         #:findlib ,ocaml4.02-findlib
+         #:configure-flags
+         (list "CAMLP4OF=camlp4of" "--enable-coverage")
+         #:make-flags
+         (list (string-append "BISECTLIB="
+                              (assoc-ref %build-inputs "bisect")
+                              "/lib/ocaml/site-lib")
+               (string-append "OCAMLCFLAGS=-g -I "
+                              (assoc-ref %build-inputs "camlp4")
+                              "/lib/ocaml/site-lib/camlp4 -I "
+                              "$(BISECTLIB)/bisect")
+               (string-append "OCAMLOPTFLAGS=-g -I "
+                              (assoc-ref %build-inputs "camlp4")
+                              "/lib/ocaml/site-lib/camlp4 -I "
+                              "$(BISECTLIB)/bisect"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'link-lib
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (stubs (string-append out
+                                            "/lib/ocaml/site-lib/stubslibs"))
+                      (lib (string-append out
+                                          "/lib/ocaml/site-lib/bitstring")))
+                 (mkdir-p stubs)
+                 (symlink (string-append lib "/dllbitstring.so")
+                          (string-append stubs "/dllbitstring.so")))
+               #t))
+           (add-before 'configure 'fix-configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "Makefile.in"
+                 (("@abs_top_builddir@")
+                  (string-append "@abs_top_builddir@:" (getenv "LIBRARY_PATH"))))
+               (substitute* "configure"
+                 (("-/bin/sh") (string-append "-" (assoc-ref inputs "bash")
+                                              "/bin/sh"))))))))
       (native-inputs
        `(("camlp4" ,camlp4-4.02)
          ("time" ,time)
@@ -2232,26 +2161,18 @@ through Transport Layer Security (@dfn{TLS}) encrypted connections.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256 (base32
                   "0mhh019bjkg5xfvpy1pxs4xdxb759fyydmgb6l4j0qww1qgr8klp"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
      `(#:tests? #f; require lwt_ppx
+       #:jbuild? #t
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
+         (add-before 'build 'configure
            (lambda _
              (invoke "ocaml" "src/util/configure.ml" "-use-libev" "true")
-             #t))
-         (replace 'build
-           (lambda _
-             (invoke "jbuilder" "build" "@install")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "jbuilder" "install" "--prefix" (assoc-ref outputs "out"))
              #t)))))
     (native-inputs
-     `(("dune" ,dune)
-       ("ocaml-cppo" ,ocaml-cppo)
+     `(("ocaml-cppo" ,ocaml-cppo)
        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
        ("pkg-config" ,pkg-config)
        ("ppx-tools-versioned" ,ocaml-ppx-tools-versioned)))
@@ -2285,22 +2206,10 @@ locks or other synchronization primitives.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256 (base32
                   "1lr62j2266pbsi54xmzsfvl2z7fi7smhak7fp1ybl8hssxwi6in2"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
      `(#:tests? #f; require lwt_ppx
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "jbuilder" "build" "@install")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "jbuilder" "install" "--prefix" (assoc-ref outputs "out"))
-             #t)))))
-    (native-inputs
-     `(("dune" ,dune)))
+       #:jbuild? #t))
     (propagated-inputs
      `(("lwt" ,ocaml-lwt)))
     (home-page "https://github.com/aantron/lwt_log")
@@ -3114,24 +3023,12 @@ provide a tool that can be used to:
         (sha256 (base32
                   "1dkm3d5h6h56y937gcdk2wixlpzl59vv5pmiafglr89p20kf7gqf"))
         (file-name (string-append name "-" version ".tar.gz"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "dune" "build" "@install" "--profile" "release")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))
-       #:tests? #f))
+     `(#:tests? #f
+       #:build-flags (list "--profile" "release")))
     (native-inputs
-     `(("dune" ,dune)
-       ("ocamlbuild" ,ocamlbuild)))
+     `(("ocamlbuild" ,ocamlbuild)))
     (home-page "https://github.com/mjambon/cppo")
     (synopsis "Equivalent of the C preprocessor for OCaml programs")
     (description "Cppo is an equivalent of the C preprocessor for OCaml
@@ -3766,26 +3663,14 @@ standard iterator type starting from 4.07.")
               (sha256
                (base32
                 "1pdb0mr6z5ax6szblr3f5lbdnqq9grm97cmsfjmdma60yrx2rqhd"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
      `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "dune" "build" "@install" "--profile" "release")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))))
+       #:build-flags (list "--profile" "release")))
     (propagated-inputs
      `(("ocaml-seq" ,ocaml-seq)))
     (native-inputs
-     `(("dune" ,dune)
-       ("ounit" ,ocaml-ounit)))
+     `(("ounit" ,ocaml-ounit)))
     (home-page "https://github.com/ocaml/ocaml-re/")
     (synopsis "Regular expression library for OCaml")
     (description "Pure OCaml regular expressions with:
@@ -4518,23 +4403,11 @@ the plugins facilitate extensibility, and the frontends serve as entry points.")
               (sha256
                (base32
                 "01ssjrqz41jvrqh27jxnh9cx7ywi9b5sgsykd00i7z9nrcwhlfy2"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (native-inputs
-     `(("camlp4" ,camlp4)
-       ("dune" ,dune)))
+     `(("camlp4" ,camlp4)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "dune" "build" "@install" "--profile" "release")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))
+     `(#:build-flags (list "--profile" "realease")
        #:tests? #f))
     (synopsis "Comprehensive Unicode library")
     (description "Camomile is a Unicode library for OCaml.  Camomile provides
@@ -4635,23 +4508,10 @@ connect an engine to your inputs and rendering functions to get an editor.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1hy5ryagqclgdm9lzh1qil5mrynlypv7mn6qm858hdcnmz9zzn0l"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _
-             (invoke "dune" "build" "@install" "--profile" "release")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "dune" "install"
-                     "--prefix" (assoc-ref outputs "out"))
-             #t)))
+     `(#:build-flags (list "--profile" "release")
        #:tests? #f))
-    (native-inputs
-     `(("dune" ,dune)))
     (propagated-inputs
      `(("lwt" ,ocaml-lwt)
        ("lwt-log" ,ocaml-lwt-log)

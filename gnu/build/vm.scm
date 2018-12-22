@@ -105,13 +105,7 @@ the #:references-graphs parameter of 'derivation'."
       ;; hardware virtualization to still use these commands.  KVM support is
       ;; still buggy on some ARM32 boards. Do not use it even if available.
       ,@(if (and (file-exists? "/dev/kvm")
-                 (not target-arm32?)
-
-                 ;; XXX: 32-bit 'qemu-system-i386 -enable-kvm' segfaults on
-                 ;; x86_64 hosts running Linux-libre 4.17:
-                 ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=31380#18> and
-                 ;; <https://lists.gnu.org/archive/html/qemu-devel/2018-07/msg01166.html>.
-                 (not (string-suffix? "-i386" qemu)))
+                 (not target-arm32?))
             '("-enable-kvm")
             '())
 

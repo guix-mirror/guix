@@ -22,6 +22,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1408,14 +1409,14 @@ recover lost partitions and/or make non-booting disks bootable again.")
 (define-public tree
   (package
     (name "tree")
-    (version "1.7.0")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://mama.indstate.edu/users/ice/tree/src/tree-"
                     version ".tgz"))
               (sha256
-               (base32 "04kviw799qxly08zb8n5mgxfd96gyis6x69q2qiw86jnh87c4mv9"))))
+               (base32 "1hmpz6k0mr6salv0nprvm1g0rdjva1kx03bdf1scw8a38d5mspbi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -1600,15 +1601,14 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.7.4")
+    (version "2.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "0p1n6yyc632522fl2r247p0jg4mncc7z4hqngzbh1zxq3dcb12s9"))
-       (patches (search-patches "ansible-wrap-program-hack.patch"))))
+         "1fsif2jmkrrgiawsd8r6sxrqvh01fvrmdhas0p540a6i9fby3yda"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -1625,6 +1625,42 @@ of supported upstream metrics systems simultaneously.")
        ("python-jinja2" ,python-jinja2)
        ("python-pyyaml" ,python-pyyaml)
        ("python-paramiko" ,python-paramiko)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Several ansible commands (ansible-config, ansible-console, etc.)
+         ;; are just symlinks to a single ansible executable. The ansible
+         ;; executable behaves differently based on the value of
+         ;; sys.argv[0]. This does not work well with our wrap phase, and
+         ;; therefore the following two phases are required as a workaround.
+         (add-after 'unpack 'hide-wrapping
+           (lambda _
+             ;; Overwrite sys.argv[0] to hide the wrapper script from it.
+             (substitute* "bin/ansible"
+               (("import traceback" all)
+                (string-append all "
+import re
+sys.argv[0] = re.sub(r'\\.([^/]*)-real$', r'\\1', sys.argv[0])
+")))
+             #t))
+         (add-after 'wrap 'fix-symlinks
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (subprogram)
+                  ;; The symlinks point to the ansible wrapper script. Make
+                  ;; them point to the real executable (.ansible-real).
+                  (delete-file (string-append out "/bin/.ansible-" subprogram "-real"))
+                  (symlink (string-append out "/bin/.ansible-real")
+                           (string-append out "/bin/.ansible-" subprogram "-real"))
+                  ;; The wrapper scripts of the symlinks invoke the ansible
+                  ;; wrapper script. Fix them to invoke the correct executable.
+                  (substitute* (string-append out "/bin/ansible-" subprogram)
+                    (("/bin/ansible")
+                     (string-append "/bin/.ansible-" subprogram "-real"))))
+                (list "config" "console" "doc" "galaxy"
+                      "inventory" "playbook" "pull" "vault")))
+             #t)))))
     (home-page "https://www.ansible.com/")
     (synopsis "Radically simple IT automation")
     (description "Ansible is a radically simple IT automation system.  It
@@ -1886,7 +1922,7 @@ done with the @code{auditctl} utility.")
     ;; TODO Add zenmap output.
     (outputs '("out" "ndiff"))
     (arguments
-     '(#:configure-flags '("--without-zenmap")
+     `(#:configure-flags '("--without-zenmap")
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-Makefile
@@ -1902,7 +1938,10 @@ done with the @code{auditctl} utility.")
                       (string-append "prefix=" out)
                       args))
              (define (python-path dir)
-               (string-append dir "/lib/python2.7/site-packages"))
+               (string-append dir "/lib/python"
+                              ,(version-major+minor
+                                 (package-version python))
+                              "/site-packages"))
              (let ((out (assoc-ref outputs "out"))
                    (ndiff (assoc-ref outputs "ndiff")))
                (for-each mkdir-p (list out ndiff))
@@ -2953,3 +2992,36 @@ security defenses and provide tips for further system hardening.  It will also
 scan for general system information, vulnerable software packages, and
 possible configuration issues.")
     (license license:gpl3+)))
+
+(define-public ngrep
+  (package
+    (name "ngrep")
+    (version "1.47")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jpr5/ngrep/")
+             (commit (string-append "V" (string-replace-substring version "." "_")))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1x2fyd7wdqlj1r76ilal06cl2wmbz0ws6i3ys204sbjh1cj6dcl7"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libpcap" ,libpcap)))
+    (arguments
+     `(#:tests? #f ;; No tests.
+       #:configure-flags (list (string-append "--with-pcap-includes="
+                                              (assoc-ref %build-inputs "libpcap")
+                                              "/include/pcap"))))
+    (home-page "https://github.com/jpr5/ngrep/")
+    (synopsis "Grep-like utility to search for network packets on an interface")
+    (description "@command{ngrep} is like GNU grep applied to the network
+layer.  It's a PCAP-based tool that allows you to specify an extended regular
+or hexadecimal expression to match against data payloads of packets.  It
+understands many kinds of protocols, including IPv4/6, TCP, UDP, ICMPv4/6,
+IGMP and Raw, across a wide variety of interface types, and understands BPF
+filter logic in the same fashion as more common packet sniffing tools, such as
+tcpdump and snoop.")
+    (license license:bsd-3)))

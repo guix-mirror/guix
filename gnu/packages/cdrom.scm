@@ -558,7 +558,8 @@ from an audio CD.")
 
                (for-each wrap
                          (find-files (string-append out "/bin")
-                                     ".*"))))))
+                                     ".*")))
+             #t)))
        #:tests? #f)) ; no test target
 
     (inputs `(("wget" ,wget)
