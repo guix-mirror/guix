@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
@@ -640,6 +640,36 @@ images inside of images and reports the coordinates, allowing progams
 to find buttons, etc, on the screen to click on.")
     (home-page "https://www.hoopajoo.net/projects/xautomation.html")
     (license license:gpl2+)))
+
+(define-public xbanish
+  (package
+    (name "xbanish")
+    (version "1.6")
+    (home-page "https://github.com/jcs/xbanish")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0vp8ja68hpmqkl61zyjar3czhmny1hbm74m8f393incfz1ymr3i8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxfixes" ,libxfixes)
+       ("libxi" ,libxi)
+       ("libxt" ,libxt)))
+    (synopsis "Banish the mouse cursor")
+    (description
+     "@command{xbanish} hides the mouse cursor when you start typing, and
+shows it again when the mouse cursor moves or a mouse button is pressed.")
+    (license license:bsd-3)))
 
 (define-public xlockmore
   (package
