@@ -2608,7 +2608,7 @@ application, collecting the information received.")
               (method url-fetch)
               (uri (string-append "https://github.com/jwilk/hungrycat/"
                                   "releases/download/" version "/"
-                                  name "-" version ".tar.gz"))
+                                  "hungrycat-" version ".tar.gz"))
               (sha256
                (base32
                 "03fc1zsrf99lvxa7b4ps6pbi43304wbxh1f6ci4q0vkal370yfwh"))))
