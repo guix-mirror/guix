@@ -758,12 +758,13 @@ indentation.
     (version "1.0.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/BYVoid/OpenCC"
-                           "/archive/ver." version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/BYVoid/OpenCC")
+              (commit (string-append "ver." version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "01870gbkf711msirf3206k0ajaabypjhnx3fny5wikw0ladn9q8w"))))
+        (base32 "1pv5md225qwhbn8ql932zdg6gh1qlx3paiajaks8gfsa07yzvhr4"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python-wrapper)))
