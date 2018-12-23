@@ -271,12 +271,9 @@ also known as DXTn or DXTC) for Mesa.")
     (arguments
      `(#:configure-flags
        '(,@(match (%current-system)
-             ("armhf-linux"
-              ;; TODO: Add etnaviv,imx when libdrm supports etnaviv.
-              '("--with-gallium-drivers=freedreno,nouveau,r300,r600,swrast,tegra,vc4,virgl"))
-             ("aarch64-linux"
+             ((or "armhf-linux" "aarch64-linux")
               ;; TODO: Fix svga driver for aarch64 and armhf.
-              '("--with-gallium-drivers=freedreno,nouveau,pl111,r300,r600,swrast,tegra,vc4,virgl"))
+              '("--with-gallium-drivers=etnaviv,freedreno,imx,nouveau,pl111,r300,r600,swrast,tegra,v3d,vc4,virgl"))
              (_
               '("--with-gallium-drivers=i915,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
