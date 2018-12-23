@@ -525,13 +525,6 @@ and corrections.  It is based on a Bayesian filter.")
                     (man (string-append out "/share/man")))
                (install-file "docs/offlineimap.1" (string-append man "/man1"))
                (install-file "docs/offlineimapui.7" (string-append man "/man7"))
-               #t)))
-         (add-after 'install-documentation 'wrap-binary
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin/offlineimap")))
-               (wrap-program bin
-                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
                #t))))))
     (home-page "https://www.offlineimap.org")
     (synopsis "Sync emails between two repositories")
