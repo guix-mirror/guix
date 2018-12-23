@@ -1864,7 +1864,7 @@ platform-specific methods.")
     (version "2.8.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append home-page name "-" version ".tar.gz"))
+              (uri (string-append home-page "audit-" version ".tar.gz"))
               (sha256
                (base32
                 "0f4ci6ffznnmgblwgv7ich9mjfk3p6y5l6m6h3chhmzw156nj454"))))
