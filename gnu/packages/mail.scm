@@ -943,7 +943,7 @@ useful features.")
 (define-public libetpan
   (package
     (name "libetpan")
-    (version "1.9.1")
+    (version "1.9.2")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -951,7 +951,7 @@ useful features.")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
-               (base32 "1628lb1qvxixl64ifvjjr839hmirpx532klhv2mr7m6gmn7nlci5"))))
+               (base32 "13jiy2ddxbp9f2mk1mip9sk8h97bva5m0pnq2mlvh5xhifs6gza4"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
