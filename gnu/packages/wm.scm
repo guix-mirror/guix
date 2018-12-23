@@ -250,7 +250,7 @@ developers.")
                 (sha256
                  (base32
                   "15rnrcajzyrmhlz1a21qqsjlj3dkib70806dlb386fliylc2kisb"))
-                (file-name (string-append name "-" version "-checkout"))))
+                (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
