@@ -1705,13 +1705,13 @@ lookup to YAML Mode.  You could enable the mode with @code{(add-hook
     (version "0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/opsengine/cpulimit/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/opsengine/cpulimit.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1nn2w849xd5bw4y5sqnll29nxdwl5h0cv4smc7dwmpb9qnd2ycb4"))))
+        (base32 "1dz045yhcsw1rdamzpz4bk8mw888in7fyqk1q1b3m1yk4pd1ahkh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
