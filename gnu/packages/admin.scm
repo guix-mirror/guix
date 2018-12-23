@@ -2565,14 +2565,15 @@ on systems running the Linux kernel.")
   (package
     (name "masscan")
     (version "1.0.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/robertdavidgraham/masscan"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0wxddsgyx27z45906icdhdbfsvfj8ij805208qpqjx46i0lnjs50"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/robertdavidgraham/masscan.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0q0c7bsf0pbl8napry1qyg0gl4pd8wn872h4mz9b56dx4rx90vqg"))))
     (build-system gnu-build-system)
     (inputs
      `(("libpcap" ,libpcap)))
