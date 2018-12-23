@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
@@ -292,7 +292,7 @@ Japanese language input in most graphical applications.")
 (define-public librime
   (package
     (name "librime")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method git-fetch)
@@ -301,7 +301,7 @@ Japanese language input in most graphical applications.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1y0h3nnz97smx9z8h5fzk4c27mvrwv8kajxffqc43bhyvxvb2jd6"))))
+        (base32 "06q10cv7a3i6d8l3sq79nasw3p1njvmjgh4jq2hqw9abcx351m1r"))))
     (build-system cmake-build-system)
     (inputs
      `(("boost" ,boost)
