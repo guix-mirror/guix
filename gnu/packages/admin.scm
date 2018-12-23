@@ -2206,11 +2206,12 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
     (version "1.4.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/linux-sunxi/"
-                           "sunxi-tools/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/linux-sunxi/sunxi-tools.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "08iqwj95qw2s7ilhrdi2lkbc8dx64zk5lzz1qk587jr0lla81x41"))
+        (base32 "04f3jqg8ww4jxsf9c6ddcdgy2xbhkyp0b3l5f1hvvbv94p81rjxd"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove binaries contained in the tarball which are only for the
@@ -2218,7 +2219,7 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
         '(begin
            (delete-file-recursively "bin")
            #t))
-       (file-name (string-append name "-" version ".tar.gz"))))
+       (file-name (git-file-name name version))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("cross-gcc" ,(cross-gcc "arm-linux-gnueabihf"
