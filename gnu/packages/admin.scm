@@ -2125,22 +2125,22 @@ the status of your battery in the system tray.")
         (commit "896543735e1c99144765fdbd7b6e6b5afbd8b881"))
     (package
       (name "interrobang")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/TrilbyWhite/interrobang")
-                      (commit commit)))
-                (file-name (string-append name "-" version))
-                (sha256
-                 (base32
-                  "1n13m70p1hfba5dy3i8hfclbr6k9q3d9dai3dg4jvhdhmxcpjzdf"))))
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/TrilbyWhite/interrobang.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1n13m70p1hfba5dy3i8hfclbr6k9q3d9dai3dg4jvhdhmxcpjzdf"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f ; no tests
+       `(#:tests? #f                    ; no tests
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure)) ; no configure script
+           (delete 'configure))         ; no configure script
          #:make-flags (list (string-append "PREFIX="
                                            (assoc-ref %outputs "out")))))
       (inputs
