@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -138,18 +140,19 @@ C++.")
   (package
     (name "microscheme")
     (version "0.9.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ryansuchocki/"
-                                  "microscheme/archive/v" version ".tar.gz"))
-              (sha256
-               (base32
-                "1n404mh7z2icy3ga1mx249lk9x091k7idj6xpcf20hnmzabd0k0x"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ryansuchocki/microscheme.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1r3ng4pw1s9yy1h5rafra1rq19d3vmb5pzbpcz1913wz22qdd976"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:parallel-build? #f ; fails to build otherwise
-       #:tests? #f ; no tests
+     `(#:parallel-build? #f             ; fails to build otherwise
+       #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))
