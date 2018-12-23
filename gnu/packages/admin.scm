@@ -2365,7 +2365,7 @@ buffers.")
               (method url-fetch)
               (uri (string-append "https://cgit.freedesktop.org/xorg/app/"
                                   "intel-gpu-tools/snapshot/"
-                                  name "-" version ".tar.gz"))
+                                  "igt-gpu-tools-" version ".tar.gz"))
               (sha256
                (base32
                 "0vzv2i4jfv2pkbqby5k3ap9pzidkmajwqmg3s7wnv8i1h33775iq"))))
