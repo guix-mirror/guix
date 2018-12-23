@@ -1541,14 +1541,13 @@ degradation and failure.")
     (version "1.6.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/adrianlopezroche/fdupes/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/adrianlopezroche/fdupes.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1sj9pa40pbz6xdwbxfwhdhkvhdf1xc5gvggk9mdq26c41gdnyswx"))))
+        (base32 "19b6vqblddaw8ccw4sn0qsqzbswlhrz8ia6n4m3hymvcxn8skpz9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
