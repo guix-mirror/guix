@@ -34,6 +34,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
@@ -301,8 +302,25 @@ Japanese language input in most graphical applications.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06q10cv7a3i6d8l3sq79nasw3p1njvmjgh4jq2hqw9abcx351m1r"))))
+        (base32
+         "06q10cv7a3i6d8l3sq79nasw3p1njvmjgh4jq2hqw9abcx351m1r"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "thirdparty/src")
+           (delete-file-recursively "thirdparty/bin")
+           (delete-file-recursively "thirdparty/include/X11")
+           #t))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("include_directories\\($\\{PROJECT_SOURCE_DIR\\}/thirdparty/include\\)") "")
+               (("link_directories\\($\\{PROJECT_SOURCE_DIR\\}/thirdparty/lib\\)") ""))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("glog" ,glog)
@@ -310,6 +328,9 @@ Japanese language input in most graphical applications.")
        ("marisa" ,marisa)
        ("opencc" ,opencc)
        ("yaml-cpp" ,yaml-cpp)))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("xorgproto" ,xorgproto))) ; keysym.h
     (home-page "https://rime.im/")
     (synopsis "The core library of Rime Input Method Engine")
     (description "@dfn{librime} is the core library of Rime Input Method
