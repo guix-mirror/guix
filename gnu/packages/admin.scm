@@ -148,13 +148,15 @@ usual file attributes can be checked for inconsistencies.")
   (package
     (name "progress")
     (version "0.14")
-    (source (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/Xfennec/"
-                          name "/archive/v" version ".tar.gz"))
-      (sha256
-       (base32 "1wcanixfsi5k4i9h5vrnncgjdncalsdfqllrxibxwpgfnf20sji1"))
-      (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Xfennec/progress.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1lk2v4b767klib93an4g3f7z5qrv9kdk9jf7545vw1immc4kamrl"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -162,12 +164,12 @@ usual file attributes can be checked for inconsistencies.")
     (inputs
      `(("ncurses" ,ncurses)))
     (arguments
-     `(#:tests? #f ; There is no test suite.
+     `(#:tests? #f                      ; no test suite
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; There's no configure phase.
+         (delete 'configure))))         ; no configure script
     (home-page "https://github.com/Xfennec/progress")
     (synopsis "Program to view the progress of the coreutils commands")
     (description "A program that looks for coreutils basic commands (cp, mv,
