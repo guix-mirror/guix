@@ -108,14 +108,13 @@ nested include statements).")
     (version "0.9.5")
     (source
      (origin
-       (file-name (string-append name "-" version ".tar.gz"))
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/baskerville/bspwm/archive/"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/baskerville/bspwm.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "10pph8wxqysgk7b2h0svs0nwacn1a4y44jnzzry32pd1ysx92d97"))))
+        (base32 "09h3g1rxxjyw861mk32lj774nmwkx8cwxq4wfgmf4dpbizymvhhr"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxcb" ,libxcb)
