@@ -488,13 +488,14 @@ and corrections.  It is based on a Bayesian filter.")
     (name "offlineimap")
     (version "7.2.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OfflineIMAP/offlineimap")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1022xf2w1xax4vx4kzhlfbhaf0b72wkpvrcscvs4q8qk2ja68h8x"))))
+                "1m5i74baazwazqp98ssma968rnwzfl1nywb7icf0swc8447ps97q"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
