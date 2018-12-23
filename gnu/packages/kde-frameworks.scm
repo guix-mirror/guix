@@ -2003,7 +2003,8 @@ gallons).")
            ;; This test fails on i686 and aarch64
            (lambda _
              (substitute* "autotests/unit/file/CMakeLists.txt"
-               (("metadatamovertest") ""))
+               (("^\\s*ecm_add_test\\(.* TEST_NAME metadatamovertest .*" line)
+                (string-append "# " line)))
              #t))
          (replace 'check
            (lambda _
