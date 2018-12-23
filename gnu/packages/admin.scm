@@ -1979,22 +1979,22 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
   (package
     (name "dstat")
     (version "0.7.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/dagwieers/dstat/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append "dstat-" version ".tar.gz"))
-              (sha256
-               (base32
-                "16286z3y2lc9nsq8njzjkv6k2vyxrj9xiixj1k3gnsbvhlhkirj6"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dagwieers/dstat.git")
+             (commit version)))
+       (file-name (git-file-name "dstat" version))
+       (sha256
+        (base32 "0sbpna531034gr40w4g9cwz35s2fpf9h654paznsxw9fih91rfa5"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;; no make check
+     `(#:tests? #f                      ; no make check
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
                             "prefix=/"))
-       ;; no configure script
+       ;; No configure script.
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs `(("python-2" ,python-2)))
     (synopsis "Versatile resource statistics tool")
