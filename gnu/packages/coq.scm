@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -42,14 +43,15 @@
   (package
     (name "coq")
     (version "8.8.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/coq/coq/archive/V"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0i2hs0i6rp27cy8zd0mx7jscqw5cx2y0diw0pxgij66s3yr47y7r"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/coq/coq.git")
+             (commit (string-append "V" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03v8b57mz3ivsijwxy51avzwiyhla5ijaf98a5a2q29yabdq8dkp"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")
@@ -63,6 +65,10 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
