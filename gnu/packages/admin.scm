@@ -219,8 +219,8 @@ interface and is based on GNU Guile.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://cr.yp.to/" name "/"
-                    name "-" version ".tar.gz"))
+                    "https://cr.yp.to/daemontools/"
+                    "daemontools-" version ".tar.gz"))
               (sha256
                (base32
                 "07scvw88faxkscxi91031pjkpccql6wspk4yrlnsbrrb5c0kamd5"))))
@@ -231,7 +231,7 @@ interface and is based on GNU Guile.")
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
            (lambda _
-             (chdir ,(string-append name "-" version))
+             (chdir ,(string-append "daemontools-" version))
              #t))
          (delete 'configure)
          (add-before 'build 'patch
