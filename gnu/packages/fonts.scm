@@ -22,6 +22,7 @@
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;; Copyright © 2018 Charlie Ritter <chewzerita@posteo.net>
+;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1350,4 +1351,25 @@ designed to make long texts pleasant and easy to read, even in less than ideal
 reproduction and display environments.  This package provides only TrueType
 files (TTF).")
     (home-page "https://software.sil.org/charis/")
+    (license license:silofl1.1)))
+
+(define-public font-mononoki
+  (package
+    (name "font-mononoki")
+    (version "1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/madmalik/mononoki/")
+                    (commit version)))
+              (sha256
+               (base32
+                "1rkzyxn30rn8qv2h2xz324j7q15hzg2lci8790a7cdl1dfgic4xi"))
+              (file-name (git-file-name name version))))
+    (build-system font-build-system)
+    (synopsis "Font for programming and code review")
+    (description
+     "Mononoki is a typeface by Matthias Tellen, created to enhance code
+formatting.")
+    (home-page "https://madmalik.github.io/mononoki/")
     (license license:silofl1.1)))
