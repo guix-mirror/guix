@@ -2,6 +2,7 @@
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages boost)
@@ -44,18 +46,19 @@
   (package
     (name "avogadro")
     (version "1.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/cryos/avogadro/archive/"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "02v4h6hi1m7ilv0apdf74a8l1cm6dxnxyqp0rdaidrp3i9pf6lv4"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (patches
-               (search-patches "avogadro-eigen3-update.patch"
-                               "avogadro-python-eigen-lib.patch"
-                               "avogadro-boost148.patch"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cryos/avogadro.git")
+             (commit version)))
+       (sha256
+        (base32 "0258py3lkba85qhs5ynancinyym61vlp0zaq9yrfs3hhnhpzv9n2"))
+       (file-name (git-file-name name version))
+       (patches
+        (search-patches "avogadro-eigen3-update.patch"
+                        "avogadro-python-eigen-lib.patch"
+                        "avogadro-boost148.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
