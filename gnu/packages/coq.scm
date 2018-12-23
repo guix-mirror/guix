@@ -285,20 +285,22 @@ assistant.")
   (package
     (name "coq-mathcomp")
     (version "1.7.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/math-comp/math-comp/archive/mathcomp-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "05zgyi4wmasi1rcyn5jq42w0bi9713q9m8dl1fdgl66nmacixh39"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/math-comp/math-comp.git")
+             (commit (string-append "mathcomp-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1cdzi67jj440xkdpxm10aly80zpn56vjzj2ygb67iq3xpljlv95h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
        ("which" ,which)
        ("coq" ,coq)))
     (arguments
-     `(#:tests? #f; No need to test formally-verified programs :)
+     `(#:tests? #f             ; no need to test formally-verified programs :)
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
