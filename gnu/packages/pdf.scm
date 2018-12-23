@@ -496,7 +496,7 @@ by using the poppler rendering engine.")
 (define-public zathura
   (package
     (name "zathura")
-    (version "0.4.0")
+    (version "0.4.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -504,9 +504,7 @@ by using the poppler rendering engine.")
                               version ".tar.xz"))
               (sha256
                (base32
-                "1j0yah09adv3bsjhhbqra5lambal32svk8fxmf89wwmcqrcr4qma"))
-              (patches (search-patches
-                        "zathura-plugindir-environment-variable.patch"))))
+                "0hgx5x09i6d0z45llzdmh4l348fxh1y102sb1w76f2fp4r21j4ky"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")
@@ -523,7 +521,7 @@ by using the poppler rendering engine.")
                          ("girara" ,girara)))
     (native-search-paths
      (list (search-path-specification
-            (variable "ZATHURA_PLUGIN_PATH")
+            (variable "ZATHURA_PLUGINS_PATH")
             (files '("lib/zathura")))))
     (build-system meson-build-system)
     (arguments
