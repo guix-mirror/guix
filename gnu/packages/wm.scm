@@ -76,6 +76,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages suckless)
+  #:use-module (gnu packages mpd)
   #:use-module (guix download)
   #:use-module (guix git-download))
 
@@ -1051,3 +1052,45 @@ its size
 @item Display preview images in a tiled icon layout
 @end itemize")
     (license license:gpl2+)))
+
+(define-public polybar
+  (package
+    (name "polybar")
+    (version "3.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jaagr/polybar/releases/"
+                           "download/" version "/polybar.tar"))
+       (sha256
+        (base32 "0sjh3xmf11g09spi88zj7xsc3a3vv78kixab6n5i7436py7xwzb4"))
+       (file-name (string-append name "-" version ".tar"))))
+    (build-system cmake-build-system)
+    (arguments
+     ;; Test is disabled because it requires downloading googletest from the
+     ;; Internet.
+     '(#:tests? #f))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("cairo" ,cairo)
+       ("i3-wm" ,i3-wm)
+       ("libmpdclient" ,libmpdclient)
+       ("libnl" ,libnl)
+       ("libxcb" ,libxcb)
+       ("pulseaudio" ,pulseaudio)
+       ("xcb-proto" ,xcb-proto)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-cursor" ,xcb-util-cursor)
+       ("xcb-util-image" ,xcb-util-image)
+       ("xcb-util-wm" ,xcb-util-wm)
+       ("xcb-util-xrm" ,xcb-util-xrm)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-2" ,python-2)           ; lib/xpp depends on python 2
+       ("python" ,python)))             ; xcb-proto depends on python 3
+    (home-page "https://polybar.github.io/")
+    (synopsis "Fast and easy-to-use status bar")
+    (description "Polybar aims to help users build beautiful and highly
+customizable status bars for their desktop environment.  It has built-in
+functionality to display information about the most commonly used services.")
+    (license license:expat)))
