@@ -2303,16 +2303,16 @@ in order to be able to find it.
     (version "1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/aureliojargas/sedsed/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aureliojargas/sedsed.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0139jkqvm8ipiwfj7k69ry2f9b1ffgpk79arpz4r7w9kf6h23bnh"))))
+        (base32 "0009lsjsxhqmgaklpwq15hhd94hpiy7r4va69yy0ig3mxi6zbg2z"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; No tests.
+     `(#:tests? #f                      ; no tests
        #:python ,python-2
        #:phases
        (modify-phases %standard-phases
