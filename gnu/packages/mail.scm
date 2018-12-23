@@ -1011,7 +1011,7 @@ compresses it.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.claws-mail.org/releases/" name "-" version
+                    "https://www.claws-mail.org/releases/claws-mail-" version
                     ".tar.xz"))
               (sha256
                (base32
