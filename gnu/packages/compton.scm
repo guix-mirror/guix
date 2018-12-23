@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +20,7 @@
 (define-module (gnu packages compton)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -38,15 +39,16 @@
       (name "compton")
       (version (string-filter (char-set-complement (char-set #\_))
                               upstream-version))
-      (source (origin
-                (method url-fetch)
-                (uri (string-append
-                      "https://github.com/chjj/" name "/archive/v"
-                      upstream-version ".tar.gz"))
-                (sha256
-                 (base32
-                  "02dhlqqcwnmlf2dxg7rd4lapgqahgndzixdkbpxicq9jawmdb73v"))
-                (file-name (string-append name "-" version "-checkout"))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/chjj/compton.git")
+               (commit (string-append "v" upstream-version))))
+         (sha256
+          (base32
+           "0v65viilhnd2xgvmdpzc1srxszcg8kj1vhi5gy9292j48w0s2fx1"))
+         (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs
        `(("dbus" ,dbus)
