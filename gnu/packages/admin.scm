@@ -2015,15 +2015,16 @@ throughput (in the same interval).")
   (package
     (name "thefuck")
     (version "3.28")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/nvbn/thefuck/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1i11qlnbg95nx7dcf6wqvfz7b230dqr5m981md4hvyaa1qw3xj5m"))
-              (patches (search-patches "thefuck-test-environ.patch"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nvbn/thefuck.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "070b2sx8r0b4hry6xg97psxlikxghmz91zicg2cm6kc1yhgz4agc"))
+       (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
