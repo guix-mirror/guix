@@ -56,7 +56,7 @@
     (home-page "http://entrproject.org/")
     (synopsis "Run arbitrary commands when files change")
     (description
-     "entr is a zero-configuration tool with no external build- or run-time
+     "entr is a zero-configuration tool with no external build or run-time
 dependencies.  The interface to entr is not only minimal, it aims to be simple
 enough to create a new category of ad hoc automation.  These micro-tests
 reduce keystrokes, but more importantly they emphasize the utility of

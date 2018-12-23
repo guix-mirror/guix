@@ -1309,7 +1309,7 @@ fight Morgoth, the Lord of Darkness.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)))) ; no configure script
-    (home-page "http://pingus.seul.org/welcome.html")
+    (home-page "https://pingus.seul.org/")
     (synopsis "Lemmings clone")
     (description
      "Pingus is a free Lemmings-like puzzle game in which the player takes

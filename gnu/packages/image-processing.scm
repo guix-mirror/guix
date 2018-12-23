@@ -440,6 +440,7 @@ vision algorithms.  It can be used to do things like:
        ("expat" ,expat)
        ("hdf5" ,hdf5)))
     (home-page "https://libvips.github.io/libvips/")
-    (synopsis "A free image processing system")
-    (description "vips is a demand-driven, horizontally threaded image processing library")
+    (synopsis "Image processing system")
+    (description
+     "vips is a demand-driven, horizontally threaded image processing library.")
     (license license:lgpl2.1+)))

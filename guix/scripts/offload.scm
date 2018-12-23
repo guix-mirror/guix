@@ -733,7 +733,7 @@ machine."
                           (utsname:sysname uts) (utsname:release uts)
                           (utsname:machine uts)
                           (utsname:nodename uts)
-                          load
+                          (normalized-load machine load)
                           (/ free (expt 2 20) 1.))))
               machines)))
 

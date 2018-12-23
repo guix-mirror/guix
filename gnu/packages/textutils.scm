@@ -52,7 +52,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages slang))
+  #:use-module (gnu packages slang)
+  #:use-module (gnu packages web))
 
 (define-public dos2unix
   (package
@@ -758,15 +759,33 @@ indentation.
     (version "1.0.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/BYVoid/OpenCC"
-                           "/archive/ver." version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/BYVoid/OpenCC")
+              (commit (string-append "ver." version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "01870gbkf711msirf3206k0ajaabypjhnx3fny5wikw0ladn9q8w"))))
+        (base32
+         "1pv5md225qwhbn8ql932zdg6gh1qlx3paiajaks8gfsa07yzvhr4"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; TODO: Unbundle tclap, darts-clone, gtest
+           (delete-file-recursively "deps/rapidjson-0.11") #t))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-3rd-party-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((rapidjson (assoc-ref inputs "rapidjson")))
+               (substitute* "src/CMakeLists.txt"
+                 (("../deps/rapidjson-0.11")
+                  (string-append rapidjson "/include/rapidjson")))
+             #t))))))
     (native-inputs
-     `(("python" ,python-wrapper)))
+     `(("python" ,python-wrapper)
+       ("rapidjson" ,rapidjson)))
     (home-page "https://github.com/BYVoid/OpenCC")
     (synopsis "Convert between Traditional Chinese and Simplified Chinese")
     (description "Open Chinese Convert (OpenCC) converts between Traditional

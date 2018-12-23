@@ -29,6 +29,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,7 +54,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
-  #:use-module (guix build utils)
+  #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
@@ -63,6 +64,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -3965,7 +3967,7 @@ as equations, scalars, vectors, and matrices.")
 (define-public z3
   (package
     (name "z3")
-    (version "4.8.1")
+    (version "4.8.3")
     (home-page "https://github.com/Z3Prover/z3")
     (source (origin
               (method git-fetch)
@@ -3974,16 +3976,10 @@ as equations, scalars, vectors, and matrices.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vr57bwx40sd5riijyrhy70i2wnv9xrdihf6y5zdz56yq88rl48f"))))
-    (build-system cmake-build-system)
+                "0p5gdmhd32x6zwmx7j5cgwh4jyfxa9yapym95nlmyfaqzak92qar"))))
+    (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list "-DBUILD_PYTHON_BINDINGS=true"
-             "-DINSTALL_PYTHON_BINDINGS=true"
-             (string-append "-DCMAKE_INSTALL_PYTHON_PKG_DIR="
-                            %output
-                            "/lib/python2.7/site-packages"))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-compatability
            ;; Versions after 4.8.3 have immintrin.h IFDEFed for Windows only.
@@ -3994,7 +3990,18 @@ as equations, scalars, vectors, and matrices.")
          (add-before 'configure 'bootstrap
            (lambda _
              (zero?
-              (system* "python" "contrib/cmake/bootstrap.py" "create"))))
+              (system* "python" "scripts/mk_make.py"))))
+         ;; work around gnu-build-system's setting --enable-fast-install
+         ;; (z3's `configure' is a wrapper around the above python file,
+         ;; which fails when passed --enable-fast-install)
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (invoke "./configure"
+                     (string-append "--prefix=" (assoc-ref outputs "out")))))
+         (add-after 'configure 'change-directory
+           (lambda _
+             (chdir "build")
+             #t))
          (add-before 'check 'make-test-z3
            (lambda _
              ;; Build the test suite executable.
@@ -4005,7 +4012,8 @@ as equations, scalars, vectors, and matrices.")
              ;; Run all the tests that don't require arguments.
              (zero? (system* "./test-z3" "/a")))))))
     (native-inputs
-     `(("python" ,python-2)))
+     `(("which" ,which)
+       ("python" ,python-wrapper)))
     (synopsis "Theorem prover")
     (description "Z3 is a theorem prover and @dfn{satisfiability modulo
 theories} (SMT) solver.  It provides a C/C++ API, as well as Python bindings.")

@@ -486,15 +486,16 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.2.1")
+    (version "7.2.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OfflineIMAP/offlineimap")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1022xf2w1xax4vx4kzhlfbhaf0b72wkpvrcscvs4q8qk2ja68h8x"))))
+                "11nj7y9fa7v6vcxk3wr8smfgm3mxxnmq3l8q69rrjxlfzcv7dl8m"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
@@ -527,7 +528,7 @@ and corrections.  It is based on a Bayesian filter.")
                (wrap-program bin
                  `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
                #t))))))
-    (home-page "http://www.offlineimap.org")
+    (home-page "https://www.offlineimap.org")
     (synopsis "Sync emails between two repositories")
     (description
      "OfflineImap synchronizes emails between two repositories, so that you
@@ -942,7 +943,7 @@ useful features.")
 (define-public libetpan
   (package
     (name "libetpan")
-    (version "1.9.1")
+    (version "1.9.2")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -950,7 +951,7 @@ useful features.")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
-               (base32 "1628lb1qvxixl64ifvjjr839hmirpx532klhv2mr7m6gmn7nlci5"))))
+               (base32 "13jiy2ddxbp9f2mk1mip9sk8h97bva5m0pnq2mlvh5xhifs6gza4"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
@@ -1007,15 +1008,15 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.17.1")
+    (version "3.17.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.claws-mail.org/releases/" name "-" version
+                    "https://www.claws-mail.org/releases/claws-mail-" version
                     ".tar.xz"))
               (sha256
                (base32
-                "1wknxbwyzm5xjh3cqmddcxmvp1rkp301qga5n5rgfi7vcd0myyvm"))))
+                "1wnj6c9cbmhphs2l6wfvndkk2g08rmxw0sl2c8k1k008dxd1ykjh"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)

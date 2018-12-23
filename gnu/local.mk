@@ -109,7 +109,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/commencement.scm			\
   %D%/packages/compression.scm			\
   %D%/packages/compton.scm 			\
-  %D%/packages/conkeror.scm			\
   %D%/packages/conky.scm			\
   %D%/packages/connman.scm			\
   %D%/packages/cook.scm				\
@@ -648,7 +647,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/cube-nocheck.patch			\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-2017-12836.patch			\
-  %D%/packages/patches/datamash-arm-tests.patch			\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\

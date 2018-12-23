@@ -17699,7 +17699,7 @@ A service type for the @code{fcgiwrap} FastCGI proxy.
 @end defvr
 
 @deftp {Data Type} fcgiwrap-configuration
-Data type representing the configuration of the @code{fcgiwrap} serice.
+Data type representing the configuration of the @code{fcgiwrap} service.
 This type has the following parameters:
 @table @asis
 @item @code{package} (default: @code{fcgiwrap})
@@ -17874,7 +17874,7 @@ The cat avatar generator is a simple service to demonstrate the use of php-fpm
 in @code{Nginx}.  It is used to generate cat avatar from a seed, for instance
 the hash of a user's email address.
 
-@deffn {Scheme Procedure} cat-avatar-generator-serice @
+@deffn {Scheme Procedure} cat-avatar-generator-service @
        [#:cache-dir "/var/cache/cat-avatar-generator"] @
        [#:package cat-avatar-generator] @
        [#:configuration (nginx-server-configuration)]

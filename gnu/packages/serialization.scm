@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
@@ -271,7 +271,23 @@ that implements both the msgpack and msgpack-rpc specifications.")
                 "01gxn7kc8pzyh4aadjxxzq8cignmbwmm9rfrsmgqfg9w2q75dn74"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
+     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'dont-install-gtest-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion
+                 (string-append out "/include")
+                 (delete-file-recursively "gtest")
+                 (delete-file-recursively "gmock"))
+               (with-directory-excursion
+                 (string-append out "/lib")
+                 (for-each (lambda (file)
+                             (delete-file file))
+                           '("libgmock.so" "libgmock_main.so"
+                             "libgtest.so" "libgtest_main.so"))))
+             #t)))))
     (native-inputs
      `(("python" ,python)))
     (home-page "https://github.com/jbeder/yaml-cpp")
