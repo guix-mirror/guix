@@ -2495,7 +2495,7 @@ you are running, what theme or icon set you are using, etc.")
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
-                           version "/" name "-v" version ".tar.gz"))
+                           version "/nnn-v" version ".tar.gz"))
        (sha256
         (base32 "1d6z12y4rlg4dzhpm30irpq2ak8hjh5zykkp2n7vxnz5m4ki89zp"))))
     (build-system gnu-build-system)
