@@ -50,6 +50,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages gcc)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
@@ -366,7 +367,7 @@ driven and does not detract you from your daily work.")
 (define-public next-gtk-webkit
   (package
     (name "next-gtk-webkit")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method git-fetch)
@@ -375,13 +376,16 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "00xi01r6gxlrv7xc2dhf4da30y0vng1snbdmc8d829qyn0chl55q"))
+         "0a066f56hnb9znbwnv1blm31j0ysv05n4wzlkli0zgw087c9047x"))
        (file-name (git-file-name "next" version))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags (list "gtk-webkit"
-                          "CC=gcc"
+                          (string-append
+                           "CC="
+                           (assoc-ref %build-inputs "gcc-7")
+                           "/bin/gcc")
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
@@ -392,9 +396,10 @@ driven and does not detract you from your daily work.")
     (inputs
      `(("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-2.22)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gcc-7" ,gcc-7) ; needed because webkitgtk-2.22 is compiled with gcc-7
+       ("pkg-config" ,pkg-config)))
     (home-page "https://next.atlas.engineer")
     (synopsis "Infinitely extensible web-browser (user interface only)")
     (description "Next is a keyboard-oriented, extensible web-browser
