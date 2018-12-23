@@ -1045,6 +1045,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/pinball-src-deps.patch			\
   %D%/packages/patches/pinball-system-ltdl.patch		\
   %D%/packages/patches/pinentry-efl.patch			\
+  %D%/packages/patches/pingus-boost-headers.patch		\
   %D%/packages/patches/pingus-sdl-libs-config.patch		\
   %D%/packages/patches/pius.patch       			\
   %D%/packages/patches/pixman-CVE-2016-5296.patch		\
