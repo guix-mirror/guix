@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,8 +52,8 @@
       (origin
         (method url-fetch)
         (uri
-          (string-append "https://www.abisource.com/downloads/" name "/" version
-                         "/source/" name "-" version ".tar.gz"))
+          (string-append "https://www.abisource.com/downloads/abiword/" version
+                         "/source/abiword-" version ".tar.gz"))
         (sha256
          (base32 "08imry821g81apdwym3gcs4nss0l9j5blqk31j5rv602zmcd9gxg"))
         (patches
