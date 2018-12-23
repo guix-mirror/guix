@@ -2158,8 +2158,8 @@ shortcut syntax and completion options.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://archives.eyrie.org/software/kerberos/" name "-"
-                    version ".tar.xz"))
+                    "https://archives.eyrie.org/software/kerberos/"
+                    "pam-krb5-" version ".tar.xz"))
               (sha256
                (base32
                 "1qjp8i1s9bz7g6kiqrkzzkxn5pfspa4sy53b6z40fqmdf9przdfb"))))
