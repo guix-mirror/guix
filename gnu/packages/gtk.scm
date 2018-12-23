@@ -1357,7 +1357,7 @@ and routines to assist in editing internationalized text.")
 (define-public girara
   (package
     (name "girara")
-    (version "0.2.9")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1365,7 +1365,7 @@ and routines to assist in editing internationalized text.")
                               version ".tar.xz"))
               (sha256
                (base32
-                "0lkxrfna818wkkr2f6mdzf15y5z8xl1b9592ylmzjbqsqya3w7x8"))))
+                "1kc6n1mxjxa7wvwnqy94qfg8l9jvx9qrvrr2kc7m4g0z20x3a00p"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)
                      ("gettext" ,gettext-minimal)
