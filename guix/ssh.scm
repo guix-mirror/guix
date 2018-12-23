@@ -18,6 +18,7 @@
 
 (define-module (guix ssh)
   #:use-module (guix store)
+  #:use-module (guix inferior)
   #:use-module (guix i18n)
   #:use-module ((guix utils) #:select (&fix-hint))
   #:use-module (ssh session)
@@ -36,6 +37,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 binary-ports)
   #:export (open-ssh-session
+            remote-inferior
             remote-daemon-channel
             connect-to-remote-daemon
             send-files
@@ -93,6 +95,12 @@ Throw an error on failure."
                (&message
                 (message (format #f (G_ "SSH connection to '~a' failed: ~a~%")
                                  host (get-error session))))))))))
+
+(define (remote-inferior session)
+  "Return a remote inferior for the given SESSION."
+  (let ((pipe (open-remote-pipe* session OPEN_BOTH
+                                 "guix" "repl" "-t" "machine")))
+    (port->inferior pipe)))
 
 (define* (remote-daemon-channel session
                                 #:optional
