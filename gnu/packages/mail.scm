@@ -528,7 +528,7 @@ and corrections.  It is based on a Bayesian filter.")
                (wrap-program bin
                  `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
                #t))))))
-    (home-page "http://www.offlineimap.org")
+    (home-page "https://www.offlineimap.org")
     (synopsis "Sync emails between two repositories")
     (description
      "OfflineImap synchronizes emails between two repositories, so that you
