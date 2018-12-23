@@ -2091,23 +2091,24 @@ produce uniform output across heterogeneous networks.")
   (package
     (name "cbatticon")
     (version "1.6.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/valr/"
-                                  name "/archive/" version ".tar.gz"))
-              (sha256
-               (base32
-                "185lzvaijvyq7y8r7dvizhri0rf9lpc1anfgbbn4lznr1fr3z7rn"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/valr/cbatticon.git")
+             (commit version)))
+       (sha256
+        (base32 "16g26vin1693dbdr9qsnw36fdchx394lp79gvp7gcbw0w1ny9av6"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "CC=gcc")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; no configure script
+         (delete 'configure))))         ; no configure script
     (inputs
      `(("gtk+" ,gtk+)
        ("gettext" ,gettext-minimal)
