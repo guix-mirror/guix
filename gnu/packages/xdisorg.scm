@@ -340,14 +340,12 @@ rasterisation.")
              ("armhf-linux"
               '("--enable-exynos-experimental-api"
                 "--enable-omap-experimental-api"
-                ;; XXX: This fails a symbol check on a build machine:
-                ;; <https://hydra.gnu.org/build/2270314/nixlog/4/raw>
-                ;; TODO: Update the list of symbols.
-                ;;"--enable-etnaviv-experimental-api"
+                "--enable-etnaviv-experimental-api"
                 "--enable-tegra-experimental-api"
                 "--enable-freedreno-kgsl"))
              ("aarch64-linux"
               '("--enable-tegra-experimental-api"
+                "--enable-etnaviv-experimental-api"
                 "--enable-freedreno-kgsl"))
              (_ '())))))
     (inputs
