@@ -95,7 +95,7 @@ the application layer) you need to install @code{torsocks}.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://people.torproject.org/~dgoulet/"
-                                  name "/" name "-" version ".tar.xz"))
+                                  "torsocks/torsocks-" version ".tar.xz"))
               (sha256
                (base32
                 "0byr9ga9w79qz4vp0m11sbmspad7fsal9wm67r4znzb7zb7cis19"))))
