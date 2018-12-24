@@ -2840,9 +2840,16 @@ These are distributed in separate files and can be used individually.")
                 "0nhjrnlmss535jbshjjd30vydbr8py21vkx4p294w6d8vg2rssf8"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
-    (arguments '())
-    (propagated-inputs
-     `(("emacs-irony-mode-server" ,emacs-irony-mode-server)))
+    (inputs `(("server" ,emacs-irony-mode-server)))
+    (arguments `(#:phases
+                 (modify-phases %standard-phases
+                   (add-after 'unpack 'configure
+                        (lambda* (#:key inputs #:allow-other-keys)
+                          (chmod "irony.el" #o644)
+                          (emacs-substitute-variables "irony.el"
+                            ("irony-server-install-prefix"
+                             (assoc-ref inputs "server")))
+                          #t)))))
     (synopsis "C/C++/ObjC Code completion and syntax checks for Emacs")
     (description "Irony-mode provides Clang-assisted syntax checking and
 completion for C, C++, and ObjC in GNU Emacs.  Using @code{libclang} it can
@@ -2857,7 +2864,6 @@ described on the homepage.")
     (name "emacs-irony-mode-server")
     (inputs
      `(("clang" ,clang)))
-    (propagated-inputs '())
     (arguments
      `(#:phases
        (modify-phases %standard-phases
