@@ -353,7 +353,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "2.4.4")
+    (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -362,7 +362,7 @@ photographic equipment.")
                     version "/darktable-" version ".tar.xz"))
               (sha256
                (base32
-                "0kdhmiw4wxk2w9v2hms9yk8nl4ymdshnqyj0l07nivzzr6w20hwn"))))
+                "0y04cx0a0rwdclmn16f5y0z2vnm7yxly291gzjgdhcn59a77sga8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
