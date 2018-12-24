@@ -7,6 +7,7 @@
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -37,6 +39,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
@@ -400,3 +403,47 @@ DNS domain name queries.")
 @command{sshuttle} virtual private networks.  It supports flexible profiles
 with configuration options for most of @command{sshuttle}’s features.")
     (license license:gpl3+)))
+
+(define-public badvpn
+  (package
+    (name "badvpn")
+    (version "1.999.130")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ambrop72/badvpn.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rm67xhi7bh3yph1vh07imv5y1pwyldvw3wa5bz471g8mnkc7d3c"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f))                    ; no tests
+    (inputs
+     `(("nspr" ,nspr)
+       ("nss" ,nss)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/ambrop72/badvpn")
+    (synopsis "Peer-to-peer virtual private network (VPN)")
+    (description "@code{BadVPN} is a collection of virtual private
+network (VPN) tools.  It includes:
+
+@enumerate
+@item NCD programming language.\n
+NCD (Network Configuration Daemon) is a daemon and programming/scripting
+language for configuration of network interfaces and other aspects of the
+operating system.
+@item Tun2socks network-layer proxifier.\n
+The tun2socks program socksifes TCP connections at the network layer.  It
+implements a TUN device which accepts all incoming TCP connections (regardless
+of destination IP), and forwards the connections through a SOCKS server.
+@item Peer-to-peer VPN.\n
+The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
+(VPN nodes).
+@end enumerate")
+    ;; This project contains a bundled lwIP. lwIP is also released under the
+    ;; 3-clause BSD license.
+    (license license:bsd-3)))
