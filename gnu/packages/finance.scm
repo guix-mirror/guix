@@ -590,13 +590,13 @@ Monero GUI client.")
     (version "0.9.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/romanz/trezor-agent/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/romanz/trezor-agent.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0h8jb147vpjk7mqbl4za0xdh7lblhx07n9dfk80kn2plwnvrry1x"))))
+        (base32 "15aaqk79d9y9nbsfznf2iscz12z5ispcj8kr8v5bc0sqqj2brs12"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -604,7 +604,7 @@ Monero GUI client.")
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key outputs inputs #:allow-other-keys)
-             ;; Make installed package available for running the tests
+             ;; Make installed package available for running the tests.
              (add-installed-pythonpath inputs outputs)
              (invoke "py.test"))))))
     (propagated-inputs
