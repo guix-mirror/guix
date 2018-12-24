@@ -252,16 +252,16 @@ in ability, and easy to use.")
     (version "0.9.13")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/stesie/geierlein"
-                           "/archive/V" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stesie/geierlein.git")
+             (commit (string-append "V" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "11jfa7mxvvf0ldhx0hsvjbx3xwvzvn2wrfjpms8c7qmrnqhwh4wp"))))
+        (base32 "00zpwr3lk2vdmd60fgdwdk0xxs52wvnm19ln2m75yfphydvkglic"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; would require npm, python and a lot more
+     `(#:tests? #f                  ; would require npm, python and a lot more
        #:phases
         (modify-phases %standard-phases
           (delete 'configure)           ; no configure script
