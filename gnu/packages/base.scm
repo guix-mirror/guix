@@ -87,14 +87,14 @@ command-line arguments, multiple languages, and so on.")
 (define-public grep
   (package
    (name "grep")
-   (version "3.1")
+   (version "3.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0zm0ywmyz9g8vn1plw14mn8kj74yipx5qsljndbyfgmvndx5qqnv"))
+              "055mqp6vrd0brkygmygb2673qwz409a7kyp1mzbfy6cn94f58q5r"))
             (patches (search-patches "grep-timing-sensitive-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))             ;some of the tests require it
@@ -102,15 +102,6 @@ command-line arguments, multiple languages, and so on.")
    (arguments
     `(#:phases
       (modify-phases %standard-phases
-        (add-before 'check 'disable-failing-tests
-          (lambda _
-            ;; These tests are expected to fail due to a glibc bug which has
-            ;; been fixed in 2.28, so they are unexpectedly passing.  They
-            ;; should be fixed for grep versions > 3.1.
-            (substitute* "tests/Makefile.in"
-              (("^[[:blank:]]+backref-alt[[:blank:]]+\\\\") "\\")
-              (("^[[:blank:]]+triple-backref[[:blank:]]+\\\\") "\\"))
-            #t))
         (add-after 'install 'fix-egrep-and-fgrep
           ;; Patch 'egrep' and 'fgrep' to execute 'grep' via its
           ;; absolute file name instead of searching for it in $PATH.
