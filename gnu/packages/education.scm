@@ -41,6 +41,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -129,6 +130,13 @@ of categories with some of the activities available in that category.
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server.
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 &"))
+             (setenv "DISPLAY" ":1")
+             #t))
          (add-after 'install 'wrap-executable
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -145,13 +153,14 @@ of categories with some of the activities available in that category.
                          '("qtdeclarative" "qtgraphicaleffects"
                            "qtmultimedia" "qtquickcontrols"))))
                #t))))
-       #:configure-flags (list "-DQML_BOX2D_MODULE=disabled")
-       #:tests? #f)) ; no test target
+       #:configure-flags (list "-DQML_BOX2D_MODULE=disabled"
+                               "-DBUILD_TESTING=TRUE")))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("gettext" ,gettext-minimal)
        ("perl" ,perl)
-       ("qttools" ,qttools)))
+       ("qttools" ,qttools)
+       ("xorg-server" ,xorg-server)))
     (inputs
      `(("python-2" ,python-2)
        ("qtbase" ,qtbase)
