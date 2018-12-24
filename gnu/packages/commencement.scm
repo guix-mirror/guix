@@ -126,7 +126,8 @@
 
 (define file-boot0
   (package-with-bootstrap-guile
-   (package-with-explicit-inputs (package/inherit file
+   (package-with-explicit-inputs (package
+                                   (inherit file)
                                    (name "file-boot0"))
                                  `(("make" ,gnu-make-boot0)
                                    ,@%bootstrap-inputs)
