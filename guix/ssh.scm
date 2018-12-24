@@ -27,8 +27,6 @@
   #:use-module (ssh channel)
   #:use-module (ssh popen)
   #:use-module (ssh session)
-  #:use-module (ssh dist)
-  #:use-module (ssh dist node)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -101,6 +99,20 @@ Throw an error on failure."
   (let ((pipe (open-remote-pipe* session OPEN_BOTH
                                  "guix" "repl" "-t" "machine")))
     (port->inferior pipe)))
+
+(define (inferior-remote-eval exp session)
+  "Evaluate EXP in a new inferior running in SESSION, and close the inferior
+right away."
+  (let ((inferior (remote-inferior session)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (inferior-eval exp inferior))
+      (lambda ()
+        ;; Close INFERIOR right away to prevent finalization from happening in
+        ;; another thread at the wrong time (see
+        ;; <https://bugs.gnu.org/26976>.)
+        (close-inferior inferior)))))
 
 (define* (remote-daemon-channel session
                                 #:optional
@@ -277,15 +289,15 @@ Return the list of store items actually sent."
   ;; Compute the subset of FILES missing on SESSION and send them.
   (let* ((files   (if recursive? (requisites local files) files))
          (session (channel-get-session (nix-server-socket remote)))
-         (node    (make-node session))
-         (missing (node-eval node
-                             `(begin
-                                (use-modules (guix)
-                                             (srfi srfi-1) (srfi srfi-26))
+         (missing (inferior-remote-eval
+                   `(begin
+                      (use-modules (guix)
+                                   (srfi srfi-1) (srfi srfi-26))
 
-                                (with-store store
-                                  (remove (cut valid-path? store <>)
-                                          ',files)))))
+                      (with-store store
+                        (remove (cut valid-path? store <>)
+                                ',files)))
+                   session))
          (count   (length missing))
          (sizes   (map (lambda (item)
                          (path-info-nar-size (query-path-info local item)))

@@ -1051,13 +1051,11 @@ name, and they will be scheduled on matching build machines.
 @end table
 @end deftp
 
-The @code{guile} command must be in the search path on the build
-machines.  In addition, the Guix modules must be in
-@code{$GUILE_LOAD_PATH} on the build machine---you can check whether
-this is the case by running:
+The @command{guix} command must be in the search path on the build
+machines.  You can check whether this is the case by running:
 
 @example
-ssh build-machine guile -c "'(use-modules (guix config))'"
+ssh build-machine guix repl --version
 @end example
 
 There is one last thing to do once @file{machines.scm} is in place.  As
