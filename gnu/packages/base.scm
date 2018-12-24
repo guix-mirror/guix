@@ -128,28 +128,16 @@ including, for example, recursive directory searching.")
 (define-public sed
   (package
    (name "sed")
-   (version "4.5")
+   (version "4.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sed/sed-" version
                                 ".tar.xz"))
             (sha256
              (base32
-              "0h3b2jfj57wmz680vkbyavlsrkak556qhvs7m7fdlawwhg477bbs"))))
+              "0smxcx66vx29djzb542nxcynl7qnzxqa5032ibazi7x2s267d198"))))
    (build-system gnu-build-system)
    (synopsis "Stream editor")
-   (arguments
-    `(#:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'dont-rebuild-sed.1
-          (lambda _
-            ;; Make sure we do not attempt to rebuild 'doc/sed.1', which does
-            ;; not work when cross-compiling because we cannot run 'sed'.
-            ;; This is fixed upstream as commit a0a25e3.
-            (substitute* "Makefile.in"
-              (("^doc/sed\\.1:.*")
-               "doc/sed.1:\n"))
-            #t)))))
    (native-inputs
     `(("perl" ,perl)))                            ;for tests
    (description
