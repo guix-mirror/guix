@@ -7588,8 +7588,8 @@ List all the packages which one or more packages depend upon.
 
 @example
 $ guix refresh --list-transitive flex
-flex@2.6.4 depends on the following 25 packages: perl@5.28.0 help2man@1.47.6
-bison@3.0.5 indent@2.2.10 tar@1.30 gzip@1.9 bzip2@1.0.6 xz@5.2.4 file@5.33 @dote{}
+flex@@2.6.4 depends on the following 25 packages: perl@@5.28.0 help2man@@1.47.6
+bison@@3.0.5 indent@@2.2.10 tar@@1.30 gzip@@1.9 bzip2@@1.0.6 xz@@5.2.4 file@@5.33 @dots{}
 @end example
 
 @end table
