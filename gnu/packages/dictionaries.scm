@@ -250,18 +250,24 @@ and a Python library.")
     (version "0.9.6.8")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/soimort/" name "/archive/v"
-                            version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url"https://github.com/soimort/translate-shell.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "17yc2kwk8957wwxyih0jmsai720ai2yqyvmrqrglcncqg6zdbz9w"))
-        (file-name (string-append name "-" version ".tar.gz"))))
+          "17fc5nlc594lvmihx39h4ddmi8ja3qqsyswzxadbaz7l3zm356b8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure phase
+         (add-after 'unpack 'remove-unnecessary-file
+           ;; This file gets generated during the build phase.
+           (lambda _
+             (delete-file "translate")
+             #t))
          (add-after 'install 'emacs-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
