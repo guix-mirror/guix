@@ -12888,3 +12888,27 @@ too ambiguous and navigation in the result buffer.")
       (description "This package provides an Emacs major mode for editing
 Dedukti files.")
       (license license:cecill-b))))
+
+(define-public emacs-flycheck-dedukti
+  (let ((commit "3dbff5646355f39d57a3ec514f560a6b0082a1cd"))
+    (package
+      (name "emacs-flycheck-dedukti")
+      (version (git-version "0" "0" commit))
+      (home-page "https://github.com/rafoo/flycheck-dedukti")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1ffpxnwl3wx244n44mbw81g00nhnykd0lnid29f4aw1av7w6nw8l"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("dedukti-mode" ,emacs-dedukti-mode)
+         ("flycheck-mode" ,emacs-flycheck)))
+      (synopsis "Flycheck integration for the dedukti language")
+      (description "This package provides a frontend for Flycheck to perform
+syntax checking on dedukti files.")
+      (license license:cecill-b))))
