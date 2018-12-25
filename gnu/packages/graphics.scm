@@ -76,17 +76,20 @@
   #:use-module (guix utils))
 
 (define-public blender
+  (let ((revision "0")
+        (commit "3c3d80ea22af15e13237f978181a881b90c41e7c"))
   (package
     (name "blender")
-    (version "2.79b")
+    (version (git-version "2.80-beta" revision commit))
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://download.blender.org/source/"
-                                  "blender-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://git.blender.org/blender.git")
+                     (commit commit)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1g4kcdqmf67srzhi3hkdnr4z1ph4h9sza1pahz38mrj998q4r52c"))
-              (patches (search-patches "blender-newer-ffmpeg.patch"))))
+                "1hhn8pf3a5556mxyrb2ggsiy6q0h75hnkdpcgq9b6vg284jl2l4q"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -98,29 +101,30 @@
                "-DWITH_CYCLES=ON"
                "-DWITH_DOC_MANPAGE=ON"
                "-DWITH_FFTW3=ON"
-               "-DWITH_GAMEENGINE=ON"
                "-DWITH_IMAGE_OPENJPEG=ON"
                "-DWITH_INPUT_NDOF=ON"
                "-DWITH_INSTALL_PORTABLE=OFF"
                "-DWITH_JACK=ON"
                "-DWITH_MOD_OCEANSIM=ON"
-               "-DWITH_PLAYER=ON"
                "-DWITH_PYTHON_INSTALL=OFF"
-               "-DWITH_PYTHON_INSTALL=OFF"
-               "-DWITH_SYSTEM_OPENJPEG=ON"
                (string-append "-DPYTHON_LIBRARY=python" ,python-version "m")
                (string-append "-DPYTHON_LIBPATH=" (assoc-ref %build-inputs "python")
                               "/lib")
                (string-append "-DPYTHON_INCLUDE_DIR=" (assoc-ref %build-inputs "python")
                               "/include/python" ,python-version "m")
-               (string-append "-DPYTHON_VERSION=" ,python-version))
+               (string-append "-DPYTHON_VERSION=" ,python-version)
+               (string-append "-DPYTHON_NUMPY_PATH="
+                              (assoc-ref %build-inputs "python-numpy")
+                              "/lib/python" ,python-version "/site-packages/"))
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'fix-broken-import
-             (lambda _
-               (substitute* "release/scripts/addons/io_scene_fbx/json2fbx.py"
-                 (("import encode_bin") "from . import encode_bin"))
-               #t))
+           ;; XXX This file doesn't exist in the Git sources but will probably
+           ;; exist in the eventual 2.80 source tarball.
+;           (add-after 'unpack 'fix-broken-import
+;             (lambda _
+;               (substitute* "release/scripts/addons/io_scene_fbx/json2fbx.py"
+;                 (("import encode_bin") "from . import encode_bin"))
+;               #t))
            (add-after 'set-paths 'add-ilmbase-include-path
              (lambda* (#:key inputs #:allow-other-keys)
                ;; OpenEXR propagates ilmbase, but its include files do not appear
@@ -138,7 +142,7 @@
        ("openimageio" ,openimageio)
        ("openexr" ,openexr)
        ("ilmbase" ,ilmbase)
-       ("openjpeg" ,openjpeg-1)
+       ("openjpeg" ,openjpeg)
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
@@ -150,6 +154,7 @@
        ("glew" ,glew)
        ("openal" ,openal)
        ("python" ,python)
+       ("python-numpy" ,python-numpy)
        ("zlib" ,zlib)))
     (home-page "https://blender.org/")
     (synopsis "3D graphics creation suite")
@@ -157,8 +162,11 @@
      "Blender is a 3D graphics creation suite.  It supports the entirety of
 the 3D pipeline—modeling, rigging, animation, simulation, rendering,
 compositing and motion tracking, even video editing and game creation.  The
-application can be customized via its API for Python scripting.")
-    (license license:gpl2+)))
+application can be customized via its API for Python scripting.
+
+WARNING: This package offers a beta build of Blender, because the stable release
+no longer works in Guix. See @uref{https://issues.guix.info/issue/33882}.")
+    (license license:gpl2+))))
 
 (define-public assimp
   (package
