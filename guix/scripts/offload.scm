@@ -624,35 +624,30 @@ If TIMEOUT is #f, simply evaluate EXP..."
            name (node-guile-version node)))))
 
 (define (assert-node-has-guix node name)
-  "Bail out if NODE lacks the (guix) module, or if its daemon is not running."
-  (catch 'node-repl-error
-    (lambda ()
-      (match (inferior-eval '(begin
-                               (use-modules (guix))
-                               (and add-text-to-store 'alright))
-                            node)
-        ('alright #t)
-        (_ (report-module-error name))))
-    (lambda (key . args)
-      (report-module-error name)))
+  "Bail out if NODE if #f or if we fail to use the (guix) module, or if its
+daemon is not running."
+  (unless (inferior? node)
+    (leave (G_ "failed to run 'guix repl' on '~a'~%") name))
 
-  (catch 'node-repl-error
-    (lambda ()
-      (match (inferior-eval '(begin
-                               (use-modules (guix))
-                               (with-store store
-                                 (add-text-to-store store "test"
-                                                    "Hello, build machine!")))
-                            node)
-        ((? string? str)
-         (info (G_ "Guix is usable on '~a' (test returned ~s)~%")
-               name str))
-        (x
-         (leave (G_ "failed to talk to guix-daemon on '~a' (test returned ~s)~%")
-                name x))))
-    (lambda (key . args)
-      (leave (G_ "remote evaluation on '~a' failed:~{ ~s~}~%")
-             name args))))
+  (match (inferior-eval '(begin
+                           (use-modules (guix))
+                           (and add-text-to-store 'alright))
+                        node)
+    ('alright #t)
+    (_ (report-module-error name)))
+
+  (match (inferior-eval '(begin
+                           (use-modules (guix))
+                           (with-store store
+                             (add-text-to-store store "test"
+                                                "Hello, build machine!")))
+                        node)
+    ((? string? str)
+     (info (G_ "Guix is usable on '~a' (test returned ~s)~%")
+           name str))
+    (x
+     (leave (G_ "failed to talk to guix-daemon on '~a' (test returned ~s)~%")
+            name x))))
 
 (define %random-state
   (delay
@@ -706,8 +701,8 @@ machine."
            (sockets  (map build-machine-daemon-socket machines))
            (sessions (map open-ssh-session machines))
            (nodes    (map remote-inferior sessions)))
-      (for-each assert-node-repl nodes names)
       (for-each assert-node-has-guix nodes names)
+      (for-each assert-node-repl nodes names)
       (for-each assert-node-can-import sessions nodes names sockets)
       (for-each assert-node-can-export sessions nodes names sockets)
       (for-each close-inferior nodes)
@@ -727,21 +722,28 @@ machine."
     (info (G_ "getting status of ~a build machines defined in '~a'...~%")
           (length machines) machine-file)
     (for-each (lambda (machine)
-                (let* ((session (open-ssh-session machine))
-                       (inferior (remote-inferior session))
-                       (uts     (inferior-eval '(uname) inferior))
-                       (load    (node-load inferior))
-                       (free    (node-free-disk-space inferior)))
-                  (close-inferior inferior)
-                  (disconnect! session)
-                  (format #t "~a~%  kernel: ~a ~a~%  architecture: ~a~%\
+                (define session
+                  (open-ssh-session machine))
+
+                (match (remote-inferior session)
+                  (#f
+                   (warning (G_ "failed to run 'guix repl' on machine '~a'~%")
+                            (build-machine-name machine)))
+                  ((? inferior? inferior)
+                   (let ((uts  (inferior-eval '(uname) inferior))
+                         (load (node-load inferior))
+                         (free (node-free-disk-space inferior)))
+                     (close-inferior inferior)
+                     (format #t "~a~%  kernel: ~a ~a~%  architecture: ~a~%\
   host name: ~a~%  normalized load: ~a~%  free disk space: ~,2f MiB~%"
-                          (build-machine-name machine)
-                          (utsname:sysname uts) (utsname:release uts)
-                          (utsname:machine uts)
-                          (utsname:nodename uts)
-                          (normalized-load machine load)
-                          (/ free (expt 2 20) 1.))))
+                             (build-machine-name machine)
+                             (utsname:sysname uts) (utsname:release uts)
+                             (utsname:machine uts)
+                             (utsname:nodename uts)
+                             (normalized-load machine load)
+                             (/ free (expt 2 20) 1.)))))
+
+                (disconnect! session))
               machines)))
 
 
