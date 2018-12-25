@@ -97,10 +97,10 @@ of programming tools as well as libraries with equivalent functionality.")
 
 ;; TODO: Build Mesa with LLVM 7 in the next staging cycle.
 ;; TODO: Make LLVM 7 the default LLVM once Clang is also upgraded.
-(define-public llvm-7.0.0
+(define-public llvm-7.0.1
   (package (inherit llvm)
     (name "llvm")
-    (version "7.0.0")
+    (version "7.0.1")
     (source
      (origin
       (method url-fetch)
@@ -108,7 +108,7 @@ of programming tools as well as libraries with equivalent functionality.")
                           version "/llvm-" version ".src.tar.xz"))
       (sha256
        (base32
-        "08p27wv1pr9ql2zc3f3qkkymci46q7myvh8r5ijippnbwr2gihcb"))))))
+        "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3"))))))
 
 ;; FIXME: This package is here to prevent many rebuilds on x86_64 and i686
 ;; from commit fc9dbf41311d99d0fd8befc789ea7c0e35911890.  Update users of
