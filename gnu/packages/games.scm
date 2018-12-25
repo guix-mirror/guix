@@ -2053,6 +2053,13 @@ This game is based on the GPL version of the famous game TuxRacer.")
              "-DCMAKE_C_FLAGS=-fpermissive")
        #:phases
        (modify-phases %standard-phases
+         ;; see https://github.com/supertuxkart/stk-code/issues/3557
+         (add-after 'unpack 'patch-for-mesa-18.3
+           (lambda _
+             (substitute* "src/graphics/gl_headers.hpp"
+               (("#if !defined\\(USE_GLES2\\)")
+                "#if !defined(USE_GLES2)\n#   define __gl_glext_h_"))
+             #t))
          (add-after 'unpack 'unbundle
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "CMakeLists.txt"
