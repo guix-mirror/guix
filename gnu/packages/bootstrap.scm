@@ -659,6 +659,7 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
     (synopsis "Bootstrap binaries of MesCC Tools")
     (description synopsis)
     (home-page #f)
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (license gpl3+)))
 
 (define %bootstrap-mes
@@ -702,10 +703,9 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                         "mes-minimal-stripped-0.19-i686-linux.tar.xz")
                   %bootstrap-base-urls))
             (sha256
-             (match (%current-system)
-               ((or "i686-linux" "x86_64-linux")
-                (base32
-                 "0k7kkl68a6xaadv47ij0nr9jm5ca1ffj38n7f2lg80y72wdkwr9h")))))))))
+             (base32
+              "0k7kkl68a6xaadv47ij0nr9jm5ca1ffj38n7f2lg80y72wdkwr9h")))))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (synopsis "Bootstrap binaries of Mes")
     (description synopsis)
     (home-page #f)
