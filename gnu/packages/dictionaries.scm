@@ -268,6 +268,20 @@ and a Python library.")
            (lambda _
              (delete-file "translate")
              #t))
+         (add-after 'install 'wrap-binary
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (bin     (string-append out "/bin/trans"))
+                    (curl    (assoc-ref inputs "curl"))
+                    (fribidi (assoc-ref inputs "fribidi"))
+                    (rlwrap  (assoc-ref inputs "rlwrap")))
+               (wrap-program bin
+                             `("PATH" ":" prefix
+                               (,(string-append out "/bin:"
+                                                curl "/bin:"
+                                                fribidi "/bin:"
+                                                rlwrap "/bin")))))
+             #t))
          (add-after 'install 'emacs-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
@@ -283,7 +297,7 @@ and a Python library.")
                   (guix build emacs-utils)
                   (guix build utils))
        #:test-target "test"))
-    (propagated-inputs
+    (inputs
      `(("curl" ,curl)
        ("fribidi" ,fribidi)
        ("rlwrap" ,rlwrap)))
