@@ -247,7 +247,7 @@ and a Python library.")
 (define-public translate-shell
   (package
     (name "translate-shell")
-    (version "0.9.6.8")
+    (version "0.9.6.9")
     (source
       (origin
         (method git-fetch)
@@ -257,7 +257,7 @@ and a Python library.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "17fc5nlc594lvmihx39h4ddmi8ja3qqsyswzxadbaz7l3zm356b8"))))
+          "1xyf0vdxmbgqcgsr1gvgwh1q4fh080h68radkim6pfcwzffliszm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
