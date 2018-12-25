@@ -1435,6 +1435,18 @@ environment set through Direnv.")
         (base32
          "1qa7lcrcmf76sf6dy8sxbg4adq7rg59fm0n5848w3qxgsr0h45fg"))))
     (build-system emacs-build-system)
+    (inputs
+     `(("global" ,global)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (chmod "ggtags.el" #o644)
+             (emacs-substitute-variables "ggtags.el"
+               ("ggtags-executable-directory"
+                (string-append (assoc-ref inputs "global") "/bin")))
+             #t)))))
     (home-page "https://github.com/leoliu/ggtags")
     (synopsis "Frontend to the GNU Global source code tagging system")
     (description "@code{ggtags} provides a frontend to the GNU Global source
