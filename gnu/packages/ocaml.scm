@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
+;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4988,4 +4989,58 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
     (description "Interval provides vernacular files containing tactics for
 simplifying the proofs of inequalities on expressions of real numbers for the
 Coq proof assistant.")
+    (license license:cecill-c)))
+
+(define-public dedukti
+  (package
+    (name "dedukti")
+    (version "2.6.0")
+    (home-page "https://deducteam.github.io/")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/deducteam/dedukti.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0frl3diff033i4fmq304b8wbsdnc9mvlhmwd7a3zd699ng2lzbxb"))))
+    (inputs
+     `(("menhir" ,ocaml-menhir)))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "make")
+	     #t))
+         (replace 'check
+           (lambda _
+             (invoke "make" "tests")
+	     #t))
+         (add-before 'install 'set-binpath
+           ;; Change binary path in the makefile
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (substitute* "GNUmakefile"
+                 (("BINDIR = (.*)$")
+                  (string-append "BINDIR = " out "/bin"))))
+	     #t))
+	 (replace 'install
+	   (lambda _
+	     (invoke "make" "install")
+	     #t)))))
+    (synopsis "Proof-checker for the λΠ-calculus modulo theory, an extension of
+the λ-calculus")
+    (description "Dedukti is a proof-checker for the λΠ-calculus modulo
+theory.  The λΠ-calculus is an extension of the simply typed λ-calculus with
+dependent types.  The λΠ-calculus modulo theory is itself an extension of the
+λΠ-calculus where the context contains variable declaration as well as rewrite
+rules.  This system is not designed to develop proofs, but to check proofs
+developed in other systems.  In particular, it enjoys a minimalistic syntax.")
     (license license:cecill-c)))
