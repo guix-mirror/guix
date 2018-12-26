@@ -5044,3 +5044,32 @@ dependent types.  The λΠ-calculus modulo theory is itself an extension of the
 rules.  This system is not designed to develop proofs, but to check proofs
 developed in other systems.  In particular, it enjoys a minimalistic syntax.")
     (license license:cecill-c)))
+
+(define-public ocaml-biniou
+ (package
+   (name "ocaml-biniou")
+   (version "1.2.0")
+   (home-page "https://github.com/mjambon/biniou")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0mjpgwyfq2b2izjw0flmlpvdjgqpq8shs89hxj1np2r50csr8dcb"))))
+   (build-system dune-build-system)
+   (inputs
+    `(("ocaml-easy-format" ,ocaml-easy-format)))
+   (native-inputs
+    `(("which" ,which)))
+   (synopsis "Data format designed for speed, safety, ease of use and backward
+compatibility")
+   (description "Biniou (pronounced \"be new\" is a binary data format
+designed for speed, safety, ease of use and backward compatibility as
+protocols evolve.  Biniou is vastly equivalent to JSON in terms of
+functionality but allows implementations several times faster (4 times faster
+than yojson), with 25-35% space savings.")
+   (license license:bsd-3)))
