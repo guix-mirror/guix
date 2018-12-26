@@ -260,13 +260,6 @@ instead of '~a' of type '~a'~%")
       (lambda ()
         (unlock-file port)))))
 
-(define-syntax-rule (with-machine-lock machine hint exp ...)
-  "Wait to acquire MACHINE's exclusive lock for HINT, and evaluate EXP in that
-context."
-  (with-file-lock (machine-lock-file machine hint)
-    exp ...))
-
-
 (define (machine-slot-file machine slot)
   "Return the file name of MACHINE's file for SLOT."
   ;; For each machine we have a bunch of files representing each build slot.
@@ -284,23 +277,25 @@ the slot, or #f if none is available.
 This mechanism allows us to set a hard limit on the number of simultaneous
 connections allowed to MACHINE."
   (mkdir-p (dirname (machine-slot-file machine 0)))
-  (with-machine-lock machine 'slots
-    (any (lambda (slot)
-           (let ((port (open-file (machine-slot-file machine slot)
-                                  "w0")))
-             (catch 'flock-error
-               (lambda ()
-                 (fcntl-flock port 'write-lock #:wait? #f)
-                 ;; Got it!
-                 (format (current-error-port)
-                         "process ~a acquired build slot '~a'~%"
-                         (getpid) (port-filename port))
-                 port)
-               (lambda args
-                 ;; PORT is already locked by another process.
-                 (close-port port)
-                 #f))))
-         (iota (build-machine-parallel-builds machine)))))
+
+  ;; When several 'guix offload' processes run in parallel, there's a race
+  ;; among them, but since they try the slots in the same order, we're fine.
+  (any (lambda (slot)
+         (let ((port (open-file (machine-slot-file machine slot)
+                                "w0")))
+           (catch 'flock-error
+             (lambda ()
+               (fcntl-flock port 'write-lock #:wait? #f)
+               ;; Got it!
+               (format (current-error-port)
+                       "process ~a acquired build slot '~a'~%"
+                       (getpid) (port-filename port))
+               port)
+             (lambda args
+               ;; PORT is already locked by another process.
+               (close-port port)
+               #f))))
+       (iota (build-machine-parallel-builds machine))))
 
 (define (release-build-slot slot)
   "Release SLOT, a build slot as returned as by 'acquire-build-slot'."
@@ -446,12 +441,6 @@ of free disk space on '~a'~%")
                 (build-machine-name machine) load normalized)
         normalized)
       load))
-
-(define (machine-lock-file machine hint)
-  "Return the name of MACHINE's lock file for HINT."
-  (string-append %state-directory "/offload/"
-                 (build-machine-name machine)
-                 "." (symbol->string hint) ".lock"))
 
 (define (random-seed)
   (logxor (getpid) (car (gettimeofday))))
@@ -827,7 +816,6 @@ This tool is meant to be used internally by 'guix-daemon'.\n"))
      (leave (G_ "invalid arguments: ~{~s ~}~%") x))))
 
 ;;; Local Variables:
-;;; eval: (put 'with-machine-lock 'scheme-indent-function 2)
 ;;; eval: (put 'with-file-lock 'scheme-indent-function 1)
 ;;; eval: (put 'with-error-to-port 'scheme-indent-function 1)
 ;;; eval: (put 'with-timeout 'scheme-indent-function 2)
