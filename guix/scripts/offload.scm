@@ -453,10 +453,6 @@ of free disk space on '~a'~%")
                  (build-machine-name machine)
                  "." (symbol->string hint) ".lock"))
 
-(define (machine-choice-lock-file)
-  "Return the name of the file used as a lock when choosing a build machine."
-  (string-append %state-directory "/offload/machine-choice.lock"))
-
 (define (random-seed)
   (logxor (getpid) (car (gettimeofday))))
 
@@ -479,67 +475,64 @@ of free disk space on '~a'~%")
 slot (which must later be released with 'release-build-slot'), or #f and #f."
 
   ;; Proceed like this:
-  ;;   1. Acquire the global machine-choice lock.
-  ;;   2. For all MACHINES, attempt to acquire a build slot, and filter out
+  ;;   1. For all MACHINES, attempt to acquire a build slot, and filter out
   ;;      those machines for which we failed.
-  ;;   3. Choose the best machine among those that are left.
-  ;;   4. Release the previously-acquired build slots of the other machines.
-  ;;   5. Release the global machine-choice lock.
+  ;;   2. Choose the best machine among those that are left.
+  ;;   3. Release the previously-acquired build slots of the other machines.
 
-  (with-file-lock (machine-choice-lock-file)
-    (define machines+slots
-      (filter-map (lambda (machine)
-                    (let ((slot (acquire-build-slot machine)))
-                      (and slot (list machine slot))))
-                  (shuffle machines)))
+  (define machines+slots
+    (filter-map (lambda (machine)
+                  (let ((slot (acquire-build-slot machine)))
+                    (and slot (list machine slot))))
+                (shuffle machines)))
 
-    (define (undecorate pred)
-      (lambda (a b)
-        (match a
-          ((machine1 slot1)
-           (match b
-             ((machine2 slot2)
-              (pred machine1 machine2)))))))
+  (define (undecorate pred)
+    (lambda (a b)
+      (match a
+        ((machine1 slot1)
+         (match b
+           ((machine2 slot2)
+            (pred machine1 machine2)))))))
 
-    (define (machine-faster? m1 m2)
-      ;; Return #t if M1 is faster than M2.
-      (> (build-machine-speed m1)
-         (build-machine-speed m2)))
+  (define (machine-faster? m1 m2)
+    ;; Return #t if M1 is faster than M2.
+    (> (build-machine-speed m1)
+       (build-machine-speed m2)))
 
-    (let loop ((machines+slots
-                (sort machines+slots (undecorate machine-faster?))))
-      (match machines+slots
-        (((best slot) others ...)
-         ;; Return the best machine unless it's already overloaded.
-         ;; Note: We call 'node-load' only as a last resort because it is
-         ;; too costly to call it once for every machine.
-         (let* ((session (false-if-exception (open-ssh-session best)))
-                (node    (and session (remote-inferior session)))
-                (load    (and node (normalized-load best (node-load node))))
-                (space   (and node (node-free-disk-space node))))
-           (when node (close-inferior node))
-           (when session (disconnect! session))
-           (if (and node (< load 2.) (>= space %minimum-disk-space))
-               (match others
-                 (((machines slots) ...)
-                  ;; Release slots from the uninteresting machines.
-                  (for-each release-build-slot slots)
+  (let loop ((machines+slots
+              (sort machines+slots (undecorate machine-faster?))))
+    (match machines+slots
+      (((best slot) others ...)
+       ;; Return the best machine unless it's already overloaded.
+       ;; Note: We call 'node-load' only as a last resort because it is
+       ;; too costly to call it once for every machine.
+       (let* ((session (false-if-exception (open-ssh-session best)))
+              (node    (and session (remote-inferior session)))
+              (load    (and node (normalized-load best (node-load node))))
+              (space   (and node (node-free-disk-space node))))
+         (when node (close-inferior node))
+         (when session (disconnect! session))
+         (if (and node (< load 2.) (>= space %minimum-disk-space))
+             (match others
+               (((machines slots) ...)
+                ;; Release slots from the uninteresting machines.
+                (for-each release-build-slot slots)
 
-                  ;; The caller must keep SLOT to protect it from GC and to
-                  ;; eventually release it.
-                  (values best slot)))
-               (begin
-                 ;; BEST is unsuitable, so try the next one.
-                 (when (and space (< space %minimum-disk-space))
-                   (format (current-error-port)
-                           "skipping machine '~a' because it is low \
+                ;; The caller must keep SLOT to protect it from GC and to
+                ;; eventually release it.
+                (values best slot)))
+             (begin
+               ;; BEST is unsuitable, so try the next one.
+               (when (and space (< space %minimum-disk-space))
+                 (format (current-error-port)
+                         "skipping machine '~a' because it is low \
 on disk space (~,2f MiB free)~%"
-                           (build-machine-name best)
-                           (/ space (expt 2 20) 1.)))
-                 (release-build-slot slot)
-                 (loop others)))))
-        (()
-         (values #f #f))))))
+                         (build-machine-name best)
+                         (/ space (expt 2 20) 1.)))
+               (release-build-slot slot)
+               (loop others)))))
+      (()
+       (values #f #f)))))
 
 (define (call-with-timeout timeout drv thunk)
   "Call THUNK and leave after TIMEOUT seconds.  If TIMEOUT is #f, simply call
