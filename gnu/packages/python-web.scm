@@ -509,27 +509,28 @@ is Python’s.")
 (define-public python-openid
   (package
     (name "python-openid")
-    (version "3.0.10")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python3-openid" version))
        (sha256
         (base32
-         "1x3nh3fycqfn43jp5j5pb4q4y2jxp4mdka4absaa3bc0078qd758"))))
+         "00l5hrjh19740w00b3fnsqldnla41wbr2rics09dl4kyd1fkd3b2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
         (replace 'check
           (lambda _
-            (invoke "./admin/runtests")
-            #t)))))
+            (invoke "coverage" "run" "-m"
+                    "unittest" "openid.test.test_suite"))))))
     (properties `((python2-variant . ,(delay python2-openid))))
     (propagated-inputs
      `(("python-defusedxml" ,python-defusedxml)))
     (native-inputs
-     `(("python-psycopg2" ,python-psycopg2)
+     `(("python-coverage" ,python-coverage)
+       ("python-psycopg2" ,python-psycopg2)
        ("python-django" ,python-django)))
     (home-page "https://github.com/necaris/python3-openid")
     (synopsis "OpenID support for servers and consumers")
