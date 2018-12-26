@@ -1051,13 +1051,11 @@ name, and they will be scheduled on matching build machines.
 @end table
 @end deftp
 
-The @code{guile} command must be in the search path on the build
-machines.  In addition, the Guix modules must be in
-@code{$GUILE_LOAD_PATH} on the build machine---you can check whether
-this is the case by running:
+The @command{guix} command must be in the search path on the build
+machines.  You can check whether this is the case by running:
 
 @example
-ssh build-machine guile -c "'(use-modules (guix config))'"
+ssh build-machine guix repl --version
 @end example
 
 There is one last thing to do once @file{machines.scm} is in place.  As
@@ -7392,6 +7390,22 @@ are many packages, though, for which it lacks a method to determine
 whether a new upstream release is available.  However, the mechanism is
 extensible, so feel free to get in touch with us to add a new method!
 
+@table @code
+
+@item --recursive
+Consider the packages specified, and all the packages upon which they depend.
+
+@example
+$ guix refresh --recursive coreutils
+gnu/packages/acl.scm:35:2: warning: no updater for acl
+gnu/packages/m4.scm:30:12: info: 1.4.18 is already the latest version of m4
+gnu/packages/xml.scm:68:2: warning: no updater for expat
+gnu/packages/multiprecision.scm:40:12: info: 6.1.2 is already the latest version of gmp
+@dots{}
+@end example
+
+@end table
+
 Sometimes the upstream name differs from the package name used in Guix,
 and @command{guix refresh} needs a little help.  Most updaters honor the
 @code{upstream-name} property in package definitions, which can be used
@@ -7565,6 +7579,22 @@ hop@@2.4.0 geiser@@0.4 notmuch@@0.18 mu@@0.9.9.5 cflow@@1.4 idutils@@4.6 @dots{}
 The command above lists a set of packages that could be built to check
 for compatibility with an upgraded @code{flex} package.
 
+@table @code
+
+@item --list-transitive
+List all the packages which one or more packages depend upon.
+
+@example
+$ guix refresh --list-transitive flex
+flex@@2.6.4 depends on the following 25 packages: perl@@5.28.0 help2man@@1.47.6
+bison@@3.0.5 indent@@2.2.10 tar@@1.30 gzip@@1.9 bzip2@@1.0.6 xz@@5.2.4 file@@5.33 @dots{}
+@end example
+
+@end table
+
+The command above lists a set of packages which, when changed, would cause
+@code{flex} to be rebuilt.
+
 The following options can be used to customize GnuPG operation:
 
 @table @code
@@ -7660,12 +7690,14 @@ Identify inputs that should most likely be native inputs.
 @item source
 @itemx home-page
 @itemx mirror-url
+@itemx github-url
 @itemx source-file-name
 Probe @code{home-page} and @code{source} URLs and report those that are
-invalid.  Suggest a @code{mirror://} URL when applicable.  Check that
-the source file name is meaningful, e.g.@: is not
-just a version number or ``git-checkout'', without a declared
-@code{file-name} (@pxref{origin Reference}).
+invalid.  Suggest a @code{mirror://} URL when applicable.  If the
+@code{source} URL redirects to a GitHub URL, recommend usage of the GitHub
+URL.  Check that the source file name is meaningful, e.g.@: is not just a
+version number or ``git-checkout'', without a declared @code{file-name}
+(@pxref{origin Reference}).
 
 @item cve
 @cindex security vulnerabilities
@@ -16332,6 +16364,37 @@ Configuration snippet added as-is to the BitlBee configuration file.
 @end table
 @end deftp
 
+@subsubheading Quassel Service
+
+@cindex IRC (Internet Relay Chat)
+@url{https://quassel-irc.org/,Quassel} is a distributed IRC client,
+meaning that one or more clients can attach to and detach from the
+central core.
+
+@defvr {Scheme Variable} quassel-service-type
+This is the service type for the @url{https://quassel-irc.org/,Quassel}
+IRC backend daemon.  Its value is a @code{quassel-configuration}
+(see below).
+@end defvr
+
+@deftp {Data Type} quassel-configuration
+This is the configuration for Quassel, with the following fields:
+
+@table @asis
+@item @code{quassel} (default: @code{quassel})
+The Quassel package to use.
+
+@item @code{interface} (default: @code{"::,0.0.0.0"})
+@item @code{port} (default: @code{4242})
+Listen on the network interface(s) corresponding to the IPv4 or IPv6
+interfaces specified in the comma delimited @var{interface}, on
+@var{port}.
+
+@item @code{loglevel} (default: @code{"Info"})
+The level of logging desired.  Accepted values are Debug, Info, Warning
+and Error.
+@end table
+@end deftp
 
 @node Telephony Services
 @subsubsection Telephony Services

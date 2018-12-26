@@ -12637,14 +12637,14 @@ validating Swagger API specifications.")
 (define-public python-apache-libcloud
   (package
     (name "python-apache-libcloud")
-    (version "2.3.0")
+    (version "2.4.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "apache-libcloud" version))
         (sha256
-          (base32
-            "15xg79ad4g2xrk081ylvj41k5hmg9hl1xvbmb5hd0fqn08wfwbhf"))))
+         (base32
+          "0daj3mkzw79v5zin2r1s2wkrz1hplfc16bwj4ss68i5qjq4l2p0j"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

@@ -247,21 +247,41 @@ and a Python library.")
 (define-public translate-shell
   (package
     (name "translate-shell")
-    (version "0.9.6.8")
+    (version "0.9.6.9")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/soimort/" name "/archive/v"
-                            version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url"https://github.com/soimort/translate-shell.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "17yc2kwk8957wwxyih0jmsai720ai2yqyvmrqrglcncqg6zdbz9w"))
-        (file-name (string-append name "-" version ".tar.gz"))))
+          "1xyf0vdxmbgqcgsr1gvgwh1q4fh080h68radkim6pfcwzffliszm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure phase
+         (add-after 'unpack 'remove-unnecessary-file
+           ;; This file gets generated during the build phase.
+           (lambda _
+             (delete-file "translate")
+             #t))
+         (add-after 'install 'wrap-binary
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (bin     (string-append out "/bin/trans"))
+                    (curl    (assoc-ref inputs "curl"))
+                    (fribidi (assoc-ref inputs "fribidi"))
+                    (rlwrap  (assoc-ref inputs "rlwrap")))
+               (wrap-program bin
+                             `("PATH" ":" prefix
+                               (,(string-append out "/bin:"
+                                                curl "/bin:"
+                                                fribidi "/bin:"
+                                                rlwrap "/bin")))))
+             #t))
          (add-after 'install 'emacs-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
@@ -277,7 +297,7 @@ and a Python library.")
                   (guix build emacs-utils)
                   (guix build utils))
        #:test-target "test"))
-    (propagated-inputs
+    (inputs
      `(("curl" ,curl)
        ("fribidi" ,fribidi)
        ("rlwrap" ,rlwrap)))

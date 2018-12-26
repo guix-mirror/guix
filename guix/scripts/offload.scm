@@ -23,13 +23,12 @@
   #:use-module (ssh session)
   #:use-module (ssh channel)
   #:use-module (ssh popen)
-  #:use-module (ssh dist)
-  #:use-module (ssh dist node)
   #:use-module (ssh version)
   #:use-module (guix config)
   #:use-module (guix records)
   #:use-module (guix ssh)
   #:use-module (guix store)
+  #:use-module (guix inferior)
   #:use-module (guix derivations)
   #:use-module ((guix serialization)
                 #:select (nar-error? nar-error-file))
@@ -321,12 +320,15 @@ hook."
     (set-port-revealed! port 1)
     port))
 
+(define (node-guile-version node)
+  (inferior-eval '(version) node))
+
 (define (node-free-disk-space node)
   "Return the free disk space, in bytes, in NODE's store."
-  (node-eval node
-             `(begin
-                (use-modules (guix build syscalls))
-                (free-disk-space ,(%store-prefix)))))
+  (inferior-eval `(begin
+                    (use-modules (guix build syscalls))
+                    (free-disk-space ,(%store-prefix)))
+                 node))
 
 (define* (transfer-and-offload drv machine
                                #:key
@@ -367,8 +369,12 @@ MACHINE."
                      (derivation-file-name drv)
                      (build-machine-name machine)
                      (nix-protocol-error-message c))
-             (let* ((space (false-if-exception
-                            (node-free-disk-space (make-node session)))))
+             (let* ((inferior (false-if-exception (remote-inferior session)))
+                    (space (false-if-exception
+                            (node-free-disk-space inferior))))
+
+               (when inferior
+                 (close-inferior inferior))
 
                ;; Use exit code 100 for a permanent build failure.  The daemon
                ;; interprets other non-zero codes as transient build failures.
@@ -417,11 +423,11 @@ of free disk space on '~a'~%")
 
 (define (node-load node)
   "Return the load on NODE.  Return +∞ if NODE is misbehaving."
-  (let ((line (node-eval node
-                         '(begin
-                            (use-modules (ice-9 rdelim))
-                            (call-with-input-file "/proc/loadavg"
-                              read-string)))))
+  (let ((line (inferior-eval '(begin
+                                (use-modules (ice-9 rdelim))
+                                (call-with-input-file "/proc/loadavg"
+                                  read-string))
+                             node)))
     (if (eof-object? line)
         +inf.0 ;MACHINE does not respond, so assume it is infinitely loaded
         (match (string-tokenize line)
@@ -508,9 +514,10 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
          ;; Note: We call 'node-load' only as a last resort because it is
          ;; too costly to call it once for every machine.
          (let* ((session (false-if-exception (open-ssh-session best)))
-                (node    (and session (make-node session)))
+                (node    (and session (remote-inferior session)))
                 (load    (and node (normalized-load best (node-load node))))
                 (space   (and node (node-free-disk-space node))))
+           (when node (close-inferior node))
            (when session (disconnect! session))
            (if (and node (< load 2.) (>= space %minimum-disk-space))
                (match others
@@ -613,40 +620,34 @@ If TIMEOUT is #f, simply evaluate EXP..."
     (#f
      (report-guile-error name))
     ((? string? version)
-     ;; Note: The version string already contains the word "Guile".
-     (info (G_ "'~a' is running ~a~%")
+     (info (G_ "'~a' is running GNU Guile ~a~%")
            name (node-guile-version node)))))
 
 (define (assert-node-has-guix node name)
-  "Bail out if NODE lacks the (guix) module, or if its daemon is not running."
-  (catch 'node-repl-error
-    (lambda ()
-      (match (node-eval node
-                        '(begin
-                           (use-modules (guix))
-                           (and add-text-to-store 'alright)))
-        ('alright #t)
-        (_ (report-module-error name))))
-    (lambda (key . args)
-      (report-module-error name)))
+  "Bail out if NODE if #f or if we fail to use the (guix) module, or if its
+daemon is not running."
+  (unless (inferior? node)
+    (leave (G_ "failed to run 'guix repl' on '~a'~%") name))
 
-  (catch 'node-repl-error
-    (lambda ()
-      (match (node-eval node
-                        '(begin
+  (match (inferior-eval '(begin
+                           (use-modules (guix))
+                           (and add-text-to-store 'alright))
+                        node)
+    ('alright #t)
+    (_ (report-module-error name)))
+
+  (match (inferior-eval '(begin
                            (use-modules (guix))
                            (with-store store
                              (add-text-to-store store "test"
-                                                "Hello, build machine!"))))
-        ((? string? str)
-         (info (G_ "Guix is usable on '~a' (test returned ~s)~%")
-               name str))
-        (x
-         (leave (G_ "failed to talk to guix-daemon on '~a' (test returned ~s)~%")
-                name x))))
-    (lambda (key . args)
-      (leave (G_ "remote evaluation on '~a' failed:~{ ~s~}~%")
-             name args))))
+                                                "Hello, build machine!")))
+                        node)
+    ((? string? str)
+     (info (G_ "Guix is usable on '~a' (test returned ~s)~%")
+           name str))
+    (x
+     (leave (G_ "failed to talk to guix-daemon on '~a' (test returned ~s)~%")
+            name x))))
 
 (define %random-state
   (delay
@@ -656,25 +657,23 @@ If TIMEOUT is #f, simply evaluate EXP..."
   (string-append name "-"
                  (number->string (random 1000000 (force %random-state)))))
 
-(define (assert-node-can-import node name daemon-socket)
+(define (assert-node-can-import session node name daemon-socket)
   "Bail out if NODE refuses to import our archives."
-  (let ((session (node-session node)))
-    (with-store store
-      (let* ((item   (add-text-to-store store "export-test" (nonce)))
-             (remote (connect-to-remote-daemon session daemon-socket)))
-        (with-store local
-          (send-files local (list item) remote))
+  (with-store store
+    (let* ((item   (add-text-to-store store "export-test" (nonce)))
+           (remote (connect-to-remote-daemon session daemon-socket)))
+      (with-store local
+        (send-files local (list item) remote))
 
-        (if (valid-path? remote item)
-            (info (G_ "'~a' successfully imported '~a'~%")
-                  name item)
-            (leave (G_ "'~a' was not properly imported on '~a'~%")
-                   item name))))))
+      (if (valid-path? remote item)
+          (info (G_ "'~a' successfully imported '~a'~%")
+                name item)
+          (leave (G_ "'~a' was not properly imported on '~a'~%")
+                 item name)))))
 
-(define (assert-node-can-export node name daemon-socket)
+(define (assert-node-can-export session node name daemon-socket)
   "Bail out if we cannot import signed archives from NODE."
-  (let* ((session (node-session node))
-         (remote  (connect-to-remote-daemon session daemon-socket))
+  (let* ((remote  (connect-to-remote-daemon session daemon-socket))
          (item    (add-text-to-store remote "import-test" (nonce name))))
     (with-store store
       (if (and (retrieve-files store (list item) remote)
@@ -701,11 +700,13 @@ machine."
     (let* ((names    (map build-machine-name machines))
            (sockets  (map build-machine-daemon-socket machines))
            (sessions (map open-ssh-session machines))
-           (nodes    (map make-node sessions)))
-      (for-each assert-node-repl nodes names)
+           (nodes    (map remote-inferior sessions)))
       (for-each assert-node-has-guix nodes names)
-      (for-each assert-node-can-import nodes names sockets)
-      (for-each assert-node-can-export nodes names sockets))))
+      (for-each assert-node-repl nodes names)
+      (for-each assert-node-can-import sessions nodes names sockets)
+      (for-each assert-node-can-export sessions nodes names sockets)
+      (for-each close-inferior nodes)
+      (for-each disconnect! sessions))))
 
 (define (check-machine-status machine-file pred)
   "Print the load of each machine matching PRED in MACHINE-FILE."
@@ -721,20 +722,28 @@ machine."
     (info (G_ "getting status of ~a build machines defined in '~a'...~%")
           (length machines) machine-file)
     (for-each (lambda (machine)
-                (let* ((session (open-ssh-session machine))
-                       (node    (make-node session))
-                       (uts     (node-eval node '(uname)))
-                       (load    (node-load node))
-                       (free    (node-free-disk-space node)))
-                  (disconnect! session)
-                  (format #t "~a~%  kernel: ~a ~a~%  architecture: ~a~%\
+                (define session
+                  (open-ssh-session machine))
+
+                (match (remote-inferior session)
+                  (#f
+                   (warning (G_ "failed to run 'guix repl' on machine '~a'~%")
+                            (build-machine-name machine)))
+                  ((? inferior? inferior)
+                   (let ((uts  (inferior-eval '(uname) inferior))
+                         (load (node-load inferior))
+                         (free (node-free-disk-space inferior)))
+                     (close-inferior inferior)
+                     (format #t "~a~%  kernel: ~a ~a~%  architecture: ~a~%\
   host name: ~a~%  normalized load: ~a~%  free disk space: ~,2f MiB~%"
-                          (build-machine-name machine)
-                          (utsname:sysname uts) (utsname:release uts)
-                          (utsname:machine uts)
-                          (utsname:nodename uts)
-                          (normalized-load machine load)
-                          (/ free (expt 2 20) 1.))))
+                             (build-machine-name machine)
+                             (utsname:sysname uts) (utsname:release uts)
+                             (utsname:machine uts)
+                             (utsname:nodename uts)
+                             (normalized-load machine load)
+                             (/ free (expt 2 20) 1.)))))
+
+                (disconnect! session))
               machines)))
 
 

@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 threads) ; par-for-each
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -88,6 +90,12 @@
         (option '(#\l "list-dependent") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'list-dependent? #t result)))
+        (option '(#\r "recursive") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'recursive? #t result)))
+        (option '("list-transitive") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'list-transitive? #t result)))
 
         (option '("keyring") #t #f
                 (lambda (opt name arg result)
@@ -140,6 +148,10 @@ specified with `--select'.\n"))
   (display (G_ "
   -l, --list-dependent   list top-level dependent packages that would need to
                          be rebuilt as a result of upgrading PACKAGE..."))
+  (display (G_ "
+  -r, --recursive        check the PACKAGE and its inputs for upgrades"))
+  (display (G_ "
+      --list-transitive  list all the packages that PACKAGE depends on"))
   (newline)
   (display (G_ "
       --keyring=FILE     use FILE as the keyring of upstream OpenPGP keys"))
@@ -323,6 +335,43 @@ dependent packages are rebuilt: ~{~a~^ ~}~%"
                  (map full-name covering))))
       (return #t))))
 
+(define (refresh-recursive packages)
+  "Check all of the package inputs of PACKAGES for newer upstream versions."
+  (mlet %store-monad ((edges (node-edges %bag-node-type
+                                         ;; Here we don't want the -boot0 packages.
+                                         (fold-packages cons '()))))
+    (let ((dependent (node-transitive-edges packages edges)))
+      ;; par-for-each has an undefined return value, so packages which cause
+      ;; errors can be ignored.
+      (par-for-each (lambda (package)
+                      (guix-refresh package))
+                    (map package-name dependent)))
+    (return #t)))
+
+(define (list-transitive packages)
+  "List all the packages that would cause PACKAGES to be rebuilt if they are changed."
+  ;; Using %BAG-NODE-TYPE is more accurate than using %PACKAGE-NODE-TYPE
+  ;; because it includes implicit dependencies.
+  (define (full-name package)
+    (string-append (package-name package) "@"
+                   (package-version package)))
+
+  (mlet %store-monad ((edges (node-edges %bag-node-type
+                                         ;; Here we don't want the -boot0 packages.
+                                         (fold-packages cons '()))))
+    (let ((dependent (node-transitive-edges packages edges)))
+      (match packages
+        ((x)
+         (format (current-output-port)
+                 (G_ "~a depends on the following ~d packages: ~{~a~^ ~}~%.")
+                 (full-name x) (length dependent) (map full-name dependent)))
+        (lst
+         (format (current-output-port)
+                 (G_ "The following ~d packages \
+all are dependent packages: ~{~a~^ ~}~%")
+                 (length dependent) (map full-name dependent))))
+      (return #t))))
+
 
 ;;;
 ;;; Manifest.
@@ -402,7 +451,9 @@ update would trigger a complete rebuild."
   (let* ((opts            (parse-options))
          (update?         (assoc-ref opts 'update?))
          (updaters        (options->updaters opts))
+         (recursive?      (assoc-ref opts 'recursive?))
          (list-dependent? (assoc-ref opts 'list-dependent?))
+         (list-transitive? (assoc-ref opts 'list-transitive?))
          (key-download    (assoc-ref opts 'key-download))
 
          ;; Warn about missing updaters when a package is explicitly given on
@@ -441,6 +492,10 @@ update would trigger a complete rebuild."
           (cond
            (list-dependent?
             (list-dependents packages))
+           (list-transitive?
+            (list-transitive packages))
+           (recursive?
+            (refresh-recursive packages))
            (update?
             (parameterize ((%openpgp-key-server
                             (or (assoc-ref opts 'key-server)

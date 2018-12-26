@@ -207,33 +207,6 @@ Phonon-GStreamer is a backend based on the GStreamer multimedia library.")
     ;; license: source files mention "either version 2.1 or 3"
     (license (list license:lgpl2.1 license:lgpl3))))
 
-(define-public gpgmepp
-  (package
-    (name "gpgmepp")
-    (version "16.08.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://kde/stable/applications"
-                    "/" version "/src/"
-                    name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0828qlhdi1i26n2xgyb01c0q77m6jlppbxv6mprryxq0ma88940a"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
-    (propagated-inputs
-     `(("boost" ,boost)
-       ("gpgme" ,gpgme)))
-    (inputs
-     `(("qtbase" ,qtbase)))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "C++ bindings/wrapper for gpgme")
-    (description "C++ bindings/wrapper for gpgme.")
-    (license license:lgpl2.1+)
-    (properties `((superseded . ,gpgme)))))
-
 (define-public kpmcore
   (package
     (name "kpmcore")
@@ -2003,7 +1976,8 @@ gallons).")
            ;; This test fails on i686 and aarch64
            (lambda _
              (substitute* "autotests/unit/file/CMakeLists.txt"
-               (("metadatamovertest") ""))
+               (("^\\s*ecm_add_test\\(.* TEST_NAME metadatamovertest .*" line)
+                (string-append "# " line)))
              #t))
          (replace 'check
            (lambda _

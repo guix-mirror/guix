@@ -17,6 +17,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages mp3) ;taglib
   #:use-module (gnu packages perl)
@@ -229,57 +231,79 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }"))
     (arguments
      `(#:configure-flags '("--cxx11"          ; required by gtkmm
                            "--no-phone-home"  ; don't contact ardour.org
-                           "--freedesktop"    ; install .desktop file
+                           "--freedesktop"    ; build .desktop file
                            "--test")          ; build unit tests
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'set-rpath-in-LDFLAGS
-          ,(ardour-rpath-phase (version-major version))))
+         (add-after 'unpack 'set-rpath-in-LDFLAGS
+          ,(ardour-rpath-phase (version-major version)))
+         (add-after 'install 'install-freedesktop-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (ver   ,(version-major version)))
+               (for-each
+                 (lambda (size)
+                   (let ((dir (string-append share "/icons/hicolor/"
+                                             size "x" size "/apps")))
+                     (mkdir-p dir)
+                     (copy-file
+                       (string-append "gtk2_ardour/resources/Ardour-icon_"
+                                      size "px.png")
+                       (string-append dir "/ardour" ver ".png"))))
+                 '("16" "22" "32" "48" "256"))
+               (install-file (string-append "build/gtk2_ardour/ardour"
+                                            ver ".desktop")
+                             (string-append share "/applications/"))
+               (install-file (string-append "build/gtk2_ardour/ardour"
+                                            ver ".appdata.xml")
+                             (string-append share "/appdata/")))
+             #t)))
        #:test-target "test"
        #:python ,python-2))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("aubio" ,aubio)
-       ("lrdf" ,lrdf)
-       ("boost" ,boost)
        ("atkmm" ,atkmm)
+       ("aubio" ,aubio)
+       ("boost" ,boost)
        ("cairomm" ,cairomm)
-       ("eudev" ,eudev)
-       ("gtkmm" ,gtkmm-2)
-       ("glibmm" ,glibmm)
-       ("libart-lgpl" ,libart-lgpl)
-       ("libgnomecanvasmm" ,libgnomecanvasmm)
-       ("pangomm" ,pangomm)
-       ("liblo" ,liblo)
-       ("libsndfile" ,libsndfile)
-       ("libsamplerate" ,libsamplerate)
-       ("libxml2" ,libxml2)
-       ("libogg" ,libogg)
-       ("libvorbis" ,libvorbis)
-       ("flac" ,flac)
-       ("lv2" ,lv2)
-       ("vamp" ,vamp)
        ("curl" ,curl)
+       ("eudev" ,eudev)
        ("fftw" ,fftw)
        ("fftwf" ,fftwf)
+       ("flac" ,flac)
+       ("glibmm" ,glibmm)
+       ("gtkmm" ,gtkmm-2)
        ("jack" ,jack-1)
+       ("libarchive" ,libarchive)
+       ("libart-lgpl" ,libart-lgpl)
+       ("libgnomecanvasmm" ,libgnomecanvasmm)
+       ("liblo" ,liblo)
+       ("libogg" ,libogg)
+       ("libsamplerate" ,libsamplerate)
+       ("libsndfile" ,libsndfile)
+       ("libusb" ,libusb)
+       ("libvorbis" ,libvorbis)
+       ("libxml2" ,libxml2)
+       ("lilv" ,lilv)
+       ("lrdf" ,lrdf)
+       ("lv2" ,lv2)
+       ("pangomm" ,pangomm)
+       ("python-rdflib" ,python-rdflib)
+       ("readline" ,readline)
+       ("redland" ,redland)
+       ("rubberband" ,rubberband)
        ("serd" ,serd)
        ("sord" ,sord)
        ("sratom" ,sratom)
        ("suil" ,suil)
-       ("lilv" ,lilv)
-       ("readline" ,readline)
-       ("redland" ,redland)
-       ("rubberband" ,rubberband)
-       ("libarchive" ,libarchive)
        ("taglib" ,taglib)
-       ("python-rdflib" ,python-rdflib)))
+       ("vamp" ,vamp)))
     (native-inputs
-     `(("perl" ,perl)
-       ("cppunit" ,cppunit)
-       ("itstool" ,itstool)
+     `(("cppunit" ,cppunit)
        ("gettext" ,gettext-minimal)
+       ("itstool" ,itstool)
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (home-page "http://ardour.org")
     (synopsis "Digital audio workstation")

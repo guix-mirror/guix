@@ -471,16 +471,23 @@ interface (FFI) of Guile.")
 (define-public python-gpg
   (package
     (name "python-gpg")
-    (version "1.8.0")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "gpg" version))
               (sha256
                (base32
-                "1x74i6q713c0bckls7rdm8kgsmllf9qvy9x62jghszlhgjkyh9nd"))))
+                "1ji3ynhp36m1ccx7bmaq75dhij9frpn19v9mpi4aajn8csl194il"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; No test suite.
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-environment
+           (lambda _
+             (substitute* "setup.py"
+               (("cc") (which "gcc")))
+             #t)))
+       #:tests? #f)) ; No test suite.
     (inputs
      `(("gpgme" ,gpgme)))
     (native-inputs

@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -668,6 +669,33 @@
                      (sha256 %null-sha256))))
        (check-mirror-url (dummy-package "x" (source source)))))
    "mirror://gnu/foo/foo.tar.gz"))
+
+(test-assert "github-url"
+  (string-null?
+   (with-warnings
+     (with-http-server 200 %long-string
+       (check-github-url
+        (dummy-package "x" (source
+                            (origin
+                              (method url-fetch)
+                              (uri (%local-url))
+                              (sha256 %null-sha256)))))))))
+
+(let ((github-url "https://github.com/foo/bar/bar-1.0.tar.gz"))
+  (test-assert "github-url: one suggestion"
+    (string-contains
+     (with-warnings
+       (with-http-server (301 `((location . ,(string->uri github-url)))) ""
+         (let ((initial-uri (%local-url)))
+           (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+             (with-http-server (302 `((location . ,(string->uri initial-uri)))) ""
+               (check-github-url
+                (dummy-package "x" (source
+                                    (origin
+                                      (method url-fetch)
+                                      (uri (%local-url))
+                                      (sha256 %null-sha256))))))))))
+     github-url)))
 
 (test-assert "cve"
   (mock ((guix scripts lint) package-vulnerabilities (const '()))

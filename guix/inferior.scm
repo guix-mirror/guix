@@ -54,6 +54,7 @@
   #:use-module ((rnrs bytevectors) #:select (string->utf8))
   #:export (inferior?
             open-inferior
+            port->inferior
             close-inferior
             inferior-eval
             inferior-eval-with-store
@@ -93,10 +94,11 @@
 
 ;; Inferior Guix process.
 (define-record-type <inferior>
-  (inferior pid socket version packages table)
+  (inferior pid socket close version packages table)
   inferior?
   (pid      inferior-pid)
   (socket   inferior-socket)
+  (close    inferior-close-socket)               ;procedure
   (version  inferior-version)                    ;REPL protocol version
   (packages inferior-package-promise)            ;promise of inferior packages
   (table    inferior-package-table))             ;promise of vhash
@@ -131,19 +133,17 @@ it's an old Guix."
                           ((@ (guix scripts repl) machine-repl))))))
         pipe)))
 
-(define* (open-inferior directory #:key (command "bin/guix"))
-  "Open the inferior Guix in DIRECTORY, running 'DIRECTORY/COMMAND repl' or
-equivalent.  Return #f if the inferior could not be launched."
-  (define pipe
-    (inferior-pipe directory command))
-
+(define* (port->inferior pipe #:optional (close close-port))
+  "Given PIPE, an input/output port, return an inferior that talks over PIPE.
+PIPE is closed with CLOSE when 'close-inferior' is called on the returned
+inferior."
   (cond-expand
     ((and guile-2 (not guile-2.2)) #t)
     (else (setvbuf pipe 'line)))
 
   (match (read pipe)
     (('repl-version 0 rest ...)
-     (letrec ((result (inferior 'pipe pipe (cons 0 rest)
+     (letrec ((result (inferior 'pipe pipe close (cons 0 rest)
                                 (delay (%inferior-packages result))
                                 (delay (%inferior-package-table result)))))
        (inferior-eval '(use-modules (guix)) result)
@@ -155,9 +155,18 @@ equivalent.  Return #f if the inferior could not be launched."
     (_
      #f)))
 
+(define* (open-inferior directory #:key (command "bin/guix"))
+  "Open the inferior Guix in DIRECTORY, running 'DIRECTORY/COMMAND repl' or
+equivalent.  Return #f if the inferior could not be launched."
+  (define pipe
+    (inferior-pipe directory command))
+
+  (port->inferior pipe close-pipe))
+
 (define (close-inferior inferior)
   "Close INFERIOR."
-  (close-pipe (inferior-socket inferior)))
+  (let ((close (inferior-close-socket inferior)))
+    (close (inferior-socket inferior))))
 
 ;; Non-self-quoting object of the inferior.
 (define-record-type <inferior-object>
@@ -409,6 +418,7 @@ thus be the code of a one-argument procedure that accepts a store."
   ;; Create a named socket in /tmp and let INFERIOR connect to it and use it
   ;; as its store.  This ensures the inferior uses the same store, with the
   ;; same options, the same per-session GC roots, etc.
+  ;; FIXME: This strategy doesn't work for remote inferiors (SSH).
   (call-with-temporary-directory
    (lambda (directory)
      (chmod directory #o700)
