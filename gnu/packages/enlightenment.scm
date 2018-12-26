@@ -70,6 +70,7 @@
               (uri (string-append
                     "https://download.enlightenment.org/rel/libs/efl/efl-"
                     version ".tar.xz"))
+              (patches (search-patches "efl-mesa-compat.patch"))
               (sha256
                (base32
                 "0a5907h896pvpix7a6idc2fspzy6d78xrzf84k8y9fyvnd14nxs4"))))
