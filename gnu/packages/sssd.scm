@@ -86,6 +86,7 @@ fundamental object types for C.")
               (method url-fetch)
               (uri (string-append "http://releases.pagure.org/SSSD/sssd/"
                                   "sssd-" version ".tar.gz"))
+              (patches (search-patches "sssd-curl-compat.patch"))
               (sha256
                (base32
                 "032ppk57qs1lnvz7pb7lw9ldwm9i1yagh9fzgqgn6na3bg61ynzy"))))
