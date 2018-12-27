@@ -298,46 +298,46 @@ functional, imperative and object-oriented styles of programming.")
 (define-public ocaml ocaml-4.07)
 
 (define-public ocamlbuild
-	  (package
-	    (name "ocamlbuild")
-	    (version "0.13.1")
-	    (source (origin
-	              (method url-fetch)
-	              (uri (string-append "https://github.com/ocaml/ocamlbuild/archive/"
-	                                  version ".tar.gz"))
-	              (file-name (string-append name "-" version ".tar.gz"))
-	              (sha256
-	               (base32
-	                "1320cfkixs1xlng5av04pa5qjb3ynvi2kl3k1ngqzg5fpi29b0vr"))))
-	    (build-system gnu-build-system)
-	    (arguments
-	     `(#:test-target "test"
-	       #:tests? #f; tests require findlib
-	       #:make-flags
-	       (list (string-append "OCAMLBUILD_PREFIX=" (assoc-ref %outputs "out"))
-	             (string-append "OCAMLBUILD_BINDIR=" (assoc-ref %outputs "out")
-                                "/bin")
-	             (string-append "OCAMLBUILD_LIBDIR=" (assoc-ref %outputs "out")
-                                "/lib/ocaml/site-lib")
-	             (string-append "OCAMLBUILD_MANDIR=" (assoc-ref %outputs "out")
-                                "/share/man"))
-	       #:phases
-	       (modify-phases %standard-phases
-	         (delete 'bootstrap)
-	         (delete 'configure)
-	         (add-before 'build 'findlib-environment
-	           (lambda* (#:key outputs #:allow-other-keys)
-	             (let* ((out (assoc-ref outputs "out")))
-	               (setenv "OCAMLFIND_DESTDIR" (string-append out "/lib/ocaml/site-lib"))
-	               (setenv "OCAMLFIND_LDCONF" "ignore")
-	               #t))))))
-	    (native-inputs
-	     `(("ocaml" ,ocaml)))
-	    (home-page "https://github.com/ocaml/ocamlbuild")
-	    (synopsis "OCaml build tool")
-	    (description "OCamlbuild is a generic build tool, that has built-in rules
-	for building OCaml library and programs.")
-	    (license license:lgpl2.1+)))
+  (package
+    (name "ocamlbuild")
+    (version "0.13.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ocaml/ocamlbuild/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1320cfkixs1xlng5av04pa5qjb3ynvi2kl3k1ngqzg5fpi29b0vr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:tests? #f; tests require findlib
+       #:make-flags
+       (list (string-append "OCAMLBUILD_PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "OCAMLBUILD_BINDIR=" (assoc-ref %outputs "out")
+                        "/bin")
+             (string-append "OCAMLBUILD_LIBDIR=" (assoc-ref %outputs "out")
+                        "/lib/ocaml/site-lib")
+             (string-append "OCAMLBUILD_MANDIR=" (assoc-ref %outputs "out")
+                        "/share/man"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure)
+         (add-before 'build 'findlib-environment
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (setenv "OCAMLFIND_DESTDIR" (string-append out "/lib/ocaml/site-lib"))
+               (setenv "OCAMLFIND_LDCONF" "ignore")
+               #t))))))
+    (native-inputs
+     `(("ocaml" ,ocaml)))
+    (home-page "https://github.com/ocaml/ocamlbuild")
+    (synopsis "OCaml build tool")
+    (description "OCamlbuild is a generic build tool, that has built-in rules
+for building OCaml library and programs.")
+    (license license:lgpl2.1+)))
 
 (define-public opam
   (package
@@ -5018,11 +5018,11 @@ Coq proof assistant.")
          (replace 'build
            (lambda _
              (invoke "make")
-	     #t))
+             #t))
          (replace 'check
            (lambda _
              (invoke "make" "tests")
-	     #t))
+             #t))
          (add-before 'install 'set-binpath
            ;; Change binary path in the makefile
            (lambda _
@@ -5030,11 +5030,11 @@ Coq proof assistant.")
                (substitute* "GNUmakefile"
                  (("BINDIR = (.*)$")
                   (string-append "BINDIR = " out "/bin"))))
-	     #t))
-	 (replace 'install
-	   (lambda _
-	     (invoke "make" "install")
-	     #t)))))
+             #t))
+         (replace 'install
+           (lambda _
+             (invoke "make" "install")
+             #t)))))
     (synopsis "Proof-checker for the λΠ-calculus modulo theory, an extension of
 the λ-calculus")
     (description "Dedukti is a proof-checker for the λΠ-calculus modulo
@@ -5090,10 +5090,13 @@ than yojson), with 25-35% space savings.")
         (base32
          "0nwsfkmqpyfab4rxq76q8ff7giyanghw08094jyrp275v99zdjr9"))))
     (build-system dune-build-system)
+    (arguments
+     `(#:test-target "."))
     (inputs
      `(("ocaml-biniou" ,ocaml-biniou)
-       ("ocaml-easy-format" ,ocaml-easy-format)
-       ("ocaml-cppo" ,ocaml-cppo)))
+       ("ocaml-easy-format" ,ocaml-easy-format)))
+    (native-inputs
+     `(("ocaml-cppo" ,ocaml-cppo)))
     (synopsis "Low-level JSON library for OCaml")
     (description "Yojson is an optimized parsing and printing library for the
 JSON format.  It addresses a few shortcomings of json-wheel including 2x
