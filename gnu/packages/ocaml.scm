@@ -4749,6 +4749,37 @@ yojson package.  The program @code{atdgen} can be used to derive OCaml-JSON
 serializers and deserializers from type definitions.")
     (license license:bsd-3)))
 
+(define-public ocaml-merlin
+  (package
+    (name "ocaml-merlin")
+    (version "3.2.2")
+    (home-page "https://ocaml.github.io/merlin/")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml/merlin.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "15ssgmwdxylbwhld9p1cq8x6kadxyhll5bfyf11dddj6cldna3hb"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-biniou" ,ocaml-biniou)
+       ("ocaml-yojson" ,ocaml-yojson)
+       ("ocaml-easy-format" ,ocaml-easy-format)))
+    (native-inputs
+     `(("ocaml-findlib" ,ocaml-findlib)))
+    (arguments
+     '(#:tests? #f)) ;; Errors in tests in version 3.2.2
+    (synopsis "Context sensitive completion for OCaml in Vim and Emacs")
+    (description "Merlin is an editor service that provides modern IDE
+features for OCaml.  Emacs and Vim support is provided out-of-the-box.
+External contributors added support for Visual Studio Code, Sublime Text and
+Atom.")
+    (license license:expat)))
+
 (define-public ocaml-gsl
   (package
     (name "ocaml-gsl")
