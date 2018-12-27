@@ -2398,7 +2398,8 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0s006gs9nsq6mg31spqha1jffzmp6qjh10y27h0fxf1iw1ah5ymx"))))
+                "0s006gs9nsq6mg31spqha1jffzmp6qjh10y27h0fxf1iw1ah5ymx"))
+              (patches (search-patches "glib-networking-connection.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlibproxy_support=false")
