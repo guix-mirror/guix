@@ -103,7 +103,7 @@
        ("ncurses" ,ncurses)
        ("perl" ,perl)
        ("tcsh" ,tcsh))) ; For runtime/tools/vim32
-    (home-page "http://www.vim.org/")
+    (home-page "https://www.vim.org/")
     (synopsis "Text editor based on vi")
     (description
      "Vim is a highly configurable text editor built to enable efficient text
