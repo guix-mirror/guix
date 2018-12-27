@@ -126,6 +126,10 @@ Download and deploy the latest version of Guix.\n"))
                  (lambda (opt name arg result)
                    (alist-cons 'profile (canonicalize-profile arg)
                                result)))
+         (option '(#\s "system") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'system arg
+                               (alist-delete 'system result eq?))))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
@@ -505,7 +509,8 @@ Use '~/.config/guix/channels.scm' instead."))
              (else
               (with-store store
                 (with-status-report print-build-event
-                  (parameterize ((%graft? (assoc-ref opts 'graft?))
+                  (parameterize ((%current-system (assoc-ref opts 'system))
+                                 (%graft? (assoc-ref opts 'graft?))
                                  (%repository-cache-directory cache))
                     (set-build-options-from-command-line store opts)
                     (honor-x509-certificates store)

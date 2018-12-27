@@ -2329,4 +2329,33 @@ Scheme by using Guile’s foreign function interface.")
       (home-page "https://gitlab.com/mothacehe/guile-newt")
       (license license:gpl3+))))
 
+(define-public guile-mastodon
+  (package
+    (name "guile-mastodon")
+    (version "0.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://framagit.org/prouby/guile-mastodon.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1vblf3d1bbwna3l09p2ap5y8ycvl549bz6whgk78imyfmn28ygry"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("gnutls" ,gnutls)
+       ("guile-json" ,guile-json)))
+    (home-page "https://framagit.org/prouby/guile-mastodon")
+    (synopsis "Guile Mastodon REST API module")
+    (description "This package provides Guile modules to access the
+@uref{https://docs.joinmastodon.org/api/, REST API of Mastodon}, a federated
+microblogging service.")
+    (license license:gpl3+)))
+
 ;;; guile.scm ends here

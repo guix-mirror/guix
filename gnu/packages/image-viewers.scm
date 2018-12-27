@@ -238,12 +238,14 @@ it and customize it for your needs.")
     (version "1.7")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/hellosiyan/Viewnior/archive/"
-                            name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/hellosiyan/Viewnior.git")
+               (commit (string-append name "-" version))))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "1rpkk721s3xas125q3g0fl11b5zsrmzv9pzl6ddzcy4sj2rd7ymr"))))
+          "0y4hk3vq8psba5k615w18qj0kbdfp5w0lm98nv5apy6hmcpwfyig"))))
     (build-system meson-build-system)
     (arguments
      '(#:phases

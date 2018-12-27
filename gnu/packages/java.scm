@@ -6140,6 +6140,11 @@ printed.")
        (modify-phases %standard-phases
          (add-after 'install 'strip-jar-timestamps
            (assoc-ref ant:%standard-phases 'strip-jar-timestamps))
+         (add-before 'configure 'fix-timestamp
+           (lambda _
+             (substitute* "configure"
+               (("^TIMESTAMP.*") "TIMESTAMP=19700101\n"))
+             #t))
          (add-after 'configure 'fix-bin-ls
            (lambda _
              (substitute* (find-files "." "Makefile")
