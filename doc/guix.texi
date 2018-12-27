@@ -2887,6 +2887,11 @@ Use @var{profile} instead of @file{~/.config/guix/current}.
 Show which channel commit(s) would be used and what would be built or
 substituted but do not actually do it.
 
+@item --system=@var{system}
+@itemx -s @var{system}
+Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
+the system type of the build host.
+
 @item --verbose
 Produce verbose output, writing build logs to the standard error output.
 
