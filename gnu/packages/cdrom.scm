@@ -225,6 +225,20 @@ reconstruction capability.")
               (sha256
                (base32
                 "03w6ypsmwwy4d7vh6zgwpc60v541vc5ywp8bdb758hbc4yv2wa7d"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; By default 'cdda2wav --help' would print a string like
+                  ;; "Version 3.01_linux_4.19.10-gnu_x86_64_x86_64".  Change
+                  ;; it to not capture the kernel version of the build
+                  ;; machine, to allow for reproducible builds.
+                  (substitute* "cdda2wav/local.cnf.in"
+                    (("^VERSION_OS=.*")
+                     (string-append
+                      "actual_os := $(shell uname -o)\n"
+                      "actual_arch := $(shell uname -m)\n"
+                      "VERSION_OS = _$(actual_os)_$(actual_arch)\n")))
+                  #t))
               (patches (search-patches "cdrtools-3.01-mkisofs-isoinfo.patch"))))
     (build-system gnu-build-system)
     ;; XXX cdrtools bundles a modified, relicensed early version of cdparanoia.
