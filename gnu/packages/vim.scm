@@ -63,13 +63,14 @@
     (name "vim")
     (version "8.1.0551")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/vim/vim/archive/v"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/vim/vim")
+                    (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1wi6j9w04wg3hxsch3izl2mxb0065vpvxscz19zjn5ypkfypnm8n"))))
+               "1db5ihzj9flz62alb3kd1w173chb5vbni325abqjf25aly7c22n0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
