@@ -5073,3 +5073,32 @@ protocols evolve.  Biniou is vastly equivalent to JSON in terms of
 functionality but allows implementations several times faster (4 times faster
 than yojson), with 25-35% space savings.")
    (license license:bsd-3)))
+
+(define-public ocaml-yojson
+  (package
+    (name "ocaml-yojson")
+    (version "1.4.1")
+    (home-page "https://github.com/ocaml-community/yojson")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0nwsfkmqpyfab4rxq76q8ff7giyanghw08094jyrp275v99zdjr9"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-biniou" ,ocaml-biniou)
+       ("ocaml-easy-format" ,ocaml-easy-format)
+       ("ocaml-cppo" ,ocaml-cppo)))
+    (synopsis "Low-level JSON library for OCaml")
+    (description "Yojson is an optimized parsing and printing library for the
+JSON format.  It addresses a few shortcomings of json-wheel including 2x
+speedup, polymorphic variants and optional syntax for tuples and variants.
+@code{ydump} is a pretty printing command-line program provided with the
+yojson package.  The program @code{atdgen} can be used to derive OCaml-JSON
+serializers and deserializers from type definitions.")
+    (license license:bsd-3)))
