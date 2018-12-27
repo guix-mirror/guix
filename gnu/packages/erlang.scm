@@ -23,6 +23,7 @@
 (define-module (gnu packages erlang)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system emacs)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
@@ -212,3 +213,21 @@ built-in support for concurrency, distribution and fault tolerance.")
     ;; have other licenses. See 'system/COPYRIGHT' in the source distribution.
     (license (list license:asl2.0 license:bsd-2 license:bsd-3 license:expat
                    license:lgpl2.0+ license:tcl/tk license:zlib))))
+
+(define-public emacs-erlang
+  (package
+    (name "emacs-erlang")
+    (version (package-version erlang))
+    (source (package-source erlang))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'set-emacs-load-path 'change-working-directory
+           (lambda _ (chdir "lib/tools/emacs") #t)))))
+    (home-page "https://www.erlang.org/")
+    (synopsis "Erlang major mode for Emacs")
+    (description
+     "This package provides an Emacs major mode for editing Erlang source
+files.")
+    (license license:asl2.0)))
