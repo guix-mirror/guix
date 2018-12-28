@@ -162,6 +162,8 @@ SYSTEM."
       (long-description . "This is a demo stand-alone QEMU image of the GNU
 system.")
       (license . ,gpl3+)
+      (max-silent-time . 600)
+      (timeout . 3600)
       (home-page . ,%guix-home-page-url)
       (maintainers . ("bug-guix@gnu.org"))))
 
@@ -221,6 +223,8 @@ system.")
                                 (system-test-name test)))
         (long-description . ,(system-test-description test))
         (license . ,gpl3+)
+        (max-silent-time . 600)
+        (timeout . 3600)
         (home-page . ,%guix-home-page-url)
         (maintainers . ("bug-guix@gnu.org")))))
 
