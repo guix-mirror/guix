@@ -27,6 +27,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system emacs)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
@@ -208,3 +209,21 @@ mechanism for serializing structured data.")
 
 (define-public python2-protobuf
   (package-with-python2 python-protobuf))
+
+(define-public emacs-protobuf-mode
+  (package
+    (name "emacs-protobuf-mode")
+    (version (package-version protobuf))
+    (source (package-source protobuf))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'set-emacs-load-path 'change-working-directory
+           (lambda _ (chdir "editors") #t)))))
+    (home-page "https://github.com/protocolbuffers/protobuf")
+    (synopsis "Protocol buffers major mode for Emacs")
+    (description
+     "This package provides an Emacs major mode for editing Protocol Buffer
+source files.")
+    (license license:bsd-3)))
