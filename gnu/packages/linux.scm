@@ -4973,3 +4973,29 @@ infrastructure for in-kernel netfilter subsystems (such as nfnetlink_log,
 nfnetlink_queue, nfnetlink_conntrack) and their respective users and/or
 management tools in userspace.")
     (license license:gpl2)))
+
+(define-public xfsprogs
+  (package
+    (name "xfsprogs")
+    (version "4.19.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/utils/fs/xfs/xfsprogs/"
+                    "xfsprogs-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gs39yiyamjw516jbak3nj4dy4h2a2g48c1mmv4wbppsccvwmwh5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; Kernel/user integration tests are in package "xfstests"
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("util-linux" ,util-linux)))
+    (home-page "https://xfs.wiki.kernel.org/")
+    (synopsis "XFS file system tools")
+    (description "This package provides commands to create and check XFS
+file systems.")
+    ;; The library "libhandle" and the headers in "xfslibs-dev" are
+    ;; licensed under lgpl2.1. the other stuff is licensed under gpl2.
+    (license (list license:gpl2 license:lgpl2.1))))
