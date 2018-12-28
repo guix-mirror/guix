@@ -126,6 +126,7 @@ MODULES =					\
   guix/cache.scm				\
   guix/cve.scm					\
   guix/workers.scm				\
+  guix/ipfs.scm					\
   guix/build-system.scm				\
   guix/build-system/android-ndk.scm		\
   guix/build-system/ant.scm			\
