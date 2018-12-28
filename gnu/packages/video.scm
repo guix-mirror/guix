@@ -704,6 +704,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("libbluray" ,libbluray)
        ("libcaca" ,libcaca)
        ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libdrm" ,libdrm)
        ("libtheora" ,libtheora)
        ("libva" ,libva)
        ("libvdpau" ,libvdpau)
@@ -805,6 +806,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          "--enable-libx265"
          "--enable-openal"
          "--enable-opengl"
+         "--enable-libdrm"
 
          "--enable-runtime-cpudetect"
 
