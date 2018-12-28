@@ -23,9 +23,13 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages golang)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web))
 
@@ -141,4 +145,68 @@ created and all the services are started as specified in the configuration.")
      "Docker-Pycreds contains the Python bindings for the docker credentials
 store API.  It allows programmers to interact with a Docker registry using
 Python without keeping their credentials in a Docker configuration file.")
+    (license license:asl2.0)))
+
+(define-public containerd
+  (package
+    (name "containerd")
+    (version "1.2.1")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/containerd/containerd.git")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "16zn6p1ky3yrgn53z8h9wza53ch91fj47wj5xgz6w4c57j30f66p"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/containerd/containerd"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'chdir
+           (lambda _
+             (chdir "src/github.com/containerd/containerd")
+             #t))
+         (add-after 'chdir 'patch-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; TODO: Patch "socat", "unpigz".
+             (substitute* "./runtime/v1/linux/runtime.go"
+              (("defaultRuntime[ \t]*=.*")
+               (string-append "defaultRuntime = \""
+                              (assoc-ref inputs "runc")
+                              "/sbin/runc\"\n"))
+              (("defaultShim[ \t]*=.*")
+               (string-append "defaultShim = \""
+                              (assoc-ref outputs "out")
+                              "/bin/containerd-shim\"\n")))
+            (substitute* "./vendor/github.com/containerd/go-runc/runc.go"
+              (("DefaultCommand[ \t]*=.*")
+               (string-append "DefaultCommand = \""
+                              (assoc-ref inputs "runc")
+                              "/sbin/runc\"\n")))
+             #t))
+         (replace 'build
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (apply invoke "make" make-flags)))
+         (replace 'install
+           (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (apply invoke "make" (string-append "DESTDIR=" out) "install"
+                      make-flags)))))))
+    (inputs
+     `(("btrfs-progs" ,btrfs-progs)
+       ("libseccomp" ,libseccomp)
+       ("runc" ,runc)))
+    (native-inputs
+     `(("go" ,go)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Container runtime")
+    (description "This package provides the container daemon for Docker.
+It includes image transfer and storage, container execution and supervision,
+network attachments.")
+    (home-page "http://containerd.io/")
     (license license:asl2.0)))
