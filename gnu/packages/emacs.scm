@@ -592,7 +592,7 @@ support for Git-SVN.")
 (define-public emacs-magit-popup
   (package
     (name "emacs-magit-popup")
-    (version "2.12.4")
+    (version "2.12.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -601,7 +601,7 @@ support for Git-SVN.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08952nzn0cb6gxscqyiljk4fq2zxjvr3ism0lvgw0gs9hl5phiwx"))))
+                "13riknyqr6vxqll80sfhvz165flvdz367rbd0pr5slb01bnfsi2i"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
