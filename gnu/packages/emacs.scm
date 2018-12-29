@@ -622,6 +622,28 @@ these arguments.  The prototypical use is for the command to call an external
 process, passing on the arguments as command line arguments.")
     (license license:gpl3+)))
 
+(define-public emacs-treepy
+  (package
+    (name "emacs-treepy")
+    (version "0.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/volrath/treepy.el.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "04zwm6gx9pxfvgfkizx6pvb1ql8pqxjyzqp8flz0432x0gq5nlxk"))))
+    (build-system emacs-build-system)
+    (home-page
+     "https://github.com/volrath/treepy.el")
+    (synopsis "Tree traversal tools")
+    (description
+     "Generic tools for recursive and iterative tree traversal based on
+clojure.walk and clojure.zip respectively.")
+    (license license:gpl3+)))
+
 (define-public emacs-ghub
   (package
     (name "emacs-ghub")
