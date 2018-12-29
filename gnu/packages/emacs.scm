@@ -644,6 +644,36 @@ process, passing on the arguments as command line arguments.")
 clojure.walk and clojure.zip respectively.")
     (license license:gpl3+)))
 
+(define-public emacs-graphql
+  (package
+   (name "emacs-graphql")
+   (version "0.1.1")
+   (source (origin
+             (modules '((guix build utils)))
+             ;; Remove examples file with references to external packages as
+             ;; they do not exist at compilation time.
+             (snippet
+              '(begin (delete-file "examples.el")
+                 #t))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/vermiculus/graphql.el.git")
+                   (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0sp0skc1rnhi39szfbq1i99pdgd3bhn4c15cff05iqhjy2d4hniw"))))
+   (build-system emacs-build-system)
+   (home-page
+    "https://github.com/vermiculus/graphql.el")
+   (synopsis "GraphQL utilities")
+   (description
+    "GraphQL.el provides a generally-applicable domain-specific language for
+creating and executing GraphQL queries against your favorite web services.
+GraphQL is a data query language and runtime designed and used to request and
+deliver data to mobile and web apps.")
+   (license license:gpl3+)))
+
 (define-public emacs-ghub
   (package
     (name "emacs-ghub")
