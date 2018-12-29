@@ -21,6 +21,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
@@ -51,7 +53,9 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
@@ -72,6 +76,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
@@ -167,6 +172,59 @@ algorithms AES or Twofish.")
     ;; Non functional parts use various licences.
     (license license:gpl3)
     (properties `((superseded . ,keepassxc)))))
+
+(define-public pwsafe
+  (package
+    (name "pwsafe")
+    (version "3.48.0")
+    (home-page "https://www.pwsafe.org/" )
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pwsafe/pwsafe.git")
+             (commit version)))
+       (sha256 (base32 "0hxv23yh76liggxbjn4m132z15sklra8ms341xgzl4n5vjx30ihi"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (build-system cmake-build-system)
+    (native-inputs `(("gettext" ,gettext-minimal)
+                     ("perl" ,perl)
+                     ("zip" ,zip)))
+    (inputs `(("curl" ,curl)
+              ("file" ,file)
+              ("gtest" ,googletest)
+              ("libuuid" ,util-linux)
+              ("libxt" ,libxt)
+              ("libxtst" ,libxtst)
+              ("openssl" ,openssl)
+              ("qrencode" ,qrencode)
+              ("wxwidgets" ,wxwidgets)
+              ("xerces-c" ,xerces-c)))
+    (arguments '(#:configure-flags (list "-DNO_GTEST=YES")
+                 #:phases (modify-phases %standard-phases
+                            (add-after 'unpack 'add-gtest
+                              (lambda* (#:key inputs #:allow-other-keys)
+                                (chmod "CMakeLists.txt" #o644)
+                                (let ((cmake-port (open-file "CMakeLists.txt"
+                                                             "a")))
+                                  (display "find_package(GTest)
+add_subdirectory(src/test)\n" cmake-port)
+                                  (close cmake-port)
+                                  #t)))
+                            (add-after 'add-gtest 'patch-executables
+                              (lambda* (#:key inputs #:allow-other-keys)
+                                (chmod "src/test/OSTest.cpp" #o644)
+                                (substitute* "src/os/unix/media.cpp"
+                                  (("/usr/bin/file")
+                                   (string-append (assoc-ref inputs "file")
+                                                  "/bin/file")))
+                                #t)))))
+    (synopsis "Password safe with automatic input and key generation")
+    (description "pwsafe is a password manager originally designed by Bruce
+Schneier.  It offers a simple UI to manage passwords for different services.
+There are other programs that support the file format on different
+platforms.")
+    (license license:artistic2.0)))
 
 (define-public shroud
   (package
