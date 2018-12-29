@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -124,6 +125,7 @@
                "--with-mysqli"          ; Required for, e.g. wordpress
                "--with-pdo-mysql"
                "--with-zlib"
+               "--enable-bcmath"        ; Required for, e.g. Zabbix frontend
                "--enable-calendar"
                "--enable-dba=shared"
                "--enable-exif"
