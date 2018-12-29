@@ -8856,16 +8856,17 @@ object @code{nil} corresponds 1:1 with @code{NULL} in the database.")
 (define-public emacs-closql
   (package
     (name "emacs-closql")
-    (version "0.5.1")
+    (version "1.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/emacscollective/closql/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacscollective/closql.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wa6r0kgbb7f19039p5f3di4dvrvxfgpd8bkam94fca7jvzj536c"))))
+         "0cy44d1fxkvah6fhjkn3mp6gzzrjmws1c4c20ayrma74y9xich3v"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-emacsql" ,emacs-emacsql)))
