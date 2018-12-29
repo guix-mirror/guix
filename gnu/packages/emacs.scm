@@ -8775,16 +8775,16 @@ object has been freed.")
 (define-public emacs-emacsql
   (package
     (name "emacs-emacsql")
-    (version "2.0.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/skeeto/emacsql/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "04hfjdgl1zc7jysgjc7d7d3xqpr7q1q9gsmzffjd91ii3hpqjgx6"))))
+    (version "3.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/skeeto/emacsql.git")
+                    (commit (string-append version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c84gxr1majqj4b59wgdy3lzm3ap66w9qsrnkx8hdbk9895ak81g"))))
     (build-system emacs-build-system)
     (arguments
      `(#:modules ((guix build emacs-build-system)
@@ -8819,8 +8819,6 @@ object has been freed.")
              (let ((file "emacsql-sqlite.el"))
                (chmod file #o644)
                (emacs-substitute-sexps file
-                 ;; Avoid interactive prompts.
-                 ("(defvar emacsql-sqlite-user-prompted" 't)
                  ;; Make sure Emacs looks for ‘GCC’ binary in the right place.
                  ("(executable-find" (which "gcc"))
                  ;; Make sure Emacs looks for ‘emacsql-sqlite’ binary
