@@ -428,16 +428,16 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "2.7.3")
+    (version "2.8.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/magit/with-editor/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/magit/with-editor.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ln2s0kckzkv50qmr6x1kb2j30cfjii0vs6lpghg7ff4lav8jqgh"))))
+                "1bbzvxnjpxqyvi808isld025b3pcidn4r2xf8hnk9bmzcfdvdr6q"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
