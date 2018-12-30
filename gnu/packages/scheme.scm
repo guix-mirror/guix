@@ -224,17 +224,17 @@ features an integrated Emacs-like editor and a large runtime library.")
   ;; long after the initial publication: <https://bugs.gnu.org/33525>.  For
   ;; transparency, we give this "second 4.3b" release a different version
   ;; number.
-  (let ((upstream-version "4.3b"))
+  (let ((upstream-version "4.3e"))
     (package
       (name "bigloo")
-      (version "4.3b2")
+      (version "4.3e1")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo"
                                     upstream-version ".tar.gz"))
                 (sha256
                  (base32
-                  "02s0wrz5b1p0yqk9x6kax1vwzil7g9cyxfvl3vmy7fzznsza9gs4"))
+                  "12k1kxyn3yilba0508xh8wkrw6279gnghzqi0bs2ayf5d2wkqdj3"))
                 ;; Remove bundled libraries.
                 (modules '((guix build utils)))
                 (snippet
