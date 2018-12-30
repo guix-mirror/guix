@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
@@ -247,7 +247,8 @@ designed to be used in a generic text renderer.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0gf1nl562fqkwlzcn6rgkp1j8jcixzmfsnwxbc0sm49zh8n3zqib"))))
+                "0gf1nl562fqkwlzcn6rgkp1j8jcixzmfsnwxbc0sm49zh8n3zqib"))
+              (patches (search-patches "fbreader-curl-7.62.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("curl" ,curl)
