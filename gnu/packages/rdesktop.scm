@@ -132,8 +132,8 @@ to remotely control a user's Windows desktop.")
                             "/xml/xsl/docbook-xsl-"
                             ,(package-version docbook-xsl))
              "-DWITH_PULSE=ON"
-             "-DWITH_CUPS=ON")
-       #:tests? #f))                              ; no 'test' target
+             "-DWITH_CUPS=ON"
+             "-DBUILD_TESTING=ON")))
     (home-page "https://www.freerdp.com")
     (synopsis "Remote Desktop Protocol implementation")
     (description "FreeRDP implements Microsoft's Remote Desktop Protocol.
