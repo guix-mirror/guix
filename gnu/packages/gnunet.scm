@@ -73,6 +73,8 @@
             (method url-fetch)
             (uri (string-append "mirror://gnu/libextractor/libextractor-"
                                 version ".tar.gz"))
+            (patches (search-patches "libextractor-CVE-2018-20430.patch"
+                                     "libextractor-CVE-2018-20431.patch"))
             (sha256
              (base32
               "1z1cb35griqzvshqdv5ck98dy0sgpsswn7fgiy7lbzi34sma8dg2"))))
