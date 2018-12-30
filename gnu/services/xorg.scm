@@ -689,8 +689,6 @@ makes the good ol' XlockMore usable."
          (documentation "Xorg display server (GDM)")
          (provision '(xorg-server))
          (requirement '(dbus-system user-processes host-name udev))
-         ;; While this service isn't working properly, turn off auto-start.
-         (auto-start? #f)
          (start #~(lambda ()
                     (fork+exec-command
                      (list #$(file-append (gdm-configuration-gdm config)
