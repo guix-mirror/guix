@@ -310,19 +310,20 @@ kinds of basic applications for the foundation of a GNU internet.")
    (home-page "https://gnunet.org/")))
 
 (define-public guile-gnunet                       ;GSoC 2015!
-  (let ((commit "383eac2aab175d8d9ea5315c2f1c8a5055c76a52"))
+  (let ((commit "d12167ab3c8d7d6caffd9c606e389ef043760602")
+        (revision "1"))
     (package
       (name "guile-gnunet")
-      (version (string-append "0.0." (string-take commit 7)))
+      (version (git-version "0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://git.savannah.gnu.org/git/guix/gnunet.git/")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0k6mn28isjlxrnvbnblab3nh2xqx1b7san8k98kc35ap9lq0iz8w"))))
+                  "0nqc18jh9j30y4l6yh6j35byfg6qalq7yr3frv9rk10qa041c2sv"))))
       (build-system gnu-build-system)
       (native-inputs `(("pkg-config" ,pkg-config)
                        ("autoconf" ,autoconf-wrapper)
