@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (guix build-system python)
@@ -241,13 +242,14 @@ designed to be used in a generic text renderer.")
     (name "fbreader")
     (version "0.99.6")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/geometer/FBReader/"
-                                  "archive/" version "-freebsdport.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/geometer/FBReader")
+                     (commit (string-append version "-freebsdport"))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gf1nl562fqkwlzcn6rgkp1j8jcixzmfsnwxbc0sm49zh8n3zqib"))
+                "0c0s4silpax74kwfz3dfmzn4lkv6jsyb800vfak166vii0hvbv3d"))
               (patches (search-patches "fbreader-curl-7.62.patch"))))
     (build-system gnu-build-system)
     (inputs
