@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3327,14 +3328,14 @@ alternative to Marshal for Object serialization. ")
 (define-public ruby-pg
   (package
     (name "ruby-pg")
-    (version "0.21.0")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pg" version))
        (sha256
         (base32
-         "00vhasqwc4f98qb4wxqn2h07fjwzhp5lwyi41j2gndi2g02wrdqh"))))
+         "1pnjw3rspdfjssxyf42jnbsdlgri8ylysimp0s28wxb93k6ff2qb"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"))
@@ -3346,7 +3347,7 @@ alternative to Marshal for Object serialization. ")
      `(("postgresql" ,postgresql-9.6)))
     (synopsis "Ruby interface to PostgreSQL")
     (description "Pg is the Ruby interface to the PostgreSQL RDBMS.  It works
-with PostgreSQL 8.4 and later.")
+with PostgreSQL 9.0 and later.")
     (home-page "https://bitbucket.org/ged/ruby-pg")
     (license license:ruby)))
 
