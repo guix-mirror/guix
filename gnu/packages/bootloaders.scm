@@ -673,10 +673,25 @@ board-independent tools.")))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0h0m3l69vp9dr6xrs1p6y7ilkq3jq8jraw2z20kqfv7lvc9l1lxj"))))
+                "0h0m3l69vp9dr6xrs1p6y7ilkq3jq8jraw2z20kqfv7lvc9l1lxj"))
+              (patches
+               (search-patches "vboot-utils-skip-test-workbuf.patch"
+                               "vboot-utils-fix-tests-show-contents.patch"
+                               "vboot-utils-fix-format-load-address.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"
+                          ;; On ARM, we must pass "HOST_ARCH=arm" so that the
+                          ;; ${HOST_ARCH} and ${ARCH} variables in the makefile
+                          ;; match.  Otherwise, ${HOST_ARCH} will be assigned
+                          ;; "armv7l", the value of `uname -m`, and will not
+                          ;; match ${ARCH}, which will make the tests require
+                          ;; QEMU for testing.
+                          ,@(if (string-prefix? "arm"
+                                                (or (%current-target-system)
+                                                    (%current-system)))
+                                '("HOST_ARCH=arm")
+                                '())
                           (string-append "DESTDIR=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-hard-coded-paths

@@ -1,0 +1,33 @@
+This patch was copied from Debian.
+
+Description: Fix format load_address for 32 bits architectures
+ The offset and load_address are 64bits integers
+ On 32bits we have to use strtoull (instead of strtoul) to parse number
+ into 64bits unsigned integers. Without this the parsed numbers are
+ truncated to 2^32-1.
+Author: Sophie Brun <sophie@freexian.com>
+Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=881997
+Forwarded: https://bugs.chromium.org/p/chromium/issues/detail?id=786969
+Last-Update: 2017-11-20
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/futility/cmd_bdb.c
++++ b/futility/cmd_bdb.c
+@@ -637,7 +637,7 @@ static int do_bdb(int argc, char *argv[]
+ 			}
+ 			break;
+ 		case OPT_OFFSET:
+-			offset = strtoul(optarg, &e, 0);
++			offset = strtoull(optarg, &e, 0);
+ 			if (!*optarg || (e && *e)) {
+ 				fprintf(stderr, "Invalid --offset\n");
+ 				parse_error = 1;
+@@ -658,7 +658,7 @@ static int do_bdb(int argc, char *argv[]
+ 			}
+ 			break;
+ 		case OPT_LOAD_ADDRESS:
+-			load_address = strtoul(optarg, &e, 0);
++			load_address = strtoull(optarg, &e, 0);
+ 			if (!*optarg || (e && *e)) {
+ 				fprintf(stderr, "Invalid --load_address\n");
+ 				parse_error = 1;
