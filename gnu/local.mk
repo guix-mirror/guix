@@ -1227,8 +1227,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/upx-fix-CVE-2017-15056.patch		\
   %D%/packages/patches/valgrind-enable-arm.patch		\
   %D%/packages/patches/valgrind-glibc-compat.patch		\
-  %D%/packages/patches/vinagre-revert-1.patch                   \
-  %D%/packages/patches/vinagre-revert-2.patch                   \
+  %D%/packages/patches/vinagre-newer-freerdp.patch             \
+  %D%/packages/patches/vinagre-newer-rdp-parameters.patch      \
   %D%/packages/patches/virglrenderer-CVE-2017-6386.patch 	\
   %D%/packages/patches/vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\

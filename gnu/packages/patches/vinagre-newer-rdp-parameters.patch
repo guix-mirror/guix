@@ -1,0 +1,212 @@
+https://gitlab.gnome.org/GNOME/vinagre/merge_requests/4.patch
+
+From 141f9383129795da267a8111897fb3a0a324b080 Mon Sep 17 00:00:00 2001
+From: Ondrej Holy <oholy@redhat.com>
+Date: Thu, 22 Nov 2018 17:22:35 +0100
+Subject: [PATCH 2/2] Handle new RDP certificate parameters
+
+The freerdp2 certificate callbacks contains more parameters, let's
+present some of them to user also.
+---
+ data/vinagre.ui               | 80 ++++++++++++++++++++++++++++++-----
+ plugins/rdp/vinagre-rdp-tab.c | 26 +++++-------
+ 2 files changed, 80 insertions(+), 26 deletions(-)
+
+diff --git a/data/vinagre.ui b/data/vinagre.ui
+index 3135336..d7ce258 100644
+--- a/data/vinagre.ui
++++ b/data/vinagre.ui
+@@ -885,7 +885,7 @@ Do you trust the new certificate?</property>
+                 <property name="vexpand">True</property>
+                 <property name="xalign">0</property>
+                 <property name="xpad">12</property>
+-                <property name="label" translatable="yes" comments="Subject of the certificate.">Subject:</property>
++                <property name="label" translatable="yes" comments="Subject of the certificate.">New subject:</property>
+               </object>
+               <packing>
+                 <property name="left_attach">0</property>
+@@ -901,7 +901,7 @@ Do you trust the new certificate?</property>
+                 <property name="vexpand">True</property>
+                 <property name="xalign">0</property>
+                 <property name="xpad">12</property>
+-                <property name="label" translatable="yes" comments="Issuer of the certificate.">Issuer:</property>
++                <property name="label" translatable="yes" comments="Issuer of the certificate.">New issuer:</property>
+               </object>
+               <packing>
+                 <property name="left_attach">0</property>
+@@ -927,7 +927,55 @@ Do you trust the new certificate?</property>
+               </packing>
+             </child>
+             <child>
+-              <object class="GtkLabel" id="certificate_changed_subject">
++              <object class="GtkLabel">
++                <property name="visible">True</property>
++                <property name="can_focus">False</property>
++                <property name="vexpand">True</property>
++                <property name="xalign">0</property>
++                <property name="xpad">12</property>
++                <property name="label" translatable="yes" comments="Subject of the old certificate.">Old subject:</property>
++              </object>
++              <packing>
++                <property name="left_attach">0</property>
++                <property name="top_attach">3</property>
++                <property name="width">1</property>
++                <property name="height">1</property>
++              </packing>
++            </child>
++            <child>
++              <object class="GtkLabel">
++                <property name="visible">True</property>
++                <property name="can_focus">False</property>
++                <property name="vexpand">True</property>
++                <property name="xalign">0</property>
++                <property name="xpad">12</property>
++                <property name="label" translatable="yes" comments="Issuer of the old certificate.">Old issuer:</property>
++              </object>
++              <packing>
++                <property name="left_attach">0</property>
++                <property name="top_attach">4</property>
++                <property name="width">1</property>
++                <property name="height">1</property>
++              </packing>
++            </child>
++            <child>
++              <object class="GtkLabel">
++                <property name="visible">True</property>
++                <property name="can_focus">False</property>
++                <property name="vexpand">True</property>
++                <property name="xalign">0</property>
++                <property name="xpad">12</property>
++                <property name="label" translatable="yes" comments="Fingerprint of the old certificate.">Old fingerprint:</property>
++              </object>
++              <packing>
++                <property name="left_attach">0</property>
++                <property name="top_attach">5</property>
++                <property name="width">1</property>
++                <property name="height">1</property>
++              </packing>
++            </child>
++            <child>
++              <object class="GtkLabel" id="certificate_changed_new_subject">
+                 <property name="visible">True</property>
+                 <property name="can_focus">False</property>
+                 <property name="hexpand">True</property>
+@@ -942,7 +990,7 @@ Do you trust the new certificate?</property>
+               </packing>
+             </child>
+             <child>
+-              <object class="GtkLabel" id="certificate_changed_issuer">
++              <object class="GtkLabel" id="certificate_changed_new_issuer">
+                 <property name="visible">True</property>
+                 <property name="can_focus">False</property>
+                 <property name="hexpand">True</property>
+@@ -972,21 +1020,33 @@ Do you trust the new certificate?</property>
+               </packing>
+             </child>
+             <child>
+-              <object class="GtkLabel" id="certificate_changed_old_fingerprint_label">
++              <object class="GtkLabel" id="certificate_changed_old_subject">
+                 <property name="visible">True</property>
+                 <property name="can_focus">False</property>
+-                <property name="vexpand">True</property>
++                <property name="hexpand">True</property>
+                 <property name="xalign">0</property>
+-                <property name="xpad">12</property>
+-                <property name="label" translatable="yes" comments="Fingerprint of the old certificate.">Old fingerprint:</property>
+               </object>
+               <packing>
+-                <property name="left_attach">0</property>
++                <property name="left_attach">1</property>
+                 <property name="top_attach">3</property>
+                 <property name="width">1</property>
+                 <property name="height">1</property>
+               </packing>
+             </child>
++            <child>
++              <object class="GtkLabel" id="certificate_changed_old_issuer">
++                <property name="visible">True</property>
++                <property name="can_focus">False</property>
++                <property name="hexpand">True</property>
++                <property name="xalign">0</property>
++              </object>
++              <packing>
++                <property name="left_attach">1</property>
++                <property name="top_attach">4</property>
++                <property name="width">1</property>
++                <property name="height">1</property>
++              </packing>
++            </child>
+             <child>
+               <object class="GtkLabel" id="certificate_changed_old_fingerprint">
+                 <property name="visible">True</property>
+@@ -997,7 +1057,7 @@ Do you trust the new certificate?</property>
+               </object>
+               <packing>
+                 <property name="left_attach">1</property>
+-                <property name="top_attach">3</property>
++                <property name="top_attach">5</property>
+                 <property name="width">1</property>
+                 <property name="height">1</property>
+               </packing>
+diff --git a/plugins/rdp/vinagre-rdp-tab.c b/plugins/rdp/vinagre-rdp-tab.c
+index 28e3eb6..30a8698 100644
+--- a/plugins/rdp/vinagre-rdp-tab.c
++++ b/plugins/rdp/vinagre-rdp-tab.c
+@@ -917,6 +917,7 @@ frdp_certificate_verify (freerdp *instance,
+   widget = GTK_WIDGET (gtk_builder_get_object (builder, "certificate_fingerprint"));
+   gtk_label_set_text (GTK_LABEL (widget), fingerprint);
+ 
++  /* FIXME: Warn user in case of host_mismatch. */
+ 
+   response = gtk_dialog_run (GTK_DIALOG (dialog));
+   gtk_widget_hide (dialog);
+@@ -939,7 +940,6 @@ frdp_changed_certificate_verify (freerdp *instance,
+   GtkBuilder *builder;
+   GtkWidget  *dialog;
+   GtkWidget  *widget;
+-  GtkWidget  *label;
+   gint        response;
+ 
+   builder = vinagre_utils_get_builder ();
+@@ -950,29 +950,23 @@ frdp_changed_certificate_verify (freerdp *instance,
+                           _("Connect"), GTK_RESPONSE_YES, NULL);
+   gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_YES);
+ 
+-  widget = GTK_WIDGET (gtk_builder_get_object (builder, "certificate_changed_subject"));
++  widget = GTK_WIDGET (gtk_builder_get_object (builder, "certificate_changed_new_subject"));
+   gtk_label_set_text (GTK_LABEL (widget), subject);
+ 
+-  widget = GTK_WIDGET (gtk_builder_get_object (builder, "certificate_changed_issuer"));
++  widget = GTK_WIDGET (gtk_builder_get_object (builder, "certificate_changed_new_issuer"));
+   gtk_label_set_text (GTK_LABEL (widget), issuer);
+ 
+   widget = GTK_WIDGET (gtk_builder_get_object (builder, "certificate_changed_new_fingerprint"));
+   gtk_label_set_text (GTK_LABEL (widget), new_fingerprint);
+ 
+-  widget = GTK_WIDGET (gtk_builder_get_object (builder, "certificate_changed_old_fingerprint"));
+-  label = GTK_WIDGET (gtk_builder_get_object (builder, "certificate_changed_old_fingerprint_label"));
+-  if (old_fingerprint != NULL && old_fingerprint[0] != '\0')
+-    {
+-      gtk_label_set_text (GTK_LABEL (widget), old_fingerprint);
+-      gtk_widget_show (widget);
+-      gtk_widget_show (label);
+-    }
+-  else
+-    {
+-      gtk_widget_hide (widget);
+-      gtk_widget_hide (label);
+-    }
++  widget = GTK_WIDGET (gtk_builder_get_object (builder, "certificate_changed_old_subject"));
++  gtk_label_set_text (GTK_LABEL (widget), old_subject);
+ 
++  widget = GTK_WIDGET (gtk_builder_get_object (builder, "certificate_changed_old_issuer"));
++  gtk_label_set_text (GTK_LABEL (widget), old_issuer);
++
++  widget = GTK_WIDGET (gtk_builder_get_object (builder, "certificate_changed_old_fingerprint"));
++  gtk_label_set_text (GTK_LABEL (widget), old_fingerprint);
+ 
+   response = gtk_dialog_run (GTK_DIALOG (dialog));
+   gtk_widget_hide (dialog);
+-- 
+2.18.1
+

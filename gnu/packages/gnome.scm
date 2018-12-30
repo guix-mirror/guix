@@ -2221,13 +2221,20 @@ selection and URL hints.")))
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches ; We have to revert 2 commits to build against freerdp 1.1.
-               (search-patches "vinagre-revert-1.patch"
-                               "vinagre-revert-2.patch"))
+              (patches (search-patches "vinagre-newer-freerdp.patch"
+                                       "vinagre-newer-rdp-parameters.patch"))
               (sha256
                (base32
                 "10jya3jyrm18nbw3v410gbkc7677bqamax44pzgd3j15randn76d"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-configure
+           (lambda _
+             (substitute* "configure"
+               (("freerdp") "freerdp2"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
@@ -2244,8 +2251,6 @@ selection and URL hints.")))
        ("spice-gtk" ,spice-gtk)
        ("telepathy-glib" ,telepathy-glib)
        ("vte" ,vte)))
-    (arguments
-     `(#:configure-flags '("--enable-rdp")))
     (home-page "https://wiki.gnome.org/Apps/Vinagre")
     (synopsis "Remote desktop viewer for GNOME")
     (description "Vinagre is a remote display client supporting the VNC, SPICE
