@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,14 +68,14 @@
 (define-public libextractor
   (package
    (name "libextractor")
-   (version "1.7")
+   (version "1.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libextractor/libextractor-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "13wf6vj7mkv6gw8h183cnk7m24ir0gyf198pyb2148ng4klgv9p0"))))
+              "1z1cb35griqzvshqdv5ck98dy0sgpsswn7fgiy7lbzi34sma8dg2"))))
    (build-system gnu-build-system)
    ;; WARNING: Checks require /dev/shm to be in the build chroot, especially
    ;; not to be a symbolic link to /run/shm.
