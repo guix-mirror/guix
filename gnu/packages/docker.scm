@@ -27,6 +27,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix utils)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages golang)
@@ -387,4 +388,66 @@ container systems.  It includes components for orchestration, image
 management, secret management, configuration management, networking,
 provisioning etc.")
     (home-page "https://mobyproject.org/")
+    (license license:asl2.0)))
+
+(define-public docker-cli
+  (package
+    (name "docker-cli")
+    (version %docker-version)
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/docker/cli.git")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "1ivisys20kphvbqlazc3bsg7pk0ykj9gjx5d4yg439x4n13jxwvb"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/docker/cli"
+       ;; TODO: Tests require a running Docker daemon.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'setup-environment-2
+           (lambda _
+             ;; Respectively, strip the symbol table and debug
+             ;; information, and the DWARF symbol table.
+             (setenv "LDFLAGS" "-s -w")
+
+             ;; Make build reproducible.
+             (setenv "BUILDTIME" "1970-01-01 00:00:01.000000000+00:00")
+             (symlink "src/github.com/docker/cli/scripts" "./scripts")
+             (symlink "src/github.com/docker/cli/docker.Makefile" "./docker.Makefile")
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "./scripts/build/dynbinary")))
+         (replace 'check
+           (lambda* (#:key make-flags tests? #:allow-other-keys)
+             (setenv "PATH" (string-append (getcwd) "/build:" (getenv "PATH")))
+             (if tests?
+                 ;; Use the newly-built docker client for the tests.
+                 (with-directory-excursion "src/github.com/docker/cli"
+                   ;; TODO: Run test-e2e as well?
+                   (apply invoke "make" "-f" "docker.Makefile" "test-unit"
+                          (or make-flags '())))
+                 #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-bin (string-append out "/bin")))
+               (chdir "build")
+               (install-file (readlink "docker") out-bin)
+               (install-file "docker" out-bin)
+               #t))))))
+    (native-inputs
+     `(("go" ,go)
+       ("libltdl" ,libltdl)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Command line interface to Docker")
+    (description "This package provides a command line interface to Docker.")
+    (home-page "http://www.docker.com/")
     (license license:asl2.0)))
