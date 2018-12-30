@@ -9328,11 +9328,11 @@ navigate and display hierarchy structures.")
       (license license:gpl3+))))
 
 (define-public emacs-md4rd
-  (let ((commit "be0fc4951b2d1f5194ffa1fcaac706dbac560500")
+  (let ((commit "c55512c2f7680db2a1e73db6bdf93adecaf40fec")
         (revision "1"))
     (package
       (name "emacs-md4rd")
-      (version (string-append "0.0.1" "-" revision "."
+      (version (string-append "0.0.2" "-" revision "."
                               (string-take commit 7)))
       (source (origin
                 (method git-fetch)
@@ -9342,7 +9342,7 @@ navigate and display hierarchy structures.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1i93shx5x192gd7cl2r6gvcvhhwyi1k08abi5w3izv1hn3pmksgq"))))
+                  "0mvv1mvsrpkrmikcpfqf2zbawnzgq33j6zjdrlv48mcw57xb2ak9"))))
       (propagated-inputs
        `(("emacs-hierarchy" ,emacs-hierarchy)
          ("emacs-request" ,emacs-request)
