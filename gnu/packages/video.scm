@@ -865,26 +865,6 @@ audio/video codec library.")
               (base32
                "0b59qk5wpc5ksiha76jbhb859g5gxa4w0k6afh3kgvgajiivs73l"))))))
 
-(define-public ffmpeg-2.8
-  (package
-    (inherit ffmpeg)
-    (version "2.8.15")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "065xbvnfmxfbfrc14cavpqyd2slil99vcjksw4ndb7w8zdh0wp3v"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments ffmpeg)
-       ((#:configure-flags flags)
-        `(map (lambda (flag)
-                (if (string=? flag "--disable-mipsdsp")
-                    "--disable-mipsdspr1"
-                    flag))
-              ,flags))))))
-
 (define-public ffmpegthumbnailer
   (package
     (name "ffmpegthumbnailer")
