@@ -275,7 +275,13 @@ designed to be used in a generic text renderer.")
                                       (assoc-ref %outputs "out") "/lib"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)
+         (add-after 'unpack 'fix-install-locations
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "fbreader/desktop/Makefile"
+                 (("/usr") out))
+               #t))))))
     (home-page "https://fbreader.org/")
     (synopsis "E-Book reader")
     (description "@code{fbreader} is an E-Book reader.  It supports the
