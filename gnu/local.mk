@@ -483,6 +483,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/desktop.scm			\
   %D%/services/dict.scm				\
   %D%/services/dns.scm				\
+  %D%/services/docker.scm			\
   %D%/services/authentication.scm		\
   %D%/services/games.scm			\
   %D%/services/kerberos.scm			\

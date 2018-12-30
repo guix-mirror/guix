@@ -22118,6 +22118,33 @@ The following is an example @code{dicod-service} configuration.
                     %dicod-database:gcide))))
 @end example
 
+@cindex Docker
+@subsubheading Docker Service
+
+The @code{(gnu services docker)} module provides the following service.
+
+@defvr {Scheme Variable} docker-service-type
+
+This is the type of the service that runs @url{http://www.docker.com,Docker},
+a daemon that can execute application bundles (sometimes referred to as
+``containers'') in isolated environments.
+
+@end defvr
+
+@deftp {Data Type} docker-configuration
+This is the data type representing the configuration of Docker and Containerd.
+
+@table @asis
+
+@item @code{package} (default: @code{docker})
+The Docker package to use.
+
+@item @code{containerd} (default: @var{containerd})
+The Containerd package to use.
+
+@end table
+@end deftp
+
 @node Setuid Programs
 @subsection Setuid Programs
 
