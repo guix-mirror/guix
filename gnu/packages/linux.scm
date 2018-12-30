@@ -31,6 +31,7 @@
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -790,7 +791,7 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.44.3")
+    (version "1.44.5")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -799,7 +800,7 @@ slabtop, and skill.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1djb9qnid1j0vvna2bhq4jsz2ig1xckbx7h4d86cr0gl61yrz2ax"))))
+               "1ff56h6h1h17sj2zvlddv5c88nmbx46p1fcbh6b0s5k9kl3b6pms"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
