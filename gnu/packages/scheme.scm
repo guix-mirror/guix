@@ -320,14 +320,14 @@ and between Scheme and Java programs.")
 (define-public hop
   (package
     (name "hop")
-    (version "3.1.0-pre2")
+    (version "3.2.0-pre1")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Hop/hop-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0bvq79vxcpgwydwi923cxb5w9isx2x8r3d0xndbdhacmmsw1m811"))))
+               "0jf418d0s9imv98s6qrpjxr1mdaxr37knh5qyfl5y4a9cc41mlg5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -338,8 +338,12 @@ and between Scheme and Java programs.")
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
+               (substitute* '("tools/Makefile"
+                              "test/hopjs/TEST.in")
+                 (("/bin/rm") (which "rm")))
                (invoke "./configure"
                        (string-append "--prefix=" out)
+                       "--hostcc=gcc"
                        (string-append "--blflags="
                                       ;; user flags completely override useful
                                       ;; default flags, so repeat them here.
