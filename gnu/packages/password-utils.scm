@@ -705,7 +705,7 @@ your online accounts makes it necessary.")
 (define-public hashcat
   (package
     (name "hashcat")
-    (version "4.1.0")
+    (version "5.1.0")
     (source
      (origin
        (method url-fetch)
@@ -713,7 +713,7 @@ your online accounts makes it necessary.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "170i2y32ykgzb1qf1wz3klwn31c09bviz4x3bnrwia65adqrj8xx"))))
+         "0f73y4cg8c7a6q7x34qvpfi4g3lw6j9bnn0a13g43aqyiskflfr8"))))
     (native-inputs
      `(("opencl-headers" ,opencl-headers)))
     (build-system gnu-build-system)
