@@ -551,7 +551,7 @@ of libraries.")
 (define-public gambit-c
   (package
     (name "gambit-c")
-    (version "4.9.0")
+    (version "4.9.1")
     (source
      (origin
        (method url-fetch)
@@ -561,14 +561,14 @@ of libraries.")
              (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
              ".tgz"))
        (sha256
-        (base32 "19862w9ij0g5xrkskl4g89xbs17gp9cc6cfcdca6dlfkb3lk6xhp"))))
+        (base32 "14x9xa0yh7187alzw2m937jnh4csj0dyywi3va8bhi7aaw4p5qai"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
        ;; According to the ./configure script, this makes the build slower and
        ;; use >= 1 GB memory, but makes Gambit much faster.
        '("--enable-single-host")))
-    (home-page "http://gambitscheme.org")
+    (home-page "http://dynamo.iro.umontreal.ca/wiki/index.php/Main_Page")
     (synopsis "Efficient Scheme interpreter and compiler")
     (description
      "Gambit consists of two main programs: gsi, the Gambit Scheme
