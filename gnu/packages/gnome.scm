@@ -32,6 +32,7 @@
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5399,6 +5400,11 @@ libxml2.")
                 ;; are met (provided GNOME is installed of course).
                 "gdm_session_set_environment_variable (self, \"XDG_CONFIG_DIRS\",\n"
                 "    \"/run/current-system/profile/etc/xdg\");\n"
+                ;; The session bus (which GDM will initialize from the this
+                ;; session environment) needs to know where to find the system
+                ;; service files.
+                "gdm_session_set_environment_variable (self, \"XDG_DATA_DIRS\",\n"
+                "    \"/run/current-system/profile/share\");\n"
                 )))
             ;; Look for custom GDM conf in /run/current-system.
             (substitute* '("common/gdm-settings-desktop-backend.c")
