@@ -400,8 +400,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.19.12")
-(define %linux-libre-hash "1cgcg3bw55adx3ivk1aiivrqx5p0ydbz1hzjwzwns0cdqi838cyp")
+(define %linux-libre-version "4.19.13")
+(define %linux-libre-hash "0ac0ywy542fiwdiab2z12rbjn9zw8vjbzkbpmpk9nfic2mcyrg8r")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
