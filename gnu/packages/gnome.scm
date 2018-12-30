@@ -2230,6 +2230,12 @@ selection and URL hints.")))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           (lambda _
+             ;; Don't create 'icon-theme.cache'
+             (substitute* (find-files "." "^Makefile$")
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
          (add-after 'unpack 'patch-configure
            (lambda _
              (substitute* "configure"
@@ -2239,8 +2245,7 @@ selection and URL hints.")))
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("itstool" ,itstool)
-       ("glib-bin" ,glib "bin")                   ;for glib-compile-schemas
-       ("gtk+-bin" ,gtk+ "bin")))                 ;for gtk-update-icon-cache
+       ("glib-bin" ,glib "bin")))                 ;for glib-compile-schemas
     (inputs
      `(("libxml2" ,libxml2)
        ("gtk-vnc" ,gtk-vnc)
