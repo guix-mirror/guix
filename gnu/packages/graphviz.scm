@@ -29,6 +29,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gtk)
@@ -185,6 +186,40 @@ visualization tool suite.")
 
 (define-public python2-graphviz
   (package-with-python2 python-graphviz))
+
+(define-public python-pygraphviz
+  (package
+    (name "python-pygraphviz")
+    (version "1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pygraphviz/pygraphviz.git")
+             (commit (string-append "pygraphviz-" version))))
+       (file-name (string-append "pygraphviz-" version "-checkout"))
+       (sha256
+        (base32
+         "1yldym38m8ckgflln83i88143pd9fjj1vfp23sq39fs6np5g0nzp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:configure-flags
+       (let ((graphviz (assoc-ref %build-inputs "graphviz")))
+         (list (string-append "--include-path=" graphviz "/include")
+               (string-append "--library-path=" graphviz "/lib")))))
+    (inputs
+     `(("graphviz" ,graphviz-2.38)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)
+       ("python-doctest-ignore-unicode" ,python-doctest-ignore-unicode)))
+    (home-page "http://pygraphviz.github.io")
+    (synopsis "Python interface to Graphviz")
+    (description "PyGraphviz is a Python interface to the Graphviz graph
+layout and visualization package.  With PyGraphviz you can create, edit, read,
+write, and draw graphs using Python to access the Graphviz graph data
+structure and layout algorithms.")
+    (license license:bsd-3)))
 
 (define-public gts
   (package
