@@ -2141,7 +2141,8 @@ falling, themeable graphics and sounds, and replays.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1kgpj2f22nnx4mwd1zis3s5ny2983aasgqsmz7wnqaq7n6a7ac85"))))
+                "1kgpj2f22nnx4mwd1zis3s5ny2983aasgqsmz7wnqaq7n6a7ac85"))
+              (patches (search-patches "wesnoth-newer-boost.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
