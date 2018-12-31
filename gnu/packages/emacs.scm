@@ -12741,7 +12741,7 @@ Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-matrix-client
-  (let ((commit "3eab4c28280feff18ee1ddd7db66ada4f135cbf8"))
+  (let ((commit "5d8e959a63e5de05b628ca8e1dfb974f7f618821"))
     (package
       (name "emacs-matrix-client")
       (version (git-version "0.0.0" "1" commit))
@@ -12753,15 +12753,17 @@ Emacs.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1k6721jz0m22vpb78881k087mpx8hf3s2219ic75v5mhgx355f7m"))))
+                  "15mwyjq3z867v0xl4m2s3vvfn0wqncb67xawm1cjmpnambz1yz1n"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("a" ,emacs-a)
          ("dash" ,emacs-dash)
          ("esxml" ,emacs-esxml)
          ("f" ,emacs-f)
+         ("frame-purpose" ,emacs-frame-purpose)
          ("ht" ,emacs-ht)
          ("ov" ,emacs-ov)
+         ("rainbow-identifiers" ,emacs-rainbow-identifiers)
          ("request" ,emacs-request)
          ("s" ,emacs-s)
          ("tracking" ,emacs-tracking)))
