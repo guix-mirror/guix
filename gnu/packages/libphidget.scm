@@ -27,7 +27,7 @@
 (define-public libphidget
   (package
    (name "libphidget")
-   (version "2.1.8.20130320")
+   (version "2.1.8.20180607")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -35,7 +35,7 @@
                   "linux/libphidget/libphidget_"
                   version ".tar.gz"))
             (sha256
-             (base32 "09ibrz1df5ajqcm9vmx6zw8qama2rzf0961yhmmfsy629qfhyrk0"))))
+             (base32 "1mdw8k13yy5dq3r41v9w5yijdk87alzix0qagslc2mxh1pf17npn"))))
    (build-system gnu-build-system)
    (inputs `(("libusb" ,libusb)))
    (outputs '("out" "debug"))
