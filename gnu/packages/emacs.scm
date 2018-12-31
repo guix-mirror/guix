@@ -12912,3 +12912,27 @@ Dedukti files.")
       (description "This package provides a frontend for Flycheck to perform
 syntax checking on dedukti files.")
       (license license:cecill-b))))
+
+(define-public emacs-frame-purpose
+  (package
+    (name "emacs-frame-purpose")
+    (version "1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alphapapa/frame-purpose.el.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "0jq2aam1yvccw887ighd1wm2xkvk5bv53ffiz3crcl16a255aj4q"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("dash" ,emacs-dash)))
+    (synopsis "Purpose-specific frames for Emacs")
+    (description "@code{frame-purpose} makes it easy to open purpose-specific
+frames that only show certain buffers, e.g. by buffers’ major mode, their
+filename or directory, etc, with custom frame/X-window titles, icons, and
+other frame parameters.")
+    (home-page "https://github.com/alphapapa/frame-purpose.el")
+    (license license:gpl3+)))
