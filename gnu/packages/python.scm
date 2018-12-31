@@ -15038,6 +15038,27 @@ RFC 8265 and RFC 8266.")
     (properties '((upstream-name . "Wikidata")))
     (license license:gpl3+)))
 
+(define-public python-doctest-ignore-unicode
+  (package
+    (name "python-doctest-ignore-unicode")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "doctest-ignore-unicode" version))
+       (sha256
+        (base32
+         "1m9aa4qnyj21lbq4sbvmv1vcz7zksss4rz37ddf2hxv4hk8b547w"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/gnublade/doctest-ignore-unicode")
+    (synopsis "Ignore Unicode literal prefixes in doctests")
+    (description
+     "This package adds support for a flag to ignore Unicode literal prefixes
+in doctests.")
+    (license license:asl2.0)))
+
 (define-public python-attr
   (package
     (name "python-attr")
