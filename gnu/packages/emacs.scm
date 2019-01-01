@@ -5524,14 +5524,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20180507")
+    (version "20181230")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/org-plus-contrib-"
                                   version ".tar"))
               (sha256
                (base32
-                "190iwjpdjrhg7gl2d4bri2y0y679vlrwd841r6dvhza0yy338d2d"))))
+                "0gibwcjlardjwq19bh0zzszv0dxxlml0rh5iikkcdynbgndk1aa1"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -5543,7 +5543,7 @@ programming and reproducible research.")
          (add-after 'install 'delete-org-files
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (org (assoc-ref inputs "emacs-org"))
+                    (org (assoc-ref inputs "org"))
                     (contrib-files
                      (map basename (find-files out)))
                     (org+contrib-files
@@ -5556,8 +5556,10 @@ programming and reproducible research.")
                  (for-each delete-file duplicates))
                #t))))))
     (propagated-inputs
-     `(("emacs-org" ,emacs-org)
-       ("emacs-scel" ,emacs-scel)))
+     `(("arduino-mode" ,emacs-arduino-mode)
+       ("cider" ,emacs-cider)
+       ("org" ,emacs-org)
+       ("scel" ,emacs-scel)))
     (synopsis "Contributed packages to Org mode")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
 lists, and project planning with a fast and effective plain-text system.
