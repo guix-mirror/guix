@@ -335,13 +335,17 @@ Bluetooth stack.  It is used by the KDE Bluetooth stack, BlueDevil.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'disable-failing-test
+         (add-after 'unpack 'add-symlinks
+           ;; Fix "ScalableTest" - FIXME: Remove for > 5.49.0
            (lambda _
-             ;; Blacklist a test-function (failing at build.kde.org, too).
-             ;; FIXME: recheck
-             (with-output-to-file "autotests/BLACKLIST"
-               (lambda _
-                 (display "[test_duplicates]\n*\n")))
+             (symlink "../22/plasma-browser-integration.svg"
+                      "icons-dark/apps/48/plasma-browser-integration.svg")
+             (symlink "../22/plasma-browser-integration.svg"
+                      "icons-dark/apps/64/plasma-browser-integration.svg")
+             (symlink "../22/plasma-browser-integration.svg"
+                      "icons/apps/48/plasma-browser-integration.svg")
+             (symlink "../22/plasma-browser-integration.svg"
+                      "icons/apps/64/plasma-browser-integration.svg")
              #t)))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
