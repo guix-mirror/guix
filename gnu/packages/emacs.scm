@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
@@ -12939,3 +12939,23 @@ filename or directory, etc, with custom frame/X-window titles, icons, and
 other frame parameters.")
     (home-page "https://github.com/alphapapa/frame-purpose.el")
     (license license:gpl3+)))
+
+(define-public emacs-arduino-mode
+  (let ((commit "3e2bad4569ad26e929e6db2cbcff0d6d36812698")) ;no release yet
+    (package
+      (name "emacs-arduino-mode")
+      (version (git-version "0" "0" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/bookest/arduino-mode.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1yvaqjc9hadbnnay5fprnh890xsp53kidad1zpb4a5z4a5z61n3c"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (synopsis "Emacs major mode for editing Arduino sketches")
+      (description "Emacs major mode for editing Arduino sketches.")
+      (home-page "https://github.com/bookest/arduino-mode")
+      (license license:gpl3+))))
