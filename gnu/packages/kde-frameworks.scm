@@ -1835,8 +1835,7 @@ covers feedback and persistent events.")
        ("ki18n" ,ki18n)
        ("qtbase" ,qtbase)))
     (arguments
-     `(#:tests? #f ; FIXME: 3/9 tests fail.
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch
            (lambda _
@@ -1847,6 +1846,17 @@ covers feedback and persistent events.")
                 (string-append a " | QDirIterator::FollowSymlinks" b))
                (("^\\s*(QDirIterator it\\(.*, QDirIterator::Subdirectories)(\\);)" _ a b)
                 (string-append a " | QDirIterator::FollowSymlinks" b)))
+             #t))
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             ;; /bin/ls doesn't exist in the build-container use /etc/passwd
+             (substitute* "autotests/packagestructuretest.cpp"
+               (("(addDirectoryDefinition\\(\")bin(\".*\")bin(\".*\")bin\""
+                 _ a b c)
+                (string-append a "etc" b "etc" c "etc\""))
+               (("filePath\\(\"bin\", QStringLiteral\\(\"ls\"))")
+                "filePath(\"etc\", QStringLiteral(\"passwd\"))")
+               (("\"/bin/ls\"") "\"/etc/passwd\""))
              #t))
          (add-before 'check 'check-setup
            (lambda _
