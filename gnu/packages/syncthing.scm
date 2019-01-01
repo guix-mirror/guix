@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.54")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "1pfjckwsrhy8lbmy42fawgh1gcfmjbh3dfxx05w5yjxnpd1g2z6r"))
+                "0992nsdiw374pbh1dywg7c2jijzy4xmsv0b7q5p76xn2yyg5yhr7"))
               ;; Since the update to Go 1.11, Go programs have been keeping
               ;; spurious references to all their dependencies:
               ;; <https://bugs.gnu.org/33620>.
