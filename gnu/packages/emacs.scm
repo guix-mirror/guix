@@ -5503,14 +5503,14 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "9.1.14")
+    (version "9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "17vd9hig26rqv90l6y92hc2i0x29g44lsdsp0xd4m53s8r3zdikz"))))
+                "14ydwh2r360fpi6v2g9rgf0zazy2ddq1pcdxvzn73h65glnnclz9"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
