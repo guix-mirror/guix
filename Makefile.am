@@ -281,6 +281,10 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 # Auxiliary files for packages.
 AUX_FILES =						\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
+  gnu/packages/aux-files/linux-libre/4.20-arm.conf	\
+  gnu/packages/aux-files/linux-libre/4.20-arm64.conf	\
+  gnu/packages/aux-files/linux-libre/4.20-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.20-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-arm.conf	\
   gnu/packages/aux-files/linux-libre/4.19-arm64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-i686.conf	\

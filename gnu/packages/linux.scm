@@ -412,16 +412,30 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.19.13")
-(define %linux-libre-hash "0ac0ywy542fiwdiab2z12rbjn9zw8vjbzkbpmpk9nfic2mcyrg8r")
+(define %linux-libre-version "4.20")
+(define %linux-libre-hash "07ss8nx95f4pqzzjy382fy5hk7anjm3hpbb3mzl1x8fzfq05q3dq")
 
-(define %linux-libre-4.19-patches
+(define %linux-libre-4.20-patches
   (list %boot-logo-patch
         %linux-libre-arm-export-__sync_icache_dcache-patch))
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
+                    '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
+                    #:patches %linux-libre-4.20-patches
+                    #:configuration-file kernel-config))
+
+(define %linux-libre-4.19-version "4.19.13")
+(define %linux-libre-4.19-hash "0ac0ywy542fiwdiab2z12rbjn9zw8vjbzkbpmpk9nfic2mcyrg8r")
+
+(define %linux-libre-4.19-patches
+  (list %boot-logo-patch
+        %linux-libre-arm-export-__sync_icache_dcache-patch))
+
+(define-public linux-libre-4.19
+  (make-linux-libre %linux-libre-4.19-version
+                    %linux-libre-4.19-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
@@ -451,6 +465,14 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
+                    #:patches %linux-libre-4.20-patches
+                    #:defconfig "multi_v7_defconfig"
+                    #:extra-version "arm-generic"))
+
+(define-public linux-libre-arm-generic-4.19
+  (make-linux-libre %linux-libre-4.19-version
+                    %linux-libre-4.19-hash
+                    '("armhf-linux")
                     #:patches %linux-libre-4.19-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
@@ -465,6 +487,14 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-arm-omap2plus
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
+                    '("armhf-linux")
+                    #:patches %linux-libre-4.20-patches
+                    #:defconfig "omap2plus_defconfig"
+                    #:extra-version "arm-omap2plus"))
+
+(define-public linux-libre-arm-omap2plus-4.19
+  (make-linux-libre %linux-libre-4.19-version
+                    %linux-libre-4.19-hash
                     '("armhf-linux")
                     #:patches %linux-libre-4.19-patches
                     #:defconfig "omap2plus_defconfig"
