@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +31,7 @@
   #:use-module (guix i18n)
   #:use-module (parted)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -339,12 +340,14 @@ PARTED-OBJECT field equals PARTITION, return #f if not found."
 (define (with-delay-device-in-use? file-name)
   "Call DEVICE-IN-USE? with a few retries, as the first re-read will often
 fail. See rereadpt function in wipefs.c of util-linux for an explanation."
-  (let loop ((try 4))
-    (usleep 250000)
-    (let ((in-use? (device-in-use? file-name)))
-      (if (and in-use? (> try 0))
-          (loop (- try 1))
-          in-use?))))
+  ;; Kernel always return EINVAL for BLKRRPART on loopdevices.
+  (and (not (string-match "/dev/loop*" file-name))
+       (let loop ((try 4))
+         (usleep 250000)
+         (let ((in-use? (device-in-use? file-name)))
+           (if (and in-use? (> try 0))
+               (loop (- try 1))
+               in-use?)))))
 
 (define* (force-device-sync device)
   "Force a flushing of the given DEVICE."
