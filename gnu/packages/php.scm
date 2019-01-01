@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -353,10 +354,4 @@ systems, web content management systems and web frameworks." )
               license:expat))))                             ; ext/date/lib
 
 (define-public php-with-bcmath
-  (package
-    (inherit php)
-    (name "php-with-bcmath")
-    (arguments
-     (substitute-keyword-arguments (package-arguments php)
-       ((#:configure-flags flags)
-        `(cons "--enable-bcmath" ,flags))))))
+  (deprecated-package "php-with-bcmath" php))

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Gábor Boskovits  <boskovits@gmail.com>
-;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -307,8 +307,7 @@ zabbix||{}
 
           (service php-fpm-service-type
                    (php-fpm-configuration
-                    (timezone "Europe/Paris")
-                    (php php-with-bcmath)))
+                    (timezone "Europe/Paris")))
 
           (service zabbix-server-service-type
                    (zabbix-server-configuration
