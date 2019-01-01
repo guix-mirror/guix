@@ -805,19 +805,6 @@ or user activity.")
        ("qtsvg" ,qtsvg)
        ;; Run-time dependency
        ("qtgraphicaleffects" ,qtgraphicaleffects)))
-    (arguments
-     `(#:tests? #f ;; FIXME: Test suite is broken,
-       ;; see https://bugs.kde.org/show_bug.cgi?id=386456
-       ;; Note for when enabling the tests: The test-suite is meant to be run
-       ;; without prior installation, see
-       ;; https://cgit.kde.org/kirigami.git/commit/?id=24ad2c9
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'check-setup
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; make Qt render "offscreen", required for tests
-             (setenv "QT_QPA_PLATFORM" "offscreen")
-             #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "QtQuick components for mobile user interfaces")
     (description "Kirigami is a set of high level QtQuick components looking
