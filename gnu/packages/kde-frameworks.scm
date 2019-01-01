@@ -567,9 +567,16 @@ propagate their changes to their respective configuration files.")
     (inputs
      `(("qtbase" ,qtbase)))
     (arguments
-     `(#:tests? #f ; FIXME: Test failure caused by stout/stderr being interleaved.
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
+         (add-before 'check 'blacklist-failing-test
+           (lambda _
+             ;; Blacklist a failing test-function. FIXME: Make it pass.
+             ;; Test failure caused by stout/stderr being interleaved.
+             (with-output-to-file "autotests/BLACKLIST"
+               (lambda _
+                 (display "[test_channels]\n*\n")))
+             #t))
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
