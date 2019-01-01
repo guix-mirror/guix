@@ -61,6 +61,7 @@
 (define-module (gnu packages emacs)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix cvs-download)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix gexp)
@@ -843,91 +844,91 @@ index is considered the key).")
 ;;;
 
 (define-public emacs-w3m
-  ;; Emacs-w3m follows a "rolling release" model from its CVS repo.  We could
-  ;; use CVS, sure, but instead we choose to use this Git mirror described on
-  ;; the home page as an "unofficial" mirror.
-  (let ((commit "0dd5691f46d314a84da63f3a7277d721815811a2"))
-    (package
-      (name "emacs-w3m")
-      (version (git-version "1.5" "0" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/ecbrown/emacs-w3m")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "02xalyxbrkgl4n8nj7xxkmsbm6lshhwdc8bzs2l4wz3hkpgkj7x4"))))
-      (build-system gnu-build-system)
-      (native-inputs `(("autoconf" ,autoconf)
-                       ("texinfo" ,texinfo)
-                       ("emacs" ,emacs-minimal)))
-      (inputs `(("w3m" ,w3m)
-                ("imagemagick" ,imagemagick)))
-      (arguments
-       `(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (guix build emacs-utils))
-         #:imported-modules (,@%gnu-build-system-modules
-                             (guix build emacs-utils))
-         #:configure-flags
-         (let ((out (assoc-ref %outputs "out")))
-           (list (string-append "--with-lispdir="
-                                out "/share/emacs/site-lisp")
-                 (string-append "--with-icondir="
-                                out "/share/images/emacs-w3m")
-                 ;; Leave .el files uncompressed, otherwise GC can't
-                 ;; identify run-time dependencies.  See
-                 ;; <http://lists.gnu.org/archive/html/guix-devel/2015-12/msg00208.html>
-                 "--without-compress-install"))
-         #:tests? #f                              ; no check target
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'autoconf
-             (lambda _
-               (invoke "autoconf")))
-           (add-before 'configure 'support-emacs!
-             (lambda _
-               ;; For some reason 'AC_PATH_EMACS' thinks that 'Emacs 26' is
-               ;; unsupported.
-               (substitute* "configure"
-                 (("EMACS_FLAVOR=unsupported")
-                  "EMACS_FLAVOR=emacs"))
-               #t))
-           (add-before 'build 'patch-exec-paths
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out"))
-                     (w3m (assoc-ref inputs "w3m"))
-                     (imagemagick (assoc-ref inputs "imagemagick"))
-                     (coreutils (assoc-ref inputs "coreutils")))
-                 (make-file-writable "w3m.el")
-                 (emacs-substitute-variables "w3m.el"
-                   ("w3m-command" (string-append w3m "/bin/w3m"))
-                   ("w3m-touch-command"
-                    (string-append coreutils "/bin/touch"))
-                   ("w3m-icon-directory"
-                    (string-append out "/share/images/emacs-w3m")))
-                 (make-file-writable "w3m-image.el")
-                 (emacs-substitute-variables "w3m-image.el"
-                   ("w3m-imagick-convert-program"
-                    (string-append imagemagick "/bin/convert"))
-                   ("w3m-imagick-identify-program"
-                    (string-append imagemagick "/bin/identify")))
-                 #t)))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (invoke "make" "install" "install-icons")
-               (with-directory-excursion
-                   (string-append (assoc-ref outputs "out")
-                                  "/share/emacs/site-lisp")
-                 (for-each delete-file '("ChangeLog" "ChangeLog.1"))
-                 (symlink "w3m-load.el" "w3m-autoloads.el")
-                 #t))))))
-      (home-page "http://emacs-w3m.namazu.org/")
-      (synopsis "Simple Web browser for Emacs based on w3m")
-      (description
-       "Emacs-w3m is an emacs interface for the w3m web browser.")
-      (license license:gpl2+))))
+  ;; Emacs-w3m follows a "rolling release" model.
+  (package
+    (name "emacs-w3m")
+    (version "2018-11-11")
+    (source (origin
+              (method cvs-fetch)
+              (uri (cvs-reference
+                    (root-directory
+                     ":pserver:anonymous@cvs.namazu.org:/storage/cvsroot")
+                    (module "emacs-w3m")
+                    (revision version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0nvahdbjs12zg7zsk4gql02mvnv56cf1rwj2f5p42lwp3xvswiwp"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("texinfo" ,texinfo)
+                     ("emacs" ,emacs-minimal)))
+    (inputs `(("w3m" ,w3m)
+              ("imagemagick" ,imagemagick)))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+       #:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "--with-lispdir="
+                              out "/share/emacs/site-lisp")
+               (string-append "--with-icondir="
+                              out "/share/images/emacs-w3m")
+               ;; Leave .el files uncompressed, otherwise GC can't
+               ;; identify run-time dependencies.  See
+               ;; <http://lists.gnu.org/archive/html/guix-devel/2015-12/msg00208.html>
+               "--without-compress-install"))
+       #:tests? #f                              ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _
+             (invoke "autoconf")))
+         (add-before 'configure 'support-emacs!
+           (lambda _
+             ;; For some reason 'AC_PATH_EMACS' thinks that 'Emacs 26' is
+             ;; unsupported.
+             (substitute* "configure"
+               (("EMACS_FLAVOR=unsupported")
+                "EMACS_FLAVOR=emacs"))
+             #t))
+         (add-before 'build 'patch-exec-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (w3m (assoc-ref inputs "w3m"))
+                   (imagemagick (assoc-ref inputs "imagemagick"))
+                   (coreutils (assoc-ref inputs "coreutils")))
+               (make-file-writable "w3m.el")
+               (emacs-substitute-variables "w3m.el"
+                 ("w3m-command" (string-append w3m "/bin/w3m"))
+                 ("w3m-touch-command"
+                  (string-append coreutils "/bin/touch"))
+                 ("w3m-icon-directory"
+                  (string-append out "/share/images/emacs-w3m")))
+               (make-file-writable "w3m-image.el")
+               (emacs-substitute-variables "w3m-image.el"
+                 ("w3m-imagick-convert-program"
+                  (string-append imagemagick "/bin/convert"))
+                 ("w3m-imagick-identify-program"
+                  (string-append imagemagick "/bin/identify")))
+               #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "make" "install" "install-icons")
+             (with-directory-excursion
+                 (string-append (assoc-ref outputs "out")
+                                "/share/emacs/site-lisp")
+               (for-each delete-file '("ChangeLog" "ChangeLog.1"))
+               (symlink "w3m-load.el" "w3m-autoloads.el")
+               #t))))))
+    (home-page "http://emacs-w3m.namazu.org/")
+    (synopsis "Simple Web browser for Emacs based on w3m")
+    (description
+     "Emacs-w3m is an emacs interface for the w3m web browser.")
+    (license license:gpl2+)))
 
 (define-public emacs-wget
   (package
