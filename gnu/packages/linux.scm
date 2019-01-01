@@ -306,14 +306,16 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
        ("elfutils" ,elfutils)  ; Needed to enable CONFIG_STACK_VALIDATION
        ("flex" ,flex)
        ("bison" ,bison)
-       ;; On x86, build with GCC-7 for full retpoline support.
+
+       ;; Build with GCC-7 for full retpoline support.
        ;; FIXME: Remove this when our default compiler has retpoline support.
-       ,@(match (system->linux-architecture
-                 (or (%current-target-system) (%current-system)))
-           ((or "x86_64" "i386")
-            `(("gcc" ,gcc-7)))
-           (_
-            '()))
+       ("gcc" ,gcc-7)
+
+       ;; These are needed to compile the GCC plugins.
+       ("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("mpc" ,mpc)
+
        ,@(match (and configuration-file
                      (configuration-file
                       (system->linux-architecture
@@ -334,6 +336,11 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
            (lambda _
              (substitute* (find-files "." "^Makefile(\\.include)?$")
                (("/bin/pwd") "pwd"))
+             #t))
+         (add-before 'configure 'work-around-gcc-7-include-path-issue
+           (lambda _
+             (unsetenv "C_INCLUDE_PATH")
+             (unsetenv "CPLUS_INCLUDE_PATH")
              #t))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)
