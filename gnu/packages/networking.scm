@@ -1860,14 +1860,14 @@ file for more details.")
     (name "amule")
     (version "2.3.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/amule-project/amule/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/amule-project/amule")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wvcj0n9xz03xz5c2xwp6dwfp7sqjhhwbki3m0lwikskpn9lkzk2"))
+                "010wxm6g9f92x6fympj501zbnjka32rzbx0sk3a2y4zpih5d2nsn"))
               ;; Patch for adopting crypto++ >= 6.0.
               (patches (search-patches "amule-crypto-6.patch"))))
     (build-system gnu-build-system)
