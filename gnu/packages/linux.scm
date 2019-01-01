@@ -231,6 +231,18 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
      (base32
       "1hk9swxxc80bmn2zd2qr5ccrjrk28xkypwhl4z0qx4hbivj7qm06"))))
 
+(define %linux-libre-arm-export-__sync_icache_dcache-patch
+  (origin
+    (method url-fetch)
+    (uri (string-append
+          "https://salsa.debian.org/kernel-team/linux"
+          "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
+          "/debian/patches/bugfix/arm/"
+          "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
+    (file-name "linux-libre-4.19-arm-export-__sync_icache_dcache.patch")
+    (sha256
+     (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f"))))
+
 (define* (kernel-config arch #:key variant)
   "Return the absolute file name of the Linux-Libre build configuration file
 for ARCH and optionally VARIANT, or #f if there is no such configuration."
@@ -393,33 +405,17 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
-(define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux"))
-
-;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
-;; supports qemu "virt" machine and possibly a large number of ARM boards.
-;; See : https://wiki.debian.org/DebianKernel/ARMMP.
-
 (define %linux-libre-version "4.19.13")
 (define %linux-libre-hash "0ac0ywy542fiwdiab2z12rbjn9zw8vjbzkbpmpk9nfic2mcyrg8r")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
-        (origin
-          (method url-fetch)
-          (uri (string-append
-                "https://salsa.debian.org/kernel-team/linux"
-                "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
-                "/debian/patches/bugfix/arm/"
-                "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
-          (file-name "linux-libre-4.19-arm-export-__sync_icache_dcache.patch")
-          (sha256
-           (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))))
+        %linux-libre-arm-export-__sync_icache_dcache-patch))
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
-                    %linux-compatible-systems
+                    '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
@@ -435,13 +431,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.9
   (make-linux-libre "4.9.148"
                     "0yrjgvdzbcp750j4fhlxi4ia1v0fqh0y3p99wnbpfvg17j01lbjl"
-                    %intel-compatible-systems
+                    '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
   (make-linux-libre "4.4.169"
                     "1snjdih9iv3fg7f9h2r1gldcqmvzj1w398aysws4fialj488x1p4"
-                    %intel-compatible-systems
+                    '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-arm-generic
