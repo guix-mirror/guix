@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,14 +31,15 @@
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://www.phidgets.com/downloads/libraries/libphidget_"
+                  "https://www.phidgets.com/downloads/phidget21/libraries/"
+                  "linux/libphidget/libphidget_"
                   version ".tar.gz"))
             (sha256
              (base32 "09ibrz1df5ajqcm9vmx6zw8qama2rzf0961yhmmfsy629qfhyrk0"))))
    (build-system gnu-build-system)
    (inputs `(("libusb" ,libusb)))
    (outputs '("out" "debug"))
-   (home-page "http://www.phidgets.com/")
+   (home-page "https://www.phidgets.com/")
    (license lgpl3+)
    (synopsis "C library to manipulate Phidgets")
    (description synopsis)))
