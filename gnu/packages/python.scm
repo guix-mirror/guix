@@ -7807,7 +7807,7 @@ with a new public API, and RPython support.")
            (lambda _
              ;; Tests require write access to HOME.
              (setenv "HOME" "/tmp")
-             (zero? (system* "nosetests")))))))
+             (invoke "nosetests"))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-nose" ,python-nose)))
