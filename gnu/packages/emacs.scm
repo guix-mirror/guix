@@ -3867,13 +3867,14 @@ fully-functional one.")
     (version "0.14.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/abo-abo/hydra/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/abo-abo/hydra")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0884k3ffwzhh6krbd8l7vvm184dkagb2jf4q8xzg72plln34qrm8"))))
+         "0ln4z2796ycy33g5jcxkqvm7638qxy4sipsab7d2864hh700cikg"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abo-abo/hydra")
     (synopsis "Make Emacs bindings that stick around")
