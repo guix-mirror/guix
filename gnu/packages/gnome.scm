@@ -2634,9 +2634,9 @@ and the GLib main loop, to integrate well with GNOME applications.")
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html"))))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
        ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)
        ("xsltproc" ,libxslt)))
