@@ -12933,3 +12933,25 @@ defining multiple keys in multiple keymaps at once, implicitly wrapping key
 strings with (@code{kbd ...}), using named prefix key sequences (like the
 leader key in vim), and much more.")
       (license license:gpl3+))))
+
+(define-public emacs-tldr
+  (let ((commit "398b197c8d2238628b07e1b32d0f373876279f4c"))
+    (package
+      (name "emacs-tldr")
+      (version (git-version "0" "0" commit))
+      (home-page "https://github.com/kuanyui/tldr.el")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url (string-append home-page ".git"))
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0iq7qlis6c6r2qkdpncrhh5vsihkhvy5x4y1y8cjb7zxkh62w33f"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (synopsis "Simplified and community-driven man pages for Emacs")
+      (description "@code{emacs-tldr} allows the user to access tldr pages
+from within emacs.  The @code{tldr} pages are a community effort to simplify
+the man pages with practical examples.")
+      (license license:wtfpl2))))
