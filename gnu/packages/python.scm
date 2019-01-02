@@ -7157,27 +7157,36 @@ system.")
 (define-public python-notebook
   (package
     (name "python-notebook")
-    (version "4.2.3")
+    (version "5.7.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "notebook" version))
               (sha256
                (base32
-                "0laq5c2f21frq6xcdckgq7raqhznbjb0qs0357g612z87wyn1a9r"))))
+                "0jm7324mbxljmn9hgapj66q7swyz5ai92blmr0jpcy0h80x6f26r"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             ;; HOME must be set for tests
+             ;; These tests require a browser
+             (delete-file-recursively "notebook/tests/selenium")
+             ;; Some tests need HOME
              (setenv "HOME" "/tmp")
-             (zero? (system* "nosetests")))))))
+             ;; This file contains "warningfilters", which are not supported
+             ;; by this version of nose.
+             (delete-file "setup.cfg")
+             (with-directory-excursion "/tmp"
+               (invoke "nosetests" "-v"))
+             #t)))))
     (propagated-inputs
      `(("python-jupyter-core" ,python-jupyter-core)
        ("python-nbformat" ,python-nbformat)
        ("python-nbconvert" ,python-nbconvert)
-       ("python-ipython" ,python-ipython)))
+       ("python-prometheus-client" ,python-prometheus-client)
+       ("python-send2trash" ,python-send2trash)
+       ("python-terminado" ,python-terminado)))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-sphinx" ,python-sphinx)
