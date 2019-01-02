@@ -9200,7 +9200,7 @@ best YAML support to date.")
 (define-public perl-yaml-tiny
   (package
     (name "perl-yaml-tiny")
-    (version "1.66")
+    (version "1.73")
     (source
      (origin
        (method url-fetch)
@@ -9208,7 +9208,7 @@ best YAML support to date.")
                            "YAML-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "0c17l8pvpraznpb31ncmr4wxlyww8sg8dhvp3s3q02yqll3cnygv"))))
+         "0i3p4nz8ysrsrs6vlzc6gkjcfpcaf05xjc7lwbjkw7lg5shmycdw"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-json-maybexs" ,perl-json-maybexs)
