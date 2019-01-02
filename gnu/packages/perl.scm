@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2018 Roel Janssen <roel@gnu.org>
@@ -1533,7 +1533,7 @@ CPAN::Meta object are present.")
 (define-public perl-cpanel-json-xs
   (package
     (name "perl-cpanel-json-xs")
-    (version "3.0114")
+    (version "4.08")
     (source
      (origin
        (method url-fetch)
@@ -1541,7 +1541,7 @@ CPAN::Meta object are present.")
                            "Cpanel-JSON-XS-" version ".tar.gz"))
        (sha256
         (base32
-         "0jhi1v0631x4d14a7cpfnpjqhs34zkygxjn1nwvvr927awx5jx71"))))
+         "0bbw9sk3kgfwkg9lw3vf59g4jjvr69vv09sinndl2nlbd5dlgh9b"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
