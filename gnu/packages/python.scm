@@ -9929,6 +9929,20 @@ characters, mouse support, and auto suggestions.")
 (define-public python2-prompt-toolkit
   (package-with-python2 python-prompt-toolkit))
 
+(define-public python-prompt-toolkit-1
+  (package (inherit python-prompt-toolkit)
+    (version "1.0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "prompt_toolkit" version ".tar.gz"))
+       (sha256
+        (base32
+         "05v9h5nydljwpj5nm8n804ms0glajwfy1zagrzqrg91wk3qqi1c5"))))))
+
+(define-public python2-prompt-toolkit-1
+  (package-with-python2 python-prompt-toolkit-1))
+
 (define-public python-jedi
   (package
     (name "python-jedi")
