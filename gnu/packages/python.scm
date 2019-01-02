@@ -7455,7 +7455,7 @@ config files.")
              ;; NOTE: Many tests do not run because they rely on Python's
              ;; built-in test.test_argparse, but we remove the unit tests from
              ;; our Python installation.
-             (zero? (system* "python" "setup.py" "test")))))))
+             (invoke "python" "setup.py" "test"))))))
     (synopsis "Replacement for argparse")
     (description "A drop-in replacement for argparse that allows options to also
 be set via config files and/or environment variables.")
