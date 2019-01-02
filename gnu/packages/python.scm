@@ -7279,14 +7279,15 @@ in the data.")
         (base32
          "1kam1qzgwr7srhm5r6aj90di5sws4bq0jmiw15452ddamb9yspal"))))
     (build-system python-build-system)
-    ;; FIXME: it's not clear how to run the tests.
+    ;; Tests only run in an TTY.
     (arguments `(#:tests? #f))
     (propagated-inputs
      `(("python-ipykernel" ,python-ipykernel)
-       ("python-ipython" ,python-ipython)
        ("python-jupyter-client" ,python-jupyter-client)
-       ("python-prompt-toolkit" ,python-prompt-toolkit)
+       ("python-prompt-toolkit" ,python-prompt-toolkit-1)
        ("python-pygments" ,python-pygments)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
     (home-page "https://jupyter.org")
     (synopsis "Jupyter terminal console")
     (description "This package provides a terminal-based console frontend for
