@@ -776,6 +776,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
   %D%/packages/patches/gnucash-price-quotes-perl.patch		\
   %D%/packages/patches/gnucash-disable-failing-tests.patch	\
+  %D%/packages/patches/gnucash-fix-test-transaction-failure.patch \
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
   %D%/packages/patches/gnutls-skip-pkgconfig-test.patch		\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \

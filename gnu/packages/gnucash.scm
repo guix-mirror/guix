@@ -61,7 +61,8 @@
        (base32
         "0grr5qi5rn1xvr7qx5d7mcxa2mcgycy2b325ry73bb485a6yv5l3"))
       (patches (search-patches "gnucash-price-quotes-perl.patch"
-                               "gnucash-disable-failing-tests.patch"))))
+                               "gnucash-disable-failing-tests.patch"
+                               "gnucash-fix-test-transaction-failure.patch"))))
     (build-system cmake-build-system)
     (inputs
      `(("guile" ,guile-2.2)
