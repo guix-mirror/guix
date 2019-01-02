@@ -7728,8 +7728,7 @@ Blog, News or Announcements section to a Sphinx website.")
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (zero? (system* "py.test" "-v")))))))
+           (lambda _ (invoke "py.test" "-v"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (propagated-inputs
