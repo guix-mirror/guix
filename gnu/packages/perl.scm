@@ -4408,7 +4408,7 @@ installed.")
 (define-public perl-json-maybexs
   (package
     (name "perl-json-maybexs")
-    (version "1.003010")
+    (version "1.004000")
     (source
      (origin
        (method url-fetch)
@@ -4416,7 +4416,7 @@ installed.")
                            "JSON-MaybeXS-" version ".tar.gz"))
        (sha256
         (base32
-         "0hs504x5zsa2vl6r7b3rvbygsak1ly24m1lg636bqp3x7jirmb30"))))
+         "09m1w03as6n0a00pzvaldkhm494yaf5n0g3j2cwwfx24iwpa1gar"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-without-module" ,perl-test-without-module)))
