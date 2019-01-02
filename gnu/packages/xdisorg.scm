@@ -992,7 +992,7 @@ color temperature should be set to match the lamps in your room.")
 (define-public xscreensaver
   (package
     (name "xscreensaver")
-    (version "5.40")
+    (version "5.42")
     (source
      (origin
        (method url-fetch)
@@ -1001,7 +1001,7 @@ color temperature should be set to match the lamps in your room.")
                        version ".tar.gz"))
        (sha256
         (base32
-         "1q2sr7h6ps6d3hk8895g12rrcqiihjl7py1ly077ikv4866r181h"))))
+         "1qfbsnj7201d03vf0b2lzxmlcq4kvkvzp48r5gcgsjr17c1sl7a4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; no check target
@@ -1015,7 +1015,9 @@ color temperature should be set to match the lamps in your room.")
              #t)))
        #:configure-flags '("--with-pam" "--with-proc-interrupts"
                            "--without-readdisplay")
-       #:make-flags (list (string-append "AD_DIR="
+       ;; FIXME: Remove CFLAGS once our default compiler is GCC6 or later.
+       #:make-flags (list "CFLAGS=-std=c99"
+                          (string-append "AD_DIR="
                                          (assoc-ref %outputs "out")
                                          "/usr/lib/X11/app-defaults"))))
     (native-inputs
