@@ -399,26 +399,17 @@ CorelDRAW documents of all versions.")
 (define-public libetonyek
   (package
     (name "libetonyek")
-    (version "0.1.8")
+    (version "0.1.9")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "0bfq9rwm040xhh7b3v0gsdavwvnrz4hkwnhpggarxk70mr3j7jcx"))))
+               "0jhsbdimiyijdqriy0zzkjjgc4wi6fjimhdg4mdybrlwg7l7f5p6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-mdds=1.4")
-       #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'support-mdds-1.4
-                    (lambda _
-                      ;; This package already works fine with mdds 1.4, but the
-                      ;; configure check is too strict.  Taken from upstream.
-                      (substitute* "configure"
-                        (("mdds=1\\.2") "mdds=1.4")
-                        (("mdds=\"1\\.2\"") "mdds=\"1.4\""))
-                      #t)))))
+     `(#:configure-flags '("--with-mdds=1.4")))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
