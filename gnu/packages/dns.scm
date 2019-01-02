@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -781,3 +782,30 @@ attempts the update when it has changed.")
       "@command{hnsd} is a @dfn{host name resolver} for the Handshake Naming
 System (HNS) peer-to-peer network.")
      (license license:expat))))
+
+(define-public libmicrodns
+  (package
+    (name "libmicrodns")
+    (version "0.0.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/videolabs/libmicrodns")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1xvl9k49ng35wbsqmnjnyqvkyjf8dcq2ywsq3jp3wh0rgmxhq2fh"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/videolabs/libmicrodns")
+    (synopsis "Minimal mDNS resolver library")
+    (description "@code{libmicrodns} provides a minimal implementation of a
+mDNS resolver as well as an announcer.  mDNS (Multicast Domain Name System) is
+a zero-config service that allows one to resolve host names to IP addresses in
+local networks.")
+    (license license:lgpl2.1)))
