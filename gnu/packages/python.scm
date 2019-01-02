@@ -4856,20 +4856,29 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 (define-public python-ipykernel
   (package
     (name "python-ipykernel")
-    (version "4.5.2")
+    (version "5.1.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "ipykernel" version))
       (sha256
-       (base32 "0qllv0k6zzv1r1cj1x2ygxmlrrqhbslzj8rc6r6fg3kc1rgz4m2s"))))
+       (base32 "0br95qhrd5k65g10djngiy27hs0642301hlf2q142i8djabvzh0g"))))
     (build-system python-build-system)
-    ;; The tests load a submodule of IPython.  However, IPython itself depends
-    ;; on ipykernel.
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (invoke "pytest" "-v")
+             #t)))))
     (propagated-inputs
-     ;; imported at runtime during connect
-     `(("python-jupyter-client" ,python-jupyter-client)))
+     `(("python-ipython" ,python-ipython)
+       ;; imported at runtime during connect
+       ("python-jupyter-client" ,python-jupyter-client)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-nose" ,python-nose)))
     (home-page "https://ipython.org")
     (synopsis "IPython Kernel for Jupyter")
     (description
