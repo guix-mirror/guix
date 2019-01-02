@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
@@ -7381,21 +7381,19 @@ support for rich media output.")
         (base32
          "0pwf3pminkzyzgx5kcplvvbvwrrzd3baa7lmh96f647k30rlpp6r"))))
     (build-system python-build-system)
-    ;; FIXME: it's not clear how to run the tests.
-    (arguments `(#:tests? #f))
+    (arguments '(#:tests? #f)) ; there are none.
     (propagated-inputs
      `(("python-ipykernel" ,python-ipykernel)
        ("python-ipywidgets" ,python-ipywidgets)
        ("python-jupyter-console" ,python-jupyter-console)
        ("python-nbconvert" ,python-nbconvert)
-       ("python-notebook" ,python-notebook)))
-
+       ("python-notebook" ,python-notebook)
+       ("python-qtconsole" ,python-qtconsole)))
     (native-search-paths
      (list (search-path-specification
             (variable "JUPYTER_PATH")
             (files '("share/jupyter")))))
-
-    (home-page "http://jupyter.org")
+    (home-page "https://jupyter.org")
     (synopsis "Web application for interactive documents")
     (description
      "The Jupyter Notebook is a web application that allows you to create and
