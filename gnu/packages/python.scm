@@ -9888,32 +9888,43 @@ collections of data.")
   (package-with-python2 python-backpack))
 
 (define-public python-prompt-toolkit
- (package
-  (name "python-prompt-toolkit")
-  (version "1.0.15")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (pypi-uri "prompt_toolkit" version ".tar.gz"))
-      (sha256
+  (package
+    (name "python-prompt-toolkit")
+    (version "2.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "prompt_toolkit" version ".tar.gz"))
+       (sha256
         (base32
-          "05v9h5nydljwpj5nm8n804ms0glajwfy1zagrzqrg91wk3qqi1c5"))))
-  (build-system python-build-system)
-  (arguments
-   '(#:tests? #f)) ; The test suite uses some Windows-specific data types.
-  (propagated-inputs
-   `(("python-wcwidth" ,python-wcwidth)
-     ("python-six" ,python-six)
-     ("python-pygments" ,python-pygments)))
-  (home-page "https://github.com/jonathanslenders/python-prompt-toolkit")
-  (synopsis "Library for building command line interfaces in Python")
-  (description
-    "Prompt-Toolkit is a library for building interactive command line
+         "0fgacqk73w7s932vy46pan2yp8rvjmlkag20xvaydh9mhf6h85zx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'post-install-check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; HOME is needed for the test
+             ;; "test_pathcompleter_can_expanduser".
+             (setenv "HOME" "/tmp")
+             (add-installed-pythonpath inputs outputs)
+             (invoke "py.test"))))))
+    (propagated-inputs
+     `(("python-wcwidth" ,python-wcwidth)
+       ("python-six" ,python-six)
+       ("python-pygments" ,python-pygments)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/jonathanslenders/python-prompt-toolkit")
+    (synopsis "Library for building command line interfaces in Python")
+    (description
+     "Prompt-Toolkit is a library for building interactive command line
 interfaces in Python.  It's like GNU Readline but it also features syntax
 highlighting while typing, out-of-the-box multi-line input editing, advanced
 code completion, incremental search, support for Chinese double-width
 characters, mouse support, and auto suggestions.")
-  (license license:bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-prompt-toolkit
   (package-with-python2 python-prompt-toolkit))
