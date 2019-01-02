@@ -7255,13 +7255,13 @@ notebooks.")
         (base32
          "1lk0qrr5l9a0z7qkkn30hv5832whxwxymf1l576fmmad0n7hkxms"))))
     (build-system python-build-system)
-    ;; FIXME: it's not clear how to run the tests.
-    (arguments `(#:tests? #f))
     (propagated-inputs
-     `(("python-ipykernel" ,python-ipykernel)
-       ("python-ipython" ,python-ipython)
+     `(("python-ipython" ,python-ipython)
        ("python-traitlets" ,python-traitlets)
        ("python-widgetsnbextension" ,python-widgetsnbextension)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://ipython.org")
     (synopsis "IPython HTML widgets for Jupyter")
     (description "Ipywidgets are interactive HTML widgets for Jupyter
