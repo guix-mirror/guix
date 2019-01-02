@@ -707,20 +707,21 @@ memory_cycle_ok( $object );
 (define-public perl-test-mockmodule
   (package
     (name "perl-test-mockmodule")
-    (version "0.13")
+    (version "0.170.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/G/GF/GFRANKS/"
-                           "Test-MockModule-" version ".tar.gz"))
+                           "Test-MockModule-v" version ".tar.gz"))
        (sha256
-        (base32 "0lwh6fvnc16r6d74vvh5h4b5a1spcslpjb3mcqbv23k01lm78wvl"))))
+        (base32 "0pggwrlqj6k44qayhbpjqkzry1r626iy2vf30zlf2jdhbjbvlycz"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ;; For tests.
        ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
+       ("perl-test-warnings" ,perl-test-warnings)))
     (propagated-inputs
      `(("perl-super" ,perl-super)))
     (home-page "https://metacpan.org/release/Test-MockModule")
