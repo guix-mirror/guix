@@ -2424,8 +2424,7 @@ engine WebKit via QtWebKit.")
        ("kcoreaddons" ,kcoreaddons)
        ("qtbase" ,qtbase)))
     (arguments
-     `(#:tests? #f ; FIXME: 2/2 tests fail.
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _
