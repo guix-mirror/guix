@@ -7343,7 +7343,7 @@ automatically detect a wide range of file encodings.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (zero? (system* "py.test")))))))
+           (lambda _ (invoke "py.test"))))))
     (home-page "http://docopt.org")
     (synopsis "Command-line interface description language for Python")
     (description "This library allows the user to define a command-line
