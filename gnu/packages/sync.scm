@@ -109,14 +109,14 @@ silently and reliably flow across to every other.")
     (version "0.5.8")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://github.com/sieren/QSyncthingTray/archive/"
-               version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/sieren/QSyncthingTray")
+               (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "1024778ml7q62ziqm4d22z5sc1715l34846pwfyzfpcyl32qlhpz"))))
+          "1n9g4j7qznvg9zl6x163pi9f7wsc3x6q76i33psnm7x2v1i22x5w"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DQST_BUILD_WEBKIT=1")
@@ -128,12 +128,10 @@ silently and reliably flow across to every other.")
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
                (install-file "QSyncthingTray" bin)
-               (install-file (string-append
-                               "../QSyncthingTray-"
-                               ,(package-version qsyncthingtray)
-                               "/resources/images/Icon1024.png")
-                             (string-append
-                               out "/share/pixmaps/QSyncthingTray.png"))
+               (mkdir-p (string-append out "/share/pixmaps"))
+               (copy-file "../source/resources/images/Icon1024.png"
+                          (string-append
+                            out "/share/pixmaps/QSyncthingTray.png"))
                #t))))
        #:tests? #f)) ; no test target
     (inputs
