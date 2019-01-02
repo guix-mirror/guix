@@ -2732,8 +2732,7 @@ KIO enabled infrastructure.")
        ("solid" ,solid)
        ("sonnet" ,sonnet)))
     (arguments
-     `(#:tests? #f ; FIXME: 1/3 tests fail.
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'check 'check-setup
            (lambda _ ; XDG_DATA_DIRS isn't set
