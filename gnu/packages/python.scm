@@ -4933,12 +4933,6 @@ trash.")
        ("python-numpy" ,python-numpy)
        ("python-numpydoc" ,python-numpydoc)
        ("python-jinja2" ,python-jinja2)
-       ("python-jupyter-console"
-        ;; The python-ipython and python-jupyter-console require each
-        ;; other. To get the functionality in both packages working, strip
-        ;; down the python-jupyter-console package when using it as an input
-        ;; to python-ipython.
-        ,python-jupyter-console-minimal)
        ("python-mistune" ,python-mistune)
        ("python-pexpect" ,python-pexpect)
        ("python-pickleshare" ,python-pickleshare)
