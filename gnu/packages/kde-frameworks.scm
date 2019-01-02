@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016,2017,2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016-2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -56,6 +56,7 @@
   #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages openbox)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -1094,6 +1095,7 @@ configuration pages, message boxes, and password requests.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)
        ("dbus" ,dbus) ; for the tests
+       ("openbox" ,openbox) ; for the tests
        ("qttools" ,qttools)
        ("xorg-server" ,xorg-server))) ; for the tests
     (inputs
@@ -1102,31 +1104,26 @@ configuration pages, message boxes, and password requests.")
        ("qtx11extras" ,qtx11extras)
        ("xcb-utils-keysyms" ,xcb-util-keysyms)))
     (arguments
-     `(#:tests? #f ; FIXME: 3/12 tests fail.
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
-             ;; TODO: Simplify and use "common" phases when test-suite passes
-             (if tests?
-                 (begin
-                   (let ((out (assoc-ref outputs "out")))
-                     (setenv "QT_PLUGIN_PATH"
-                             (string-append out "/lib/qt5/plugins:"
-                                            (getenv "QT_PLUGIN_PATH"))))
-                   ;; The test suite requires a running X server, setting
-                   ;; QT_QPA_PLATFORM=offscreen does not suffice and even make
-                   ;; some tests fail.
-                   (system (string-append (assoc-ref inputs "xorg-server")
-                                          "/bin/Xvfb :1 -screen 0 640x480x24 &"))
-                   (setenv "DISPLAY" ":1")
-                   (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
-                   (setenv "DBUS_FATAL_WARNINGS" "0")
-                   (zero? (system* "dbus-launch" "ctest" ".")))
-                 (begin
-                   (format #t "test suite not run~%")
-                   #t)))))))
+         (add-before 'check 'blacklist-failing-tests
+           (lambda _
+             ;; Blacklist a failing test-functions. FIXME: Make it pass.
+             (with-output-to-file "autotests/BLACKLIST"
+               (lambda _
+                 (display "[testState]\n*\n")
+                 (display "[testSupported]\n*\n")))
+             #t))
+         (replace 'check
+           (lambda _
+             ;; The test suite requires a running window anager
+             (system "Xvfb :1 -ac -screen 0 640x480x24 &")
+             (setenv "DISPLAY" ":1")
+             (sleep 5) ;; Give Xvfb a few moments to get on it's feet
+             (system "openbox &")
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             (invoke "dbus-launch" "ctest" "."))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE access to the windowing system")
     (description "KWindowSystem provides information about and allows
