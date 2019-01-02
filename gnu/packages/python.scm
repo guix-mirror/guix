@@ -4888,6 +4888,28 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 (define-public python2-ipykernel
   (package-with-python2 python-ipykernel))
 
+(define-public python-send2trash
+  (package
+    (name "python-send2trash")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "send2trash" version))
+       (sha256
+        (base32
+         "1ci8vcwjmjlp11ljj1ckrfmml9fkq1mclx2gr53y4zvhgp01q030"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/hsoft/send2trash")
+    (synopsis "Send files to trash")
+    (description
+     "This package provides a cross-platform mechanism to send files to the
+trash.")
+    (license license:bsd-3)))
+
+(define-public python2-send2trash
+  (package-with-python2 python-send2trash))
+
 ;; This is the latest release of the LTS version of ipython with support for
 ;; Python 2.7 and Python 3.x.  Later non-LTS versions starting from 6.0 have
 ;; dropped support for Python 2.7.  We may want to rename this package.
