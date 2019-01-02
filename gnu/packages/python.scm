@@ -7219,17 +7219,18 @@ interactive computing.")
 (define-public python-widgetsnbextension
   (package
     (name "python-widgetsnbextension")
-    (version "1.2.6")
+    (version "3.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "widgetsnbextension" version))
        (sha256
         (base32
-         "0lff2mrwrgsa1mxmwx3phl9xvy0jqfpg6khbmxy53jbq56rwy666"))))
+         "0rc2nivdy7k4m3vljx7wdh2jh11djapcgwhvzlbs0isl8gl8nqgs"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-notebook" ,python-notebook)))
+     `(("python-ipykernel" ,python-ipykernel)
+       ("python-notebook" ,python-notebook)))
     (native-inputs
      `(("python-certifi" ,python-certifi)
        ("python-nose" ,python-nose)))
