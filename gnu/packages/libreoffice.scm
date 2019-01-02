@@ -287,15 +287,15 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
 (define-public libcmis
   (package
     (name "libcmis")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/tdf/libcmis/releases/download/v"
-                          version "/libcmis-" version ".tar.gz"))
+                          version "/libcmis-" version ".tar.xz"))
       (sha256
        (base32
-        "03kvl8ywsv5qrxblf0m6955mmvl5q2zpb6vj51vs7ayvxhidzjva"))))
+        "18h0a2gsfxvlv03nlcfvw9bzsflq5sin9agq6za103hr0ab8vcfp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -313,22 +313,10 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
           ;; FIXME: Man pages generation requires docbook-to-man; reenable
           ;; it once this is available.
           "--without-man"
-          ;; avoid triggering configure errors by simple inclusion of
-          ;; boost headers
-          "--disable-werror"
           ;; During configure, the boost headers are found, but linking
           ;; fails without the following flag.
           (string-append "--with-boost="
-                         (assoc-ref %build-inputs "boost")))
-        #:phases (modify-phases %standard-phases
-                   (add-before 'build 'fix-boost-include
-                     (lambda _
-                       ;; This library moved in Boost and the compatibility
-                       ;; redirect is no longer available since version 1.68.0.
-                       (substitute* "src/libcmis/xml-utils.cxx"
-                         (("boost/uuid/sha1.hpp")
-                          "boost/uuid/detail/sha1.hpp"))
-                       #t)))))
+                         (assoc-ref %build-inputs "boost")))))
     (home-page "https://github.com/tdf/libcmis")
     (synopsis "CMIS client library")
     (description "LibCMIS is a C++ client library for the CMIS interface.  It
