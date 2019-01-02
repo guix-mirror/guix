@@ -7333,6 +7333,42 @@ Jupyter kernels such as IJulia and IRKernel.")
       "python-ipython"
       (package-propagated-inputs python-jupyter-console)))))
 
+(define-public python-qtconsole
+  (package
+    (name "python-qtconsole")
+    (version "4.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "qtconsole" version))
+       (sha256
+        (base32
+         "1b03n1ixzscm0jw97l4dq5iy4fslnqxq5bb8287xb7n2a1gs26xw"))))
+    (build-system python-build-system)
+    (arguments
+     ;; XXX: Tests are disabled, because this package needs python-ipython 7,
+     ;; but we only have the LTS version 5.x.  This means that there might be
+     ;; runtime errors, but since this is a dependency of the Jupyter package,
+     ;; and Jupyter can be used without the qtconsole we can overlook this for
+     ;; now.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (propagated-inputs
+     `(("python-ipykernel" ,python-ipykernel)
+       ("python-ipython" ,python-ipython)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "http://jupyter.org")
+    (synopsis "Jupyter Qt console")
+    (description "This package provides a Qt-based console for Jupyter with
+support for rich media output.")
+    (license license:bsd-3)))
+
 (define-public jupyter
   (package
     (name "jupyter")
