@@ -1998,7 +1998,7 @@ recreates the stored directory structure by default.")
 (define-public perl-archive-zip
   (package
     (name "perl-archive-zip")
-    (version "1.60")
+    (version "1.64")
     (source
      (origin
        (method url-fetch)
@@ -2007,7 +2007,7 @@ recreates the stored directory structure by default.")
              version ".tar.gz"))
        (sha256
         (base32
-         "02y2ylq83hy9kgj57sc0239x65br9sm98c0chsm61s08yc2mpiza"))))
+         "0zfinh8nx3rxzscp57vq3w8hihpdb0zs67vvalykcf402kr88pyy"))))
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.
