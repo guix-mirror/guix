@@ -19,7 +19,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -1484,11 +1484,10 @@ can solve two kinds of problems:
        (modify-phases %standard-phases
          (add-after 'configure 'configure-makeinfo
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "libinterp/corefcn/help.cc"
-               (("Vmakeinfo_program = \"makeinfo\"")
-                (string-append "Vmakeinfo_program = \""
-                               (assoc-ref inputs "texinfo")
-                               "/bin/makeinfo\"")))
+             (substitute* "libinterp/corefcn/help.h"
+               (("\"makeinfo\"")
+                (string-append
+                 "\"" (assoc-ref inputs "texinfo") "/bin/makeinfo\"")))
              #t)))))
     (home-page "https://www.gnu.org/software/octave/")
     (synopsis "High-level language for numerical computation")
