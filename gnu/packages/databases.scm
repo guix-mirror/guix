@@ -698,7 +698,7 @@ as a drop-in replacement of MySQL.")
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-uuid=e2fs")
+     `(#:configure-flags '("--with-uuid=e2fs" "--with-openssl")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-/bin/sh
@@ -717,6 +717,7 @@ as a drop-in replacement of MySQL.")
     (inputs
      `(("readline" ,readline)
        ("libuuid" ,util-linux)
+       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://www.postgresql.org/")
     (synopsis "Powerful object-relational database system")
