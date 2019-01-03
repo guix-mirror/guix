@@ -60,8 +60,7 @@
        (sha256
         (base32
          "0grr5qi5rn1xvr7qx5d7mcxa2mcgycy2b325ry73bb485a6yv5l3"))
-       (patches (search-patches "gnucash-price-quotes-perl.patch"
-                                "gnucash-disable-failing-tests.patch"
+       (patches (search-patches "gnucash-disable-failing-tests.patch"
                                 "gnucash-fix-test-transaction-failure.patch"))))
     (build-system cmake-build-system)
     (inputs
@@ -119,6 +118,13 @@
                  (("set\\(SHELL /bin/bash\\)")
                   (string-append "set(SHELL " (which "bash") ")")))
                #t)))
+         ;; After wrapping gnc-fq-check and gnc-fq-helper we can no longer
+         ;; execute them with perl, so execute them directly instead.
+         (add-after 'unpack 'fix-finance-quote-check
+           (lambda _
+             (substitute* "libgnucash/scm/price-quotes.scm"
+               (("\"perl\" \"-w\" ") ""))
+             #t))
          ;; There are about 100 megabytes of documentation.
          (add-after 'install 'install-docs
            (lambda* (#:key inputs outputs #:allow-other-keys)
