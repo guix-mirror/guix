@@ -4890,3 +4890,49 @@ base converters")
 libraries is an industrial strength alternative to OCaml's standard library
 that was developed by Jane Street, the largest industrial user of OCaml.")
 (license license:expat)))
+
+(define-public ocaml-parsexp
+  (package
+    (name "ocaml-parsexp")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/parsexp")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1nyq23s5igd8cf3n4qxprjvhbmb6ighb3fy5mw7hxl0mdgsw5fvz"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (synopsis "S-expression parsing library")
+    (description
+     "This library provides generic parsers for parsing S-expressions from
+strings or other medium.
+
+The library is focused on performances but still provide full generic
+parsers that can be used with strings, bigstrings, lexing buffers,
+character streams or any other sources effortlessly.
+
+It provides three different class of parsers:
+@itemize
+@item
+the normal parsers, producing [Sexp.t] or [Sexp.t list] values
+@item
+the parsers with positions, building compact position sequences so
+that one can recover original positions in order to report properly
+located errors at little cost
+@item
+the Concrete Syntax Tree parsers, produce values of type
+@code{Parsexp.Cst.t} which record the concrete layout of the s-expression
+syntax, including comments
+@end itemize
+
+This library is portable and doesn't provide IO functions.  To read
+s-expressions from files or other external sources, you should use
+parsexp_io.")
+    (license license:expat)))
