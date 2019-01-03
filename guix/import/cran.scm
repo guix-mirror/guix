@@ -358,7 +358,8 @@ s-expression corresponding to that package, or #f on failure."
                 (eq? repo 'bioconductor))
            ;; Retry import from CRAN
            (cran->guix-package package-name 'cran)
-           (description->package repo description))))))
+           (and description
+                (description->package repo description)))))))
 
 (define* (cran-recursive-import package-name #:optional (repo 'gnu))
   (recursive-import package-name repo
