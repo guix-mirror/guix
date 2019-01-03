@@ -361,7 +361,7 @@ s-expression corresponding to that package, or #f on failure."
            (and description
                 (description->package repo description)))))))
 
-(define* (cran-recursive-import package-name #:optional (repo 'gnu))
+(define* (cran-recursive-import package-name #:optional (repo 'cran))
   (recursive-import package-name repo
                     #:repo->guix-package cran->guix-package
                     #:guix-name cran-guix-name))
