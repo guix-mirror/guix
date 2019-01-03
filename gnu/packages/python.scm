@@ -7899,11 +7899,14 @@ otherwise matches 3.2’s API.")
          (base32
           "0rdjmmsab550kxsssdq49jcniz77zlkpw4pvi9hvib3lsskjmh4y"))))
     (build-system python-build-system)
-    (arguments `(#:python ,python-2
-                 ;; FIXME: Python 2.7.14 moved the test.support library,
-                 ;; but our package has not yet been adjusted.  Enable
-                 ;; tests when the python2 package has been fixed.
-                 #:tests? #f))
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "test_futures.py")
+             #t)))))
     (home-page "https://github.com/agronholm/pythonfutures")
     (synopsis
      "Backport of the concurrent.futures package from Python 3.2")
