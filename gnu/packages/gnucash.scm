@@ -49,9 +49,11 @@
   #:use-module (gnu packages xml))
 
 (define-public gnucash
+  ;; TODO: Unbundle libraries such as guile-json found under the "borrowed/"
+  ;; directory.
   (package
     (name "gnucash")
-    (version "3.3")
+    (version "3.4")
     (source
      (origin
        (method url-fetch)
@@ -59,7 +61,7 @@
                            version "/gnucash-" version ".tar.bz2"))
        (sha256
         (base32
-         "0grr5qi5rn1xvr7qx5d7mcxa2mcgycy2b325ry73bb485a6yv5l3"))
+         "1ms2wg4sh5gq3rpjmmnp85rh5nc9ahca1imxkvhz4d3yiwy8hm52"))
        (patches (search-patches "gnucash-fix-test-transaction-failure.patch"))))
     (build-system cmake-build-system)
     (inputs
@@ -83,7 +85,7 @@
        ("googletest" ,googletest)
        ("gnucash-docs" ,gnucash-docs)
        ("pkg-config" ,pkg-config)))
-    (outputs '("out" "doc"))
+    (outputs '("out" "doc" "debug"))
     (arguments
      `(#:test-target "check"
        #:configure-flags
@@ -192,38 +194,41 @@ financial calculations or scheduled transactions.")
 ;; This package is not public, since we use it to build the "doc" output of
 ;; the gnucash package (see above).  It would be confusing if it were public.
 (define gnucash-docs
-  (package
-    (name "gnucash-docs")
-    (version (package-version gnucash))
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
-                           version "/gnucash-docs-" version ".tar.gz"))
-       (sha256
-        (base32
-         "10v4hw4lh888r8yv473pqrvzfjg8dwamk62sghs93rn88ndwm16c"))))
-    (build-system gnu-build-system)
-    ;; These are native-inputs because they are only required for building the
-    ;; documentation.
-    (native-inputs
-     `(("libxml2" ,libxml2)
-       ;; The "check" target needs the docbook xml packages for validating the
-       ;; DocBook XML during the tests.
-       ("docbook-xml-4.4" ,docbook-xml-4.4)
-       ("docbook-xml-4.2" ,docbook-xml-4.2)
-       ("docbook-xml-4.1.2" ,docbook-xml-4.1.2)
-       ("libxslt" ,libxslt)
-       ("docbook-xsl" ,docbook-xsl)
-       ("scrollkeeper" ,scrollkeeper)))
-    (home-page "https://www.gnucash.org/")
-    (synopsis "Documentation for GnuCash")
-    (description
-     "User guide and other documentation for GnuCash in various languages.
+  (let ((revision "1"))              ;set to the empty string when no revision
+    (package
+      (name "gnucash-docs")
+      (version (package-version gnucash))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
+                             version "/gnucash-docs-" version
+                             (if (string-null? revision)
+                                 ""
+                                 (string-append "-" revision))
+                             ".tar.gz"))
+         (sha256
+          (base32
+           "0bgjxpxgk7hy8ihn1kvd8p6vv191q5md2hz6jb9mqc4aykpvdlq7"))))
+      (build-system gnu-build-system)
+      ;; These are native-inputs because they are only required for building the
+      ;; documentation.
+      (native-inputs
+       `(("libxml2" ,libxml2)
+         ;; The "check" target needs the docbook xml package for validating the
+         ;; DocBook XML during the tests.
+         ("docbook-xml" ,docbook-xml)
+         ("libxslt" ,libxslt)
+         ("docbook-xsl" ,docbook-xsl)
+         ("scrollkeeper" ,scrollkeeper)))
+      (home-page "https://www.gnucash.org/")
+      (synopsis "Documentation for GnuCash")
+      (description
+       "User guide and other documentation for GnuCash in various languages.
 This package exists because the GnuCash project maintains its documentation in
 an entirely separate package from the actual GnuCash program.  It is intended
 to be read using the GNOME Yelp program.")
-    (license (list license:fdl1.1+ license:gpl3+))))
+      (license (list license:fdl1.1+ license:gpl3+)))))
 
 (define-public gwenhywfar
   (package
