@@ -4963,3 +4963,42 @@ parsexp_io.")
      "This package is part of Jane Street's Core library. Sexplib contains
 functionality for parsing and pretty-printing s-expressions.")
     (license license:expat)))
+
+(define-public ocaml-base
+  (package
+    (name "ocaml-base")
+    (version "0.11.1")
+    (home-page "https://github.com/janestreet/base")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0j6xb4265jr41vw4fjzak6yr8s30qrnzapnc6rl1dxy8bjai0nir"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           ;; make warnings non fatal (jbuilder behaviour)
+           (lambda _
+             (invoke "dune" "build" "@install" "--profile=release"))))))
+  (synopsis
+    "Full standard library replacement for OCaml")
+  (description
+    "Base is a complete and portable alternative to the OCaml standard
+library.  It provides all standard functionalities one would expect
+from a language standard library.  It uses consistent conventions
+across all of its module.
+
+Base aims to be usable in any context.  As a result system dependent
+features such as I/O are not offered by Base.  They are instead
+provided by companion libraries such as
+@url{https://github.com/janestreet/stdio, ocaml-stdio}.")
+  (license license:expat)))
