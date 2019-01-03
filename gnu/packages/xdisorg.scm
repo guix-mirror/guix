@@ -22,7 +22,7 @@
 ;;; Copyright © 2017 Marek Benc <dusxmt@gmx.com>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
-;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;;
@@ -62,6 +62,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -1612,3 +1613,28 @@ colors on all monitors attached to an XRandR-capable X11 display server.")
     (description "@code{sct} is a lightweight utility to set the color
 temperature of the screen.")
     (license license:bsd-3)))
+
+(define-public wl-clipboard
+  (package
+    (name "wl-clipboard")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bugaevc/wl-clipboard.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03h6ajcc30w6928bkd4h6xfj4iy2359ww6hdlybq8mr1zwmb2h0q"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/bugaevc/wl-clipboard")
+    (synopsis "Command-line copy/paste utilities for Wayland")
+    (description "Wl-clipboard is a set of command-line copy/paste utilities for
+Wayland.")
+    (license license:gpl3+)))
