@@ -5026,3 +5026,30 @@ provided by companion libraries such as
 so they don't expose everything at toplevel.  For instance, @code{Ast_helper}
 is now @code{Ocaml_common.Ast_helper}.")
     (license license:expat)))
+
+(define-public ocaml-stdio
+  (package
+    (name "ocaml-stdio")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/stdio")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1facajqhvq34g2wrg368y0ajxd6lrj5b3lyzyj0jhdmraxajjcwn"))))
+    (build-system dune-build-system)
+    (inputs `(("ocaml-base" ,ocaml-base)
+              ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (arguments
+     '(#:tests? #f)) ;no tests
+    (synopsis "Standard IO library for OCaml")
+    (description
+     "Stdio implements simple input/output functionalities for OCaml.  It
+re-exports the input/output functions of the OCaml standard libraries using
+a more consistent API.")
+    (license license:expat)))
