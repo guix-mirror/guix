@@ -64,7 +64,7 @@
          (add-after 'install 'install-info
            (lambda _
              (invoke "make" "install_doc"))))))
-    (home-page "http://www.nasm.us/")
+    (home-page "https://www.nasm.us/")
     (synopsis "80x86 and x86-64 assembler")
     (description
      "NASM, the Netwide Assembler, is an 80x86 and x86-64 assembler designed
