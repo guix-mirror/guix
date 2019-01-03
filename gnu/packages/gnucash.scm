@@ -54,15 +54,15 @@
     (version "3.3")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
-                          version "/gnucash-" version ".tar.bz2"))
-      (sha256
-       (base32
-        "0grr5qi5rn1xvr7qx5d7mcxa2mcgycy2b325ry73bb485a6yv5l3"))
-      (patches (search-patches "gnucash-price-quotes-perl.patch"
-                               "gnucash-disable-failing-tests.patch"
-                               "gnucash-fix-test-transaction-failure.patch"))))
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
+                           version "/gnucash-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0grr5qi5rn1xvr7qx5d7mcxa2mcgycy2b325ry73bb485a6yv5l3"))
+       (patches (search-patches "gnucash-price-quotes-perl.patch"
+                                "gnucash-disable-failing-tests.patch"
+                                "gnucash-fix-test-transaction-failure.patch"))))
     (build-system cmake-build-system)
     (inputs
      `(("guile" ,guile-2.2)
@@ -79,7 +79,7 @@
        ("perl-finance-quote" ,perl-finance-quote)
        ("tzdata" ,tzdata-for-tests)))
     (native-inputs
-     `(("glib" ,glib "bin") ; glib-compile-schemas, etc.
+     `(("glib" ,glib "bin")             ; glib-compile-schemas, etc.
        ("intltool" ,intltool)
        ("googlemock" ,(package-source googletest))
        ("googletest" ,googletest)
@@ -89,8 +89,8 @@
     (arguments
      `(#:test-target "check"
        #:configure-flags
-       (list "-DWITH_OFX=OFF"  ; libofx is not available yet
-             "-DWITH_SQL=OFF") ; without dbi.h
+       (list "-DWITH_OFX=OFF"           ; libofx is not available yet
+             "-DWITH_SQL=OFF")          ; without dbi.h
        #:make-flags '("GUILE_AUTO_COMPILE=0")
        #:modules ((guix build cmake-build-system)
                   ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
@@ -120,43 +120,41 @@
                   (string-append "set(SHELL " (which "bash") ")")))
                #t)))
          ;; There are about 100 megabytes of documentation.
-         (add-after
-          'install 'install-docs
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((docs (assoc-ref inputs "gnucash-docs"))
-                  (doc-output (assoc-ref outputs "doc")))
-              (mkdir-p (string-append doc-output "/share"))
-              (symlink (string-append docs "/share/gnome")
-                       (string-append doc-output "/share/gnome"))
-              #t)))
-         (add-after
-          'install-docs 'wrap-programs
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (for-each (lambda (prog)
-                        (wrap-program (string-append (assoc-ref outputs "out")
-                                                     "/bin/" prog)
-                          `("PERL5LIB" ":" prefix
-                            ,(map (lambda (o)
-                                    (string-append o "/lib/perl5/site_perl/"
-                                                   ,(package-version perl)))
-                                  (if (string=? prog "gnc-fq-helper")
-                                      (list
-                                       ,@(transitive-input-references
-                                          'inputs
-                                          (map (lambda (l)
-                                                 (assoc l (inputs)))
-                                               '("perl-finance-quote"
-                                                 "perl-date-manip"))))
-                                      (list
-                                       ,@(transitive-input-references
-                                          'inputs
-                                          (map (lambda (l)
-                                                 (assoc l (inputs)))
-                                               '("perl-finance-quote")))))))))
-                      '("gnucash"
-                        "gnc-fq-check"
-                        "gnc-fq-helper"
-                        "gnc-fq-dump"))))
+         (add-after 'install 'install-docs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((docs (assoc-ref inputs "gnucash-docs"))
+                   (doc-output (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc-output "/share"))
+               (symlink (string-append docs "/share/gnome")
+                        (string-append doc-output "/share/gnome"))
+               #t)))
+         (add-after 'install-docs 'wrap-programs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (for-each (lambda (prog)
+                         (wrap-program (string-append (assoc-ref outputs "out")
+                                                      "/bin/" prog)
+                           `("PERL5LIB" ":" prefix
+                             ,(map (lambda (o)
+                                     (string-append o "/lib/perl5/site_perl/"
+                                                    ,(package-version perl)))
+                                   (if (string=? prog "gnc-fq-helper")
+                                       (list
+                                        ,@(transitive-input-references
+                                           'inputs
+                                           (map (lambda (l)
+                                                  (assoc l (inputs)))
+                                                '("perl-finance-quote"
+                                                  "perl-date-manip"))))
+                                       (list
+                                        ,@(transitive-input-references
+                                           'inputs
+                                           (map (lambda (l)
+                                                  (assoc l (inputs)))
+                                                '("perl-finance-quote")))))))))
+                       '("gnucash"
+                         "gnc-fq-check"
+                         "gnc-fq-helper"
+                         "gnc-fq-dump"))))
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'install 'glib-or-gtk-wrap
