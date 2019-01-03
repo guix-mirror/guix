@@ -271,12 +271,9 @@
                                  (scandir testdir
                                           (match-lambda
                                             ((or "." "..") #f)
+                                            ("support" #f)
                                             (file
                                              (not
-                                              ;; FIXME: Add the 'support' directory
-                                              ;; in the next rebuild cycle, since it
-                                              ;; moved in 2.7.14.  See also
-                                              ;; python2-futures below.
                                               (string-prefix? "test_support."
                                                               file))))))
                        (call-with-output-file "__init__.py" (const #t))
