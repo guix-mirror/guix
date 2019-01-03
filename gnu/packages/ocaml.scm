@@ -4936,3 +4936,30 @@ This library is portable and doesn't provide IO functions.  To read
 s-expressions from files or other external sources, you should use
 parsexp_io.")
     (license license:expat)))
+
+(define-public ocaml-sexplib
+  (package
+    (name "ocaml-sexplib")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/sexplib")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1qfl0m04rpcjvc4yw1hzh6r16jpwmap0sa9ax6zjji67dz4szpyb"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-num" ,ocaml-num)
+       ("ocaml-parsexp" ,ocaml-parsexp)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (synopsis
+     "Library for serializing OCaml values to and from S-expressions")
+    (description
+     "This package is part of Jane Street's Core library. Sexplib contains
+functionality for parsing and pretty-printing s-expressions.")
+    (license license:expat)))
