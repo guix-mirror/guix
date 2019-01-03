@@ -74,7 +74,7 @@ Windows32 and Windows64.  It will also output plain binary files.  Its syntax
 is designed to be simple and easy to understand, similar to Intel's but less
 complex.  It supports all currently known x86 architectural extensions, and
 has strong support for macros.")
-    (license license:bsd-3)))
+    (license license:bsd-2)))
 
 (define-public yasm
   (package
