@@ -575,7 +575,7 @@ operations.")
            (setenv "PATH" PATH)
            (invoke tar "xvf" source)
 
-           (install-file (string-append ,name "-" ,version "/magit-svn.el")
+           (install-file (string-append "magit-svn-" ,version "/magit-svn.el")
                          lisp-dir)
 
            (with-directory-excursion lisp-dir
