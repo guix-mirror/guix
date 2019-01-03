@@ -125,7 +125,7 @@ package definition."
     ((package-inputs ...)
      `((,type (,'quasiquote ,(format-inputs package-inputs)))))))
 
-(define %cran-url "http://cran.r-project.org/web/packages/")
+(define %cran-url "https://cran.r-project.org/web/packages/")
 (define %bioconductor-url "https://bioconductor.org/packages/")
 
 ;; The latest Bioconductor release is 3.8.  Bioconductor packages should be
