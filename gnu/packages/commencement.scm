@@ -477,9 +477,7 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
               (cons (f (car h) (caar t)) (map f (cdr h) (cdar t)))
               (if (null? (cddr t))
                   (cons (f (car h) (caar t) (caadr t)) (map f (cdr h) (cdar t) (cdadr t)))
-                  (if (null? (cdddr t))
-                      (cons (f (car h) (caar t) (caadr t) (car (caddr t))) (map f (cdr h) (cdar t) (cdadr t) (cdr (caddr t))))
-                      (error 'unsupported (cons* 'map-5: f h t))) )))))
+                  (error 'unsupported (cons* 'map-4: f h t))b )))))
 " base.mes)
                          (close base.mes))
 
@@ -501,72 +499,88 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
   (package
     (inherit mes)
     (name "mes-boot")
-    (version "0.19")
+    (version "0.21-33-g6d493b90d")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnu/mes/"
+              (uri (string-append "http://lilypond.org/janneke/mes/"
                                   "mes-" version ".tar.gz"))
               (sha256
                (base32
-                "15h4yhaywdc0djpjlin2jz1kzahpqxfki0r0aav1qm9nxxmnp1l0"))))
+                "0nr74zyam5n82svjwfbcz2mycj88vvsqab12x0mxv1lm6yqxqmmj"))))
     (inputs '())
     (propagated-inputs '())
     (native-inputs
-     `(("mescc-tools" ,%bootstrap-mescc-tools)
-       ("nyacc-source" ,(bootstrap-origin
-                         (package-source nyacc-0.86)))
-
-       ("coreutils" , %bootstrap-coreutils&co)
-       ("bootstrap-mes" ,%bootstrap-mes)))
+     `(("nyacc-source" ,(origin (inherit (package-source nyacc))
+                                (snippet #f)))
+       ("mes" ,%bootstrap-mes-rewired)
+       ("mescc-tools" ,%bootstrap-mescc-tools)
+       ,@(%boot-gash-inputs)))
     (arguments
      `(#:implicit-inputs? #f
+       #:tests? #f
        #:guile ,%bootstrap-guile
        #:strip-binaries? #f    ; binutil's strip b0rkes MesCC/M1/hex2 binaries
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'unpack-seeds
            (lambda _
-             (let ((nyacc-source (assoc-ref %build-inputs "nyacc-source"))
-                   (bootstrap-mes (assoc-ref %build-inputs "bootstrap-mes")))
+             (let ((nyacc-source (assoc-ref %build-inputs "nyacc-source")))
                (with-directory-excursion ".."
-                 (mkdir-p "nyacc-source")
-                 (invoke "tar" "--strip=1" "-C" "nyacc-source" "-xvf" nyacc-source)
-                 (symlink (string-append bootstrap-mes "/share/mes/lib") "mes-seed"))
-               #t)))
+                 (invoke "tar" "-xvf" nyacc-source)))))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref %outputs "out")))
-               (setenv "GUILE" "mes")
-               (setenv "GUILE_EFFECTIVE_VERSION" "2.2")
-               (setenv "GUILE_LOAD_PATH" "nyacc")
-               (symlink (string-append "../nyacc-source/module") "nyacc")
-               (invoke "bash" "configure.sh"
-                       (string-append "--prefix=" out)))))
+             (let ((out (assoc-ref %outputs "out"))
+                   (gash (assoc-ref %build-inputs "bash"))
+                   (mes (assoc-ref %build-inputs "mes"))
+                   (dir (with-directory-excursion ".." (getcwd))))
+               (setenv "AR" (string-append "gash " (getcwd) "/scripts/mesar"))
+               (setenv "BASH" (string-append gash "/bin/bash"))
+               (setenv "CC" (string-append mes "/bin/mescc"))
+               (setenv "GUILE_LOAD_PATH"
+                       (string-append
+                        mes "/share/mes/module"
+                        ":" dir "/nyacc-0.99.0/module"
+                        ":" (getenv "GUILE_LOAD_PATH")))
+               (invoke "gash" "configure.sh"
+                       (string-append "--prefix=" out)
+                       (string-append "--host=i686-linux-gnu")))))
          (replace 'build
            (lambda _
-             (let ((mes (assoc-ref %build-inputs "bootstrap-mes")))
-               (setenv "MES_PREFIX" (string-append mes "/share/mes"))
-               (setenv "MES_ARENA" "100000000")
-               (setenv "MES_MAX_ARENA" "100000000")
-               (setenv "MES_STACK" "10000000")
-               (invoke "sh" "bootstrap.sh"))))
-         (replace 'check
-           (lambda _
-             (setenv "DIFF" "sh scripts/diff.scm")
-             ;; fail fast tests
-             ;; (invoke "sh" "-x" "build-aux/test.sh" "scaffold/tests/t")
-             ;; (invoke "sh" "-x" "build-aux/test.sh" "scaffold/tests/63-struct-cell")
-             (invoke "sh" "check.sh")))
+             (invoke "sh" "bootstrap.sh")))
+         (delete 'check)
          (replace 'install
            (lambda _
-             (invoke "sh" "install.sh"))))))
+             (substitute* "install.sh"  ; show some progress
+               ((" -xf") " -xvf")
+               (("^( *)((cp|mkdir|tar) [^']*[^\\])\n" all space cmd)
+                (string-append space "echo '" cmd "'\n"
+                               space cmd "\n")))
+             (invoke "sh" "install.sh")
+             ;; Keep ASCII output, for friendlier comparison and bisection
+             (let* ((out (assoc-ref %outputs "out"))
+                    (cache (string-append out "/lib/cache")))
+               (define (objects-in-dir dir)
+                 (find-files dir
+                             (lambda (name stat)
+                               (and (equal? (dirname name) dir)
+                                    (or (string-suffix? ".o" name)
+                                        (string-suffix? ".s" name))))))
+               (for-each (lambda (x) (install-file x cache))
+                         (append (objects-in-dir ".")
+                                 (objects-in-dir "mescc-lib"))))
+             #t)))))
     (native-search-paths
      (list (search-path-specification
             (variable "C_INCLUDE_PATH")
-            (files '("share/mes/include")))
+            (files '("include")))
            (search-path-specification
             (variable "LIBRARY_PATH")
-            (files '("share/mes/lib")))))))
+            (files '("lib")))
+           (search-path-specification
+            (variable "MES_PREFIX")
+            (separator #f)
+            (files '("")))))))
+
 
 (define tcc-boot0
   ;; Pristine tcc cannot be built by MesCC, we are keeping a delta of 11
