@@ -60,8 +60,7 @@
        (sha256
         (base32
          "0grr5qi5rn1xvr7qx5d7mcxa2mcgycy2b325ry73bb485a6yv5l3"))
-       (patches (search-patches "gnucash-disable-failing-tests.patch"
-                                "gnucash-fix-test-transaction-failure.patch"))))
+       (patches (search-patches "gnucash-fix-test-transaction-failure.patch"))))
     (build-system cmake-build-system)
     (inputs
      `(("guile" ,guile-2.2)
@@ -124,6 +123,21 @@
            (lambda _
              (substitute* "libgnucash/scm/price-quotes.scm"
                (("\"perl\" \"-w\" ") ""))
+             #t))
+         ;; The test-stress-options unit test is known to fail, so we disable
+         ;; it (see: https://bugs.gnucash.org/show_bug.cgi?id=796877).
+         (add-after 'unpack 'disable-stress-options-test
+           (lambda _
+             (substitute* "gnucash/report/standard-reports/test/CMakeLists.txt"
+               (("test-stress-options.scm") ""))
+             #t))
+         ;; The qof test requires the en_US, en_GB, and fr_FR locales.
+         (add-before 'check 'install-locales
+           (lambda _
+             (setenv "LOCPATH" (getcwd))
+             (invoke "localedef" "-i" "en_US" "-f" "UTF-8" "./en_US.UTF-8")
+             (invoke "localedef" "-i" "en_GB" "-f" "UTF-8" "./en_GB.UTF-8")
+             (invoke "localedef" "-i" "fr_FR" "-f" "UTF-8" "./fr_FR.UTF-8")
              #t))
          ;; There are about 100 megabytes of documentation.
          (add-after 'install 'install-docs
