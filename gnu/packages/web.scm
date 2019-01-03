@@ -5330,6 +5330,9 @@ Instagram and YouTube.")
        (uri (git-reference
              (url "https://github.com/linkchecker/linkchecker")
              (commit (string-append "v" version))))
+       (patches
+        (search-patches
+         "linkchecker-mark-more-tests-that-require-the-network.patch"))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -5339,8 +5342,32 @@ Instagram and YouTube.")
      `(("python2-dnspython" ,python2-dnspython)
        ("python2-pyxdg" ,python2-pyxdg)
        ("python2-requests" ,python2-requests)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("python2-pytest" ,python2-pytest)
+       ("python2-miniboa" ,python2-miniboa)
+       ("python2-parameterized" ,python2-parameterized)))
     (arguments
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; Move the 'check phase to after 'install, so that the installed
+         ;; library can be used
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Set PYTHONPATH so that the installed linkchecker is used
+               (setenv "PYTHONPATH"
+                       (string-append out "/lib/python2.7/site-packages"
+                                      ":"
+                                      (getenv "PYTHONPATH")))
+               ;; Remove this directory to avoid it being used when running
+               ;; the tests
+               (delete-file-recursively "linkcheck")
+
+               (invoke "py.test" "tests"))
+             #t)))))
     (home-page "https://linkcheck.github.io/linkchecker")
     (synopsis "Check websites for broken links")
     (description "LinkChecker is a website validator.  It checks for broken
