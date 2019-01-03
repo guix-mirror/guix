@@ -1753,6 +1753,28 @@ matching them against a list of media-ranges.")
 (define-public python2-mimeparse
   (package-with-python2 python-mimeparse))
 
+(define-public python-miniboa
+  (package
+    (name "python-miniboa")
+    (version "1.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "miniboa" version))
+       (sha256
+        (base32
+         "09jh3pn4rh7kh7jayanf8jzy6gp03791b5a193w6148cf3i6k9m3"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/shmup/miniboa")
+    (synopsis "Simple, single-threaded Telnet server")
+    (description
+     "Miniboa is a simple, asynchronous, single-threaded, poll-based Telnet
+server.")
+    (license license:asl2.0)))
+
+(define-public python2-miniboa
+  (package-with-python2 python-miniboa))
+
 (define-public python-pafy
   (package
     (name "python-pafy")
