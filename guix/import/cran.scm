@@ -161,6 +161,12 @@ bioconductor package NAME, or #F if the package is unknown."
                (bioconductor-packages-list))
          (cut assoc-ref <> "Version")))
 
+;; Little helper to download URLs only once.
+(define download
+  (memoize
+   (lambda (url)
+     (with-store store (download-to-store store url)))))
+
 (define (fetch-description repository name)
   "Return an alist of the contents of the DESCRIPTION file for the R package
 NAME in the given REPOSITORY, or #f in case of failure.  NAME is
@@ -183,7 +189,7 @@ from ~s: ~a (~s)~%"
      ;; download the source tarball, and then extract the DESCRIPTION file.
      (and-let* ((version (latest-bioconductor-package-version name))
                 (url     (car (bioconductor-uri name version)))
-                (tarball (with-store store (download-to-store store url))))
+                (tarball (download url)))
        (call-with-temporary-directory
         (lambda (dir)
           (parameterize ((current-error-port (%make-void-port "rw+"))
@@ -299,7 +305,7 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                        ((url rest ...) url)
                        ((? string? url) url)
                        (_ #f)))
-         (tarball    (with-store store (download-to-store store source-url)))
+         (tarball    (download source-url))
          (sysdepends (append
                       (if (needs-zlib? tarball) '("zlib") '())
                       (map string-downcase (listify meta "SystemRequirements"))))
