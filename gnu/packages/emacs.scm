@@ -35,7 +35,7 @@
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
@@ -330,6 +330,36 @@ editor (without an X toolkit)" )
            (add-before 'build 'make-deps-dir
              (lambda _
                (invoke "mkdir" "-p" "src/deps")))))))))
+
+(define-public (package-elisp-from-package
+                source-package package-name source-files)
+  "Returns a package definition that packages emacs-lisp files from the
+SOURCE-PACKAGEs source.  The package has the name PACKAGE-NAME and packages
+the files SOURCE-FILES from the source in its root directory."
+  (let ((orig (package-source source-package)))
+    (package
+      (inherit source-package)
+      (name package-name)
+      (build-system emacs-build-system)
+      (source (origin
+                (method (origin-method orig))
+                (uri (origin-uri orig))
+                (sha256 (origin-sha256 orig))
+                (file-name (string-append package-name "-"
+                                          (package-version source-package)))
+                (modules '((guix build utils)
+                           (srfi srfi-1)
+                           (ice-9 ftw)))
+                (snippet
+                 `(let* ((source-files (quote ,source-files))
+                         (basenames (map basename source-files)))
+                    (map copy-file
+                         source-files basenames)
+                    (map delete-file-recursively
+                         (fold delete
+                               (scandir ".")
+                               (append '("." "..") basenames)))
+                    #t)))))))
 
 
 ;;;
