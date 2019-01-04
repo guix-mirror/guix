@@ -5079,3 +5079,65 @@ a more consistent API.")
 ppx_deriving and ppx_type_conv to inter-operate gracefully when linked
 as part of the same ocaml-migrate-parsetree driver.")
     (license license:bsd-3)))
+
+(define-public ocaml-ppxlib
+  (package
+    (name "ocaml-ppxlib")
+    (version "0.4.0")
+    (home-page "https://github.com/ocaml-ppx/ppxlib")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1nr4igf5m4prvigvv470dnhfdhdw0p6hz6zw8gnm5bzcv7s2lg5l"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-compiler-libs" ,ocaml-compiler-libs)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppx-derivers" ,ocaml-ppx-derivers)
+       ("ocaml-stdio" ,ocaml-stdio)
+       ("ocaml-result" ,ocaml-result)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (native-inputs
+     `(("ocaml-findlib" ,ocaml-findlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-topfind
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; add the line #directory ".." at the top of each file
+             ;; using #use "topfind";; to be able to find topfind
+             (let* ((findlib-path (assoc-ref inputs "ocaml-findlib"))
+                    (findlib-libdir
+                     (string-append findlib-path "/lib/ocaml/site-lib")))
+               (substitute* '("test/base/test.ml"
+                              "test/deriving/test.ml"
+                              "test/driver/attributes/test.ml"
+                              "test/driver/non-compressible-suffix/test.ml"
+                              "test/driver/transformations/test.ml")
+                 (("#use \"topfind\";;" all)
+                  (string-append "#directory \"" findlib-libdir "\"\n"
+                                 all))))
+             #t)))))
+    (synopsis
+     "Base library and tools for ppx rewriters")
+    (description
+     "A comprehensive toolbox for ppx development.  It features:
+@itemize
+@item an OCaml AST / parser / pretty-printer snapshot, to create a full frontend
+independent of the version of OCaml;
+@item a library for library for ppx rewriters in general, and type-driven code
+generators in particular;
+@item
+a feature-full driver for OCaml AST transformers;
+@item a quotation mechanism allowing to write values representing the
+OCaml AST in the OCaml syntax;
+@item a generator of open recursion classes from type definitions.
+@end itemize")
+    (license license:expat)))
