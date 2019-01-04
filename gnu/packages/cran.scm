@@ -8467,3 +8467,24 @@ related functions.")
 random number generation for (skew) stable distributions, using the
 parametrizations of Nolan.")
     (license license:gpl2+)))
+
+(define-public r-gsl
+  (package
+    (name "r-gsl")
+    (version "1.9-10.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gsl" version))
+       (sha256
+        (base32
+         "00isw2iha5af4s7rr8svqka9mkl9l26l8h2rnk4r7fkhh7fc97sg"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gsl" ,gsl)))
+    (home-page "https://cran.r-project.org/web/packages/gsl")
+    (synopsis "Wrapper for the GNU Scientific Library")
+    (description
+     "This package provides an R wrapper for the special functions and quasi
+random number generators of the GNU Scientific Library.")
+    (license license:gpl2+)))
