@@ -2615,7 +2615,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
 (define-public libsecret
   (package
     (name "libsecret")
-    (version "0.18.6")
+    (version "0.18.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2624,7 +2624,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vynag97a9bnnb8ipah45av8xg8jzmhd572rw3zj78s1pa8ciysy"))))
+                "11ylmcfx6ff7xd1gpi58i2nbma83lz2xg0g2dq23w6snqhgzwrhd"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
