@@ -8510,3 +8510,30 @@ with p-value calculation based on Marsaglia's 2004 paper \"Evaluating the
 Anderson-Darling Distribution\".")
     ;; Any version of the GPL.
     (license license:gpl3+)))
+
+(define-public r-softimpute
+  (package
+    (name "r-softimpute")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "softImpute" version))
+       (sha256
+        (base32
+         "07cxbzkl08q58m1455i139952rmryjlic4s2f2hscl5zxxmfdxcq"))))
+    (properties `((upstream-name . "softImpute")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/softImpute")
+    (synopsis "Matrix completion via iterative soft-thresholded SVD")
+    (description
+     "This package provides iterative methods for matrix completion that use
+nuclear-norm regularization.  The package includes procedures for centering
+and scaling rows, columns or both, and for computing low-rank @dfn{single
+value decompositions} (SVDs) on large sparse centered matrices (i.e. principal
+components).")
+    (license license:gpl2)))
