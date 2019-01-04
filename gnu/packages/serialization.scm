@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
@@ -402,14 +402,14 @@ However, “Memory efficiency” and “Speed” have not been primary goals.")
 (define-public python-ruamel.yaml
   (package
     (name "python-ruamel.yaml")
-    (version "0.15.37")
+    (version "0.15.83")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ruamel.yaml" version))
        (sha256
         (base32
-         "0629xzlwbddfwp8lkjz3mpvxhml9kx17cfs8aydzg55idzcl562h"))))
+         "0p4i8ad28cbbbjja8b9274irkhnphhvhap3aym6yb8xfp1d72kpw"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
