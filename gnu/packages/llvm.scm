@@ -8,7 +8,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -39,6 +39,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages bootstrap)           ;glibc-dynamic-linker
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
@@ -481,22 +482,21 @@ code analysis tools.")
 
 (define-public emacs-clang-format
   (package
-    (inherit clang)
-    (name "emacs-clang-format")
-    (build-system emacs-build-system)
-    (inputs
-     `(("clang" ,clang)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "clang")))
-               (copy-file "tools/clang-format/clang-format.el" "clang-format.el")
-               (emacs-substitute-variables "clang-format.el"
-                 ("clang-format-executable"
-                  (string-append clang "/bin/clang-format"))))
-             #t)))))
+    (inherit (package-elisp-from-package
+              clang
+              "emacs-clang-format"
+              '("tools/clang-format/clang-format.el")))
+    (inputs `(("clang" ,clang)))
+    (arguments `(#:phases
+                 (modify-phases %standard-phases
+                                (add-after 'unpack 'configure
+                                  (lambda* (#:key inputs #:allow-other-keys)
+                                    (chmod "clang-format.el" #o644)
+                                    (emacs-substitute-variables "clang-format.el"
+                                      ("clang-format-executable"
+                                       (string-append (assoc-ref inputs "clang")
+                                                      "/bin/clang-format")))
+                                    #t)))))
     (synopsis "Format code using clang-format")
     (description "This package allows to filter code through @code{clang-format}
 to fix its formatting.  @code{clang-format} is a tool that formats
@@ -505,22 +505,21 @@ C/C++/Obj-C code according to a set of style options, see
 
 (define-public emacs-clang-rename
   (package
-    (inherit clang)
-    (name "emacs-clang-rename")
-    (build-system emacs-build-system)
-    (inputs
-     `(("clang" ,clang)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((clang (assoc-ref inputs "clang")))
-               (copy-file "tools/clang-rename/clang-rename.el" "clang-rename.el")
-               (emacs-substitute-variables "clang-rename.el"
-                 ("clang-rename-binary"
-                  (string-append clang "/bin/clang-rename"))))
-             #t)))))
+    (inherit (package-elisp-from-package
+              clang
+              "emacs-clang-rename"
+              '("tools/clang-rename/clang-rename.el")))
+    (inputs `(("clang" ,clang)))
+    (arguments `(#:phases
+                 (modify-phases %standard-phases
+                   (add-after 'unpack 'configure
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (chmod "clang-rename.el" #o644)
+                       (emacs-substitute-variables "clang-rename.el"
+                         ("clang-rename-binary"
+                          (string-append (assoc-ref inputs "clang")
+                                         "/bin/clang-rename")))
+                       #t)))))
     (synopsis "Rename every occurrence of a symbol using clang-rename")
     (description "This package renames every occurrence of a symbol at point
 using @code{clang-rename}.")))
