@@ -8488,3 +8488,25 @@ parametrizations of Nolan.")
      "This package provides an R wrapper for the special functions and quasi
 random number generators of the GNU Scientific Library.")
     (license license:gpl2+)))
+
+(define-public r-adgoftest
+  (package
+    (name "r-adgoftest")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ADGofTest" version))
+       (sha256
+        (base32
+         "0ik817qzqp6kfbckjp1z7srlma0w6z2zcwykh0jdiv7nahwk3ncw"))))
+    (properties `((upstream-name . "ADGofTest")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/ADGofTest")
+    (synopsis "Anderson-Darling GoF test")
+    (description
+     "This package provides an implementation of the Anderson-Darling GoF test
+with p-value calculation based on Marsaglia's 2004 paper \"Evaluating the
+Anderson-Darling Distribution\".")
+    ;; Any version of the GPL.
+    (license license:gpl3+)))
