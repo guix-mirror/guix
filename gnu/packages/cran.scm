@@ -8563,3 +8563,28 @@ mimic the functionality of the R functions @code{fft()} and @code{mvfft()}.
 The FFT functions have a parameter that allows them to not return the
 redundant complex conjugate when the input is real data.")
     (license license:gpl2+)))
+
+(define-public r-tiff
+  (package
+    (name "r-tiff")
+    (version "0.1-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tiff" version))
+       (sha256
+        (base32
+         "0asf2bws3x3yd3g3ixvk0f86b0mdf882pl8xrqlxrkbgjalyc54m"))))
+    (build-system r-build-system)
+    (inputs
+     `(("libtiff" ,libtiff)
+       ("libjpeg" ,libjpeg)
+       ("zlib" ,zlib)))
+    (home-page "http://www.rforge.net/tiff/")
+    (synopsis "Read and write TIFF images")
+    (description
+     "This package provides an easy and simple way to read, write and display
+bitmap images stored in the TIFF format.  It can read and write both files and
+in-memory raw vectors.")
+    ;; Either of these two license versions.
+    (license (list license:gpl2 license:gpl3))))
