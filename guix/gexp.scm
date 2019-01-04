@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
@@ -388,8 +388,9 @@ This is the declarative counterpart of 'gexp->derivation'."
          (mlet %store-monad ((guile (lower-object guile system
                                                   #:target target)))
            (apply gexp->derivation name gexp #:guile-for-build guile
-                  options))
-         (apply gexp->derivation name gexp options)))))
+                  #:system system #:target target options))
+         (apply gexp->derivation name gexp
+                #:system system #:target target options)))))
 
 (define-record-type <program-file>
   (%program-file name gexp guile path)
