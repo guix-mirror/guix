@@ -8447,3 +8447,23 @@ for evolution along a phylogenetic tree.")
 Japan, 2007) with Japanese demographic data and some demographic analysis
 related functions.")
     (license license:gpl2+)))
+
+(define-public r-stabledist
+  (package
+    (name "r-stabledist")
+    (version "0.7-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "stabledist" version))
+       (sha256
+        (base32
+         "0scar396wiq6wkbkvwp4qrxqc1m075y56p37i6iry5rw796p1i86"))))
+    (build-system r-build-system)
+    (home-page "http://www.rmetrics.org")
+    (synopsis "Stable distribution functions")
+    (description
+     "This package provides density, probability and quantile functions, and
+random number generation for (skew) stable distributions, using the
+parametrizations of Nolan.")
+    (license license:gpl2+)))
