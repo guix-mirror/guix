@@ -244,6 +244,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/javascript.scm			\
   %D%/packages/jemalloc.scm			\
   %D%/packages/jrnl.scm				\
+  %D%/packages/jose.scm				\
   %D%/packages/julia.scm			\
   %D%/packages/kde.scm              \
   %D%/packages/kde-frameworks.scm		\
