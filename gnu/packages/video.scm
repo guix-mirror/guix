@@ -1060,7 +1060,7 @@ videoformats depend on the configuration flags of ffmpeg.")
     (synopsis "Audio and video framework")
     (description "VLC is a cross-platform multimedia player and framework
 that plays most multimedia files as well as DVD, Audio CD, VCD, and various
-treaming protocols.")
+streaming protocols.")
     (license license:gpl2+)))
 
 (define-public mplayer
