@@ -35,6 +35,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system r)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -8537,3 +8538,28 @@ and scaling rows, columns or both, and for computing low-rank @dfn{single
 value decompositions} (SVDs) on large sparse centered matrices (i.e. principal
 components).")
     (license license:gpl2)))
+
+(define-public r-fftwtools
+  (package
+    (name "r-fftwtools")
+    (version "0.9-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fftwtools" version))
+       (sha256
+        (base32
+         "1nqvpzda281rxi1cmwajxxsn3sc3gz7scv8bvs5jm34kf36whha6"))))
+    (build-system r-build-system)
+    (inputs `(("fftw" ,fftw)))
+    (home-page "https://github.com/krahim/fftwtools")
+    (synopsis "Wrapper for FFTW3")
+    (description
+     "This package provides a wrapper for several FFTW functions.  It provides
+access to the two-dimensional FFT, the multivariate FFT, and the
+one-dimensional real to complex FFT using the FFTW3 library.  The package
+includes the functions @code{fftw()} and @code{mvfftw()} which are designed to
+mimic the functionality of the R functions @code{fft()} and @code{mvfft()}.
+The FFT functions have a parameter that allows them to not return the
+redundant complex conjugate when the input is real data.")
+    (license license:gpl2+)))
