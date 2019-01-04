@@ -233,16 +233,18 @@ under several distributions that's hard or impossible to figure out.")
 (define-public python-isodate
   (package
     (name "python-isodate")
-    (version "0.5.4")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "isodate" version))
        (sha256
         (base32
-         "0cafaiwixgpxwh9dsd28qb0dbzsj6xpxjdkyk30ns91ps10mq422"))))
+         "1n7jkz68kk5pwni540pr5zdh99bf6ywydk1p5pdrqisrawylldif"))))
     (build-system python-build-system)
-    (home-page "http://cheeseshop.python.org/pypi/isodate")
+    (native-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/gweis/isodate/")
     (synopsis "Python date parser and formatter")
     (description
      "Python-isodate is a python module for parsing and formatting
