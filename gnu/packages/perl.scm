@@ -3667,7 +3667,7 @@ file names in a directory.")
 (define-public perl-file-slurper
   (package
     (name "perl-file-slurper")
-    (version "0.008")
+    (version "0.012")
     (source
      (origin
        (method url-fetch)
@@ -3677,8 +3677,10 @@ file names in a directory.")
              ".tar.gz"))
        (sha256
         (base32
-         "0cyjspspms6zyjcqz9v18dbs574g085h2jzjh41xvsrc1qa8bxhh"))))
+         "0y5518ji60yfkx9ggjp309j6g8vfri4ka4zqlsys245i2sj2xysf"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-warnings" ,perl-test-warnings)))
     (propagated-inputs
      `(("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)))
     (home-page "https://metacpan.org/release/File-Slurper")
