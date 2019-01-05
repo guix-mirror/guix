@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -1026,14 +1026,14 @@ use of resources by test cases.")))
 (define-public python-subunit-bootstrap
   (package
     (name "python-subunit-bootstrap")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-subunit" version))
        (sha256
         (base32
-         "1yii2gx3z6323as3iraj1yphj76dy7i3h6kj63pnc5y0hwjs5sgx"))))
+         "1fsw8rsn1s3nklx06mayrg5rn2zbky6wwjc5z07s7rf1wjzfs1wn"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-extras" ,python-extras)
@@ -1042,7 +1042,7 @@ use of resources by test cases.")))
      `(("python-fixtures" ,python-fixtures-bootstrap)
        ("python-hypothesis" ,python-hypothesis)
        ("python-testscenarios" ,python-testscenarios-bootstrap)))
-    (home-page "http://launchpad.net/subunit")
+    (home-page "https://launchpad.net/subunit")
     (synopsis "Python implementation of the subunit protocol")
     (description
      "This package is here for bootstrapping purposes only.  Use the regular
