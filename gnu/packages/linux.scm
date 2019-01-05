@@ -32,6 +32,7 @@
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5188,3 +5189,45 @@ the correct permissions and ownership, and then pack them up, or one would
 have to construct the archives directly, without using the archiver.")
     (home-page "http://freshmeat.sourceforge.net/projects/fakeroot")
     (license license:gpl3+)))
+
+(define-public inputattach
+  (package
+    (name "inputattach")
+    (version "0.42.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linuxwacom/input-wacom.git")
+                    (commit (string-append "input-wacom-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "04lnn7v0rm4ppbya140im5d4igcl6c1nrqpgbsr0i8wkral0nv7j"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inputattach"
+               (invoke (string-append (assoc-ref inputs "gcc")
+                                      "/bin/gcc")
+                       "-o" "inputattach" "inputattach.c"))
+             #t))
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((target-dir (string-append
+                                (assoc-ref outputs "out")
+                                "/bin/")))
+               (mkdir-p target-dir)
+               (copy-file "inputattach/inputattach"
+                          (string-append target-dir
+                                         "inputattach"))
+               #t))))))
+    (home-page "https://linuxwacom.github.io/")
+    (synopsis "Dispatch input peripherals events to a device file")
+    (description "inputattach dispatches input events from several device
+types and interfaces and translates so that the X server can use them.")
+    (license license:gpl2+)))
