@@ -2,7 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -143,14 +143,14 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
 (define-public po4a
   (package
     (name "po4a")
-    (version "0.54")
+    (version "0.55")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mquinson/po4a/releases/download/v"
                                   version "/po4a-" version ".tar.gz"))
               (sha256
                (base32
-                "0l9xc06cr8i5jqycfylr4lynhmkb4ng2534m14kx37bzd4hpcvsr"))))
+                "1qss4q5df3nsydsbggb7gg50bn0kdxq5wn8riqm9zwkiq6a4bifg"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -174,15 +174,20 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
                                                   "/share/man")
                                    ".*\\.gz$"))
              #t))
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (find-files "." ".*\\.xml(-good)?")
+               (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                (string-append (assoc-ref inputs "docbook-xml")
+                               "/xml/dtd/docbook/")))
+             #t))
          (add-before 'check 'disable-failing-tests
            (lambda _
              ;; FIXME: ‘Files ../t-03-asciidoc/Titles.po and Titles.po differ’.
              (delete-file "t/03-asciidoc.t")
 
-             ;; FIXME: ‘Unknown format type: html’, and it's not listed.
-             (delete-file "t/09-html.t")
-
-             ;; FIXME: this test requires SGMLS.pm.
+             ;; FIXME: these tests require SGMLS.pm.
+             (delete-file "t/01-classes.t")
              (delete-file "t/16-sgml.t")
 
              #t)))))
@@ -194,7 +199,7 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
        ("xsltproc" ,libxslt)
 
        ;; For tests.
-       ("docbook-xml" ,docbook-xml)
+       ("docbook-xml" ,docbook-xml-4.1.2)
        ("perl-yaml-tiny" ,perl-yaml-tiny)
        ("texlive" ,texlive-tiny)))
     (home-page "https://po4a.org/")
