@@ -5053,3 +5053,29 @@ is now @code{Ocaml_common.Ast_helper}.")
 re-exports the input/output functions of the OCaml standard libraries using
 a more consistent API.")
     (license license:expat)))
+
+(define-public ocaml-ppx-derivers
+  (package
+    (name "ocaml-ppx-derivers")
+    (version "1.2")
+    (home-page
+     "https://github.com/ocaml-ppx/ppx_derivers")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0bnhihl1w31as5w2czly1v3d6pbir9inmgsjg2cj6aaj9v1dzd85"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:tests? #f)) ;no tests
+    (synopsis "Shared @code{@@deriving} plugin registry")
+    (description
+     "Ppx_derivers is a tiny package whose sole purpose is to allow
+ppx_deriving and ppx_type_conv to inter-operate gracefully when linked
+as part of the same ocaml-migrate-parsetree driver.")
+    (license license:bsd-3)))
