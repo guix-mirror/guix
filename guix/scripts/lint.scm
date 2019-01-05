@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -1108,8 +1108,8 @@ or a list thereof")
      (description "Suggest 'mirror://' URLs")
      (check       check-mirror-url))
    (lint-checker
-     (name        'github-uri)
-     (description "Suggest GitHub URIs")
+     (name        'github-url)
+     (description "Suggest GitHub URLs")
      (check       check-github-url))
    (lint-checker
      (name        'source-file-name)
