@@ -4865,3 +4865,28 @@ parametrized transition systems with states represented as arrays indexed by
 an arbitrary number of processes.  Cache coherence protocols and mutual
 exclusion algorithms are typical examples of such systems.")
     (license license:asl2.0)))
+
+(define-public ocaml-sexplib0
+  (package
+    (name "ocaml-sexplib0")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/sexplib0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07v3ggyss7xhfv14bjk1n87sr42iqwj4cgjiv2lcdfkqk49i2bmi"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:tests? #f)) ;no tests
+    (synopsis "Library containing the definition of S-expressions and some
+base converters")
+    (description "Part of Jane Street's Core library The Core suite of
+libraries is an industrial strength alternative to OCaml's standard library
+that was developed by Jane Street, the largest industrial user of OCaml.")
+(license license:expat)))
