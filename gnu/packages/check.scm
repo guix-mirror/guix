@@ -855,9 +855,7 @@ result back.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/s/scripttest/scripttest-"
-             version ".tar.gz"))
+       (uri (pypi-uri "scripttest" version))
        (sha256
         (base32
          "0f4w84k8ck82syys7yg9maz93mqzc8p5ymis941x034v44jzq74m"))))
