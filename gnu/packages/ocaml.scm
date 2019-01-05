@@ -5002,3 +5002,27 @@ features such as I/O are not offered by Base.  They are instead
 provided by companion libraries such as
 @url{https://github.com/janestreet/stdio, ocaml-stdio}.")
   (license license:expat)))
+
+(define-public ocaml-compiler-libs
+  (package
+    (name "ocaml-compiler-libs")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/ocaml-compiler-libs")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03jds7bszh8wwpfwxb3dg0gyr1j1872wxwx1xqhry5ir0i84bg0s"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:tests? #f)) ;no tests
+    (synopsis "Compiler libraries repackaged")
+    (description "This packaeg simply repackages the OCaml compiler libraries
+so they don't expose everything at toplevel.  For instance, @code{Ast_helper}
+is now @code{Ocaml_common.Ast_helper}.")
+    (license license:expat)))
