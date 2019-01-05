@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -1500,6 +1500,15 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
        #:module-build-flags '("--gtk")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'install 'install-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sharedir (string-append out "/share")))
+               (install-file "share/gtk-youtube-viewer.desktop"
+                             (string-append sharedir "/applications"))
+               (install-file "share/icons/gtk-youtube-viewer.png"
+                             (string-append sharedir "/pixmaps"))
+               #t)))
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
