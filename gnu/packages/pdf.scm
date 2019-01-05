@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
@@ -1075,3 +1075,28 @@ more sophisticated overview on the other one providing information like a
 picture of the next slide, as well as the left over time till the end of the
 presentation.  The input files processed by pdfpc are PDF documents.")
     (license license:gpl2+)))
+
+(define-public paps
+  (package
+    (name "paps")
+    (version "0.6.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/paps/paps/" version "/"
+                           "paps-" version ".tar.gz"))
+       (sha256
+        (base32
+         "080ahnyvq918m8ahq8bg9qvgzlv4k0jgcsdqhrwjzppclx74q8fv"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("pango" ,pango)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://paps.sourceforge.net/")
+    (synopsis "Pango to PostScript converter")
+    (description
+     "Paps reads a UTF-8 encoded file and generates a PostScript language
+rendering of the file.  The rendering is done by creating outline curves
+through the Pango @code{ft2} backend.")
+    (license license:lgpl2.0+)))
