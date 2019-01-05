@@ -63,9 +63,7 @@ recursively.  Return #t on success, #f otherwise."
             (invoke git-command "checkout" commit)))
       (when recursive?
         ;; Now is the time to fetch sub-modules.
-        (unless (zero? (system* git-command "submodule" "update"
-                                "--init" "--recursive"))
-          (error "failed to fetch sub-modules" url))
+        (invoke git-command "submodule" "update" "--init" "--recursive")
 
         ;; In sub-modules, '.git' is a flat file, not a directory,
         ;; so we can use 'find-files' here.
