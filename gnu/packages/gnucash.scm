@@ -188,7 +188,10 @@
 It can be used to track bank accounts, stocks, income and expenses, based on
 the double-entry accounting practice.  It includes support for QIF/OFX/HBCI
 import and transaction matching.  It also automates several tasks, such as
-financial calculations or scheduled transactions.")
+financial calculations or scheduled transactions.
+
+To make the GnuCash documentation available, its doc output must be
+installed as well as Yelp, the Gnome help browser.")
     (license license:gpl3+)))
 
 ;; This package is not public, since we use it to build the "doc" output of
