@@ -800,14 +800,14 @@ same arguments.")
 (define-public python-pytest-xdist
   (package
     (name "python-pytest-xdist")
-    (version "1.14")
+    (version "1.25.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "pytest-xdist" version ".zip"))
+       (uri (pypi-uri "pytest-xdist" version))
        (sha256
         (base32
-         "08rn2l39ds60xshs4js787l84pfckksqklfq2wq9x8ig2aci2pja"))
+         "1d812apvcmshh2l8f38spqwb3bpp0x43yy7lyfpxxzc99h4r7y4n"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -827,8 +827,7 @@ same arguments.")
        ;;       (add-installed-pythonpath inputs outputs)
        ;;       (zero? (system* "py.test" "-v")))))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-execnet" ,python-execnet)
        ("python-pytest" ,python-pytest)
