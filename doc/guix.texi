@@ -22503,6 +22503,22 @@ that enables sharing the clipboard with a vm and setting the guest display
 resolution when the graphical console window resizes.
 @end deffn
 
+@cindex inputattach
+@subsubheading inputattach Service
+
+@deftp {Data Type} inputattach-configuration
+@table @asis
+@item @code{device-type} The type of device to connect to.
+@item @code{device} The device file to connect to the device.
+@item @code{log-file} The file to log messages to.
+@end table
+@end deftp
+
+@deffn {Scheme Procedure} inputattach-service-type
+Return a service that runs inputattach on a device and
+dispatches events from it.
+@end deffn
+
 @subsection Dictionary Services
 @cindex dictionary
 The @code{(gnu services dict)} module provides the following service:
