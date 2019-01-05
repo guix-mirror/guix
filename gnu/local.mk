@@ -9,7 +9,7 @@
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
-# Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
+# Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2016, 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -879,6 +879,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/liba52-use-mtune-not-mcpu.patch		\
   %D%/packages/patches/libarchive-CVE-2017-14166.patch		\
   %D%/packages/patches/libarchive-CVE-2017-14502.patch		\
+  %D%/packages/patches/libarchive-CVE-2018-1000877.patch	\
+  %D%/packages/patches/libarchive-CVE-2018-1000878.patch	\
+  %D%/packages/patches/libarchive-CVE-2018-1000880.patch	\
   %D%/packages/patches/libbase-fix-includes.patch		\
   %D%/packages/patches/libbase-use-own-logging.patch		\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\

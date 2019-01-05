@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -194,11 +195,12 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
+    (replacement libarchive-3.3.3)
     (version "3.3.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://libarchive.org/downloads/libarchive-"
+       (uri (string-append "https://libarchive.org/downloads/libarchive-"
                            version ".tar.gz"))
        (patches (search-patches "libarchive-CVE-2017-14166.patch"
                                 "libarchive-CVE-2017-14502.patch"))
@@ -258,7 +260,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
        ;; libarchive/test/test_write_format_gnutar_filenames.c needs to be
        ;; compiled with C99 or C11 or a gnu variant.
        #:configure-flags '("CFLAGS=-O2 -g -std=c99")))
-    (home-page "http://libarchive.org/")
+    (home-page "https://libarchive.org/")
     (synopsis "Multi-format archive and compression library")
     (description
      "Libarchive provides a flexible interface for reading and writing
@@ -269,6 +271,22 @@ serially iterate through the archive, writers serially add things to the
 archive.  In particular, note that there is currently no built-in support for
 random access nor for in-place modification.")
     (license license:bsd-2)))
+
+(define-public libarchive-3.3.3
+  (package
+    (inherit libarchive)
+    (version "3.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://libarchive.org/downloads/libarchive-"
+                           version ".tar.gz"))
+       (patches (search-patches "libarchive-CVE-2018-1000877.patch"
+                                "libarchive-CVE-2018-1000878.patch"
+                                "libarchive-CVE-2018-1000880.patch"))
+       (sha256
+        (base32
+         "0bhfncid058p7n1n8v29l6wxm3mhdqfassscihbsxfwz3iwb2zms"))))))
 
 (define-public rdup
   (package
