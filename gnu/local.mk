@@ -790,7 +790,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gpsbabel-minizip.patch     		\
   %D%/packages/patches/gpsbabel-qstring.patch     		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
-  %D%/packages/patches/groff-source-date-epoch.patch		\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
   %D%/packages/patches/grub-binutils-compat.patch		\
   %D%/packages/patches/grub-check-error-efibootmgr.patch	\

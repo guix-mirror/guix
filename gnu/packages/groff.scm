@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,14 +37,13 @@
 (define-public groff
   (package
    (name "groff")
-   (version "1.22.3")
+   (version "1.22.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/groff/groff-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1998v2kcs288d3y7kfxpvl369nqi06zbbvjzafyvyl3pr7bajj1s"))
-            (patches (search-patches "groff-source-date-epoch.patch"))))
+                     "14q2mldnr1vx0l9lqp9v2f6iww24gj28iyh4j2211hyynx67p3p7"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                    ;12MiB of PS, PDF, HTML, and examples
@@ -91,7 +91,7 @@ is usually the formatter of \"man\" documentation pages.")
     (arguments
      `(#:disallowed-references (,perl)
 
-       #:configure-flags '("--docdir=/tmp/trash/doc")
+       #:configure-flags '("--with-doc=no")
 
        ,@(substitute-keyword-arguments (package-arguments groff)
            ((#:phases phases)
