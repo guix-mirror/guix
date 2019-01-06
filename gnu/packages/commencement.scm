@@ -1430,6 +1430,7 @@ exec " gcc "/bin/" program
                                           #:guile %bootstrap-guile)))
      (package (inherit p)
        (name "diffutils-boot0")
+       (native-inputs `())
        (arguments `(#:tests? #f         ; the test suite needs diffutils
                     ,@(package-arguments p)))))))
 

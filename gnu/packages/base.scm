@@ -245,16 +245,16 @@ differences.")
 (define-public diffutils
   (package
    (name "diffutils")
-   (version "3.6")
+   (version "3.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/diffutils/diffutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1mivg0fy3a6fcn535ln8nkgfj6vxh5hsxxs5h6692wxmsjyyh8fn"))
-            (patches (search-patches "diffutils-getopt.patch"))))
+              "09isrg0isjinv8c535nxsi1s86wfdfzml80dbw41dj9x3hiad9xk"))))
    (build-system gnu-build-system)
+   (native-inputs `(("perl" ,perl)))
    (synopsis "Comparing and merging files")
    (description
     "GNU Diffutils is a package containing tools for finding the
