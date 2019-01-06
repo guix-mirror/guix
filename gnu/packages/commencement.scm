@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
@@ -1634,7 +1634,8 @@ exec " gcc "/bin/" program
                         (substitute* "libcc1/configure"
                           (("g\\+\\+ -v") "true"))
                         #t)))
-                   (_ identity))
+                   (_ '(add-before 'configure 'return-true
+                         (lambda _ #t))))
                 (add-after 'install 'symlink-libgcc_eh
                   (lambda* (#:key outputs #:allow-other-keys)
                     (let ((out (assoc-ref outputs "lib")))
