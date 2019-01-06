@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -10706,13 +10706,13 @@ related extensions.")
 (define-public python-sphinx-alabaster-theme
   (package
     (name "python-sphinx-alabaster-theme")
-    (version "0.7.9")
+    (version "0.7.12")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "alabaster" version))
               (sha256
                (base32
-                "027anxzcb951gjlcc43y3rbn9qrw36d16vj9wd2smv5410xx9bs7"))))
+                "00nwwjj2d2ym4s2kk217x7jkx1hnczc3fvm8yxbqmsp6b0nxfqd6"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pygments" ,python-pygments)))
