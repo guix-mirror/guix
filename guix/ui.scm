@@ -427,11 +427,6 @@ report them in a user-friendly way."
     (lambda _
       (setlocale LC_ALL ""))
     (lambda args
-      (cond-expand
-        ;; Guile 2.2 already emits a warning, so let's not add a second one.
-        (guile-2.2 #t)
-        (else (warning (G_ "failed to install locale: ~a~%")
-                       (strerror (system-error-errno args)))))
       (display-hint (G_ "Consider installing the @code{glibc-utf8-locales} or
 @code{glibc-locales} package and defining @code{GUIX_LOCPATH}, along these
 lines:

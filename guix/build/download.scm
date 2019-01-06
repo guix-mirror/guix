@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -314,9 +314,7 @@ host name without trailing dot."
 
       ;; Write HTTP requests line by line rather than byte by byte:
       ;; <https://bugs.gnu.org/22966>.  This is possible with Guile >= 2.2.
-      (cond-expand
-        (guile-2.2 (setvbuf record 'line))
-        (else #f))
+      (setvbuf record 'line)
 
       record)))
 

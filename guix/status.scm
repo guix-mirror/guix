@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -636,9 +636,7 @@ The second return value is a thunk to retrieve the current state."
 
   ;; The build port actually receives Unicode strings.
   (set-port-encoding! port "UTF-8")
-  (cond-expand
-    ((and guile-2 (not guile-2.2)) #t)
-    (else (setvbuf port 'line)))
+  (setvbuf port 'line)
   (values port (lambda () %state)))
 
 (define (call-with-status-report on-event thunk)

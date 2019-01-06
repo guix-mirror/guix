@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -125,9 +125,7 @@
 
 (test-equal "current-build-output-port, UTF-8 + garbage"
   ;; What about a mixture of UTF-8 + garbage?
-  (let ((replacement (cond-expand
-                      ((and guile-2 (not guile-2.2)) "?")
-                      (else "�"))))
+  (let ((replacement "�"))
     `((build-log #f ,(string-append "garbage: " replacement "lambda: λ\n"))))
   (let-values (((port get-status) (build-event-output-port cons '())))
     (display "garbage: " port)
