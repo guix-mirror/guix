@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -916,66 +916,31 @@ organized in a hash table or B+ tree.")
 (define-public recutils
   (package
     (name "recutils")
-    (version "1.7")
+    (version "1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/recutils/recutils-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0cdwa4094x3yx7vn98xykvnlp9rngvd58d19vs3vh5hrvggccg93"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Adjust the bundled gnulib to work with glibc 2.28.  See e.g.
-                  ;; "m4-gnulib-libio.patch".  This is a phase rather than patch
-                  ;; or snippet to work around <https://bugs.gnu.org/32347>.
-                  (substitute* (find-files "lib" "\\.c$")
-                    (("#if defined _IO_ftrylockfile")
-                     "#if defined _IO_EOF_SEEN"))
-                  (substitute* "lib/stdio-impl.h"
-                    (("^/\\* BSD stdio derived implementations")
-                     (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
-                                    "# define _IO_IN_BACKUP 0x100\n"
-                                    "#endif\n\n"
-                                    "/* BSD stdio derived implementations")))
-                  #t))))
+                "14xiln4immfsw8isnvwvq0h23f6z0wilpgsc4qzabnrzb5lsx3nz"))))
     (build-system gnu-build-system)
 
-    ;; Running tests in parallel leads to test failures and crashes in
-    ;; torture/utils.
-    (arguments '(#:parallel-tests? #f
-                 #:configure-flags
+    (arguments '(#:configure-flags
                  (list (string-append "--with-bash-headers="
                                       (assoc-ref %build-inputs "bash:include")
-                                      "/include/bash"))
-
-                 #:phases (modify-phases %standard-phases
-                            (add-before 'build 'set-bash4.4-header-location
-                              (lambda _
-                                (substitute* "bash/Makefile.in"
-                                  ;; Adjust the header search path for Bash
-                                  ;; 4.4 in accordance with 'bash.pc'.
-                                  (("AM_CPPFLAGS = (.*)$" _ rest)
-                                   (string-append "AM_CPPFLAGS = "
-                                                  "-I$(BASH_HEADERS)/include "
-                                                  rest))
-
-                                  ;; Install to PREFIX/lib/bash to match Bash
-                                  ;; 4.4's search path.
-                                  (("^libdir = .*$")
-                                   "libdir = @libdir@/bash\n"))
-                                #t)))))
+                                      "/include/bash"))))
 
     (native-inputs `(("emacs" ,emacs-minimal)
                      ("bc" ,bc)
                      ("bash:include" ,bash "include")
-                     ("libuuid" ,util-linux)))
+                     ("check" ,check)
+                     ("libuuid" ,util-linux)
+                     ("pkg-config" ,pkg-config)))
 
     ;; TODO: Add more optional inputs.
     (inputs `(("curl" ,curl)
-              ("libgcrypt" ,libgcrypt)
-              ("check" ,check)))
+              ("libgcrypt" ,libgcrypt)))
     (synopsis "Manipulate plain text files as databases")
     (description
      "GNU Recutils is a set of tools and libraries for creating and
