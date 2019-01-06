@@ -746,8 +746,6 @@ by pressing the Exit button.~%~%")))
          (form (draw-formating-page)))
     ;; Make sure the disks are not in use before proceeding to formating.
     (free-parted non-install-devices)
-    (run-error-page (format #f "~a" user-partitions-with-pass)
-                    "user-partitions")
     (format-user-partitions user-partitions-with-pass)
     (destroy-form-and-pop form)
     user-partitions))
