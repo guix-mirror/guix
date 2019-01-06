@@ -20,6 +20,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,8 +83,8 @@
   #:use-module ((srfi srfi-1) #:select (alist-delete)))
 
 (define-public artanis
-  (let ((release "0.2.1")
-	(revision 3))
+  (let ((release "0.3.1")
+	(revision 0))
     (package
       (name "artanis")
       (version (if (zero? revision)
@@ -97,17 +98,26 @@
                 (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "041ajcg2pz918kd9iqcj4inpzddc3impvz3r2nhlpbv8zrz011hn"))
+                  "0hqr5m3mb558bdhkc2sadmd9cbrhp3y525wx7cwirgy6i0zmay68"))
                 (modules '((guix build utils)))
                 (snippet
                  '(begin
+                    ;; Unbundle guile-redis and guile-json
                     (delete-file-recursively "artanis/third-party/json.scm")
                     (delete-file-recursively "artanis/third-party/json")
+                    (delete-file-recursively "artanis/third-party/redis.scm")
+                    (delete-file-recursively "artanis/third-party/redis")
                     (substitute* '("artanis/artanis.scm"
+                                   "artanis/lpc.scm"
                                    "artanis/oht.scm")
                       (("(#:use-module \\()artanis third-party (json\\))" _
                         use-module json)
                        (string-append use-module json)))
+                    (substitute* '("artanis/lpc.scm"
+                                   "artanis/session.scm")
+                      (("(#:use-module \\()artanis third-party (redis\\))" _
+                        use-module redis)
+                       (string-append use-module redis)))
                     (substitute* "artanis/oht.scm"
                       (("([[:punct:][:space:]]+)(->json-string)([[:punct:][:space:]]+)"
                         _ pre json-string post)
@@ -119,9 +129,13 @@
                        ""))
                     #t))))
       (build-system gnu-build-system)
+      ;; FIXME the bundled csv contains one more exported procedure
+      ;; (sxml->csv-string) than guile-csv. The author is maintainer of both
+      ;; projects.
       ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
       (inputs `(("guile" ,guile-2.2)
-                ("guile-json" ,guile-json)))
+                ("guile-json" ,guile-json)
+                ("guile-redis" ,guile-redis)))
       (native-inputs `(("bash"       ,bash)         ;for the `source' builtin
                        ("pkgconfig"  ,pkg-config)
                        ("util-linux" ,util-linux))) ;for the `script' command
