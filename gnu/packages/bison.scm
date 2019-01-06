@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,7 @@
 (define-public bison
   (package
     (name "bison")
-    (version "3.2.2")
+    (version "3.2.4")
     (source
      (origin
       (method url-fetch)
@@ -38,7 +39,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "1yps7xyhllbg9rbb9mii1z736w85yh26vqvhr1y5qx6hwhj0z5bg"))))
+        "0d2ny1kmvvlmj4h9gdyqsx4bf01lgdfcjh1pa2385xjdkx0l8gaj"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ;; m4 is not present in PATH when cross-building.
