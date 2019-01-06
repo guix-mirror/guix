@@ -11730,14 +11730,14 @@ clone, while other processes access the original tree.")
 (define-public python-astroid
   (package
     (name "python-astroid")
-    (version "2.0.4")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "astroid" version))
        (sha256
         (base32
-         "138svbm88w5k0y2nvl4svyas1jfhcc5iy0d2ywkbcpn9kq8ks0f7"))))
+         "08hz675knh4294bancdapql392fmbjyimhbyrmfkz1ka7l035c1m"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
@@ -11751,13 +11751,13 @@ clone, while other processes access the original tree.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-            (add-after 'unpack 'remove-spurious-test
-              (lambda _
-                ;; This can be removed after upgrading from python-3.7
-                ;; https://github.com/PyCQA/astroid/issues/593
-                ;; https://bugs.python.org/issue34056
-                (delete-file "astroid/tests/unittest_modutils.py")
-                #t))
+         (add-after 'unpack 'remove-spurious-test
+           (lambda _
+             ;; This can be removed after upgrading from python-3.7
+             ;; https://github.com/PyCQA/astroid/issues/593
+             ;; https://bugs.python.org/issue34056
+             (delete-file "astroid/tests/unittest_modutils.py")
+             #t))
          (replace 'check
            (lambda _
              (invoke "pytest" "astroid"))))))
