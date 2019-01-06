@@ -808,14 +808,14 @@ protocol (Javascript Object Signing and Encryption).")
 (define-public python-pycryptodome
   (package
     (name "python-pycryptodome")
-    (version "3.5.1")
+    (version "3.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pycryptodome" version))
        (sha256
         (base32
-         "15mc1h5ij1b6hcqvb048kb4k0ip64n2ky0zz0rml2s78ylv7g5dp"))))
+         "1xxf5cyhlc5ak5skf4zgqz9yk5fj5g70hd06hc1jym995lxpxz7m"))))
     (build-system python-build-system)
     (home-page "https://www.pycryptodome.org")
     (synopsis "Cryptographic library for Python")
