@@ -4075,17 +4075,17 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python-pillow
   (package
     (name "python-pillow")
-    (version "5.2.0")
+    (version "5.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pillow" version))
        (sha256
         (base32
-         "1ary9mj2ddllq3lkxgn6aac7qxqiwbcg2pacrl94py58ql9x9czq"))))
+         "0qrkcjszym7ixffg5zphhp8a07w8w11yyc2ylcbdrhwm771z316m"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest"       ,python-pytest)))
+     `(("python-pytest" ,python-pytest)))
     (inputs
      `(("freetype" ,freetype)
        ("lcms"     ,lcms)
@@ -4097,18 +4097,21 @@ the OleFileIO module from PIL, the Python Image Library.")
     (propagated-inputs
      `(("python-olefile" ,python-olefile)))
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after
-                   'install 'check-installed
-                   (lambda* (#:key outputs inputs #:allow-other-keys)
-                     (begin
-                       (setenv "HOME" (getcwd))
-                       ;; Make installed package available for running the
-                       ;; tests
-                       (add-installed-pythonpath inputs outputs)
-                       (invoke "python" "selftest.py" "--installed")
-                       (invoke "python" "-m" "pytest" "-vv"))))
-                 (delete 'check))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-ldconfig
+           (lambda _
+             (substitute* "setup.py"
+               (("\\['/sbin/ldconfig', '-p'\\]") "['true']"))))
+         (delete 'check) ; We must run checks after python-pillow is installed.
+         (add-after 'install 'check-installed
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (begin
+               (setenv "HOME" (getcwd))
+               ;; Make installed package available for running the tests.
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "selftest.py" "--installed")
+               (invoke "python" "-m" "pytest" "-vv")))))))
     (home-page "https://pypi.python.org/pypi/Pillow")
     (synopsis "Fork of the Python Imaging Library")
     (description
