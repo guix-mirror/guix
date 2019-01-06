@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -357,7 +358,30 @@ or @command{xorrisofs} to create ISO 9660 images.")
      `(;; Parallel builds appear to be unsafe, see
        ;; <http://hydra.gnu.org/build/49331/nixlog/1/raw>.
        #:parallel-build? #f
-       #:tests? #f)) ; no check target
+       #:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((datadir (string-append (assoc-ref outputs "out") "/share")))
+               (substitute* "contrib/dvdisaster.desktop"
+                 (("dvdisaster48.png") "dvdisaster.png"))
+               (install-file "contrib/dvdisaster.desktop"
+                             (string-append datadir "/applications"))
+               (for-each
+                (lambda (png)
+                  (let* ((size (substring png
+                                          (string-index png char-set:digit)
+                                          (string-rindex png #\.)))
+                         (icondir (string-append datadir "/icons/"
+                                                 size "x" size "/apps")))
+                    (mkdir-p icondir)
+                    (copy-file png (string-append icondir "/dvdisaster.png"))))
+                (find-files "contrib" "dvdisaster[0-9]*\\.png"))
+               (mkdir-p (string-append datadir "/pixmaps"))
+               (copy-file "contrib/dvdisaster48.xpm"
+                          (string-append datadir "/pixmaps/dvdisaster.xpm"))
+               #t))))))
     (home-page "http://dvdisaster.net/en/index.html")
     (synopsis "Error correcting codes for optical media images")
     (description "Optical media (CD,DVD,BD) keep their data only for a
