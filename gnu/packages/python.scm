@@ -12231,14 +12231,14 @@ several utilities, as well as an API for building localization tools.")
 (define-public python-packaging
   (package
     (name "python-packaging")
-    (version "17.1")
+    (version "18.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "packaging" version))
         (sha256
          (base32
-          "0nrpayk8kij1zm9sjnk38ldz3a6705ggvw8ljylqbrb4vmqbf6gh"))))
+          "01wq9c53ix5rz6qg2c98gy8n4ff768rmanifm8m5jpjiaizj51h8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
