@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -283,6 +283,7 @@ integrate Windows applications into your desktop.")
                (base32
                 "0nx5ahahfnmimd2b7zh2wx36b877vad10i2kr2zib9m9b2w8wyfd"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
+              ("ffmpeg" ,ffmpeg)
               ("gtk+" ,gtk+)
               ("libva" ,libva)
               ("python" ,python)
