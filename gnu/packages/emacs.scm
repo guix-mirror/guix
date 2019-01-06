@@ -6372,15 +6372,15 @@ actually changing the buffer's text.")
 (define-public emacs-diff-hl
  (package
   (name "emacs-diff-hl")
-  (version "1.8.4")
+  (version "1.8.5")
   (source
     (origin
       (method url-fetch)
-      (uri (string-append "http://elpa.gnu.org/packages/diff-hl-"
+      (uri (string-append "https://elpa.gnu.org/packages/diff-hl-"
                           version ".tar"))
       (sha256
         (base32
-          "0axhidc3cym7a2x4rpxf4745qss9s9ajyg4s9h5b4zn7v7fyp71n"))))
+          "1vxc7z7c2qs0mx7l5sa4sybi5qbzv0s79flj74p1ynw8dl3qxg3d"))))
   (build-system emacs-build-system)
   (home-page "https://github.com/dgutov/diff-hl")
   (synopsis
