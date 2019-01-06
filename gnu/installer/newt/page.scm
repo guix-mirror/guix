@@ -83,7 +83,7 @@ enters an empty input."
                                  #:flags FLAG-BORDER))
          (grid (make-grid 1 3))
          (input-entry (make-entry -1 -1 20))
-         (ok-button (make-button -1 -1 (G_ "Ok")))
+         (ok-button (make-button -1 -1 (G_ "OK")))
          (form (make-form)))
 
     (when default-text
@@ -125,7 +125,7 @@ of the page is set to TITLE."
           (make-reflowed-textbox -1 -1 text 40
                                  #:flags FLAG-BORDER))
          (grid (make-grid 1 2))
-         (ok-button (make-button -1 -1 "Ok"))
+         (ok-button (make-button -1 -1 "OK"))
          (form (make-form)))
 
     (set-grid-field grid 0 0 GRID-ELEMENT-COMPONENT text-box)
@@ -438,7 +438,7 @@ ITEMS when 'Ok' is pressed."
           (make-reflowed-textbox -1 -1 info-text
                                  info-textbox-width
                                  #:flags FLAG-BORDER))
-         (ok-button (make-button -1 -1 (G_ "Ok")))
+         (ok-button (make-button -1 -1 (G_ "OK")))
          (exit-button (make-button -1 -1 (G_ "Exit")))
          (grid (vertically-stacked-grid
                 GRID-ELEMENT-COMPONENT info-textbox
@@ -495,7 +495,7 @@ ITEMS when 'Ok' is pressed."
                         file-textbox-width
                         file-textbox-height
                         (logior FLAG-SCROLL FLAG-BORDER)))
-         (ok-button (make-button -1 -1 (G_ "Ok")))
+         (ok-button (make-button -1 -1 (G_ "OK")))
          (exit-button (make-button -1 -1 (G_ "Exit")))
          (grid (vertically-stacked-grid
                 GRID-ELEMENT-COMPONENT info-textbox

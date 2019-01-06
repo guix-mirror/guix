@@ -41,7 +41,7 @@
          (entry-home-directory (make-entry -1 -1 entry-width))
          (entry-grid (make-grid 2 2))
          (button-grid (make-grid 1 1))
-         (ok-button (make-button -1 -1 (G_ "Ok")))
+         (ok-button (make-button -1 -1 (G_ "OK")))
          (grid (make-grid 1 2))
          (title (G_ "User creation"))
          (set-entry-grid-field
@@ -115,7 +115,7 @@
              `(,@(if (null? users)
                      '()
                      (list GRID-ELEMENT-COMPONENT del-button)))))
-           (ok-button (make-button -1 -1 (G_ "Ok")))
+           (ok-button (make-button -1 -1 (G_ "OK")))
            (exit-button (make-button -1 -1 (G_ "Exit")))
            (title "User creation")
            (grid

@@ -414,7 +414,7 @@ partition. Leave this field empty if you don't want to set a mounting point.")
            #:listbox-item->text cdr
            #:sort-listbox-items? #f
            #:listbox-default-item default-item
-           #:button-text (G_ "Ok")
+           #:button-text (G_ "OK")
            #:listbox-callback-procedure listbox-action
            #:button-callback-procedure button-action)))
     (match result
@@ -594,7 +594,7 @@ edit it."
                 (format #f (G_ "Are you sure you want to delete everything on disk ~a?")
                         file-name))
                (result (choice-window (G_ "Delete disk")
-                                      (G_ "Ok")
+                                      (G_ "OK")
                                       (G_ "Exit")
                                       info-text)))
           (case result
@@ -615,7 +615,7 @@ edit it."
                     (format #f (G_ "Are you sure you want to delete partition ~a?")
                             number-str))
                    (result (choice-window (G_ "Delete partition")
-                                          (G_ "Ok")
+                                          (G_ "OK")
                                           (G_ "Exit")
                                           info-text)))
               (case result
@@ -653,7 +653,7 @@ by pressing the Exit button.~%~%")))
           #:sort-listbox-items? #f
           #:skip-item-procedure? skip-item?
           #:allow-delete? #t
-          #:button-text (G_ "Ok")
+          #:button-text (G_ "OK")
           #:button-callback-procedure button-ok-action
           #:button2-text (G_ "Exit")
           #:button2-callback-procedure button-exit-action
