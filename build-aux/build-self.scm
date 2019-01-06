@@ -420,7 +420,7 @@ files."
            (error "build program failed" (list build status)))
           ((? derivation-path? drv)
            (mbegin %store-monad
-             (return (newline (current-output-port)))
+             (return (newline (current-error-port)))
              ((store-lift add-temp-root) drv)
              (return (read-derivation-from-file drv))))
           ("#f"
