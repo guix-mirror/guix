@@ -8705,3 +8705,22 @@ manipulate tree data.")
      "This package provides tools to check the latest release version of R and
 R packages (on CRAN, Bioconductor or Github).")
     (license license:artistic2.0)))
+
+(define-public r-docopt
+  (package
+    (name "r-docopt")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "docopt" version))
+       (sha256
+        (base32
+         "06zknnd0c5s2y0hbddzdlr3m63ib783izpck6pgz7sjbab5pd068"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/docopt/docopt.R")
+    (synopsis "Command-line interface specification language")
+    (description
+     "This package enables you to define a command-line interface by just
+giving it a description in the specific format.")
+    (license license:expat)))
