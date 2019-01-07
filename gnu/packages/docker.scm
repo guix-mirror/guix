@@ -31,7 +31,8 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages python-web))
+  #:use-module (gnu packages python-web)
+  #:use-module (gnu packages virtualization))
 
 (define-public python-docker-py
   (package
