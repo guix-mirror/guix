@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -13316,6 +13316,8 @@ queries, small indexes, and exact results, i.e., no false positives or
 negatives.  Furthermore, Mantis is also a colored de Bruijn graph
 representation, so it supports fast graph traversal and other topological
 analyses in addition to large-scale sequence-level searches.")
+      ;; uses __uint128_t and inline assembly
+      (supported-systems '("x86_64-linux"))
       (license license:bsd-3))))
 
 (define-public r-diversitree
