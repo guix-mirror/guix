@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Laura Lazzati <laura.lazzati.15@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
@@ -2176,6 +2178,35 @@ calendar objects.")
 for the creation and investigation of magic squares and hypercubes, including
 a variety of functions for the manipulation and analysis of arbitrarily
 dimensioned arrays.")
+    (license license:gpl2)))
+
+(define-public r-rmysql
+  (package
+    (name "r-rmysql")
+    (version "0.10.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RMySQL" version))
+       (sha256
+        (base32
+         "0bmc7w5fnkjaf333sgc0hskiy332m9gmfaxg0yzkjxscpizdw43n"))))
+    (properties `((upstream-name . "RMySQL")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("mariadb" ,mariadb)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-dbi" ,r-dbi)))
+    (home-page "https://github.com/r-dbi/RMySQL")
+    (synopsis "Database interface and MySQL driver for R")
+    (description
+     "This package provides a DBI interface to MySQL / MariaDB.  The RMySQL
+package contains an old implementation based on legacy code from S-PLUS which
+is being phased out.  A modern MySQL client based on Rcpp is available from
+the RMariaDB package.")
     (license license:gpl2)))
 
 (define-public r-geometry
