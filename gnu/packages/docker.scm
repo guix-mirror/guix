@@ -165,7 +165,6 @@ Python without keeping their credentials in a Docker configuration file.")
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/containerd/containerd"
-       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'chdir
