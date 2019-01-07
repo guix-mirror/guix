@@ -358,9 +358,15 @@ or @command{xorrisofs} to create ISO 9660 images.")
      `(;; Parallel builds appear to be unsafe, see
        ;; <http://hydra.gnu.org/build/49331/nixlog/1/raw>.
        #:parallel-build? #f
-       #:tests? #f ; no check target
        #:phases
        (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "regtest"
+               (substitute* "common.bash"
+                 (("ISODIR=/var/tmp/regtest") "ISODIR=/tmp"))
+               (for-each invoke (find-files "." "rs.*\\.bash")))
+             #t))
          (add-after 'install 'install-desktop
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((datadir (string-append (assoc-ref outputs "out") "/share")))
