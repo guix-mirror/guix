@@ -116,7 +116,6 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages statistics)
   #:use-module (gnu packages version-control))
 
 (define-public httpd
