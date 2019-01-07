@@ -11,6 +11,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
+;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
@@ -5105,3 +5107,88 @@ speedup, polymorphic variants and optional syntax for tuples and variants.
 yojson package.  The program @code{atdgen} can be used to derive OCaml-JSON
 serializers and deserializers from type definitions.")
     (license license:bsd-3)))
+
+(define-public ocaml-gsl
+  (package
+    (name "ocaml-gsl")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://github.com/mmottl/gsl-ocaml/releases/download/"
+         version "/gsl-" version ".tbz"))
+       (sha256
+        (base32
+         "17vcswipliq1b2idbzx1z95kskn1a4q4s5v04igilg0f7lnkaarb"))))
+    (build-system ocaml-build-system)
+    (inputs
+     `(("gsl" ,gsl)))
+    (home-page "https://mmottl.github.io/gsl-ocaml")
+    (synopsis "Bindings to the GNU Scientific Library")
+    (description
+     "GSL-OCaml is an interface to the @dfn{GNU scientific library} (GSL) for
+the OCaml language.")
+    (license license:gpl3+)))
+
+(define-public ocaml4.01-gsl
+  (package-with-ocaml4.01 ocaml-gsl))
+
+(define-public cubicle
+  (package
+    (name "cubicle")
+    (version "1.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://cubicle.lri.fr/cubicle-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "10kk80jdmpdvql88sdjsh7vqzlpaphd8vip2lp47aarxjkwjlz1q"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("automake" ,automake)
+       ("ocaml" ,ocaml)
+       ("which" ,(@@ (gnu packages base) which))))
+    (propagated-inputs
+     `(("ocaml-num" ,ocaml-num)
+       ("z3" ,z3)))
+    (arguments
+     `(#:configure-flags (list "--with-z3")
+       #:make-flags (list "QUIET=")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'configure-for-release
+           (lambda _
+             (substitute* "Makefile.in"
+               (("SVNREV=") "#SVNREV="))
+             #t))
+         (add-before 'configure 'fix-/bin/sh
+           (lambda _
+             (substitute* "configure"
+               (("-/bin/sh") (string-append "-" (which "sh"))))
+             #t))
+         (add-before 'configure 'fix-smt-z3wrapper.ml
+           (lambda _
+             (substitute* "Makefile.in"
+               (("\\\\n") ""))
+             #t))
+         (add-before 'configure 'fix-ocaml-num
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("= \\$\\(FUNCTORYLIB\\)")
+                (string-append "= -I "
+                               (assoc-ref inputs "ocaml-num")
+                               "/lib/ocaml/site-lib"
+                               " $(FUNCTORYLIB)")))
+             #t)))))
+    (home-page "http://cubicle.lri.fr/")
+    (synopsis "Model checker for array-based systems")
+    (description "Cubicle is a model checker for verifying safety properties
+of array-based systems.  This is a syntactically restricted class of
+parametrized transition systems with states represented as arrays indexed by
+an arbitrary number of processes.  Cache coherence protocols and mutual
+exclusion algorithms are typical examples of such systems.")
+    (license license:asl2.0)))
