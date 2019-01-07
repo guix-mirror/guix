@@ -8794,3 +8794,30 @@ large datasets (> 100,000 samples) very efficiently.")
     (synopsis "Combinatorics utilities")
     (description "This package provides assorted routines for combinatorics.")
     (license license:gpl2)))
+
+(define-public r-qlcmatrix
+  (package
+    (name "r-qlcmatrix")
+    (version "0.9.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qlcMatrix" version))
+       (sha256
+        (base32
+         "0iqkcvvy8rxlk0s83sjq57dd6fadb18p5z31lzy0gnzv1hsy1x8y"))))
+    (properties `((upstream-name . "qlcMatrix")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-docopt" ,r-docopt)
+       ("r-matrix" ,r-matrix)
+       ("r-slam" ,r-slam)
+       ("r-sparsesvd" ,r-sparsesvd)))
+    (home-page "https://cran.r-project.org/web/packages/qlcMatrix")
+    (synopsis "Sparse matrix functions for quantitative language comparison")
+    (description
+     "This package provides an extension of the functionality of the Matrix
+package for using sparse matrices.  Some of the functions are very general,
+while other are highly specific for the special data format used for
+@dfn{quantitative language comparison} (QLC).")
+    (license license:gpl3)))
