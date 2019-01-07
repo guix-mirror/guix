@@ -8588,3 +8588,28 @@ bitmap images stored in the TIFF format.  It can read and write both files and
 in-memory raw vectors.")
     ;; Either of these two license versions.
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-waveslim
+  (package
+    (name "r-waveslim")
+    (version "1.7.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "waveslim" version))
+       (sha256
+        (base32
+         "0lqslkihgrd7rbihqhhk57m9vkbnfsznkvk8430cvbcsn7vridii"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://waveslim.blogspot.com")
+    (synopsis "Basic wavelet routines for signal processing")
+    (description
+     "This package provides basic wavelet routines for time series (1D),
+image (2D) and array (3D) analysis.  The code provided here is based on
+wavelet methodology developed in Percival and Walden (2000); Gencay, Selcuk
+and Whitcher (2001); the dual-tree complex wavelet transform (DTCWT) from
+Kingsbury (1999, 2001) as implemented by Selesnick; and Hilbert wavelet
+pairs (Selesnick 2001, 2002).")
+    (license license:bsd-3)))
