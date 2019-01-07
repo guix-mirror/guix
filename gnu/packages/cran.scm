@@ -8656,3 +8656,31 @@ over-plotting in scatter plots with text.")
 maps.")
     ;; Any version of the GPL
     (license license:gpl3+)))
+
+(define-public r-tidytree
+  (package
+    (name "r-tidytree")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tidytree" version))
+       (sha256
+        (base32
+         "1sx69wvlp7k761cmglrzq2jxkm2iq27x6bhhdcisj62wryj96wb2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-dplyr" ,r-dplyr)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/GuangchuangYu/tidytree")
+    (synopsis "Tidy tool for phylogenetic tree data manipulation")
+    (description
+     "Phylogenetic trees generally contain multiple components including nodes,
+edges, branches and associated data.  This package provides an approach to
+convert tree objects to tidy data frames.  It also provides tidy interfaces to
+manipulate tree data.")
+    (license license:artistic2.0)))
