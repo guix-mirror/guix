@@ -41,7 +41,6 @@
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -124,7 +123,6 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages wordnet)
-  #:use-module (gnu packages ocaml)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -12862,62 +12860,6 @@ functions to ensure they are called with the right arguments during testing.")
 @code{wordnet}.  Features include completion, if the query is not found
 too ambiguous and navigation in the result buffer.")
       (license license:gpl3+))))
-
-(define-public emacs-dedukti-mode
-  (let ((commit "d7c3505a1046187de3c3aeb144455078d514594e"))
-    (package
-      (name "emacs-dedukti-mode")
-      (version (git-version "0" "0" commit))
-      (home-page "https://github.com/rafoo/dedukti-mode")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1842wikq24c8rg0ac84vb1qby9ng1nssxswyyni4kq85lng5lcrp"))
-                (file-name (git-file-name name version))))
-      (inputs
-       `(("dedukti" ,dedukti)))
-      (build-system emacs-build-system)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'patch-dkpath
-             (lambda _
-               (let ((dkcheck-path (which "dkcheck")))
-                 (substitute* "dedukti-mode.el"
-                   (("dedukti-path \"(.*)\"")
-                    (string-append "dedukti-path \"" dkcheck-path "\"")))))))))
-      (synopsis "Emacs major mode for Dedukti files")
-      (description "This package provides an Emacs major mode for editing
-Dedukti files.")
-      (license license:cecill-b))))
-
-(define-public emacs-flycheck-dedukti
-  (let ((commit "3dbff5646355f39d57a3ec514f560a6b0082a1cd"))
-    (package
-      (name "emacs-flycheck-dedukti")
-      (version (git-version "0" "0" commit))
-      (home-page "https://github.com/rafoo/flycheck-dedukti")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1ffpxnwl3wx244n44mbw81g00nhnykd0lnid29f4aw1av7w6nw8l"))
-                (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (inputs
-       `(("dedukti-mode" ,emacs-dedukti-mode)
-         ("flycheck-mode" ,emacs-flycheck)))
-      (synopsis "Flycheck integration for the dedukti language")
-      (description "This package provides a frontend for Flycheck to perform
-syntax checking on dedukti files.")
-      (license license:cecill-b))))
 
 (define-public emacs-frame-purpose
   (package

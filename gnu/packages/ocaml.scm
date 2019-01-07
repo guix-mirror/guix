@@ -67,6 +67,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system dune)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
   #:use-module (guix download)
@@ -5046,6 +5047,62 @@ dependent types.  The λΠ-calculus modulo theory is itself an extension of the
 rules.  This system is not designed to develop proofs, but to check proofs
 developed in other systems.  In particular, it enjoys a minimalistic syntax.")
     (license license:cecill-c)))
+
+(define-public emacs-dedukti-mode
+  (let ((commit "d7c3505a1046187de3c3aeb144455078d514594e"))
+    (package
+      (name "emacs-dedukti-mode")
+      (version (git-version "0" "0" commit))
+      (home-page "https://github.com/rafoo/dedukti-mode")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1842wikq24c8rg0ac84vb1qby9ng1nssxswyyni4kq85lng5lcrp"))
+                (file-name (git-file-name name version))))
+      (inputs
+       `(("dedukti" ,dedukti)))
+      (build-system emacs-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'patch-dkpath
+             (lambda _
+               (let ((dkcheck-path (which "dkcheck")))
+                 (substitute* "dedukti-mode.el"
+                   (("dedukti-path \"(.*)\"")
+                    (string-append "dedukti-path \"" dkcheck-path "\"")))))))))
+      (synopsis "Emacs major mode for Dedukti files")
+      (description "This package provides an Emacs major mode for editing
+Dedukti files.")
+      (license license:cecill-b))))
+
+(define-public emacs-flycheck-dedukti
+  (let ((commit "3dbff5646355f39d57a3ec514f560a6b0082a1cd"))
+    (package
+      (name "emacs-flycheck-dedukti")
+      (version (git-version "0" "0" commit))
+      (home-page "https://github.com/rafoo/flycheck-dedukti")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1ffpxnwl3wx244n44mbw81g00nhnykd0lnid29f4aw1av7w6nw8l"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("dedukti-mode" ,emacs-dedukti-mode)
+         ("flycheck-mode" ,emacs-flycheck)))
+      (synopsis "Flycheck integration for the dedukti language")
+      (description "This package provides a frontend for Flycheck to perform
+syntax checking on dedukti files.")
+      (license license:cecill-b))))
 
 (define-public ocaml-biniou
  (package
