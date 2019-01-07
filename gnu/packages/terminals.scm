@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -30,7 +30,6 @@
 
 (define-module (gnu packages terminals)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)

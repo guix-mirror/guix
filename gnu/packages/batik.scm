@@ -23,7 +23,6 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system ant)
-  #:use-module (guix build utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages java)

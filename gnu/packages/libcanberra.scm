@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;;
@@ -28,7 +28,6 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
-  #:use-module (guix build utils)
   #:use-module (guix utils)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gstreamer)
@@ -38,7 +37,8 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages xiph))
+  #:use-module (gnu packages xiph)
+  #:use-module ((srfi srfi-1) #:select (alist-delete)))
 
 (define-public libcanberra
   (package
