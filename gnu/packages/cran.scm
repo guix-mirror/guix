@@ -8777,3 +8777,20 @@ neighbors) of the density peak clustering algorithm, originally described by
 Alex Rodriguez and Alessandro Laio (Science, 2014 vol. 344).  It can handle
 large datasets (> 100,000 samples) very efficiently.")
     (license license:gpl2+)))
+
+(define-public r-combinat
+  (package
+    (name "r-combinat")
+    (version "0.0-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "combinat" version))
+       (sha256
+        (base32
+         "1h9hr88gigihc4na7lb5i7rn4az1xa7sb34zvnznaj6pdrmwy4qm"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/combinat")
+    (synopsis "Combinatorics utilities")
+    (description "This package provides assorted routines for combinatorics.")
+    (license license:gpl2)))
