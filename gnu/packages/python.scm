@@ -120,7 +120,6 @@
   #:use-module (gnu packages search)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages ssh)
-  #:use-module (gnu packages statistics)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
@@ -3730,64 +3729,6 @@ can, for example, efficiently read whole PLINK *.bed/bim/fam files or parts of
 those files.  It can also efficiently manipulate ranges of integers using set
 operators such as union, intersection, and difference.")
     (license license:asl2.0)))
-
-(define-public python-rpy2
-  (package
-    (name "python-rpy2")
-    (version "2.9.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "rpy2" version))
-       (sha256
-        (base32
-         "0bl1d2qhavmlrvalir9hmkjh74w21vzkvc2sg3cbb162s10zfmxy"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:modules ((ice-9 ftw)
-                  (srfi srfi-1)
-                  (srfi srfi-26)
-                  (guix build utils)
-                  (guix build python-build-system))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let ((cwd (getcwd)))
-               (setenv "PYTHONPATH"
-                       (string-append cwd "/build/"
-                                      (find (cut string-prefix? "lib" <>)
-                                            (scandir (string-append cwd "/build")))
-                                      ":"
-                                      (getenv "PYTHONPATH"))))
-             (invoke "python" "-m" "rpy2.tests" "-v"))))))
-    (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-jinja2" ,python-jinja2)
-       ("python-pytz" ,python-pytz)))
-    (inputs
-     `(("readline" ,readline)
-       ("icu4c" ,icu4c)
-       ("pcre" ,pcre)
-       ("r-minimal" ,r-minimal)
-       ("r-survival" ,r-survival)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-rsqlite" ,r-rsqlite)
-       ("r-dplyr" ,r-dplyr)
-       ("r-dbplyr" ,r-dbplyr)
-       ("python-numpy" ,python-numpy)))
-    (native-inputs
-     `(("zlib" ,zlib)))
-    (home-page "https://rpy2.bitbucket.io/")
-    (synopsis "Python interface to the R language")
-    (description "rpy2 is a redesign and rewrite of rpy.  It is providing a
-low-level interface to R from Python, a proposed high-level interface,
-including wrappers to graphical libraries, as well as R-like structures and
-functions.")
-    ;; Any of these licenses can be picked for the R interface.  The whole
-    ;; project is released under GPLv2+ according to the license declaration
-    ;; in "setup.py".
-    (license (list license:mpl2.0 license:gpl2+ license:lgpl2.1+))))
 
 (define-public python-scipy
   (package
