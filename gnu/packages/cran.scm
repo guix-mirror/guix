@@ -8747,3 +8747,33 @@ only sparse real matrices in Matrix package format are supported.")
     ;; SVDLIBC is released under BSD-2.  The R interface is released under
     ;; BSD-3.
     (license (list license:bsd-3 license:bsd-2))))
+
+(define-public r-densityclust
+  (package
+    (name "r-densityclust")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "densityClust" version))
+       (sha256
+        (base32
+         "1zry0vafajzmr37aylglxfvwplhdygbkb9cvzvh8cy0xgnjrnx13"))))
+    (properties `((upstream-name . "densityClust")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fnn" ,r-fnn)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-gridextra" ,r-gridextra)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rtsne" ,r-rtsne)))
+    (home-page "https://cran.r-project.org/web/packages/densityClust")
+    (synopsis "Clustering by fast search and find of density peaks")
+    (description
+     "This package provides an improved implementation (based on k-nearest
+neighbors) of the density peak clustering algorithm, originally described by
+Alex Rodriguez and Alessandro Laio (Science, 2014 vol. 344).  It can handle
+large datasets (> 100,000 samples) very efficiently.")
+    (license license:gpl2+)))
