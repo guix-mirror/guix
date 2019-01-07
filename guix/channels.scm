@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -335,6 +335,26 @@ modules in the old ~/.config/guix/latest style."
   (define packages
     (resolve-interface '(gnu packages guile)))
 
+  (define modules+compiled
+    ;; Since MODULES contains both .scm and .go files at its root, re-bundle
+    ;; it so that it has share/guile/site and lib/guile, which is what
+    ;; 'whole-package' expects.
+    (computed-file (derivation-name modules)
+                   (with-imported-modules '((guix build utils))
+                     #~(begin
+                         (use-modules (guix build utils))
+
+                         (define version
+                           (effective-version))
+                         (define share
+                           (string-append #$output "/share/guile/site"))
+                         (define lib
+                           (string-append #$output "/lib/guile/" version))
+
+                         (mkdir-p share) (mkdir-p lib)
+                         (symlink #$modules (string-append share "/" version))
+                         (symlink #$modules (string-append lib "/site-ccache"))))))
+
   (letrec-syntax ((list (syntax-rules (->)
                           ((_)
                            '())
@@ -346,7 +366,7 @@ modules in the old ~/.config/guix/latest style."
                           ((_ variable rest ...)
                            (cons (module-ref packages 'variable)
                                  (list rest ...))))))
-    (whole-package name modules
+    (whole-package name modules+compiled
 
                    ;; In the "old style", %SELF-BUILD-FILE would simply return a
                    ;; derivation that builds modules.  We have to infer what the
