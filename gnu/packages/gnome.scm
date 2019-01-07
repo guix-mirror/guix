@@ -5917,7 +5917,7 @@ properties, screen resolution, and other GNOME parameters.")
 (define-public gnome-shell
   (package
     (name "gnome-shell")
-    (version "3.28.2")
+    (version "3.30.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5925,7 +5925,7 @@ properties, screen resolution, and other GNOME parameters.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1b9n89ij2g5nqaqp7a13jnqcd8qa2v9p55rbi71al3xvqk091ri7"))
+                "0kacd4w9lc5finsvs170i7827qkxwd1ddj0g2giizwffpjdjqqr2"))
               (patches (search-patches "gnome-shell-theme.patch"))
               (modules '((guix build utils)))
               (snippet
