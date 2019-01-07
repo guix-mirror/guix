@@ -331,35 +331,6 @@ editor (without an X toolkit)" )
              (lambda _
                (invoke "mkdir" "-p" "src/deps")))))))))
 
-(define-public (package-elisp-from-package
-                source-package package-name source-files)
-  "Return a package definition named PACKAGE-NAME that packages the Emacs Lisp
-SOURCE-FILES found in SOURCE-PACKAGE."
-  (let ((orig (package-source source-package)))
-    (package
-      (inherit source-package)
-      (name package-name)
-      (build-system emacs-build-system)
-      (source (origin
-                (method (origin-method orig))
-                (uri (origin-uri orig))
-                (sha256 (origin-sha256 orig))
-                (file-name (string-append package-name "-"
-                                          (package-version source-package)))
-                (modules '((guix build utils)
-                           (srfi srfi-1)
-                           (ice-9 ftw)))
-                (snippet
-                 `(let* ((source-files (quote ,source-files))
-                         (basenames (map basename source-files)))
-                    (map copy-file
-                         source-files basenames)
-                    (map delete-file-recursively
-                         (fold delete
-                               (scandir ".")
-                               (append '("." "..") basenames)))
-                    #t)))))))
-
 
 ;;;
 ;;; Emacs hacking.
