@@ -8613,3 +8613,26 @@ and Whitcher (2001); the dual-tree complex wavelet transform (DTCWT) from
 Kingsbury (1999, 2001) as implemented by Selesnick; and Hilbert wavelet
 pairs (Selesnick 2001, 2002).")
     (license license:bsd-3)))
+
+(define-public r-wordcloud
+  (package
+    (name "r-wordcloud")
+    (version "2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "wordcloud" version))
+       (sha256
+        (base32
+         "0j96yyvm6bcrrpbdx4w26piqx44a0vbsr3px9cb4zk8a8da6jwak"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/wordcloud")
+    (synopsis "Word clouds")
+    (description
+     "This package provides functionality to create pretty word clouds,
+visualize differences and similarity between documents, and avoid
+over-plotting in scatter plots with text.")
+    (license license:lgpl2.1)))
