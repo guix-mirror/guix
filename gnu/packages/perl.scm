@@ -4638,7 +4638,7 @@ implemented for example in GNU gettext.")
 (define-public perl-lingua-translit
   (package
     (name "perl-lingua-translit")
-    (version "0.26")
+    (version "0.28")
     (source
      (origin
        (method url-fetch)
@@ -4646,7 +4646,7 @@ implemented for example in GNU gettext.")
                            "Lingua-Translit-" version ".tar.gz"))
        (sha256
         (base32
-         "161589h08kzliga17i2g0hb0yn4cjmb8rdiyadq5bw97974bac14"))))
+         "1qgap0j0ixmif309dvbqca7sy8xha9xgnj9s2lvh8qrczkc92gqi"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Lingua-Translit")
     (synopsis "Transliterate text between writing systems")
