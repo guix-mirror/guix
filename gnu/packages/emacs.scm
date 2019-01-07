@@ -105,7 +105,6 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages scheme)
-  #:use-module (gnu packages statistics)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages gettext)
@@ -4351,73 +4350,6 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
       (description "This Emacs package provides a mode for the Julia
 programming language.")
       (license license:expat))))
-
-(define-public emacs-ess
-  (package
-    (name "emacs-ess")
-    (version "17.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/emacs-ess/ESS/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0cbilbsiwvcyf6d5y24mymp57m3ana5dkzab3knfs83w4a3a4c5c"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Stop ESS from trying to bundle an external julia-mode.el.
-                  (substitute* "lisp/Makefile"
-                    (("^\tjulia-mode.elc\\\\\n") "")
-                    (("^dist: all julia-mode.el")
-                     "dist: all"))
-                  ;; No need to build docs in so many formats.  Also, skipping
-                  ;; pdf lets us not pull in texlive.
-                  (substitute* "doc/Makefile"
-                    (("all  : info text html pdf")
-                     "all  : info")
-                    (("install: install-info install-other-docs")
-                     "install: install-info"))
-                  ;; Test fails upstream
-                  (substitute* "test/ess-r-tests.el"
-                    (("ert-deftest ess-r-namespaced-eval-no-srcref-in-errors ()")
-                     "ert-deftest ess-r-namespaced-eval-no-srcref-in-errors () :expected-result :failed"))
-                  #t))))
-    (build-system gnu-build-system)
-    (arguments
-     (let ((base-directory "/share/emacs/site-lisp/guix.d/ess"))
-       `(#:make-flags (list (string-append "PREFIX=" %output)
-                            (string-append "ETCDIR=" %output "/"
-                                           ,base-directory "/etc")
-                            (string-append "LISPDIR=" %output "/"
-                                           ,base-directory))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-before 'build 'more-shebang-patching
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "Makeconf"
-                 (("SHELL = /bin/sh")
-                  (string-append "SHELL = " (which "sh"))))
-               #t))
-           (replace 'check
-             (lambda _
-               (invoke "make" "test")))))))
-    (inputs
-     `(("emacs" ,emacs-minimal)
-       ("r-minimal" ,r-minimal)))
-    (native-inputs
-     `(("perl" ,perl)
-       ("texinfo" ,texinfo)))
-    (propagated-inputs
-     `(("emacs-julia-mode" ,emacs-julia-mode)))
-    (home-page "https://ess.r-project.org/")
-    (synopsis "Emacs mode for statistical analysis programs")
-    (description "Emacs Speaks Statistics (ESS) is an add-on package for GNU
-Emacs.  It is designed to support editing of scripts and interaction with
-various statistical analysis programs such as R, Julia, and JAGS.")
-    (license license:gpl2+)))
 
 (define-public emacs-smex
   (package
