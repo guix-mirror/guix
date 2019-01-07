@@ -34,20 +34,17 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system r)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages cran)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages statistics))
+  #:use-module (gnu packages perl))
 
 (define-public cereal
   (package
@@ -475,28 +472,6 @@ to generate and parse.  The two primary functions are @code{cbor.loads} and
     (description "FlatBuffers is a cross-platform serialization library for C++,
 C#, C, Go, Java, JavaScript, PHP, and Python.  It was originally created for
 game development and other performance-critical applications.")
-    (license license:asl2.0)))
-
-(define-public r-feather
-  (package
-    (name "r-feather")
-    (version "0.3.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (cran-uri "feather" version))
-        (sha256
-         (base32
-          "1q6dbkfnkpnabq8lb6bm9ma44cfcghx2lm23pyk3vg7943wrn1pi"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-hms" ,r-hms)
-       ("r-rcpp" ,r-rcpp)
-       ("r-tibble" ,r-tibble)))
-    (home-page "https://github.com/wesm/feather")
-    (synopsis "R Bindings to the Feather API")
-    (description "Read and write feather files, a lightweight binary columnar
-daa store designed for maximum speed.")
     (license license:asl2.0)))
 
 (define-public python-feather-format

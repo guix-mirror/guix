@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Laura Lazzati <laura.lazzati.15@gmail.com>
+;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -774,6 +775,28 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
      "This package provides UI widget and layout functions for writing Shiny apps that
 work well on small screens.")
     (license license:gpl3)))
+
+(define-public r-feather
+  (package
+    (name "r-feather")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "feather" version))
+       (sha256
+        (base32
+         "1q6dbkfnkpnabq8lb6bm9ma44cfcghx2lm23pyk3vg7943wrn1pi"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-hms" ,r-hms)
+       ("r-rcpp" ,r-rcpp)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/wesm/feather")
+    (synopsis "R Bindings to the Feather API")
+    (description "Read and write feather files, a lightweight binary columnar
+data store designed for maximum speed.")
+    (license license:asl2.0)))
 
 (define-public r-haven
   (package
