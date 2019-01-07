@@ -333,9 +333,8 @@ editor (without an X toolkit)" )
 
 (define-public (package-elisp-from-package
                 source-package package-name source-files)
-  "Returns a package definition that packages emacs-lisp files from the
-SOURCE-PACKAGEs source.  The package has the name PACKAGE-NAME and packages
-the files SOURCE-FILES from the source in its root directory."
+  "Return a package definition named PACKAGE-NAME that packages the Emacs Lisp
+SOURCE-FILES found in SOURCE-PACKAGE."
   (let ((orig (package-source source-package)))
     (package
       (inherit source-package)
