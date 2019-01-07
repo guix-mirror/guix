@@ -96,6 +96,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
@@ -869,6 +870,38 @@ Additionally, for developers it aims to be easy to extend and give a flexible
 system on which to rapidly develop added functionality, or prototype new
 protocols.")
     (license license:x11)))
+
+(define-public prosody-http-upload
+  (let ((changeset "765735bb590b")
+        (revision "1"))
+    (package
+      (name "prosody-http-upload")
+      (version (string-append "0-" revision "." (string-take changeset 7)))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference
+                      (url "https://hg.prosody.im/prosody-modules/")
+                      (changeset changeset)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "142wrcism70nf8ffahhd961cqg2pi1h7ic8adfs3zwh0j3pnf41f"))))
+      (build-system trivial-build-system)
+      (arguments
+       '(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((out (assoc-ref %outputs "out"))
+                 (source (assoc-ref %build-inputs "source")))
+             (with-directory-excursion (in-vicinity source "mod_http_upload")
+               (install-file "mod_http_upload.lua" out))
+             #t))))
+      (home-page "https://modules.prosody.im/mod_http_upload.html")
+      (synopsis "XEP-0363: Allow clients to upload files over HTTP")
+      (description "This module implements XEP-0363: it allows clients to
+upload files over HTTP.")
+      (license (package-license prosody)))))
 
 (define-public libtoxcore
   (let ((revision "2")
