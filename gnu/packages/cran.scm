@@ -8724,3 +8724,26 @@ R packages (on CRAN, Bioconductor or Github).")
      "This package enables you to define a command-line interface by just
 giving it a description in the specific format.")
     (license license:expat)))
+
+(define-public r-sparsesvd
+  (package
+    (name "r-sparsesvd")
+    (version "0.1-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sparsesvd" version))
+       (sha256
+        (base32
+         "1yf373552wvdnd65r7hfcqa3v29dqn7jd4cn431mqd2acnqjrsam"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-matrix" ,r-matrix)))
+    (home-page "http://tedlab.mit.edu/~dr/SVDLIBC/")
+    (synopsis "Sparse truncated singular value decomposition")
+    (description
+     "This package provides a Wrapper around the SVDLIBC library
+for (truncated) singular value decomposition of a sparse matrix.  Currently,
+only sparse real matrices in Matrix package format are supported.")
+    ;; SVDLIBC is released under BSD-2.  The R interface is released under
+    ;; BSD-3.
+    (license (list license:bsd-3 license:bsd-2))))
