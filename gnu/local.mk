@@ -604,6 +604,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
   %D%/packages/patches/beets-python-3.7-fix.patch		\
   %D%/packages/patches/beignet-correct-file-names.patch		\
+  %D%/packages/patches/biber-fix-encoding-write.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blast+-fix-makefile.patch		\
   %D%/packages/patches/blender-newer-ffmpeg.patch		\
