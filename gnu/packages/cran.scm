@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
@@ -30,10 +30,12 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system r)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
@@ -41,6 +43,8 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages javascript)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
@@ -274,6 +278,501 @@ the embedded @code{RapidXML} C++ library.")
     (description
      "Functions for modelling that help you seamlessly integrate modelling
 into a pipeline of data manipulation and visualisation.")
+    (license license:gpl3)))
+
+(define-public r-httpuv
+  (package
+    (name "r-httpuv")
+    (version "1.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "httpuv" version))
+              (sha256
+               (base32
+                "1ddpcarzf694h0gy5pdz7l5glqfv4hr9dmxb4vw7yqd0bga174gi"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-later" ,r-later)
+       ("r-promises" ,r-promises)))
+    (home-page "https://github.com/rstudio/httpuv")
+    (synopsis "HTTP and WebSocket server library for R")
+    (description
+     "The httpuv package provides low-level socket and protocol support for
+handling HTTP and WebSocket requests directly from within R.  It is primarily
+intended as a building block for other packages, rather than making it
+particularly easy to create complete web applications using httpuv alone.")
+    ;; This package includes third-party code that was originally released
+    ;; under various non-copyleft licenses.  Full licensing information can be
+    ;; obtained here: https://github.com/rstudio/httpuv/blob/master/LICENSE
+    (license license:gpl3+)))
+
+(define-public r-jsonlite
+  (package
+    (name "r-jsonlite")
+    (version "1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "jsonlite" version))
+              (sha256
+               (base32
+                "00lfg464jhf7k01bal9pcjvbdf5cxk6xi2h46hccp1x3h883g434"))))
+    (build-system r-build-system)
+    (home-page "http://arxiv.org/abs/1403.2805")
+    (synopsis "Robust, high performance JSON parser and generator for R")
+    (description
+     "The jsonlite package provides a fast JSON parser and generator optimized
+for statistical data and the web.  It offers flexible, robust, high
+performance tools for working with JSON in R and is particularly powerful for
+building pipelines and interacting with a web API.  In addition to converting
+JSON data from/to R objects, jsonlite contains functions to stream, validate,
+and prettify JSON data.  The unit tests included with the package verify that
+all edge cases are encoded and decoded consistently for use with dynamic data
+in systems and applications.")
+    (license license:expat)))
+
+(define-public r-servr
+  (package
+    (name "r-servr")
+    (version "0.11")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "servr" version))
+              (sha256
+               (base32
+                "0yj3p1risf269n25dd56lqv82dsxv6a0aq4bcc1ddn9wv7h2xdfi"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httpuv" ,r-httpuv)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-mime" ,r-mime)
+       ("r-xfun" ,r-xfun)))
+    (home-page "https://github.com/yihui/servr")
+    (synopsis "Simple HTTP server to serve static files or dynamic documents")
+    (description
+     "Servr provides an HTTP server in R to serve static files, or dynamic
+documents that can be converted to HTML files (e.g., R Markdown) under a given
+directory.")
+    (license license:expat)))
+
+(define-public r-htmltools
+  (package
+    (name "r-htmltools")
+    (version "0.3.6")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "htmltools" version))
+              (sha256
+               (base32
+                "18k8r1s8sz1jy7dkz35n69wj20xhmllr53xmwb4pdzf2z61gpbs4"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; See https://github.com/rstudio/htmltools/pull/68
+         ;; The resource files are in the store and have mode 444.  After
+         ;; copying the files R fails to remove them again because it doesn't
+         ;; have write access to them.
+         (add-after 'unpack 'copy-files-without-mode
+           (lambda _
+             (substitute* "R/html_dependency.R"
+               (("file.copy\\(from, to, " prefix)
+                (string-append prefix
+                               "copy.mode = FALSE, ")))
+             #t)))))
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/htmltools")
+    (synopsis "R tools for HTML")
+    (description
+     "This package provides tools for HTML generation and output in R.")
+    (license license:expat)))
+
+(define-public r-htmlwidgets
+  (package
+    (name "r-htmlwidgets")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "htmlwidgets" version))
+              (sha256
+               (base32
+                "04jsdh14l2zifbjpbbh23w7bxz1wpsas0zb2gy2zwv4yqamzzr7i"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://github.com/ramnathv/htmlwidgets")
+    (synopsis "HTML Widgets for R")
+    (description
+     "HTML widgets is a framework for creating HTML widgets that render in
+various contexts including the R console, R Markdown documents, and Shiny web
+applications.")
+    (license license:expat)))
+
+(define-public r-htmltable
+  (package
+    (name "r-htmltable")
+    (version "1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "htmlTable" version))
+       (sha256
+        (base32
+         "1n5136vb7mi4rxl5jgwdmdhn4mwv2pcqyw2mrj406ih4hy6hpxa2"))))
+    (properties `((upstream-name . "htmlTable")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-knitr" ,r-knitr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-stringr" ,r-stringr)))
+    (home-page "http://gforge.se/packages/")
+    (synopsis "Advanced tables for Markdown/HTML")
+    (description
+     "This package provides functions to build tables with advanced layout
+elements such as row spanners, column spanners, table spanners, zebra
+striping, and more.  While allowing advanced layout, the underlying
+CSS-structure is simple in order to maximize compatibility with word
+processors such as LibreOffice.  The package also contains a few text
+formatting functions that help outputting text compatible with HTML or
+LaTeX.")
+    (license license:gpl3+)))
+
+(define-public r-curl
+  (package
+    (name "r-curl")
+    (version "3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "curl" version))
+              (sha256
+               (base32
+                "15hmy71310hnf9yqvz0icx4cq939gv6iqaifzlfdh2ia8akawdhn"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The environment variable CURL_CA_BUNDLE is only respected when
+         ;; running Windows, so we disable the platform checks.
+         ;; This can be removed once the libcurl has been patched.
+         (add-after 'unpack 'allow-CURL_CA_BUNDLE
+           (lambda _
+             (substitute* "R/onload.R"
+               (("if \\(!grepl\\(\"mingw\".*")
+                "if (FALSE)\n"))
+             (substitute* "src/handle.c"
+               (("#ifdef _WIN32") "#if 1"))
+             #t)))))
+    (inputs
+     `(("libcurl" ,curl)))
+    (home-page "https://github.com/jeroenooms/curl")
+    (synopsis "HTTP client for R")
+    (description
+     "The @code{curl()} and @code{curl_download()} functions provide highly
+configurable drop-in replacements for base @code{url()} and
+@code{download.file()} with better performance, support for encryption, gzip
+compression, authentication, and other @code{libcurl} goodies.  The core of
+the package implements a framework for performing fully customized requests
+where data can be processed either in memory, on disk, or streaming via the
+callback or connection interfaces.")
+    (license license:expat)))
+
+(define-public r-hwriter
+  (package
+    (name "r-hwriter")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hwriter" version))
+       (sha256
+        (base32
+         "0arjsz854rfkfqhgvpqbm9lfni97dcjs66isdsfvwfd2wz932dbb"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/hwriter")
+    (synopsis "Output R objects in HTML format")
+    (description
+     "This package provides easy-to-use and versatile functions to output R
+objects in HTML format.")
+    (license license:lgpl2.1+)))
+
+(define-public r-rjson
+  (package
+    (name "r-rjson")
+    (version "0.2.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rjson" version))
+       (sha256
+        (base32
+         "0v1zvdd3svnavklh7y5xbwrrkbvx6053r4c5hgnk7hz7bqg7qa1s"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/rjson")
+    (synopsis "JSON library for R")
+    (description
+     "This package provides functions to convert R objects into JSON objects
+and vice-versa.")
+    (license license:gpl2+)))
+
+(define-public r-shiny
+  (package
+    (name "r-shiny")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rstudio/shiny.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "041q2gzvzs13syfhbirmkik96asdji8dxnnbs63j7v1ks97hrvvz"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build r-build-system)
+                  (guix build minify-build-system)
+                  (guix build utils)
+                  (ice-9 match))
+       #:imported-modules (,@%r-build-system-modules
+                           (guix build minify-build-system))
+       #:phases
+       (modify-phases (@ (guix build r-build-system) %standard-phases)
+         (add-after 'unpack 'replace-bundled-minified-JavaScript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((replace-file (lambda (old new)
+                                   (format #t "replacing ~a with ~a\n" old new)
+                                   (delete-file old)
+                                   (symlink new old))))
+               ;; NOTE: Files in ./inst/www/shared/datepicker/js/locales/
+               ;; contain just data.  They are not minified code, so we don't
+               ;; replace them.
+               (with-directory-excursion "inst/www/shared"
+                 (replace-file "bootstrap/shim/respond.min.js"
+                               (string-append (assoc-ref inputs "js-respond")
+                                              "/share/javascript/respond.min.js"))
+                 (replace-file "bootstrap/shim/html5shiv.min.js"
+                               (string-append (assoc-ref inputs "js-html5shiv")
+                                              "/share/javascript/html5shiv.min.js"))
+                 (replace-file "json2-min.js"
+                               (string-append (assoc-ref inputs "js-json2")
+                                              "/share/javascript/json2.min.js"))
+                 (replace-file "strftime/strftime-min.js"
+                               (string-append (assoc-ref inputs "js-strftime")
+                                              "/share/javascript/strftime.min.js"))
+                 (replace-file "highlight/highlight.pack.js"
+                               (string-append (assoc-ref inputs "js-highlight")
+                                              "/share/javascript/highlight.min.js"))
+                 (replace-file "datatables/js/jquery.dataTables.min.js"
+                               (string-append (assoc-ref inputs "js-datatables")
+                                              "/share/javascript/jquery.dataTables.min.js"))
+                 (replace-file "selectize/js/selectize.min.js"
+                               (string-append (assoc-ref inputs "js-selectize")
+                                              "/share/javascript/selectize.min.js"))
+                 (replace-file "selectize/js/es5-shim.min.js"
+                               (string-append (assoc-ref inputs "js-es5-shim")
+                                              "/share/javascript/es5-shim.min.js"))
+                 (for-each (match-lambda
+                             ((source . target)
+                              (delete-file target)
+                              (minify source #:target target)))
+                           '(("jqueryui/jquery-ui.js" .
+                              "jqueryui/jquery-ui.min.js")
+                             ("showdown/src/showdown.js" .
+                              "showdown/compressed/showdown.js")
+                             ("datepicker/js/bootstrap-datepicker.js" .
+                              "datepicker/js/bootstrap-datepicker.min.js")
+                             ("ionrangeslider/js/ion.rangeSlider.js" .
+                              "ionrangeslider/js/ion.rangeSlider.min.js")
+                             ("bootstrap/js/bootstrap.js" .
+                              "bootstrap/js/bootstrap.min.js")
+                             ("shiny.js" .
+                              "shiny.min.js")
+                             ("jquery.js" .
+                              "jquery.min.js")))))
+             #t)))))
+    (propagated-inputs
+     `(("r-crayon" ,r-crayon)
+       ("r-httpuv" ,r-httpuv)
+       ("r-mime" ,r-mime)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-xtable" ,r-xtable)
+       ("r-digest" ,r-digest)
+       ("r-htmltools" ,r-htmltools)
+       ("r-r6" ,r-r6)
+       ("r-sourcetools" ,r-sourcetools)))
+    (inputs
+     `(("js-datatables" ,js-datatables)
+       ("js-html5shiv" ,js-html5shiv)
+       ("js-json2" ,js-json2)
+       ("js-respond" ,js-respond)
+       ("js-selectize" ,js-selectize)
+       ("js-strftime" ,js-strftime)
+       ("js-highlight" ,js-highlight)
+       ("js-es5-shim" ,js-es5-shim)))
+    (home-page "http://shiny.rstudio.com")
+    (synopsis "Easy interactive web applications with R")
+    (description
+     "Makes it incredibly easy to build interactive web applications
+with R.  Automatic \"reactive\" binding between inputs and outputs and
+extensive prebuilt widgets make it possible to build beautiful,
+responsive, and powerful applications with minimal effort.")
+    (license license:artistic2.0)))
+
+(define-public r-shinydashboard
+  (package
+    (name "r-shinydashboard")
+    (version "0.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "shinydashboard" version))
+              (sha256
+               (base32
+                "0khac8b27q3swdw07kl609hm0fjfjsjv591b388q99mqqr2rk92i"))))
+    (build-system r-build-system)
+    ;; The directory inst/AdminLTE/ contains a minified JavaScript file.
+    ;; Regenerate it from the included sources.
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'generate-minified-javascript
+           (lambda _
+             (with-directory-excursion "inst/AdminLTE"
+               (delete-file "app.min.js")
+               (let ((minified (open-pipe* OPEN_READ "uglify-js" "app.js")))
+                 (call-with-output-file "app.min.js"
+                   (lambda (port)
+                     (dump-port minified port))))))))))
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-promises" ,r-promises)
+       ("r-shiny" ,r-shiny)))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)))
+    (home-page "http://rstudio.github.io/shinydashboard/")
+    (synopsis "Create dashboards with shiny")
+    (description "This package provides an extension to the Shiny web
+application framework for R, making it easy to create attractive dashboards.")
+    ;; This package includes software that was released under the Expat
+    ;; license, but the whole package is released under GPL version 2 or
+    ;; later.
+    (license license:gpl2+)))
+
+(define-public r-shinyfiles
+  (package
+    (name "r-shinyfiles")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinyFiles" version))
+       (sha256
+        (base32
+         "0dlcjrw96x72grg6j915070x8x98l7629pn86gf148iknflm7gd5"))))
+    (properties `((upstream-name . "shinyFiles")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fs" ,r-fs)
+       ("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-shiny" ,r-shiny)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/thomasp85/shinyFiles")
+    (synopsis "Server-side file system viewer for Shiny")
+    (description
+     "This package provides functionality for client-side navigation of the
+server side file system in shiny apps.  In case the app is running locally
+this gives the user direct access to the file system without the need to
+\"download\" files to a temporary location.  Both file and folder selection as
+well as file saving is available.")
+    (license license:gpl2+)))
+
+(define-public r-crosstalk
+  (package
+    (name "r-crosstalk")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "crosstalk" version))
+       (sha256
+        (base32
+         "0lfa89vhrzi7a1rghmygcjr8gzddw35sinb3jx6g49mc9jias7mk"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-r6" ,r-r6)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://rstudio.github.io/crosstalk/")
+    (synopsis "Inter-widget interactivity for HTML widgets")
+    (description
+     "This package provides building blocks for allowing HTML widgets to
+communicate with each other, with Shiny or without (i.e.  static @code{.html}
+files).  It currently supports linked brushing and filtering.")
+    (license license:expat)))
+
+(define-public r-rook
+  (package
+    (name "r-rook")
+    (version "1.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rook" version))
+       (sha256
+        (base32
+         "00s9a0kr9rwxvlq433daxjk4ji8m0w60hjdprf502msw9kxfrx00"))))
+    (properties `((upstream-name . "Rook")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-brew" ,r-brew)))
+    (home-page "https://cran.r-project.org/web/packages/Rook")
+    (synopsis "Web server interface for R")
+    (description
+     "This package contains the Rook specification and convenience software
+for building and running Rook applications.  A Rook application is an R
+reference class object that implements a @code{call} method or an R closure
+that takes exactly one argument, an environment, and returns a list with three
+named elements: the @code{status}, the @code{headers}, and the @code{body}.")
+    (license license:gpl2)))
+
+(define-public r-miniui
+  (package
+    (name "r-miniui")
+    (version "0.1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "miniUI" version))
+       (sha256
+        (base32
+         "1h5h2sc57h95d6bsgs95l26911g38hvjc1v50bc31xl9689l2as5"))))
+    (properties `((upstream-name . "miniUI")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://cran.r-project.org/web/packages/miniUI/")
+    (synopsis "Shiny UI widgets for small screens")
+    (description
+     "This package provides UI widget and layout functions for writing Shiny apps that
+work well on small screens.")
     (license license:gpl3)))
 
 (define-public r-haven
