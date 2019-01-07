@@ -595,7 +595,8 @@ from ~a")
                     'home-page)))))
 
 (define %distro-directory
-  (dirname (search-path %load-path "gnu.scm")))
+  (mlambda ()
+    (dirname (search-path %load-path "gnu.scm"))))
 
 (define (check-patch-file-names package)
   "Emit a warning if the patches requires by PACKAGE are badly named or if the
@@ -620,12 +621,12 @@ patch could not be found."
        'patch-file-names))
 
     ;; Check whether we're reaching tar's maximum file name length.
-    (let ((prefix (string-length %distro-directory))
+    (let ((prefix (string-length (%distro-directory)))
           (margin (string-length "guix-0.13.0-10-123456789/"))
           (max    99))
       (for-each (match-lambda
                   ((? string? patch)
-                   (when (> (+ margin (if (string-prefix? %distro-directory
+                   (when (> (+ margin (if (string-prefix? (%distro-directory)
                                                           patch)
                                           (- (string-length patch) prefix)
                                           (string-length patch)))
