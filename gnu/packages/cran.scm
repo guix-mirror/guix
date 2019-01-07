@@ -8684,3 +8684,24 @@ edges, branches and associated data.  This package provides an approach to
 convert tree objects to tidy data frames.  It also provides tidy interfaces to
 manipulate tree data.")
     (license license:artistic2.0)))
+
+(define-public r-rvcheck
+  (package
+    (name "r-rvcheck")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rvcheck" version))
+       (sha256
+        (base32
+         "1i2g6gyiqyd1pn6y0h6vmlcmg1qb5pv7rym8mkw8jnyc3in9hn8b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rlang" ,r-rlang)))
+    (home-page "https://cran.r-project.org/web/packages/rvcheck")
+    (synopsis "R package version check")
+    (description
+     "This package provides tools to check the latest release version of R and
+R packages (on CRAN, Bioconductor or Github).")
+    (license license:artistic2.0)))
