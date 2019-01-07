@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
@@ -20,10 +20,12 @@
 
 (define-module (gnu packages datastructures)
   #:use-module (gnu packages)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages perl)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
 (define-public gdsl
@@ -195,3 +197,31 @@ arguments.  Thus, they are able to work with any type of structure and key.
 Any C structure can be stored in a hash table by adding @code{UT_hash_handle}
 to the structure and choosing one or more fields to act as the key.")
     (license license:bsd-2)))
+
+(define-public sdsl-lite
+  (package
+    (name "sdsl-lite")
+    (version "2.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/simongog/sdsl-lite/"
+                                  "releases/download/v" version "/"
+                                  "sdsl-lite-" version
+                                  ".tar.gz.offline.install.gz"))
+              (sha256
+               (base32
+                "1v86ivv3mmdy802i9xkjpxb4cggj3s27wb19ja4sw1klnivjj69g"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)))
+    (home-page "https://github.com/simongog/sdsl-lite")
+    (synopsis "Succinct data structure library")
+    (description "The Succinct Data Structure Library (SDSL) is a powerful and
+flexible C++11 library implementing succinct data structures.  In total, the
+library contains the highlights of 40 research publications.  Succinct data
+structures can represent an object (such as a bitvector or a tree) in space
+close to the information-theoretic lower bound of the object while supporting
+operations of the original object efficiently.  The theoretical time
+complexity of an operation performed on the classical data structure and the
+equivalent succinct data structure are (most of the time) identical.")
+    (license license:gpl3+)))
