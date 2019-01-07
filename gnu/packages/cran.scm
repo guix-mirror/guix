@@ -8636,3 +8636,23 @@ pairs (Selesnick 2001, 2002).")
 visualize differences and similarity between documents, and avoid
 over-plotting in scatter plots with text.")
     (license license:lgpl2.1)))
+
+(define-public r-colorramps
+  (package
+    (name "r-colorramps")
+    (version "2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "colorRamps" version))
+       (sha256
+        (base32
+         "0shbjh83x1axv4drm5r3dwgbyv70idih8z4wlzjs4hiac2qfl41z"))))
+    (properties `((upstream-name . "colorRamps")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/colorRamps")
+    (synopsis "Build color tables")
+    (description "This package provides features to build gradient color
+maps.")
+    ;; Any version of the GPL
+    (license license:gpl3+)))
