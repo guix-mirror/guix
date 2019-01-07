@@ -1613,7 +1613,7 @@ colors on all monitors attached to an XRandR-capable X11 display server.")
     (synopsis "Set the color temperature of the screen")
     (description "@code{sct} is a lightweight utility to set the color
 temperature of the screen.")
-    (license license:bsd-3)))
+    (license (license:non-copyleft "file://sct.c")))) ; "OpenBSD" license
 
 (define-public wl-clipboard
   (package
