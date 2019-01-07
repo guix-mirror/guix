@@ -8821,3 +8821,34 @@ package for using sparse matrices.  Some of the functions are very general,
 while other are highly specific for the special data format used for
 @dfn{quantitative language comparison} (QLC).")
     (license license:gpl3)))
+
+(define-public r-ddrtree
+  (package
+    (name "r-ddrtree")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "DDRTree" version))
+       (sha256
+        (base32
+         "16s5fjw7kwlxhrkzdny62sx32fvmg3rxjc3wrh6krd31jh1fqlfk"))))
+    (properties `((upstream-name . "DDRTree")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-irlba" ,r-irlba)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)))
+    (home-page "https://cran.r-project.org/web/packages/DDRTree")
+    (synopsis "Learning principal graphs with DDRTree")
+    (description
+     "This package provides an implementation of the framework of
+@dfn{reversed graph embedding} (RGE) which projects data into a reduced
+dimensional space while constructs a principal tree which passes through the
+middle of the data simultaneously.  DDRTree shows superiority to
+alternatives (Wishbone, DPT) for inferring the ordering as well as the
+intrinsic structure of single cell genomics data.  In general, it could be
+used to reconstruct the temporal progression as well as the bifurcation
+structure of any data type.")
+    (license license:asl2.0)))
