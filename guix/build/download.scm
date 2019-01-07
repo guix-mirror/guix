@@ -504,18 +504,6 @@ port if PORT is a TLS session record port."
   (module-set! (resolve-module '(web http))
                'parse-rfc-822-date parse-rfc-822-date))
 
-;; XXX: Work around <http://bugs.gnu.org/19840>, present in Guile
-;; up to 2.0.11.
-(unless (or (> (string->number (major-version)) 2)
-            (> (string->number (minor-version)) 0)
-            (> (string->number (micro-version)) 11))
-  (let ((var (module-variable (resolve-module '(web http))
-                              'declare-relative-uri-header!)))
-    ;; If 'declare-relative-uri-header!' doesn't exist, forget it.
-    (when (and var (variable-bound? var))
-      (let ((declare-relative-uri-header! (variable-ref var)))
-        (declare-relative-uri-header! "Location")))))
-
 ;; XXX: Work around broken proxy handling on Guile 2.2 <= 2.2.2, fixed in
 ;; Guile commits 7d0d9e2c25c1e872cfc7d14ab5139915f1813d56 and
 ;; 6ad28ae3bc6a6d9e95ab7d70510d12c97673a143.  See bug report at
