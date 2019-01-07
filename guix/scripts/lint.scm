@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -820,10 +820,11 @@ descriptions maintained upstream."
        (lambda (uri)
          (and=> (follow-redirects-to-github uri)
                 (lambda (github-uri)
-                  (emit-warning
-                   package
-                   (format #f (G_ "URL should be '~a'") github-uri)
-                   'source))))
+                  (unless (string=? github-uri uri)
+                    (emit-warning
+                     package
+                     (format #f (G_ "URL should be '~a'") github-uri)
+                     'source)))))
        (origin-uris origin)))))
 
 (define (check-derivation package)
