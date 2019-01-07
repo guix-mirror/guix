@@ -204,7 +204,7 @@ Python without keeping their credentials in a Docker configuration file.")
     (native-inputs
      `(("go" ,go)
        ("pkg-config" ,pkg-config)))
-    (synopsis "Container runtime")
+    (synopsis "Docker container runtime")
     (description "This package provides the container daemon for Docker.
 It includes image transfer and storage, container execution and supervision,
 network attachments.")
