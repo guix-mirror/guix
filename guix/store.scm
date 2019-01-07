@@ -608,7 +608,7 @@ to OUT, using chunks of BUFFER-SIZE bytes."
 
 (define %newlines
   ;; Newline characters triggering a flush of 'current-build-output-port'.
-  ;; Unlike Guile's _IOLBF, we flush upon #\return so that progress reports
+  ;; Unlike Guile's 'line, we flush upon #\return so that progress reports
   ;; that use that trick are correctly displayed.
   (char-set #\newline #\return))
 

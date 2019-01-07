@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,12 +63,12 @@
   (let ((socket (open-socket-for-uri uri)))
     ;; Make sure to use an unbuffered port so that we can then peek at the
     ;; underlying file descriptor via 'call-with-gzip-input-port'.
-    (setvbuf socket _IONBF)
+    (setvbuf socket 'none)
     (call-with-values
         (lambda ()
           (http-get uri #:port socket #:streaming? #t))
       (lambda (response port)
-        ;; Don't (setvbuf port _IONBF) because of <http://bugs.gnu.org/19610>
+        ;; Don't (setvbuf port 'none) because of <http://bugs.gnu.org/19610>
         ;; (PORT might be a custom binary input port).
         port))))
 

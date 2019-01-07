@@ -357,7 +357,7 @@ ETIMEDOUT error is raised."
           (connect* s (addrinfo:addr ai) timeout)
 
           ;; Buffer input and output on this port.
-          (setvbuf s _IOFBF)
+          (setvbuf s 'block)
           ;; If we're using a proxy, make a note of that.
           (when http-proxy (set-http-proxy-port?! s #t))
           s)
@@ -401,7 +401,7 @@ VERIFY-CERTIFICATE? is true, verify HTTPS server certificates."
     (with-https-proxy
      (let ((s (open-socket-for-uri uri #:timeout timeout)))
        ;; Buffer input and output on this port.
-       (setvbuf s _IOFBF %http-receive-buffer-size)
+       (setvbuf s 'block %http-receive-buffer-size)
 
        (if https?
            (tls-wrap s (uri-host uri)
@@ -777,11 +777,11 @@ otherwise simply ignore them."
                               hashes))
                 content-addressed-mirrors))
 
-  ;; Make this unbuffered so 'progress-report/file' works as expected.  _IOLBF
+  ;; Make this unbuffered so 'progress-report/file' works as expected.  'line
   ;; means '\n', not '\r', so it's not appropriate here.
-  (setvbuf (current-output-port) _IONBF)
+  (setvbuf (current-output-port) 'none)
 
-  (setvbuf (current-error-port) _IOLBF)
+  (setvbuf (current-error-port) 'line)
 
   (let try ((uri (append uri content-addressed-uris)))
     (match uri

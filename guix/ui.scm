@@ -454,8 +454,8 @@ See the \"Application Setup\" section in the manual, for more info.\n")))))
   ;; notified via an EPIPE later.
   (sigaction SIGPIPE SIG_IGN)
 
-  (setvbuf (current-output-port) _IOLBF)
-  (setvbuf (current-error-port) _IOLBF))
+  (setvbuf (current-output-port) 'line)
+  (setvbuf (current-error-port) 'line))
 
 (define* (show-version-and-exit #:optional (command (car (command-line))))
   "Display version information for COMMAND and `(exit 0)'."

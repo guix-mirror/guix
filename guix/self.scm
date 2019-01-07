@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -904,8 +904,8 @@ containing MODULE-FILES and possibly other files as well."
                              #:report-load report-load
                              #:report-compilation report-compilation)))
 
-          (setvbuf (current-output-port) _IONBF)
-          (setvbuf (current-error-port) _IONBF)
+          (setvbuf (current-output-port) 'none)
+          (setvbuf (current-error-port) 'none)
 
           (set! %load-path (cons #+module-tree %load-path))
           (set! %load-path

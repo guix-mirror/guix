@@ -389,8 +389,8 @@ input/output ports.)"
 
   ;; Use buffered ports so that 'get-bytevector-some' returns up to the
   ;; whole buffer like read(2) would--see <https://bugs.gnu.org/30066>.
-  (setvbuf client _IOFBF 65536)
-  (setvbuf backend _IOFBF 65536)
+  (setvbuf client 'block 65536)
+  (setvbuf backend 'block 65536)
 
   (let loop ()
     (match (select* (list client backend) '() '())
