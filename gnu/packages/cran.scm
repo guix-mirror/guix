@@ -8852,3 +8852,25 @@ intrinsic structure of single cell genomics data.  In general, it could be
 used to reconstruct the temporal progression as well as the bifurcation
 structure of any data type.")
     (license license:asl2.0)))
+
+(define-public r-corpcor
+  (package
+    (name "r-corpcor")
+    (version "1.6.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "corpcor" version))
+       (sha256
+        (base32
+         "1hi3i9d3841snppq1ks5pd8cliq1b4rm4dpsczmfqvwksg8snkrf"))))
+    (build-system r-build-system)
+    (home-page "http://strimmerlab.org/software/corpcor/")
+    (synopsis "Efficient estimation of covariance and (partial) correlation")
+    (description
+     "This package implements a James-Stein-type shrinkage estimator for the
+covariance matrix, with separate shrinkage for variances and correlations.
+Furthermore, functions are available for fast singular value decomposition,
+for computing the pseudoinverse, and for checking the rank and positive
+definiteness of a matrix.")
+    (license license:gpl3+)))
