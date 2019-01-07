@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Adam Van Ymeren <adam@vany.ca>
@@ -1712,15 +1712,17 @@ interface and a programmable text output for scripting.")
 (define-public libnet
   (package
     (name "libnet")
-    (version "1.1.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/sam-github/libnet/"
-                                  "archive/libnet-" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0l4gbzzvr199fzczzricjz7b825i7dlk6sgl5p5alnkcagmq0xys"))))
+    (version "1.2-rc3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sam-github/libnet")
+             (commit (string-append "libnet-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0cy8w4g5rv963v4p6iq3333kxgdddx2lywp70xf62553a25xhhs4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
