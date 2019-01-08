@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2016, 2017, 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -576,7 +576,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -584,11 +584,10 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "1qis8vs7y7g1zn5i5dshwrszidc22qpflycwb4nixvp9lbmkq0va"))))
+                "09n4445hclqwfnk2h9cxvsxaixza4cpgb5rp4najdfc2jgg2msb3"))))
     (build-system python-build-system)
     (arguments
-     `(#:test-target "test_nogui"
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-plugin-dirs
            (lambda _
@@ -596,6 +595,9 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                (("_paths\\['PLUGINS_USER'\\]")
                 "_paths['PLUGINS_USER'],os.getenv('GAJIM_PLUGIN_PATH')"))
              #t))
+         (replace 'check
+           (lambda _
+             (invoke "python" "./setup.py" "test" "-s" "test.no_gui")))
          (add-after 'install 'wrap-gi-typelib-path
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
