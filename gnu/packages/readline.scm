@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -55,18 +55,15 @@
 (define-public readline
   (package
     (name "readline")
-    (version (string-append "7.0."
-                            (number->string (length %patch-series-7.0))))
+    (version "8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/readline/readline-"
                                   (version-major+minor version) ".tar.gz"))
               (sha256
                (base32
-                "0d13sg9ksf982rrrmv5mb6a2p4ys9rvg9r71d6il0vr8hmql63bm"))
-              (patches (append
-                        %patch-series-7.0
-                        (search-patches "readline-link-ncurses.patch")))
+                "0qg4924hf4hg0r0wbx2chswsr08734536fh5iagkd3a7f4czafg3"))
+              (patches (search-patches "readline-link-ncurses.patch"))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (propagated-inputs `(("ncurses" ,ncurses)))
@@ -100,6 +97,23 @@ features both Emacs-like and vi-like keybindings, making its usage
 comfortable for anyone.")
     (license gpl3+)
     (home-page "https://savannah.gnu.org/projects/readline/")))
+
+(define-public readline-7
+  (package (inherit readline)
+    (name "readline")
+    (version (string-append "7.0."
+                            (number->string (length %patch-series-7.0))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/readline/readline-"
+                                  (version-major+minor version) ".tar.gz"))
+              (sha256
+               (base32
+                "0d13sg9ksf982rrrmv5mb6a2p4ys9rvg9r71d6il0vr8hmql63bm"))
+              (patches (append
+                        %patch-series-7.0
+                        (search-patches "readline-link-ncurses.patch")))
+              (patch-flags '("-p0"))))))
 
 (define-public readline-6.2
   (package (inherit readline)
