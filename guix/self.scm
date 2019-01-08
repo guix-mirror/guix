@@ -384,7 +384,14 @@ DOMAIN, a gettext domain."
                                                   (basename texi ".texi")
                                                   ".info")))
                     (cons "guix.texi"
-                          (find-files "." "^guix\\.[a-z]{2}\\.texi$"))))))
+                          (find-files "." "^guix\\.[a-z]{2}\\.texi$")))
+
+          ;; Compress Info files.
+          (setenv "PATH"
+                  #+(file-append (specification->package "gzip") "/bin"))
+          (for-each (lambda (file)
+                      (invoke "gzip" "-9n" file))
+                    (find-files #$output "\\.info(-[0-9]+)?$")))))
 
   (computed-file "guix-manual" build))
 
