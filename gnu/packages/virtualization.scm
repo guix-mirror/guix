@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018. 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -681,6 +681,9 @@ domains, their live performance and resource utilization statistics.")
                      (string-append (assoc-ref inputs "libnl")
                                     "/include/libnl3:"
                                     (getenv "C_INCLUDE_PATH")))
+             ;; Hardcode arm version detection
+             (substitute* "Makefile"
+               (("ARMV.*:=.*") "ARMV := 7\n"))
              ;; Prevent xmlto from failing the install phase.
              (substitute* "Documentation/Makefile"
                (("XMLTO.*:=.*")
