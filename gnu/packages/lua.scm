@@ -244,9 +244,9 @@ handy.")
 (define-public lua5.2-socket
   (make-lua-socket "lua5.2-socket" lua-5.2))
 
-(define-public lua5.1-filesystem
+(define (make-lua-filesystem name lua)
   (package
-    (name "lua5.1-filesystem")
+    (name name)
     (version "1.6.3")
     (source (origin
               (method url-fetch)
@@ -260,13 +260,16 @@ handy.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       (let ((out (assoc-ref %outputs "out"))
+             (lua-version ,(version-major+minor (package-version lua))))
+         (list (string-append "PREFIX=" out)
+               (string-append "LUA_LIBDIR=" out "/lib/lua/" lua-version)))
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("lua" ,lua-5.1)))
+     `(("lua" ,lua)))
     (home-page "https://keplerproject.github.io/luafilesystem/index.html")
     (synopsis "File system library for Lua")
     (description "LuaFileSystem is a Lua library developed to complement the
@@ -274,6 +277,15 @@ set of functions related to file systems offered by the standard Lua
 distribution.  LuaFileSystem offers a portable way to access the underlying
 directory structure and file attributes.")
     (license (package-license lua-5.1))))
+
+(define-public lua-filesystem
+  (make-lua-filesystem "lua-filesystem" lua))
+
+(define-public lua5.1-filesystem
+  (make-lua-filesystem "lua5.1-filesystem" lua-5.1))
+
+(define-public lua5.2-filesystem
+  (make-lua-filesystem "lua5.2-filesystem" lua-5.2))
 
 (define-public lua5.1-sec
   (package
