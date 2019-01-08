@@ -287,9 +287,9 @@ directory structure and file attributes.")
 (define-public lua5.2-filesystem
   (make-lua-filesystem "lua5.2-filesystem" lua-5.2))
 
-(define-public lua5.1-sec
+(define (make-lua-sec name lua)
   (package
-    (name "lua5.1-sec")
+    (name name)
     (version "0.6")
     (source (origin
               (method url-fetch)
@@ -301,27 +301,37 @@ directory structure and file attributes.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (let ((out (assoc-ref %outputs "out")))
+       (let ((out (assoc-ref %outputs "out"))
+             (lua-version ,(version-major+minor (package-version lua))))
          (list "linux"
                "CC=gcc"
                "LD=gcc"
-               (string-append "LUAPATH=" out "/share/lua/5.1")
-               (string-append "LUACPATH=" out "/lib/lua/5.1")))
+               (string-append "LUAPATH=" out "/share/lua/" lua-version)
+               (string-append "LUACPATH=" out "/lib/lua/" lua-version)))
        #:tests? #f ; no tests included
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("lua" ,lua-5.1)
+     `(("lua" ,lua)
        ("openssl" ,openssl)))
     (propagated-inputs
-     `(("lua-socket" ,lua5.1-socket)))
+     `(("lua-socket"
+        ,(make-lua-socket
+          (format #f "lua~a-socket"
+                  (version-major+minor (package-version lua))) lua))))
     (home-page "https://github.com/brunoos/luasec/wiki")
     (synopsis "OpenSSL bindings for Lua")
     (description "LuaSec is a binding for OpenSSL library to provide TLS/SSL
 communication.  It takes an already established TCP connection and creates a
 secure session between the peers.")
-    (license (package-license lua-5.1))))
+    (license license:expat)))
+
+(define-public lua5.1-sec
+  (make-lua-sec "lua5.1-sec" lua-5.1))
+
+(define-public lua5.2-sec
+  (make-lua-sec "lua5.2-sec" lua-5.2))
 
 (define-public lua-lgi
   (package
