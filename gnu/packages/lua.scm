@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
-;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -148,9 +148,9 @@ language.  It may be embedded or used as a general-purpose, stand-alone
 language.")
     (license license:x11)))
 
-(define-public lua5.1-expat
+(define (make-lua-expat name lua)
   (package
-    (name "lua5.1-expat")
+    (name name)
     (version "1.3.0")
     (source (origin
               (method url-fetch)
@@ -162,10 +162,11 @@ language.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (let ((out (assoc-ref %outputs "out")))
+       (let ((out (assoc-ref %outputs "out"))
+             (lua-version ,(version-major+minor (package-version lua))))
          (list "CC=gcc"
-               (string-append "LUA_LDIR=" out "/share/lua/$(LUA_V)")
-               (string-append "LUA_CDIR=" out "/lib/lua/$(LUA_V)")))
+               (string-append "LUA_LDIR=" out "/share/lua/" lua-version)
+               (string-append "LUA_CDIR=" out "/lib/lua/" lua-version)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -176,12 +177,18 @@ language.")
              (invoke "lua" "tests/test.lua")
              (invoke "lua" "tests/test-lom.lua"))))))
     (inputs
-     `(("lua" ,lua-5.1)
+     `(("lua" ,lua)
        ("expat" ,expat)))
     (home-page "http://matthewwild.co.uk/projects/luaexpat/")
     (synopsis "SAX XML parser based on the Expat library")
     (description "LuaExpat is a SAX XML parser based on the Expat library.")
     (license (package-license lua-5.1))))
+
+(define-public lua5.1-expat
+  (make-lua-expat "lua5.1-expat" lua-5.1))
+
+(define-public lua5.2-expat
+  (make-lua-expat "lua5.2-expat" lua-5.2))
 
 (define-public lua5.1-socket
   (package
