@@ -783,17 +783,17 @@ a graphical desktop environment like GNOME.")
 (define-public prosody
   (package
     (name "prosody")
-    (version "0.10.2")
+    (version "0.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://prosody.im/downloads/source/"
                                   "prosody-" version ".tar.gz"))
               (sha256
                (base32
-                "13knr7izscw0zx648b9582dx11aap4cq9bzfiqh5ykd7wwsz1dbm"))))
+                "1ak5bkx09kscyifxhzybgp5a73jr8nki6xi05c59wwlq0wzw9gli"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no "check" target
+     `(#:tests? #f                      ;tests require "busted"
        #:configure-flags (list "--no-example-certs")
        #:modules ((ice-9 match)
                   (srfi srfi-1)
@@ -810,7 +810,7 @@ a graphical desktop environment like GNOME.")
              #t))
          (add-after 'unpack 'fix-makefile
            (lambda _
-             (substitute* "Makefile"
+             (substitute* "GNUmakefile"
                ;; prosodyctl needs to read the configuration file.
                (("^INSTALLEDCONFIG =.*") "INSTALLEDCONFIG = /etc/prosody\n")
                ;; prosodyctl needs a place to put auto-generated certificates.
@@ -830,15 +830,15 @@ a graphical desktop environment like GNOME.")
                     (lua-path (string-join
                                (map (lambda (path)
                                       (string-append
-                                       path "/share/lua/5.1/?.lua;"
-                                       path "/share/lua/5.1/?/?.lua"))
+                                       path "/share/lua/5.2/?.lua;"
+                                       path "/share/lua/5.2/?/?.lua"))
                                     (cons out deps))
                                ";"))
                     (lua-cpath (string-join
                                 (map (lambda (path)
                                        (string-append
-                                        path "/lib/lua/5.1/?.so;"
-                                        path "/lib/lua/5.1/?/?.so"))
+                                        path "/lib/lua/5.2/?.so;"
+                                        path "/lib/lua/5.2/?/?.so"))
                                      (cons out deps))
                                 ";"))
                     (openssl (assoc-ref inputs "openssl"))
@@ -856,14 +856,12 @@ a graphical desktop environment like GNOME.")
     (inputs
      `(("libidn" ,libidn)
        ("openssl" ,openssl)
-       ;; Lua 5.1 is still recommended for production usage.
-       ;; See https://prosody.im/doc/packagers.
-       ("lua" ,lua-5.1)
-       ("lua5.1-bitop" ,lua5.1-bitop)
-       ("lua5.1-expat" ,lua5.1-expat)
-       ("lua5.1-socket" ,lua5.1-socket)
-       ("lua5.1-filesystem" ,lua5.1-filesystem)
-       ("lua5.1-sec" ,lua5.1-sec)))
+       ("lua" ,lua-5.2)
+       ("lua5.2-bitop" ,lua5.2-bitop)
+       ("lua5.2-expat" ,lua5.2-expat)
+       ("lua5.2-socket" ,lua5.2-socket)
+       ("lua5.2-filesystem" ,lua5.2-filesystem)
+       ("lua5.2-sec" ,lua5.2-sec)))
     (home-page "https://prosody.im/")
     (synopsis "Jabber (XMPP) server")
     (description "Prosody is a modern XMPP communication server.  It aims to
