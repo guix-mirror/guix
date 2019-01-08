@@ -957,7 +957,7 @@ supplies a generic doubly-linked list and some string functions.")
 (define-public freeimage
   (package
    (name "freeimage")
-   (version "3.17.0")
+   (version "3.18.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -967,7 +967,7 @@ supplies a generic doubly-linked list and some string functions.")
                   ".zip"))
             (sha256
              (base32
-              "12bz57asdcfsz3zr9i9nska0fb6h3z2aizy412qjqkixkginbz7v"))
+              "1z9qwi9mlq69d5jipr3v2jika2g0kszqdzilggm99nls5xl7j4zl"))
             (modules '((guix build utils)))
             (snippet
              '(begin
@@ -975,12 +975,8 @@ supplies a generic doubly-linked list and some string functions.")
                   (lambda (dir)
                     (delete-file-recursively (string-append "Source/" dir)))
                   '("LibJPEG" "LibOpenJPEG" "LibPNG" "LibRawLite"
-                    ;; "LibJXR"
-                    "LibWebP" "OpenEXR" "ZLib"))))
-            (patches (search-patches "freeimage-unbundle.patch"
-                                     "freeimage-CVE-2015-0852.patch"
-                                     "freeimage-CVE-2016-5684.patch"
-                                     "freeimage-fix-build-with-gcc-5.patch"))))
+                    "LibJXR" "LibWebP" "OpenEXR" "ZLib"))))
+            (patches (search-patches "freeimage-unbundle.patch"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -1011,7 +1007,7 @@ supplies a generic doubly-linked list and some string functions.")
             ;; We need '-fpermissive' for Source/FreeImage.h.
             ;; libjxr doesn't have a pkg-config file.
             (string-append "CFLAGS+=-O2 -fPIC -fvisibility=hidden -fpermissive "
-                           ;;"-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib"
+                           "-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib "
 
                            ;; FIXME: OpenEXR 2.4.0 requires C++11 or later.
                            ;; Remove when the default compiler is > GCC 5.
@@ -1022,7 +1018,7 @@ supplies a generic doubly-linked list and some string functions.")
       ("unzip" ,unzip)))
    (inputs
     `(("libjpeg" ,libjpeg)
-      ;("libjxr" ,libjxr)
+      ("libjxr" ,libjxr)
       ("libpng" ,libpng)
       ("libraw" ,libraw)
       ("libtiff" ,libtiff)
