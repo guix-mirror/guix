@@ -25,7 +25,7 @@ Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
 Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
-Copyright @copyright{} 2015, 2016, 2017, 2018 Ricardo Wurmus@*
+Copyright @copyright{} 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
 Copyright @copyright{} 2016, 2017, 2018 Efraim Flashner@*
@@ -394,28 +394,33 @@ garbage collection of packages (@pxref{Features}).
 @chapter Installation
 
 @cindex installing Guix
-@cindex official website
-GNU Guix is available for download from its website at
-@url{http://www.gnu.org/software/guix/}.  This section describes the
-software requirements of Guix, as well as how to install it and get
-ready to use it.
 
-Note that this section is concerned with the installation of the package
-manager, which can be done on top of a running GNU/Linux system.  If,
-instead, you want to install the complete GNU operating system,
-@pxref{System Installation}.
+@quotation Note
+We recommend the use of this
+@uref{https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh,
+shell installer script} to install Guix on top of a running GNU/Linux system,
+thereafter called a @dfn{foreign distro}.@footnote{This section is concerned
+with the installation of the package manager, which can be done on top of a
+running GNU/Linux system.  If, instead, you want to install the complete GNU
+operating system, @pxref{System Installation}.} The script automates the
+download, installation, and initial configuration of Guix.  It should be run
+as the root user.
+@end quotation
 
 @cindex foreign distro
 @cindex directories related to foreign distro
-
-When installed on a running GNU/Linux system---thereafter called a
-@dfn{foreign distro}---GNU@tie{}Guix complements the available tools
-without interference.  Its data lives exclusively in two directories,
-usually @file{/gnu/store} and @file{/var/guix}; other files on your
-system, such as @file{/etc}, are left untouched.
+When installed on a foreign distro, GNU@tie{}Guix complements the available
+tools without interference.  Its data lives exclusively in two directories,
+usually @file{/gnu/store} and @file{/var/guix}; other files on your system,
+such as @file{/etc}, are left untouched.
 
 Once installed, Guix can be updated by running @command{guix pull}
 (@pxref{Invoking guix pull}).
+
+If you prefer to perform the installation steps manually or want to tweak
+them, you may find the following subsections useful.  They describe the
+software requirements of Guix, as well as how to install it manually and get
+ready to use it.
 
 @menu
 * Binary Installation::         Getting Guix running in no time!
@@ -436,11 +441,6 @@ self-contained tarball providing binaries for Guix and for all its
 dependencies.  This is often quicker than installing from source, which
 is described in the next sections.  The only requirement is to have
 GNU@tie{}tar and Xz.
-
-We provide a
-@uref{https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh,
-shell installer script}, which automates the download, installation, and
-initial configuration of Guix.  It should be run as the root user.
 
 Installing goes along these lines:
 
@@ -637,6 +637,10 @@ This section lists requirements when building Guix from source.  The
 build procedure for Guix is the same as for other GNU software, and is
 not covered here.  Please see the files @file{README} and @file{INSTALL}
 in the Guix source tree for additional details.
+
+@cindex official website
+GNU Guix is available for download from its website at
+@url{https://www.gnu.org/software/guix/}.
 
 GNU Guix depends on the following packages:
 
