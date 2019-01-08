@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -88,6 +88,8 @@ Download and deploy the latest version of Guix.\n"))
   -p, --profile=PROFILE  use PROFILE instead of ~/.config/guix/current"))
   (display (G_ "
   -n, --dry-run          show what would be pulled and built"))
+  (display (G_ "
+  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (display (G_ "
       --bootstrap        use the bootstrap Guile to build the new Guix"))
   (newline)
