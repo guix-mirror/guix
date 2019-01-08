@@ -190,9 +190,9 @@ language.")
 (define-public lua5.2-expat
   (make-lua-expat "lua5.2-expat" lua-5.2))
 
-(define-public lua5.1-socket
+(define (make-lua-socket name lua)
   (package
-    (name "lua5.1-socket")
+    (name name)
     (version "3.0-rc1")
     (source (origin
               (method url-fetch)
@@ -206,8 +206,10 @@ language.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list (string-append "INSTALL_TOP=" out)))
+       (let ((out (assoc-ref %outputs "out"))
+             (lua-version ,(version-major+minor (package-version lua))))
+         (list (string-append "INSTALL_TOP=" out)
+               (string-append "LUAV?=" lua-version)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -219,7 +221,7 @@ language.")
                (invoke "lua" "test/testsrvr.lua"))
              (invoke "lua" "test/testclnt.lua"))))))
     (inputs
-     `(("lua" ,lua-5.1)))
+     `(("lua" ,lua)))
     (home-page "http://www.tecgraf.puc-rio.br/~diego/professional/luasocket/")
     (synopsis "Socket library for Lua")
     (description "LuaSocket is a Lua extension library that is composed by two
@@ -234,7 +236,13 @@ to the functionality defined by each protocol.  In addition, you will find
 that the MIME (common encodings), URL (anything you could possible want to do
 with one) and LTN12 (filters, sinks, sources and pumps) modules can be very
 handy.")
-    (license (package-license lua-5.1))))
+    (license license:expat)))
+
+(define-public lua5.1-socket
+  (make-lua-socket "lua5.1-socket" lua-5.1))
+
+(define-public lua5.2-socket
+  (make-lua-socket "lua5.2-socket" lua-5.2))
 
 (define-public lua5.1-filesystem
   (package
