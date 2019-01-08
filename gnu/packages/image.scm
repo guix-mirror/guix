@@ -437,36 +437,66 @@ lossless JPEG manipulations such as rotation, scaling or cropping:
               (patches (search-patches "libjxr-fix-function-signature.patch"
                                        "libjxr-fix-typos.patch"))))
     (build-system gnu-build-system)
-    (arguments '(#:make-flags '("CC=gcc")
-                 #:tests? #f ; no check target
-                 #:phases
-                 (modify-phases %standard-phases
-                   (delete 'configure) ; no configure script
-                   ;; The upstream makefile does not include an install phase.
-                   (replace 'install
-                     (lambda* (#:key outputs #:allow-other-keys)
-                       (let* ((out (assoc-ref outputs "out"))
-                              (bin (string-append out "/bin"))
-                              (lib (string-append out "/lib"))
-                              (include (string-append out "/include/jxrlib")))
-                         (for-each (lambda (file)
-                                     (install-file file include)
-                                     (delete-file file))
-                                   (append
-                                    '("jxrgluelib/JXRGlue.h"
-                                      "jxrgluelib/JXRMeta.h"
-                                      "jxrtestlib/JXRTest.h"
-                                      "image/sys/windowsmediaphoto.h")
-                                    (find-files "common/include" "\\.h$")))
-                         (for-each (lambda (file)
-                                     (install-file file lib)
-                                     (delete-file file))
-                                   (find-files "." "\\.a$"))
-                         (for-each (lambda (file)
-                                     (install-file file bin)
-                                     (delete-file file))
-                                   '("JxrDecApp" "JxrEncApp")))
-                       #t)))))
+    (arguments
+     '(#:make-flags
+       (list "CC=gcc"
+             ;; A substitute* procedure call would be enough to add the -fPIC
+             ;; flag if there was no file decoding error.
+             ;; The makefile is a "Non-ISO extended-ASCII text, with CRLF line
+             ;; terminators" according to the file(1) utility.
+             (string-append "CFLAGS=-I. -Icommon/include -Iimage/sys -fPIC "
+                            "-D__ANSI__ -DDISABLE_PERF_MEASUREMENT -w -O "))
+       #:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no configure script
+         (add-after 'build 'build-shared-library
+           (lambda _
+             ;; The Makefile uses optimization level 1, so the same
+             ;; level is used here for consistency.
+             (invoke "gcc" "-shared" "-fPIC" "-O"
+                     ;; Common files.
+                     "adapthuff.o" "image.o" "strcodec.o" "strPredQuant.o"
+                     "strTransform.o" "perfTimerANSI.o"
+                     ;; Decoding files.
+                     "decode.o" "postprocess.o" "segdec.o" "strdec.o"
+                     "strInvTransform.o" "strPredQuantDec.o" "JXRTranscode.o"
+                     ;; Encoding files.
+                     "encode.o" "segenc.o" "strenc.o" "strFwdTransform.o"
+                     "strPredQuantEnc.o"
+                     "-o" "libjpegxr.so")
+             (invoke "gcc" "-shared" "-fPIC" "-O"
+                     ;; Glue files.
+                     "JXRGlue.o" "JXRMeta.o" "JXRGluePFC.o" "JXRGlueJxr.o"
+                     ;; Test files.
+                     "JXRTest.o" "JXRTestBmp.o" "JXRTestHdr.o" "JXRTestPnm.o"
+                     "JXRTestTif.o" "JXRTestYUV.o"
+                     "-o" "libjxrglue.so")))
+         ;; The upstream makefile does not include an install phase.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib"))
+                    (include (string-append out "/include/jxrlib")))
+               (for-each (lambda (file)
+                           (install-file file include)
+                           (delete-file file))
+                         (append
+                          '("jxrgluelib/JXRGlue.h"
+                            "jxrgluelib/JXRMeta.h"
+                            "jxrtestlib/JXRTest.h"
+                            "image/sys/windowsmediaphoto.h")
+                          (find-files "common/include" "\\.h$")))
+               (for-each (lambda (file)
+                           (install-file file lib)
+                           (delete-file file))
+                         (find-files "." "\\.(a|so)$"))
+               (for-each (lambda (file)
+                           (install-file file bin)
+                           (delete-file file))
+                         '("JxrDecApp" "JxrEncApp")))
+             #t)))))
     (synopsis "Implementation of the JPEG XR standard")
     (description "JPEG XR is an approved ISO/IEC International standard (its
 official designation is ISO/IEC 29199-2). This library is an implementation of that standard.")
