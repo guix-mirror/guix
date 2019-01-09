@@ -9050,3 +9050,26 @@ a given p-value.  It is an interface to code originally made available by
 Helene Touzet and Jean-Stephane Varre, 2007, Algorithms Mol Biol:2, 15.
 Touzet and Varre (2007).")
     (license license:gpl2)))
+
+(define-public r-rnifti
+  (package
+    (name "r-rnifti")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RNifti" version))
+       (sha256
+        (base32
+         "07sfzps4yg5zdhbxh6i4rbjvbjvvf2d8i9jcf64ywbmi557sw1zv"))))
+    (properties `((upstream-name . "RNifti")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/jonclayden/RNifti")
+    (synopsis "Fast R and C++ access to NIfTI images")
+    (description
+     "This package provides very fast read and write access to images stored
+in the NIfTI-1 and ANALYZE-7.5 formats, with seamless synchronisation between
+compiled C and interpreted R code.  It also provides a C/C++ API that can be
+used by other packages.")
+    (license license:gpl2)))
