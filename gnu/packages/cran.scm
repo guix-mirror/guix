@@ -10250,3 +10250,40 @@ JASA, 94:496-509.")
 the matrix of transition probabilities for any time-inhomogeneous multistate
 model with finite state space using the Aalen-Johansen estimator.")
     (license license:expat)))
+
+(define-public r-epi
+  (package
+    (name "r-epi")
+    (version "2.32")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Epi" version))
+       (sha256
+        (base32
+         "14n24xlm7pwdc54w2hlpjhfal1zpzm87rv3rjfckiz47d3w7dwqm"))))
+    (properties `((upstream-name . "Epi")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cmprsk" ,r-cmprsk)
+       ("r-data-table" ,r-data-table)
+       ("r-etm" ,r-etm)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-mgcv" ,r-mgcv)
+       ("r-numderiv" ,r-numderiv)
+       ("r-plyr" ,r-plyr)
+       ("r-survival" ,r-survival)
+       ("r-zoo" ,r-zoo)))
+    (home-page "http://BendixCarstensen.com/Epi/")
+    (synopsis "Statistical analysis in epidemiology")
+    (description
+     "This package provides functions for demographic and epidemiological
+analysis in the Lexis diagram, i.e. register and cohort follow-up data, in
+particular representation, manipulation and simulation of multistate data -
+the Lexis suite of functions, which includes interfaces to the @code{mstate},
+@code{etm} and @code{cmprsk} packages.  It also contains functions for
+Age-Period-Cohort and Lee-Carter modeling and a function for interval censored
+data and some useful functions for tabulation and plotting, as well as a
+number of epidemiological data sets.")
+    (license license:gpl2)))
