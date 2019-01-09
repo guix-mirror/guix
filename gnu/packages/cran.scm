@@ -9980,3 +9980,31 @@ emphasis on splines, spatial data and spatial statistics.  The major methods
 include cubic, and thin plate splines, Kriging, and compactly supported
 covariance functions for large data sets.")
     (license license:gpl2+)))
+
+(define-public r-spatialextremes
+  (package
+    (name "r-spatialextremes")
+    (version "2.0-7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SpatialExtremes" version))
+       (sha256
+        (base32
+         "1y0h1pcfqp9ynxsr3yrfbihlwm25ypyb88jmm5k2g7xvm8h9g050"))))
+    (properties
+     `((upstream-name . "SpatialExtremes")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fields" ,r-fields)
+       ("r-maps" ,r-maps)))
+    (home-page "http://spatialextremes.r-forge.r-project.org/")
+    (synopsis "Modelling spatial extremes")
+    (description
+     "This package provides tools for the statistical modelling of spatial
+extremes using max-stable processes, copula or Bayesian hierarchical models.
+More precisely, this package allows (conditional) simulations from various
+parametric max-stable models, analysis of the extremal spatial dependence, the
+fitting of such processes using composite likelihoods or least square (simple
+max-stable processes only), model checking and selection and prediction.")
+    (license license:gpl2+)))
