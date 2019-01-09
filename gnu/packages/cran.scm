@@ -9924,3 +9924,33 @@ supports long vectors, arguments of type 64-bit integer, and provides a
 mechanism to avoid unnecessary copies of read-only and write-only arguments.
 This makes it a convenient and fast interface to C/C++ and Fortran code.")
     (license license:gpl2+)))
+
+(define-public r-spam
+  (package
+    (name "r-spam")
+    (version "2.2-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spam" version))
+       (sha256
+        (base32
+         "04bfwwna013hrbl4k6w1cdiz5bkc83jlasivriyn5l9gkj2qskr2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dotcall64" ,r-dotcall64)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://www.math.uzh.ch/pages/spam/")
+    (synopsis "Sparse matrix algebra")
+    (description
+     "This package provides a set of functions for sparse matrix algebra.
+Differences with other sparse matrix packages are:
+
+@enumerate
+@item it only supports (essentially) one sparse matrix format;
+@item it is based on transparent and simple structure(s);
+@item it is tailored for MCMC calculations within G(M)RF;
+@item and it is fast and scalable (with the extension package @code{spam64}).
+@end enumerate\n")
+    ;; Either of these licenses
+    (license (list license:bsd-3 license:lgpl2.0))))
