@@ -8874,3 +8874,30 @@ Furthermore, functions are available for fast singular value decomposition,
 for computing the pseudoinverse, and for checking the rank and positive
 definiteness of a matrix.")
     (license license:gpl3+)))
+
+(define-public r-rspectra
+  (package
+    (name "r-rspectra")
+    (version "0.13-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RSpectra" version))
+       (sha256
+        (base32
+         "1sw80chwyyjzf5px278l6xmp94yhwrlj5xh8d3wlw3dnvdkycca7"))))
+    (properties `((upstream-name . "RSpectra")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)))
+    (home-page "https://github.com/yixuan/RSpectra")
+    (synopsis "Solvers for large-scale Eigenvalue and SVD problems")
+    (description
+     "This package provides an R interface to the Spectra library for
+large-scale eigenvalue and SVD problems.  It is typically used to compute a
+few eigenvalues/vectors of an n by n matrix, e.g., the k largest eigenvalues,
+which is usually more efficient than @code{eigen()} if k << n.")
+    ;; MPL 2 or later.
+    (license license:mpl2.0)))
