@@ -10309,3 +10309,28 @@ partial least squares and penalization techniques.  Model parameters are
 selected via cross-validation, and confidence intervals ans tests for the
 regression coefficients can be conducted via jackknifing.")
     (license license:gpl2+)))
+
+(define-public r-huge
+  (package
+    (name "r-huge")
+    (version "1.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "huge" version))
+       (sha256
+        (base32
+         "134d951x42vy9dcmf155fbvik2934nh6qm2w5jlx3x2c6cf7faq4"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)))
+    (home-page "https://cran.r-project.org/web/packages/huge")
+    (synopsis "High-dimensional undirected graph estimation")
+    (description
+     "This package provides a general framework for high-dimensional
+undirected graph estimation.  It integrates data preprocessing, neighborhood
+screening, graph estimation, and model selection techniques into a pipeline.")
+    (license license:gpl2)))
