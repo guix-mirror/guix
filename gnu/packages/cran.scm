@@ -2329,6 +2329,32 @@ is being phased out.  A modern MySQL client based on Rcpp is available from
 the RMariaDB package.")
     (license license:gpl2)))
 
+(define-public r-rpostgresql
+  (package
+    (name "r-rpostgresql")
+    (version "0.6-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RPostgreSQL" version))
+       (sha256
+        (base32
+         "1mdhw5821v2h7hpa53v10wz53k4i90r0vb6a3dia5gq8f9j1h088"))))
+    (properties `((upstream-name . "RPostgreSQL")))
+    (build-system r-build-system)
+    (inputs
+     `(("postgresql" ,postgresql)))
+    (propagated-inputs
+     `(("r-dbi" ,r-dbi)))
+    (home-page "https://github.com/tomoakin/RPostgreSQL")
+    (synopsis "R interface to the PostgreSQL database system")
+    (description
+     "This package provides a Database Interface (DBI) compliant driver for R
+to access PostgreSQL database systems.")
+    ;; The whole package is released under GPL version 2.  It includes code
+    ;; under the PostgreSQL license.
+    (license license:gpl2)))
+
 (define-public r-geometry
   (package
     (name "r-geometry")
