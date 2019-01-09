@@ -10055,3 +10055,26 @@ meta-analysis for two-sample comparisons and cumulative meta-analyses.  It
 draws standard summary plots, funnel plots, and computes summaries and tests
 for association and heterogeneity.")
     (license license:gpl2)))
+
+(define-public r-bootstrap
+  (package
+    (name "r-bootstrap")
+    (version "2017.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bootstrap" version))
+       (sha256
+        (base32
+         "08lmsy7k8wsgv89yc904c6fidcymr1ma2ry4fl0p69p21v4iiwa4"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/bootstrap")
+    (synopsis "Functions for the book \"An Introduction to the Bootstrap\"")
+    (description
+     "This package provides software and data for the book \"An Introduction
+to the Bootstrap\" by B. Efron and R. Tibshirani, 1993, Chapman and Hall.
+This package is primarily provided for projects already based on it, and for
+support of the book.  New projects should preferentially use the recommended
+package \"boot\".")
+    (license license:bsd-3)))
