@@ -9785,3 +9785,29 @@ packages.")
 the properties of strings.  This is mainly for use by other package developers
 who want to include run-time testing features in their own packages.")
     (license license:gpl3+)))
+
+(define-public r-assertive-data-us
+  (package
+    (name "r-assertive-data-us")
+    (version "0.0-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive.data.us" version))
+       (sha256
+        (base32
+         "1bgspn0sccmp9z7s7djvdvprgxlyc5vrxznp4zfjb79kwvgn83hq"))))
+    (properties
+     `((upstream-name . "assertive.data.us")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertive-base" ,r-assertive-base)
+       ("r-assertive-strings" ,r-assertive-strings)))
+    (home-page "https://bitbucket.org/richierocks/assertive.data.us")
+    (synopsis "Assertions to check properties of strings")
+    (description
+     "This package provides a set of predicates and assertions for checking
+the properties of US-specific complex data types.  This is mainly for use by
+other package developers who want to include run-time testing features in
+their own packages.")
+    (license license:gpl3+)))
