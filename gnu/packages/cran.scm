@@ -9189,3 +9189,27 @@ handling.")
      "This package provides functions for converting, importing, and drawing
 PostScript pictures in R plots.")
     (license license:gpl2+)))
+
+(define-public r-kohonen
+  (package
+    (name "r-kohonen")
+    (version "3.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "kohonen" version))
+       (sha256
+        (base32
+         "1zbfqa1qdlry8w6xhypkiknc5gn98v1ijhlsfka8zjg8ajhqgn1q"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/kohonen")
+    (synopsis "Supervised and unsupervised self-organising maps")
+    (description
+     "This package provides functions to train @dfn{self-organising
+maps} (SOMs).  Also interrogation of the maps and prediction using trained
+maps are supported.  The name of the package refers to Teuvo Kohonen, the
+inventor of the SOM.")
+    (license license:gpl2+)))
