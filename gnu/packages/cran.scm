@@ -8927,3 +8927,25 @@ few eigenvalues/vectors of an n by n matrix, e.g., the k largest eigenvalues,
 which is usually more efficient than @code{eigen()} if k << n.")
     ;; MPL 2 or later.
     (license license:mpl2.0)))
+
+(define-public r-vbsr
+  (package
+    (name "r-vbsr")
+    (version "0.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "vbsr" version))
+       (sha256
+        (base32
+         "1avskbxxyinjjdga4rnghcfvd4sypv4m39ysfaij5avvmi89bx3b"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/vbsr")
+    (synopsis "Variational Bayes spike regression regularized linear models")
+    (description
+     "This package provides an efficient algorithm for solving ultra-sparse
+regularized regression models using a variational Bayes algorithm with a spike
+prior.  The algorithm is solved on a path, with coordinate updates, and is
+capable of generating very sparse models.  Very general model
+diagnostics for controlling type-1 errors are also provided.")
+    (license license:gpl2)))
