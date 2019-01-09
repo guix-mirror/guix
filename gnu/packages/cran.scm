@@ -10170,3 +10170,30 @@ putative directions).")
      "This package provides an R interface to functions of the SAMtools
 library.")
     (license license:artistic2.0)))
+
+(define-public r-protviz
+  (package
+    (name "r-protviz")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "protViz" version))
+       (sha256
+        (base32
+         "1im3ajimycsc1zpzbihxlsibjk0462q0vldy7v5ypsqnjbi1ndxm"))))
+    (properties `((upstream-name . "protViz")))
+    (build-system r-build-system)
+    (inputs
+     `(("perl" ,perl)
+       ("python-2" ,python-2)))
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/protViz/protViz/")
+    (synopsis "Visualizing and analyzing mass spectrometry data in proteomics")
+    (description
+     "This package helps with quality checks, visualizations and analysis of
+mass spectrometry data, coming from proteomics experiments.  The package is
+developed, tested and used at the Functional Genomics Center Zurich, where it
+is used mainly for prototyping, teaching, and having fun with proteomics data.
+But it can also be used to do data analysis for small scale data sets.")
+    (license license:gpl3)))
