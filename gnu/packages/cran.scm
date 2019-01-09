@@ -9681,3 +9681,29 @@ want to include run-time testing features in their own packages.")
 the types of variables.  This is mainly for use by other package developers
 who want to include run-time testing features in their own packages.")
     (license license:gpl3+)))
+
+(define-public r-assertive-files
+  (package
+    (name "r-assertive-files")
+    (version "0.0-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive.files" version))
+       (sha256
+        (base32
+         "02pfz8j5vwcj5kl6zca46894li7lxwnlrr29j922f14ay6kdssmy"))))
+    (properties
+     `((upstream-name . "assertive.files")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertive-base" ,r-assertive-base)
+       ("r-assertive-numbers" ,r-assertive-numbers)))
+    (home-page "https://bitbucket.org/richierocks/assertive.files")
+    (synopsis "Assertions to check properties of files")
+    (description
+     "This package provides a set of predicates and assertions for checking
+the properties of files and connections.  This is mainly for use by other
+package developers who want to include run-time testing features in their own
+packages.")
+    (license license:gpl3+)))
