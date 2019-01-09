@@ -9655,3 +9655,29 @@ the state and capabilities of R, the operating system it is running on, and
 the IDE being used.  This is mainly for use by other package developers who
 want to include run-time testing features in their own packages.")
     (license license:gpl3+)))
+
+(define-public r-assertive-types
+  (package
+    (name "r-assertive-types")
+    (version "0.0-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive.types" version))
+       (sha256
+        (base32
+         "0zxq1jfrzgw95ll7alvm0xnk7aihjdksngq4ya2whyvfjbmv4vdb"))))
+    (properties
+     `((upstream-name . "assertive.types")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertive-base" ,r-assertive-base)
+       ("r-assertive-properties" ,r-assertive-properties)
+       ("r-codetools" ,r-codetools)))
+    (home-page "https://bitbucket.org/richierocks/assertive.types")
+    (synopsis "Assertions to check types of variables")
+    (description
+     "This package provides a set of predicates and assertions for checking
+the types of variables.  This is mainly for use by other package developers
+who want to include run-time testing features in their own packages.")
+    (license license:gpl3+)))
