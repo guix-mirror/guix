@@ -9113,3 +9113,26 @@ handling regular expressions, based on the Onigmo library.  It offers
 first-class compiled regex objects, partial matching and function-based
 substitutions, amongst other features.")
     (license license:bsd-3)))
+
+(define-public r-reportr
+  (package
+    (name "r-reportr")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "reportr" version))
+       (sha256
+        (base32
+         "0zynplxqvbmf23cm2rsz3wz2jx6mv55z94mn1k44ny3lx625cnpw"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-ore" ,r-ore)))
+    (home-page "https://github.com/jonclayden/reportr")
+    (synopsis "General message and error reporting system")
+    (description
+     "This package provides a system for reporting messages, which offers
+certain useful features over the standard R system, such as the incorporation
+of output consolidation, message filtering, assertions, expression
+substitution, automatic generation of stack traces for debugging, and
+conditional reporting based on the current \"output level\".")
+    (license license:gpl2)))
