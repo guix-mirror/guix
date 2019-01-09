@@ -10334,3 +10334,30 @@ regression coefficients can be conducted via jackknifing.")
 undirected graph estimation.  It integrates data preprocessing, neighborhood
 screening, graph estimation, and model selection techniques into a pipeline.")
     (license license:gpl2)))
+
+(define-public r-parcor
+  (package
+    (name "r-parcor")
+    (version "0.2-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "parcor" version))
+       (sha256
+        (base32
+         "0vgs6k92vdr0cmb8cwbv2ff6qavw30agskfd8bfh17hsskrisvx0"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-epi" ,r-epi)
+       ("r-genenet" ,r-genenet)
+       ("r-glmnet" ,r-glmnet)
+       ("r-mass" ,r-mass)
+       ("r-ppls" ,r-ppls)))
+    (home-page "https://cran.r-project.org/web/packages/parcor")
+    (synopsis "Regularized estimation of partial correlation matrices")
+    (description
+     "This package estimates the matrix of partial correlations based on
+different regularized regression methods: lasso, adaptive lasso, PLS, and
+Ridge Regression.  In addition, the package provides model selection for
+lasso, adaptive lasso and Ridge regression based on cross-validation.")
+    (license license:gpl2+)))
