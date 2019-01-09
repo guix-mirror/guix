@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;;
@@ -628,7 +628,8 @@ makes the good ol' XlockMore usable."
   (allow-empty-passwords? gdm-configuration-allow-empty-passwords? (default #t))
   (auto-login? gdm-configuration-auto-login? (default #f))
   (default-user gdm-configuration-default-user (default #f))
-  (x-server gdm-configuration-x-server))
+  (x-server gdm-configuration-x-server
+            (default (xorg-wrapper))))
 
 (define (gdm-etc-service config)
   (define gdm-configuration-file
@@ -719,12 +720,17 @@ makes the good ol' XlockMore usable."
                        (service-extension etc-service-type
                                           gdm-etc-service)
                        (service-extension dbus-root-service-type
-                                          (compose list gdm-configuration-gdm))))))
+                                          (compose list
+                                                   gdm-configuration-gdm))))
+                (default-value (gdm-configuration))
+                (description
+                 "Run the GNOME Desktop Manager (GDM), a program that allows
+you to log in in a graphical session, whether or not you use GNOME.")))
 
 ;; This service isn't working yet; it gets as far as starting to run the
 ;; greeter from gnome-shell but doesn't get any further.  It is here because
 ;; it doesn't hurt anyone and perhaps it inspires someone to fix it :)
-(define* (gdm-service #:key (gdm gdm)
+(define* (gdm-service #:key (gdm gdm)             ;deprecated
                        (allow-empty-passwords? #t)
                        (x-server (xorg-wrapper)))
   "Return a service that spawns the GDM graphical login manager, which in turn
