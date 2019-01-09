@@ -10361,3 +10361,27 @@ different regularized regression methods: lasso, adaptive lasso, PLS, and
 Ridge Regression.  In addition, the package provides model selection for
 lasso, adaptive lasso and Ridge regression based on cross-validation.")
     (license license:gpl2+)))
+
+(define-public r-mcmc
+  (package
+    (name "r-mcmc")
+    (version "0.9-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mcmc" version))
+       (sha256
+        (base32
+         "1i3rahph8pbhi5dsyjnkazqklg4lhh3azlyvx4kvabx50q0awxn6"))))
+    (build-system r-build-system)
+    (home-page "http://www.stat.umn.edu/geyer/mcmc/")
+    (synopsis "Markov chain Monte Carlo")
+    (description
+     "This package simulates continuous distributions of random vectors using
+@dfn{Markov chain Monte Carlo} (MCMC).  Users specify the distribution by an R
+function that evaluates the log unnormalized density.  Algorithms are random
+walk Metropolis algorithm (function @code{metrop}), simulated
+tempering (function @code{temper}), and morphometric random walk
+Metropolis (function @code{morph.metrop}), which achieves geometric ergodicity
+by change of variable.")
+    (license license:expat)))
