@@ -9486,3 +9486,25 @@ arbitrary precision floating point numbers, including transcendental
 functions.  To this end, the package interfaces with the @dfn{Multiple
 Precision Floating-Point Reliable} (MPFR) library.")
     (license license:gpl2+)))
+
+(define-public r-assertive-base
+  (package
+    (name "r-assertive-base")
+    (version "0.0-7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive.base" version))
+       (sha256
+        (base32
+         "1xs3ysvj0z57c58jw57pckq2rynia6ks4rmjmc02alczhk54wbgh"))))
+    (properties
+     `((upstream-name . "assertive.base")))
+    (build-system r-build-system)
+    (home-page "https://bitbucket.org/richierocks/assertive.base")
+    (synopsis "Core of the assertive package")
+    (description
+     "This package provides a minimal set of predicates and assertions used by
+the assertive package.  This is mainly for use by other package developers who
+want to include run-time testing features in their own packages.")
+    (license license:gpl3+)))
