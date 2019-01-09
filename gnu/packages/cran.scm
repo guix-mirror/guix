@@ -9283,3 +9283,34 @@ linear order on both variables.")
 \"Chemometrics with R - Multivariate Data Analysis in the Natural Sciences and
 Life Sciences\" by Ron Wehrens, Springer (2011).")
     (license license:gpl2+)))
+
+(define-public r-als
+  (package
+    (name "r-als")
+    (version "0.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ALS" version))
+       (sha256
+        (base32
+         "1swrn39vy50fazkpf97r7c542gkj6mlvy8gmcxllg7mf2mqx546a"))))
+    (properties `((upstream-name . "ALS")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-iso" ,r-iso)
+       ("r-nnls" ,r-nnls)))
+    (home-page "https://cran.r-project.org/web/packages/ALS")
+    (synopsis "Multivariate curve resolution alternating least squares")
+    (description
+     "Alternating least squares is often used to resolve components
+contributing to data with a bilinear structure; the basic technique may be
+extended to alternating constrained least squares.  This package provides an
+implementation of @dfn{multivariate curve resolution alternating least
+squares} (MCR-ALS).
+
+Commonly applied constraints include unimodality, non-negativity, and
+normalization of components.  Several data matrices may be decomposed
+simultaneously by assuming that one of the two matrices in the bilinear
+decomposition is shared between datasets.")
+    (license license:gpl2+)))
