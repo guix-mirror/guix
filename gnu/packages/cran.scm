@@ -9073,3 +9073,22 @@ in the NIfTI-1 and ANALYZE-7.5 formats, with seamless synchronisation between
 compiled C and interpreted R code.  It also provides a C/C++ API that can be
 used by other packages.")
     (license license:gpl2)))
+
+(define-public r-shades
+  (package
+    (name "r-shades")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shades" version))
+       (sha256
+        (base32
+         "0qbg7b37ifgil7ka4vhk15wjf65rwha233yppqd9wlf3gys8784n"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/jonclayden/shades")
+    (synopsis "Simple color manipulation")
+    (description
+     "This package provides functions for easily manipulating colors,
+creating color scales and calculating color distances.")
+    (license license:bsd-3)))
