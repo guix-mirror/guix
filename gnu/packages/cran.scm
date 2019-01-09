@@ -9900,3 +9900,27 @@ features in their own packages.")
 check the state of your variables, and assertions (@code{assert_*} functions)
 to throw errors if they aren't in the right form.")
     (license license:gpl3+)))
+
+(define-public r-dotcall64
+  (package
+    (name "r-dotcall64")
+    (version "1.0-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dotCall64" version))
+       (sha256
+        (base32
+         "1b8p7m3w0m7bp977c6jz74xkd611cxg11j49yza59k5fp338scb9"))))
+    (properties `((upstream-name . "dotCall64")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://git.math.uzh.ch/reinhard.furrer/dotCall64")
+    (synopsis "Enhanced foreign function interface supporting long vectors")
+    (description
+     "This package provides @code{.C64()}, an enhanced version of @code{.C()}
+and @code{.Fortran()} from the R foreign function interface.  @code{.C64()}
+supports long vectors, arguments of type 64-bit integer, and provides a
+mechanism to avoid unnecessary copies of read-only and write-only arguments.
+This makes it a convenient and fast interface to C/C++ and Fortran code.")
+    (license license:gpl2+)))
