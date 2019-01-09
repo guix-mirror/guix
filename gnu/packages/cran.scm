@@ -44,6 +44,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages graph)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages image)
@@ -8948,4 +8949,29 @@ regularized regression models using a variational Bayes algorithm with a spike
 prior.  The algorithm is solved on a path, with coordinate updates, and is
 capable of generating very sparse models.  Very general model
 diagnostics for controlling type-1 errors are also provided.")
+    (license license:gpl2)))
+
+(define-public r-flare
+  (package
+    (name "r-flare")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "flare" version))
+       (sha256
+        (base32
+         "0ygif9a7a99qwv0b488wymmmncp6f5ww9yz13s4qs6p8yf37x1r1"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)))
+    (home-page "https://cran.r-project.org/web/packages/flare")
+    (synopsis "Family of Lasso regression implementations")
+    (description
+     "This packages provides implementations of a family of Lasso variants
+including Dantzig Selector, LAD Lasso, SQRT Lasso, Lq Lasso for estimating
+high dimensional sparse linear models.")
     (license license:gpl2)))
