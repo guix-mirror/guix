@@ -9733,3 +9733,29 @@ packages.")
 the properties of code.  This is mainly for use by other package developers
 who want to include run-time testing features in their own packages.")
     (license license:gpl3+)))
+
+(define-public r-assertive-datetimes
+  (package
+    (name "r-assertive-datetimes")
+    (version "0.0-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive.datetimes" version))
+       (sha256
+        (base32
+         "00a98fx8p3pr3ckayh8wmxmm4rz01s67wah9697m92yci6pv3m78"))))
+    (properties
+     `((upstream-name . "assertive.datetimes")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertive-base" ,r-assertive-base)
+       ("r-assertive-types" ,r-assertive-types)))
+    (home-page "https://bitbucket.org/richierocks/assertive.datetimes")
+    (synopsis "Assertions to check properties of dates and times")
+    (description
+     "This package provides a set of predicates and assertions for checking
+the properties of dates and times.  This is mainly for use by other package
+developers who want to include run-time testing features in their own
+packages.")
+    (license license:gpl3+)))
