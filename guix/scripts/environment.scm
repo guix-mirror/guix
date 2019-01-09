@@ -158,6 +158,8 @@ COMMAND or an interactive shell in that environment.\n"))
       --expose=SPEC      for containers, expose read-only host file system
                          according to SPEC"))
   (display (G_ "
+  -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
+  (display (G_ "
       --bootstrap        use bootstrap binaries to build the environment"))
   (newline)
   (show-build-options-help)
@@ -179,7 +181,8 @@ COMMAND or an interactive shell in that environment.\n"))
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
-    (verbosity . 0)))
+    (debug . 0)
+    (verbosity . 2)))
 
 (define (tag-package-arg opts arg)
   "Return a two-element list with the form (TAG ARG) that tags ARG with either
@@ -260,6 +263,11 @@ COMMAND or an interactive shell in that environment.\n"))
          (option '(#\r "root") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'gc-root arg result)))
+         (option '(#\v "verbosity") #t #f
+                 (lambda (opt name arg result)
+                   (let ((level (string->number* arg)))
+                     (alist-cons 'verbosity level
+                                 (alist-delete 'verbosity result)))))
          (option '("bootstrap") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'bootstrap? #t result)))
@@ -674,7 +682,7 @@ message if any test fails."
         (leave (G_ "'--user' cannot be used without '--container'~%")))
 
       (with-store store
-        (with-status-verbosity 1
+        (with-status-verbosity (assoc-ref opts 'verbosity)
           (define manifest
             (options/resolve-packages store opts))
 

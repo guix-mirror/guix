@@ -66,7 +66,8 @@
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
     (graft? . #t)
-    (verbosity . 0)))
+    (debug . 0)
+    (verbosity . 2)))
 
 (define (show-help)
   (display (G_ "Usage: guix pull [OPTION]...
@@ -88,6 +89,8 @@ Download and deploy the latest version of Guix.\n"))
   -p, --profile=PROFILE  use PROFILE instead of ~/.config/guix/current"))
   (display (G_ "
   -n, --dry-run          show what would be pulled and built"))
+  (display (G_ "
+  -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (display (G_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (display (G_ "
@@ -135,6 +138,11 @@ Download and deploy the latest version of Guix.\n"))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+         (option '(#\v "verbosity") #t #f
+                 (lambda (opt name arg result)
+                   (let ((level (string->number* arg)))
+                     (alist-cons 'verbosity level
+                                 (alist-delete 'verbosity result)))))
          (option '("bootstrap") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'bootstrap? #t result)))
@@ -510,7 +518,7 @@ Use '~/.config/guix/channels.scm' instead."))
               (process-query opts profile))
              (else
               (with-store store
-                (with-status-verbosity 2
+                (with-status-verbosity (assoc-ref opts 'verbosity)
                   (parameterize ((%current-system (assoc-ref opts 'system))
                                  (%graft? (assoc-ref opts 'graft?))
                                  (%repository-cache-directory cache))

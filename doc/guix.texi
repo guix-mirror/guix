@@ -2101,10 +2101,6 @@ By default, @command{guix package} reports as an error @dfn{collisions}
 in the profile.  Collisions happen when two or more different versions
 or variants of a given package end up in the profile.
 
-@item --verbose
-Produce verbose output.  In particular, emit the build log of the
-environment on the standard error port.
-
 @item --bootstrap
 Use the bootstrap Guile to build the profile.  This option is only
 useful to distribution developers.
@@ -6363,10 +6359,15 @@ Likewise, when the build or substitution process lasts for more than
 By default, the daemon's setting is honored (@pxref{Invoking
 guix-daemon, @code{--timeout}}).
 
-@item --verbosity=@var{level}
-Use the given verbosity level.  @var{level} must be an integer between 0
-and 5; higher means more verbose output.  Setting a level of 4 or more
-may be helpful when debugging setup issues with the build daemon.
+@c Note: This option is actually not part of %standard-build-options but
+@c most programs honor it.
+@cindex verbosity, of the command-line tools
+@cindex build logs, verbosity
+@item -v @var{level}
+@itemx --verbosity=@var{level}
+Use the given verbosity @var{level}, an integer.  Choosing 0 means that no
+output is produced, 1 is for quiet output, and 2 shows all the build log
+output on standard error.
 
 @item --cores=@var{n}
 @itemx -c @var{n}
@@ -6378,6 +6379,11 @@ value @code{0} means to use as many CPU cores as available.
 Allow at most @var{n} build jobs in parallel.  @xref{Invoking
 guix-daemon, @code{--max-jobs}}, for details about this option and the
 equivalent @command{guix-daemon} option.
+
+@item --debug=@var{level}
+Produce debugging output coming from the build daemon.  @var{level} must be an
+integer between 0 and 5; higher means more verbose output.  Setting a level of
+4 or more may be helpful when debugging setup issues with the build daemon.
 
 @end table
 
@@ -6547,9 +6553,9 @@ build}.
 
 @item --quiet
 @itemx -q
-Build quietly, without displaying the build log.  Upon completion, the
-build log is kept in @file{/var} (or similar) and can always be
-retrieved using the @option{--log-file} option.
+Build quietly, without displaying the build log; this is equivalent to
+@code{--verbosity=0}.  Upon completion, the build log is kept in @file{/var}
+(or similar) and can always be retrieved using the @option{--log-file} option.
 
 @item --file=@var{file}
 @itemx -f @var{file}

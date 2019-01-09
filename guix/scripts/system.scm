@@ -1015,6 +1015,8 @@ Some ACTIONS support additional ARGS.\n"))
       --full-boot        for 'vm', make a full boot sequence"))
   (display (G_ "
       --skip-checks      skip file system and initrd module safety checks"))
+  (display (G_ "
+  -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
@@ -1074,6 +1076,11 @@ Some ACTIONS support additional ARGS.\n"))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+         (option '(#\v "verbosity") #t #f
+                 (lambda (opt name arg result)
+                   (let ((level (string->number* arg)))
+                     (alist-cons 'verbosity level
+                                 (alist-delete 'verbosity result)))))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
@@ -1092,7 +1099,8 @@ Some ACTIONS support additional ARGS.\n"))
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
     (graft? . #t)
-    (verbosity . 0)
+    (debug . 0)
+    (verbosity . #f)                              ;default
     (file-system-type . "ext4")
     (image-size . guess)
     (install-bootloader? . #t)))
@@ -1267,8 +1275,9 @@ argument list and OPTS is the option alist."
            (args     (option-arguments opts))
            (command  (assoc-ref opts 'action)))
       (parameterize ((%graft? (assoc-ref opts 'graft?)))
-        (with-status-verbosity (if (memq command '(init reconfigure))
-                                   1 2)
+        (with-status-verbosity (or (assoc-ref opts 'verbosity)
+                                   (if (memq command '(init reconfigure))
+                                       1 2))
           (process-command command args opts))))))
 
 ;;; Local Variables:
