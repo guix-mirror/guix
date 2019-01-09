@@ -9213,3 +9213,24 @@ maps} (SOMs).  Also interrogation of the maps and prediction using trained
 maps are supported.  The name of the package refers to Teuvo Kohonen, the
 inventor of the SOM.")
     (license license:gpl2+)))
+
+(define-public r-nnls
+  (package
+    (name "r-nnls")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nnls" version))
+       (sha256
+        (base32
+         "07vcrrxvswrvfiha6f3ikn640yg0m2b4yd9lkmim1g0jmsmpfp8f"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/nnls")
+    (synopsis "Lawson-Hanson algorithm for non-negative least squares")
+    (description
+     "This package provides an R interface to the Lawson-Hanson implementation
+of an algorithm for @dfn{non-negative least squares} (NNLS).  It also allows
+the combination of non-negative and non-positive constraints.")
+    (license license:gpl2+)))
