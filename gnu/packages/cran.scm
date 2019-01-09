@@ -9606,3 +9606,27 @@ the properties of matrices.  This is mainly for use by other package
 developers who want to include run-time testing features in their own
 packages.")
     (license license:gpl3+)))
+
+(define-public r-assertive-models
+  (package
+    (name "r-assertive-models")
+    (version "0.0-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive.models" version))
+       (sha256
+        (base32
+         "0bn4j4v5qvb2d672cgri61p8d9v258pmz35y3lvm6b9mdxwdi9mr"))))
+    (properties
+     `((upstream-name . "assertive.models")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertive-base" ,r-assertive-base)))
+    (home-page "https://bitbucket.org/richierocks/assertive.models")
+    (synopsis "Assertions to check properties of models")
+    (description
+     "This package provides a set of predicates and assertions for checking
+the properties of models.  This is mainly for use by other package developers
+who want to include run-time testing features in their own packages.")
+    (license license:gpl3+)))
