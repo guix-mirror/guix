@@ -9707,3 +9707,29 @@ the properties of files and connections.  This is mainly for use by other
 package developers who want to include run-time testing features in their own
 packages.")
     (license license:gpl3+)))
+
+(define-public r-assertive-code
+  (package
+    (name "r-assertive-code")
+    (version "0.0-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive.code" version))
+       (sha256
+        (base32
+         "1qhbp668zfvhqs8avkhg9amp4zyazz6dsy4fc6kpdmw3sv8yi07g"))))
+    (properties
+     `((upstream-name . "assertive.code")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertive-base" ,r-assertive-base)
+       ("r-assertive-properties" ,r-assertive-properties)
+       ("r-assertive-types" ,r-assertive-types)))
+    (home-page "https://bitbucket.org/richierocks/assertive.code")
+    (synopsis "Assertions to check properties of code")
+    (description
+     "This package provides a set of predicates and assertions for checking
+the properties of code.  This is mainly for use by other package developers
+who want to include run-time testing features in their own packages.")
+    (license license:gpl3+)))
