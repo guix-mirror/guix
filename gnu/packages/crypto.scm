@@ -905,3 +905,44 @@ GnuPG or encrypted filesystems.  Enchive has no external dependencies and is
 trivial to build for local use.  Portability is emphasized over performance.")
     (home-page "https://github.com/skeeto/enchive")
     (license license:unlicense)))
+
+(define-public libsecp256k1
+  (let ((commit "e34ceb333b1c0e6f4115ecbb80c632ac1042fa49"))
+    (package
+      (name "libsecp256k1")
+      (version (git-version "20181126" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/bitcoin-core/secp256k1")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0as78s179hcr3ysk3fw98k5wzabgnwri7vkkc17wg31lyz6ids6c"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      ;; WARNING: This package might need additional configure flags to run properly.
+      ;; See https://git.archlinux.org/svntogit/community.git/tree/trunk/PKGBUILD?h=packages/libsecp256k1.
+      (synopsis "C library for EC operations on curve secp256k1")
+      (description
+       "Optimized C library for EC operations on curve secp256k1.
+
+This library is a work in progress and is being used to research best
+practices.  Use at your own risk.
+
+Features:
+
+@itemize
+@item secp256k1 ECDSA signing/verification and key generation.
+@item Adding/multiplying private/public keys.
+@item Serialization/parsing of private keys, public keys, signatures.
+@item Constant time, constant memory access signing and pubkey generation.
+@item Derandomized DSA (via RFC6979 or with a caller provided function.)
+@item Very efficient implementation.
+@end itemize\n")
+      (home-page "https://github.com/bitcoin-core/secp256k1")
+      (license license:unlicense))))
