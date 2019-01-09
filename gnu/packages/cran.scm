@@ -54,6 +54,7 @@
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -9432,3 +9433,30 @@ and manipulating sets of ontological terms.")
     (description
      "This package provides an R interface to Google's BigQuery database.")
     (license license:gpl3)))
+
+(define-public r-gmp
+  (package
+    (name "r-gmp")
+    (version "0.5-13.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gmp" version))
+       (sha256
+        (base32
+         "1xd6jjra4niqv1kps91y348lwgvy73p2faxaia4gfzdnrpw7wsxf"))))
+    (build-system r-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-CC
+           (lambda _ (setenv "CC" "gcc") #t)))))
+    (inputs `(("gmp" ,gmp)))
+    (home-page "https://cran.r-project.org/web/packages/gmp")
+    (synopsis "Multiple precision arithmetic")
+    (description
+     "This package supports multiple precision arithmetic (big integers and
+rationals, prime number tests, matrix computation), \"arithmetic without
+limitations\" using the GNU Multiple Precision library.")
+    ;; Any version of the GPL.
+    (license license:gpl3+)))
