@@ -3344,20 +3344,38 @@ color scales, and color space conversion easy.  It has support for:
 (define-public python-pygit2
   (package
     (name "python-pygit2")
-    (version "0.26.4")
+    (version "0.27.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygit2" version))
        (sha256
         (base32
-         "145k3fsd21274swia7mcc7n3kzlbd47xmg55mxsjdb5d9b7fr858"))))
+         "046ahvsb7a20sgvscqfm3cb32sp3sii4gim9vz7zzrkf7yz16xlv"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; Remove after the next update. See:
+         ;; https://github.com/libgit2/pygit2/pull/851
+         (add-after 'unpack 'compile-with-cffi
+           (lambda _
+             (substitute* "setup.py"
+               (("install_requires")
+                "setup_requires=['cffi'],\n      install_requires"))
+             #t))
+         (add-after 'unpack 'fix-dependency-versioning
+           (lambda _
+             (substitute* "setup.py"
+               (("<") "<="))
+             #t)))))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-cffi" ,python-cffi)
        ("libgit2" ,libgit2)
        ("python-tox" ,python-tox)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/libgit2/pygit2")
     (synopsis "Python bindings for libgit2")
     (description "Pygit2 is a set of Python bindings to the libgit2 shared
