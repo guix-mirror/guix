@@ -9863,3 +9863,40 @@ the properties of (country independent) complex data types.  This is mainly
 for use by other package developers who want to include run-time testing
 features in their own packages.")
     (license license:gpl3+)))
+
+(define-public r-assertive
+  (package
+    (name "r-assertive")
+    (version "0.3-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive" version))
+       (sha256
+        (base32
+         "0blbbhlxcb5ffdxqxi62xs33ljiawh6s22a0pyvbbh79jf46rzr3"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertive-base" ,r-assertive-base)
+       ("r-assertive-code" ,r-assertive-code)
+       ("r-assertive-data" ,r-assertive-data)
+       ("r-assertive-data-uk" ,r-assertive-data-uk)
+       ("r-assertive-data-us" ,r-assertive-data-us)
+       ("r-assertive-datetimes" ,r-assertive-datetimes)
+       ("r-assertive-files" ,r-assertive-files)
+       ("r-assertive-matrices" ,r-assertive-matrices)
+       ("r-assertive-models" ,r-assertive-models)
+       ("r-assertive-numbers" ,r-assertive-numbers)
+       ("r-assertive-properties" ,r-assertive-properties)
+       ("r-assertive-reflection" ,r-assertive-reflection)
+       ("r-assertive-sets" ,r-assertive-sets)
+       ("r-assertive-strings" ,r-assertive-strings)
+       ("r-assertive-types" ,r-assertive-types)
+       ("r-knitr" ,r-knitr)))
+    (home-page "https://bitbucket.org/richierocks/assertive")
+    (synopsis "Readable check functions to ensure code integrity")
+    (description
+     "This package provides lots of predicates (@code{is_*} functions) to
+check the state of your variables, and assertions (@code{assert_*} functions)
+to throw errors if they aren't in the right form.")
+    (license license:gpl3+)))
