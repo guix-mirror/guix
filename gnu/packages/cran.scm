@@ -10078,3 +10078,24 @@ This package is primarily provided for projects already based on it, and for
 support of the book.  New projects should preferentially use the recommended
 package \"boot\".")
     (license license:bsd-3)))
+
+(define-public r-survivalroc
+  (package
+    (name "r-survivalroc")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "survivalROC" version))
+       (sha256
+        (base32
+         "0wnd65ff5w679hxa1zrpfrx9qg47q21pjxppsga6m3h4iq1yfj8l"))))
+    (properties `((upstream-name . "survivalROC")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/survivalROC")
+    (synopsis "Time-dependent ROC curve estimation from censored survival data")
+    (description
+     "Compute time-dependent ROC curve from censored survival data using
+Kaplan-Meier (KM) or Nearest Neighbor Estimation (NNE) method of Heagerty,
+Lumley & Pepe (Biometrics, Vol 56 No 2, 2000, PP 337-344)")
+    (license license:gpl2+)))
