@@ -632,7 +632,7 @@ data on your platform, so the seed itself will be as random as possible.
 (define-public crypto++
   (package
     (name "crypto++")
-    (version "6.0.0")
+    (version "8.0.0")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://cryptopp.com/cryptopp"
@@ -640,11 +640,14 @@ data on your platform, so the seed itself will be as random as possible.
                                   ".zip"))
               (sha256
                (base32
-                "1nidm6xbdza5cbgf5md2zznmaq692rfyjasycwipl6rzdfwjvb34"))))
+                "0b5qrsm4jhy4nzxgrm13nixhvbswr242plx1jw6r4sw492rqkzdv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             ;; Override "/sbin/ldconfig" with simply "echo" since
+             ;; we don't need ldconfig(8).
+             "LDCONF=echo")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-native-optimisation
@@ -654,7 +657,28 @@ data on your platform, so the seed itself will be as random as possible.
              (substitute* "GNUmakefile"
                ((" -march=native") ""))
              #t))
-         (delete 'configure))))
+         (delete 'configure)
+         (add-after 'build 'build-shared
+           (lambda _
+             ;; By default, only the static library is built.
+             (invoke "make" "shared")))
+         (add-after 'install 'install-pkg-config
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pkg-dir (string-append out "/lib/pkgconfig")))
+               (mkdir-p pkg-dir)
+               (with-output-to-file (string-append pkg-dir "/libcrypto++.pc")
+                 (lambda _
+                   (display
+                    (string-append
+                     "prefix=" out "\n"
+                     "libdir=" out "/lib\n"
+                     "includedir=" out "/include\n\n"
+                     "Name: libcrypto++-" ,version "\n"
+                     "Description: Class library of cryptographic schemes"
+                     "Version: " ,version "\n"
+                     "Libs: -L${libdir} -lcryptopp\n"
+                     "Cflags: -I${includedir}\n"))))))))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://cryptopp.com/")
