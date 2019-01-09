@@ -11,6 +11,8 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -167,28 +169,16 @@ OpenBSD tool of the same name.")
 (define-public opendht
   (package
     (name "opendht")
-    (version "0.6.1")
+    (version "1.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/savoirfairelinux/opendht.git")
                     (commit version)))
               (file-name (git-file-name name version))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (delete-file-recursively "src/argon2")
-                  (substitute* "src/Makefile.am"
-                    (("./argon2/libargon2.la") "")
-                    (("SUBDIRS = argon2") ""))
-                  (substitute* "src/crypto.cpp"
-                    (("argon2/argon2.h") "argon2.h"))
-                  (substitute* "configure.ac"
-                    (("src/argon2/Makefile") ""))
-                  #t))
               (sha256
                (base32
-                "1akk613f18rc8kqs0cxdm34iq7wwc9kffhgp5rng09arwlw8gw3w"))))
+                "0vninb5mak27wigajslyvr05vq7wbrwqhbr4wzl2nmqcb20wmlq2"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
@@ -203,13 +193,15 @@ OpenBSD tool of the same name.")
        ("automake" ,automake)
        ("libtool" ,libtool)))
     (arguments
-     `(#:configure-flags '("--disable-tools" "--disable-python")))
+     `(#:configure-flags '("--disable-tools"
+                           "--disable-python"
+                           "--with-argon2")))
     (home-page "https://github.com/savoirfairelinux/opendht/")
     (synopsis "Distributed Hash Table (DHT) library")
     (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may
 be used to manage peer-to-peer network connections as needed for real time
 communication.")
-    (license license:gpl3)))
+    (license license:gpl3+)))
 
 (define-public encfs
   (package
