@@ -140,18 +140,17 @@ to the clients.")
          "02wqkqxpn3p0iwcagsm92qd9cdfcnbx8a09qg03b3pjppp30hmp6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;;no tests
-       #:strip-binaries? #f ;; fasm has no sections
+     `(#:tests? #f ; No tests exist
+       #:strip-binaries? #f ; fasm has no sections
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure) ;;no configure script used
+         (delete 'configure) ; no "configure" script exists
          (replace 'build
            (lambda _
-             ;;source code are in this directory
              (chdir "source/Linux/")
              (if (string=? ,(%current-system) "x86_64-linux")
-                 ;;use pre-compiled binaries in top-level directory to build
-                 ;;itself
+                 ;; Use pre-compiled binaries in top-level directory to build
+                 ;; fasm.
                  (invoke "../../fasm.x64" "fasm.asm")
                  (invoke "../../fasm" "fasm.asm"))))
          (replace 'install
@@ -159,7 +158,6 @@ to the clients.")
              (let ((out (assoc-ref %outputs "out")))
                (install-file "fasm" (string-append out "/bin")))
              #t)))))
-    ;;support only intel x86 family processors
     (supported-systems '("x86_64-linux" "i686-linux"))
     (synopsis "Assembler for x86 processors")
     (description
