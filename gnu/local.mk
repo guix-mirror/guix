@@ -9,7 +9,7 @@
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 # Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
-# Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
+# Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2016, 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -244,6 +244,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/javascript.scm			\
   %D%/packages/jemalloc.scm			\
   %D%/packages/jrnl.scm				\
+  %D%/packages/jose.scm				\
   %D%/packages/julia.scm			\
   %D%/packages/kde.scm              \
   %D%/packages/kde-frameworks.scm		\
@@ -551,7 +552,9 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/ssh.scm				\
   %D%/tests/version-control.scm			\
   %D%/tests/virtualization.scm			\
-  %D%/tests/web.scm
+  %D%/tests/web.scm				\
+						\
+  %D%/ci.scm
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
@@ -603,6 +606,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
   %D%/packages/patches/beets-python-3.7-fix.patch		\
   %D%/packages/patches/beignet-correct-file-names.patch		\
+  %D%/packages/patches/biber-fix-encoding-write.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blast+-fix-makefile.patch		\
   %D%/packages/patches/blender-newer-ffmpeg.patch		\
@@ -852,7 +856,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/kiki-makefile.patch			\
   %D%/packages/patches/kiki-missing-includes.patch		\
   %D%/packages/patches/kiki-portability-64bit.patch		\
+  %D%/packages/patches/kinit-kdeinit-extra_libs.patch		\
+  %D%/packages/patches/kinit-kdeinit-libpath.patch		\
+  %D%/packages/patches/kio-search-smbd-on-PATH.patch		\
   %D%/packages/patches/kmod-module-directory.patch		\
+  %D%/packages/patches/kpackage-allow-external-paths.patch	\
   %D%/packages/patches/kobodeluxe-paths.patch			\
   %D%/packages/patches/kobodeluxe-enemies-pipe-decl.patch	\
   %D%/packages/patches/kobodeluxe-const-charp-conversion.patch	\
@@ -870,6 +878,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/liba52-use-mtune-not-mcpu.patch		\
   %D%/packages/patches/libarchive-CVE-2017-14166.patch		\
   %D%/packages/patches/libarchive-CVE-2017-14502.patch		\
+  %D%/packages/patches/libarchive-CVE-2018-1000877.patch	\
+  %D%/packages/patches/libarchive-CVE-2018-1000878.patch	\
+  %D%/packages/patches/libarchive-CVE-2018-1000880.patch	\
   %D%/packages/patches/libbase-fix-includes.patch		\
   %D%/packages/patches/libbase-use-own-logging.patch		\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
@@ -886,6 +897,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
+  %D%/packages/patches/libextractor-CVE-2018-20430.patch	\
+  %D%/packages/patches/libextractor-CVE-2018-20431.patch	\
   %D%/packages/patches/libgcrypt-make-yat2m-reproducible.patch	\
   %D%/packages/patches/libgit2-mtime-0.patch			\
   %D%/packages/patches/libgit2-oom-test.patch			\
@@ -1162,8 +1175,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
   %D%/packages/patches/soundtouch-CVE-2018-14044-14045.patch 	\
   %D%/packages/patches/soundtouch-CVE-2018-1000223.patch 	\
-  %D%/packages/patches/sssd-curl-compat.patch 			\
+  %D%/packages/patches/sssd-curl-compat.patch			\
   %D%/packages/patches/steghide-fixes.patch			\
+  %D%/packages/patches/streamlink-update-test.patch		\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/swig-guile-gc.patch			\
   %D%/packages/patches/swish-e-search.patch			\
@@ -1206,7 +1220,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/u-boot-pinebook-dts.patch		\
   %D%/packages/patches/u-boot-pinebook-syscon-node.patch	\
   %D%/packages/patches/u-boot-pinebook-video-bridge.patch	\
-  %D%/packages/patches/unrtf-CVE-2016-10091.patch		\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
   %D%/packages/patches/unzip-CVE-2014-8140.patch		\
   %D%/packages/patches/unzip-CVE-2014-8141.patch		\
@@ -1226,8 +1239,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/upx-fix-CVE-2017-15056.patch		\
   %D%/packages/patches/valgrind-enable-arm.patch		\
   %D%/packages/patches/valgrind-glibc-compat.patch		\
-  %D%/packages/patches/vinagre-revert-1.patch                   \
-  %D%/packages/patches/vinagre-revert-2.patch                   \
+  %D%/packages/patches/vboot-utils-fix-format-load-address.patch	\
+  %D%/packages/patches/vboot-utils-fix-tests-show-contents.patch	\
+  %D%/packages/patches/vboot-utils-skip-test-workbuf.patch	\
+  %D%/packages/patches/vinagre-newer-freerdp.patch             \
+  %D%/packages/patches/vinagre-newer-rdp-parameters.patch      \
   %D%/packages/patches/virglrenderer-CVE-2017-6386.patch 	\
   %D%/packages/patches/vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\

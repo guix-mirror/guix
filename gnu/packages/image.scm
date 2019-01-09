@@ -1595,3 +1595,29 @@ identical visual appearance.")
    (description "grim can create screenshots from a Wayland compositor.")
    ;; MIT license.
    (license license:expat)))
+
+(define-public slurp
+  (package
+   (name "slurp")
+   (version "1.0")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/emersion/slurp.git")
+           (commit (string-append "v" version))))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32 "03igv8r8n772xb0y7whhs1pa298l3d94jbnknaxpwp2n4fi04syb"))))
+   (build-system meson-build-system)
+   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs `(("cairo" ,cairo)
+             ("scdoc" ,scdoc)
+             ("wayland" ,wayland)
+             ("wayland-protocols" ,wayland-protocols)))
+   (home-page "https://github.com/emersion/slurp")
+   (synopsis "Select a region in a Wayland compositor")
+   (description "Slurp can select a region in a Wayland compositor and print it
+to the standard output.  It works well together with grim.")
+   ;; MIT license.
+   (license license:expat)))

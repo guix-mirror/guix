@@ -30,7 +30,6 @@
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
-  #:use-module (guix build utils)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
@@ -45,7 +44,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages webkit)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module ((srfi srfi-1) #:select (alist-delete)))
 
 (define-public wxwidgets
   (package

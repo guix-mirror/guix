@@ -873,3 +873,37 @@ the following advantages:
 such as online, hashing, allreduce, reductions, learning2search, active, and
 interactive learning.")
     (license license:bsd-3)))
+
+(define-public python2-fastlmm
+  (package
+    (name "python2-fastlmm")
+    (version "0.2.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fastlmm" version ".zip"))
+       (sha256
+        (base32
+         "1q8c34rpmwkfy3r4d5172pzdkpfryj561897z9r3x22gq7813x1m"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2)) ; only Python 2.7 is supported
+    (propagated-inputs
+     `(("python2-numpy" ,python2-numpy)
+       ("python2-scipy" ,python2-scipy)
+       ("python2-matplotlib" ,python2-matplotlib)
+       ("python2-pandas" ,python2-pandas)
+       ("python2-scikit-learn" ,python2-scikit-learn)
+       ("python2-pysnptools" ,python2-pysnptools)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python2-cython" ,python2-cython)
+       ("python2-mock" ,python2-mock)
+       ("python2-nose" ,python2-nose)))
+    (home-page "http://research.microsoft.com/en-us/um/redmond/projects/mscompbio/fastlmm/")
+    (synopsis "Perform genome-wide association studies on large data sets")
+    (description
+     "FaST-LMM, which stands for Factored Spectrally Transformed Linear Mixed
+Models, is a program for performing both single-SNP and SNP-set genome-wide
+association studies (GWAS) on extremely large data sets.")
+    (license license:asl2.0)))

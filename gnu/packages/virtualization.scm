@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018. 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -656,14 +656,14 @@ domains, their live performance and resource utilization statistics.")
 (define-public criu
   (package
     (name "criu")
-    (version "3.7")
+    (version "3.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.openvz.org/criu/criu-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0qrpz7pvnks34v7d8lb73flz3mb7qwnib94pdwaxh0mskn8470fq"))))
+                "03nimyn3wy5mlw30gq7bvlzvvprqjv8f25240yj5arzlld8mhsw8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -692,7 +692,23 @@ domains, their live performance and resource utilization statistics.")
                                (assoc-ref inputs "docbook-xsl")
                                "/xml/xsl/docbook-xsl-"
                                ,(package-version docbook-xsl)
-                               "/manpages/docbook.xsl")))
+                               "/manpages/docbook.xsl"))
+               (("\\$\\(XMLTO\\);")
+                (string-append (assoc-ref inputs "xmlto")
+                               "/bin/xmlto;")))
+             #t))
+         (add-after 'unpack 'hardcode-variables
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Hardcode arm version detection
+             (substitute* "Makefile"
+               (("ARMV.*:=.*") "ARMV := 7\n"))
+             ;; We are currently using python-2
+             (substitute* "crit/Makefile"
+               (("\\$\\(PYTHON\\)") "python2"))
+             (substitute* "lib/Makefile"
+               (("\\$\\(PYTHON\\)")
+                (string-append (assoc-ref inputs "python")
+                               "/bin/python")))
              #t))
          (add-before 'build 'fix-symlink
            (lambda* (#:key inputs #:allow-other-keys)

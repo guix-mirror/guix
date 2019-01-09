@@ -4,6 +4,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,9 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module ((guix utils)
+                #:select (%current-system)))
 
 (define-public nasm
   (package
@@ -122,3 +125,46 @@ abstracts over the target CPU by exposing a standardized RISC instruction set
 to the clients.")
     (home-page "https://www.gnu.org/software/lightning/")
     (license license:gpl3+)))
+
+(define-public fasm
+  (package
+    (name "fasm")
+    (version "1.73.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://flatassembler.net/fasm-"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "02wqkqxpn3p0iwcagsm92qd9cdfcnbx8a09qg03b3pjppp30hmp6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;;no tests
+       #:strip-binaries? #f ;; fasm has no sections
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ;;no configure script used
+         (replace 'build
+           (lambda _
+             ;;source code are in this directory
+             (chdir "source/Linux/")
+             (if (string=? ,(%current-system) "x86_64-linux")
+                 ;;use pre-compiled binaries in top-level directory to build
+                 ;;itself
+                 (invoke "../../fasm.x64" "fasm.asm")
+                 (invoke "../../fasm" "fasm.asm"))))
+         (replace 'install
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (install-file "fasm" (string-append out "/bin")))
+             #t)))))
+    ;;support only intel x86 family processors
+    (supported-systems '("x86_64-linux" "i686-linux"))
+    (synopsis "Assembler for x86 processors")
+    (description
+     "FASM is a assembler that supports x86, and IA-64 Intel architectures.
+It does multiple passes to optimize machine code.It have macro abilities and
+focus on operating system portability.")
+    (home-page "https://flatassembler.net/")
+    (license license:bsd-2)))

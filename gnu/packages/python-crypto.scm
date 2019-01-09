@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
@@ -341,13 +341,13 @@ password storage.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2018.8.13")
+    (version "2018.11.29")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "1x7jy10rz3100g9iw7c2czcw2z4lqfaalsd8yg991l4d82hnh7ac"))))
+                "1dvccavd2fzq4j37w0sznylp92ps14zi6gvlxzm23in0yhzciya7"))))
     (build-system python-build-system)
     (home-page "https://certifi.io/")
     (synopsis "Python CA certificate bundle")
@@ -808,14 +808,14 @@ protocol (Javascript Object Signing and Encryption).")
 (define-public python-pycryptodome
   (package
     (name "python-pycryptodome")
-    (version "3.5.1")
+    (version "3.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pycryptodome" version))
        (sha256
         (base32
-         "15mc1h5ij1b6hcqvb048kb4k0ip64n2ky0zz0rml2s78ylv7g5dp"))))
+         "1xxf5cyhlc5ak5skf4zgqz9yk5fj5g70hd06hc1jym995lxpxz7m"))))
     (build-system python-build-system)
     (home-page "https://www.pycryptodome.org")
     (synopsis "Cryptographic library for Python")

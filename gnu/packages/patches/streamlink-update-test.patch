@@ -1,0 +1,70 @@
+https://github.com/streamlink/streamlink/commit/a3123346824ee7b9c461110f292ea6987ea9a78d.patch
+This is taken from upstream, and can be removed at the next release
+
+From c6f3994e177a42792238f2edd07ba9053c10abc9 Mon Sep 17 00:00:00 2001
+From: back-to <backto@protonmail.ch>
+Date: Sat, 21 Jul 2018 14:30:51 +0200
+Subject: [PATCH] tests.localization: use en_CA instead of en_US for
+ test_equivalent
+
+**python-iso3166** got an update which breaks the Streamlink tests.
+https://pypi.org/project/iso3166/#history
+
+**python-iso3166** and **pycountry** have now a different `name` for _the United States of America_
+
+> python-iso3166: United States of America
+https://github.com/deactivated/python-iso3166/commit/e5f8b37f18b01fcb5fa0e8130d8296fc7a7b5a9f
+
+> pycountry: United States
+https://bitbucket.org/flyingcircus/pycountry/src/5aa4bb47e33798cb631a81521b7b5b18f7d6c919/src/pycountry/databases/iso3166-1.json?at=default&fileviewer=file-view-default#iso3166-1.json-1572:1578
+
+https://www.iso.org/obp/ui/#iso:code:3166:US
+
+---
+
+use **en_CA** instead of **en_US** for backwards compatibility,
+as changing the **US** name would fail with older versions of **python-iso3166** / **pycountry**
+---
+ tests/test_localization.py | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/tests/test_localization.py b/tests/test_localization.py
+index 0b81ae591..90bb3ac31 100644
+--- a/tests/test_localization.py
++++ b/tests/test_localization.py
+@@ -32,11 +32,12 @@ def test_bad_language_code(self):
+         self.assertRaises(LookupError, l10n.Localization, "enUS")
+ 
+     def test_equivalent(self):
+-        l = l10n.Localization("en_US")
++        l = l10n.Localization("en_CA")
+         self.assertTrue(l.equivalent(language="eng"))
+         self.assertTrue(l.equivalent(language="en"))
+-        self.assertTrue(l.equivalent(language="en", country="US"))
+-        self.assertTrue(l.equivalent(language="en", country="United States"))
++        self.assertTrue(l.equivalent(language="en", country="CA"))
++        self.assertTrue(l.equivalent(language="en", country="CAN"))
++        self.assertTrue(l.equivalent(language="en", country="Canada"))
+ 
+     def test_equivalent_remap(self):
+         l = l10n.Localization("fr_FR")
+@@ -48,7 +49,7 @@ def test_not_equivalent(self):
+         self.assertFalse(l.equivalent(language="eng"))
+         self.assertFalse(l.equivalent(language="en"))
+         self.assertFalse(l.equivalent(language="en", country="US"))
+-        self.assertFalse(l.equivalent(language="en", country="United States"))
++        self.assertFalse(l.equivalent(language="en", country="Canada"))
+         self.assertFalse(l.equivalent(language="en", country="ES"))
+         self.assertFalse(l.equivalent(language="en", country="Spain"))
+ 
+@@ -71,8 +72,8 @@ def test_get_country(self):
+                          l10n.Localization.get_country("USA").alpha2)
+         self.assertEqual("GB",
+                          l10n.Localization.get_country("GB").alpha2)
+-        self.assertEqual("United States",
+-                         l10n.Localization.get_country("United States").name)
++        self.assertEqual("Canada",
++                         l10n.Localization.get_country("Canada").name)
+ 
+     def test_get_country_miss(self):
+         self.assertRaises(LookupError, l10n.Localization.get_country, "XE")

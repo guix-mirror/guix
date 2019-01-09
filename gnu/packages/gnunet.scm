@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,14 +68,16 @@
 (define-public libextractor
   (package
    (name "libextractor")
-   (version "1.7")
+   (version "1.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libextractor/libextractor-"
                                 version ".tar.gz"))
+            (patches (search-patches "libextractor-CVE-2018-20430.patch"
+                                     "libextractor-CVE-2018-20431.patch"))
             (sha256
              (base32
-              "13wf6vj7mkv6gw8h183cnk7m24ir0gyf198pyb2148ng4klgv9p0"))))
+              "1z1cb35griqzvshqdv5ck98dy0sgpsswn7fgiy7lbzi34sma8dg2"))))
    (build-system gnu-build-system)
    ;; WARNING: Checks require /dev/shm to be in the build chroot, especially
    ;; not to be a symbolic link to /run/shm.
@@ -145,14 +148,14 @@ tool to extract metadata from a file and print the results.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.59")
+   (version "0.9.62")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0g4jgnv43yddr9yxrqg11632rip0lg5c53gmy5wy3c0i1dywv74v"))))
+              "0jfvi1fb4im3a3m8qishbmzx3zch993c0mhvl2k92l1zf1yhjgmx"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
@@ -307,19 +310,20 @@ kinds of basic applications for the foundation of a GNU internet.")
    (home-page "https://gnunet.org/")))
 
 (define-public guile-gnunet                       ;GSoC 2015!
-  (let ((commit "383eac2aab175d8d9ea5315c2f1c8a5055c76a52"))
+  (let ((commit "d12167ab3c8d7d6caffd9c606e389ef043760602")
+        (revision "1"))
     (package
       (name "guile-gnunet")
-      (version (string-append "0.0." (string-take commit 7)))
+      (version (git-version "0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://git.savannah.gnu.org/git/guix/gnunet.git/")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0k6mn28isjlxrnvbnblab3nh2xqx1b7san8k98kc35ap9lq0iz8w"))))
+                  "0nqc18jh9j30y4l6yh6j35byfg6qalq7yr3frv9rk10qa041c2sv"))))
       (build-system gnu-build-system)
       (native-inputs `(("pkg-config" ,pkg-config)
                        ("autoconf" ,autoconf-wrapper)

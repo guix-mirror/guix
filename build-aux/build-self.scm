@@ -334,12 +334,13 @@ interface (FFI) of Guile.")
                         (format (current-error-port)
                                 "Computing Guix derivation for '~a'...  "
                                 system)
-                        (let loop ((spin spin))
-                          (display (string-append "\b" (car spin))
-                                   (current-error-port))
-                          (force-output (current-error-port))
-                          (sleep 1)
-                          (loop (cdr spin))))
+                        (when (isatty? (current-error-port))
+                          (let loop ((spin spin))
+                            (display (string-append "\b" (car spin))
+                                     (current-error-port))
+                            (force-output (current-error-port))
+                            (sleep 1)
+                            (loop (cdr spin)))))
 
                       (match (command-line)
                         ((_ source system version protocol-version)
@@ -420,7 +421,7 @@ files."
            (error "build program failed" (list build status)))
           ((? derivation-path? drv)
            (mbegin %store-monad
-             (return (newline (current-output-port)))
+             (return (newline (current-error-port)))
              ((store-lift add-temp-root) drv)
              (return (read-derivation-from-file drv))))
           ("#f"

@@ -11,6 +11,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
+;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
@@ -65,6 +67,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system dune)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
   #:use-module (guix download)
@@ -632,144 +635,6 @@ written in Objective Caml.")
 arbitrary-precision integer and rational arithmetic that used to be part of
 the OCaml core distribution.")
     (license license:lgpl2.1+))); with linking exception
-
-(define-public coq
-  (package
-    (name "coq")
-    (version "8.8.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/coq/coq/archive/V"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0i2hs0i6rp27cy8zd0mx7jscqw5cx2y0diw0pxgij66s3yr47y7r"))))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "COQPATH")
-            (files (list "lib/coq/user-contrib")))))
-    (build-system ocaml-build-system)
-    (inputs
-     `(("lablgtk" ,lablgtk)
-       ("python" ,python-2)
-       ("camlp5" ,camlp5)
-       ("ocaml-num" ,ocaml-num)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (mandir (string-append out "/share/man"))
-                    (browser "icecat -remote \"OpenURL(%s,new-tab)\""))
-               (invoke "./configure"
-                       "-prefix" out
-                       "-mandir" mandir
-                       "-browser" browser
-                       "-coqide" "opt"))))
-         (replace 'build
-           (lambda _
-             (invoke "make"
-                     "-j" (number->string (parallel-job-count))
-                     "world")))
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda _
-             (with-directory-excursion "test-suite"
-               ;; These two tests fail.
-               ;; This one fails because the output is not formatted as expected.
-               (delete-file-recursively "coq-makefile/timing")
-               ;; This one fails because we didn't build coqtop.byte.
-               (delete-file-recursively "coq-makefile/findlib-package")
-               (invoke "make")))))))
-    (home-page "https://coq.inria.fr")
-    (synopsis "Proof assistant for higher-order logic")
-    (description
-     "Coq is a proof assistant for higher-order logic, which allows the
-development of computer programs consistent with their formal specification.
-It is developed using Objective Caml and Camlp5.")
-    ;; The code is distributed under lgpl2.1.
-    ;; Some of the documentation is distributed under opl1.0+.
-    (license (list license:lgpl2.1 license:opl1.0+))))
-
-(define-public proof-general
-  (package
-    (name "proof-general")
-    (version "4.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://proofgeneral.inf.ed.ac.uk/releases/"
-                    "ProofGeneral-" version ".tgz"))
-              (sha256
-               (base32
-                "09qb0myq66fw17v4ziz401ilsb5xlxz1nl2wsp69d0vrfy0bcrrm"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("which" ,which)
-       ("emacs" ,emacs-minimal)
-       ("texinfo" ,texinfo)))
-    (inputs
-     `(("host-emacs" ,emacs)
-       ("perl" ,perl)
-       ("coq" ,coq)))
-    (arguments
-     `(#:tests? #f  ; no check target
-       #:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "DEST_PREFIX=" %output))
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build emacs-utils))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build emacs-utils))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'disable-byte-compile-error-on-warn
-                    (lambda _
-                      (substitute* "Makefile"
-                        (("\\(setq byte-compile-error-on-warn t\\)")
-                         "(setq byte-compile-error-on-warn nil)"))
-                      #t))
-         (add-after 'unpack 'patch-hardcoded-paths
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let ((out   (assoc-ref outputs "out"))
-                            (coq   (assoc-ref inputs "coq"))
-                            (emacs (assoc-ref inputs "host-emacs")))
-                        (define (coq-prog name)
-                          (string-append coq "/bin/" name))
-                        (emacs-substitute-variables "coq/coq.el"
-                          ("coq-prog-name"           (coq-prog "coqtop"))
-                          ("coq-compiler"            (coq-prog "coqc"))
-                          ("coq-dependency-analyzer" (coq-prog "coqdep")))
-                        (substitute* "Makefile"
-                          (("/sbin/install-info") "install-info"))
-                        (substitute* "bin/proofgeneral"
-                          (("^PGHOMEDEFAULT=.*" all)
-                           (string-append all
-                                          "PGHOME=$PGHOMEDEFAULT\n"
-                                          "EMACS=" emacs "/bin/emacs")))
-                        #t)))
-         (add-after 'unpack 'clean
-                    (lambda _
-                      ;; Delete the pre-compiled elc files for Emacs 23.
-                      (zero? (system* "make" "clean"))))
-         (add-after 'install 'install-doc
-                    (lambda* (#:key make-flags #:allow-other-keys)
-                      ;; XXX FIXME avoid building/installing pdf files,
-                      ;; due to unresolved errors building them.
-                      (substitute* "Makefile"
-                        ((" [^ ]*\\.pdf") ""))
-                      (zero? (apply system* "make" "install-doc"
-                                    make-flags)))))))
-    (home-page "http://proofgeneral.inf.ed.ac.uk/")
-    (synopsis "Generic front-end for proof assistants based on Emacs")
-    (description
-     "Proof General is a major mode to turn Emacs into an interactive proof
-assistant to write formal mathematical proofs using a variety of theorem
-provers.")
-    (license license:gpl2+)))
 
 (define-public emacs-tuareg
   (package
@@ -4273,6 +4138,7 @@ and 4 (random based) according to RFC 4122.")
              (setenv "CONFIG_SHELL" (string-append (assoc-ref inputs "bash")
                                                    "/bin/sh")))))))
     (inputs `(("lablgtk" ,lablgtk)))
+    (properties `((upstream-name . "ocamlgraph")))
     (home-page "http://ocamlgraph.lri.fr/")
     (synopsis "Graph library for OCaml")
     (description "OCamlgraph is a generic graph library for OCaml.")
@@ -4712,285 +4578,6 @@ OCaml projects that contain C stubs.")
 cross-platform SDL C library.")
     (license license:isc)))
 
-(define-public coq-flocq
-  (package
-    (name "coq-flocq")
-    (version "2.6.1")
-    (source (origin
-              (method url-fetch)
-              ;; Use the ‘Latest version’ link for a stable URI across releases.
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37454/flocq-" version ".tar.gz"))
-              (sha256
-               (base32
-                "06msp1fwpqv6p98a3i1nnkj7ch9rcq3rm916yxq8dxf51lkghrin"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)))
-    (arguments
-     `(#:configure-flags
-       (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Flocq"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-remake
-           (lambda _
-             (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))
-             #t))
-         (replace 'build
-           (lambda _
-             (invoke "./remake")
-             #t))
-         (replace 'check
-           (lambda _
-             (invoke "./remake" "check")
-             #t))
-             ;; TODO: requires coq-gappa and coq-interval.
-             ;(invoke "./remake" "check-more")
-         (replace 'install
-           (lambda _
-             (invoke "./remake" "install")
-             #t)))))
-    (home-page "http://flocq.gforge.inria.fr/")
-    (synopsis "Floating-point formalization for the Coq system")
-    (description "Flocq (Floats for Coq) is a floating-point formalization for
-the Coq system.  It provides a comprehensive library of theorems on a multi-radix
-multi-precision arithmetic.  It also supports efficient numerical computations
-inside Coq.")
-    (license license:lgpl3+)))
-
-(define-public coq-gappa
-  (package
-    (name "coq-gappa")
-    (version "1.3.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/file/36397/gappa-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "19kg2zldaqs4smy7bv9hp650sqg46xbx1ss7jnyagpxdscwn9apd"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)
-       ("bison" ,bison)
-       ("flex" ,flex)))
-    (inputs
-     `(("gmp" ,gmp)
-       ("mpfr" ,mpfr)
-       ("boost" ,boost)))
-    (arguments
-     `(#:configure-flags
-       (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Gappa"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-remake
-           (lambda _
-             (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
-         (replace 'build
-           (lambda _
-             (zero? (system* "./remake"))))
-         (replace 'check
-           (lambda _
-             (zero? (system* "./remake" "check"))))
-         (replace 'install
-           (lambda _
-             (zero? (system* "./remake" "install")))))))
-    (home-page "http://gappa.gforge.inria.fr/")
-    (synopsis "Verify and formally prove properties on numerical programs")
-    (description "Gappa is a tool intended to help verifying and formally proving
-properties on numerical programs dealing with floating-point or fixed-point
-arithmetic.  It has been used to write robust floating-point filters for CGAL
-and it is used to certify elementary functions in CRlibm.  While Gappa is
-intended to be used directly, it can also act as a backend prover for the Why3
-software verification plateform or as an automatic tactic for the Coq proof
-assistant.")
-    (license (list license:gpl2+ license:cecill))));either gpl2+ or cecill
-
-(define-public coq-mathcomp
-  (package
-    (name "coq-mathcomp")
-    (version "1.7.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/math-comp/math-comp/archive/mathcomp-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "05zgyi4wmasi1rcyn5jq42w0bi9713q9m8dl1fdgl66nmacixh39"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)))
-    (arguments
-     `(#:tests? #f; No need to test formally-verified programs :)
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-before 'build 'chdir
-           (lambda _
-             (chdir "mathcomp")))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
-             (zero? (system* "make" "-f" "Makefile.coq"
-                             (string-append "COQLIB=" (assoc-ref outputs "out")
-                                            "/lib/coq/")
-                             "install")))))))
-    (home-page "https://math-comp.github.io/math-comp/")
-    (synopsis "Mathematical Components for Coq")
-    (description "Mathematical Components for Coq has its origins in the formal
-proof of the Four Colour Theorem.  Since then it has grown to cover many areas
-of mathematics and has been used for large scale projects like the formal proof
-of the Odd Order Theorem.
-
-The library is written using the Ssreflect proof language that is an integral
-part of the distribution.")
-    (license license:cecill-b)))
-
-(define-public coq-coquelicot
-  (package
-    (name "coq-coquelicot")
-    (version "3.0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37045/coquelicot-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0hsyhsy2lwqxxx2r8xgi5csmirss42lp9bkb9yy35mnya0w78c8r"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)))
-    (propagated-inputs
-     `(("mathcomp" ,coq-mathcomp)))
-    (arguments
-     `(#:configure-flags
-       (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Coquelicot"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-coq8.8
-           (lambda _
-             ; appcontext has been removed from coq 8.8
-             (substitute* "theories/AutoDerive.v"
-               (("appcontext") "context"))
-             #t))
-         (add-before 'configure 'fix-remake
-           (lambda _
-             (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
-         (replace 'build
-           (lambda _
-             (zero? (system* "./remake"))))
-         (replace 'check
-           (lambda _
-             (zero? (system* "./remake" "check"))))
-         (replace 'install
-           (lambda _
-             (zero? (system* "./remake" "install")))))))
-    (home-page "http://coquelicot.saclay.inria.fr/index.html")
-    (synopsis "Coq library for Reals")
-    (description "Coquelicot is an easier way of writing formulas and theorem
-statements, achieved by relying on total functions in place of dependent types
-for limits, derivatives, integrals, power series, and so on.  To help with the
-proof process, the library comes with a comprehensive set of theorems that cover
-not only these notions, but also some extensions such as parametric integrals,
-two-dimensional differentiability, asymptotic behaviors.  It also offers some
-automations for performing differentiability proofs.  Moreover, Coquelicot is a
-conservative extension of Coq's standard library and provides correspondence
-theorems between the two libraries.")
-    (license license:lgpl3+)))
-
-(define-public coq-bignums
-  (package
-    (name "coq-bignums")
-    (version "8.8.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/coq/bignums/archive/V"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "08m1cmq4hkaf4sb0vy978c11rgzvds71cphyadmr2iirpr5815r0"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("ocaml" ,ocaml)
-       ("coq" ,coq)))
-    (inputs
-     `(("camlp5" ,camlp5)))
-    (arguments
-     `(#:tests? #f; No test target
-       #:make-flags
-       (list (string-append "COQLIBINSTALL=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib"))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
-    (home-page "https://github.com/coq/bignums")
-    (synopsis "Coq library for arbitrary large numbers")
-    (description "Bignums is a coq library of arbitrary large numbers.  It
-provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
-    (license license:lgpl2.1+)))
-
-(define-public coq-interval
-  (package
-    (name "coq-interval")
-    (version "3.3.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37077/interval-" version ".tar.gz"))
-              (sha256
-               (base32
-                "08fdcf3hbwqphglvwprvqzgkg0qbimpyhnqsgv3gac4y1ap0f903"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)))
-    (propagated-inputs
-     `(("flocq" ,coq-flocq)
-       ("bignums" ,coq-bignums)
-       ("coquelicot" ,coq-coquelicot)
-       ("mathcomp" ,coq-mathcomp)))
-    (arguments
-     `(#:configure-flags
-       (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Gappa"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-remake
-           (lambda _
-             (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
-         (replace 'build
-           (lambda _
-             (zero? (system* "./remake"))))
-         (replace 'check
-           (lambda _
-             (zero? (system* "./remake" "check"))))
-         (replace 'install
-           (lambda _
-             (zero? (system* "./remake" "install")))))))
-    (home-page "http://coq-interval.gforge.inria.fr/")
-    (synopsis "Coq tactics to simplify inequality proofs")
-    (description "Interval provides vernacular files containing tactics for
-simplifying the proofs of inequalities on expressions of real numbers for the
-Coq proof assistant.")
-    (license license:cecill-c)))
-
 (define-public dedukti
   (package
     (name "dedukti")
@@ -5044,6 +4631,62 @@ dependent types.  The λΠ-calculus modulo theory is itself an extension of the
 rules.  This system is not designed to develop proofs, but to check proofs
 developed in other systems.  In particular, it enjoys a minimalistic syntax.")
     (license license:cecill-c)))
+
+(define-public emacs-dedukti-mode
+  (let ((commit "d7c3505a1046187de3c3aeb144455078d514594e"))
+    (package
+      (name "emacs-dedukti-mode")
+      (version (git-version "0" "0" commit))
+      (home-page "https://github.com/rafoo/dedukti-mode")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1842wikq24c8rg0ac84vb1qby9ng1nssxswyyni4kq85lng5lcrp"))
+                (file-name (git-file-name name version))))
+      (inputs
+       `(("dedukti" ,dedukti)))
+      (build-system emacs-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'patch-dkpath
+             (lambda _
+               (let ((dkcheck-path (which "dkcheck")))
+                 (substitute* "dedukti-mode.el"
+                   (("dedukti-path \"(.*)\"")
+                    (string-append "dedukti-path \"" dkcheck-path "\"")))))))))
+      (synopsis "Emacs major mode for Dedukti files")
+      (description "This package provides an Emacs major mode for editing
+Dedukti files.")
+      (license license:cecill-b))))
+
+(define-public emacs-flycheck-dedukti
+  (let ((commit "3dbff5646355f39d57a3ec514f560a6b0082a1cd"))
+    (package
+      (name "emacs-flycheck-dedukti")
+      (version (git-version "0" "0" commit))
+      (home-page "https://github.com/rafoo/flycheck-dedukti")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1ffpxnwl3wx244n44mbw81g00nhnykd0lnid29f4aw1av7w6nw8l"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("dedukti-mode" ,emacs-dedukti-mode)
+         ("flycheck-mode" ,emacs-flycheck)))
+      (synopsis "Flycheck integration for the dedukti language")
+      (description "This package provides a frontend for Flycheck to perform
+syntax checking on dedukti files.")
+      (license license:cecill-b))))
 
 (define-public ocaml-biniou
  (package
@@ -5105,3 +4748,88 @@ speedup, polymorphic variants and optional syntax for tuples and variants.
 yojson package.  The program @code{atdgen} can be used to derive OCaml-JSON
 serializers and deserializers from type definitions.")
     (license license:bsd-3)))
+
+(define-public ocaml-gsl
+  (package
+    (name "ocaml-gsl")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://github.com/mmottl/gsl-ocaml/releases/download/"
+         version "/gsl-" version ".tbz"))
+       (sha256
+        (base32
+         "17vcswipliq1b2idbzx1z95kskn1a4q4s5v04igilg0f7lnkaarb"))))
+    (build-system ocaml-build-system)
+    (inputs
+     `(("gsl" ,gsl)))
+    (home-page "https://mmottl.github.io/gsl-ocaml")
+    (synopsis "Bindings to the GNU Scientific Library")
+    (description
+     "GSL-OCaml is an interface to the @dfn{GNU scientific library} (GSL) for
+the OCaml language.")
+    (license license:gpl3+)))
+
+(define-public ocaml4.01-gsl
+  (package-with-ocaml4.01 ocaml-gsl))
+
+(define-public cubicle
+  (package
+    (name "cubicle")
+    (version "1.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://cubicle.lri.fr/cubicle-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "10kk80jdmpdvql88sdjsh7vqzlpaphd8vip2lp47aarxjkwjlz1q"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("automake" ,automake)
+       ("ocaml" ,ocaml)
+       ("which" ,(@@ (gnu packages base) which))))
+    (propagated-inputs
+     `(("ocaml-num" ,ocaml-num)
+       ("z3" ,z3)))
+    (arguments
+     `(#:configure-flags (list "--with-z3")
+       #:make-flags (list "QUIET=")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'configure-for-release
+           (lambda _
+             (substitute* "Makefile.in"
+               (("SVNREV=") "#SVNREV="))
+             #t))
+         (add-before 'configure 'fix-/bin/sh
+           (lambda _
+             (substitute* "configure"
+               (("-/bin/sh") (string-append "-" (which "sh"))))
+             #t))
+         (add-before 'configure 'fix-smt-z3wrapper.ml
+           (lambda _
+             (substitute* "Makefile.in"
+               (("\\\\n") ""))
+             #t))
+         (add-before 'configure 'fix-ocaml-num
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("= \\$\\(FUNCTORYLIB\\)")
+                (string-append "= -I "
+                               (assoc-ref inputs "ocaml-num")
+                               "/lib/ocaml/site-lib"
+                               " $(FUNCTORYLIB)")))
+             #t)))))
+    (home-page "http://cubicle.lri.fr/")
+    (synopsis "Model checker for array-based systems")
+    (description "Cubicle is a model checker for verifying safety properties
+of array-based systems.  This is a syntactically restricted class of
+parametrized transition systems with states represented as arrays indexed by
+an arbitrary number of processes.  Cache coherence protocols and mutual
+exclusion algorithms are typical examples of such systems.")
+    (license license:asl2.0)))

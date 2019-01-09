@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -32,6 +32,7 @@
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1851,17 +1852,17 @@ Hints specification (EWMH).")
 (define-public goffice
   (package
     (name "goffice")
-    (version "0.10.36")
+    (version "0.10.44")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
                                   name "-" version ".tar.xz"))
               (sha256
-               (base32 "1mma1gp179dh7kvwzd7q3mwg0719hhbm9f5sqw28flv5lv05zrng"))))
+               (base32 "1fd7cm6j0g0mqgpqs4y22b4gd2ll4mcyvg4d0q22d5ndjapl4q3d"))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "doc"))                            ;4.1 MiB of gtk-doc
+               "doc"))                            ;4.0 MiB of gtk-doc
     (arguments
      '(#:configure-flags (list (string-append "--with-html-dir="
                                               (assoc-ref %outputs "doc")
@@ -2214,19 +2215,31 @@ selection and URL hints.")))
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches ; We have to revert 2 commits to build against freerdp 1.1.
-               (search-patches "vinagre-revert-1.patch"
-                               "vinagre-revert-2.patch"))
+              (patches (search-patches "vinagre-newer-freerdp.patch"
+                                       "vinagre-newer-rdp-parameters.patch"))
               (sha256
                (base32
                 "10jya3jyrm18nbw3v410gbkc7677bqamax44pzgd3j15randn76d"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           (lambda _
+             ;; Don't create 'icon-theme.cache'
+             (substitute* (find-files "." "^Makefile$")
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
+         (add-after 'unpack 'patch-configure
+           (lambda _
+             (substitute* "configure"
+               (("freerdp") "freerdp2"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("itstool" ,itstool)
-       ("glib-bin" ,glib "bin")                   ;for glib-compile-schemas
-       ("gtk+-bin" ,gtk+ "bin")))                 ;for gtk-update-icon-cache
+       ("glib-bin" ,glib "bin")))                 ;for glib-compile-schemas
     (inputs
      `(("libxml2" ,libxml2)
        ("gtk-vnc" ,gtk-vnc)
@@ -2237,8 +2250,6 @@ selection and URL hints.")))
        ("spice-gtk" ,spice-gtk)
        ("telepathy-glib" ,telepathy-glib)
        ("vte" ,vte)))
-    (arguments
-     `(#:configure-flags '("--enable-rdp")))
     (home-page "https://wiki.gnome.org/Apps/Vinagre")
     (synopsis "Remote desktop viewer for GNOME")
     (description "Vinagre is a remote display client supporting the VNC, SPICE
@@ -2584,7 +2595,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
 (define-public libsecret
   (package
     (name "libsecret")
-    (version "0.18.6")
+    (version "0.18.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2593,7 +2604,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vynag97a9bnnb8ipah45av8xg8jzmhd572rw3zj78s1pa8ciysy"))))
+                "11ylmcfx6ff7xd1gpi58i2nbma83lz2xg0g2dq23w6snqhgzwrhd"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -5317,6 +5328,10 @@ libxml2.")
          ;; script. It provides a generic one if --enable-gdm-xsession is set.
          "--enable-gdm-xsession"
 
+         ;; Use '/etc/environment' for locale settings instead of the
+         ;; systemd-specific '/etc/locale.conf'.
+         "--with-lang-file=/etc/environment"
+
          "--localstatedir=/var"
          ,(string-append "--with-default-path="
                          (string-join '("/run/setuid-programs"
@@ -5379,6 +5394,11 @@ libxml2.")
                 ;; are met (provided GNOME is installed of course).
                 "gdm_session_set_environment_variable (self, \"XDG_CONFIG_DIRS\",\n"
                 "    \"/run/current-system/profile/etc/xdg\");\n"
+                ;; The session bus (which GDM will initialize from the this
+                ;; session environment) needs to know where to find the system
+                ;; service files.
+                "gdm_session_set_environment_variable (self, \"XDG_DATA_DIRS\",\n"
+                "    \"/run/current-system/profile/share\");\n"
                 )))
             ;; Look for custom GDM conf in /run/current-system.
             (substitute* '("common/gdm-settings-desktop-backend.c")

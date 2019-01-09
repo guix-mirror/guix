@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -102,15 +103,15 @@ header.")
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.7")
+    (version "0.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnu/gnuastro/gnuastro-"
-                           version ".tar.gz"))
+                           version ".tar.lz"))
        (sha256
         (base32
-         "1h4hpj5dd1nz8hx0dkf43as0hl1grcaijg0k3zcd5djg7wgna46y"))))
+         "0gx6iar3z07k9sdvpa6kchsz6fpk94xn5vcvbcigssl2dwqmlnkb"))))
     (inputs
      `(("cfitsio" ,cfitsio)
        ("gsl" ,gsl)
@@ -118,6 +119,8 @@ header.")
        ("libtiff" ,libtiff)
        ("wcslib" ,wcslib)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("lzip" ,lzip)))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/gnuastro/")
     (synopsis "Astronomy utilities")

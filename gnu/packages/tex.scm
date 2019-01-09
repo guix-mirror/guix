@@ -4223,15 +4223,19 @@ values (strings, macros, or numbers) pasted together.")
 (define-public biber
   (package
     (name "biber")
-    (version "2.7")
+    (version "2.12")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/plk/biber/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/plk/biber/")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              ;; TODO: Patch awaiting inclusion upstream (see:
+              ;; https://github.com/plk/biber/issues/239).
+              (patches (search-patches "biber-fix-encoding-write.patch"))
               (sha256
                (base32
-                "17wd80jg98qyddhvz4cin8779ycvppaf2va77r1lyvymjz6w9bx0"))))
+                "1g1hi6zvf2hmrjly1sidjaxy5440gfqm4p7p3n7kayshnjsmlskx"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -4253,7 +4257,7 @@ values (strings, macros, or numbers) pasted together.")
        ("perl-data-uniqid" ,perl-data-uniqid)
        ("perl-datetime-format-builder" ,perl-datetime-format-builder)
        ("perl-datetime-calendar-julian" ,perl-datetime-calendar-julian)
-       ("perl-file-slurp" ,perl-file-slurp)
+       ("perl-file-slurper" ,perl-file-slurper)
        ("perl-ipc-cmd" ,perl-ipc-cmd)
        ("perl-ipc-run3" ,perl-ipc-run3)
        ("perl-list-allutils" ,perl-list-allutils)

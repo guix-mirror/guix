@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -91,14 +91,14 @@ groups.")
 (define-public python-iso3166
   (package
     (name "python-iso3166")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "iso3166" version))
        (sha256
         (base32
-         "0cs9w507dj93jj9z9di93lx2fplf8pma4jkrsvvb258dv6z1gszv"))))
+         "0hm0xm30sprk1jssmn4cqks0x3nx5fp8r5ypvahcysmmayzrsnjl"))))
     (build-system python-build-system)
     (home-page "https://github.com/deactivated/python-iso3166")
     (synopsis "Self-contained ISO 3166-1 country definitions")

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016,2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016,2017,2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -98,8 +98,10 @@
                (("\"lib64\"") "\"lib\"")
                ;; TODO: Base the following on values taken from Qt
                ;; Install plugins into lib/qt5/plugins
-               (("_define_relative\\(QTPLUGINDIR LIBDIR \"plugins\"")
-                "_define_relative(QTPLUGINDIR LIBDIR \"qt5/plugins\"")
+               ;; TODO: Check if this is okay for Android, too
+               ;; (see comment in KDEInstallDirs.cmake)
+               (("_define_relative\\(QTPLUGINDIR \"\\$\\{_pluginsDirParent}\" \"plugins\"")
+                "_define_relative(QTPLUGINDIR \"${_pluginsDirParent}\" \"qt5/plugins\"")
                ;; Install imports into lib/qt5/imports
                (("_define_relative\\(QTQUICKIMPORTSDIR QTPLUGINDIR \"imports\"")
                 "_define_relative(QTQUICKIMPORTSDIR LIBDIR \"qt5/imports\"")
@@ -335,13 +337,17 @@ Bluetooth stack.  It is used by the KDE Bluetooth stack, BlueDevil.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'disable-failing-test
+         (add-after 'unpack 'add-symlinks
+           ;; Fix "ScalableTest" - FIXME: Remove for > 5.49.0
            (lambda _
-             ;; Blacklist a test-function (failing at build.kde.org, too).
-             ;; FIXME: recheck
-             (with-output-to-file "autotests/BLACKLIST"
-               (lambda _
-                 (display "[test_duplicates]\n*\n")))
+             (symlink "../22/plasma-browser-integration.svg"
+                      "icons-dark/apps/48/plasma-browser-integration.svg")
+             (symlink "../22/plasma-browser-integration.svg"
+                      "icons-dark/apps/64/plasma-browser-integration.svg")
+             (symlink "../22/plasma-browser-integration.svg"
+                      "icons/apps/48/plasma-browser-integration.svg")
+             (symlink "../22/plasma-browser-integration.svg"
+                      "icons/apps/64/plasma-browser-integration.svg")
              #t)))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1819,7 +1825,10 @@ covers feedback and persistent events.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1xbfjwxb4gff8gg0hs5m9s0jcnzqk27rs2jr71g5ckhvs5psnkcd"))))
+                "1xbfjwxb4gff8gg0hs5m9s0jcnzqk27rs2jr71g5ckhvs5psnkcd"))
+              ;; Default to: external paths/symlinks can be followed by a
+              ;; package
+              (patches (search-patches "kpackage-allow-external-paths.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -1834,6 +1843,16 @@ covers feedback and persistent events.")
      `(#:tests? #f ; FIXME: 3/9 tests fail.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             ;; Make QDirIterator follow symlinks
+             (substitute* '("src/kpackage/packageloader.cpp"
+                            "src/kpackage/private/packagejobthread.cpp")
+               (("^\\s*(const QDirIterator::IteratorFlags flags = QDirIterator::Subdirectories)(;)" _ a b)
+                (string-append a " | QDirIterator::FollowSymlinks" b))
+               (("^\\s*(QDirIterator it\\(.*, QDirIterator::Subdirectories)(\\);)" _ a b)
+                (string-append a " | QDirIterator::FollowSymlinks" b)))
+             #t))
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
@@ -2082,6 +2101,20 @@ using the XBEL format.")
        ("kservice" ,kservice)))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "src/kpluginselector.cpp"
+               ;; make QDirIterator follow symlinks
+               (("^\\s*(QDirIterator it\\(.*, QDirIterator::Subdirectories)(\\);)" _ a b)
+                (string-append a " | QDirIterator::FollowSymlinks" b)))
+             (substitute* "src/kcmoduleloader.cpp"
+               ;; print plugin name when loading fails
+               (("^\\s*(qWarning\\(\\) << \"Error loading) (plugin:\")( << loader\\.errorString\\(\\);)" _ a b c)
+                (string-append a " KCM plugin\" << mod.service()->library() << \":\"" c)))
+             #t)))))
     (inputs
      `(("kauth" ,kauth)
        ("kcodecs" ,kcodecs)
@@ -2132,6 +2165,13 @@ KCModules can be created with the KConfigWidgets framework.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "src/khelpclient.cpp"
+               ;; make QDirIterator follow symlinks
+               (("^\\s*(QDirIterator it\\(.*, QDirIterator::Subdirectories)(\\);)" _ a b)
+                (string-append a " | QDirIterator::FollowSymlinks" b)))
+             #t))
          (add-before 'check 'check-setup
            (lambda _
              ;; make Qt render "offscreen", required for tests
@@ -2499,8 +2539,23 @@ in applications using the KDE Frameworks.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1rq9b59gdgcpvwd694l8h55sqahpdaky0n7ag5psjlfn5myf1d95"))))
+                "1rq9b59gdgcpvwd694l8h55sqahpdaky0n7ag5psjlfn5myf1d95"))
+              ;; Use the store paths for other packages and dynamically loaded
+              ;; libs
+              (patches (search-patches "kinit-kdeinit-extra_libs.patch"
+                                       "kinit-kdeinit-libpath.patch"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Set patched-in values:
+             (substitute* "src/kdeinit/kinit.cpp"
+               (("GUIX_PKGS_KF5_KIO") (assoc-ref inputs "kio"))
+               (("GUIX_PKGS_KF5_PARTS") (assoc-ref inputs "kparts"))
+               (("GUIX_PKGS_KF5_PLASMA") (assoc-ref inputs "plasma-framework")))
+             #t)))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
@@ -2518,11 +2573,13 @@ in applications using the KDE Frameworks.")
        ("kitemviews" ,kitemviews)
        ("ki18n" ,ki18n)
        ("kjobwidgets" ,kjobwidgets)
+       ("kparts" ,kparts)
        ("kservice" ,kservice)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
        ("libcap" ,libcap) ; to install start_kdeinit with CAP_SYS_RESOURCE
+       ("plasma-framework" ,plasma-framework)
        ("qtbase" ,qtbase)
        ("solid" ,solid)))
     (home-page "https://community.kde.org/Frameworks")
@@ -2546,7 +2603,8 @@ makes starting KDE applications faster and reduces memory consumption.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0rrsg3g1b204cdp58vxd5dig1ggwyvk1382p1c86vn6w8qbrq27k"))))
+                "0rrsg3g1b204cdp58vxd5dig1ggwyvk1382p1c86vn6w8qbrq27k"))
+              (patches (search-patches "kio-search-smbd-on-PATH.patch"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kbookmarks" ,kbookmarks)
@@ -2589,11 +2647,10 @@ makes starting KDE applications faster and reduces memory consumption.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch
            (lambda _
-             ;; Better error message (taken from nix)
+             ;; Better error message (taken from NixOS)
              (substitute* "src/kiod/kiod_main.cpp"
                (("(^\\s*qCWarning(KIOD_CATEGORY) << \"Error loading plugin:\")( << loader.errorString();)" _ a b)
                 (string-append a "<< name" b)))
-             ;; TODO: samba-search-path.patch from nix: search smbd on $PATH
              #t))
          (add-before 'check 'check-setup
            (lambda _
@@ -2877,10 +2934,11 @@ to easily extend the contacts collection.")
              (setenv "HOME" (getcwd))
              ;; make Qt render "offscreen", required for tests
              (setenv "QT_QPA_PLATFORM" "offscreen")
-             ;; Blacklist a failing test-function. FIXME: Make it pass.
+             ;; Blacklist some failing test-functions. FIXME: Make them pass.
              (with-output-to-file "bin/BLACKLIST"
                (lambda _
-                 (display "[testMatch]\n*\n")))
+                 (display "[testMatch]\n*\n")
+                 (display "[testMulti]\n*\n")))
              #t)))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Framework for Plasma runners")
@@ -2921,6 +2979,20 @@ typed.")
      `(#:tests? #f ; FIXME: 6/10 tests fail.
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           ;; Adopted from NixOS' patches "qdiriterator-follow-symlinks" and
+           ;; "no-canonicalize-path".
+           (lambda _
+             (substitute* "src/sycoca/kbuildsycoca.cpp"
+               ;; make QDirIterator follow symlinks
+               (("^\\s*(QDirIterator it\\(.*, QDirIterator::Subdirectories)(\\);)" _ a b)
+                (string-append a " | QDirIterator::FollowSymlinks" b)))
+             (substitute* "src/sycoca/vfolder_menu.cpp"
+               ;; Normalize path, but don't resolve symlinks (taken from
+               ;; NixOS)
+               (("^\\s*QString resolved = QDir\\(dir\\)\\.canonicalPath\\(\\);")
+                "QString resolved = QDir::cleanPath(dir);"))
+             #t))
          (add-before 'check 'check-setup
            (lambda _
              (setenv "HOME" (getcwd))
@@ -3418,6 +3490,8 @@ workspace.")
        ("qtx11extras" ,qtx11extras)))
     ;; FIXME: Use GuixSD ca-bundle.crt in etc/xdg/ksslcalist and
     ;; share/kf5/kssl/ca-bundle.crt
+    ;; TODO: NixOS has nix-kde-include-dir.patch to change std-dir "include"
+    ;; into "@dev@/include/". Think about whether this is needed for us, too.
     (arguments
      `(#:phases
        (modify-phases %standard-phases

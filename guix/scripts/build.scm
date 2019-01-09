@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -788,13 +788,15 @@ package '~a' has no source~%")
                    ((? file-like? obj)
                     (list (run-with-store store
                             (lower-object obj system
-                                          #:target (assoc-ref opts 'target)))))
+                                          #:target (assoc-ref opts 'target))
+                            #:system system)))
                    ((? gexp? gexp)
                     (list (run-with-store store
                             (mbegin %store-monad
                               (set-guile-for-build (default-guile))
                               (gexp->derivation "gexp" gexp
-                                                #:system system))))))
+                                                #:system system))
+                            #:system system))))
                  (map (cut transform store <>)
                       (options->things-to-build opts))))))
 

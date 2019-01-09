@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +18,8 @@
 
 (define-module (guix build git)
   #:use-module (guix build utils)
+  #:use-module (srfi srfi-34)
+  #:use-module (ice-9 format)
   #:export (git-fetch))
 
 ;;; Commentary:
@@ -39,31 +41,39 @@ recursively.  Return #t on success, #f otherwise."
 
   (mkdir-p directory)
 
-  (with-directory-excursion directory
-    (invoke git-command "init")
-    (invoke git-command "remote" "add" "origin" url)
-    (if (zero? (system* git-command "fetch" "--depth" "1" "origin" commit))
-        (invoke git-command "checkout" "FETCH_HEAD")
-        (begin
-          (setvbuf (current-output-port) 'line)
-          (format #t "Failed to do a shallow fetch; retrying a full fetch...~%")
-          (invoke git-command "fetch" "origin")
-          (invoke git-command "checkout" commit)))
-    (when recursive?
-      ;; Now is the time to fetch sub-modules.
-      (unless (zero? (system* git-command "submodule" "update"
-                                          "--init" "--recursive"))
-        (error "failed to fetch sub-modules" url))
+  (guard (c ((invoke-error? c)
+             (format (current-error-port)
+                     "git-fetch: '~a~{ ~a~}' failed with exit code ~a~%"
+                     (invoke-error-program c)
+                     (invoke-error-arguments c)
+                     (or (invoke-error-exit-status c) ;XXX: not quite accurate
+                         (invoke-error-stop-signal c)
+                         (invoke-error-term-signal c)))
+             (delete-file-recursively directory)
+             #f))
+    (with-directory-excursion directory
+      (invoke git-command "init")
+      (invoke git-command "remote" "add" "origin" url)
+      (if (zero? (system* git-command "fetch" "--depth" "1" "origin" commit))
+          (invoke git-command "checkout" "FETCH_HEAD")
+          (begin
+            (setvbuf (current-output-port) 'line)
+            (format #t "Failed to do a shallow fetch; retrying a full fetch...~%")
+            (invoke git-command "fetch" "origin")
+            (invoke git-command "checkout" commit)))
+      (when recursive?
+        ;; Now is the time to fetch sub-modules.
+        (invoke git-command "submodule" "update" "--init" "--recursive")
 
-      ;; In sub-modules, '.git' is a flat file, not a directory,
-      ;; so we can use 'find-files' here.
-      (for-each delete-file-recursively
-                (find-files directory "^\\.git$")))
+        ;; In sub-modules, '.git' is a flat file, not a directory,
+        ;; so we can use 'find-files' here.
+        (for-each delete-file-recursively
+                  (find-files directory "^\\.git$")))
 
       ;; The contents of '.git' vary as a function of the current
       ;; status of the Git repo.  Since we want a fixed output, this
       ;; directory needs to be taken out.
       (delete-file-recursively ".git")
-      #t))
+      #t)))
 
 ;;; git.scm ends here

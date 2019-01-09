@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -704,14 +704,14 @@ and many external plugins.")
 (define-public python-pytest-cov
   (package
     (name "python-pytest-cov")
-    (version "2.5.1")
+    (version "2.6.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pytest-cov" version))
         (sha256
          (base32
-          "0bbfpwdh9k3636bxc88vz9fa7vf4akchgn513ql1vd0xy4n7bah3"))))
+          "0qnpp9y3ygx4jk4pf5ad71fh2skbvnr6gl54m7rg5qysnx4g0q73"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -800,14 +800,14 @@ same arguments.")
 (define-public python-pytest-xdist
   (package
     (name "python-pytest-xdist")
-    (version "1.14")
+    (version "1.25.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "pytest-xdist" version ".zip"))
+       (uri (pypi-uri "pytest-xdist" version))
        (sha256
         (base32
-         "08rn2l39ds60xshs4js787l84pfckksqklfq2wq9x8ig2aci2pja"))
+         "1d812apvcmshh2l8f38spqwb3bpp0x43yy7lyfpxxzc99h4r7y4n"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -827,8 +827,7 @@ same arguments.")
        ;;       (add-installed-pythonpath inputs outputs)
        ;;       (zero? (system* "py.test" "-v")))))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-execnet" ,python-execnet)
        ("python-pytest" ,python-pytest)
@@ -856,9 +855,7 @@ result back.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/s/scripttest/scripttest-"
-             version ".tar.gz"))
+       (uri (pypi-uri "scripttest" version))
        (sha256
         (base32
          "0f4w84k8ck82syys7yg9maz93mqzc8p5ymis941x034v44jzq74m"))))
@@ -1026,14 +1023,14 @@ use of resources by test cases.")))
 (define-public python-subunit-bootstrap
   (package
     (name "python-subunit-bootstrap")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-subunit" version))
        (sha256
         (base32
-         "1yii2gx3z6323as3iraj1yphj76dy7i3h6kj63pnc5y0hwjs5sgx"))))
+         "1fsw8rsn1s3nklx06mayrg5rn2zbky6wwjc5z07s7rf1wjzfs1wn"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-extras" ,python-extras)
@@ -1042,7 +1039,7 @@ use of resources by test cases.")))
      `(("python-fixtures" ,python-fixtures-bootstrap)
        ("python-hypothesis" ,python-hypothesis)
        ("python-testscenarios" ,python-testscenarios-bootstrap)))
-    (home-page "http://launchpad.net/subunit")
+    (home-page "https://launchpad.net/subunit")
     (synopsis "Python implementation of the subunit protocol")
     (description
      "This package is here for bootstrapping purposes only.  Use the regular

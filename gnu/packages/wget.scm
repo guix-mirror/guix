@@ -45,7 +45,7 @@
 (define-public wget
   (package
     (name "wget")
-    (version "1.20")
+    (version "1.20.1")
     (source
      (origin
       (method url-fetch)
@@ -53,23 +53,8 @@
                           version ".tar.lz"))
       (sha256
        (base32
-        "07k8yd8rdn27x5fbzlnsz4db7z7qnisiqhs7r1b5wzy2b9b0zf5h"))))
+        "0a29qsqxkk8145vkyy35q5a1wc7qzwx3qj3gmfrkmi9xs96yhqqg"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'check 'disable-https-tests
-                    (lambda _
-                      ;; XXX: Skip TLS tests, which fail with "The
-                      ;; certificate's owner does not match hostname" as
-                      ;; reported at:
-                      ;; <https://lists.gnu.org/archive/html/bug-wget/2017-07/msg00012.html>.
-                      ;; The problem appears to be due to a change in GnuTLS
-                      ;; 3.5.12, whereby 'gnutls_x509_crt_check_hostname2' no
-                      ;; longer matches IP address against the 'CN' or
-                      ;; 'DNSname' fields of certificates.
-                      (substitute* "testenv/Makefile"
-                        (("SSL_TESTS=1") ""))
-                      #t)))))
     (inputs
      `(("gnutls" ,gnutls)
        ("libidn2" ,libidn2)

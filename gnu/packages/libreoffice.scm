@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -32,6 +32,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses)
                 #:select (gpl2+ lgpl2.1+ lgpl3+ mpl1.1 mpl2.0
                           non-copyleft x11-style bsd-3))
@@ -772,15 +773,17 @@ Zoner Draw version 4 and 5.")
 (define-public hunspell
   (package
     (name "hunspell")
-    (version "1.6.2")
+    (version "1.7.0")
     (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/hunspell/hunspell/archive/v"
-                          version ".tar.gz"))
-      (sha256 (base32
-               "1i7lsv2cm0713ia3j5wjkcrhpfp3lqpjpwp4d3v18n7ycaqcxn9w"))
-      (file-name (string-append name "-" version ".tar.gz"))))
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/hunspell/hunspell")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0qxlkd012r45ppd21kldbq9k5ac5nmxz290z6m2kch9l56v768k1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

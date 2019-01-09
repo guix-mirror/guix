@@ -10,6 +10,8 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -144,74 +146,6 @@ a focus on simplicity and productivity.")
                    ;; Remove bundled libffi
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
                    #t))))))
-
-(define-public ruby-2.2
-  (package (inherit ruby)
-    (version "2.2.10")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
-                           (version-major+minor version)
-                           "/ruby-" version ".tar.xz"))
-       (sha256
-        (base32
-         "0l5nk9mc0q4769d2i9d9y1izk0pk0lms2bl8s3lclv36wsvvqxxz"))))))
-
-(define-public ruby-2.1
-  (package (inherit ruby)
-    (version "2.1.10")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
-                           (version-major+minor version)
-                           "/ruby-" version ".tar.bz2"))
-       (sha256
-        (base32
-         "1wglbd599mlwxfcb2xgqcxi2shr363pjn5dpbv11m04si9bpaim7"))))
-    (arguments
-     `(#:test-target "test"
-       #:parallel-tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'replace-bin-sh
-           (lambda _
-             (substitute* '("Makefile.in"
-                            "ext/pty/pty.c"
-                            "io.c"
-                            "lib/mkmf.rb"
-                            "process.c")
-               (("/bin/sh") (which "sh")))
-             #t)))))))
-
-(define-public ruby-1.8
-  (package (inherit ruby)
-    (version "1.8.7-p374")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
-                           (version-major+minor version)
-                           "/ruby-" version ".tar.bz2"))
-       (sha256
-        (base32
-         "1qq7khilwkayrhwmzlxk83scrmiqfi7lgsn4c63znyvz2c1lgqxl"))))
-    (native-search-paths '())
-    (arguments
-     `(#:test-target "test"
-       #:parallel-tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'replace-bin-sh
-           (lambda _
-             (substitute* '("Makefile.in"
-                            "ext/pty/pty.c"
-                            "io.c"
-                            "lib/mkmf.rb"
-                            "process.c")
-               (("/bin/sh") (which "sh")))
-             #t)))))))
 
 (define-public ruby-highline
   (package
@@ -3346,14 +3280,14 @@ alternative to Marshal for Object serialization. ")
 (define-public ruby-pg
   (package
     (name "ruby-pg")
-    (version "0.21.0")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pg" version))
        (sha256
         (base32
-         "00vhasqwc4f98qb4wxqn2h07fjwzhp5lwyi41j2gndi2g02wrdqh"))))
+         "1pnjw3rspdfjssxyf42jnbsdlgri8ylysimp0s28wxb93k6ff2qb"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"))
@@ -3365,7 +3299,7 @@ alternative to Marshal for Object serialization. ")
      `(("postgresql" ,postgresql-9.6)))
     (synopsis "Ruby interface to PostgreSQL")
     (description "Pg is the Ruby interface to the PostgreSQL RDBMS.  It works
-with PostgreSQL 8.4 and later.")
+with PostgreSQL 9.0 and later.")
     (home-page "https://bitbucket.org/ged/ruby-pg")
     (license license:ruby)))
 

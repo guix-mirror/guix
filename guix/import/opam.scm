@@ -27,16 +27,23 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (web uri)
+  #:use-module (guix build-system)
+  #:use-module (guix build-system ocaml)
   #:use-module (guix http-client)
   #:use-module (guix git)
   #:use-module (guix ui)
+  #:use-module (guix packages)
+  #:use-module (guix upstream)
   #:use-module (guix utils)
   #:use-module (guix import utils)
   #:use-module ((guix licenses) #:prefix license:)
-  #:export (opam->guix-package))
+  #:export (opam->guix-package
+            opam-recursive-import
+            %opam-updater))
 
 ;; Define a PEG parser for the opam format
-(define-peg-pattern SP none (or " " "\n"))
+(define-peg-pattern comment none (and "#" (* STRCHR) "\n"))
+(define-peg-pattern SP none (or " " "\n" comment))
 (define-peg-pattern SP2 body (or " " "\n"))
 (define-peg-pattern QUOTE none "\"")
 (define-peg-pattern QUOTE2 body "\"")
@@ -128,7 +135,6 @@ path to the repository."
     (else (string-append "ocaml-" name))))
 
 (define (metadata-ref file lookup)
-  (pk 'file file 'lookup lookup)
   (fold (lambda (record acc)
           (match record
             ((record key val)
@@ -166,6 +172,21 @@ path to the repository."
     (('conditional-value val condition)
      (if (native? condition) (dependency->input val) ""))))
 
+(define (dependency->name dependency)
+  (match dependency
+    (('string-pat str) str)
+    (('conditional-value val condition)
+     (dependency->name val))))
+
+(define (dependency-list->names lst)
+  (filter
+    (lambda (name)
+      (not (or
+             (string-prefix? "conf-" name)
+             (equal? name "ocaml")
+             (equal? name "findlib"))))
+    (map dependency->name lst)))
+
 (define (ocaml-names->guix-names names)
   (map ocaml-name->guix-name
        (remove (lambda (name)
@@ -190,35 +211,88 @@ path to the repository."
       (list dependency (list 'unquote (string->symbol dependency))))
     (ocaml-names->guix-names lst)))
 
-(define (opam->guix-package name)
+(define (opam-fetch name)
   (and-let* ((repository (get-opam-repository))
              (version (find-latest-version name repository))
-             (file (string-append repository "/packages/" name "/" name "." (pk 'version version) "/opam"))
-             (opam-content (get-metadata file))
-             (url-dict (metadata-ref (pk 'metadata opam-content) "url"))
+             (file (string-append repository "/packages/" name "/" name "." version "/opam")))
+    `(("metadata" ,@(get-metadata file))
+      ("version" . ,version))))
+
+(define (opam->guix-package name)
+  (and-let* ((opam-file (opam-fetch name))
+             (version (assoc-ref opam-file "version"))
+             (opam-content (assoc-ref opam-file "metadata"))
+             (url-dict (metadata-ref opam-content "url"))
              (source-url (metadata-ref url-dict "src"))
              (requirements (metadata-ref opam-content "depends"))
+             (dependencies (dependency-list->names requirements))
              (inputs (dependency-list->inputs (depends->inputs requirements)))
              (native-inputs (dependency-list->inputs (depends->native-inputs requirements))))
         (call-with-temporary-output-file
           (lambda (temp port)
             (and (url-fetch source-url temp)
-                 `(package
-                    (name ,(ocaml-name->guix-name name))
-                    (version ,(metadata-ref opam-content "version"))
-                    (source
-                      (origin
-                        (method url-fetch)
-                        (uri ,source-url)
-                        (sha256 (base32 ,(guix-hash-url temp)))))
-                    (build-system ocaml-build-system)
-                    ,@(if (null? inputs)
-                        '()
-                        `((inputs ,(list 'quasiquote inputs))))
-                    ,@(if (null? native-inputs)
-                        '()
-                        `((native-inputs ,(list 'quasiquote native-inputs))))
-                    (home-page ,(metadata-ref opam-content "homepage"))
-                    (synopsis ,(metadata-ref opam-content "synopsis"))
-                    (description ,(metadata-ref opam-content "description"))
-                    (license #f)))))))
+                 (values
+                  `(package
+                     (name ,(ocaml-name->guix-name name))
+                     (version ,version)
+                     (source
+                       (origin
+                         (method url-fetch)
+                         (uri ,source-url)
+                         (sha256 (base32 ,(guix-hash-url temp)))))
+                     (build-system ocaml-build-system)
+                     ,@(if (null? inputs)
+                         '()
+                         `((inputs ,(list 'quasiquote inputs))))
+                     ,@(if (null? native-inputs)
+                         '()
+                         `((native-inputs ,(list 'quasiquote native-inputs))))
+                     (home-page ,(metadata-ref opam-content "homepage"))
+                     (synopsis ,(metadata-ref opam-content "synopsis"))
+                     (description ,(metadata-ref opam-content "description"))
+                     (license #f))
+                  dependencies))))))
+
+(define (opam-recursive-import package-name)
+  (recursive-import package-name #f
+                    #:repo->guix-package (lambda (name repo)
+                                           (opam->guix-package name))
+                    #:guix-name ocaml-name->guix-name))
+
+(define (guix-package->opam-name package)
+  "Given an OCaml PACKAGE built from OPAM, return the name of the
+package in OPAM."
+  (let ((upstream-name (assoc-ref
+                         (package-properties package)
+                         'upstream-name))
+        (name (package-name package)))
+    (cond
+      (upstream-name upstream-name)
+      ((string-prefix? "ocaml-" name) (substring name 6))
+      (else name))))
+
+(define (opam-package? package)
+  "Return true if PACKAGE is an OCaml package from OPAM"
+  (and
+    (equal? (build-system-name (package-build-system package)) 'ocaml)
+    (not (string-prefix? "ocaml4" (package-name package)))))
+
+(define (latest-release package)
+  "Return an <upstream-source> for the latest release of PACKAGE."
+  (and-let* ((opam-name (guix-package->opam-name package))
+             (opam-file (opam-fetch opam-name))
+             (version (assoc-ref opam-file "version"))
+             (opam-content (assoc-ref opam-file "metadata"))
+             (url-dict (metadata-ref opam-content "url"))
+             (source-url (metadata-ref url-dict "src")))
+    (upstream-source
+      (package (package-name package))
+      (version version)
+      (urls (list source-url)))))
+
+(define %opam-updater
+  (upstream-updater
+    (name 'opam)
+    (description "Updater for OPAM packages")
+    (pred opam-package?)
+    (latest latest-release)))

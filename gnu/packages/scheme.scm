@@ -224,17 +224,17 @@ features an integrated Emacs-like editor and a large runtime library.")
   ;; long after the initial publication: <https://bugs.gnu.org/33525>.  For
   ;; transparency, we give this "second 4.3b" release a different version
   ;; number.
-  (let ((upstream-version "4.3b"))
+  (let ((upstream-version "4.3e"))
     (package
       (name "bigloo")
-      (version "4.3b2")
+      (version "4.3e1")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo"
                                     upstream-version ".tar.gz"))
                 (sha256
                  (base32
-                  "02s0wrz5b1p0yqk9x6kax1vwzil7g9cyxfvl3vmy7fzznsza9gs4"))
+                  "12k1kxyn3yilba0508xh8wkrw6279gnghzqi0bs2ayf5d2wkqdj3"))
                 ;; Remove bundled libraries.
                 (modules '((guix build utils)))
                 (snippet
@@ -320,14 +320,14 @@ and between Scheme and Java programs.")
 (define-public hop
   (package
     (name "hop")
-    (version "3.1.0-pre2")
+    (version "3.2.0-pre1")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Hop/hop-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0bvq79vxcpgwydwi923cxb5w9isx2x8r3d0xndbdhacmmsw1m811"))))
+               "0jf418d0s9imv98s6qrpjxr1mdaxr37knh5qyfl5y4a9cc41mlg5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -338,8 +338,12 @@ and between Scheme and Java programs.")
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
+               (substitute* '("tools/Makefile"
+                              "test/hopjs/TEST.in")
+                 (("/bin/rm") (which "rm")))
                (invoke "./configure"
                        (string-append "--prefix=" out)
+                       "--hostcc=gcc"
                        (string-append "--blflags="
                                       ;; user flags completely override useful
                                       ;; default flags, so repeat them here.
@@ -367,14 +371,14 @@ mashups, office (web agendas, mail clients, ...), etc.")
 (define-public chicken
   (package
     (name "chicken")
-    (version "4.13.0")
+    (version "5.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://code.call-cc.org/releases/"
                                   version "/chicken-" version ".tar.gz"))
               (sha256
                (base32
-                "0hvckhi5gfny3mlva6d7y9pmx7cbwvq0r7mk11k3sdiik9hlkmdd"))))
+                "15b5yrzfa8aimzba79x7v6y282f898rxqxfxrr446sjx9jwlpfd8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -551,7 +555,7 @@ of libraries.")
 (define-public gambit-c
   (package
     (name "gambit-c")
-    (version "4.9.0")
+    (version "4.9.1")
     (source
      (origin
        (method url-fetch)
@@ -561,14 +565,14 @@ of libraries.")
              (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
              ".tgz"))
        (sha256
-        (base32 "19862w9ij0g5xrkskl4g89xbs17gp9cc6cfcdca6dlfkb3lk6xhp"))))
+        (base32 "14x9xa0yh7187alzw2m937jnh4csj0dyywi3va8bhi7aaw4p5qai"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
        ;; According to the ./configure script, this makes the build slower and
        ;; use >= 1 GB memory, but makes Gambit much faster.
        '("--enable-single-host")))
-    (home-page "http://gambitscheme.org")
+    (home-page "http://dynamo.iro.umontreal.ca/wiki/index.php/Main_Page")
     (synopsis "Efficient Scheme interpreter and compiler")
     (description
      "Gambit consists of two main programs: gsi, the Gambit Scheme

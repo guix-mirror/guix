@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2015, 2017 Alex Kost <alezost@gmail.com>
 # Copyright © 2016, 2018 Mathieu Lirzin <mthl@gnu.org>
@@ -172,7 +172,6 @@ MODULES =					\
   guix/build/union.scm				\
   guix/build/profiles.scm			\
   guix/build/compile.scm			\
-  guix/build/pull.scm				\
   guix/build/rpath.scm				\
   guix/build/cvs.scm				\
   guix/build/svn.scm				\
@@ -281,6 +280,10 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 # Auxiliary files for packages.
 AUX_FILES =						\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
+  gnu/packages/aux-files/linux-libre/4.20-arm.conf	\
+  gnu/packages/aux-files/linux-libre/4.20-arm64.conf	\
+  gnu/packages/aux-files/linux-libre/4.20-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.20-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-arm.conf	\
   gnu/packages/aux-files/linux-libre/4.19-arm64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-i686.conf	\

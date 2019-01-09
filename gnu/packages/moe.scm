@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages moe)
-  #:use-module ((guix licenses) #:select (gpl3+))
+  #:use-module ((guix licenses) #:select (gpl2+))
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages compression)
   #:use-module (guix packages)
@@ -28,7 +28,7 @@
 (define-public moe
   (package
     (name "moe")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
       (method url-fetch)
@@ -36,7 +36,7 @@
                           version ".tar.lz"))
       (sha256
        (base32
-        "1wsfzy0iia0c89wnx1ilzw54wqcmlp2nz8mkpvc393z0zagrx48q"))))
+        "0fymywdiy9xqppcmvgs7mf7d3gfrky3jp5jkxs2l3v93asml9zcc"))))
     (build-system gnu-build-system)
     (native-inputs `(("lzip" ,lzip)))
     (inputs `(("ncurses" ,ncurses)))
@@ -51,4 +51,4 @@ movements while combinations with the Control key are for commands
 that will modify the text.  Moe features multiple windows, unlimited
 undo/redo, unlimited line length, global search and replace, and
 more.")
-    (license gpl3+)))
+    (license gpl2+)))

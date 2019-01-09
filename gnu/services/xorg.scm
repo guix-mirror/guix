@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -625,7 +626,6 @@ makes the good ol' XlockMore usable."
   gdm-configuration?
   (gdm gdm-configuration-gdm (default gdm))
   (allow-empty-passwords? gdm-configuration-allow-empty-passwords? (default #t))
-  (allow-root? gdm-configuration-allow-root? (default #t))
   (auto-login? gdm-configuration-auto-login? (default #f))
   (default-user gdm-configuration-default-user (default #f))
   (x-server gdm-configuration-x-server))
@@ -680,18 +680,15 @@ makes the good ol' XlockMore usable."
     (auth (list (pam-entry
                  (control "required")
                  (module "pam_permit.so")))))
-   (unix-pam-service
-    "gdm-password"
-    #:allow-empty-passwords? (gdm-configuration-allow-empty-passwords? config)
-    #:allow-root? (gdm-configuration-allow-root? config))))
+   (unix-pam-service "gdm-password"
+                     #:allow-empty-passwords?
+                     (gdm-configuration-allow-empty-passwords? config))))
 
 (define (gdm-shepherd-service config)
   (list (shepherd-service
          (documentation "Xorg display server (GDM)")
          (provision '(xorg-server))
          (requirement '(dbus-system user-processes host-name udev))
-         ;; While this service isn't working properly, turn off auto-start.
-         (auto-start? #f)
          (start #~(lambda ()
                     (fork+exec-command
                      (list #$(file-append (gdm-configuration-gdm config)

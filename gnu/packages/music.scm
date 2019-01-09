@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -2045,7 +2045,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.5.9")
+    (version "1.5.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -2053,7 +2053,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "1nqwxwq6814m860zrh33r85vdyi2bgkvjg5372h3ngcdmxnb7wr0"))))
+                "0mazzn5pc4xnjci3yy1yfsx9l05gkxqzkmscaq1h75jpa7qfsial"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -2786,7 +2786,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
 (define-public schismtracker
   (package
     (name "schismtracker")
-    (version "20180810")
+    (version "20181223")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2795,7 +2795,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0cwp5fna14hjrlf652l96ja5cjq63is3cwg6pp4wbpx43mb7qb2d"))
+                "18k5j10zq39y2q294avdmar87x93k57wqmq8bpz562hdqki2mz1l"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove use of __DATE__ and __TIME__ for reproducibility.
@@ -3610,7 +3610,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "2.3.2")
+    (version "3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3619,7 +3619,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ncv0xfmq87plqa43cm0fpidlwzz1nq5s7h7139llrbc36yp3pr1"))
+                "0g8n8xpw5d6wh8bwbvy12sinl9i0ir009sr28i4izr28lr4x8v50"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.
@@ -3634,27 +3634,21 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
                               "thirdparty/openssl"
                               "thirdparty/portmidi"))
                   #t))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (arguments
-     `(#:make-flags
-       `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
-         "USE_SYSTEM_FREETYPE=ON"
-         "DOWNLOAD_SOUNDFONT=OFF"
-         ;; The following is not supported since Qt 5.11.  May be removed in
-         ;; a future release.
-         "BUILD_WEBKIT=OFF")
-       ;; There are tests, but no simple target to run.  The command
-       ;; used to run them is:
+     `(#:configure-flags
+       `("-DUSE_SYSTEM_FREETYPE=ON"
+         "-DBUILD_WEBENGINE=OFF"
+         "-DDOWNLOAD_SOUNDFONT=OFF")
+       ;; There are tests, but no simple target to run.  The command used to
+       ;; run them is:
        ;;
        ;;   make debug && sudo make installdebug && cd \
        ;;   build.debug/mtest && make && ctest
        ;;
        ;; Basically, it requires to start a whole new build process.
        ;; So we simply skip them.
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
+       #:tests? #f))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("freetype" ,freetype)
@@ -3673,8 +3667,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        ("qtsvg" ,qtsvg)
        ("qtxmlpatterns" ,qtxmlpatterns)))
     (native-inputs
-     `(("cmake" ,cmake)
-       ("pkg-config" ,pkg-config)
+     `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (synopsis "Music composition and notation software")
     (description "MuseScore is a music score typesetter.  Its main purpose is

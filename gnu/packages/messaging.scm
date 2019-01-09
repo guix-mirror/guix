@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2016, 2017, 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -96,6 +96,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
@@ -575,7 +576,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -583,11 +584,10 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "1qis8vs7y7g1zn5i5dshwrszidc22qpflycwb4nixvp9lbmkq0va"))))
+                "09n4445hclqwfnk2h9cxvsxaixza4cpgb5rp4najdfc2jgg2msb3"))))
     (build-system python-build-system)
     (arguments
-     `(#:test-target "test_nogui"
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-plugin-dirs
            (lambda _
@@ -595,6 +595,9 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                (("_paths\\['PLUGINS_USER'\\]")
                 "_paths['PLUGINS_USER'],os.getenv('GAJIM_PLUGIN_PATH')"))
              #t))
+         (replace 'check
+           (lambda _
+             (invoke "python" "./setup.py" "test" "-s" "test.no_gui")))
          (add-after 'install 'wrap-gi-typelib-path
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -678,7 +681,7 @@ end-to-end encryption support; XML console.")
 (define-public gajim-omemo
   (package
     (name "gajim-omemo")
-    (version "2.6.23")
+    (version "2.6.26")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
@@ -686,7 +689,7 @@ end-to-end encryption support; XML console.")
                     version ".zip"))
               (sha256
                (base32
-                "134zbscbcnhx4smad0ryvx3ngkqlsspafqf0kk8y2d3vcd9bf3pa"))))
+                "0amqlmnsijz60s0wwkp7bzix60v5p6khqcdsd6qcwawxq5pdayw0"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -780,17 +783,17 @@ a graphical desktop environment like GNOME.")
 (define-public prosody
   (package
     (name "prosody")
-    (version "0.10.2")
+    (version "0.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://prosody.im/downloads/source/"
                                   "prosody-" version ".tar.gz"))
               (sha256
                (base32
-                "13knr7izscw0zx648b9582dx11aap4cq9bzfiqh5ykd7wwsz1dbm"))))
+                "1ak5bkx09kscyifxhzybgp5a73jr8nki6xi05c59wwlq0wzw9gli"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no "check" target
+     `(#:tests? #f                      ;tests require "busted"
        #:configure-flags (list "--no-example-certs")
        #:modules ((ice-9 match)
                   (srfi srfi-1)
@@ -807,7 +810,7 @@ a graphical desktop environment like GNOME.")
              #t))
          (add-after 'unpack 'fix-makefile
            (lambda _
-             (substitute* "Makefile"
+             (substitute* "GNUmakefile"
                ;; prosodyctl needs to read the configuration file.
                (("^INSTALLEDCONFIG =.*") "INSTALLEDCONFIG = /etc/prosody\n")
                ;; prosodyctl needs a place to put auto-generated certificates.
@@ -827,15 +830,15 @@ a graphical desktop environment like GNOME.")
                     (lua-path (string-join
                                (map (lambda (path)
                                       (string-append
-                                       path "/share/lua/5.1/?.lua;"
-                                       path "/share/lua/5.1/?/?.lua"))
+                                       path "/share/lua/5.2/?.lua;"
+                                       path "/share/lua/5.2/?/?.lua"))
                                     (cons out deps))
                                ";"))
                     (lua-cpath (string-join
                                 (map (lambda (path)
                                        (string-append
-                                        path "/lib/lua/5.1/?.so;"
-                                        path "/lib/lua/5.1/?/?.so"))
+                                        path "/lib/lua/5.2/?.so;"
+                                        path "/lib/lua/5.2/?/?.so"))
                                      (cons out deps))
                                 ";"))
                     (openssl (assoc-ref inputs "openssl"))
@@ -853,14 +856,12 @@ a graphical desktop environment like GNOME.")
     (inputs
      `(("libidn" ,libidn)
        ("openssl" ,openssl)
-       ;; Lua 5.1 is still recommended for production usage.
-       ;; See https://prosody.im/doc/packagers.
-       ("lua" ,lua-5.1)
-       ("lua5.1-bitop" ,lua5.1-bitop)
-       ("lua5.1-expat" ,lua5.1-expat)
-       ("lua5.1-socket" ,lua5.1-socket)
-       ("lua5.1-filesystem" ,lua5.1-filesystem)
-       ("lua5.1-sec" ,lua5.1-sec)))
+       ("lua" ,lua-5.2)
+       ("lua5.2-bitop" ,lua5.2-bitop)
+       ("lua5.2-expat" ,lua5.2-expat)
+       ("lua5.2-socket" ,lua5.2-socket)
+       ("lua5.2-filesystem" ,lua5.2-filesystem)
+       ("lua5.2-sec" ,lua5.2-sec)))
     (home-page "https://prosody.im/")
     (synopsis "Jabber (XMPP) server")
     (description "Prosody is a modern XMPP communication server.  It aims to
@@ -869,6 +870,38 @@ Additionally, for developers it aims to be easy to extend and give a flexible
 system on which to rapidly develop added functionality, or prototype new
 protocols.")
     (license license:x11)))
+
+(define-public prosody-http-upload
+  (let ((changeset "765735bb590b")
+        (revision "1"))
+    (package
+      (name "prosody-http-upload")
+      (version (string-append "0-" revision "." (string-take changeset 7)))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference
+                      (url "https://hg.prosody.im/prosody-modules/")
+                      (changeset changeset)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "142wrcism70nf8ffahhd961cqg2pi1h7ic8adfs3zwh0j3pnf41f"))))
+      (build-system trivial-build-system)
+      (arguments
+       '(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((out (assoc-ref %outputs "out"))
+                 (source (assoc-ref %build-inputs "source")))
+             (with-directory-excursion (in-vicinity source "mod_http_upload")
+               (install-file "mod_http_upload.lua" out))
+             #t))))
+      (home-page "https://modules.prosody.im/mod_http_upload.html")
+      (synopsis "XEP-0363: Allow clients to upload files over HTTP")
+      (description "This module implements XEP-0363: it allows clients to
+upload files over HTTP.")
+      (license (package-license prosody)))))
 
 (define-public libtoxcore
   (let ((revision "2")

@@ -401,7 +401,7 @@ required structures.")
   (package
     (inherit openssl)
     (name "openssl")
-    (version "1.1.1")
+    (version "1.1.1a")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -414,16 +414,16 @@ required structures.")
               (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
               (sha256
                (base32
-                "0gbab2fjgms1kx5xjvqx8bxhr98k4r8l2fa8vw7kvh491xd8fdi8"))))
+                "0hcz7znzznbibpy3iyyhvlqrq44y88plxwdj32wjzgbwic7i687w"))))
     (outputs '("out"
-               "doc"        ; 6.7 MiB of man3 pages and full HTML documentation
+               "doc"        ; 6.8 MiB of man3 pages and full HTML documentation
                "static"))   ; 6.4 MiB of .a files
     (arguments
      (substitute-keyword-arguments (package-arguments openssl)
        ((#:phases phases)
         `(modify-phases ,phases
            (delete 'patch-tests)          ; These two phases are not needed by
-           (delete 'patch-Makefile.org)   ; OpenSSL 1.1.0.
+           (delete 'patch-Makefile.org)   ; OpenSSL 1.1.
 
            ;; Override configure phase since -rpath is now a configure option.
            (replace 'configure

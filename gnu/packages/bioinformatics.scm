@@ -1,10 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -13284,6 +13284,41 @@ All pipelines are easily configured with a simple sample sheet and a
 descriptive settings file.  The result is a set of comprehensive, interactive
 HTML reports with interesting findings about your samples.")
     (license license:gpl3+)))
+
+(define-public mantis
+  (let ((commit "4ffd171632c2cb0056a86d709dfd2bf21bc69b84")
+        (revision "1"))
+    (package
+      (name "mantis")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/splatlab/mantis.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0iqbr0dhmlc8mzpirmm2s4pkzkwdgrcx50yx6cv3wlr2qi064p55"))))
+      (build-system cmake-build-system)
+      (arguments '(#:tests? #f)) ; there are none
+      (inputs
+       `(("sdsl-lite" ,sdsl-lite)
+         ("openssl" ,openssl)
+         ("zlib" ,zlib)))
+      (home-page "https://github.com/splatlab/mantis")
+      (synopsis "Large-scale sequence-search index data structure")
+      (description "Mantis is a space-efficient data structure that can be
+used to index thousands of raw-read genomics experiments and facilitate
+large-scale sequence searches on those experiments.  Mantis uses counting
+quotient filters instead of Bloom filters, enabling rapid index builds and
+queries, small indexes, and exact results, i.e., no false positives or
+negatives.  Furthermore, Mantis is also a colored de Bruijn graph
+representation, so it supports fast graph traversal and other topological
+analyses in addition to large-scale sequence-level searches.")
+      ;; uses __uint128_t and inline assembly
+      (supported-systems '("x86_64-linux"))
+      (license license:bsd-3))))
 
 (define-public r-diversitree
   (package

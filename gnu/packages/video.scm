@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -31,6 +31,7 @@
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Gábor Boskovit <boskovits@gmail.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,6 +84,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
+  #:use-module (gnu packages dns)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
@@ -117,6 +119,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
@@ -865,26 +868,6 @@ audio/video codec library.")
               (base32
                "0b59qk5wpc5ksiha76jbhb859g5gxa4w0k6afh3kgvgajiivs73l"))))))
 
-(define-public ffmpeg-2.8
-  (package
-    (inherit ffmpeg)
-    (version "2.8.15")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "065xbvnfmxfbfrc14cavpqyd2slil99vcjksw4ndb7w8zdh0wp3v"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments ffmpeg)
-       ((#:configure-flags flags)
-        `(map (lambda (flag)
-                (if (string=? flag "--disable-mipsdsp")
-                    "--disable-mipsdspr1"
-                    flag))
-              ,flags))))))
-
 (define-public ffmpegthumbnailer
   (package
     (name "ffmpegthumbnailer")
@@ -916,31 +899,19 @@ thumbnailer uses ffmpeg to decode frames from the video files, so supported
 videoformats depend on the configuration flags of ffmpeg.")
     (license license:gpl2+)))
 
-;; Fix build with newer x264.
-(define %vlc-libx264-compat.patch
-  (origin
-    (method url-fetch)
-    (uri (string-append "https://git.videolan.org/?p=vlc.git;a=patch;h="
-                        "a8953ba707cca1f2de372ca24513296bcfcdaaa8"))
-    (file-name "vlc-libx264-compat.patch")
-    (sha256
-     (base32
-      "04igckbdp3sbp8vh0ihmhcf3yjyyk9r3cd5dm9mn9j6vipi1dg3g"))))
-
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.4")
+    (version "3.0.5")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "https://download.videolan.org/pub/videolan/vlc/"
                    (car (string-split version #\-))
                    "/vlc-" version ".tar.xz"))
-             (patches (list %vlc-libx264-compat.patch))
              (sha256
               (base32
-               "17jsq0zqpqyxw4ckvjba0hf6zk8ywc4wf8sy3z03hh3ij0vxpwq1"))))
+               "1nvj00khy08sing0mdnw6virmiq579mrk5rvpx9710nlxggqgh7m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -977,6 +948,7 @@ videoformats depend on the configuration flags of ffmpeg.")
        ("libkate" ,libkate)
        ("libmad" ,libmad)
        ("libmatroska" ,libmatroska)
+       ("libmicrodns" ,libmicrodns)
        ("libmodplug" ,libmodplug)
        ("libmpeg2" ,libmpeg2)
        ("libogg" ,libogg)
@@ -1004,6 +976,7 @@ videoformats depend on the configuration flags of ffmpeg.")
        ("opus" ,opus)
        ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
+       ("protobuf" ,protobuf)
        ("python" ,python-wrapper)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
@@ -1088,7 +1061,7 @@ videoformats depend on the configuration flags of ffmpeg.")
     (synopsis "Audio and video framework")
     (description "VLC is a cross-platform multimedia player and framework
 that plays most multimedia files as well as DVD, Audio CD, VCD, and various
-treaming protocols.")
+streaming protocols.")
     (license license:gpl2+)))
 
 (define-public mplayer
@@ -1338,7 +1311,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.11.07")
+    (version "2018.12.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1346,7 +1319,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1rvc2m2kbm2kycqsa7fkcg5gql9f0w3hn1a7jg48zzl06ayggxk9"))))
+                "1nd4zr3wd35vldm775m9wcgbzma2013yyj134lcz19ipjs38isrk"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1527,6 +1500,15 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
        #:module-build-flags '("--gtk")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'install 'install-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sharedir (string-append out "/share")))
+               (install-file "share/gtk-youtube-viewer.desktop"
+                             (string-append sharedir "/applications"))
+               (install-file "share/icons/gtk-youtube-viewer.png"
+                             (string-append sharedir "/pixmaps"))
+               #t)))
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1942,7 +1924,8 @@ and custom quantization matrices.")
         (uri (pypi-uri "streamlink" version))
         (sha256
          (base32
-          "0l2145fd60i76afjisfxd48cwhwyir07i7s3bnimdq5db2kzkix8"))))
+          "0l2145fd60i76afjisfxd48cwhwyir07i7s3bnimdq5db2kzkix8"))
+        (patches (search-patches "streamlink-update-test.patch"))))
     (build-system python-build-system)
     (home-page "https://github.com/streamlink/streamlink")
     (native-inputs

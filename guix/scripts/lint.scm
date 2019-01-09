@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -595,7 +595,8 @@ from ~a")
                     'home-page)))))
 
 (define %distro-directory
-  (dirname (search-path %load-path "gnu.scm")))
+  (mlambda ()
+    (dirname (search-path %load-path "gnu.scm"))))
 
 (define (check-patch-file-names package)
   "Emit a warning if the patches requires by PACKAGE are badly named or if the
@@ -620,12 +621,12 @@ patch could not be found."
        'patch-file-names))
 
     ;; Check whether we're reaching tar's maximum file name length.
-    (let ((prefix (string-length %distro-directory))
+    (let ((prefix (string-length (%distro-directory)))
           (margin (string-length "guix-0.13.0-10-123456789/"))
           (max    99))
       (for-each (match-lambda
                   ((? string? patch)
-                   (when (> (+ margin (if (string-prefix? %distro-directory
+                   (when (> (+ margin (if (string-prefix? (%distro-directory)
                                                           patch)
                                           (- (string-length patch) prefix)
                                           (string-length patch)))
@@ -1108,8 +1109,8 @@ or a list thereof")
      (description "Suggest 'mirror://' URLs")
      (check       check-mirror-url))
    (lint-checker
-     (name        'github-uri)
-     (description "Suggest GitHub URIs")
+     (name        'github-url)
+     (description "Suggest GitHub URLs")
      (check       check-github-url))
    (lint-checker
      (name        'source-file-name)

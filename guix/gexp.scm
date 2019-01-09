@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
@@ -388,8 +388,9 @@ This is the declarative counterpart of 'gexp->derivation'."
          (mlet %store-monad ((guile (lower-object guile system
                                                   #:target target)))
            (apply gexp->derivation name gexp #:guile-for-build guile
-                  options))
-         (apply gexp->derivation name gexp options)))))
+                  #:system system #:target target options))
+         (apply gexp->derivation name gexp
+                #:system system #:target target options)))))
 
 (define-record-type <program-file>
   (%program-file name gexp guile path)
@@ -1314,30 +1315,33 @@ they can refer to each other."
                                #:key (extensions '()))
   "Return as a monadic value a gexp that sets '%load-path' and
 '%load-compiled-path' to point to MODULES, a list of module names.  MODULES
-are searched for in PATH."
-  (mlet %store-monad ((modules  (imported-modules modules
-                                                  #:module-path path))
-                      (compiled (compiled-modules modules
-                                                  #:extensions extensions
-                                                  #:module-path path)))
-    (return (gexp (eval-when (expand load eval)
-                    (set! %load-path
-                      (cons (ungexp modules)
-                            (append (map (lambda (extension)
-                                           (string-append extension
-                                                          "/share/guile/site/"
-                                                          (effective-version)))
-                                         '((ungexp-native-splicing extensions)))
-                                    %load-path)))
-                    (set! %load-compiled-path
-                      (cons (ungexp compiled)
-                            (append (map (lambda (extension)
-                                           (string-append extension
-                                                          "/lib/guile/"
-                                                          (effective-version)
-                                                          "/site-ccache"))
-                                         '((ungexp-native-splicing extensions)))
-                                    %load-compiled-path))))))))
+are searched for in PATH.  Return #f when MODULES and EXTENSIONS are empty."
+  (if (and (null? modules) (null? extensions))
+      (with-monad %store-monad
+        (return #f))
+      (mlet %store-monad ((modules  (imported-modules modules
+                                                      #:module-path path))
+                          (compiled (compiled-modules modules
+                                                      #:extensions extensions
+                                                      #:module-path path)))
+        (return (gexp (eval-when (expand load eval)
+                        (set! %load-path
+                          (cons (ungexp modules)
+                                (append (map (lambda (extension)
+                                               (string-append extension
+                                                              "/share/guile/site/"
+                                                              (effective-version)))
+                                             '((ungexp-native-splicing extensions)))
+                                        %load-path)))
+                        (set! %load-compiled-path
+                          (cons (ungexp compiled)
+                                (append (map (lambda (extension)
+                                               (string-append extension
+                                                              "/lib/guile/"
+                                                              (effective-version)
+                                                              "/site-ccache"))
+                                             '((ungexp-native-splicing extensions)))
+                                        %load-compiled-path)))))))))
 
 (define* (gexp->script name exp
                        #:key (guile (default-guile))
@@ -1361,7 +1365,11 @@ imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
                                    "#!~a/bin/guile --no-auto-compile~%!#~%"
                                    (ungexp guile))
 
-                           (write '(ungexp set-load-path) port)
+                           (ungexp-splicing
+                            (if set-load-path
+                                (gexp ((write '(ungexp set-load-path) port)))
+                                (gexp ())))
+
                            (write '(ungexp exp) port)
                            (chmod port #o555))))
                       #:module-path module-path)))

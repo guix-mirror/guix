@@ -231,6 +231,18 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
      (base32
       "1hk9swxxc80bmn2zd2qr5ccrjrk28xkypwhl4z0qx4hbivj7qm06"))))
 
+(define %linux-libre-arm-export-__sync_icache_dcache-patch
+  (origin
+    (method url-fetch)
+    (uri (string-append
+          "https://salsa.debian.org/kernel-team/linux"
+          "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
+          "/debian/patches/bugfix/arm/"
+          "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
+    (file-name "linux-libre-4.19-arm-export-__sync_icache_dcache.patch")
+    (sha256
+     (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f"))))
+
 (define* (kernel-config arch #:key variant)
   "Return the absolute file name of the Linux-Libre build configuration file
 for ARCH and optionally VARIANT, or #f if there is no such configuration."
@@ -294,14 +306,16 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
        ("elfutils" ,elfutils)  ; Needed to enable CONFIG_STACK_VALIDATION
        ("flex" ,flex)
        ("bison" ,bison)
-       ;; On x86, build with GCC-7 for full retpoline support.
+
+       ;; Build with GCC-7 for full retpoline support.
        ;; FIXME: Remove this when our default compiler has retpoline support.
-       ,@(match (system->linux-architecture
-                 (or (%current-target-system) (%current-system)))
-           ((or "x86_64" "i386")
-            `(("gcc" ,gcc-7)))
-           (_
-            '()))
+       ("gcc" ,gcc-7)
+
+       ;; These are needed to compile the GCC plugins.
+       ("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("mpc" ,mpc)
+
        ,@(match (and configuration-file
                      (configuration-file
                       (system->linux-architecture
@@ -322,6 +336,11 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
            (lambda _
              (substitute* (find-files "." "^Makefile(\\.include)?$")
                (("/bin/pwd") "pwd"))
+             #t))
+         (add-before 'configure 'work-around-gcc-7-include-path-issue
+           (lambda _
+             (unsetenv "C_INCLUDE_PATH")
+             (unsetenv "CPLUS_INCLUDE_PATH")
              #t))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)
@@ -393,38 +412,36 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
-(define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux"))
+(define %linux-libre-version "4.20")
+(define %linux-libre-hash "07ss8nx95f4pqzzjy382fy5hk7anjm3hpbb3mzl1x8fzfq05q3dq")
 
-;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
-;; supports qemu "virt" machine and possibly a large number of ARM boards.
-;; See : https://wiki.debian.org/DebianKernel/ARMMP.
-
-(define %linux-libre-version "4.19.12")
-(define %linux-libre-hash "1cgcg3bw55adx3ivk1aiivrqx5p0ydbz1hzjwzwns0cdqi838cyp")
-
-(define %linux-libre-4.19-patches
+(define %linux-libre-4.20-patches
   (list %boot-logo-patch
-        (origin
-          (method url-fetch)
-          (uri (string-append
-                "https://salsa.debian.org/kernel-team/linux"
-                "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
-                "/debian/patches/bugfix/arm/"
-                "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
-          (file-name "linux-libre-4.19-arm-export-__sync_icache_dcache.patch")
-          (sha256
-           (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))))
+        %linux-libre-arm-export-__sync_icache_dcache-patch))
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
-                    %linux-compatible-systems
+                    '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
+                    #:patches %linux-libre-4.20-patches
+                    #:configuration-file kernel-config))
+
+(define %linux-libre-4.19-version "4.19.13")
+(define %linux-libre-4.19-hash "0ac0ywy542fiwdiab2z12rbjn9zw8vjbzkbpmpk9nfic2mcyrg8r")
+
+(define %linux-libre-4.19-patches
+  (list %boot-logo-patch
+        %linux-libre-arm-export-__sync_icache_dcache-patch))
+
+(define-public linux-libre-4.19
+  (make-linux-libre %linux-libre-4.19-version
+                    %linux-libre-4.19-hash
+                    '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.90")
-(define %linux-libre-4.14-hash "19my91gb54whgk83vyd45ri0c3jb57jfdb670s80fp02ilr7x5ka")
+(define %linux-libre-4.14-version "4.14.91")
+(define %linux-libre-4.14-hash "1xr4q6hqjg4fjcd1w8qi2x9a11ms9wvascy9b1p6czblg9j9dd6a")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -433,20 +450,28 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.147"
-                    "0gpzf04lmwxh675lam4m8pbwrgxzd7y1y50b6yfzhxa4bb3c4yfb"
-                    %intel-compatible-systems
+  (make-linux-libre "4.9.148"
+                    "0yrjgvdzbcp750j4fhlxi4ia1v0fqh0y3p99wnbpfvg17j01lbjl"
+                    '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
   (make-linux-libre "4.4.169"
                     "1snjdih9iv3fg7f9h2r1gldcqmvzj1w398aysws4fialj488x1p4"
-                    %intel-compatible-systems
+                    '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
+                    '("armhf-linux")
+                    #:patches %linux-libre-4.20-patches
+                    #:defconfig "multi_v7_defconfig"
+                    #:extra-version "arm-generic"))
+
+(define-public linux-libre-arm-generic-4.19
+  (make-linux-libre %linux-libre-4.19-version
+                    %linux-libre-4.19-hash
                     '("armhf-linux")
                     #:patches %linux-libre-4.19-patches
                     #:defconfig "multi_v7_defconfig"
@@ -462,6 +487,14 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-arm-omap2plus
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
+                    '("armhf-linux")
+                    #:patches %linux-libre-4.20-patches
+                    #:defconfig "omap2plus_defconfig"
+                    #:extra-version "arm-omap2plus"))
+
+(define-public linux-libre-arm-omap2plus-4.19
+  (make-linux-libre %linux-libre-4.19-version
+                    %linux-libre-4.19-hash
                     '("armhf-linux")
                     #:patches %linux-libre-4.19-patches
                     #:defconfig "omap2plus_defconfig"
@@ -4974,3 +5007,29 @@ infrastructure for in-kernel netfilter subsystems (such as nfnetlink_log,
 nfnetlink_queue, nfnetlink_conntrack) and their respective users and/or
 management tools in userspace.")
     (license license:gpl2)))
+
+(define-public xfsprogs
+  (package
+    (name "xfsprogs")
+    (version "4.19.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/utils/fs/xfs/xfsprogs/"
+                    "xfsprogs-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gs39yiyamjw516jbak3nj4dy4h2a2g48c1mmv4wbppsccvwmwh5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; Kernel/user integration tests are in package "xfstests"
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("util-linux" ,util-linux)))
+    (home-page "https://xfs.wiki.kernel.org/")
+    (synopsis "XFS file system tools")
+    (description "This package provides commands to create and check XFS
+file systems.")
+    ;; The library "libhandle" and the headers in "xfslibs-dev" are
+    ;; licensed under lgpl2.1. the other stuff is licensed under gpl2.
+    (license (list license:gpl2 license:lgpl2.1))))

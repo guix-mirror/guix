@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -1786,14 +1786,14 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.3.7")
+    (version "1.3.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/facebook/zstd/releases/download/"
                            "v" version "/zstd-" version ".tar.gz"))
        (sha256
-        (base32 "0gapsdzqfsfqqddzv22592iwa0008xjyi15f06pfv9hcvwvg4xrj"))))
+        (base32 "13nlsqhkn276frxrzjdn7wz0j9zz414lf336885ykyxcvw2a0gr9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1808,7 +1808,7 @@ or junctions, and always follows hard links.")
              ;; Not currently detected, but be explicit & avoid surprises later.
              "HAVE_LZ4=0"
              "HAVE_ZLIB=0")))
-    (home-page "http://zstd.net/")
+    (home-page "https://facebook.github.io/zstd/")
     (synopsis "Zstandard real-time compression algorithm")
     (description "Zstandard (@command{zstd}) is a lossless compression algorithm
 that combines very fast operation with a compression ratio comparable to that of
@@ -1998,7 +1998,7 @@ recreates the stored directory structure by default.")
 (define-public perl-archive-zip
   (package
     (name "perl-archive-zip")
-    (version "1.60")
+    (version "1.64")
     (source
      (origin
        (method url-fetch)
@@ -2007,7 +2007,7 @@ recreates the stored directory structure by default.")
              version ".tar.gz"))
        (sha256
         (base32
-         "02y2ylq83hy9kgj57sc0239x65br9sm98c0chsm61s08yc2mpiza"))))
+         "0zfinh8nx3rxzscp57vq3w8hihpdb0zs67vvalykcf402kr88pyy"))))
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.

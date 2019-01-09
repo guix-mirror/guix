@@ -1186,7 +1186,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.204")
+    (version "0.205")
     (source
      (origin
        (method git-fetch)
@@ -1196,7 +1196,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0yn63v2f1xlksfnvbxc5p5zpc7ps044m1kf69jhzbfirx953slsi"))
+         "1q5z18rlmas598fxga8jr2d6xdngdzjab49xfy4hffdmlq624lw7"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1223,14 +1223,6 @@ play them on systems for which they were never designed!")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         ;; Prevent compilation error: ‘atan’ is not a member of ‘std’.  Also
-         ;; fixed upstream in fec1cde5a40e197d4ed4314bf58b9e66e84e1631.
-         (add-after 'unpack 'fix-build
-           (lambda _
-             (substitute* "src/mame/video/xavix.cpp"
-               (("#include \"logmacro.h\"")
-                "#include \"logmacro.h\"\n#include <cmath>"))
-             #t))
          (add-after 'build 'build-documentation
            (lambda _ (invoke "make" "-C" "docs" "man" "info")))
          (replace 'install

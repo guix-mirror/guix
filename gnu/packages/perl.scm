@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2018 Roel Janssen <roel@gnu.org>
@@ -1533,7 +1533,7 @@ CPAN::Meta object are present.")
 (define-public perl-cpanel-json-xs
   (package
     (name "perl-cpanel-json-xs")
-    (version "3.0114")
+    (version "4.08")
     (source
      (origin
        (method url-fetch)
@@ -1541,7 +1541,7 @@ CPAN::Meta object are present.")
                            "Cpanel-JSON-XS-" version ".tar.gz"))
        (sha256
         (base32
-         "0jhi1v0631x4d14a7cpfnpjqhs34zkygxjn1nwvvr927awx5jx71"))))
+         "0bbw9sk3kgfwkg9lw3vf59g4jjvr69vv09sinndl2nlbd5dlgh9b"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
@@ -3667,7 +3667,7 @@ file names in a directory.")
 (define-public perl-file-slurper
   (package
     (name "perl-file-slurper")
-    (version "0.008")
+    (version "0.012")
     (source
      (origin
        (method url-fetch)
@@ -3677,8 +3677,10 @@ file names in a directory.")
              ".tar.gz"))
        (sha256
         (base32
-         "0cyjspspms6zyjcqz9v18dbs574g085h2jzjh41xvsrc1qa8bxhh"))))
+         "0y5518ji60yfkx9ggjp309j6g8vfri4ka4zqlsys245i2sj2xysf"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-warnings" ,perl-test-warnings)))
     (propagated-inputs
      `(("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)))
     (home-page "https://metacpan.org/release/File-Slurper")
@@ -4408,7 +4410,7 @@ installed.")
 (define-public perl-json-maybexs
   (package
     (name "perl-json-maybexs")
-    (version "1.003010")
+    (version "1.004000")
     (source
      (origin
        (method url-fetch)
@@ -4416,7 +4418,7 @@ installed.")
                            "JSON-MaybeXS-" version ".tar.gz"))
        (sha256
         (base32
-         "0hs504x5zsa2vl6r7b3rvbygsak1ly24m1lg636bqp3x7jirmb30"))))
+         "09m1w03as6n0a00pzvaldkhm494yaf5n0g3j2cwwfx24iwpa1gar"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-without-module" ,perl-test-without-module)))
@@ -4636,7 +4638,7 @@ implemented for example in GNU gettext.")
 (define-public perl-lingua-translit
   (package
     (name "perl-lingua-translit")
-    (version "0.26")
+    (version "0.28")
     (source
      (origin
        (method url-fetch)
@@ -4644,7 +4646,7 @@ implemented for example in GNU gettext.")
                            "Lingua-Translit-" version ".tar.gz"))
        (sha256
         (base32
-         "161589h08kzliga17i2g0hb0yn4cjmb8rdiyadq5bw97974bac14"))))
+         "1qgap0j0ixmif309dvbqca7sy8xha9xgnj9s2lvh8qrczkc92gqi"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Lingua-Translit")
     (synopsis "Transliterate text between writing systems")
@@ -9200,7 +9202,7 @@ best YAML support to date.")
 (define-public perl-yaml-tiny
   (package
     (name "perl-yaml-tiny")
-    (version "1.66")
+    (version "1.73")
     (source
      (origin
        (method url-fetch)
@@ -9208,7 +9210,7 @@ best YAML support to date.")
                            "YAML-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "0c17l8pvpraznpb31ncmr4wxlyww8sg8dhvp3s3q02yqll3cnygv"))))
+         "0i3p4nz8ysrsrs6vlzc6gkjcfpcaf05xjc7lwbjkw7lg5shmycdw"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-json-maybexs" ,perl-json-maybexs)

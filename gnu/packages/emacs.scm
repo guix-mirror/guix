@@ -1,20 +1,20 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
@@ -35,13 +35,12 @@
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,11 +60,9 @@
 (define-module (gnu packages emacs)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix cvs-download)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix gexp)
-  #:use-module (guix monads)
-  #:use-module (guix store)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system emacs)
@@ -108,7 +105,6 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages scheme)
-  #:use-module (gnu packages statistics)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages gettext)
@@ -123,7 +119,6 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages wordnet)
-  #:use-module (gnu packages ocaml)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -574,7 +569,7 @@ operations.")
            (setenv "PATH" PATH)
            (invoke tar "xvf" source)
 
-           (install-file (string-append ,name "-" ,version "/magit-svn.el")
+           (install-file (string-append "magit-svn-" ,version "/magit-svn.el")
                          lisp-dir)
 
            (with-directory-excursion lisp-dir
@@ -843,91 +838,91 @@ index is considered the key).")
 ;;;
 
 (define-public emacs-w3m
-  ;; Emacs-w3m follows a "rolling release" model from its CVS repo.  We could
-  ;; use CVS, sure, but instead we choose to use this Git mirror described on
-  ;; the home page as an "unofficial" mirror.
-  (let ((commit "0dd5691f46d314a84da63f3a7277d721815811a2"))
-    (package
-      (name "emacs-w3m")
-      (version (git-version "1.5" "0" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/ecbrown/emacs-w3m")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "02xalyxbrkgl4n8nj7xxkmsbm6lshhwdc8bzs2l4wz3hkpgkj7x4"))))
-      (build-system gnu-build-system)
-      (native-inputs `(("autoconf" ,autoconf)
-                       ("texinfo" ,texinfo)
-                       ("emacs" ,emacs-minimal)))
-      (inputs `(("w3m" ,w3m)
-                ("imagemagick" ,imagemagick)))
-      (arguments
-       `(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (guix build emacs-utils))
-         #:imported-modules (,@%gnu-build-system-modules
-                             (guix build emacs-utils))
-         #:configure-flags
-         (let ((out (assoc-ref %outputs "out")))
-           (list (string-append "--with-lispdir="
-                                out "/share/emacs/site-lisp")
-                 (string-append "--with-icondir="
-                                out "/share/images/emacs-w3m")
-                 ;; Leave .el files uncompressed, otherwise GC can't
-                 ;; identify run-time dependencies.  See
-                 ;; <http://lists.gnu.org/archive/html/guix-devel/2015-12/msg00208.html>
-                 "--without-compress-install"))
-         #:tests? #f                              ; no check target
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'autoconf
-             (lambda _
-               (invoke "autoconf")))
-           (add-before 'configure 'support-emacs!
-             (lambda _
-               ;; For some reason 'AC_PATH_EMACS' thinks that 'Emacs 26' is
-               ;; unsupported.
-               (substitute* "configure"
-                 (("EMACS_FLAVOR=unsupported")
-                  "EMACS_FLAVOR=emacs"))
-               #t))
-           (add-before 'build 'patch-exec-paths
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out"))
-                     (w3m (assoc-ref inputs "w3m"))
-                     (imagemagick (assoc-ref inputs "imagemagick"))
-                     (coreutils (assoc-ref inputs "coreutils")))
-                 (make-file-writable "w3m.el")
-                 (emacs-substitute-variables "w3m.el"
-                   ("w3m-command" (string-append w3m "/bin/w3m"))
-                   ("w3m-touch-command"
-                    (string-append coreutils "/bin/touch"))
-                   ("w3m-icon-directory"
-                    (string-append out "/share/images/emacs-w3m")))
-                 (make-file-writable "w3m-image.el")
-                 (emacs-substitute-variables "w3m-image.el"
-                   ("w3m-imagick-convert-program"
-                    (string-append imagemagick "/bin/convert"))
-                   ("w3m-imagick-identify-program"
-                    (string-append imagemagick "/bin/identify")))
-                 #t)))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (invoke "make" "install" "install-icons")
-               (with-directory-excursion
-                   (string-append (assoc-ref outputs "out")
-                                  "/share/emacs/site-lisp")
-                 (for-each delete-file '("ChangeLog" "ChangeLog.1"))
-                 (symlink "w3m-load.el" "w3m-autoloads.el")
-                 #t))))))
-      (home-page "http://emacs-w3m.namazu.org/")
-      (synopsis "Simple Web browser for Emacs based on w3m")
-      (description
-       "Emacs-w3m is an emacs interface for the w3m web browser.")
-      (license license:gpl2+))))
+  ;; Emacs-w3m follows a "rolling release" model.
+  (package
+    (name "emacs-w3m")
+    (version "2018-11-11")
+    (source (origin
+              (method cvs-fetch)
+              (uri (cvs-reference
+                    (root-directory
+                     ":pserver:anonymous@cvs.namazu.org:/storage/cvsroot")
+                    (module "emacs-w3m")
+                    (revision version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0nvahdbjs12zg7zsk4gql02mvnv56cf1rwj2f5p42lwp3xvswiwp"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("texinfo" ,texinfo)
+                     ("emacs" ,emacs-minimal)))
+    (inputs `(("w3m" ,w3m)
+              ("imagemagick" ,imagemagick)))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+       #:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "--with-lispdir="
+                              out "/share/emacs/site-lisp")
+               (string-append "--with-icondir="
+                              out "/share/images/emacs-w3m")
+               ;; Leave .el files uncompressed, otherwise GC can't
+               ;; identify run-time dependencies.  See
+               ;; <http://lists.gnu.org/archive/html/guix-devel/2015-12/msg00208.html>
+               "--without-compress-install"))
+       #:tests? #f                              ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _
+             (invoke "autoconf")))
+         (add-before 'configure 'support-emacs!
+           (lambda _
+             ;; For some reason 'AC_PATH_EMACS' thinks that 'Emacs 26' is
+             ;; unsupported.
+             (substitute* "configure"
+               (("EMACS_FLAVOR=unsupported")
+                "EMACS_FLAVOR=emacs"))
+             #t))
+         (add-before 'build 'patch-exec-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (w3m (assoc-ref inputs "w3m"))
+                   (imagemagick (assoc-ref inputs "imagemagick"))
+                   (coreutils (assoc-ref inputs "coreutils")))
+               (make-file-writable "w3m.el")
+               (emacs-substitute-variables "w3m.el"
+                 ("w3m-command" (string-append w3m "/bin/w3m"))
+                 ("w3m-touch-command"
+                  (string-append coreutils "/bin/touch"))
+                 ("w3m-icon-directory"
+                  (string-append out "/share/images/emacs-w3m")))
+               (make-file-writable "w3m-image.el")
+               (emacs-substitute-variables "w3m-image.el"
+                 ("w3m-imagick-convert-program"
+                  (string-append imagemagick "/bin/convert"))
+                 ("w3m-imagick-identify-program"
+                  (string-append imagemagick "/bin/identify")))
+               #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "make" "install" "install-icons")
+             (with-directory-excursion
+                 (string-append (assoc-ref outputs "out")
+                                "/share/emacs/site-lisp")
+               (for-each delete-file '("ChangeLog" "ChangeLog.1"))
+               (symlink "w3m-load.el" "w3m-autoloads.el")
+               #t))))))
+    (home-page "http://emacs-w3m.namazu.org/")
+    (synopsis "Simple Web browser for Emacs based on w3m")
+    (description
+     "Emacs-w3m is an emacs interface for the w3m web browser.")
+    (license license:gpl2+)))
 
 (define-public emacs-wget
   (package
@@ -1755,14 +1750,14 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.5.1")
+    (version "0.5.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://emacs-guix.gitlab.io/website/"
                                   "releases/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "1gwihi08pz52zbv11lhwcdzsbmcbqvjf8j0ic56543v7nlmywkxh"))))
+                "1gxg7lan3njc2yg2d02b2zij0d2cm2pv2q08nqz86s85jk3b6m03"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3874,13 +3869,14 @@ fully-functional one.")
     (version "0.14.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/abo-abo/hydra/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/abo-abo/hydra")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0884k3ffwzhh6krbd8l7vvm184dkagb2jf4q8xzg72plln34qrm8"))))
+         "0ln4z2796ycy33g5jcxkqvm7638qxy4sipsab7d2864hh700cikg"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abo-abo/hydra")
     (synopsis "Make Emacs bindings that stick around")
@@ -4363,73 +4359,6 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
 programming language.")
       (license license:expat))))
 
-(define-public emacs-ess
-  (package
-    (name "emacs-ess")
-    (version "17.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/emacs-ess/ESS/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0cbilbsiwvcyf6d5y24mymp57m3ana5dkzab3knfs83w4a3a4c5c"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Stop ESS from trying to bundle an external julia-mode.el.
-                  (substitute* "lisp/Makefile"
-                    (("^\tjulia-mode.elc\\\\\n") "")
-                    (("^dist: all julia-mode.el")
-                     "dist: all"))
-                  ;; No need to build docs in so many formats.  Also, skipping
-                  ;; pdf lets us not pull in texlive.
-                  (substitute* "doc/Makefile"
-                    (("all  : info text html pdf")
-                     "all  : info")
-                    (("install: install-info install-other-docs")
-                     "install: install-info"))
-                  ;; Test fails upstream
-                  (substitute* "test/ess-r-tests.el"
-                    (("ert-deftest ess-r-namespaced-eval-no-srcref-in-errors ()")
-                     "ert-deftest ess-r-namespaced-eval-no-srcref-in-errors () :expected-result :failed"))
-                  #t))))
-    (build-system gnu-build-system)
-    (arguments
-     (let ((base-directory "/share/emacs/site-lisp/guix.d/ess"))
-       `(#:make-flags (list (string-append "PREFIX=" %output)
-                            (string-append "ETCDIR=" %output "/"
-                                           ,base-directory "/etc")
-                            (string-append "LISPDIR=" %output "/"
-                                           ,base-directory))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-before 'build 'more-shebang-patching
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "Makeconf"
-                 (("SHELL = /bin/sh")
-                  (string-append "SHELL = " (which "sh"))))
-               #t))
-           (replace 'check
-             (lambda _
-               (invoke "make" "test")))))))
-    (inputs
-     `(("emacs" ,emacs-minimal)
-       ("r-minimal" ,r-minimal)))
-    (native-inputs
-     `(("perl" ,perl)
-       ("texinfo" ,texinfo)))
-    (propagated-inputs
-     `(("emacs-julia-mode" ,emacs-julia-mode)))
-    (home-page "https://ess.r-project.org/")
-    (synopsis "Emacs mode for statistical analysis programs")
-    (description "Emacs Speaks Statistics (ESS) is an add-on package for GNU
-Emacs.  It is designed to support editing of scripts and interaction with
-various statistical analysis programs such as R, Julia, and JAGS.")
-    (license license:gpl2+)))
-
 (define-public emacs-smex
   (package
     (name "emacs-smex")
@@ -4591,16 +4520,17 @@ in Emacs.")
 (define-public emacs-edit-indirect
   (package
     (name "emacs-edit-indirect")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Fanael/edit-indirect/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/Fanael/edit-indirect")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "07kr58rd1p5j764wminsssazr73hy51yw8iqcsv5z2dwgj7msv71"))))
+         "0by1x53pji39fjrj5bd446kz831nv0vdgw2jqasbym4pc1p2947r"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Fanael/edit-indirect")
     (synopsis "Edit regions in separate buffers")
@@ -5510,14 +5440,14 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "9.1.14")
+    (version "9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "17vd9hig26rqv90l6y92hc2i0x29g44lsdsp0xd4m53s8r3zdikz"))))
+                "14ydwh2r360fpi6v2g9rgf0zazy2ddq1pcdxvzn73h65glnnclz9"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -5531,14 +5461,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20180507")
+    (version "20181230")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/org-plus-contrib-"
                                   version ".tar"))
               (sha256
                (base32
-                "190iwjpdjrhg7gl2d4bri2y0y679vlrwd841r6dvhza0yy338d2d"))))
+                "0gibwcjlardjwq19bh0zzszv0dxxlml0rh5iikkcdynbgndk1aa1"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -5550,7 +5480,7 @@ programming and reproducible research.")
          (add-after 'install 'delete-org-files
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (org (assoc-ref inputs "emacs-org"))
+                    (org (assoc-ref inputs "org"))
                     (contrib-files
                      (map basename (find-files out)))
                     (org+contrib-files
@@ -5563,8 +5493,10 @@ programming and reproducible research.")
                  (for-each delete-file duplicates))
                #t))))))
     (propagated-inputs
-     `(("emacs-org" ,emacs-org)
-       ("emacs-scel" ,emacs-scel)))
+     `(("arduino-mode" ,emacs-arduino-mode)
+       ("cider" ,emacs-cider)
+       ("org" ,emacs-org)
+       ("scel" ,emacs-scel)))
     (synopsis "Contributed packages to Org mode")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
 lists, and project planning with a fast and effective plain-text system.
@@ -6375,15 +6307,15 @@ actually changing the buffer's text.")
 (define-public emacs-diff-hl
  (package
   (name "emacs-diff-hl")
-  (version "1.8.4")
+  (version "1.8.5")
   (source
     (origin
       (method url-fetch)
-      (uri (string-append "http://elpa.gnu.org/packages/diff-hl-"
+      (uri (string-append "https://elpa.gnu.org/packages/diff-hl-"
                           version ".tar"))
       (sha256
         (base32
-          "0axhidc3cym7a2x4rpxf4745qss9s9ajyg4s9h5b4zn7v7fyp71n"))))
+          "1vxc7z7c2qs0mx7l5sa4sybi5qbzv0s79flj74p1ynw8dl3qxg3d"))))
   (build-system emacs-build-system)
   (home-page "https://github.com/dgutov/diff-hl")
   (synopsis
@@ -11446,33 +11378,32 @@ describing the key binding changes.")
   (deprecated-package "emacs-evil-mu4e" emacs-evil-collection))
 
 (define-public emacs-evil-multiedit
-  (let ((commit "ea3d9177b74ab0bc65e55df9cc0a0b42e4ef815d"))
-    (package
-      (name "emacs-evil-multiedit")
-      (version (git-version "1.3.9" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/hlissner/evil-multiedit")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "17zm35r474z8ras4xy7124pcb972d385pbdv4jxyj5vq042vq07w"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-evil" ,emacs-evil)
-         ("emacs-iedit" ,emacs-iedit)))
-      (home-page
-       "https://github.com/hlissner/evil-multiedit")
-      (synopsis "Multiple cursors for Evil mode")
-      (description
-       "This plugin was an answer to the lack of proper multiple cursor support
+  (package
+    (name "emacs-evil-multiedit")
+    (version "1.3.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hlissner/evil-multiedit")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "19h3kqylqzbjv4297wkzzxdmn9yxbg6z4ga4ssrqri90xs7m3rw3"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)
+       ("emacs-iedit" ,emacs-iedit)))
+    (home-page
+     "https://github.com/hlissner/evil-multiedit")
+    (synopsis "Multiple cursors for Evil mode")
+    (description
+     "This plugin was an answer to the lack of proper multiple cursor support
 in Emacs+Evil.  It allows you to select and edit matches interactively,
 integrating @code{iedit-mode} into Evil mode with an attempt at sensible
 defaults.")
-    (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-evil-org
   (let ((commit "b6d652a9163d3430a9e0933a554bdbee5244bbf6"))
@@ -12749,7 +12680,7 @@ Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-matrix-client
-  (let ((commit "3eab4c28280feff18ee1ddd7db66ada4f135cbf8"))
+  (let ((commit "5d8e959a63e5de05b628ca8e1dfb974f7f618821"))
     (package
       (name "emacs-matrix-client")
       (version (git-version "0.0.0" "1" commit))
@@ -12761,15 +12692,17 @@ Emacs.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1k6721jz0m22vpb78881k087mpx8hf3s2219ic75v5mhgx355f7m"))))
+                  "15mwyjq3z867v0xl4m2s3vvfn0wqncb67xawm1cjmpnambz1yz1n"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("a" ,emacs-a)
          ("dash" ,emacs-dash)
          ("esxml" ,emacs-esxml)
          ("f" ,emacs-f)
+         ("frame-purpose" ,emacs-frame-purpose)
          ("ht" ,emacs-ht)
          ("ov" ,emacs-ov)
+         ("rainbow-identifiers" ,emacs-rainbow-identifiers)
          ("request" ,emacs-request)
          ("s" ,emacs-s)
          ("tracking" ,emacs-tracking)))
@@ -12865,58 +12798,46 @@ functions to ensure they are called with the right arguments during testing.")
 too ambiguous and navigation in the result buffer.")
       (license license:gpl3+))))
 
-(define-public emacs-dedukti-mode
-  (let ((commit "d7c3505a1046187de3c3aeb144455078d514594e"))
-    (package
-      (name "emacs-dedukti-mode")
-      (version (git-version "0" "0" commit))
-      (home-page "https://github.com/rafoo/dedukti-mode")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1842wikq24c8rg0ac84vb1qby9ng1nssxswyyni4kq85lng5lcrp"))
-                (file-name (git-file-name name version))))
-      (inputs
-       `(("dedukti" ,dedukti)))
-      (build-system emacs-build-system)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'patch-dkpath
-             (lambda _
-               (let ((dkcheck-path (which "dkcheck")))
-                 (substitute* "dedukti-mode.el"
-                   (("dedukti-path \"(.*)\"")
-                    (string-append "dedukti-path \"" dkcheck-path "\"")))))))))
-      (synopsis "Emacs major mode for Dedukti files")
-      (description "This package provides an Emacs major mode for editing
-Dedukti files.")
-      (license license:cecill-b))))
+(define-public emacs-frame-purpose
+  (package
+    (name "emacs-frame-purpose")
+    (version "1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alphapapa/frame-purpose.el.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "0jq2aam1yvccw887ighd1wm2xkvk5bv53ffiz3crcl16a255aj4q"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("dash" ,emacs-dash)))
+    (synopsis "Purpose-specific frames for Emacs")
+    (description "@code{frame-purpose} makes it easy to open purpose-specific
+frames that only show certain buffers, e.g. by buffers’ major mode, their
+filename or directory, etc, with custom frame/X-window titles, icons, and
+other frame parameters.")
+    (home-page "https://github.com/alphapapa/frame-purpose.el")
+    (license license:gpl3+)))
 
-(define-public emacs-flycheck-dedukti
-  (let ((commit "3dbff5646355f39d57a3ec514f560a6b0082a1cd"))
+(define-public emacs-arduino-mode
+  (let ((commit "3e2bad4569ad26e929e6db2cbcff0d6d36812698")) ;no release yet
     (package
-      (name "emacs-flycheck-dedukti")
+      (name "emacs-arduino-mode")
       (version (git-version "0" "0" commit))
-      (home-page "https://github.com/rafoo/flycheck-dedukti")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url home-page)
+                      (url "https://github.com/bookest/arduino-mode.git")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1ffpxnwl3wx244n44mbw81g00nhnykd0lnid29f4aw1av7w6nw8l"))
+                  "1yvaqjc9hadbnnay5fprnh890xsp53kidad1zpb4a5z4a5z61n3c"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
-      (inputs
-       `(("dedukti-mode" ,emacs-dedukti-mode)
-         ("flycheck-mode" ,emacs-flycheck)))
-      (synopsis "Flycheck integration for the dedukti language")
-      (description "This package provides a frontend for Flycheck to perform
-syntax checking on dedukti files.")
-      (license license:cecill-b))))
+      (synopsis "Emacs major mode for editing Arduino sketches")
+      (description "Emacs major mode for editing Arduino sketches.")
+      (home-page "https://github.com/bookest/arduino-mode")
+      (license license:gpl3+))))
