@@ -10034,3 +10034,24 @@ max-stable processes only), model checking and selection and prediction.")
      "This package provides a suite of flexible and versatile model fitting
 and after-fitting functions for the analysis of dose-response data.")
     (license license:gpl2+)))
+
+(define-public r-rmeta
+  (package
+    (name "r-rmeta")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rmeta" version))
+       (sha256
+        (base32
+         "0vkbnxp579v8zmcv1isdbzj5swpr6fq17zwparxcvzswjc2x9ydr"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/rmeta")
+    (synopsis "Tools for meta-analysis")
+    (description
+     "This package provides functions for simple fixed and random effects
+meta-analysis for two-sample comparisons and cumulative meta-analyses.  It
+draws standard summary plots, funnel plots, and computes summaries and tests
+for association and heterogeneity.")
+    (license license:gpl2)))
