@@ -9508,3 +9508,28 @@ Precision Floating-Point Reliable} (MPFR) library.")
 the assertive package.  This is mainly for use by other package developers who
 want to include run-time testing features in their own packages.")
     (license license:gpl3+)))
+
+(define-public r-assertive-properties
+  (package
+    (name "r-assertive-properties")
+    (version "0.0-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive.properties" version))
+       (sha256
+        (base32
+         "0sqs54acs9qk9kvm32rxzfbzxz1l8mjahpfnw7r30z2brgz661jw"))))
+    (properties
+     `((upstream-name . "assertive.properties")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertive-base" ,r-assertive-base)))
+    (home-page "https://bitbucket.org/richierocks/assertive.properties")
+    (synopsis "Assertions to check properties of variables")
+    (description
+     "This package provides a set of predicates and assertions for checking
+the properties of variables, such as length, names and attributes.  This is
+mainly for use by other package developers who want to include run-time
+testing features in their own packages.")
+    (license license:gpl3+)))
