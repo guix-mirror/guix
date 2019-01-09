@@ -9954,3 +9954,29 @@ Differences with other sparse matrix packages are:
 @end enumerate\n")
     ;; Either of these licenses
     (license (list license:bsd-3 license:lgpl2.0))))
+
+(define-public r-fields
+  (package
+    (name "r-fields")
+    (version "9.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "fields" version))
+       (sha256
+        (base32
+         "1v7z48a8jmdcil28rj8c3455k6rssr5v9qi6dyhhpbb193bj8121"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-maps" ,r-maps)
+       ("r-spam" ,r-spam)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://www.image.ucar.edu/fields")
+    (synopsis "Tools for spatial data")
+    (description
+     "This is a package for curve, surface and function fitting with an
+emphasis on splines, spatial data and spatial statistics.  The major methods
+include cubic, and thin plate splines, Kriging, and compactly supported
+covariance functions for large data sets.")
+    (license license:gpl2+)))
