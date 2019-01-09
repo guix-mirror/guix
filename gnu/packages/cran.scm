@@ -9630,3 +9630,28 @@ packages.")
 the properties of models.  This is mainly for use by other package developers
 who want to include run-time testing features in their own packages.")
     (license license:gpl3+)))
+
+(define-public r-assertive-reflection
+  (package
+    (name "r-assertive-reflection")
+    (version "0.0-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive.reflection" version))
+       (sha256
+        (base32
+         "19zmsbn00crfqm0kwd9ys5gv87xs3gi6wmlikrz9xiwzm7hp4dhj"))))
+    (properties
+     `((upstream-name . "assertive.reflection")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertive-base" ,r-assertive-base)))
+    (home-page "https://bitbucket.org/richierocks/assertive.reflection")
+    (synopsis "Assertions for checking the state of R")
+    (description
+     "This package provides a set of predicates and assertions for checking
+the state and capabilities of R, the operating system it is running on, and
+the IDE being used.  This is mainly for use by other package developers who
+want to include run-time testing features in their own packages.")
+    (license license:gpl3+)))
