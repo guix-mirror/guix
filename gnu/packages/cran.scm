@@ -10224,3 +10224,29 @@ of a competing risk, Ann. Stat. 16:1141-1154, and Fine JP and Gray RJ (1999),
 A proportional hazards model for the subdistribution of a competing risk,
 JASA, 94:496-509.")
     (license license:gpl2+)))
+
+(define-public r-etm
+  (package
+    (name "r-etm")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "etm" version))
+       (sha256
+        (base32
+         "0ws103b3pmli0z4xbyfxkly2wnnnxnnwc0r66qjjqjrlvm7pffl1"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-lattice" ,r-lattice)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/etm")
+    (synopsis "Empirical transition matrix")
+    (description
+     "The @dfn{empirical transition matrix} (etm) package permits to estimate
+the matrix of transition probabilities for any time-inhomogeneous multistate
+model with finite state space using the Aalen-Johansen estimator.")
+    (license license:expat)))
