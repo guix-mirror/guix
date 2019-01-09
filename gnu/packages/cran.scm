@@ -10099,3 +10099,25 @@ package \"boot\".")
 Kaplan-Meier (KM) or Nearest Neighbor Estimation (NNE) method of Heagerty,
 Lumley & Pepe (Biometrics, Vol 56 No 2, 2000, PP 337-344)")
     (license license:gpl2+)))
+
+(define-public r-longitudinal
+  (package
+    (name "r-longitudinal")
+    (version "1.1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "longitudinal" version))
+       (sha256
+        (base32
+         "1d83ws28nxi3kw5lgd5n5y7865djq7ky72fw3ddi1fkkhg1r9y6l"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-corpcor" ,r-corpcor)))
+    (home-page "http://strimmerlab.org/software/longitudinal/")
+    (synopsis "Analysis of multiple time course data")
+    (description
+     "This package contains general data structures and functions for
+longitudinal data with multiple variables, repeated measurements, and
+irregularly spaced time points.  It also implements a shrinkage estimator of
+dynamical correlation and dynamical covariance.")
+    (license license:gpl3+)))
