@@ -9363,3 +9363,22 @@ Emphasis is always given to methods for visualizing the data.")
      "This package provides functions for importing, exporting, plotting and
 other manipulations of bitmapped images.")
     (license license:gpl2)))
+
+(define-public r-rapidjsonr
+  (package
+    (name "r-rapidjsonr")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rapidjsonr" version))
+       (sha256
+        (base32
+         "0h4phjjhykbb45rg5b1xn48vqxdcvcngbm0416ds8in7j469wbwd"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/rapidjsonr")
+    (synopsis "JSON parser")
+    (description
+     "This package provides JSON parsing capability through the Rapidjson
+library.")
+    (license license:expat)))
