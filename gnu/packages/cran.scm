@@ -8997,3 +8997,30 @@ against target variable y in Lasso regression, using the regularization
 strength when each predictor enters the active set of regularization path for
 the first time as the statistic.")
     (license license:gpl3)))
+
+(define-public r-splitstackshape
+  (package
+    (name "r-splitstackshape")
+    (version "1.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "splitstackshape" version))
+       (sha256
+        (base32
+         "03w6h64ga4zqilffdway4l38l5cbman4yrspkzhbigds12aqz25r"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)))
+    (home-page "https://github.com/mrdwab/splitstackshape")
+    (synopsis "Stack and reshape datasets after splitting concatenated values")
+    (description
+     "Online data collection tools like Google Forms often export
+multiple-response questions with data concatenated in cells.  The
+@code{concat.split} (cSplit) family of functions provided by this package
+splits such data into separate cells.  This package also includes functions to
+stack groups of columns and to reshape wide data, even when the data are
+\"unbalanced\"---something which @code{reshape} (from base R) does not handle,
+and which @code{melt} and @code{dcast} from @code{reshape2} do not easily
+handle.")
+    (license license:gpl3)))
