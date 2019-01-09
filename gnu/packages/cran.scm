@@ -9460,3 +9460,29 @@ rationals, prime number tests, matrix computation), \"arithmetic without
 limitations\" using the GNU Multiple Precision library.")
     ;; Any version of the GPL.
     (license license:gpl3+)))
+
+(define-public r-rmpfr
+  (package
+    (name "r-rmpfr")
+    (version "0.7-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rmpfr" version))
+       (sha256
+        (base32
+         "0172px5ryi7i0gyyin9z2bzif8vnj292gk0s1w5p3c12g9hj2c4v"))))
+    (properties `((upstream-name . "Rmpfr")))
+    (build-system r-build-system)
+    (inputs
+     `(("mpfr" ,mpfr)))
+    (propagated-inputs
+     `(("r-gmp" ,r-gmp)))
+    (home-page "http://rmpfr.r-forge.r-project.org/")
+    (synopsis "R bindings to the MPFR library")
+    (description
+     "This package supports arithmetic (via S4 classes and methods) for
+arbitrary precision floating point numbers, including transcendental
+functions.  To this end, the package interfaces with the @dfn{Multiple
+Precision Floating-Point Reliable} (MPFR) library.")
+    (license license:gpl2+)))
