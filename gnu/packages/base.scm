@@ -1111,7 +1111,7 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2018g")
+    (version "2018i")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1119,7 +1119,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "05kayi3w9pvhj6ljx1hvwd0r8mxfzn436fjmwhx53xkj919xxpq2"))))
+               "1n80ih8agibagic401smqscz3xxqvs5bm5x3lk803g539kw5xi42"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -1169,7 +1169,7 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "09y44fzcdq3c06saa8iqqa0a59cyw6ni3p31ps0j1w3hcpxz8lxa"))))))
+                            "1p1jxlnryaxknj0l768h3dmlk2jpqz5n5d24w9c9vyx6dj3xpb5a"))))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
@@ -1187,7 +1187,25 @@ and daylight-saving rules.")
 (define-public tzdata-for-tests
   (hidden-package
    (package
-     (inherit tzdata))))
+     (inherit tzdata)
+     (version "2018g")
+     (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.iana.org/time-zones/repository/releases/tzdata"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "05kayi3w9pvhj6ljx1hvwd0r8mxfzn436fjmwhx53xkj919xxpq2"))))
+     (inputs
+       `(("tzcode" ,(origin
+                     (method url-fetch)
+                     (uri (string-append
+                           "http://www.iana.org/time-zones/repository/releases/tzcode"
+                           version ".tar.gz"))
+                     (sha256
+                      (base32
+                       "09y44fzcdq3c06saa8iqqa0a59cyw6ni3p31ps0j1w3hcpxz8lxa")))))))))
 
 (define-public libiconv
   (package
