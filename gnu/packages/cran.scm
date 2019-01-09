@@ -9382,3 +9382,23 @@ other manipulations of bitmapped images.")
      "This package provides JSON parsing capability through the Rapidjson
 library.")
     (license license:expat)))
+
+(define-public r-ontologyindex
+  (package
+    (name "r-ontologyindex")
+    (version "2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ontologyIndex" version))
+       (sha256
+        (base32
+         "168m4jdwbzv8lpimx9063306691hnfdjmdhb5y8195d9vcq049jr"))))
+    (properties `((upstream-name . "ontologyIndex")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/ontologyIndex")
+    (synopsis "Functions for processing ontologies in R")
+    (description
+     "This package provides functions for reading ontologies into R as lists
+and manipulating sets of ontological terms.")
+    (license license:gpl2+)))
