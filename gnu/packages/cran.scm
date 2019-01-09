@@ -9136,3 +9136,31 @@ of output consolidation, message filtering, assertions, expression
 substitution, automatic generation of stack traces for debugging, and
 conditional reporting based on the current \"output level\".")
     (license license:gpl2)))
+
+(define-public r-tractor-base
+  (package
+    (name "r-tractor-base")
+    (version "3.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tractor.base" version))
+       (sha256
+        (base32
+         "0i62dwra0yh565ryz75byfgqv22bqwz7138zs48w46yj2h8q9hyj"))))
+    (properties `((upstream-name . "tractor.base")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ore" ,r-ore)
+       ("r-reportr" ,r-reportr)
+       ("r-rnifti" ,r-rnifti)
+       ("r-shades" ,r-shades)))
+    (home-page "http://www.tractor-mri.org.uk")
+    (synopsis "Read, manipulate and visualize magnetic resonance images")
+    (description
+     "This package provides functions for working with magnetic resonance
+images.  It supports reading and writing of popular file formats (DICOM,
+Analyze, NIfTI-1, NIfTI-2, MGH); interactive and non-interactive
+visualization; flexible image manipulation; metadata and sparse image
+handling.")
+    (license license:gpl2)))
