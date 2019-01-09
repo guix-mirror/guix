@@ -9234,3 +9234,25 @@ inventor of the SOM.")
 of an algorithm for @dfn{non-negative least squares} (NNLS).  It also allows
 the combination of non-negative and non-positive constraints.")
     (license license:gpl2+)))
+
+(define-public r-iso
+  (package
+    (name "r-iso")
+    (version "0.0-17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Iso" version))
+       (sha256
+        (base32
+         "0lljc99sdzdqj6d56qbsggibr6pkdwkh821bj70ianikyvmdc1y0"))))
+    (properties `((upstream-name . "Iso")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://www.stat.auckland.ac.nz/~rolf/")
+    (synopsis "Functions to perform isotonic regression")
+    (description
+     "This package provides support for linear order and unimodal
+order (univariate) isotonic regression and bivariate isotonic regression with
+linear order on both variables.")
+    (license license:gpl2+)))
