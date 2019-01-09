@@ -10008,3 +10008,29 @@ parametric max-stable models, analysis of the extremal spatial dependence, the
 fitting of such processes using composite likelihoods or least square (simple
 max-stable processes only), model checking and selection and prediction.")
     (license license:gpl2+)))
+
+(define-public r-drc
+  (package
+    (name "r-drc")
+    (version "3.0-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "drc" version))
+       (sha256
+        (base32
+         "0c8xn8ripzq270hy8d16fcnx02l02alddznd7fqwk3jyi6113h1y"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-car" ,r-car)
+       ("r-gtools" ,r-gtools)
+       ("r-mass" ,r-mass)
+       ("r-multcomp" ,r-multcomp)
+       ("r-plotrix" ,r-plotrix)
+       ("r-scales" ,r-scales)))
+    (home-page "https://cran.r-project.org/web/packages/drc")
+    (synopsis "Analysis of dose-response curves")
+    (description
+     "This package provides a suite of flexible and versatile model fitting
+and after-fitting functions for the analysis of dose-response data.")
+    (license license:gpl2+)))
