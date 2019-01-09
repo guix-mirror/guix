@@ -10287,3 +10287,25 @@ Age-Period-Cohort and Lee-Carter modeling and a function for interval censored
 data and some useful functions for tabulation and plotting, as well as a
 number of epidemiological data sets.")
     (license license:gpl2)))
+
+(define-public r-ppls
+  (package
+    (name "r-ppls")
+    (version "1.6-1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ppls" version))
+       (sha256
+        (base32
+         "1zyrisy3c4cz896j1bjh61sf57wdl9p8ywdq268cl819szfq78mx"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/ppls")
+    (synopsis "Penalized partial least squares")
+    (description
+     "This package contains linear and nonlinear regression methods based on
+partial least squares and penalization techniques.  Model parameters are
+selected via cross-validation, and confidence intervals ans tests for the
+regression coefficients can be conducted via jackknifing.")
+    (license license:gpl2+)))
