@@ -63,7 +63,8 @@
             print-build-event/quiet
             print-build-status
 
-            with-status-report))
+            with-status-report
+            with-status-verbosity))
 
 ;;; Commentary:
 ;;;
@@ -649,3 +650,17 @@ The second return value is a thunk to retrieve the current state."
   "Set up build status reporting to the user using the ON-EVENT procedure;
 evaluate EXP... in that context."
   (call-with-status-report on-event (lambda () exp ...)))
+
+(define (logger-for-level level)
+  "Return the logging procedure that corresponds to LEVEL."
+  (cond ((<= level 0) (const #t))
+        ((= level 1)  print-build-event/quiet)
+        (else         print-build-event)))
+
+(define (call-with-status-verbosity level thunk)
+  (call-with-status-report (logger-for-level level) thunk))
+
+(define-syntax-rule (with-status-verbosity level exp ...)
+  "Set up build status reporting to the user at the given LEVEL: 0 means
+silent, 1 means quiet, 2 means verbose.  Evaluate EXP... in that context."
+  (call-with-status-verbosity level (lambda () exp ...)))

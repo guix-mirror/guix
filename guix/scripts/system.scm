@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -1267,9 +1267,8 @@ argument list and OPTS is the option alist."
            (args     (option-arguments opts))
            (command  (assoc-ref opts 'action)))
       (parameterize ((%graft? (assoc-ref opts 'graft?)))
-        (with-status-report (if (memq command '(init reconfigure))
-                                print-build-event/quiet
-                                print-build-event)
+        (with-status-verbosity (if (memq command '(init reconfigure))
+                                   1 2)
           (process-command command args opts))))))
 
 ;;; Local Variables:

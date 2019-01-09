@@ -510,7 +510,7 @@ Use '~/.config/guix/channels.scm' instead."))
               (process-query opts profile))
              (else
               (with-store store
-                (with-status-report print-build-event
+                (with-status-verbosity 2
                   (parameterize ((%current-system (assoc-ref opts 'system))
                                  (%graft? (assoc-ref opts 'graft?))
                                  (%repository-cache-directory cache))

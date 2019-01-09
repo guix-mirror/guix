@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2018 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -674,7 +674,7 @@ message if any test fails."
         (leave (G_ "'--user' cannot be used without '--container'~%")))
 
       (with-store store
-        (with-status-report print-build-event
+        (with-status-verbosity 1
           (define manifest
             (options/resolve-packages store opts))
 

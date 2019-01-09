@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
@@ -914,7 +914,7 @@ processed, #f otherwise."
     (or (process-query opts)
         (parameterize ((%store  (open-connection))
                        (%graft? (assoc-ref opts 'graft?)))
-          (with-status-report print-build-event/quiet
+          (with-status-verbosity 1
             (set-build-options-from-command-line (%store) opts)
             (parameterize ((%guile-for-build
                             (package-derivation

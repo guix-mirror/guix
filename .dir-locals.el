@@ -61,6 +61,7 @@
    (eval . (put 'with-derivation-narinfo 'scheme-indent-function 1))
    (eval . (put 'with-derivation-substitute 'scheme-indent-function 2))
    (eval . (put 'with-status-report 'scheme-indent-function 1))
+   (eval . (put 'with-status-verbosity 'scheme-indent-function 1))
 
    (eval . (put 'mlambda 'scheme-indent-function 1))
    (eval . (put 'mlambdaq 'scheme-indent-function 1))

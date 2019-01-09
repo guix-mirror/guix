@@ -772,7 +772,7 @@ Create a bundle of PACKAGE.\n"))
 
   (with-error-handling
     (with-store store
-      (with-status-report print-build-event
+      (with-status-verbosity 2
         ;; Set the build options before we do anything else.
         (set-build-options-from-command-line store opts)
 
