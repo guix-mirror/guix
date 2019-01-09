@@ -9402,3 +9402,33 @@ library.")
      "This package provides functions for reading ontologies into R as lists
 and manipulating sets of ontological terms.")
     (license license:gpl2+)))
+
+(define-public r-bigrquery
+  (package
+    (name "r-bigrquery")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bigrquery" version))
+       (sha256
+        (base32
+         "0z7wsqxla1pg2454l35kkfaz2s9hppwvpz1pds286ddldbbmyzis"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-curl" ,r-curl)
+       ("r-dbi" ,r-dbi)
+       ("r-glue" ,r-glue)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-prettyunits" ,r-prettyunits)
+       ("r-progress" ,r-progress)
+       ("r-rapidjsonr" ,r-rapidjsonr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/rstats-db/bigrquery")
+    (synopsis "R interface to Google's BigQuery API")
+    (description
+     "This package provides an R interface to Google's BigQuery database.")
+    (license license:gpl3)))
