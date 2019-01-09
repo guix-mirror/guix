@@ -9557,3 +9557,27 @@ testing features in their own packages.")
 the properties of numbers.  This is mainly for use by other package developers
 who want to include run-time testing features in their own packages.")
     (license license:gpl3+)))
+
+(define-public r-assertive-sets
+  (package
+    (name "r-assertive-sets")
+    (version "0.0-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive.sets" version))
+       (sha256
+        (base32
+         "1cqvh2syvh5b6d85h601zjmsdbbf3h8q98ids4dfl4frdshpasc7"))))
+    (properties
+     `((upstream-name . "assertive.sets")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertive-base" ,r-assertive-base)))
+    (home-page "https://bitbucket.org/richierocks/assertive.sets")
+    (synopsis "Assertions to check properties of sets")
+    (description
+     "This package provides a set of predicates and assertions for checking
+the properties of sets.  This is mainly for use by other package developers
+who want to include run-time testing features in their own packages.")
+    (license license:gpl3+)))
