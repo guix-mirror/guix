@@ -168,3 +168,40 @@ It does multiple passes to optimize machine code.It have macro abilities and
 focus on operating system portability.")
     (home-page "https://flatassembler.net/")
     (license license:bsd-2)))
+
+(define-public dev86
+  (package
+    (name "dev86")
+    (version "0.16.21")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://v3.sk/~lkundrak/dev86/Dev86src-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "154dyr2ph4n0kwi8yx0n78j128kw29rk9r9f7s2gddzrdl712jr3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f ; They use submakes wrong
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:system "i686-linux" ; Standalone ld86 had problems otherwise
+       #:tests? #f ; No tests exist
+       #:phases
+       (modify-phases %standard-phases
+        (delete 'configure)
+        (add-before 'install 'mkdir
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (mkdir-p (string-append out "/bin"))
+              (mkdir-p (string-append out "/man/man1"))
+              #t))))))
+    (synopsis "Intel 8086 (primarily 16-bit) assembler, C compiler and
+linker")
+    (description "This package provides a Intel 8086 (primarily 16-bit)
+assembler, a C compiler and a linker.  The assembler uses Intel syntax
+(also Intel order of operands).")
+    (home-page "https://github.com/jbruchon/dev86")
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (license license:gpl2+)))
