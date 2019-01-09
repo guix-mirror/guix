@@ -9024,3 +9024,29 @@ stack groups of columns and to reshape wide data, even when the data are
 and which @code{melt} and @code{dcast} from @code{reshape2} do not easily
 handle.")
     (license license:gpl3)))
+
+(define-public r-tfmpvalue
+  (package
+    (name "r-tfmpvalue")
+    (version "0.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "TFMPvalue" version))
+       (sha256
+        (base32
+         "0h9qkl15k8v17v3g9bdnfwvh2s04ywjgg5y0xn2077dmywlja1bd"))))
+    (properties `((upstream-name . "TFMPvalue")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/ge11232002/TFMPvalue")
+    (synopsis "P-value computation for position weight matrices")
+    (description
+     "In putative @dfn{Transcription Factor Binding Sites} (TFBSs)
+identification from sequence/alignments, we are interested in the significance
+of certain match scores.  TFMPvalue provides the accurate calculation of a
+p-value with a score threshold for position weight matrices, or the score with
+a given p-value.  It is an interface to code originally made available by
+Helene Touzet and Jean-Stephane Varre, 2007, Algorithms Mol Biol:2, 15.
+Touzet and Varre (2007).")
+    (license license:gpl2)))
