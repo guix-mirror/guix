@@ -2556,6 +2556,10 @@ in applications using the KDE Frameworks.")
                (("GUIX_PKGS_KF5_PARTS") (assoc-ref inputs "kparts"))
                (("GUIX_PKGS_KF5_PLASMA") (assoc-ref inputs "plasma-framework")))
              #t)))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "KDEINIT5_LIBRARY_PATH")
+            (files '("lib/")))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
