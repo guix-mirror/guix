@@ -42,6 +42,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages graph)
@@ -9164,3 +9165,27 @@ Analyze, NIfTI-1, NIfTI-2, MGH); interactive and non-interactive
 visualization; flexible image manipulation; metadata and sparse image
 handling.")
     (license license:gpl2)))
+
+(define-public r-grimport
+  (package
+    (name "r-grimport")
+    (version "0.9-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "grImport" version))
+       (sha256
+        (base32
+         "1qhyw5wiyfqw1wcpvcgdwc1vgaz7j7dbc7qa5h85qgml7hb68mjv"))))
+    (properties `((upstream-name . "grImport")))
+    (build-system r-build-system)
+    (inputs
+     `(("ghostscript" ,ghostscript)))
+    (propagated-inputs
+     `(("r-xml" ,r-xml)))
+    (home-page "https://cran.r-project.org/web/packages/grImport")
+    (synopsis "Convert, import, and draw PostScript pictures")
+    (description
+     "This package provides functions for converting, importing, and drawing
+PostScript pictures in R plots.")
+    (license license:gpl2+)))
