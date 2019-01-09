@@ -9344,3 +9344,22 @@ with structural changes can be estimated together with confidence intervals.
 Emphasis is always given to methods for visualizing the data.")
     ;; Either of these two GPL versions
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-pixmap
+  (package
+    (name "r-pixmap")
+    (version "0.4-11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pixmap" version))
+       (sha256
+        (base32
+         "04klxp6jndw1bp6z40v20fbmdmdpfca2g0czmmmgbkark9s1183g"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/pixmap")
+    (synopsis "Tools for bitmap images")
+    (description
+     "This package provides functions for importing, exporting, plotting and
+other manipulations of bitmapped images.")
+    (license license:gpl2)))
