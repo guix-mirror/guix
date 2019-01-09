@@ -9092,3 +9092,24 @@ used by other packages.")
      "This package provides functions for easily manipulating colors,
 creating color scales and calculating color distances.")
     (license license:bsd-3)))
+
+(define-public r-ore
+  (package
+    (name "r-ore")
+    (version "1.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ore" version))
+       (sha256
+        (base32
+         "1l1ziljgm5gwjhvjq42wi5vcwbxlaj5dl9w8bhz0wh8vx4ajj07m"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/jonclayden/ore")
+    (synopsis "R interface to the Onigmo regular expression library")
+    (description
+     "This package provides an alternative to R's built-in functionality for
+handling regular expressions, based on the Onigmo library.  It offers
+first-class compiled regex objects, partial matching and function-based
+substitutions, amongst other features.")
+    (license license:bsd-3)))
