@@ -9759,3 +9759,29 @@ the properties of dates and times.  This is mainly for use by other package
 developers who want to include run-time testing features in their own
 packages.")
     (license license:gpl3+)))
+
+(define-public r-assertive-strings
+  (package
+    (name "r-assertive-strings")
+    (version "0.0-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive.strings" version))
+       (sha256
+        (base32
+         "0n6jrk88670g4ym0r8ii40a08a90z1xadj8wcryk8h0nl04dchfm"))))
+    (properties
+     `((upstream-name . "assertive.strings")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertive-base" ,r-assertive-base)
+       ("r-assertive-types" ,r-assertive-types)
+       ("r-stringi" ,r-stringi)))
+    (home-page "https://bitbucket.org/richierocks/assertive.strings")
+    (synopsis "Assertions to check properties of strings")
+    (description
+     "This package provides a set of predicates and assertions for checking
+the properties of strings.  This is mainly for use by other package developers
+who want to include run-time testing features in their own packages.")
+    (license license:gpl3+)))
