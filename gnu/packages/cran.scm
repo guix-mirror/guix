@@ -9314,3 +9314,33 @@ normalization of components.  Several data matrices may be decomposed
 simultaneously by assuming that one of the two matrices in the bilinear
 decomposition is shared between datasets.")
     (license license:gpl2+)))
+
+(define-public r-strucchange
+  (package
+    (name "r-strucchange")
+    (version "1.5-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "strucchange" version))
+       (sha256
+        (base32
+         "0cdgvl6kphm2i59bmnppn1y3kv65ml111bk7yzpcx7vv8wh2w3kl"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-sandwich" ,r-sandwich)
+       ("r-zoo" ,r-zoo)))
+    (home-page "https://cran.r-project.org/web/packages/strucchange")
+    (synopsis "Testing, monitoring, and dating structural changes")
+    (description
+     "This package provides tools for testing, monitoring and dating
+structural changes in (linear) regression models.  It features tests/methods
+from the generalized fluctuation test framework as well as from the F
+test (Chow test) framework.  This includes methods to fit, plot and test
+fluctuation processes (e.g., CUSUM, MOSUM, recursive/moving estimates) and F
+statistics, respectively.  It is possible to monitor incoming data online
+using fluctuation processes.  Finally, the breakpoints in regression models
+with structural changes can be estimated together with confidence intervals.
+Emphasis is always given to methods for visualizing the data.")
+    ;; Either of these two GPL versions
+    (license (list license:gpl2 license:gpl3))))
