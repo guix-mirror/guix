@@ -8975,3 +8975,25 @@ diagnostics for controlling type-1 errors are also provided.")
 including Dantzig Selector, LAD Lasso, SQRT Lasso, Lq Lasso for estimating
 high dimensional sparse linear models.")
     (license license:gpl2)))
+
+(define-public r-lassopv
+  (package
+    (name "r-lassopv")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lassopv" version))
+       (sha256
+        (base32
+         "0yawnjw063jypk3riy9xab9cmliv6c9dnabi18670khd3gzb2r9z"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-lars" ,r-lars)))
+    (home-page "https://github.com/lingfeiwang/lassopv")
+    (synopsis "Non-parametric p-value estimation for predictors in Lasso")
+    (description
+     "This package enables you to estimate the p-values for predictors x
+against target variable y in Lasso regression, using the regularization
+strength when each predictor enters the active set of regularization path for
+the first time as the statistic.")
+    (license license:gpl3)))
