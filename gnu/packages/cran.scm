@@ -9837,3 +9837,29 @@ the properties of UK-specific complex data types.  This is mainly for use by
 other package developers who want to include run-time testing features in
 their own packages.")
     (license license:gpl3+)))
+
+(define-public r-assertive-data
+  (package
+    (name "r-assertive-data")
+    (version "0.0-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive.data" version))
+       (sha256
+        (base32
+         "00cvg2g36mdl8plrzx40m63qd55742mddqrchwy9n3c7mm4gn02s"))))
+    (properties
+     `((upstream-name . "assertive.data")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertive-base" ,r-assertive-base)
+       ("r-assertive-strings" ,r-assertive-strings)))
+    (home-page "https://bitbucket.org/richierocks/assertive.data")
+    (synopsis "Assertions to check properties of data")
+    (description
+     "This package provides a set of predicates and assertions for checking
+the properties of (country independent) complex data types.  This is mainly
+for use by other package developers who want to include run-time testing
+features in their own packages.")
+    (license license:gpl3+)))
