@@ -9533,3 +9533,27 @@ the properties of variables, such as length, names and attributes.  This is
 mainly for use by other package developers who want to include run-time
 testing features in their own packages.")
     (license license:gpl3+)))
+
+(define-public r-assertive-numbers
+  (package
+    (name "r-assertive-numbers")
+    (version "0.0-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertive.numbers" version))
+       (sha256
+        (base32
+         "0jc3ss64j4m7bjydhagwwmka5n7c72vpw4kfcch0m5jvkq5qrqds"))))
+    (properties
+     `((upstream-name . "assertive.numbers")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertive-base" ,r-assertive-base)))
+    (home-page "https://bitbucket.org/richierocks/assertive.numbers")
+    (synopsis "Assertions to check properties of numbers")
+    (description
+     "This package provides a set of predicates and assertions for checking
+the properties of numbers.  This is mainly for use by other package developers
+who want to include run-time testing features in their own packages.")
+    (license license:gpl3+)))
