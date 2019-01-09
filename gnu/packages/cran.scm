@@ -10197,3 +10197,30 @@ developed, tested and used at the Functional Genomics Center Zurich, where it
 is used mainly for prototyping, teaching, and having fun with proteomics data.
 But it can also be used to do data analysis for small scale data sets.")
     (license license:gpl3)))
+
+(define-public r-cmprsk
+  (package
+    (name "r-cmprsk")
+    (version "2.2-7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cmprsk" version))
+       (sha256
+        (base32
+         "1imr3wpnj4g57n2x4ryahl4lk8lvq9y2r7319zv3k82mznha8bcm"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-survival" ,r-survival)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/cmprsk")
+    (synopsis "Subdistribution analysis of competing risks")
+    (description
+     "This package provides tool for estimation, testing and regression
+modeling of subdistribution functions in competing risks, as described in
+Gray (1988), A class of K-sample tests for comparing the cumulative incidence
+of a competing risk, Ann. Stat. 16:1141-1154, and Fine JP and Gray RJ (1999),
+A proportional hazards model for the subdistribution of a competing risk,
+JASA, 94:496-509.")
+    (license license:gpl2+)))
