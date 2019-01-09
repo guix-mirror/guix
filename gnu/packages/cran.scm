@@ -9256,3 +9256,30 @@ the combination of non-negative and non-positive constraints.")
 order (univariate) isotonic regression and bivariate isotonic regression with
 linear order on both variables.")
     (license license:gpl2+)))
+
+(define-public r-chemometricswithr
+  (package
+    (name "r-chemometricswithr")
+    (version "0.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ChemometricsWithR" version))
+       (sha256
+        (base32
+         "00z09bplm5qvd31y7m4b4knsrl0n27j9635m1gdak6lg4db4nxrd"))))
+    (properties
+     `((upstream-name . "ChemometricsWithR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-devtools" ,r-devtools)
+       ("r-kohonen" ,r-kohonen)
+       ("r-mass" ,r-mass)
+       ("r-pls" ,r-pls)))
+    (home-page "https://github.com/rwehrens/CWR")
+    (synopsis "Chemometrics with R")
+    (description
+     "This package provides functions and scripts used in the book
+\"Chemometrics with R - Multivariate Data Analysis in the Natural Sciences and
+Life Sciences\" by Ron Wehrens, Springer (2011).")
+    (license license:gpl2+)))
