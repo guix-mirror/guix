@@ -264,6 +264,7 @@ maintained upstream.")
               (uri (string-append "https://github.com/tatsuhiro-t/aria2/"
                                   "releases/download/release-" version "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "aria2-CVE-2019-3500.patch"))
               (sha256
                (base32
                 "18vpgr430vxlwbcc3598rr1srfmwypls6wp1m4wf21hncc1ahi1s"))))
