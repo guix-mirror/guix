@@ -10121,3 +10121,30 @@ longitudinal data with multiple variables, repeated measurements, and
 irregularly spaced time points.  It also implements a shrinkage estimator of
 dynamical correlation and dynamical covariance.")
     (license license:gpl3+)))
+
+(define-public r-genenet
+  (package
+    (name "r-genenet")
+    (version "1.2.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "GeneNet" version))
+       (sha256
+        (base32
+         "0w52apk0nnr8nsskf26ff7ana8xiksr8wqmkjxzwhzgg7fncm61p"))))
+    (properties `((upstream-name . "GeneNet")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-corpcor" ,r-corpcor)
+       ("r-fdrtool" ,r-fdrtool)
+       ("r-longitudinal" ,r-longitudinal)))
+    (home-page "http://strimmerlab.org/software/genenet/")
+    (synopsis "Modeling and inferring gene networks")
+    (description
+     "This package analyzes gene expression (time series) data with focus on
+the inference of gene networks.  In particular, GeneNet implements the methods
+of Schaefer and Strimmer (2005a,b,c) and Opgen-Rhein and Strimmer (2006, 2007)
+for learning large-scale gene association networks (including assignment of
+putative directions).")
+    (license license:gpl3+)))
