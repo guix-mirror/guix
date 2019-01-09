@@ -10148,3 +10148,25 @@ of Schaefer and Strimmer (2005a,b,c) and Opgen-Rhein and Strimmer (2006, 2007)
 for learning large-scale gene association networks (including assignment of
 putative directions).")
     (license license:gpl3+)))
+
+(define-public r-rbamtools
+  (package
+    (name "r-rbamtools")
+    (version "2.16.11.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rbamtools" version))
+       (sha256
+        (base32
+         "0gzkb1xyrkriv45wq8gv7qfwjslnvwkfkk5jjc4wg5kmm0ydpdzj"))))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-refgenome" ,r-refgenome)))
+    (home-page "https://cran.r-project.org/web/packages/rbamtools")
+    (synopsis "Read and write BAM (binary alignment) files")
+    (description
+     "This package provides an R interface to functions of the SAMtools
+library.")
+    (license license:artistic2.0)))
