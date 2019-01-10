@@ -363,9 +363,24 @@ network attachments.")
                ;; invokes other programs we don't know about and thus don't
                ;; substitute.
                (substitute* source-files
-                (("LookPath\\(\"zfs\"\\)") "LooxPath(\"zfs\")")
-                (("LookPath\\(\"") "Guix_doesnt_want_LookPath\\(\"") ; ))
-                (("LooxPath") "LookPath")))
+                ;; Search for Java in PATH.
+                (("\\<exec\\.Command\\(\"java\"") ; )
+                 "xxec.Command(\"java\"") ; )
+                ;; Search for AUFS in PATH (mainline Linux doesn't support it).
+                (("\\<exec\\.Command\\(\"auplink\"") ; )
+                 "xxec.Command(\"auplink\"") ; )
+                ;; Fail on other unsubstituted commands.
+                (("\\<exec\\.Command\\(\"([a-zA-Z0-9][a-zA-Z0-9_-]*)\""
+                  _ executable) ; )
+                 (string-append "exec.Guix_doesnt_want_Command(\""
+                                executable "\"")) ;)
+                (("\\<xxec\\.Command")
+                 "exec.Command")
+                ;; Search for ZFS in PATH.
+                (("\\<LookPath\\(\"zfs\"\\)") "LooxPath(\"zfs\")")
+                ;; Fail on other unsubstituted LookPaths.
+                (("\\<LookPath\\(\"") "Guix_doesnt_want_LookPath\\(\"") ; ))
+                (("\\<LooxPath") "LookPath")))
              #t))
          (add-after 'patch-paths 'delete-failing-tests
            (lambda _
