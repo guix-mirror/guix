@@ -71,7 +71,14 @@
            (documentation "Docker daemon.")
            (provision '(dockerd))
            ;; Note: elogind is required because it's mounting the cgroups.
-           (requirement '(containerd elogind))
+           (requirement '(containerd
+                          file-system-/sys/fs/cgroup/blkio
+                          file-system-/sys/fs/cgroup/cpu
+                          file-system-/sys/fs/cgroup/cpuset
+                          file-system-/sys/fs/cgroup/devices
+                          file-system-/sys/fs/cgroup/memory
+                          ; TODO: file-system-/sys/fs/cgroup/pids
+                          ))
            (start #~(make-forkexec-constructor
                      (list (string-append #$docker "/bin/dockerd")
                            "-p" "/var/run/docker.pid")
