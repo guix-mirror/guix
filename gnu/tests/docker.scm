@@ -25,6 +25,7 @@
   #:use-module (gnu services dbus)
   #:use-module (gnu services networking)
   #:use-module (gnu services docker)
+  #:use-module (gnu services desktop)
   #:use-module (gnu packages docker)
   #:use-module (guix gexp)
   #:use-module (guix store)
@@ -35,6 +36,7 @@
    (service dhcp-client-service-type)
    (dbus-service)
    (polkit-service)
+   (service elogind-service-type)
    (service docker-service-type)))
 
 (define (run-docker-test)
@@ -48,6 +50,8 @@
   (define vm
     (virtual-machine
      (operating-system os)
+     (memory-size 500)
+     (disk-image-size (* 250 (expt 2 20)))
      (port-forwardings '())))
 
   (define test
