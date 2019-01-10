@@ -35,7 +35,7 @@
 
 (define (compile-with-latex format file)
   (invoke format
-          "-interaction=batchmode"
+          "-interaction=nonstopmode"
           "-output-directory=build"
           (string-append "&" format)
           file))
