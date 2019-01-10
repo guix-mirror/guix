@@ -70,7 +70,8 @@
     (shepherd-service
            (documentation "Docker daemon.")
            (provision '(dockerd))
-           (requirement '(containerd))
+           ;; Note: elogind is required because it's mounting the cgroups.
+           (requirement '(containerd elogind))
            (start #~(make-forkexec-constructor
                      (list (string-append #$docker "/bin/dockerd")
                            "-p" "/var/run/docker.pid")
