@@ -3269,3 +3269,32 @@ transitions, and effects and then export your film to many common formats.")
     (description "dav1d is a new AV1 cross-platform decoder, and focused on
 speed and correctness.")
     (license license:bsd-2)))
+
+(define-public wlstream
+  (let ((commit "182076a94562b128c3a97ecc53cc68905ea86838")
+        (revision "1"))
+    (package
+      (name "wlstream")
+      (version (git-version "0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url "https://github.com/atomnuker/wlstream.git")
+                (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "01qbcgfl3g9kfwn1jf1z9pdj3bvf5lmg71d1vwkcllc2az24bjqp"))))
+      (build-system meson-build-system)
+      (native-inputs `(("libdrm" ,libdrm)
+                       ("pkg-config" ,pkg-config)))
+      (inputs `(("ffmpeg" ,ffmpeg)
+                ("pulseaudio" ,pulseaudio)
+                ("wayland" ,wayland)
+                ("wayland-protocols" ,wayland-protocols)))
+      (home-page "https://github.com/atomnuker/wlstream")
+      (synopsis "Screen capture tool for Wayland sessions")
+      (description "Wlstream is a screen capture tool for recording audio and
+video from a Wayland session.")
+      (license license:lgpl2.1+))))
