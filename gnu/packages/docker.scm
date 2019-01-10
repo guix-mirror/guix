@@ -28,6 +28,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix utils)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages golang)
@@ -303,7 +304,21 @@ network attachments.")
                                       (string-append "\""
                                                      (assoc-ref inputs package)
                                                      relative-path
-                                                     "\", error(nil)"))))))))
+                                                     "\", error(nil)")))))))
+                            (substitute-Command
+                             (lambda (x)
+                               (syntax-case x ()
+                                 ((substitute-LookPath source-text package
+                                                       relative-path)
+                                  #`(substitute* source-files
+                                     ((#,(string-append "exec\\.Command\\(\""
+                                                        (syntax->datum
+                                                         #'source-text)
+                                                        "\"")) ; )
+                                      (string-append "exec.Command(\""
+                                                     (assoc-ref inputs package)
+                                                     relative-path
+                                                     "\"")))))))) ; )
                  (substitute-LookPath "ps" "procps" "/bin/ps")
                  (substitute-LookPath "mkfs.xfs" "xfsprogs" "/bin/mkfs.xfs")
                  (substitute-LookPath "lvmdiskscan" "lvm2" "/sbin/lvmdiskscan")
@@ -311,13 +326,37 @@ network attachments.")
                  (substitute-LookPath "blkid" "util-linux" "/sbin/blkid")
                  (substitute-LookPath "unpigz" "pigz" "/bin/unpigz")
                  (substitute-LookPath "iptables" "iptables" "/sbin/iptables")
-                 (substitute-LookPath "ip" "iproute2" "/sbin/ip"))
+                 (substitute-LookPath "ip" "iproute2" "/sbin/ip")
+                 (substitute-Command "modprobe" "kmod" "/bin/modprobe")
+                 (substitute-Command "pvcreate" "lvm2" "/sbin/pvcreate")
+                 (substitute-Command "vgcreate" "lvm2" "/sbin/vgcreate")
+                 (substitute-Command "lvcreate" "lvm2" "/sbin/lvcreate")
+                 (substitute-Command "lvconvert" "lvm2" "/sbin/lvconvert")
+                 (substitute-Command "lvchange" "lvm2" "/sbin/lvchange")
+                 (substitute-Command "mkfs.xfs" "xfsprogs" "/sbin/mkfs.xfs")
+                 (substitute-Command "xfs_growfs" "xfsprogs" "/sbin/xfs_growfs")
+                 (substitute-Command "mkfs.ext4" "e2fsprogs" "/sbin/mkfs.ext4")
+                 (substitute-Command "tune2fs" "e2fsprogs" "/sbin/tune2fs")
+                 (substitute-Command "blkid" "util-linux" "/sbin/blkid")
+                 (substitute-Command "resize2fs" "e2fsprogs" "/sbin/resize2fs")
+; docker-mountfrom ??
+; docker
+; docker-untar
+; docker-applyLayer
+; uname
+; /usr/bin/uname
+; dbus-launch
+; grep
+; apparmor_parser
+                 (substitute-Command "ps" "procps" "/bin/ps")
+                 (substitute-Command "losetup" "util-linux" "/sbin/losetup")
+                 (substitute-Command "uname" "coreutils" "/bin/uname"))
                ;; Make compilation fail when, in future versions, Docker
                ;; invokes other programs we don't know about and thus don't
                ;; substitute.
                (substitute* source-files
                 (("LookPath\\(\"zfs\"\\)") "LooxPath(\"zfs\")")
-                (("LookPath\\(\"") "Guix_doesnt_want_LookPath\\(\"")
+                (("LookPath\\(\"") "Guix_doesnt_want_LookPath\\(\"") ; ))
                 (("LooxPath") "LookPath")))
              #t))
          (add-after 'patch-paths 'delete-failing-tests
@@ -376,12 +415,15 @@ network attachments.")
     (inputs
      `(("btrfs-progs" ,btrfs-progs)
        ("containerd" ,containerd) ; for containerd-shim
-       ("runc" ,runc)
+       ("coreutils" ,coreutils)
+       ("e2fsprogs" ,e2fsprogs)
        ("iproute2" ,iproute)
        ("iptables" ,iptables)
+       ("kmod" ,kmod)
        ("libseccomp" ,libseccomp)
        ("pigz" ,pigz)
        ("procps" ,procps)
+       ("runc" ,runc)
        ("util-linux" ,util-linux)
        ("lvm2" ,lvm2)
        ("xfsprogs" ,xfsprogs)))
