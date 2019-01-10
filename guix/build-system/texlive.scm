@@ -39,9 +39,10 @@
 ;;
 ;; Code:
 
-;; These variables specify the SVN tag and the matching SVN revision.
-(define %texlive-tag "texlive-2017.1")
-(define %texlive-revision 44591)
+;; These variables specify the SVN tag and the matching SVN revision.  They
+;; are taken from https://www.tug.org/svn/texlive/tags/
+(define %texlive-tag "texlive-2018.2")
+(define %texlive-revision 49435)
 
 (define (texlive-ref component id)
   "Return a <svn-reference> object for the package ID, which is part of the

@@ -255,7 +255,7 @@ This package contains the binaries.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0fcy2hpapbj01ncpjj3v39yhr0jjxb6rm13qaxjjw66s3vydxls1"))))
+                "1ky6wc173jhf0b33lhyb4r3bx1d4bmiqkn6y1hxn92kwjdzl42p7"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -286,7 +286,7 @@ This package contains the binaries.")
            (file-name (string-append "dvips-font-maps-" version "-checkout"))
            (sha256
             (base32
-             "09hply3nmy24ilnc6cl8q70jcqxvq6bwri572kms008ini3h9vqh"))))
+             "0nxvfbb5vsvakiw0iviicghdc2sxk05cj056ilqnpa62fffc36a6"))))
        ("dvips-base-enc"
         ,(origin
            (method svn-fetch)
@@ -322,7 +322,7 @@ to PostScript.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0ivrhp6jz31pl4z841g4ws41lmvdiwz4sslmhf02inlib79gz6r2"))))
+                "0r1v16jyfpz6dwqsgm6b9jcj4kf2pkzc9hg07s6fx9g8ba8qglih"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -361,7 +361,7 @@ out to date by @code{unicode-letters.tex}. ")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1l9wgv99qq0ysvlxqpj4g8bl0dywbzra4g8m2kmpg2fb0i0hczap"))))
+                "03yj1di9py92drp6gpfva6q69vk2iixr79r7cp7ja570s3pr0m33"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -432,7 +432,7 @@ to adapt the plain e-TeX source file to work with XeTeX and LuaTeX.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0ghizcz7ps16dzfqf66wwg5i181assc6qsm0g7g5dbmp909931vi"))))
+                "1alnn9cd60m2c12vym9f9q22ap1ngywxpkjl9dk472why44g1dmy"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -541,7 +541,7 @@ build fonts using the Metafont system.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0cssbzcx15221dynp5sii72qh4l18mwkr14n8w1xb19j8pbaqasz"))))
+                "05rbn7z30xawd3n6w7c3ijp2yc67ga220jgqmkla9pd9wx185rzq"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -575,7 +575,7 @@ documents.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "045k5b9rdmbxpy1a3006l1x96z1rd18vg3cwrvnld9bqybw5qz44"))))
+                "0vfjhidr9pha613h8mfhnpcpvld6ahdfb449918fpsfs93cppkyj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -916,7 +916,7 @@ individual symbols defined in @code{amssymb.sty}.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0mjgl3gscn3ps29yjambz1j9fg81ynnncb96vpprwx4xsijhsns0"))))
+                "1xknlb3gcw6jjqh97bhghxi594bzpj1zfzzfsrr9pvr9s1bx7dnf"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -961,7 +961,7 @@ book).")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1h9pir2hz6i9avc4lrl733p3zf4rpkg8537x1zdbhs91hvhikw9k"))))
+                  "17bqrzzjz16k52sc7ydl4vw7ddy2z3g0p1xsk2c35h1ynq9h3wwm"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -1082,7 +1082,7 @@ book).")
                         "1cfwdg2rhbayl3w0x1xqd36d45zbc96f029myp13s7cb6kbmbppv"))
          ("texlive-generic-config"
           ,(texlive-dir "tex/generic/config/"
-                        "19vj088p4kkp6xll0141m4kl6ssgdzhs3g10i232khb07aqiag8s"))
+                        "1v90iihy112q93zdpblpdk8zv8rf99fgslsg06s1sxm27zjm9nap"))
          ("texlive-latex-base-support-files"
           ,(origin
              (method svn-fetch)
@@ -1094,7 +1094,7 @@ book).")
              (file-name (string-append name "-" version "-checkout"))
              (sha256
               (base32
-               "16bs9pi3nq407xhg59glklqv43v102cg3yim6k3zcri5d9nkbv3a"))))
+               "18wy8dlcw8adl6jzqwbg54pdwlhs8hilnfvqbw6ikj6y3zhqkj7q"))))
          ("texlive-tex-plain" ,texlive-tex-plain)
          ("texlive-fonts-cm" ,texlive-fonts-cm)
          ("texlive-fonts-latex" ,texlive-fonts-latex)
@@ -1233,7 +1233,7 @@ verbatim source).")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "07azyn0b1s49vbdlr6dmygrminxp72ndl24j1091hiiccvrjq3xc"))))
+                "0nlfhn55ax89rcvpkrl9570671b62kcr4c9l5ch3w5zw9vmi00dz"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/graphics"
@@ -1282,7 +1282,7 @@ verbatim source).")
                                      "-checkout"))
            (sha256
             (base32
-             "0gi4qv6378nl84s8n1yx3hjqvv7r4lza7hpbymbl5rzwgw8qrnyb"))))))
+             "17zpcgrfsr29g1dkz9np1qi63kjv7gb12rg979c6dai6qksbr3vq"))))))
     (home-page "https://www.ctan.org/pkg/latex-graphics")
     (synopsis "LaTeX standard graphics bundle")
     (description
@@ -1358,7 +1358,7 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0aswvsxgsn709xmvpcg50d2xl7vcy1ckdxb9c1cligqqfjjvviqf"))))
+                "1m9fg8ddhpsl1212igr9a9fmj012lv780aghjn6fpidg2wqrffmn"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/oberdiek"
@@ -1389,7 +1389,7 @@ arrows; record information about document class(es) used; and many more.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "052a0pch2k5zls5jlay9xxcf93rw3i60a2x28y3ip3rhbsv3xgiz"))))
+                "0vj7h1fgf1396h4qjdc2m07y08i54gbbfrxl8y327cn3r1n093s6"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/tools"
@@ -1455,7 +1455,7 @@ of file names.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0r0wfk594j8wkdqhh21haimwsfq8x5jch4ldm21hkzk5dnmvpbg6"))))
+                "0p3fsxap1ilwjz356aq4s5ygwvdscis8bh93g8klf8mhrd8cr2jy"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3kernel"))
@@ -1479,7 +1479,7 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "16jplkvzdysfssijq9l051nsks65c2nrarsl17k8gjhc28yznj8y"))))
+                "0pyx0hffiyss363vv7fkrcdiaf7p099xnq0mngzqc7v8v9q849hs"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3packages"
@@ -1534,11 +1534,10 @@ programming tools and kernel sup­port.  Packages provided in this release are:
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1rx43y5xmjqvc27pjdnmqwp4pcw3czcfd6nfpmzc1gnqfl1hlc0q"))))
+                "1p0mkn6iywl0k4m9cx3hnhylpi499inisff3f72pcf349baqsnvq"))))
     (build-system texlive-build-system)
     (arguments
-     '(#:tex-directory "latex/fontspec"
-       #:build-targets '("fontspec.dtx")))
+     '(#:tex-directory "latex/fontspec"))
     (inputs
      `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)))
     (home-page "https://www.ctan.org/pkg/fontspec")
@@ -1598,7 +1597,7 @@ this bundle for use independent of ConTeXt.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "178ywjpdlv78qmfzqdyn6gy14620zjsn2q9wap76fbr9s4hw6dba"))))
+                "0arvk7gn32mshnfdad5qkgf3i1arxq77k3vq7wnpm4nwnrzclxal"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/amsmath"))
     (home-page "https://www.ctan.org/pkg/amsmath")
@@ -1627,7 +1626,7 @@ definitions.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0jmcr37mcdi7drczppvr6lmz5d5yd9m67ii79gp2nglg1xpw934j"))))
+                "0c2j9xh4qpi0x1vvcxdjxq6say0zhyr569fryi5cmhp8bclh4kca"))))
     (build-system texlive-build-system)
     (arguments
      `(#:tex-directory "latex/amscls"))
@@ -1651,7 +1650,7 @@ distribution.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1n3i5adsyy7jw0imnzrm2i8wkf73i3mjk9h3ic8cb9cd19i4r9r3"))))
+                "0yhlfiz3fjc8jd46f1zrjj4jig48l8rrzh8cmd8ammml8z9a01z6"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "generic/babel"
@@ -1708,7 +1707,7 @@ for Canadian and USA text.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1mdhl35hwas68ki56qqngzar37dwv4mm64l2canihr255bz34lbv"))))
+                "083xbwg7hrnlv47fkwvz8yjb830bhxx7y0mq7z7nz2f96y2ldr6b"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/cyrillic"))
@@ -1942,6 +1941,13 @@ ipsum\" text, see the @code{lipsum} package).")
          (add-after 'unpack 'remove-generated-file
            (lambda _
              (delete-file "dinbrief.drv")
+             #t))
+         (add-after 'unpack 'fix-encoding-error
+           (lambda _
+             (with-fluids ((%default-port-encoding "ISO-8859-1"))
+               (substitute* "dinbrief.dtx"
+                 (("zur Verf.+ung. In der Pr\"aambel")
+                  "zur Verf\"ung. In der Pr\"aambel")))
              #t)))))
     (home-page "https://www.ctan.org/pkg/dinbrief")
     (synopsis "German letter DIN style")
@@ -2012,7 +2018,7 @@ define a new author interface to creating new environments.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0pvmhsd4xmpil0m3c7qcgwilbk266mlkzv03g0jr8r3zd8jxlyzq"))))
+                "1ib5xdwcj5wk23wgk41m2hdcjr1dzrs4l3wwnpink9mlapz12wjs"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/eqparbox"))
     (home-page "https://www.ctan.org/pkg/eqparbox")
@@ -2110,7 +2116,7 @@ but non-expandable ones.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "11gvvjvmdfs9b7mm19yf80zwkx49jqcbq6g8qb9y5ns1r1qvnixp"))))
+                "157pplavvm2z97b3jl4x41w11k6q9wgy074mfg0dwmsx5lm328jy"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/ifplatform"))
     (home-page "https://www.ctan.org/pkg/ifplatform")
@@ -2174,34 +2180,70 @@ with a user specified LaTeX construction, properly aligned, scaled, and/or
 rotated.")
     (license (license:fsf-free "file://psfrag.dtx"))))
 
+(define-public texlive-latex-xkeyval
+  (package
+    (name "texlive-latex-xkeyval")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "xkeyval"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0wancavix39j240pd8m9cgmwsijwx6jd6n54v8wg0x2rk5m44myp"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/xkeyval"))
+    (home-page "https://www.ctan.org/pkg/xkeyval")
+    (synopsis "Macros for defining and setting keys")
+    (description
+     "This package is an extension of the @code{keyval} package and offers
+more flexible macros for defining and setting keys.  The package provides a
+pointer and a preset system.  Furthermore, it supplies macros to allow class
+and package options to contain options of the @code{key=value} form.  A LaTeX
+kernel patch is provided to avoid premature expansions of macros in class or
+package options.  A specialized system for setting @code{PSTricks} keys is
+provided by the @code{pst-xkey} package.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-pstool
   (package
     (name "texlive-latex-pstool")
     (version (number->string %texlive-revision))
     (source (origin
               (method svn-fetch)
-              (uri (texlive-ref "latex" "pstool"))
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/pstool"))
+                    (revision %texlive-revision)))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1kwlk1x67lad4xb7gpkxqgdlxwpi6nvq1r9wika7m92abmyf18h3"))))
-    (build-system texlive-build-system)
+                "1h816jain8c9nky75kk8pmmwj5b4yf9dpqvdvi2l6jhfj5iqkzr8"))))
+    (build-system trivial-build-system)
     (arguments
-     '(#:tex-directory "latex/pstool"
-       #:tex-format "latex"))
-    (inputs
-     `(("texlive-fonts-cm" ,texlive-fonts-cm)
-       ("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/pstool")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
     (propagated-inputs
-     `(("texlive-latex-bigfoot" ,texlive-latex-bigfoot)
+     `(("texlive-latex-bigfoot" ,texlive-latex-bigfoot) ; for suffix
        ("texlive-latex-filemod" ,texlive-latex-filemod)
        ("texlive-latex-graphics" ,texlive-latex-graphics)
        ("texlive-latex-ifplatform" ,texlive-latex-ifplatform)
+       ("texlive-latex-l3kernel" ,texlive-latex-l3kernel) ; for expl3
        ("texlive-latex-oberdiek" ,texlive-latex-oberdiek)
        ("texlive-latex-psfrag" ,texlive-latex-psfrag)
-       ("texlive-latex-trimspaces" ,texlive-latex-trimspaces)))
+       ("texlive-latex-tools" ,texlive-latex-tools) ; for shellesc
+       ("texlive-latex-trimspaces" ,texlive-latex-trimspaces)
+       ("texlive-latex-xkeyval" ,texlive-latex-xkeyval)))
     (home-page "https://www.ctan.org/pkg/pstool")
-    (synopsis "Process PostScript graphisc within pdfLaTeX documents")
+    (synopsis "Process PostScript graphics within pdfLaTeX documents")
     (description
      "This is a package for processing PostScript graphics with @code{psfrag}
 labels within pdfLaTeX documents.  Every graphic is compiled individually,
@@ -2356,7 +2398,7 @@ hyperlink to the target of the DOI.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0016bscnpima9krrg2569mva78xzwnygzlvg87dznsm6gf8g589v"))))
+                "1agmq6bf8wzcd77n20ng8bl4kh69cg5f6sjniii7bcw4llhd3nc8"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -2538,7 +2580,7 @@ BibLaTeX, and is considered experimental.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1r2kfcwclg33yk5z8mvlagwxj7nr1mc3w4bdpmhrwv6dn8mrbvw8"))))
+                "0yw6bjfgsli3s1dldsgb7mkr7lnk329cgdjbgs8z2xn59pmmdsn4"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/geometry"))
     (home-page "https://www.ctan.org/pkg/geometry")
@@ -2587,7 +2629,7 @@ array environments; verbatim handling; and syntax diagrams.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "09mvszd5qgqg4cfglpj5qxyzjz190ppb9p8gnsnjydwp1akvhayf"))))
+                "03ma58z3ypsbp7zgkzb1ylpn2ygr27cxzkf042ns0rif4g8s491f"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/polyglossia"))
     (home-page "https://www.ctan.org/pkg/polyglossia")
@@ -2633,7 +2675,7 @@ situations where longtable has problems.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "09zj2w3lx0y6i2syfjjgizahf86z301dw8p37ln6syfhqhzqdz46"))))
+                "06cf821y1j7jdg93pb41ayigrfwgn0y49d7w1025zlijjxi6bvjp"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -2750,7 +2792,7 @@ command.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1ik4m8pzfsn1grlda6fniqqfwmgj7rfxwg63jdw0p0qv002vc7ik"))))
+                "05x15ilynqrl448h8l6qiraygamdldlngz89a2bw7kg74fym14ch"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/changebar"))
     (home-page "https://www.ctan.org/pkg/changebar")
@@ -2866,7 +2908,7 @@ floats, center, flushleft, and flushright, lists, and pages.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "04h430agf8aj7ziwyb46xpk95c605rjk1wzhr63m6ylipihidlgw"))))
+                "1xsnzx7vgdfh9zh2m7bjz6bgdpxsgb1kyc19p50vhs34x5nbgsnr"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -3284,7 +3326,7 @@ entry at the \"natural\" width of its text.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0m29q9qdb00558b7g2i7iw6w62n5s46yx81j8m99qkv77magk4fm"))))
+                "1rpx4ibjncj5416rg19v0xjbj3z9avhfdfn2gzp8r8sz9vz25c6g"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -3350,7 +3392,7 @@ designed class) helps alleviate this untidiness.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "06p5smfq66559ppdnmkl3hp8534x84ywbscimsiir4gllpya3i9h"))))
+                "0s4izcah7im67889qz4d26pcfpasmm35sj1rw4ragkkdk3rlbbbd"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/pdfpages"))
     (home-page "https://www.ctan.org/pkg/pdfpages")
@@ -3764,7 +3806,7 @@ OT2 encoded fonts, CM bright shaped fonts and Concrete shaped fonts.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "03nvjddffiz796wll6axzmgfvynyciy2mqamv20qx252w71vwkwd"))))
+                "0sf18pc6chgy26p9bxxn44xcqhzjrfb53jxjr2y7l3jb6xllhblq"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -3944,7 +3986,7 @@ package of that name now exists.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0j6fff6q0ca96nwfdgay2jm55792z4q9aa0rczmiw2qccyg5n2dv"))))
+                "1hpsk4yp08qvbl43kqiv0hhwxv3gcqqxcpahyv6ch2b38pbj4bh6"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/preview"
@@ -4031,7 +4073,7 @@ e-TeX.")
            (file-name (string-append name "-map-" version "-checkout"))
            (sha256
             (base32
-             "197z9kx3bpnz58f5xrn5szyvmb3fxqq12y5sc4dw4jnm3xll8ji2"))))))
+             "18jvcm0vwpg6wwzijvnb92xx78la45kkh71k6l44425krp2vnwm0"))))))
     (home-page "https://www.ctan.org/pkg/pdftex")
     (synopsis "TeX extension for direct creation of PDF")
     (description
@@ -4511,7 +4553,7 @@ required: automatic sectioning and pagination, spell checking and so forth.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "01ysky8h8s6q12dxfahkzwhbkc9j5wl50xzcczy0cbjx9f6aj9kv"))))
+                "0lhb2h5hxjq9alpk4r3gvg21pwyifs4ah6hqzp92k55mkp1xv73j"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -4551,7 +4593,7 @@ specification.  It replaces the now obsolete @code{movie15} package.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "12kkl7n534j0p4frwyrlw22dc3ik50kxv97cxp4xpmji13m0hxpf"))))
+                "0zp00jg058djx8xp0xqwas92y3j97clkyd8z6pqr890yqy06myqb"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -4781,7 +4823,7 @@ produce either PostScript or PDF output.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1g8qg796hc6s092islnybaxs115ldsqwp2vxkk3gpy6vh7wc9r50"))))
+                "0nqwf0sr4mf3v9gqa6apv6ml2xhcdwax0vgyf12a672g7rpdyvgm"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -4841,7 +4883,7 @@ typearea (which are the main parts of the bundle).")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1k50z6ixgwwzy84mi0dr5vcjah5p7wvgq66y45bilm91a4m8sgla"))))
+                "0hs28fc0v2l92ad9las9b8xcckyrdrwmyhcx1yzmbr6s7s6nvsx8"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -5107,7 +5149,7 @@ TeX).")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "1gk9q22fcb2fa1ql6cf9yw505x6a6axdzzfxbsya7nkrph860af8"))))
+         "0hnbs0s1znbn32hfcsyijl39z81sdb00jf092a4blqz421qs2mbv"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -5211,7 +5253,7 @@ for use with LaTeX is available in @code{freenfss}, part of
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0zwl0cg6pka13i26dpqh137391f3j9sk69cpvwrm4ivsa0rqnw6g"))))
+                "0rlx4qqijms1n64gjx475kvip8l322fh7v17zkmwp1l1g0w3vlyz"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
