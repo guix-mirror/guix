@@ -31,11 +31,13 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization))
 
 (define %docker-version "18.09.0")
@@ -347,16 +349,16 @@ network attachments.")
                  (substitute-Command "resize2fs" "e2fsprogs" "/sbin/resize2fs")
 ; docker-mountfrom ??
 ; docker
-; docker-untar
-; docker-applyLayer
-; uname
+; docker-untar ??
+; docker-applyLayer ??
 ; /usr/bin/uname
-; dbus-launch
 ; grep
 ; apparmor_parser
                  (substitute-Command "ps" "procps" "/bin/ps")
                  (substitute-Command "losetup" "util-linux" "/sbin/losetup")
-                 (substitute-Command "uname" "coreutils" "/bin/uname"))
+                 (substitute-Command "uname" "coreutils" "/bin/uname")
+                 (substitute-Command "dbus-launch" "dbus" "/bin/dbus-launch")
+                 (substitute-Command "git" "git" "/bin/git"))
                ;; Make compilation fail when, in future versions, Docker
                ;; invokes other programs we don't know about and thus don't
                ;; substitute.
@@ -425,7 +427,9 @@ network attachments.")
      `(("btrfs-progs" ,btrfs-progs)
        ("containerd" ,containerd) ; for containerd-shim
        ("coreutils" ,coreutils)
+       ("dbus" ,dbus)
        ("e2fsprogs" ,e2fsprogs)
+       ("git" ,git)
        ("iproute2" ,iproute)
        ("iptables" ,iptables)
        ("kmod" ,kmod)
