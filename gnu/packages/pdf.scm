@@ -785,7 +785,7 @@ vector formats.")
 (define-public impressive
   (package
     (name "impressive")
-    (version "0.11.1")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -793,7 +793,7 @@ vector formats.")
                     version "/Impressive-" version ".tar.gz"))
               (sha256
                (base32
-                "0b3rmy6acp2vmf5nill3aknxvr9a5aawk1vnphkah61anxp62gsr"))))
+                "0zaqq3yvd296mfr5bxpj2hqlk7vrb0rsbgd4dc1l5ag46giqvivx"))))
     (build-system python-build-system)
 
     ;; TODO: Add dependency on pdftk.
