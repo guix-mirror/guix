@@ -88,9 +88,9 @@ bundles in Docker containers.")
                   (service-extension activation-service-type
                                      %docker-activation)
                   (service-extension shepherd-root-service-type
-                                     (lambda args
-                                       (list (apply containerd-shepherd-service args)
-                                             (apply docker-shepherd-service args))))
+                                     (lambda (config)
+                                       (list (containerd-shepherd-service config)
+                                             (docker-shepherd-service config))))
                   (service-extension account-service-type
                                      (const %docker-accounts))))
                 (default-value (docker-configuration))))
