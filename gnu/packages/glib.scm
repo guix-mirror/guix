@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,8 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages enlightenment)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
@@ -118,14 +121,21 @@
                             "sysconfdir=/tmp/dummy"
                             "install"))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ;; Dependencies to generate the doc.
+       ("docbook-xml" ,docbook-xml-4.4)
+       ("docbook-xsl" ,docbook-xsl)
+       ("doxygen" ,doxygen)
+       ("xmlto" ,xmlto)
+       ("libxml2" ,libxml2)             ;for XML_CATALOG_FILES
+       ("libxslt" ,libxslt)
+       ("yelp-tools" ,yelp-tools)))
     (inputs
      `(("expat" ,expat)
-
        ;; Add a dependency on libx11 so that 'dbus-launch' has support for
        ;; '--autolaunch'.
        ("libx11" ,libx11)))
-
+    (outputs '("out" "doc"))            ;22 MiB of HTML doc
     (home-page "https://www.freedesktop.org/wiki/Software/dbus/")
     (synopsis "Message bus for inter-process communication (IPC)")
     (description
