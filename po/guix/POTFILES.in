@@ -45,4 +45,5 @@ guix/nar.scm
 guix/channels.scm
 guix/profiles.scm
 guix/git.scm
+guix/deprecation.scm
 nix/nix-daemon/guix-daemon.cc
