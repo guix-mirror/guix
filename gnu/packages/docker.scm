@@ -311,7 +311,14 @@ network attachments.")
                  (substitute-LookPath "blkid" "util-linux" "/sbin/blkid")
                  (substitute-LookPath "unpigz" "pigz" "/bin/unpigz")
                  (substitute-LookPath "iptables" "iptables" "/sbin/iptables")
-                 (substitute-LookPath "ip" "iproute2" "/sbin/ip")))
+                 (substitute-LookPath "ip" "iproute2" "/sbin/ip"))
+               ;; Make compilation fail when, in future versions, Docker
+               ;; invokes other programs we don't know about and thus don't
+               ;; substitute.
+               (substitute* source-files
+                (("LookPath\\(\"zfs\"\\)") "LooxPath(\"zfs\")")
+                (("LookPath\\(\"") "Guix_doesnt_want_LookPath\\(\"")
+                (("LooxPath") "LookPath")))
              #t))
          (add-after 'patch-paths 'delete-failing-tests
            (lambda _
