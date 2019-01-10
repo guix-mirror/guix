@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -45,6 +45,7 @@
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix modules)
+  #:use-module (guix deprecation)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
@@ -206,7 +207,8 @@ fe80::1%lo0 apps.facebook.com\n")
       (stop #~(make-kill-destructor))))
    isc-dhcp))
 
-(define* (dhcp-client-service #:key (dhcp isc-dhcp)) ;deprecated
+(define-deprecated (dhcp-client-service #:key (dhcp isc-dhcp))
+  dhcp-client-service-type
   "Return a service that runs @var{dhcp}, a Dynamic Host Configuration
 Protocol (DHCP) client, on all the non-loopback network interfaces."
   (service dhcp-client-service-type dhcp))
@@ -374,9 +376,10 @@ daemon of the @uref{http://www.ntp.org, Network Time Foundation}.  The daemon
 will keep the system clock synchronized with that of the given servers.")
                 (default-value (ntp-configuration))))
 
-(define* (ntp-service #:key (ntp ntp)             ;deprecated
-                      (servers %ntp-servers)
-                      allow-large-adjustment?)
+(define-deprecated (ntp-service #:key (ntp ntp)
+                                (servers %ntp-servers)
+                                allow-large-adjustment?)
+  ntp-service-type
   "Return a service that runs the daemon from @var{ntp}, the
 @uref{http://www.ntp.org, Network Time Protocol package}.  The daemon will
 keep the system clock synchronized with that of @var{servers}.

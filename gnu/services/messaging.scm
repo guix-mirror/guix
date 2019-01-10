@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -32,6 +32,7 @@
   #:use-module (guix modules)
   #:use-module (guix records)
   #:use-module (guix packages)
+  #:use-module (guix deprecation)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
@@ -882,9 +883,10 @@ string, you could instantiate a prosody service like this:
                  "Run @url{http://bitlbee.org,BitlBee}, a daemon that acts as
 a gateway between IRC and chat networks.")))
 
-(define* (bitlbee-service #:key (bitlbee bitlbee) ;deprecated
-                          (interface "127.0.0.1") (port 6667)
-                          (extra-settings ""))
+(define-deprecated (bitlbee-service #:key (bitlbee bitlbee)
+                                    (interface "127.0.0.1") (port 6667)
+                                    (extra-settings ""))
+  bitlbee-service-type
   "Return a service that runs @url{http://bitlbee.org,BitlBee}, a daemon that
 acts as a gateway between IRC and chat networks.
 

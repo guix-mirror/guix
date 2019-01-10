@@ -40,6 +40,7 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix records)
+  #:use-module (guix deprecation)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
@@ -521,14 +522,15 @@ reboot_cmd " shepherd "/sbin/reboot\n"
                                           (const (list xterm)))))
                 (default-value (slim-configuration))))
 
-(define* (slim-service #:key (slim slim)          ;deprecated
-                       (allow-empty-passwords? #t) auto-login?
-                       (default-user "")
-                       (theme %default-slim-theme)
-                       (theme-name %default-slim-theme-name)
-                       (xauth xauth) (shepherd shepherd)
-                       (auto-login-session #f)
-                       (startx (xorg-start-command)))
+(define-deprecated (slim-service #:key (slim slim)
+                                 (allow-empty-passwords? #t) auto-login?
+                                 (default-user "")
+                                 (theme %default-slim-theme)
+                                 (theme-name %default-slim-theme-name)
+                                 (xauth xauth) (shepherd shepherd)
+                                 (auto-login-session #f)
+                                 (startx (xorg-start-command)))
+  slim-service-type
   "Return a service that spawns the SLiM graphical login manager, which in
 turn starts the X display server with @var{startx}, a command as returned by
 @code{xorg-start-command}.
@@ -730,9 +732,10 @@ you to log in in a graphical session, whether or not you use GNOME.")))
 ;; This service isn't working yet; it gets as far as starting to run the
 ;; greeter from gnome-shell but doesn't get any further.  It is here because
 ;; it doesn't hurt anyone and perhaps it inspires someone to fix it :)
-(define* (gdm-service #:key (gdm gdm)             ;deprecated
-                       (allow-empty-passwords? #t)
-                       (x-server (xorg-wrapper)))
+(define-deprecated (gdm-service #:key (gdm gdm)
+                                (allow-empty-passwords? #t)
+                                (x-server (xorg-wrapper)))
+  gdm-service-type
   "Return a service that spawns the GDM graphical login manager, which in turn
 starts the X display server with @var{X}, a command as returned by
 @code{xorg-wrapper}.

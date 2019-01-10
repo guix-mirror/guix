@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -25,6 +25,7 @@
 
 (define-module (gnu services base)
   #:use-module (guix store)
+  #:use-module (guix deprecation)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system pam)
@@ -614,8 +615,9 @@ file systems, as well as corresponding @file{/etc/fstab} entries.")))
 generator (RNG) with the value recorded when the system was last shut
 down.")))
 
-(define (urandom-seed-service)                    ;deprecated
-  (service urandom-seed-service-type #f))
+(define-deprecated (urandom-seed-service)
+  urandom-seed-service-type
+  (service urandom-seed-service-type))
 
 
 ;;;
@@ -2078,8 +2080,9 @@ command-line options.  GPM allows users to use the mouse in the console,
 notably to select, copy, and paste text.  The default options use the
 @code{ps2} protocol, which works for both USB and PS/2 mice.")))
 
-(define* (gpm-service #:key (gpm gpm)             ;deprecated
-                      (options %default-gpm-options))
+(define-deprecated (gpm-service #:key (gpm gpm)
+                                (options %default-gpm-options))
+  gpm-service-type
   "Run @var{gpm}, the general-purpose mouse daemon, with the given
 command-line @var{options}.  GPM allows users to use the mouse in the console,
 notably to select, copy, and paste text.  The default value of @var{options}
