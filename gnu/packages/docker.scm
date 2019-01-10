@@ -375,6 +375,9 @@ network attachments.")
              (delete-file "daemon/graphdriver/vfs/vfs_test.go")
              ;; Timeouts after 5 min.
              (delete-file "plugin/manager_linux_test.go")
+             ;; Operation not permitted.
+             (delete-file "daemon/graphdriver/overlay/overlay_test.go")
+             (delete-file "daemon/graphdriver/overlay2/overlay_test.go")
              #t))
          (replace 'configure
            (lambda _
