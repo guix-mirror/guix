@@ -253,7 +253,8 @@ You have been warned.  Thanks for being so brave.\x1b[0m
           ;; The build daemon.  Register the official server keys as trusted.
           ;; This allows the installation process to use substitutes by
           ;; default.
-          (guix-service (guix-configuration (authorize-key? #t)))
+          (service guix-service-type
+                   (guix-configuration (authorize-key? #t)))
 
           ;; Start udev so that useful device nodes are available.
           ;; Use device-mapper rules for cryptsetup & co; enable the CRDA for

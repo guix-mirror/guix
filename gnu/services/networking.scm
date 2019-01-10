@@ -755,9 +755,10 @@ HiddenServicePort ~a ~a~%"
                  "Run the @uref{https://torproject.org, Tor} anonymous
 networking daemon.")))
 
-(define* (tor-service #:optional
-                      (config-file (plain-file "empty" ""))
-                      #:key (tor tor))
+(define-deprecated (tor-service #:optional
+                                (config-file (plain-file "empty" ""))
+                                #:key (tor tor))
+  tor-service-type
   "Return a service to run the @uref{https://torproject.org, Tor} anonymous
 networking daemon.
 

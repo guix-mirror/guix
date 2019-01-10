@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -627,7 +627,8 @@ non-ASCII names from /tmp.")
         (job3 #~(job next-second-from             ;to test $PATH
                      "touch witness-touch")))
     (simple-operating-system
-     (mcron-service (list job1 job2 job3)))))
+     (service mcron-service-type
+              (mcron-configuration (jobs (list job1 job2 job3)))))))
 
 (define (run-mcron-test name)
   (define os

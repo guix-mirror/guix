@@ -11684,9 +11684,11 @@ gexps to introduce job definitions that are passed to mcron
 
 (operating-system
   ;; @dots{}
-  (services (cons (mcron-service (list garbage-collector-job
-                                       updatedb-job
-                                       idutils-job))
+  (services (cons (service mcron-service-type
+                           (mcron-configuration
+                            (jobs (list garbage-collector-job
+                                        updatedb-job
+                                        idutils-job))))
                   %base-services)))
 @end lisp
 
@@ -11708,17 +11710,6 @@ also specify the number of tasks to display:
 @example
 # herd schedule mcron 10
 @end example
-
-@deffn {Scheme Procedure} mcron-service @var{jobs} [#:mcron @var{mcron}]
-Return an mcron service running @var{mcron} that schedules @var{jobs}, a
-list of gexps denoting mcron job specifications.
-
-This is a shorthand for:
-@example
-(service mcron-service-type
-         (mcron-configuration (mcron mcron) (jobs jobs)))
-@end example
-@end deffn
 
 @defvr {Scheme Variable} mcron-service-type
 This is the type of the @code{mcron} service, whose value is an
@@ -12312,12 +12303,6 @@ Tor} anonymous networking daemon.  The service is configured using a
 @code{tor} unprivileged user, which is a member of the @code{tor} group.
 
 @end defvr
-
-@deffn {Scheme Procedure} tor-service [@var{config-file}] [#:tor @var{tor}]
-This procedure is deprecated and will be removed in a future release.  Return
-a service of the @code{tor-service-type} type.  @var{config-file} and
-@var{tor} have the same meaning as in @code{<tor-configuration>}.
-@end deffn
 
 @deftp {Data Type} tor-configuration
 @table @asis

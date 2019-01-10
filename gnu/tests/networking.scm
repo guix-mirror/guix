@@ -351,7 +351,7 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
 
 (define %tor-os
   (simple-operating-system
-   (tor-service)))
+   (service tor-service-type)))
 
 (define %tor-os/unix-socks-socket
   (simple-operating-system

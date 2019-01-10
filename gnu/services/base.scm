@@ -1688,7 +1688,9 @@ failed to register public key '~a': ~a~%" key status)))))))
    (description
     "Run the build daemon of GNU@tie{}Guix, aka. @command{guix-daemon}.")))
 
-(define* (guix-service #:optional (config %default-guix-configuration))
+(define-deprecated (guix-service #:optional
+                                 (config %default-guix-configuration))
+  guix-service-type
   "Return a service that runs the Guix build daemon according to
 @var{config}."
   (service guix-service-type config))
@@ -1789,7 +1791,9 @@ failed to register public key '~a': ~a~%" key status)))))))
                  "Add a Shepherd service running @command{guix publish}, a
 command that allows you to share pre-built binaries with others over HTTP.")))
 
-(define* (guix-publish-service #:key (guix guix) (port 80) (host "localhost"))
+(define-deprecated (guix-publish-service #:key (guix guix)
+                                         (port 80) (host "localhost"))
+  guix-publish-service-type
   "Return a service that runs @command{guix publish} listening on @var{host}
 and @var{port} (@pxref{Invoking guix publish}).
 
