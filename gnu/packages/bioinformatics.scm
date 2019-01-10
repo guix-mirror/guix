@@ -78,6 +78,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages java-compression)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages dlang)
   #:use-module (gnu packages linux)
