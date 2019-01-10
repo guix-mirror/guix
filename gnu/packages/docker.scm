@@ -194,6 +194,11 @@ Python without keeping their credentials in a Docker configuration file.")
                (string-append "DefaultCommand = \""
                               (assoc-ref inputs "runc")
                               "/sbin/runc\"\n")))
+            (substitute* "vendor/github.com/containerd/continuity/testutil/loopback/loopback_linux.go"
+             (("exec\\.Command\\(\"losetup\"") ; )
+              (string-append "exec.Command(\""
+                             (assoc-ref inputs "util-linux")
+                             "/sbin/losetup\""))) ;)
              #t))
          (replace 'build
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
@@ -206,7 +211,8 @@ Python without keeping their credentials in a Docker configuration file.")
     (inputs
      `(("btrfs-progs" ,btrfs-progs)
        ("libseccomp" ,libseccomp)
-       ("runc" ,runc)))
+       ("runc" ,runc)
+       ("util-linux" ,util-linux)))
     (native-inputs
      `(("go" ,go)
        ("pkg-config" ,pkg-config)))
