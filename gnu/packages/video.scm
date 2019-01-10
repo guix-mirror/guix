@@ -3277,15 +3277,15 @@ speed and correctness.")
       (name "wlstream")
       (version (git-version "0.0" revision commit))
       (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                (url "https://github.com/atomnuker/wlstream.git")
-                (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "01qbcgfl3g9kfwn1jf1z9pdj3bvf5lmg71d1vwkcllc2az24bjqp"))))
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/atomnuker/wlstream.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "01qbcgfl3g9kfwn1jf1z9pdj3bvf5lmg71d1vwkcllc2az24bjqp"))))
       (build-system meson-build-system)
       (native-inputs `(("libdrm" ,libdrm)
                        ("pkg-config" ,pkg-config)))
