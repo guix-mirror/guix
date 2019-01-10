@@ -61,7 +61,8 @@
            (documentation "containerd daemon.")
            (provision '(containerd))
            (start #~(make-forkexec-constructor
-                     (list (string-append #$package "/bin/containerd"))))
+                     (list (string-append #$package "/bin/containerd"))
+                     #:log-file "/var/log/containerd.log"))
            (stop #~(make-kill-destructor)))))
 
 (define (docker-shepherd-service config)
