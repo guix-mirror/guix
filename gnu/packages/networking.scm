@@ -2271,3 +2271,56 @@ allow all other machines, without direct access to that network, to be relayed
 through the machine the Dante server is running on.  The external network will
 never see any machines other than the one Dante is running on.")
     (license (license:non-copyleft "file://LICENSE"))))
+
+(define-public restbed
+  (let ((commit "6eb385fa9051203f28bf96cc1844bbb5a9a6481f"))
+    (package
+      (name "restbed")
+      (version (git-version "4.6" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Corvusoft/restbed/")
+               (commit commit)))
+         (file-name (string-append name "-" version ".tar.gz"))
+         (sha256
+          (base32 "0k60i5drklqqrb4khb25fzkgz9y0sncxf1sp6lh2bm1m0gh0661n"))))
+      (build-system cmake-build-system)
+      (inputs
+       `(("asio" ,asio)
+         ("catch" ,catch-framework)
+         ("openssl" ,openssl)))
+      (arguments
+       `(#:tests? #f
+         #:configure-flags
+         '("-DBUILD_TESTS=NO"
+           "-DBUILD_EXAMPLES=NO"
+           "-DBUILD_SSL=NO"
+           "-DBUILD_SHARED=NO")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'apply-patches-and-fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((asio (assoc-ref inputs "asio"))
+                     (catch (assoc-ref inputs "catch"))
+                     (openssl (assoc-ref inputs "openssl")))
+                 (substitute* "cmake/Findasio.cmake"
+                   (("(find_path\\( asio_INCLUDE asio\\.hpp HINTS ).*$" all begin)
+                    (string-append begin " \"" asio "/include\" )")))
+                 (substitute* "cmake/Findcatch.cmake"
+                   (("(find_path\\( catch_INCLUDE catch\\.hpp HINTS ).*$" all begin)
+                    (string-append begin " \"" catch "/include\" )")))
+                 (substitute* "cmake/Findopenssl.cmake"
+                   (("(find_library\\( ssl_LIBRARY ssl ssleay32 HINTS ).*$" all begin)
+                    (string-append begin " \"" openssl "/lib\" )"))
+                   (("(find_library\\( crypto_LIBRARY crypto libeay32 HINTS ).*$" all begin)
+                    (string-append begin " \"" openssl "/lib\" )"))
+                   (("(find_path\\( ssl_INCLUDE openssl/ssl\\.h HINTS ).*$" all begin)
+                    (string-append begin " \"" openssl "/include\" )")))))))))
+      (synopsis "Asynchronous RESTful functionality to C++11 applications")
+      (description "Restbed is a comprehensive and consistent programming
+model for building applications that require seamless and secure
+communication over HTTP.")
+      (home-page "https://github.com/Corvusoft/restbed")
+      (license license:agpl3+))))
