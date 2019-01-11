@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -41,7 +41,6 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
-  #:use-module (ice-9 threads) ; par-for-each
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -171,6 +170,79 @@ specified with `--select'.\n"))
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
+
+(define (options->packages opts)
+  "Return the list of packages requested by OPTS, honoring options like
+'--recursive'."
+  (define core-package?
+    (let* ((input->package (match-lambda
+                             ((name (? package? package) _ ...) package)
+                             (_ #f)))
+           (final-inputs   (map input->package %final-inputs))
+           (core           (append final-inputs
+                                   (append-map (compose (cut filter-map input->package <>)
+                                                        package-transitive-inputs)
+                                               final-inputs)))
+           (names          (delete-duplicates (map package-name core))))
+      (lambda (package)
+        "Return true if PACKAGE is likely a \"core package\"---i.e., one whose
+update would trigger a complete rebuild."
+        ;; Compare by name because packages in base.scm basically inherit
+        ;; other packages.  So, even if those packages are not core packages
+        ;; themselves, updating them would also update those who inherit from
+        ;; them.
+        ;; XXX: Fails to catch MPFR/MPC, whose *source* is used as input.
+        (member (package-name package) names))))
+
+  (define (keep-newest package lst)
+    ;; If a newer version of PACKAGE is already in LST, return LST; otherwise
+    ;; return LST minus the other version of PACKAGE in it, plus PACKAGE.
+    (let ((name (package-name package)))
+      (match (find (lambda (p)
+                     (string=? (package-name p) name))
+                   lst)
+        ((? package? other)
+         (if (version>? (package-version other) (package-version package))
+             lst
+             (cons package (delq other lst))))
+        (_
+         (cons package lst)))))
+
+  (define args-packages
+    ;; Packages explicitly passed as command-line arguments.
+    (match (filter-map (match-lambda
+                         (('argument . spec)
+                          ;; Take either the specified version or the
+                          ;; latest one.
+                          (specification->package spec))
+                         (('expression . exp)
+                          (read/eval-package-expression exp))
+                         (_ #f))
+                       opts)
+      (()                                         ;default to all packages
+       (let ((select? (match (assoc-ref opts 'select)
+                        ('core core-package?)
+                        ('non-core (negate core-package?))
+                        (_ (const #t)))))
+         (fold-packages (lambda (package result)
+                          (if (select? package)
+                              (keep-newest package result)
+                              result))
+                        '())))
+      (some                                       ;user-specified packages
+       some)))
+
+  (define packages
+    (match (assoc-ref opts 'manifest)
+      (#f args-packages)
+      ((? string? file) (packages-from-manifest file))))
+
+  (if (assoc-ref opts 'recursive?)
+      (mlet %store-monad ((edges (node-edges %bag-node-type
+                                             (all-packages))))
+        (return (node-transitive-edges packages edges)))
+      (with-monad %store-monad
+        (return packages))))
 
 
 ;;;
@@ -335,19 +407,6 @@ dependent packages are rebuilt: ~{~a~^ ~}~%"
                  (map full-name covering))))
       (return #t))))
 
-(define (refresh-recursive packages)
-  "Check all of the package inputs of PACKAGES for newer upstream versions."
-  (mlet %store-monad ((edges (node-edges %bag-node-type
-                                         ;; Here we don't want the -boot0 packages.
-                                         (fold-packages cons '()))))
-    (let ((dependent (node-transitive-edges packages edges)))
-      ;; par-for-each has an undefined return value, so packages which cause
-      ;; errors can be ignored.
-      (par-for-each (lambda (package)
-                      (guix-refresh package))
-                    (map package-name dependent)))
-    (return #t)))
-
 (define (list-transitive packages)
   "List all the packages that would cause PACKAGES to be rebuilt if they are changed."
   ;; Using %BAG-NODE-TYPE is more accurate than using %PACKAGE-NODE-TYPE
@@ -414,40 +473,6 @@ all are dependent packages: ~{~a~^ ~}~%")
       (lists
        (concatenate lists))))
 
-  (define (keep-newest package lst)
-    ;; If a newer version of PACKAGE is already in LST, return LST; otherwise
-    ;; return LST minus the other version of PACKAGE in it, plus PACKAGE.
-    (let ((name (package-name package)))
-      (match (find (lambda (p)
-                     (string=? (package-name p) name))
-                   lst)
-        ((? package? other)
-         (if (version>? (package-version other) (package-version package))
-             lst
-             (cons package (delq other lst))))
-        (_
-         (cons package lst)))))
-
-  (define core-package?
-    (let* ((input->package (match-lambda
-                             ((name (? package? package) _ ...) package)
-                             (_ #f)))
-           (final-inputs   (map input->package %final-inputs))
-           (core           (append final-inputs
-                                   (append-map (compose (cut filter-map input->package <>)
-                                                        package-transitive-inputs)
-                                               final-inputs)))
-           (names          (delete-duplicates (map package-name core))))
-      (lambda (package)
-        "Return true if PACKAGE is likely a \"core package\"---i.e., one whose
-update would trigger a complete rebuild."
-        ;; Compare by name because packages in base.scm basically inherit
-        ;; other packages.  So, even if those packages are not core packages
-        ;; themselves, updating them would also update those who inherit from
-        ;; them.
-        ;; XXX: Fails to catch MPFR/MPC, whose *source* is used as input.
-        (member (package-name package) names))))
-
   (let* ((opts            (parse-options))
          (update?         (assoc-ref opts 'update?))
          (updaters        (options->updaters opts))
@@ -458,65 +483,37 @@ update would trigger a complete rebuild."
 
          ;; Warn about missing updaters when a package is explicitly given on
          ;; the command line.
-         (warn?           (or (assoc-ref opts 'argument)
-                              (assoc-ref opts 'expression)))
-         (args-packages
-          (match (filter-map (match-lambda
-                               (('argument . spec)
-                                ;; Take either the specified version or the
-                                ;; latest one.
-                                (specification->package spec))
-                               (('expression . exp)
-                                (read/eval-package-expression exp))
-                               (_ #f))
-                             opts)
-            (()                                   ; default to all packages
-             (let ((select? (match (assoc-ref opts 'select)
-                              ('core core-package?)
-                              ('non-core (negate core-package?))
-                              (_ (const #t)))))
-               (fold-packages (lambda (package result)
-                                (if (select? package)
-                                    (keep-newest package result)
-                                    result))
-                              '())))
-            (some                                 ; user-specified packages
-             some)))
-         (packages
-          (match (assoc-ref opts 'manifest)
-            (#f args-packages)
-            ((? string? file) (packages-from-manifest file)))))
+         (warn?           (and (or (assoc-ref opts 'argument)
+                                   (assoc-ref opts 'expression))
+                               (not recursive?))))
     (with-error-handling
       (with-store store
         (run-with-store store
-          (cond
-           (list-dependent?
-            (list-dependents packages))
-           (list-transitive?
-            (list-transitive packages))
-           (recursive?
-            (refresh-recursive packages))
-           (update?
-            (parameterize ((%openpgp-key-server
-                            (or (assoc-ref opts 'key-server)
-                                (%openpgp-key-server)))
-                           (%gpg-command
-                            (or (assoc-ref opts 'gpg-command)
-                                (%gpg-command)))
-                           (current-keyring
-                            (or (assoc-ref opts 'keyring)
-                                (string-append (config-directory)
-                                               "/upstream/trustedkeys.kbx"))))
-              (for-each
-               (cut update-package store <> updaters
-                    #:key-download key-download
-                    #:warn? warn?)
-               packages)
-              (with-monad %store-monad
-                (return #t))))
-           (else
-            (for-each (cut check-for-package-update <> updaters
-                           #:warn? warn?)
-                      packages)
-            (with-monad %store-monad
+          (mlet %store-monad ((packages (options->packages opts)))
+            (cond
+             (list-dependent?
+              (list-dependents packages))
+             (list-transitive?
+              (list-transitive packages))
+             (update?
+              (parameterize ((%openpgp-key-server
+                              (or (assoc-ref opts 'key-server)
+                                  (%openpgp-key-server)))
+                             (%gpg-command
+                              (or (assoc-ref opts 'gpg-command)
+                                  (%gpg-command)))
+                             (current-keyring
+                              (or (assoc-ref opts 'keyring)
+                                  (string-append (config-directory)
+                                                 "/upstream/trustedkeys.kbx"))))
+                (for-each
+                 (cut update-package store <> updaters
+                      #:key-download key-download
+                      #:warn? warn?)
+                 packages)
+                (return #t)))
+             (else
+              (for-each (cut check-for-package-update <> updaters
+                             #:warn? warn?)
+                        packages)
               (return #t)))))))))
