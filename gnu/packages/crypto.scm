@@ -166,43 +166,6 @@ OpenBSD tool of the same name.")
                                           "See base64.c in the distribution for
                                            the license from IBM.")))))
 
-(define-public opendht
-  (package
-    (name "opendht")
-    (version "1.8.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/savoirfairelinux/opendht.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0vninb5mak27wigajslyvr05vq7wbrwqhbr4wzl2nmqcb20wmlq2"))))
-    (build-system gnu-build-system)
-    (inputs
-     `(("gnutls" ,gnutls)
-       ("nettle" ,nettle)
-       ("readline" ,readline)
-       ("argon2" ,argon2)))
-    (propagated-inputs
-     `(("msgpack" ,msgpack)))           ;included in several installed headers
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("pkg-config" ,pkg-config)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
-    (arguments
-     `(#:configure-flags '("--disable-tools"
-                           "--disable-python"
-                           "--with-argon2")))
-    (home-page "https://github.com/savoirfairelinux/opendht/")
-    (synopsis "Distributed Hash Table (DHT) library")
-    (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may
-be used to manage peer-to-peer network connections as needed for real time
-communication.")
-    (license license:gpl3+)))
-
 (define-public encfs
   (package
     (name "encfs")
