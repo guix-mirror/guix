@@ -484,7 +484,8 @@ all are dependent packages: ~{~a~^ ~}~%")
          ;; Warn about missing updaters when a package is explicitly given on
          ;; the command line.
          (warn?           (and (or (assoc-ref opts 'argument)
-                                   (assoc-ref opts 'expression))
+                                   (assoc-ref opts 'expression)
+                                   (assoc-ref opts 'manifest))
                                (not recursive?))))
     (with-error-handling
       (with-store store
