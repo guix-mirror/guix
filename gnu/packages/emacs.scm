@@ -677,16 +677,16 @@ deliver data to mobile and web apps.")
 (define-public emacs-ghub
   (package
     (name "emacs-ghub")
-    (version "3.2.0")
+    (version "2.0.1")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/magit/ghub.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/magit/ghub/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lp52qygyavddl1lrgsyb6mq7hcf9h89dy2pzya3mb2va49f0vvl"))))
+                "0d0qj5r1bm2aidi61rigrdaycxnyb7y1ivb3h8rpvvapsf8sk7z0"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -694,11 +694,6 @@ deliver data to mobile and web apps.")
          (add-before 'install 'make-info
            (lambda _
              (invoke "make" "info"))))))
-    (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-graphql" ,emacs-graphql)
-       ("emacs-let-alist" ,emacs-let-alist)
-       ("emacs-treepy" ,emacs-treepy)))
     (native-inputs
      `(("texinfo" ,texinfo)))
     (home-page "https://github.com/magit/ghub")
