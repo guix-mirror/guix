@@ -28,11 +28,14 @@
   #:use-module (guix memoization)
   #:use-module ((guix build utils)
                 #:select ((package-name->name+version
-                           . hyphen-separated-name->name+version)))
+                           . hyphen-separated-name->name+version)
+                          mkdir-p))
   #:autoload   (guix profiles) (packages->manifest)
   #:use-module (guix describe)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
+  #:autoload   (ice-9 binary-ports) (put-bytevector)
+  #:autoload   (system base compile) (compile)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -56,7 +59,9 @@
 
             specification->package
             specification->package+output
-            specifications->manifest))
+            specifications->manifest
+
+            generate-package-cache))
 
 ;;; Commentary:
 ;;;
@@ -135,6 +140,14 @@ for system '~a'")
   ;; Default search path for package modules.
   `((,%distro-root-directory . "gnu/packages")))
 
+(define (cache-is-authoritative?)
+  "Return true if the pre-computed package cache is authoritative.  It is not
+authoritative when entries have been added via GUIX_PACKAGE_PATH or '-L'
+flags."
+  (equal? (%package-module-path)
+          (append %default-package-module-path
+                  (package-path-entries))))
+
 (define %package-module-path
   ;; Search path for package modules.  Each item must be either a directory
   ;; name or a pair whose car is a directory and whose cdr is a sub-directory
@@ -183,7 +196,35 @@ is guaranteed to never traverse the same package twice."
                                 init
                                 modules))
 
-(define find-packages-by-name
+(define %package-cache-file
+  ;; Location of the package cache.
+  "/lib/guix/package.cache")
+
+(define load-package-cache
+  (mlambda (profile)
+    "Attempt to load the package cache.  On success return a vhash keyed by
+package names.  Return #f on failure."
+    (match profile
+      (#f #f)
+      (profile
+       (catch 'system-error
+         (lambda ()
+           (define lst
+             (load-compiled (string-append profile %package-cache-file)))
+           (fold (lambda (item vhash)
+                   (match item
+                     (#(name version module symbol outputs
+                             supported? deprecated?
+                             file line column)
+                      (vhash-cons name item vhash))))
+                 vlist-null
+                 lst))
+         (lambda args
+           (if (= ENOENT (system-error-errno args))
+               #f
+               (apply throw args))))))))
+
+(define find-packages-by-name/direct              ;bypass the cache
   (let ((packages (delay
                     (fold-packages (lambda (p r)
                                      (vhash-cons (package-name p) p r))
@@ -202,6 +243,37 @@ decreasing version order."
                     matching)
             matching)))))
 
+(define (cache-lookup cache name)
+  "Lookup package NAME in CACHE.  Return a list sorted in increasing version
+order."
+  (define (package-version<? v1 v2)
+    (version>? (vector-ref v2 1) (vector-ref v1 1)))
+
+  (sort (vhash-fold* cons '() name cache)
+        package-version<?))
+
+(define* (find-packages-by-name name #:optional version)
+  "Return the list of packages with the given NAME.  If VERSION is not #f,
+then only return packages whose version is prefixed by VERSION, sorted in
+decreasing version order."
+  (define cache
+    (load-package-cache (current-profile)))
+
+  (if (and (cache-is-authoritative?) cache)
+      (match (cache-lookup cache name)
+        (#f #f)
+        ((#(_ versions modules symbols _ _ _ _ _ _) ...)
+         (fold (lambda (version* module symbol result)
+                 (if (or (not version)
+                         (version-prefix? version version*))
+                     (cons (module-ref (resolve-interface module)
+                                       symbol)
+                           result)
+                     result))
+               '()
+               versions modules symbols)))
+      (find-packages-by-name/direct name version)))
+
 (define (find-best-packages-by-name name version)
   "If version is #f, return the list of packages named NAME with the highest
 version numbers; otherwise, return the list of packages named NAME and at
@@ -217,6 +289,55 @@ VERSION."
            (take-while (lambda (p)
                          (string=? (package-version p) highest))
                        matches))))))
+
+(define (generate-package-cache directory)
+  "Generate under DIRECTORY a cache of all the available packages.
+
+The primary purpose of the cache is to speed up package lookup by name such
+that we don't have to traverse and load all the package modules, thereby also
+reducing the memory footprint."
+  (define cache-file
+    (string-append directory %package-cache-file))
+
+  (define (expand-cache module symbol variable result)
+    (match (false-if-exception (variable-ref variable))
+      ((? package? package)
+       (if (hidden-package? package)
+           result
+           (cons `#(,(package-name package)
+                    ,(package-version package)
+                    ,(module-name module)
+                    ,symbol
+                    ,(package-outputs package)
+                    ,(->bool (member (%current-system)
+                                     (package-supported-systems package)))
+                    ,(->bool (package-superseded package))
+                    ,@(let ((loc (package-location package)))
+                        (if loc
+                            `(,(location-file loc)
+                              ,(location-line loc)
+                              ,(location-column loc))
+                            '(#f #f #f))))
+                 result)))
+      (_
+       result)))
+
+  (define exp
+    (fold-module-public-variables* expand-cache '()
+                                   (all-modules (%package-module-path)
+                                                #:warn
+                                                warn-about-load-error)))
+
+  (mkdir-p (dirname cache-file))
+  (call-with-output-file cache-file
+    (lambda (port)
+      ;; Store the cache as a '.go' file.  This makes loading fast and reduces
+      ;; heap usage since some of the static data is directly mmapped.
+      (put-bytevector port
+                      (compile `'(,@exp)
+                               #:to 'bytecode
+                               #:opts '(#:to-file? #t)))))
+  cache-file)
 
 
 (define %sigint-prompt

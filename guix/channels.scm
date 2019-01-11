@@ -21,6 +21,7 @@
   #:use-module (guix git)
   #:use-module (guix records)
   #:use-module (guix gexp)
+  #:use-module (guix modules)
   #:use-module (guix discovery)
   #:use-module (guix monads)
   #:use-module (guix profiles)
@@ -31,7 +32,8 @@
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
-  #:autoload   (guix self) (whole-package)
+  #:autoload   (guix self) (whole-package make-config.scm)
+  #:autoload   (guix inferior) (gexp->derivation-in-inferior) ;FIXME: circular dep
   #:use-module (ice-9 match)
   #:export (channel
             channel?
@@ -52,6 +54,7 @@
             checkout->channel-instance
             latest-channel-derivation
             channel-instances->manifest
+            %channel-profile-hooks
             channel-instances->derivation))
 
 ;;; Commentary:
@@ -416,11 +419,40 @@ channel instances."
                                           (zip instances derivations))))
     (return (manifest entries))))
 
+(define (package-cache-file manifest)
+  "Build a package cache file for the instance in MANIFEST.  This is meant to
+be used as a profile hook."
+  (mlet %store-monad ((profile (profile-derivation manifest
+                                                   #:hooks '())))
+
+    (define build
+      #~(begin
+          (use-modules (gnu packages))
+
+          (if (defined? 'generate-package-cache)
+              (begin
+                ;; Delegate package cache generation to the inferior.
+                (format (current-error-port)
+                        "Generating package cache for '~a'...~%"
+                        #$profile)
+                (generate-package-cache #$output))
+              (mkdir #$output))))
+
+    (gexp->derivation-in-inferior "guix-package-cache" build
+                                  profile
+                                  #:properties '((type . profile-hook)
+                                                 (hook . package-cache)))))
+
+(define %channel-profile-hooks
+  ;; The default channel profile hooks.
+  (cons package-cache-file %default-profile-hooks))
+
 (define (channel-instances->derivation instances)
   "Return the derivation of the profile containing INSTANCES, a list of
 channel instances."
   (mlet %store-monad ((manifest (channel-instances->manifest instances)))
-    (profile-derivation manifest)))
+    (profile-derivation manifest
+                        #:hooks %channel-profile-hooks)))
 
 (define latest-channel-instances*
   (store-lift latest-channel-instances))

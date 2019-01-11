@@ -188,6 +188,7 @@ true, display what would be built without actually building it."
   (mlet %store-monad ((manifest (channel-instances->manifest instances)))
     (mbegin %store-monad
       (update-profile profile manifest
+                      #:hooks %channel-profile-hooks
                       #:dry-run? dry-run?)
       (munless dry-run?
         (return (display-profile-news profile))))))

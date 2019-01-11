@@ -1005,6 +1005,24 @@
     (((? (cut eq? hello <>))) #t)
     (wrong (pk 'find-packages-by-name wrong #f))))
 
+(test-equal "find-packages-by-name with cache"
+  (find-packages-by-name "guile")
+  (call-with-temporary-directory
+   (lambda (cache)
+     (generate-package-cache cache)
+     (mock ((guix describe) current-profile (const cache))
+           (mock ((gnu packages) cache-is-authoritative? (const #t))
+                 (find-packages-by-name "guile"))))))
+
+(test-equal "find-packages-by-name + version, with cache"
+  (find-packages-by-name "guile" "2")
+  (call-with-temporary-directory
+   (lambda (cache)
+     (generate-package-cache cache)
+     (mock ((guix describe) current-profile (const cache))
+           (mock ((gnu packages) cache-is-authoritative? (const #t))
+                 (find-packages-by-name "guile" "2"))))))
+
 (test-assert "--search-paths with pattern"
   ;; Make sure 'guix package --search-paths' correctly reports environment
   ;; variables when file patterns are used (in particular, it must follow
