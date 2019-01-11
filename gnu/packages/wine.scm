@@ -224,48 +224,48 @@ integrate Windows applications into your desktop.")
 
 (define-public wine-staging-patchset-data
   (package
-   (name "wine-staging-patchset-data")
-   (version "4.0-rc5")
-   (source
-    (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/wine-staging/wine-staging")
-            (commit (string-append "v" version))))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32
-        "0smp6ngs77vk1yg0saavhhn7kmi9ri8y8gc3vcgg837ycwg5i5qb"))))
-   (build-system trivial-build-system)
-   (native-inputs
-    `(("bash" ,bash)
-      ("coreutils" ,coreutils)))
-   (arguments
-    `(#:modules ((guix build utils))
-      #:builder
-      (begin
-        (use-modules (guix build utils))
-        (let* ((build-directory ,(string-append name "-" version))
-               (source (assoc-ref %build-inputs "source"))
-               (bash (assoc-ref %build-inputs "bash"))
-               (coreutils (assoc-ref %build-inputs "coreutils"))
-               (out (assoc-ref %outputs "out"))
-               (wine-staging (string-append out "/share/wine-staging")))
-          (copy-recursively source build-directory)
-          (with-directory-excursion build-directory
-            (substitute* "patches/patchinstall.sh"
-              (("/bin/sh")
-               (string-append bash "/bin/sh")))
-            (substitute* "patches/gitapply.sh"
-              (("/usr/bin/env")
-               (string-append coreutils "/bin/env"))))
-          (copy-recursively build-directory wine-staging)
-          #t))))
-   (home-page "https://github.com/wine-staging")
-   (synopsis "Patchset for Wine")
-   (description
-    "wine-staging-patchset-data contains the patchset to build Wine-Staging.")
-   (license license:lgpl2.1+)))
+    (name "wine-staging-patchset-data")
+    (version "4.0-rc5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wine-staging/wine-staging")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0smp6ngs77vk1yg0saavhhn7kmi9ri8y8gc3vcgg837ycwg5i5qb"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((build-directory ,(string-append name "-" version))
+                (source (assoc-ref %build-inputs "source"))
+                (bash (assoc-ref %build-inputs "bash"))
+                (coreutils (assoc-ref %build-inputs "coreutils"))
+                (out (assoc-ref %outputs "out"))
+                (wine-staging (string-append out "/share/wine-staging")))
+           (copy-recursively source build-directory)
+           (with-directory-excursion build-directory
+             (substitute* "patches/patchinstall.sh"
+               (("/bin/sh")
+                (string-append bash "/bin/sh")))
+             (substitute* "patches/gitapply.sh"
+               (("/usr/bin/env")
+                (string-append coreutils "/bin/env"))))
+           (copy-recursively build-directory wine-staging)
+           #t))))
+    (home-page "https://github.com/wine-staging")
+    (synopsis "Patchset for Wine")
+    (description
+     "wine-staging-patchset-data contains the patchset to build Wine-Staging.")
+    (license license:lgpl2.1+)))
 
 (define-public wine-staging
   (package
@@ -286,6 +286,7 @@ integrate Windows applications into your desktop.")
               ("ffmpeg" ,ffmpeg)
               ("gtk+" ,gtk+)
               ("libva" ,libva)
+              ("mesa" ,mesa)
               ("python" ,python)
               ("sdl2" ,sdl2)
               ("util-linux" ,util-linux) ; for hexdump
@@ -296,6 +297,27 @@ integrate Windows applications into your desktop.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; Explicitely set the 32-bit version of vulkan-loader when installing
+         ;; to i686-linux or x86_64-linux.
+         ;; TODO: Add more JSON files as they become available in Mesa.
+         ,@(match (%current-system)
+             ((or "i686-linux" "x86_64-linux")
+              `((add-after 'install 'wrap-executable
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (icd (string-append out "/share/vulkan/icd.d")))
+                      (mkdir-p icd)
+                      (copy-file (string-append (assoc-ref inputs "mesa")
+                                 "/share/vulkan/icd.d/radeon_icd.i686.json")
+                                 (string-append icd "/radeon_icd.i686.json"))
+                      (wrap-program (string-append out "/bin/wine-preloader")
+                                    `("VK_ICD_FILENAMES" ":" =
+                                      (,(string-append icd
+                                        "/radeon_icd.i686.json"))))
+                      #t)))))
+             (_
+              `())
+             )
          (add-before 'configure 'patch-source-wine-staging
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((source (assoc-ref %build-inputs "source"))
@@ -344,6 +366,34 @@ integrated into the main branch.")
              (string-append "libdir=" %output "/lib/wine64"))
        #:phases
        (modify-phases %standard-phases
+         ;; Explicitely set both the 64-bit and 32-bit versions of vulkan-loader
+         ;; when installing to x86_64-linux so both are available.
+         ;; TODO: Add more JSON files as they become available in Mesa.
+         ,@(match (%current-system)
+           ((or "x86_64-linux")
+             `((add-after 'copy-wine32-binaries 'wrap-executable
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out")))
+                   (wrap-program (string-append out "/bin/wine-preloader")
+                                 `("VK_ICD_FILENAMES" ":" =
+                                   (,(string-append (assoc-ref inputs "mesa")
+                                     "/share/vulkan/icd.d/radeon_icd.x86_64.json" ":"
+                                     (assoc-ref inputs "mesa")
+                                     "/share/vulkan/icd.d/intel_icd.x86_64.json" ":"
+                                     (assoc-ref inputs "wine-staging")
+                                     "/share/vulkan/icd.d/radeon_icd.i686.json"))))
+                   (wrap-program (string-append out "/bin/wine64-preloader")
+                                 `("VK_ICD_FILENAMES" ":" =
+                                   (,(string-append (assoc-ref inputs "mesa")
+                                     "/share/vulkan/icd.d/radeon_icd.x86_64.json"
+                                     ":" (assoc-ref inputs "mesa")
+                                     "/share/vulkan/icd.d/intel_icd.x86_64.json"
+                                     ":" (assoc-ref inputs "wine-staging")
+                                     "/share/vulkan/icd.d/radeon_icd.i686.json"))))
+                   #t)))))
+           (_
+            `())
+           )
          (add-before 'configure 'patch-source-wine-staging
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((source (assoc-ref %build-inputs "source"))
@@ -359,7 +409,9 @@ integrated into the main branch.")
                ;; Copy the 32-bit binaries needed for WoW64.
                (copy-file (string-append wine32 "/bin/wine")
                           (string-append out "/bin/wine"))
-               (copy-file (string-append wine32 "/bin/wine-preloader")
+               ;; Copy the real 32-bit wine-preloader instead of the wrapped
+               ;; version.
+               (copy-file (string-append wine32 "/bin/.wine-preloader-real")
                           (string-append out "/bin/wine-preloader"))
                #t)))
          (add-after 'compress-documentation 'copy-wine32-manpage
