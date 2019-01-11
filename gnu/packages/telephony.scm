@@ -30,6 +30,7 @@
 
 (define-module (gnu packages telephony)
   #:use-module (gnu packages)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages audio)
@@ -38,10 +39,15 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages file)
   #:use-module (gnu packages protobuf)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
@@ -54,9 +60,11 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages speech)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
@@ -836,5 +844,65 @@ leaves the power of privacy in the hands of the user.  It supports the SIP and
 IAX protocols, as well as decentralized calling using P2P-DHT.
 
 This package provides a library common to all Jami clients.")
+    (home-page "https://jami.net")
+    (license license:gpl3+)))
+
+(define-public jami-client-gnome
+  (package
+    (inherit libring)
+    (name "jami-client-gnome")
+    (build-system cmake-build-system)
+    (inputs
+     `(("libringclient" ,libringclient)
+       ("gtk+" ,gtk+)
+       ("qrencode" ,qrencode)
+       ("libnotify" ,libnotify)
+       ("clutter" ,clutter)
+       ("clutter-gtk" ,clutter-gtk)
+       ("gettext" ,gnu-gettext)
+       ("libcanberra" ,libcanberra)
+       ("webkitgtk" ,webkitgtk)
+       ;; TODO: We must wrap ring-client-gnome to force using the
+       ;; `sqlite-with-column-metadata' package instead of `sqlite' or else it
+       ;; fails with:
+       ;;
+       ;;   /gnu/store/...-qtbase-5.11.2/lib/qt5/plugins/sqldrivers/libqsqlite.so:
+       ;;   undefined symbol: sqlite3_column_table_name16
+       ;;
+       ;; qtbase is built against sqlite-with-column-metadata but somehow
+       ;; jami-client-gnome ends up with both `sqlite' and
+       ;; `sqlite-with-column-metadata' as inputs and it seems that
+       ;; libqsqlite.so gets confused.
+       ("sqlite" ,sqlite-with-column-metadata)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")
+       ("doxygen" ,doxygen)))
+    (propagated-inputs
+     `(("libring" ,libring)             ; Contains `dring', the daemon, which is automatically by d-bus.
+       ("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("evolution-data-server" ,evolution-data-server)))
+    (arguments
+     `(#:tests? #f                      ; There is no testsuite.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "client-gnome")
+             #t))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (string-append (assoc-ref inputs "sqlite") "/lib")))
+               (wrap-program (string-append out "/bin/gnome-ring")
+                 `("LD_LIBRARY_PATH" ":" prefix (,path))))
+             #t)))))
+    (synopsis "Distributed multimedia communications platform")
+    (description "Jami (formerly GNU Ring) is a secure and distributed voice,
+video and chat communication platform that requires no centralized server and
+leaves the power of privacy in the hands of the user.  It supports the SIP and
+IAX protocols, as well as decentralized calling using P2P-DHT.
+
+This package provides the Jami client for the GNOME desktop.")
     (home-page "https://jami.net")
     (license license:gpl3+)))
