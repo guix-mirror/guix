@@ -125,7 +125,7 @@ over IRC, instant messaging, network games, and most server software.")
 (define-public libupnp
   (package
     (name "libupnp")
-    (version "1.6.24")
+    (version "1.6.25")
     (source
      (origin
       (method url-fetch)
@@ -133,7 +133,7 @@ over IRC, instant messaging, network games, and most server software.")
                           version "/" name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "15ngi1i7cvsv7g15fb9bkswvi99d1plz52x5qgjn4h5vyfddg0vx"))))
+        "0hzsd7rvfa87b4hxg9yj4xhdfxx9sp09r9sqdl3mqhvmcyw018y5"))))
     (build-system gnu-build-system)
     (arguments
      ;; The tests require a network device capable of multicasting which is
