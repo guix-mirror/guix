@@ -1788,6 +1788,34 @@ version numbers.")
 (define-public python2-vcversioner
   (package-with-python2 python-vcversioner))
 
+(define-public python-jdcal
+  (package
+    (name "python-jdcal")
+    (version "1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "jdcal" version))
+        (sha256
+          (base32
+            "1ja6j2xq97bsl6rv09mhdx7n0xnrsfx0mj5xqza0mxghqmkm02pa"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/phn/jdcal")
+    (synopsis "Functions to convert between Julian dates Gregorian dates")
+    (description "This Python library provides functions for converting
+between Julian dates and Gregorian dates.")
+    (license license:bsd-2)))
+
+(define-public python2-jdcal
+  (package-with-python2 python-jdcal))
+
 (define-public python-jsonschema
   (package
     (name "python-jsonschema")
