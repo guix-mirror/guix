@@ -802,3 +802,39 @@ This package provides a library and daemon implementing the Jami core
 functionality.")
     (home-page "https://jami.net/")
     (license license:gpl3+)))
+
+(define-public libringclient
+  (package
+    (inherit libring)
+    (name "libringclient")
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("libring" ,libring)     ; For 'dring'.
+       ("qtbase" ,qtbase)       ; Qt is included in several installed headers.
+       ("qttools" ,qttools)))
+    (arguments
+     `(#:tests? #f                      ; There is no testsuite.
+       #:configure-flags
+       (list (string-append "-DRING_BUILD_DIR="
+                            (assoc-ref %build-inputs "libring") "/include"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "lrc")
+             #t))
+         (add-before 'configure 'fix-dbus-interfaces-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{CMAKE_INSTALL_PREFIX\\}(/share/dbus-1/interfaces)" _ dbus-interfaces-path-suffix)
+                (string-append (assoc-ref inputs "libring")
+                               dbus-interfaces-path-suffix))))))))
+    (synopsis "Distributed multimedia communications platform")
+    (description "Jami (formerly GNU Ring) is a secure and distributed voice,
+video and chat communication platform that requires no centralized server and
+leaves the power of privacy in the hands of the user.  It supports the SIP and
+IAX protocols, as well as decentralized calling using P2P-DHT.
+
+This package provides a library common to all Jami clients.")
+    (home-page "https://jami.net")
+    (license license:gpl3+)))
