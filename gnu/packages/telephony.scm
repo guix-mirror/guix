@@ -8,7 +8,10 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Adonay Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,19 +32,31 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages audio)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages file)
   #:use-module (gnu packages protobuf)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages speech)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages upnp)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
@@ -529,3 +544,84 @@ messaging communcations using the SIP protocol.  You can use it for direct IP
 phone to IP phone communication or in a network using a SIP proxy to route your
 calls and messages")
    (license license:gpl2+))))
+
+(define-public pjproject
+  (package
+    (name "pjproject")
+    (version "2.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.pjsip.org/release/" ;
+             version "/" name "-" version ".tar.bz2"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (let ((third-party-directories
+                  (list "BaseClasses" "bdsound" "bin" "g7221" "gsm"
+                        "ilbc" "lib" "milenage" "mp3" "speex" "srtp"
+                        "resample"
+                        ;; Keep only resample, build and README.txt.
+                        "build/baseclasses" "build/g7221" "build/gsm"
+                        "build/ilbc" "build/milenage" "build/samplerate"
+                        "build/speex" "build/srtp"
+                        "build/resample" "build/yuv")))
+             ;; Keep only Makefiles related to resample.
+             (for-each (lambda (file)
+                         (delete-file-recursively
+                          (string-append "third_party/" file)))
+                       third-party-directories)
+             #t)
+           (let ((third-party-dirs
+                  (list "gsm" "ilbc" "speex" "g7221" "srtp"
+                        "portaudio" "resample")))
+             (for-each
+              (lambda (dirs)
+                (substitute* "third_party/build/os-linux.mak"
+                  (((string-append "DIRS += " dirs)) "")))
+              third-party-dirs))))
+       (sha256
+        (base32
+         "0wiph6g51wanzwjjrpwsz63amgvly8g08jz033gnwqmppa584b4w"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("portaudio" ,portaudio)))
+    (propagated-inputs
+     ;; These packages are referenced in the Libs field of the pkg-config
+     ;; file that will be installed by pjproject.
+     `(("speex" ,speex)
+       ("libsrtp" ,libsrtp)
+       ("gnutls" ,gnutls)
+       ("util-linux" ,util-linux)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)))
+    (arguments
+     `(;; FIXME make: No rule to make target
+       ;; 'pjlib-test-unknown-[something]-gnu'.
+       #:tests? #f
+       ;; #:test-target "selftest"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-dep
+           (lambda _ (invoke "make" "dep")))
+         (add-before 'patch-source-shebangs 'autoconf
+           (lambda _
+             (invoke "autoconf" "-vfi" "-o"
+                     "aconfigure" "aconfigure.ac")))
+         (add-before 'autoconf 'disable-some-tests
+           ;; Three of the six test programs fail due to missing network
+           ;; access.
+           (lambda _
+             (substitute* "Makefile"
+               (("selftest: pjlib-test pjlib-util-test pjnath-test pjmedia-test pjsip-test pjsua-test")
+                "selftest: pjlib-test pjlib-util-test pjmedia-test"))
+             #t)))))
+    (home-page "https://www.pjsip.org")
+    (synopsis "Session Initiation Protocol (SIP) stack")
+    (description "PJProject provides an implementation of the Session
+Initiation Protocol (SIP) and a multimedia framework.")
+    (license license:gpl2+)))
