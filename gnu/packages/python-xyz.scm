@@ -142,6 +142,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -861,6 +862,43 @@ of @code{xmlfile}.")
 
 (define-public python2-et-xmlfile
   (package-with-python2 python-et-xmlfile))
+
+(define-public python-openpyxl
+  (package
+    (name "python-openpyxl")
+    (version "2.6.0")
+    (source
+     (origin
+       ;; We use the upstream repository, as the tests are not included in the
+       ;; PyPI releases.
+       (method hg-fetch)
+       (uri (hg-reference
+             (url "https://bitbucket.org/openpyxl/openpyxl")
+             (changeset version)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1x47ngn7ybaqdbvg90c8h2x0j6yfdfj25gjfinp2w5rf62gsany7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest"))))))
+    (native-inputs
+     ;; For the test suite.
+     `(("python-lxml" ,python-lxml)
+       ("python-pillow" ,python-pillow)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-et-xmlfile" ,python-et-xmlfile)
+       ("python-jdcal" ,python-jdcal)))
+    (home-page "https://openpyxl.readthedocs.io")
+    (synopsis "Python library to read/write Excel 2010 XLSX/XLSM files")
+    (description "This Python library allows reading and writing to the Excel XLSX, XLSM,
+XLTX and XLTM file formats that are defined by the Office Open XML (OOXML)
+standard.")
+    (license license:expat)))
 
 (define-public python-eventlet
   (package
