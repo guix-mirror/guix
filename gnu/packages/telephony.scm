@@ -728,3 +728,77 @@ Initiation Protocol (SIP) and a multimedia framework.")
                (("selftest: pjlib-test pjlib-util-test pjnath-test pjmedia-test pjsip-test pjsua-test")
                 "selftest: pjlib-test pjlib-util-test pjmedia-test"))
              #t)))))))
+
+(define-public libring
+  (package
+    (name "libring")
+    (version %jami-version)
+    (source (jami-source #:without-daemon #t))
+    (build-system gnu-build-system)
+    (inputs
+     ;; Missing (optional?) dep: libnatpmp.
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("dbus-c++" ,dbus-c++)
+       ("eudev" ,eudev)
+       ("ffmpeg" ,ffmpeg)
+       ("flac" ,flac)
+       ("gmp" ,gmp)
+       ("gsm" ,gsm)
+       ("jack" ,jack-1)
+       ("jsoncpp" ,jsoncpp)
+       ("libogg" ,libogg)
+       ("libva" ,libva)
+       ("opendht" ,opendht)
+       ("opus" ,opus)
+       ("pcre" ,pcre)
+       ("pulseaudio" ,pulseaudio)
+       ("libsamplerate" ,libsamplerate)
+       ("libsndfile" ,libsndfile)
+       ("speex" ,speex)
+       ("speexdsp" ,speexdsp)
+       ("libupnp" ,libupnp)
+       ("libvorbis" ,libvorbis)
+       ("libx264" ,libx264)
+       ("libvdpau" ,libvdpau)
+       ("yaml-cpp" ,yaml-cpp)
+       ("zlib" ,zlib)
+       ("openssl" ,openssl)
+       ("libsecp256k1" ,libsecp256k1)
+       ("python" ,python)
+       ("python-wrapper" ,python-wrapper)
+       ("restbed" ,restbed)
+       ("libx11" ,libx11)
+       ;; TODO: Upstream seems to rely on a custom pjproject (a.k.a. pjsip) version.
+       ;; See https://git.jami.net/savoirfairelinux/ring-daemon/issues/24.
+       ("pjproject" ,pjproject-jami)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)
+       ("cppunit" ,cppunit)
+       ("perl" ,perl)))                 ; Needed for documentation.
+    (arguments
+     `(#:tests? #f         ; The tests fail to compile due to missing headers.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "daemon")
+             #t))
+         (add-before 'build 'add-lib-dir
+           (lambda _
+             (mkdir-p "src/lib")
+             #t)))))
+    (synopsis "Distributed multimedia communications platform")
+    (description "Jami (formerly GNU Ring) is a secure and distributed voice,
+video and chat communication platform that requires no centralized server and
+leaves the power of privacy in the hands of the user.  It supports the SIP and
+IAX protocols, as well as decentralized calling using P2P-DHT.
+
+This package provides a library and daemon implementing the Jami core
+functionality.")
+    (home-page "https://jami.net/")
+    (license license:gpl3+)))
