@@ -2346,11 +2346,11 @@ communication over HTTP.")
      `(("gnutls" ,gnutls)
        ("nettle" ,nettle)
        ("readline" ,readline)
-       ("argon2" ,argon2)
        ("jsoncpp" ,jsoncpp)
        ("restbed" ,restbed)))
     (propagated-inputs
-     `(("msgpack" ,msgpack)))           ;included in several installed headers
+     `(("argon2" ,argon2)               ; TODO: Needed for the pkg-config .pc file to work?
+       ("msgpack" ,msgpack)))           ;included in several installed headers
     (native-inputs
      `(("autoconf" ,autoconf)
        ("pkg-config" ,pkg-config)
