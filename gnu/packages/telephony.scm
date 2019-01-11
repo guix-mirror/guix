@@ -625,3 +625,106 @@ calls and messages")
     (description "PJProject provides an implementation of the Session
 Initiation Protocol (SIP) and a multimedia framework.")
     (license license:gpl2+)))
+
+(define %jami-version "20190319.4.a16a99f")
+
+(define* (jami-source #:key without-daemon)
+  (origin
+    (method url-fetch)
+    (uri (string-append "http://dl.jami.net/ring-release/tarballs/ring_"
+                        %jami-version
+                        ".tar.gz"))
+    (modules '((guix build utils)))
+    (snippet
+     (if without-daemon
+       '(begin
+          (delete-file-recursively "daemon/contrib"))
+       #f))
+    (sha256
+     (base32
+      "1c6n6sm7skw83v25g33g4jzbragz9j4przbzaz7asxw54jy33dwl"))))
+
+(define-public pjproject-jami
+  (package
+    (inherit pjproject)
+    (name "pjproject-jami")
+    (native-inputs
+     `(("savoir-faire-linux-patches" ,(jami-source))
+       ,@(package-native-inputs pjproject)))
+    (arguments
+     `(#:tests? #f
+       ;; See ring-project/daemon/contrib/src/pjproject/rules.mak.
+       #:configure-flags
+       (list "--disable-oss"
+             "--disable-sound"
+             "--disable-video"
+             "--enable-ext-sound"
+             "--disable-speex-aec"
+             "--disable-g711-codec"
+             "--disable-l16-codec"
+             "--disable-gsm-codec"
+             "--disable-g722-codec"
+             "--disable-g7221-codec"
+             "--disable-speex-codec"
+             "--disable-ilbc-codec"
+             "--disable-opencore-amr"
+             "--disable-silk"
+             "--disable-sdl"
+             "--disable-ffmpeg"
+             "--disable-v4l2"
+             "--disable-openh264"
+             "--disable-resample"
+             "--disable-libwebrtc"
+             ;; "-fPIC" is required for libring.  Bug?
+             "CFLAGS=-fPIC -DPJ_ENABLE_EXTRA_CHECK=1 -DPJ_ICE_MAX_CAND=256 -DPJ_ICE_MAX_CHECKS=1024 -DPJ_ICE_COMP_BITS=2 -DPJ_ICE_MAX_STUN=3 -DPJSIP_MAX_PKT_LEN=8000 -DPJ_ICE_ST_MAX_CAND=32"
+             "CXXFLAGS=-fPIC -DPJ_ENABLE_EXTRA_CHECK=1 -DPJ_ICE_MAX_CAND=256 -DPJ_ICE_MAX_CHECKS=1024 -DPJ_ICE_COMP_BITS=2 -DPJ_ICE_MAX_STUN=3 -DPJSIP_MAX_PKT_LEN=8000 -DPJ_ICE_ST_MAX_CAND=32"
+             ;; Now deviating from the rules.mak file.
+             "--enable-ssl=gnutls"
+             "--with-external-srtp")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'apply-patches
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((savoir-faire-linux-patches-directory "Savoir-faire Linux patches")
+                   ;; Comes from
+                   ;; "ring-project/daemon/contrib/src/pjproject/rules.mak".
+                   ;; WARNING: These amount for huge changes in pjproject.
+                   ;; Particularly, they add support for GnuTLS.
+                   (savoir-faire-linux-patches
+                    '("gnutls"
+                      "rfc2466"
+                      "ipv6"
+                      "ice_config"
+                      "multiple_listeners"
+                      "pj_ice_sess"
+                      "fix_turn_fallback"
+                      "fix_ioqueue_ipv6_sendto"
+                      "add_dtls_transport"
+                      "rfc6062")))
+               (mkdir-p savoir-faire-linux-patches-directory)
+               (invoke "tar" "-xvf" (assoc-ref inputs "savoir-faire-linux-patches")
+                       "-C" savoir-faire-linux-patches-directory "--strip-components=5" "ring-project/daemon/contrib/src/pjproject")
+               (for-each
+                (lambda (file)
+                  (invoke "patch" "--force" "-p1" "-i"
+                          (string-append savoir-faire-linux-patches-directory "/"
+                                         file ".patch")))
+                savoir-faire-linux-patches))
+             #t))
+         ;; TODO: We could use substitute-keyword-arguments instead of
+         ;; repeating the phases from pjproject, but somehow it does
+         ;; not work.
+         (add-before 'build 'build-dep
+           (lambda _ (invoke "make" "dep")))
+         (add-before 'patch-source-shebangs 'autoconf
+           (lambda _
+             (invoke "autoconf" "-v" "-f" "-i" "-o"
+                     "aconfigure" "aconfigure.ac")))
+         (add-before 'autoconf 'disable-some-tests
+           ;; Three of the six test programs fail due to missing network
+           ;; access.
+           (lambda _
+             (substitute* "Makefile"
+               (("selftest: pjlib-test pjlib-util-test pjnath-test pjmedia-test pjsip-test pjsua-test")
+                "selftest: pjlib-test pjlib-util-test pjmedia-test"))
+             #t)))))))
