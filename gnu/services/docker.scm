@@ -70,7 +70,6 @@
     (shepherd-service
            (documentation "Docker daemon.")
            (provision '(dockerd))
-           ;; Note: elogind is required because it's mounting the cgroups.
            (requirement '(containerd
                           file-system-/sys/fs/cgroup/blkio
                           file-system-/sys/fs/cgroup/cpu
