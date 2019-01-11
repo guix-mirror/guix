@@ -220,31 +220,32 @@ of relevance scores."
     ('dismiss
      transaction)
     (($ <manifest-entry> name version output (? string? path))
-     (match (vhash-assoc name (find-newest-available-packages))
-       ((_ candidate-version pkg . rest)
-        (match (package-superseded pkg)
-          ((? package? new)
-           (supersede entry new))
-          (#f
-           (case (version-compare candidate-version version)
-             ((>)
-              (manifest-transaction-install-entry
-               (package->manifest-entry* pkg output)
-               transaction))
-             ((<)
-              transaction)
-             ((=)
-              (let ((candidate-path (derivation->output-path
-                                     (package-derivation (%store) pkg))))
-                ;; XXX: When there are propagated inputs, assume we need to
-                ;; upgrade the whole entry.
-                (if (and (string=? path candidate-path)
-                         (null? (package-propagated-inputs pkg)))
-                    transaction
-                    (manifest-transaction-install-entry
-                     (package->manifest-entry* pkg output)
-                     transaction))))))))
-       (#f
+     (match (find-best-packages-by-name name #f)
+       ((pkg . rest)
+        (let ((candidate-version (package-version pkg)))
+          (match (package-superseded pkg)
+            ((? package? new)
+             (supersede entry new))
+            (#f
+             (case (version-compare candidate-version version)
+               ((>)
+                (manifest-transaction-install-entry
+                 (package->manifest-entry* pkg output)
+                 transaction))
+               ((<)
+                transaction)
+               ((=)
+                (let ((candidate-path (derivation->output-path
+                                       (package-derivation (%store) pkg))))
+                  ;; XXX: When there are propagated inputs, assume we need to
+                  ;; upgrade the whole entry.
+                  (if (and (string=? path candidate-path)
+                           (null? (package-propagated-inputs pkg)))
+                      transaction
+                      (manifest-transaction-install-entry
+                       (package->manifest-entry* pkg output)
+                       transaction)))))))))
+       (()
         (warning (G_ "package '~a' no longer exists~%") name)
         transaction)))))
 

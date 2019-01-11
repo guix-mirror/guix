@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,8 +96,8 @@
 
 (test-assert "transaction-upgrade-entry, zero upgrades"
   (let* ((old (dummy-package "foo" (version "1")))
-         (tx  (mock ((gnu packages) find-newest-available-packages
-                     (const vlist-null))
+         (tx  (mock ((gnu packages) find-best-packages-by-name
+                     (const '()))
                     ((@@ (guix scripts package) transaction-upgrade-entry)
                      (manifest-entry
                        (inherit (package->manifest-entry old))
@@ -109,8 +109,8 @@
 (test-assert "transaction-upgrade-entry, one upgrade"
   (let* ((old (dummy-package "foo" (version "1")))
          (new (dummy-package "foo" (version "2")))
-         (tx  (mock ((gnu packages) find-newest-available-packages
-                     (const (vhash-cons "foo" (list "2" new) vlist-null)))
+         (tx  (mock ((gnu packages) find-best-packages-by-name
+                     (const (list new)))
                     ((@@ (guix scripts package) transaction-upgrade-entry)
                      (manifest-entry
                        (inherit (package->manifest-entry old))
@@ -126,8 +126,8 @@
   (let* ((old (dummy-package "foo" (version "1")))
          (new (dummy-package "bar" (version "2")))
          (dep (deprecated-package "foo" new))
-         (tx  (mock ((gnu packages) find-newest-available-packages
-                     (const (vhash-cons "foo" (list "2" dep) vlist-null)))
+         (tx  (mock ((gnu packages) find-best-packages-by-name
+                     (const (list dep)))
                     ((@@ (guix scripts package) transaction-upgrade-entry)
                      (manifest-entry
                        (inherit (package->manifest-entry old))
