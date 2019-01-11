@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +18,7 @@
 
 (define-module (guix profiling)
   #:use-module (ice-9 match)
+  #:autoload   (ice-9 format) (format)
   #:export (profiled?
             register-profiling-hook!))
 
@@ -50,3 +51,25 @@
     (for-each (lambda (hook)
                 (add-hook! hook thunk))
               %profiling-hooks)))
+
+(define (show-gc-stats)
+  "Display garbage collection statistics."
+  (define MiB (* 1024 1024.))
+  (define stats (gc-stats))
+
+  (format (current-error-port) "Garbage collection statistics:
+  heap size:        ~,2f MiB
+  allocated:        ~,2f MiB
+  GC times:         ~a
+  time spent in GC: ~,2f seconds (~d% of user time)~%"
+          (/ (assq-ref stats 'heap-size) MiB)
+          (/ (assq-ref stats 'heap-total-allocated) MiB)
+          (assq-ref stats 'gc-times)
+          (/ (assq-ref stats 'gc-time-taken)
+             internal-time-units-per-second 1.)
+          (inexact->exact
+           (round (* (/ (assq-ref stats 'gc-time-taken)
+                        (tms:utime (times)) 1.)
+                     100)))))
+
+(register-profiling-hook! "gc" show-gc-stats)
