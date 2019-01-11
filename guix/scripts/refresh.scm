@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -296,7 +297,7 @@ KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
 values: 'interactive' (default), 'always', and 'never'.  When WARN? is true,
 warn about packages that have no matching updater."
   (if (lookup-updater package updaters)
-      (let-values (((version tarball)
+      (let-values (((version tarball changes)
                     (package-update store package updaters
                                     #:key-download key-download))
                    ((loc)
@@ -310,6 +311,26 @@ warn about packages that have no matching updater."
                         (location->string loc)
                         (package-name package)
                         (package-version package) version)
+                (for-each
+                 (lambda (change)
+                   (format (current-error-port)
+                           (match (list (upstream-input-change-action change)
+                                        (upstream-input-change-type change))
+                             (('add 'regular)
+                              (G_ "~a: consider adding this input: ~a~%"))
+                             (('add 'native)
+                              (G_ "~a: consider adding this native input: ~a~%"))
+                             (('add 'propagated)
+                              (G_ "~a: consider adding this propagated input: ~a~%"))
+                             (('remove 'regular)
+                              (G_ "~a: consider removing this input: ~a~%"))
+                             (('remove 'native)
+                              (G_ "~a: consider removing this native input: ~a~%"))
+                             (('remove 'propagated)
+                              (G_ "~a: consider removing this propagated input: ~a~%")))
+                           (package-name package)
+                           (upstream-input-change-name change)))
+                 (changes))
                 (let ((hash (call-with-input-file tarball
                               port-sha256)))
                   (update-package-source package version hash)))

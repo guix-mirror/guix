@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
             upstream-source-urls
             upstream-source-signature-urls
             upstream-source-archive-types
+            upstream-source-input-changes
 
             url-prefix-predicate
             coalesce-sources
@@ -55,6 +57,12 @@
             upstream-updater-description
             upstream-updater-predicate
             upstream-updater-latest
+
+            upstream-input-change?
+            upstream-input-change-name
+            upstream-input-change-type
+            upstream-input-change-action
+            changed-inputs
 
             %updaters
             lookup-updater
@@ -82,7 +90,73 @@
   (version        upstream-source-version)        ;string
   (urls           upstream-source-urls)           ;list of strings
   (signature-urls upstream-source-signature-urls  ;#f | list of strings
-                  (default #f)))
+                  (default #f))
+  (input-changes  upstream-source-input-changes
+                  (default '()) (thunked)))
+
+;; Representation of an upstream input change.
+(define-record-type* <upstream-input-change>
+  upstream-input-change make-upstream-input-change
+  upstream-input-change?
+  (name    upstream-input-change-name)    ;string
+  (type    upstream-input-change-type)    ;symbol: regular | native | propagated
+  (action  upstream-input-change-action)) ;symbol: add | remove
+
+(define (changed-inputs package package-sexp)
+  "Return a list of input changes for PACKAGE based on the newly imported
+S-expression PACKAGE-SEXP."
+  (match package-sexp
+    ((and expr ('package fields ...))
+     (let* ((input->name (match-lambda ((name pkg . out) name)))
+            (new-regular
+             (match expr
+               ((path *** ('inputs
+                           ('quasiquote ((label ('unquote sym)) ...)))) label)
+               (_ '())))
+            (new-native
+             (match expr
+               ((path *** ('native-inputs
+                           ('quasiquote ((label ('unquote sym)) ...)))) label)
+               (_ '())))
+            (new-propagated
+             (match expr
+               ((path *** ('propagated-inputs
+                           ('quasiquote ((label ('unquote sym)) ...)))) label)
+               (_ '())))
+            (current-regular
+             (map input->name (package-inputs package)))
+            (current-native
+             (map input->name (package-native-inputs package)))
+            (current-propagated
+             (map input->name (package-propagated-inputs package))))
+       (append-map
+        (match-lambda
+          ((action type names)
+           (map (lambda (name)
+                  (upstream-input-change
+                   (name name)
+                   (type type)
+                   (action action)))
+                names)))
+        `((add regular
+           ,(lset-difference equal?
+                             new-regular current-regular))
+          (remove regular
+           ,(lset-difference equal?
+                             current-regular new-regular))
+          (add native
+           ,(lset-difference equal?
+                             new-native current-native))
+          (remove native
+           ,(lset-difference equal?
+                             current-native new-native))
+          (add propagated
+           ,(lset-difference equal?
+                             new-propagated current-propagated))
+          (remove propagated
+           ,(lset-difference equal?
+                             current-propagated new-propagated))))))
+    (_ '())))
 
 (define (url-prefix-predicate prefix)
   "Return a predicate that returns true when passed a package where one of its
@@ -268,12 +342,12 @@ values: the item from LST1 and the item from LST2 that match PRED."
 
 (define* (package-update store package updaters
                          #:key (key-download 'interactive))
-  "Return the new version and the file name of the new version tarball for
-PACKAGE, or #f and #f when PACKAGE is up-to-date.  KEY-DOWNLOAD specifies a
-download policy for missing OpenPGP keys; allowed values: 'always', 'never',
-and 'interactive' (default)."
+  "Return the new version, the file name of the new version tarball, and input
+changes for PACKAGE; return #f (three values) when PACKAGE is up-to-date.
+KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
+values: 'always', 'never', and 'interactive' (default)."
   (match (package-latest-release* package updaters)
-    (($ <upstream-source> _ version urls signature-urls)
+    (($ <upstream-source> _ version urls signature-urls changes)
      (let*-values (((name)
                     (package-name package))
                    ((archive-type)
@@ -299,9 +373,9 @@ and 'interactive' (default)."
                            (or signature-urls (circular-list #f)))))
        (let ((tarball (download-tarball store url signature-url
                                         #:key-download key-download)))
-         (values version tarball))))
+         (values version tarball changes))))
     (#f
-     (values #f #f))))
+     (values #f #f #f))))
 
 (define (update-package-source package version hash)
   "Modify the source file that defines PACKAGE to refer to VERSION,
