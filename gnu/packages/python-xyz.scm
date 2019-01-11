@@ -54,7 +54,7 @@
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
@@ -831,6 +831,36 @@ messages in color.")
 
 (define-public python2-coloredlogs
   (package-with-python2 python-coloredlogs))
+
+(define-public python-et-xmlfile
+  (package
+    (name "python-et-xmlfile")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "et_xmlfile" version))
+       (sha256
+        (base32
+         "0nrkhcb6jdrlb6pwkvd4rycw34y3s931hjf409ij9xkjsli9fkb1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-lxml" ,python-lxml)))   ;used for the tests
+    (home-page "https://bitbucket.org/openpyxl/et_xmlfile")
+    (synopsis "Low memory implementation of @code{lxml.xmlfile}")
+    (description "This Python library is based upon the @code{xmlfile} module
+from @code{lxml}.  It aims to provide a low memory, compatible implementation
+of @code{xmlfile}.")
+    (license license:expat)))
+
+(define-public python2-et-xmlfile
+  (package-with-python2 python-et-xmlfile))
 
 (define-public python-eventlet
   (package
