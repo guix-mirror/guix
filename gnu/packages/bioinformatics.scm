@@ -14217,12 +14217,7 @@ absolute GSEA.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (replace 'build
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (substitute* "JAMM.sh"
-               (("^sPath=.*")
-                (string-append "")))
-             #t))
+         (delete 'build)
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
