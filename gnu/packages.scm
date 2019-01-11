@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
@@ -53,7 +53,6 @@
 
             find-packages-by-name
             find-best-packages-by-name
-            find-newest-available-packages
 
             specification->package
             specification->package+output
@@ -203,38 +202,21 @@ decreasing version order."
                     matching)
             matching)))))
 
-(define find-newest-available-packages
-  (mlambda ()
-    "Return a vhash keyed by package names, and with
-associated values of the form
-
-  (newest-version newest-package ...)
-
-where the preferred package is listed first."
-
-    ;; FIXME: Currently, the preferred package is whichever one
-    ;; was found last by 'fold-packages'.  Find a better solution.
-    (fold-packages (lambda (p r)
-                     (let ((name    (package-name p))
-                           (version (package-version p)))
-                       (match (vhash-assoc name r)
-                         ((_ newest-so-far . pkgs)
-                          (case (version-compare version newest-so-far)
-                            ((>) (vhash-cons name `(,version ,p) r))
-                            ((=) (vhash-cons name `(,version ,p ,@pkgs) r))
-                            ((<) r)))
-                         (#f (vhash-cons name `(,version ,p) r)))))
-                   vlist-null)))
-
 (define (find-best-packages-by-name name version)
   "If version is #f, return the list of packages named NAME with the highest
 version numbers; otherwise, return the list of packages named NAME and at
 VERSION."
   (if version
       (find-packages-by-name name version)
-      (match (vhash-assoc name (find-newest-available-packages))
-        ((_ version pkgs ...) pkgs)
-        (#f '()))))
+      (match (find-packages-by-name name)
+        (()
+         '())
+        ((matches ...)
+         ;; Return the subset of MATCHES with the higher version number.
+         (let ((highest (package-version (first matches))))
+           (take-while (lambda (p)
+                         (string=? (package-version p) highest))
+                       matches))))))
 
 
 (define %sigint-prompt
