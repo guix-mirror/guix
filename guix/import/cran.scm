@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -390,11 +390,11 @@ s-expression corresponding to that package, or #f on failure."
              (_ #f)))
           (_ #f)))))
 
-(define (latest-cran-release package)
-  "Return an <upstream-source> for the latest release of PACKAGE."
+(define (latest-cran-release pkg)
+  "Return an <upstream-source> for the latest release of the package PKG."
 
   (define upstream-name
-    (package->upstream-name package))
+    (package->upstream-name pkg))
 
   (define meta
     (fetch-description 'cran upstream-name))
@@ -403,15 +403,18 @@ s-expression corresponding to that package, or #f on failure."
        (let ((version (assoc-ref meta "Version")))
          ;; CRAN does not provide signatures.
          (upstream-source
-          (package (package-name package))
+          (package (package-name pkg))
           (version version)
-          (urls (cran-uri upstream-name version))))))
+          (urls (cran-uri upstream-name version))
+          (input-changes
+           (changed-inputs pkg
+                           (description->package 'cran meta)))))))
 
-(define (latest-bioconductor-release package)
-  "Return an <upstream-source> for the latest release of PACKAGE."
+(define (latest-bioconductor-release pkg)
+  "Return an <upstream-source> for the latest release of the package PKG."
 
   (define upstream-name
-    (package->upstream-name package))
+    (package->upstream-name pkg))
 
   (define version
     (latest-bioconductor-package-version upstream-name))
@@ -419,9 +422,13 @@ s-expression corresponding to that package, or #f on failure."
   (and version
        ;; Bioconductor does not provide signatures.
        (upstream-source
-        (package (package-name package))
+        (package (package-name pkg))
         (version version)
-        (urls (bioconductor-uri upstream-name version)))))
+        (urls (bioconductor-uri upstream-name version))
+        (input-changes
+         (changed-inputs
+          pkg
+          (cran->guix-package upstream-name 'bioconductor))))))
 
 (define (cran-package? package)
   "Return true if PACKAGE is an R package from CRAN."
