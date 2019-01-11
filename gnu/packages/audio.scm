@@ -18,6 +18,7 @@
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2155,7 +2156,11 @@ and ALSA.")
                 "1rzzqa39a6llr52vjkjr0a86nc776kmr5xs52qqga8ms9697psz5"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f))                    ; no check target
+     '(#:tests? #f ;; no check target
+       ;; Disable xunique to prevent X hanging when starting qjackctl in
+       ;; tiling window managers such as StumpWM or i3
+       ;; (see https://github.com/rncbc/qjackctl/issues/13).
+       #:configure-flags '("--disable-xunique")))
     (inputs
      `(("jack" ,jack-1)
        ("alsa-lib" ,alsa-lib)
