@@ -1043,7 +1043,6 @@ human-friendly syntax.")
                                     '("pandas/tests/io/conftest.py"
                                       "pandas/tests/io/json/test_compression.py"
                                       "pandas/tests/io/parser/test_network.py"
-                                      "pandas/tests/io/test_excel.py"
                                       "pandas/tests/io/test_parquet.py"))
                           (invoke "pytest" "-vv" "pandas" "--skip-slow"
                                   "--skip-network" "-k"
@@ -1051,8 +1050,10 @@ human-friendly syntax.")
                                   "not test_read_s3_jsonl"))))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
+       ("python-openpyxl" ,python-openpyxl)
        ("python-pytz" ,python-pytz)
-       ("python-dateutil" ,python-dateutil)))
+       ("python-dateutil" ,python-dateutil)
+       ("python-xlrd" ,python-xlrd)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-beautifulsoup4" ,python-beautifulsoup4)
