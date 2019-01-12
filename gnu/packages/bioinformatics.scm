@@ -10326,14 +10326,14 @@ the fact that each of these packages implements a select methods.")
 (define-public r-biovizbase
   (package
     (name "r-biovizbase")
-    (version "1.30.0")
+    (version "1.30.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "biovizBase" version))
        (sha256
         (base32
-         "0v54mcn3rnnfx8dmcrms5z3rgq19n3hp4r23azlgzwq6hjw7cccx"))))
+         "0v5gvcx180qn5487i1dph9abadw3ggqwp5yzy41jswzbdc8q6sbm"))))
     (properties `((upstream-name . "biovizBase")))
     (build-system r-build-system)
     (propagated-inputs
