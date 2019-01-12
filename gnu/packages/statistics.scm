@@ -5255,14 +5255,14 @@ to Applied regression, Second Edition, Sage, 2011.")
 (define-public r-caret
   (package
     (name "r-caret")
-    (version "6.0-80")
+    (version "6.0-81")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "caret" version))
        (sha256
         (base32
-         "0xhdhazzfh0hiqv2hgxglj9ffd2p4ls8acqn2sjn0ndx6158f187"))))
+         "1fibrskjzq2f06b8gbrfp3263svfc5s5apsjwaqdg9qzs7sy7fpc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreach" ,r-foreach)
