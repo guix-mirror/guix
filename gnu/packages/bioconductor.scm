@@ -197,6 +197,36 @@ default."  )
 genomes and gene ID formats, largely based on the UCSC table browser.")
     (license license:lgpl2.0+)))
 
+(define-public r-txdb-mmusculus-ucsc-mm9-knowngene
+  (package
+    (name "r-txdb-mmusculus-ucsc-mm9-knowngene")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib"
+                                  "/TxDb.Mmusculus.UCSC.mm9.knownGene_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "16bjxy00363hf91ik2mqlqls86i07gia72qh92xc3l1ncch61mx2"))))
+    (properties
+     `((upstream-name . "TxDb.Mmusculus.UCSC.mm9.knownGene")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-annotationdbi" ,r-annotationdbi)))
+    (home-page
+     "https://bioconductor.org/packages/TxDb.Mmusculus.UCSC.mm9.knownGene/")
+    (synopsis "Annotation package for mouse genome in TxDb format")
+    (description
+     "This package provides an annotation database of Mouse genome data.  It
+is derived from the UCSC mm9 genome and based on the \"knownGene\" track.  The
+database is exposed as a @code{TxDb} object.")
+    (license license:artistic2.0)))
+
 
 (define-public r-hpar
   (package
