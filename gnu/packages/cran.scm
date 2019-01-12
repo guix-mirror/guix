@@ -237,17 +237,18 @@ that.")
 (define-public r-readxl
   (package
     (name "r-readxl")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "readxl" version))
        (sha256
         (base32
-         "05ii8knrg4jji6h7bv6bfpn279b6x52yrskdx5rv7b0hcpy22gdn"))))
+         "1mwm389skl4ahcwsmhvx31pjkrn6y9igpnhsczwg6yza886q7j19"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cellranger" ,r-cellranger)
+       ("r-progress" ,r-progress)
        ("r-rcpp" ,r-rcpp)
        ("r-tibble" ,r-tibble)))
     (home-page "https://readxl.tidyverse.org")
