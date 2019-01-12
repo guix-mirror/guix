@@ -8007,14 +8007,14 @@ the interfaces between R and C++.")
 (define-public r-mvabund
   (package
     (name "r-mvabund")
-    (version "3.13.1")
+    (version "4.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mvabund" version))
        (sha256
         (base32
-         "1z8bj9zbc8h7w1xki9sc2p2rq6lv8gbcmiy9819z54d7lx1i9cnj"))))
+         "0la935gsiryfc0zixxr1dqj0av271x96pqxbi3bp6dksbw5gm68k"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)
