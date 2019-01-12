@@ -149,11 +149,26 @@ USER-PARTITIONS list. Return this list with password fields filled-in."
                    (run-input-page
                     (format #f (G_ "Please enter the password for the \
 encryption of partition ~a (label: ~a).") file-name crypt-label)
-                    (G_ "Password required")))))
+                    (G_ "Password required"))))
+                (password-confirm-page
+                 (lambda ()
+                   (run-input-page
+                    (format #f (G_ "Please confirm the password for the \
+encryption of partition ~a (label: ~a).") file-name crypt-label)
+                    (G_ "Password confirmation required")))))
            (if crypt-label
-               (user-partition
-                (inherit user-part)
-                (crypt-password (password-page)))
+               (let loop ()
+                 (let ((password (password-page))
+                       (confirmation (password-confirm-page)))
+                   (if (string=? password confirmation)
+                       (user-partition
+                        (inherit user-part)
+                        (crypt-password password))
+                       (begin
+                         (run-error-page
+                          (G_ "Password mismatch, please try again.")
+                          (G_ "Password error"))
+                         (loop)))))
                user-part)))
        user-partitions))
 
