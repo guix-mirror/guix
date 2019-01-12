@@ -402,7 +402,7 @@ access the common Google services, and has full asynchronous support.")
 (define-public libgxps
   (package
     (name "libgxps")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -410,7 +410,7 @@ access the common Google services, and has full asynchronous support.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1bhgrpb6ndlp11qwr95g9piklmjcsca7bi04f8gy9ziipm1i6as1"))))
+                "157s4c9gjjss6yd7qp7n4q6s72gz1k4ilsx4xjvp357azk49z4qs"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
