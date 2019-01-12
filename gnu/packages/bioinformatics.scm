@@ -10879,14 +10879,14 @@ block processing.")
 (define-public r-rhdf5lib
   (package
     (name "r-rhdf5lib")
-    (version "1.4.0")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhdf5lib" version))
        (sha256
         (base32
-         "01gpz780g850ql20b2ql6pvr678ydk4nq4sn5iiih94a4crb9lz1"))
+         "06bxd3wz8lrvh2hzvmjpdv4lvzj5lz9353bw5b3zb98cb8w9r2j5"))
        (modules '((guix build utils)))
        (snippet
         '(begin
