@@ -5938,14 +5938,14 @@ support for default values, positional argument support, etc.")
 (define-public r-findpython
   (package
     (name "r-findpython")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "findpython" version))
        (sha256
         (base32
-         "1y08jk2ffmkf9zpwiz2xymjhfwqvls9vzsnq62v278ghw9d571jl"))))
+         "1zfcdcp4d48d2pzf5n59kqrfk2z9nnyzkx5j00gfmgfkadnv93x5"))))
     (build-system r-build-system)
     (home-page "https://github.com/trevorld/findpython")
     (synopsis "Functions to find an acceptable Python binary")
