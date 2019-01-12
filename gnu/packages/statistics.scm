@@ -2649,14 +2649,14 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "1.10")
+    (version "1.11")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
           (base32
-            "0mh2f3k98w7pgz0ri34149s4kx5y0kfm27nwq64k0qwxd16hwd9r"))))
+            "0yyjbh891mdqzpjkblz8510ng71i7mxmyiqr69x3rwlwk2vakk79"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2666,7 +2666,6 @@ certain criterion, e.g., it contains a certain regular file.")
        ("r-jsonlite" ,r-jsonlite)
        ("r-knitr" ,r-knitr)
        ("r-mime" ,r-mime)
-       ("r-rprojroot" ,r-rprojroot)
        ("r-stringr" ,r-stringr)
        ("r-tinytex" ,r-tinytex)
        ("r-yaml" ,r-yaml)
