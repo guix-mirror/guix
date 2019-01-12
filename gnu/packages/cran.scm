@@ -2171,14 +2171,14 @@ available in a vignette.")
 (define-public r-lava
   (package
     (name "r-lava")
-    (version "1.6.3")
+    (version "1.6.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lava" version))
        (sha256
         (base32
-         "0cayjspry3r2lcbvl77v5v52b2zarri3b8xsf87pw5a3jn9anxcf"))))
+         "0627cjlg55kzbzcy82w6wykmw2i57qhgfcabn2zy3ydfdswyxij1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-numderiv" ,r-numderiv)
