@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -652,14 +652,14 @@ analysis.")
 (define-public r-survival
   (package
     (name "r-survival")
-    (version "2.43-1")
+    (version "2.43-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "survival" version))
        (sha256
         (base32
-         "0220fjsq4ycx1n5zc5h39wdbj5j6xr8rzqbcixx2p25akzdn7kqk"))))
+         "0ldrjja1dj4n1ic0lbggm7jvk52sl5h85i8m23nrgndi60acsv4r"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
