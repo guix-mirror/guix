@@ -10130,14 +10130,14 @@ microarrays or GRanges for sequencing data.")
 (define-public r-gage
   (package
     (name "r-gage")
-    (version "2.32.0")
+    (version "2.32.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gage" version))
        (sha256
         (base32
-         "07b098wvryxf0zd423nk6h52s3gyngwjcx2vplqybpbpgl8h2931"))))
+         "02g796sb1800ff0f1mq9f2m5wwzpf8pnfzajs49i68dhq2hm01a8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
