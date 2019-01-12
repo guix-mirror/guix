@@ -3419,14 +3419,14 @@ available.")
 (define-public r-gclus
   (package
     (name "r-gclus")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gclus" version))
        (sha256
         (base32
-         "02ba6zj9bjwrzykamjp40ajynx9xjx9h2i85n0ym0r5lcki4x6fn"))))
+         "1cz0g0i972955hhaji30rx8448x7f3as7z1sww9i5h86ybgirilw"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-cluster" ,r-cluster)))
     (home-page "https://cran.r-project.org/web/packages/gclus/")
