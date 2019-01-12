@@ -910,30 +910,36 @@ genes or proteins in these datasets.")
 (define-public r-inspect
   (package
     (name "r-inspect")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "INSPEcT" version))
        (sha256
         (base32
-         "0b671x5v2wyq5np2flq2m1fnjz32f303yjlw64a1inwc9k2w2pz2"))))
+         "07q5msw9rnamx957mbiawnv3p9kr5ahwawzvv9xzla7d3lkk62xp"))))
     (properties `((upstream-name . "INSPEcT")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-biocparallel" ,r-biocparallel)
+       ("r-deseq2" ,r-deseq2)
        ("r-desolve" ,r-desolve)
        ("r-genomicalignments" ,r-genomicalignments)
        ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
+       ("r-plgem" ,r-plgem)
        ("r-preprocesscore" ,r-preprocesscore)
        ("r-proc" ,r-proc)
        ("r-rootsolve" ,r-rootsolve)
        ("r-rsamtools" ,r-rsamtools)
-       ("r-s4vectors" ,r-s4vectors)))
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-shiny" ,r-shiny)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-txdb-mmusculus-ucsc-mm9-knowngene"
+        ,r-txdb-mmusculus-ucsc-mm9-knowngene)))
     (home-page "https://bioconductor.org/packages/INSPEcT")
     (synopsis "Analysis of 4sU-seq and RNA-seq time-course data")
     (description
