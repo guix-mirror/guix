@@ -6063,14 +6063,14 @@ Group (Non-)Overlap considerations.")
 (define-public r-refgenome
   (package
     (name "r-refgenome")
-    (version "1.7.3")
+    (version "1.7.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "refGenome" version))
        (sha256
         (base32
-         "15p0ra2p1pwhy5ixbhsz1g79c5sc2aap4i4c8kil0m2syg9y45sn"))))
+         "1s4lxv5pqk6d0f0a9iclgv88yl346fwvzgraxh0gwpbym1yhh787"))))
     (properties `((upstream-name . "refGenome")))
     (build-system r-build-system)
     (propagated-inputs
