@@ -9283,14 +9283,14 @@ linear order on both variables.")
 (define-public r-chemometricswithr
   (package
     (name "r-chemometricswithr")
-    (version "0.1.11")
+    (version "0.1.13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ChemometricsWithR" version))
        (sha256
         (base32
-         "00z09bplm5qvd31y7m4b4knsrl0n27j9635m1gdak6lg4db4nxrd"))))
+         "166va1g3m1wv21qkmw4wpz0bsrclh3jih8smxphdc13l9pqgclpq"))))
     (properties
      `((upstream-name . "ChemometricsWithR")))
     (build-system r-build-system)
