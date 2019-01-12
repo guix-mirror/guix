@@ -2532,6 +2532,26 @@ displays of path diagrams, factor analysis and structural equation models are
 created using basic graphics.")
     (license license:gpl2+)))
 
+(define-public r-generics
+  (package
+    (name "r-generics")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "generics" version))
+       (sha256
+        (base32
+         "0xk1xhpy7gpv3pvaygzhpfdxj72zmb38pb4nscfyg2ff36vx3cvi"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/r-lib/generics")
+    (synopsis "Common S3 generics not provided by base R methods")
+    (description
+     "In order to reduce potential package dependencies and conflicts,
+generics provides a number of commonly used S3 generics that are not provided
+by base R methods related to model fitting.")
+    (license license:gpl2)))
+
 (define-public r-broom
   (package
     (name "r-broom")
