@@ -7161,13 +7161,13 @@ also known as views, in a controlled vocabulary.")
 (define-public r-bookdown
   (package
     (name "r-bookdown")
-    (version "0.7")
+    (version "0.9")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "bookdown" version))
               (sha256
                (base32
-                "1b3fw1f41zph5yw3kynb47aijq53vhaa6mnnvxly72zamyzdf95q"))))
+                "0vg1s1w0l9pm95asqb21yf39mfk1nc9rdhmlys9xwr7p7i7rsz32"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
