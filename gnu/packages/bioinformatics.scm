@@ -9361,14 +9361,14 @@ GenomicRanges Bioconductor package.")
 (define-public r-copywriter
   (package
     (name "r-copywriter")
-    (version "2.14.0")
+    (version "2.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "CopywriteR" version))
        (sha256
         (base32
-         "0aamxafdk98n7s92jyqs65d6ljpnc2463vanvsw80p44qn6l6awn"))))
+         "1hbiw0m9hmx4na9v502pxf8y5wvxzr68r4d3fqr2755gxx86qck6"))))
     (properties `((upstream-name . "CopywriteR")))
     (build-system r-build-system)
     (propagated-inputs
