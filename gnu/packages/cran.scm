@@ -10196,14 +10196,14 @@ library.")
 (define-public r-protviz
   (package
     (name "r-protviz")
-    (version "0.3.1")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "protViz" version))
        (sha256
         (base32
-         "1im3ajimycsc1zpzbihxlsibjk0462q0vldy7v5ypsqnjbi1ndxm"))))
+         "150i2q4nakz28f39kmhrchz4qsr8ax6y02512md94k8hq4hamxg1"))))
     (properties `((upstream-name . "protViz")))
     (build-system r-build-system)
     (inputs
