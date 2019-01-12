@@ -2253,7 +2253,9 @@ the Kaplan-Meier and Aalen-Johansen methods.")
          "0ssy2qriiy6zdawriqcbl67qiq68ipml3frq7aqlq70r2fqyyw48"))))
     (properties `((upstream-name . "dimRed")))
     (build-system r-build-system)
-    (propagated-inputs `(("r-drr" ,r-drr)))
+    (propagated-inputs
+     `(("r-drr" ,r-drr)
+       ("r-magrittr" ,r-magrittr)))
     (home-page "https://github.com/gdkrmr/dimRed")
     (synopsis "Framework for dimensionality reduction")
     (description
