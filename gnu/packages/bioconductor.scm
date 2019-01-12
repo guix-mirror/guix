@@ -852,6 +852,31 @@ information.")
 in omics data.")
     (license license:gpl2+)))
 
+(define-public r-plgem
+  (package
+    (name "r-plgem")
+    (version "1.54.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "plgem" version))
+       (sha256
+        (base32
+         "1330635db3p8xm5y8fwrk1l37r6bgypsq70s3rx954i775zp6szg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-mass" ,r-mass)))
+    (home-page "http://www.genopolis.it")
+    (synopsis "Detect differential expression in microarray and proteomics datasets")
+    (description
+     "The Power Law Global Error Model (PLGEM) has been shown to faithfully
+model the variance-versus-mean dependence that exists in a variety of
+genome-wide datasets, including microarray and proteomics data.  The use of
+PLGEM has been shown to improve the detection of differentially expressed
+genes or proteins in these datasets.")
+    (license license:gpl2)))
+
 (define-public r-inspect
   (package
     (name "r-inspect")
