@@ -3538,14 +3538,14 @@ display.")
 (define-public r-pillar
   (package
     (name "r-pillar")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pillar" version))
        (sha256
         (base32
-         "1q6arybmfqxhp5zqj1fri5pb8v7ywcv7bmgf81rrmgl892p4bn5f"))))
+         "1xnbb9sr5wn9dmp6m7cr4z7i6pmjvyabnfcx6x7i7mvdjmgvaf5k"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
