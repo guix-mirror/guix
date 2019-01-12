@@ -290,13 +290,13 @@ into a pipeline of data manipulation and visualisation.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.4.5")
+    (version "1.4.5.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "1ddpcarzf694h0gy5pdz7l5glqfv4hr9dmxb4vw7yqd0bga174gi"))))
+                "0mqd40jckdpkjw1jjd860cdwkb03l6dkh931maijfdaqr1w9hwvn"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
