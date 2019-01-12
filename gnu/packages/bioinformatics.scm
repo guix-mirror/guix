@@ -8976,13 +8976,13 @@ of gene-level counts.")
 (define-public r-rhdf5
   (package
     (name "r-rhdf5")
-    (version "2.26.0")
+    (version "2.26.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rhdf5" version))
               (sha256
                (base32
-                "0xmpkfdsmgl79ffffj7cf9fx3zxki2rk0xn25k778kr3s0sbmhis"))))
+                "10zkw3k13wmvyif417gplyf6rwp2gpkjasw97lhwv2f9i32rry9l"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rhdf5lib" ,r-rhdf5lib)))
