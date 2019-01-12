@@ -2555,18 +2555,19 @@ by base R methods related to model fitting.")
 (define-public r-broom
   (package
     (name "r-broom")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "broom" version))
        (sha256
         (base32
-         "1r3831vq0fd5sh5841xr844sghg88z7ws91hg4jgnzbbkxfjp4ag"))))
+         "0bmf38yvwalqf5j5yrr48nsk5k3n75s0gwcw621hp5lgrgvnp7ns"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
        ("r-dplyr" ,r-dplyr)
+       ("r-generics" ,r-generics)
        ("r-nlme" ,r-nlme)
        ("r-purrr" ,r-purrr)
        ("r-reshape2" ,r-reshape2)
