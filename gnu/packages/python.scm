@@ -4112,7 +4112,7 @@ the OleFileIO module from PIL, the Python Image Library.")
                (add-installed-pythonpath inputs outputs)
                (invoke "python" "selftest.py" "--installed")
                (invoke "python" "-m" "pytest" "-vv")))))))
-    (home-page "https://pypi.python.org/pypi/Pillow")
+    (home-page "https://python-pillow.org")
     (synopsis "Fork of the Python Imaging Library")
     (description
      "The Python Imaging Library adds image processing capabilities to your
