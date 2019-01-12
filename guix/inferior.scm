@@ -81,6 +81,8 @@
 
             inferior-package->manifest-entry
 
+            gexp->derivation-in-inferior
+
             %inferior-cache-directory
             inferior-for-channels))
 
@@ -483,6 +485,30 @@ PACKAGE must be live."
                                         target)
   ;; Compile PACKAGE for SYSTEM, optionally cross-building for TARGET.
   (inferior-package->derivation package system #:target target))
+
+(define* (gexp->derivation-in-inferior name exp guix
+                                       #:rest rest)
+  "Return a derivation that evaluates EXP with GUIX, an instance of Guix as
+returned for example by 'channel-instances->derivation'.  Other arguments are
+passed as-is to 'gexp->derivation'."
+  (define trampoline
+    ;; This is a crude way to run EXP on GUIX.  TODO: use 'raw-derivation' and
+    ;; make 'guix repl' the "builder"; this will require "opening up" the
+    ;; mechanisms behind 'gexp->derivation', and adding '-l' to 'guix repl'.
+    #~(begin
+        (use-modules (ice-9 popen))
+
+        (let ((pipe (open-pipe* OPEN_WRITE
+                                #+(file-append guix "/bin/guix")
+                                "repl" "-t" "machine")))
+          ;; Unquote EXP right here so that its references to #$output
+          ;; propagate to the surrounding gexp.
+          (write '#$exp pipe)                     ;XXX: load path for EXP?
+
+          (unless (zero? (close-pipe pipe))
+            (error "inferior failed" #+guix)))))
+
+  (apply gexp->derivation name trampoline rest))
 
 
 ;;;
