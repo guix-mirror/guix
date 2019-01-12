@@ -811,14 +811,14 @@ non-estimable cases correctly.")
 (define-public r-pheatmap
   (package
     (name "r-pheatmap")
-    (version "1.0.10")
+    (version "1.0.12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pheatmap" version))
        (sha256
         (base32
-         "1jzxs5hwbz3r0z2pp09i7fd14sndxnrbm3zibaac3kny4nzydzf7"))))
+         "1hdh74az3vyzz6dqa311rhxdm74n46lyr03p862kn80p0kp9d7ap"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-gtable" ,r-gtable)
