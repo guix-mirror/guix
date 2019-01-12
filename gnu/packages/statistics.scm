@@ -2467,16 +2467,18 @@ time-of-day values, based on the @code{difftime} class.")
 (define-public r-readr
   (package
     (name "r-readr")
-    (version "1.1.1")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "readr" version))
               (sha256
                (base32
-                "1cvw5wdcqk88cp5fyv678mnmp66l3whcd2yh33p2qvx0168bja8s"))))
+                "1wz496rw0ah433p755n3xac8gh7yzid4xgdjzd1a7wmpkgilvy9k"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)
+     `(("r-clipr" ,r-clipr)
+       ("r-crayon" ,r-crayon)
+       ("r-rcpp" ,r-rcpp)
        ("r-hms" ,r-hms)
        ("r-tibble" ,r-tibble)
        ("r-r6" ,r-r6)
