@@ -7527,14 +7527,14 @@ differentiation.")
 (define-public r-ggeffects
   (package
     (name "r-ggeffects")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggeffects" version))
        (sha256
         (base32
-         "070c3fxmzajq2fy816s5pfqdyjlnzkabj97z7fcsva4h5rnqi9d6"))))
+         "152xyadj5m171z7dlzzy40y1fp2l9v46525dlw2al3qr0b7zpm61"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-crayon" ,r-crayon)
