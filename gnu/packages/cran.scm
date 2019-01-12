@@ -5955,21 +5955,21 @@ matches version and feature constraints.")
 (define-public r-argparse
   (package
     (name "r-argparse")
-    (version "1.1.1")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "argparse" version))
        (sha256
         (base32
-         "0fzrbj87b274vf96azdnsjxk2nf45d5wy58vzmlah4b4h7q4j524"))))
+         "1qrp7hc8sm6ryw0zws76al865ansig1xbx8ljxz4wabh60msrz3i"))))
     (build-system r-build-system)
     (inputs `(("python" ,python)))
     (propagated-inputs
      `(("r-findpython" ,r-findpython)
        ("r-getopt" ,r-getopt)
        ("r-jsonlite" ,r-jsonlite)
-       ("r-proto" ,r-proto)))
+       ("r-r6" ,r-r6)))
     (home-page "https://github.com/trevorld/argparse")
     (synopsis "Command line optional and positional argument parser")
     (description
