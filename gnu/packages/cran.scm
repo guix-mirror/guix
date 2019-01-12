@@ -458,13 +458,13 @@ LaTeX.")
 (define-public r-curl
   (package
     (name "r-curl")
-    (version "3.2")
+    (version "3.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "curl" version))
               (sha256
                (base32
-                "15hmy71310hnf9yqvz0icx4cq939gv6iqaifzlfdh2ia8akawdhn"))))
+                "1gd5i25anzi28lg1f8p7g63z9d46xi0qaw4lxpml5p0f52lvkc0c"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -481,7 +481,10 @@ LaTeX.")
                (("#ifdef _WIN32") "#if 1"))
              #t)))))
     (inputs
-     `(("libcurl" ,curl)))
+     `(("libcurl" ,curl)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/jeroenooms/curl")
     (synopsis "HTTP client for R")
     (description
