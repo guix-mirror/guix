@@ -7,6 +7,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018 Lprndn <guix@lprndn.info>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -235,6 +236,7 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
      `(#:configure-flags
        (list "-DWITH_IPP=OFF"
              "-DWITH_ITT=OFF"
+             "-DWITH_CAROTENE=OFF" ; only visible on arm/aarch64
 
              ;; CPU-Features:
              ;; See cmake/OpenCVCompilerOptimizations.cmake
@@ -245,10 +247,13 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
              "-DCPU_BASELINE=SSE2, NEON"
 
              "-DCPU_DISPATCH=SSE3,SSSE3,SSE4_1,SSE4_2,AVX,AVX2"
-             "-DCPU_DISPATCH_REQUIRE=SSE3,SSSE3,SSE4_1,SSE4_2,AVX,AVX2"
+             ,@(if (string-prefix? "x86_64" (or (%current-target-system)
+                                                (%current-system)))
+                   '("-DCPU_DISPATCH_REQUIRE=SSE3,SSSE3,SSE4_1,SSE4_2,AVX,AVX2")
+                   '())
 
              "-DBUILD_PERF_TESTS=OFF"
-             "-D BUILD_TESTS=ON"
+             "-DBUILD_TESTS=ON"
 
              (string-append "-DOPENCV_EXTRA_MODULES_PATH="
                             "/tmp/guix-build-opencv-" ,version ".drv-0"
