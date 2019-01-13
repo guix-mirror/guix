@@ -6504,6 +6504,29 @@ while providing the intuitive capabilities of @code{r-ggplot2}.")
 used to teach mathematics, statistics, computation and modeling.")
     (license license:gpl2+)))
 
+(define-public r-raster
+  (package
+    (name "r-raster")
+    (version "2.8-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "raster" version))
+       (sha256
+        (base32
+         "14pcfznxm5kdwd908axkr9v1l0hzxlrwd8kwrz0liqnfh9cx5rsa"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-sp" ,r-sp)))
+    (home-page "http://www.rspatial.org/")
+    (synopsis "Geographic data analysis and modeling")
+    (description
+     "The package implements basic and high-level functions for reading,
+writing, manipulating, analyzing and modeling of gridded spatial data.
+Processing of very large files is supported.")
+    (license license:gpl3+)))
+
 (define-public r-mosaic
   (package
    (name "r-mosaic")
