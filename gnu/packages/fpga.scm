@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -256,20 +257,20 @@ Includes the actual FTDI connector.")
     (license license:isc))))
 
 (define-public arachne-pnr
-  (let ((commit "52e69ed207342710080d85c7c639480e74a021d7")
-        (revision "1"))
+  (let ((commit "840bdfdeb38809f9f6af4d89dd7b22959b176fdd")
+        (revision "2"))
    (package
     (name "arachne-pnr")
     (version (string-append "0.0-" revision "-" (string-take commit 9)))
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/cseed/arachne-pnr.git")
+                     (url "https://github.com/YosysHQ/arachne-pnr.git")
                      (commit commit)))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                 (base32
-                   "15bdw5yxj76lxrwksp6liwmr6l1x77isf4bs50ys9rsnmiwh8c3w"))))
+                   "1dqvjvgvsridybishv4pnigw9gypxh7r7nrqp9z9qq92v7c5rxzl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -294,7 +295,7 @@ Includes the actual FTDI connector.")
        ("yosys" ,yosys) ; for tests
        ("perl" ,perl) ; for shasum
        ("python-2" ,python-2))) ; for tests
-    (home-page "https://github.com/cseed/arachne-pnr")
+    (home-page "https://github.com/YosysHQ/arachne-pnr")
     (synopsis "Place-and-Route tool for FPGAs")
     (description "Arachne-PNR is a Place-and-Route Tool For FPGAs.")
     (license license:gpl2))))
