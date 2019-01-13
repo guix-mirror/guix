@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1073,4 +1074,31 @@ such as the home directory.  Bubblewrap always creates a new mount namespace,
 and the user can specify exactly what parts of the filesystem should be visible
 in the sandbox.  Any such directories specified is mounted nodev by default,
 and can be made readonly.")
+    (license license:lgpl2.0+)))
+
+(define-public bochs
+  (package
+    (name "bochs")
+    (version "2.6.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://sourceforge.net/projects/bochs/files/bochs/"
+                           version "/bochs-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1379cq4cnfprhw8mgh60i0q9j8fz8d7n3d5fnn2g9fdiv5znfnzf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; No tests exist
+    (inputs
+     `(("libxrandr" ,libxrandr)))
+    (home-page "http://bochs.sourceforge.net/")
+    (synopsis "Emulator for x86 PC")
+    (description
+     "Bochs is an emulator which can emulate Intel x86 CPU, common I/O
+devices, and a custom BIOS.  It can also be compiled to emulate many different
+x86 CPUs, from early 386 to the most recent x86-64 Intel and AMD processors.
+Bochs can run most Operating Systems inside the emulation including Linux,
+DOS or Microsoft Windows.")
     (license license:lgpl2.0+)))

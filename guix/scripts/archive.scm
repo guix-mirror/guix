@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,7 @@
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module ((guix serialization) #:select (restore-file))
   #:use-module (guix store)
+  #:use-module (guix status)
   #:use-module (guix grafts)
   #:use-module (guix packages)
   #:use-module (guix derivations)
@@ -55,7 +56,11 @@
     (substitutes? . #t)
     (build-hook? . #t)
     (graft? . #t)
-    (verbosity . 0)))
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
+    (verbosity . 2)
+    (debug . 0)))
 
 (define (show-help)
   (display (G_ "Usage: guix archive [OPTION]... PACKAGE...
@@ -85,6 +90,8 @@ Export/import one or more packages from/to the store.\n"))
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (display (G_ "
       --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
+  (display (G_ "
+  -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
 
   (newline)
   (show-build-options-help)
@@ -161,6 +168,11 @@ Export/import one or more packages from/to the store.\n"))
          (option '(#\e "expression") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'expression arg result)))
+         (option '(#\v "verbosity") #t #f
+                 (lambda (opt name arg result)
+                   (let ((level (string->number* arg)))
+                     (alist-cons 'verbosity level
+                                 (alist-delete 'verbosity result)))))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
@@ -239,7 +251,6 @@ build and a list of store files to transfer."
 resulting archive to the standard output port."
   (let-values (((drv files)
                 (options->derivations+files store opts)))
-    (set-build-options-from-command-line store opts)
     (show-what-to-build store drv
                         #:use-substitutes? (assoc-ref opts 'substitutes?)
                         #:dry-run? (assoc-ref opts 'dry-run?))
@@ -329,21 +340,23 @@ the input port."
                 ((assoc-ref opts 'authorize)
                  (authorize-key))
                 (else
-                 (with-store store
-                   (cond ((assoc-ref opts 'export)
-                          (export-from-store store opts))
-                         ((assoc-ref opts 'import)
-                          (import-paths store (current-input-port)))
-                         ((assoc-ref opts 'missing)
-                          (let* ((files   (lines (current-input-port)))
-                                 (missing (remove (cut valid-path? store <>)
-                                                  files)))
-                            (format #t "~{~a~%~}" missing)))
-                         ((assoc-ref opts 'extract)
-                          =>
-                          (lambda (target)
-                            (restore-file (current-input-port) target)))
-                         (else
-                          (leave
-                           (G_ "either '--export' or '--import' \
-must be specified~%"))))))))))))
+                 (with-status-verbosity (assoc-ref opts 'verbosity)
+                   (with-store store
+                     (set-build-options-from-command-line store opts)
+                     (cond ((assoc-ref opts 'export)
+                            (export-from-store store opts))
+                           ((assoc-ref opts 'import)
+                            (import-paths store (current-input-port)))
+                           ((assoc-ref opts 'missing)
+                            (let* ((files   (lines (current-input-port)))
+                                   (missing (remove (cut valid-path? store <>)
+                                                    files)))
+                              (format #t "~{~a~%~}" missing)))
+                           ((assoc-ref opts 'extract)
+                            =>
+                            (lambda (target)
+                              (restore-file (current-input-port) target)))
+                           (else
+                            (leave
+                             (G_ "either '--export' or '--import' \
+must be specified~%")))))))))))))

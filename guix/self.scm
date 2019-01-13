@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +31,7 @@
   #:use-module ((guix build compile) #:select (%lightweight-optimizations))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:export (make-config.scm
             whole-package                     ;for internal use in 'guix pull'
@@ -42,35 +43,6 @@
 ;;;
 ;;; Dependency handling.
 ;;;
-
-(define* (false-if-wrong-guile package
-                               #:optional (guile-version (effective-version)))
-  "Return #f if PACKAGE depends on the \"wrong\" major version of Guile (e.g.,
-2.0 instead of 2.2), otherwise return PACKAGE."
-  (let ((guile (any (match-lambda
-                      ((label (? package? dep) _ ...)
-                       (and (string=? (package-name dep) "guile")
-                            dep)))
-                    (package-direct-inputs package))))
-    (and (or (not guile)
-             (string-prefix? guile-version
-                             (package-version guile)))
-         package)))
-
-(define (package-for-guile guile-version . names)
-  "Return the package with one of the given NAMES that depends on
-GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
-  (let loop ((names names))
-    (match names
-      (()
-       #f)
-      ((name rest ...)
-       (match (specification->package name)
-         (#f
-          (loop rest))
-         ((? package? package)
-          (or (false-if-wrong-guile package guile-version)
-              (loop rest))))))))
 
 (define specification->package
   ;; Use our own variant of that procedure because that of (gnu packages)
@@ -89,12 +61,7 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("gzip"       (ref '(gnu packages compression) 'gzip))
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
       ("xz"         (ref '(gnu packages compression) 'xz))
-      ("guile2.0-json" (ref '(gnu packages guile) 'guile2.0-json))
-      ("guile2.0-ssh"  (ref '(gnu packages ssh) 'guile2.0-ssh))
-      ("guile2.0-git"  (ref '(gnu packages guile) 'guile2.0-git))
-      ;; XXX: No "guile2.0-sqlite3".
-      ("guile2.0-gnutls" (ref '(gnu packages tls) 'gnutls/guile-2.0))
-      (_               #f))))                     ;no such package
+      (_            #f))))                        ;no such package
 
 
 ;;;
@@ -528,7 +495,7 @@ Info manual."
                         (pull-version 1)
                         (name (string-append "guix-" version))
                         (guile-version (effective-version))
-                        (guile-for-build (guile-for-build guile-version))
+                        (guile-for-build (default-guile))
                         (zlib (specification->package "zlib"))
                         (gzip (specification->package "gzip"))
                         (bzip2 (specification->package "bzip2"))
@@ -536,32 +503,22 @@ Info manual."
                         (guix (specification->package "guix")))
   "Return a file-like object that contains a compiled Guix."
   (define guile-json
-    (package-for-guile guile-version
-                       "guile-json"
-                       "guile2.0-json"))
+    (specification->package "guile-json"))
 
   (define guile-ssh
-    (package-for-guile guile-version
-                       "guile-ssh"
-                       "guile2.0-ssh"))
+    (specification->package "guile-ssh"))
 
   (define guile-git
-    (package-for-guile guile-version
-                       "guile-git"
-                       "guile2.0-git"))
+    (specification->package "guile-git"))
 
   (define guile-sqlite3
-    (package-for-guile guile-version
-                       "guile-sqlite3"
-                       "guile2.0-sqlite3"))
+    (specification->package "guile-sqlite3"))
 
   (define guile-gcrypt
-    (package-for-guile guile-version
-                       "guile-gcrypt"))
+    (specification->package "guile-gcrypt"))
 
   (define gnutls
-    (package-for-guile guile-version
-                       "gnutls" "guile2.0-gnutls"))
+    (specification->package "gnutls"))
 
   (define dependencies
     (match (append-map (lambda (package)
@@ -904,8 +861,8 @@ containing MODULE-FILES and possibly other files as well."
                              #:report-load report-load
                              #:report-compilation report-compilation)))
 
-          (setvbuf (current-output-port) _IONBF)
-          (setvbuf (current-error-port) _IONBF)
+          (setvbuf (current-output-port) 'none)
+          (setvbuf (current-error-port) 'none)
 
           (set! %load-path (cons #+module-tree %load-path))
           (set! %load-path
@@ -950,21 +907,6 @@ containing MODULE-FILES and possibly other files as well."
 ;;; Building.
 ;;;
 
-(define (guile-for-build version)
-  "Return a derivation for Guile 2.0 or 2.2, whichever matches the currently
-running Guile."
-  (define canonical-package                       ;soft reference
-    (module-ref (resolve-interface '(gnu packages base))
-                'canonical-package))
-
-  (match version
-    ("2.2"
-     (canonical-package (module-ref (resolve-interface '(gnu packages guile))
-                                    'guile-2.2)))
-    ("2.0"
-     (module-ref (resolve-interface '(gnu packages guile))
-                 'guile-2.0))))
-
 (define* (guix-derivation source version
                           #:optional (guile-version (effective-version))
                           #:key (pull-version 0))
@@ -981,9 +923,16 @@ is not supported."
   (define guile
     ;; When PULL-VERSION >= 1, produce a self-contained Guix and use Guile 2.2
     ;; unconditionally.
-    (guile-for-build (if (>= pull-version 1)
-                         "2.2"
-                         guile-version)))
+    (default-guile))
+
+  (when (and (< pull-version 1)
+             (not (string=? (package-version guile) guile-version)))
+    ;; Guix < 0.15.0 has PULL-VERSION = 0, where the host Guile is reused and
+    ;; can be any version.  When that happens and Guile is not current (e.g.,
+    ;; it's Guile 2.0), just bail out.
+    (raise (condition
+            (&message
+             (message "Guix is too old and cannot be upgraded")))))
 
   (mbegin %store-monad
     (set-guile-for-build guile)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -26,28 +26,22 @@
   #:use-module (system base message)
   #:use-module (guix modules)
   #:use-module (guix build utils)
+  #:use-module (language tree-il optimize)
+  #:use-module (language cps optimize)
   #:export (%default-optimizations
             %lightweight-optimizations
             compile-files))
 
 ;;; Commentary:
 ;;;
-;;; Support code to compile Guile code as efficiently as possible (both with
-;;; Guile 2.0 and 2.2).
+;;; Support code to compile Guile code as efficiently as possible (with 2.2).
 ;;;
 ;;; Code:
 
-(cond-expand
-  (guile-2.2 (use-modules (language tree-il optimize)
-                          (language cps optimize)))
-  (else #f))
-
 (define %default-optimizations
   ;; Default optimization options (equivalent to -O2 on Guile 2.2).
-  (cond-expand
-    (guile-2.2 (append (tree-il-default-optimization-options)
-                       (cps-default-optimization-options)))
-    (else '())))
+  (append (tree-il-default-optimization-options)
+          (cps-default-optimization-options)))
 
 (define %lightweight-optimizations
   ;; Lightweight optimizations (like -O0, but with partial evaluation).

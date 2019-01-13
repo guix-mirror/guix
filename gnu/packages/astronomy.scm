@@ -131,7 +131,7 @@ programs for the manipulation and analysis of astronomical data.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.18.1")
+    (version "0.18.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/Stellarium/" name
@@ -139,7 +139,7 @@ programs for the manipulation and analysis of astronomical data.")
                                  "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0vjkwrjy22b4wdjkafm63pmb0fck14ffnylpq8xr91ywycw4blrq"))))
+               "1mm8rjcb8j56m3kfigpix5vxviw1616kvl9ws2s3s5gdyngljrc3"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -161,6 +161,13 @@ programs for the manipulation and analysis of astronomical data.")
                                 (assoc-ref %build-inputs "qtserialport")
                                 "/include/qt5"))
        #:phases (modify-phases %standard-phases
+                  ;; Skip a test that assumes Stellarium is "installed":
+                  ;; https://bugs.gentoo.org/674472
+                  (add-after 'unpack 'patch-tests
+                    (lambda _
+                      (substitute* "src/tests/testEphemeris.cpp"
+                        (("ifndef Q_OS_WIN") "if 0"))
+                      #t))
                   (add-before 'check 'set-offscreen-display
                     (lambda _
                       ;; make Qt render "offscreen", required for tests

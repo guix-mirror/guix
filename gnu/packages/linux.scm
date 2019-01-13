@@ -31,6 +31,7 @@
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -412,8 +413,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20")
-(define %linux-libre-hash "07ss8nx95f4pqzzjy382fy5hk7anjm3hpbb3mzl1x8fzfq05q3dq")
+(define %linux-libre-version "4.20.1")
+(define %linux-libre-hash "10b1cgx7246lxwml66bzzc57sk5bbh7mjxc9zv6qncwh0xhsjv5n")
 
 (define %linux-libre-4.20-patches
   (list %boot-logo-patch
@@ -426,8 +427,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.20-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.13")
-(define %linux-libre-4.19-hash "0ac0ywy542fiwdiab2z12rbjn9zw8vjbzkbpmpk9nfic2mcyrg8r")
+(define %linux-libre-4.19-version "4.19.14")
+(define %linux-libre-4.19-hash "12ihsp3k8gznc1hjvlpy8jdb27ijr3zsvn8wcgr5za18pg5ncjl9")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -440,8 +441,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.91")
-(define %linux-libre-4.14-hash "1xr4q6hqjg4fjcd1w8qi2x9a11ms9wvascy9b1p6czblg9j9dd6a")
+(define %linux-libre-4.14-version "4.14.92")
+(define %linux-libre-4.14-hash "09s479krcjzgp53s5i6h7ld1mdagjci6lqvkv8mc1nj0ja8niiq3")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -450,8 +451,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.148"
-                    "0yrjgvdzbcp750j4fhlxi4ia1v0fqh0y3p99wnbpfvg17j01lbjl"
+  (make-linux-libre "4.9.149"
+                    "1qw1hahqiai8xbv769pdfnx3yan3rl2zh00fmi1nx0khan6i5as3"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -790,7 +791,7 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.44.3")
+    (version "1.44.5")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -799,7 +800,7 @@ slabtop, and skill.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1djb9qnid1j0vvna2bhq4jsz2ig1xckbx7h4d86cr0gl61yrz2ax"))))
+               "1ff56h6h1h17sj2zvlddv5c88nmbx46p1fcbh6b0s5k9kl3b6pms"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)

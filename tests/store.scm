@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -444,9 +444,7 @@
                      (package-derivation %store %bootstrap-guile))))
             (guard (c ((nix-protocol-error? c) #t))
               (build-derivations %store (list d))))))))
-   (cond-expand
-     (guile-2.2 "garbage: �lambda: λ")
-     (else      "garbage: ?lambda: λ"))))
+   "garbage: �lambda: λ"))
 
 (test-assert "log-file, derivation"
   (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))

@@ -122,14 +122,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.35")
+    (version "2.4.37")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0mlvwsm7hmpc7db6lfc2nx3v4cll3qljjxhjhgsw6aniskywc1r6"))))
+               "09npb7vlz5sizgj0nvl0bqxj9zig29ipkp07fgmw5ykjcxfdr61l"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -5068,15 +5068,16 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
 (define-public http-parser
   (package
     (name "http-parser")
-    (version "2.8.1")
+    (version "2.9.0")
+    (home-page "https://github.com/nodejs/http-parser")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/nodejs/http-parser/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "15ids8k2f0xhnnxh4m85w2f78pg5ndiwrpl24kyssznnp1l5yqai"))))
+                "1qa3rh9x4as2fc2p0y2hah83iqs7jr5106a8anv317359dgf3ssj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -5087,7 +5088,6 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (home-page "https://github.com/nodejs/http-parser")
     (synopsis "HTTP request/response parser for C")
     (description "This is a parser for HTTP messages written in C.  It parses
 both requests and responses.  The parser is designed to be used in

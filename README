@@ -20,7 +20,7 @@ Guix is based on the [[https://nixos.org/nix/][Nix]] package manager.
 
 GNU Guix currently depends on the following packages:
 
-  - [[https://gnu.org/software/guile/][GNU Guile 2.2.x or 2.0.x]], version 2.0.13 or later
+  - [[https://gnu.org/software/guile/][GNU Guile 2.2.x]]
   - [[https://notabug.org/cwebber/guile-gcrypt][Guile-Gcrypt]] 0.1.0 or later
   - [[https://www.gnu.org/software/make/][GNU Make]]
   - [[https://www.gnutls.org][GnuTLS]] compiled with guile support enabled

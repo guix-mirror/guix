@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -196,6 +196,36 @@ default."  )
      "This package provides the lengths of mRNA transcripts for a number of
 genomes and gene ID formats, largely based on the UCSC table browser.")
     (license license:lgpl2.0+)))
+
+(define-public r-txdb-mmusculus-ucsc-mm9-knowngene
+  (package
+    (name "r-txdb-mmusculus-ucsc-mm9-knowngene")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib"
+                                  "/TxDb.Mmusculus.UCSC.mm9.knownGene_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "16bjxy00363hf91ik2mqlqls86i07gia72qh92xc3l1ncch61mx2"))))
+    (properties
+     `((upstream-name . "TxDb.Mmusculus.UCSC.mm9.knownGene")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-annotationdbi" ,r-annotationdbi)))
+    (home-page
+     "https://bioconductor.org/packages/TxDb.Mmusculus.UCSC.mm9.knownGene/")
+    (synopsis "Annotation package for mouse genome in TxDb format")
+    (description
+     "This package provides an annotation database of Mouse genome data.  It
+is derived from the UCSC mm9 genome and based on the \"knownGene\" track.  The
+database is exposed as a @code{TxDb} object.")
+    (license license:artistic2.0)))
 
 
 (define-public r-hpar
@@ -411,14 +441,14 @@ determining dependencies between variables, code improvement suggestions.")
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.16.0")
+    (version "3.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "09fhh1355diip3v3c0skmp1336vclipkm5nv02qvp5902v4262y3"))))
+         "1x98d8iwrxjwdz1s5cnvi6flynw9gdkmara9gwf205qxgmy7j3a3"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs
@@ -778,14 +808,14 @@ trees and clusters to other programs.")
 (define-public r-goseq
   (package
     (name "r-goseq")
-    (version "1.34.0")
+    (version "1.34.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "goseq" version))
        (sha256
         (base32
-         "1401x0jn5f8hqc12r3gd1wammp1nxir3is1k5ldd03ln97x00i7a"))))
+         "1j87j98cajcjqabv6rb6zmcqxsqxxhbb3w60w1iink4rhsh8m3mn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -804,14 +834,14 @@ defined categories which are over/under represented in RNA-seq data.")
 (define-public r-glimma
   (package
     (name "r-glimma")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Glimma" version))
        (sha256
         (base32
-         "0cbsi6g8k1whkh21jxfn22sj7wry2g3rshiracf5nyvrl2fnl947"))))
+         "1ihrww55sa7ipi1rpp0rmn081sbqdwdmm5mz30zfrjr1xxqcdbcv"))))
     (properties `((upstream-name . "Glimma")))
     (build-system r-build-system)
     (propagated-inputs
@@ -831,14 +861,14 @@ information.")
 (define-public r-rots
   (package
     (name "r-rots")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ROTS" version))
        (sha256
         (base32
-         "137c06g5w7mjw3b1mly7b7n9iix4fcy23c7a9ym9iz8dazwhzwn5"))))
+         "1d5ggkk47xybcaizfy756qimbf2falg9cld46mhqjp3xfbfvzsg6"))))
     (properties `((upstream-name . "ROTS")))
     (build-system r-build-system)
     (propagated-inputs
@@ -852,33 +882,64 @@ information.")
 in omics data.")
     (license license:gpl2+)))
 
+(define-public r-plgem
+  (package
+    (name "r-plgem")
+    (version "1.54.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "plgem" version))
+       (sha256
+        (base32
+         "1330635db3p8xm5y8fwrk1l37r6bgypsq70s3rx954i775zp6szg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-mass" ,r-mass)))
+    (home-page "http://www.genopolis.it")
+    (synopsis "Detect differential expression in microarray and proteomics datasets")
+    (description
+     "The Power Law Global Error Model (PLGEM) has been shown to faithfully
+model the variance-versus-mean dependence that exists in a variety of
+genome-wide datasets, including microarray and proteomics data.  The use of
+PLGEM has been shown to improve the detection of differentially expressed
+genes or proteins in these datasets.")
+    (license license:gpl2)))
+
 (define-public r-inspect
   (package
     (name "r-inspect")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "INSPEcT" version))
        (sha256
         (base32
-         "0b671x5v2wyq5np2flq2m1fnjz32f303yjlw64a1inwc9k2w2pz2"))))
+         "07q5msw9rnamx957mbiawnv3p9kr5ahwawzvv9xzla7d3lkk62xp"))))
     (properties `((upstream-name . "INSPEcT")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-biocparallel" ,r-biocparallel)
+       ("r-deseq2" ,r-deseq2)
        ("r-desolve" ,r-desolve)
        ("r-genomicalignments" ,r-genomicalignments)
        ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
+       ("r-plgem" ,r-plgem)
        ("r-preprocesscore" ,r-preprocesscore)
        ("r-proc" ,r-proc)
        ("r-rootsolve" ,r-rootsolve)
        ("r-rsamtools" ,r-rsamtools)
-       ("r-s4vectors" ,r-s4vectors)))
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-shiny" ,r-shiny)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-txdb-mmusculus-ucsc-mm9-knowngene"
+        ,r-txdb-mmusculus-ucsc-mm9-knowngene)))
     (home-page "https://bioconductor.org/packages/INSPEcT")
     (synopsis "Analysis of 4sU-seq and RNA-seq time-course data")
     (description
@@ -918,14 +979,14 @@ demultiplexed, i.e. assigned to their original reference barcode.")
 (define-public r-ruvseq
   (package
     (name "r-ruvseq")
-    (version "1.16.0")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "RUVSeq" version))
        (sha256
         (base32
-         "0xb3bj3n06cb9xddkv77a8svhg4fl1azlfmibwrm9mq9464kgf0m"))))
+         "0qk7q3ab7k133divfkp54zsmvsmb9p8r09pkh2caswrzrn8achzv"))))
     (properties `((upstream-name . "RUVSeq")))
     (build-system r-build-system)
     (propagated-inputs

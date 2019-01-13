@@ -64,7 +64,7 @@
          (add-after 'install 'install-info
            (lambda _
              (invoke "make" "install_doc"))))))
-    (home-page "http://www.nasm.us/")
+    (home-page "https://www.nasm.us/")
     (synopsis "80x86 and x86-64 assembler")
     (description
      "NASM, the Netwide Assembler, is an 80x86 and x86-64 assembler designed
@@ -74,7 +74,7 @@ Windows32 and Windows64.  It will also output plain binary files.  Its syntax
 is designed to be simple and easy to understand, similar to Intel's but less
 complex.  It supports all currently known x86 architectural extensions, and
 has strong support for macros.")
-    (license license:bsd-3)))
+    (license license:bsd-2)))
 
 (define-public yasm
   (package
@@ -140,18 +140,17 @@ to the clients.")
          "02wqkqxpn3p0iwcagsm92qd9cdfcnbx8a09qg03b3pjppp30hmp6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;;no tests
-       #:strip-binaries? #f ;; fasm has no sections
+     `(#:tests? #f ; No tests exist
+       #:strip-binaries? #f ; fasm has no sections
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure) ;;no configure script used
+         (delete 'configure) ; no "configure" script exists
          (replace 'build
            (lambda _
-             ;;source code are in this directory
              (chdir "source/Linux/")
              (if (string=? ,(%current-system) "x86_64-linux")
-                 ;;use pre-compiled binaries in top-level directory to build
-                 ;;itself
+                 ;; Use pre-compiled binaries in top-level directory to build
+                 ;; fasm.
                  (invoke "../../fasm.x64" "fasm.asm")
                  (invoke "../../fasm" "fasm.asm"))))
          (replace 'install
@@ -159,12 +158,48 @@ to the clients.")
              (let ((out (assoc-ref %outputs "out")))
                (install-file "fasm" (string-append out "/bin")))
              #t)))))
-    ;;support only intel x86 family processors
     (supported-systems '("x86_64-linux" "i686-linux"))
     (synopsis "Assembler for x86 processors")
     (description
-     "FASM is a assembler that supports x86, and IA-64 Intel architectures.
-It does multiple passes to optimize machine code.It have macro abilities and
-focus on operating system portability.")
+     "FASM is an assembler that supports x86 and IA-64 Intel architectures.
+It does multiple passes to optimize machine code.  It has macro abilities and
+focuses on operating system portability.")
     (home-page "https://flatassembler.net/")
     (license license:bsd-2)))
+
+(define-public dev86
+  (package
+    (name "dev86")
+    (version "0.16.21")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://v3.sk/~lkundrak/dev86/Dev86src-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "154dyr2ph4n0kwi8yx0n78j128kw29rk9r9f7s2gddzrdl712jr3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f ; They use submakes wrong
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:system "i686-linux" ; Standalone ld86 had problems otherwise
+       #:tests? #f ; No tests exist
+       #:phases
+       (modify-phases %standard-phases
+        (delete 'configure)
+        (add-before 'install 'mkdir
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (mkdir-p (string-append out "/bin"))
+              (mkdir-p (string-append out "/man/man1"))
+              #t))))))
+    (synopsis "Intel 8086 (primarily 16-bit) assembler, C compiler and
+linker")
+    (description "This package provides a Intel 8086 (primarily 16-bit)
+assembler, a C compiler and a linker.  The assembler uses Intel syntax
+(also Intel order of operands).")
+    (home-page "https://github.com/jbruchon/dev86")
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (license license:gpl2+)))

@@ -23,16 +23,24 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix utils)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization))
+
+(define %docker-version "18.09.0")
 
 (define-public python-docker-py
   (package
@@ -188,6 +196,11 @@ Python without keeping their credentials in a Docker configuration file.")
                (string-append "DefaultCommand = \""
                               (assoc-ref inputs "runc")
                               "/sbin/runc\"\n")))
+            (substitute* "vendor/github.com/containerd/continuity/testutil/loopback/loopback_linux.go"
+             (("exec\\.Command\\(\"losetup\"") ; )
+              (string-append "exec.Command(\""
+                             (assoc-ref inputs "util-linux")
+                             "/sbin/losetup\""))) ;)
              #t))
          (replace 'build
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
@@ -200,7 +213,8 @@ Python without keeping their credentials in a Docker configuration file.")
     (inputs
      `(("btrfs-progs" ,btrfs-progs)
        ("libseccomp" ,libseccomp)
-       ("runc" ,runc)))
+       ("runc" ,runc)
+       ("util-linux" ,util-linux)))
     (native-inputs
      `(("go" ,go)
        ("pkg-config" ,pkg-config)))
@@ -209,4 +223,308 @@ Python without keeping their credentials in a Docker configuration file.")
 It includes image transfer and storage, container execution and supervision,
 network attachments.")
     (home-page "http://containerd.io/")
+    (license license:asl2.0)))
+
+(define-public docker
+  (package
+    (name "docker")
+    (version %docker-version)
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/docker/engine.git")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "1liqbx58grqih6m8hz9y20y5waflv19pv15l3wl64skap2bsn21c"))
+      (patches
+       (search-patches "docker-engine-test-noinstall.patch"
+                       "docker-fix-tests.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules
+       ((guix build gnu-build-system)
+        ((guix build go-build-system) #:prefix go:)
+        (guix build utils))
+       #:imported-modules
+       (,@%gnu-build-system-modules
+        (guix build go-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "builder/builder-next/executor_unix.go"
+              (("CommandCandidates:.*runc.*")
+               (string-append "CommandCandidates: []string{\""
+                              (assoc-ref inputs "runc")
+                              "/sbin/runc\"},\n")))
+             (substitute* "vendor/github.com/containerd/go-runc/runc.go"
+              (("DefaultCommand = .*")
+               (string-append "DefaultCommand = \""
+                              (assoc-ref inputs "runc")
+                              "/sbin/runc\"\n")))
+             (substitute* "vendor/github.com/containerd/containerd/runtime/v1/linux/runtime.go"
+              (("defaultRuntime[ \t]*=.*")
+               (string-append "defaultRuntime = \""
+                              (assoc-ref inputs "runc")
+                              "/sbin/runc\"\n"))
+              (("defaultShim[ \t]*=.*")
+               (string-append "defaultShim = \""
+                              (assoc-ref inputs "containerd")
+                              "/bin/containerd-shim\"\n")))
+             (substitute* "daemon/daemon_unix.go"
+              (("DefaultShimBinary = .*")
+               (string-append "DefaultShimBinary = \""
+                              (assoc-ref inputs "containerd")
+                              "/bin/containerd-shim\"\n"))
+              (("DefaultRuntimeBinary = .*")
+               (string-append "DefaultRuntimeBinary = \""
+                              (assoc-ref inputs "runc")
+                              "/sbin/runc\"\n"))
+              (("DefaultRuntimeName = .*")
+               (string-append "DefaultRuntimeName = \""
+                              (assoc-ref inputs "runc")
+                              "/sbin/runc\"\n")))
+             (substitute* "daemon/config/config.go"
+              (("StockRuntimeName = .*")
+               (string-append "StockRuntimeName = \""
+                              (assoc-ref inputs "runc")
+                              "/sbin/runc\"\n")))
+             (substitute* "vendor/github.com/moby/buildkit/executor/runcexecutor/executor.go"
+              (("var defaultCommandCandidates = .*")
+               (string-append "var defaultCommandCandidates = []string{\""
+                              (assoc-ref inputs "runc") "/sbin/runc\"}")))
+             (let ((source-files (filter (lambda (name)
+                                    (not (string-contains name "test")))
+                                  (find-files "." "\\.go$"))))
+               (let-syntax ((substitute-LookPath
+                             (lambda (x)
+                               (syntax-case x ()
+                                 ((substitute-LookPath source-text package
+                                                       relative-path)
+                                  #`(substitute* source-files
+                                     ((#,(string-append "exec\\.LookPath\\(\""
+                                                        (syntax->datum
+                                                         #'source-text)
+                                                        "\")"))
+                                      (string-append "\""
+                                                     (assoc-ref inputs package)
+                                                     relative-path
+                                                     "\", error(nil)")))))))
+                            (substitute-Command
+                             (lambda (x)
+                               (syntax-case x ()
+                                 ((substitute-LookPath source-text package
+                                                       relative-path)
+                                  #`(substitute* source-files
+                                     ((#,(string-append "exec\\.Command\\(\""
+                                                        (syntax->datum
+                                                         #'source-text)
+                                                        "\"")) ; )
+                                      (string-append "exec.Command(\""
+                                                     (assoc-ref inputs package)
+                                                     relative-path
+                                                     "\"")))))))) ; )
+                 (substitute-LookPath "ps" "procps" "/bin/ps")
+                 (substitute-LookPath "mkfs.xfs" "xfsprogs" "/bin/mkfs.xfs")
+                 (substitute-LookPath "lvmdiskscan" "lvm2" "/sbin/lvmdiskscan")
+                 (substitute-LookPath "pvdisplay" "lvm2" "/sbin/pvdisplay")
+                 (substitute-LookPath "blkid" "util-linux" "/sbin/blkid")
+                 (substitute-LookPath "unpigz" "pigz" "/bin/unpigz")
+                 (substitute-LookPath "iptables" "iptables" "/sbin/iptables")
+                 (substitute-LookPath "ip" "iproute2" "/sbin/ip")
+                 (substitute-Command "modprobe" "kmod" "/bin/modprobe")
+                 (substitute-Command "pvcreate" "lvm2" "/sbin/pvcreate")
+                 (substitute-Command "vgcreate" "lvm2" "/sbin/vgcreate")
+                 (substitute-Command "lvcreate" "lvm2" "/sbin/lvcreate")
+                 (substitute-Command "lvconvert" "lvm2" "/sbin/lvconvert")
+                 (substitute-Command "lvchange" "lvm2" "/sbin/lvchange")
+                 (substitute-Command "mkfs.xfs" "xfsprogs" "/sbin/mkfs.xfs")
+                 (substitute-Command "xfs_growfs" "xfsprogs" "/sbin/xfs_growfs")
+                 (substitute-Command "mkfs.ext4" "e2fsprogs" "/sbin/mkfs.ext4")
+                 (substitute-Command "tune2fs" "e2fsprogs" "/sbin/tune2fs")
+                 (substitute-Command "blkid" "util-linux" "/sbin/blkid")
+                 (substitute-Command "resize2fs" "e2fsprogs" "/sbin/resize2fs")
+; docker-mountfrom ??
+; docker
+; docker-untar ??
+; docker-applyLayer ??
+; /usr/bin/uname
+; grep
+; apparmor_parser
+                 (substitute-Command "ps" "procps" "/bin/ps")
+                 (substitute-Command "losetup" "util-linux" "/sbin/losetup")
+                 (substitute-Command "uname" "coreutils" "/bin/uname")
+                 (substitute-Command "dbus-launch" "dbus" "/bin/dbus-launch")
+                 (substitute-Command "git" "git" "/bin/git"))
+               ;; Make compilation fail when, in future versions, Docker
+               ;; invokes other programs we don't know about and thus don't
+               ;; substitute.
+               (substitute* source-files
+                ;; Search for Java in PATH.
+                (("\\<exec\\.Command\\(\"java\"") ; )
+                 "xxec.Command(\"java\"") ; )
+                ;; Search for AUFS in PATH (mainline Linux doesn't support it).
+                (("\\<exec\\.Command\\(\"auplink\"") ; )
+                 "xxec.Command(\"auplink\"") ; )
+                ;; Fail on other unsubstituted commands.
+                (("\\<exec\\.Command\\(\"([a-zA-Z0-9][a-zA-Z0-9_-]*)\""
+                  _ executable) ; )
+                 (string-append "exec.Guix_doesnt_want_Command(\""
+                                executable "\"")) ;)
+                (("\\<xxec\\.Command")
+                 "exec.Command")
+                ;; Search for ZFS in PATH.
+                (("\\<LookPath\\(\"zfs\"\\)") "LooxPath(\"zfs\")")
+                ;; Fail on other unsubstituted LookPaths.
+                (("\\<LookPath\\(\"") "Guix_doesnt_want_LookPath\\(\"") ; ))
+                (("\\<LooxPath") "LookPath")))
+             #t))
+         (add-after 'patch-paths 'delete-failing-tests
+           (lambda _
+             ;; Needs internet access.
+             (delete-file "builder/remotecontext/git/gitutils_test.go")
+             ;; Permission denied.
+             (delete-file "daemon/graphdriver/devmapper/devmapper_test.go")
+             ;; Operation not permitted (idtools.MkdirAllAndChown).
+             (delete-file "daemon/graphdriver/vfs/vfs_test.go")
+             ;; Timeouts after 5 min.
+             (delete-file "plugin/manager_linux_test.go")
+             ;; Operation not permitted.
+             (delete-file "daemon/graphdriver/overlay/overlay_test.go")
+             (delete-file "daemon/graphdriver/overlay2/overlay_test.go")
+             #t))
+         (replace 'configure
+           (lambda _
+             (setenv "DOCKER_GITCOMMIT" (string-append "v" ,%docker-version))
+             ;; Automatically use bundled dependencies.
+             ;; TODO: Unbundle - see file "vendor.conf".
+             (setenv "AUTO_GOPATH" "1")
+             ;; Respectively, strip the symbol table and debug
+             ;; information, and the DWARF symbol table.
+             (setenv "LDFLAGS" "-s -w")
+             ;; Make build faster
+             (setenv "GOCACHE" "/tmp")
+             #t))
+         (add-before 'build 'setup-environment
+           (assoc-ref go:%standard-phases 'setup-environment))
+         (replace 'build
+           (lambda _
+             ;; Our LD doesn't like the statically linked relocatable things
+             ;; that go produces, so install the dynamic version of
+             ;; dockerd instead.
+             (invoke "hack/make.sh" "dynbinary")))
+         (replace 'check
+           (lambda _
+             ;; The build process generated a file because the environment
+             ;; variable "AUTO_GOPATH" was set.  Use it.
+             (setenv "GOPATH" (string-append (getcwd) "/.gopath"))
+             ;; ".gopath/src/github.com/docker/docker" is a link to the current
+             ;; directory and chdir would canonicalize to that.
+             ;; But go needs to have the uncanonicalized directory name, so
+             ;; store that.
+             (setenv "PWD" (string-append (getcwd)
+                            "/.gopath/src/github.com/docker/docker"))
+             (with-directory-excursion ".gopath/src/github.com/docker/docker"
+               (invoke "hack/test/unit"))
+             (setenv "PWD" #f)
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-bin (string-append out "/bin")))
+               (install-file "bundles/dynbinary-daemon/dockerd" out-bin)
+               (install-file "bundles/dynbinary-daemon/dockerd-dev" out-bin)
+               #t))))))
+    (inputs
+     `(("btrfs-progs" ,btrfs-progs)
+       ("containerd" ,containerd) ; for containerd-shim
+       ("coreutils" ,coreutils)
+       ("dbus" ,dbus)
+       ("e2fsprogs" ,e2fsprogs)
+       ("git" ,git)
+       ("iproute2" ,iproute)
+       ("iptables" ,iptables)
+       ("kmod" ,kmod)
+       ("libseccomp" ,libseccomp)
+       ("pigz" ,pigz)
+       ("procps" ,procps)
+       ("runc" ,runc)
+       ("util-linux" ,util-linux)
+       ("lvm2" ,lvm2)
+       ("xfsprogs" ,xfsprogs)))
+    (native-inputs
+     `(("eudev" ,eudev) ; TODO: Should be propagated by lvm2 (.pc -> .pc)
+       ("go" ,go)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Docker container component library, and daemon")
+    (description "This package provides a framework to assemble specialized
+container systems.  It includes components for orchestration, image
+management, secret management, configuration management, networking,
+provisioning etc.")
+    (home-page "https://mobyproject.org/")
+    (license license:asl2.0)))
+
+(define-public docker-cli
+  (package
+    (name "docker-cli")
+    (version %docker-version)
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/docker/cli.git")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "1ivisys20kphvbqlazc3bsg7pk0ykj9gjx5d4yg439x4n13jxwvb"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/docker/cli"
+       ;; TODO: Tests require a running Docker daemon.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'setup-environment-2
+           (lambda _
+             ;; Respectively, strip the symbol table and debug
+             ;; information, and the DWARF symbol table.
+             (setenv "LDFLAGS" "-s -w")
+
+             ;; Make build reproducible.
+             (setenv "BUILDTIME" "1970-01-01 00:00:01.000000000+00:00")
+             (symlink "src/github.com/docker/cli/scripts" "./scripts")
+             (symlink "src/github.com/docker/cli/docker.Makefile" "./docker.Makefile")
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "./scripts/build/dynbinary")))
+         (replace 'check
+           (lambda* (#:key make-flags tests? #:allow-other-keys)
+             (setenv "PATH" (string-append (getcwd) "/build:" (getenv "PATH")))
+             (if tests?
+                 ;; Use the newly-built docker client for the tests.
+                 (with-directory-excursion "src/github.com/docker/cli"
+                   ;; TODO: Run test-e2e as well?
+                   (apply invoke "make" "-f" "docker.Makefile" "test-unit"
+                          (or make-flags '())))
+                 #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-bin (string-append out "/bin")))
+               (chdir "build")
+               (install-file (readlink "docker") out-bin)
+               (install-file "docker" out-bin)
+               #t))))))
+    (native-inputs
+     `(("go" ,go)
+       ("libltdl" ,libltdl)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Command line interface to Docker")
+    (description "This package provides a command line interface to Docker.")
+    (home-page "http://www.docker.com/")
     (license license:asl2.0)))

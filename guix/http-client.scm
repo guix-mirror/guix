@@ -97,7 +97,7 @@ Raise an '&http-get-error' condition if downloading fails."
                             headers))
                      (_ headers))))
       (unless (or buffered? (not (file-port? port)))
-        (setvbuf port _IONBF))
+        (setvbuf port 'none))
       (let*-values (((resp data)
                      (http-get uri #:streaming? #t #:port port
                                #:keep-alive? #t

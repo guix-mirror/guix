@@ -17,7 +17,7 @@
 @set SUBSTITUTE-SERVER ci.guix.info
 
 @copying
-Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès@*
+Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov@*
 Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
@@ -645,8 +645,7 @@ GNU Guix is available for download from its website at
 GNU Guix depends on the following packages:
 
 @itemize
-@item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.13 or
-later, including 2.2.x;
+@item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.2.x;
 @item @url{https://notabug.org/cwebber/guile-gcrypt, Guile-Gcrypt}, version
 0.1.0 or later;
 @item
@@ -2101,10 +2100,6 @@ Allow colliding packages in the new profile.  Use at your own risk!
 By default, @command{guix package} reports as an error @dfn{collisions}
 in the profile.  Collisions happen when two or more different versions
 or variants of a given package end up in the profile.
-
-@item --verbose
-Produce verbose output.  In particular, emit the build log of the
-environment on the standard error port.
 
 @item --bootstrap
 Use the bootstrap Guile to build the profile.  This option is only
@@ -6364,10 +6359,15 @@ Likewise, when the build or substitution process lasts for more than
 By default, the daemon's setting is honored (@pxref{Invoking
 guix-daemon, @code{--timeout}}).
 
-@item --verbosity=@var{level}
-Use the given verbosity level.  @var{level} must be an integer between 0
-and 5; higher means more verbose output.  Setting a level of 4 or more
-may be helpful when debugging setup issues with the build daemon.
+@c Note: This option is actually not part of %standard-build-options but
+@c most programs honor it.
+@cindex verbosity, of the command-line tools
+@cindex build logs, verbosity
+@item -v @var{level}
+@itemx --verbosity=@var{level}
+Use the given verbosity @var{level}, an integer.  Choosing 0 means that no
+output is produced, 1 is for quiet output, and 2 shows all the build log
+output on standard error.
 
 @item --cores=@var{n}
 @itemx -c @var{n}
@@ -6379,6 +6379,11 @@ value @code{0} means to use as many CPU cores as available.
 Allow at most @var{n} build jobs in parallel.  @xref{Invoking
 guix-daemon, @code{--max-jobs}}, for details about this option and the
 equivalent @command{guix-daemon} option.
+
+@item --debug=@var{level}
+Produce debugging output coming from the build daemon.  @var{level} must be an
+integer between 0 and 5; higher means more verbose output.  Setting a level of
+4 or more may be helpful when debugging setup issues with the build daemon.
 
 @end table
 
@@ -6548,9 +6553,9 @@ build}.
 
 @item --quiet
 @itemx -q
-Build quietly, without displaying the build log.  Upon completion, the
-build log is kept in @file{/var} (or similar) and can always be
-retrieved using the @option{--log-file} option.
+Build quietly, without displaying the build log; this is equivalent to
+@code{--verbosity=0}.  Upon completion, the build log is kept in @file{/var}
+(or similar) and can always be retrieved using the @option{--log-file} option.
 
 @item --file=@var{file}
 @itemx -f @var{file}
@@ -11685,9 +11690,11 @@ gexps to introduce job definitions that are passed to mcron
 
 (operating-system
   ;; @dots{}
-  (services (cons (mcron-service (list garbage-collector-job
-                                       updatedb-job
-                                       idutils-job))
+  (services (cons (service mcron-service-type
+                           (mcron-configuration
+                            (jobs (list garbage-collector-job
+                                        updatedb-job
+                                        idutils-job))))
                   %base-services)))
 @end lisp
 
@@ -11709,17 +11716,6 @@ also specify the number of tasks to display:
 @example
 # herd schedule mcron 10
 @end example
-
-@deffn {Scheme Procedure} mcron-service @var{jobs} [#:mcron @var{mcron}]
-Return an mcron service running @var{mcron} that schedules @var{jobs}, a
-list of gexps denoting mcron job specifications.
-
-This is a shorthand for:
-@example
-(service mcron-service-type
-         (mcron-configuration (mcron mcron) (jobs jobs)))
-@end example
-@end deffn
 
 @defvr {Scheme Variable} mcron-service-type
 This is the type of the @code{mcron} service, whose value is an
@@ -12313,12 +12309,6 @@ Tor} anonymous networking daemon.  The service is configured using a
 @code{tor} unprivileged user, which is a member of the @code{tor} group.
 
 @end defvr
-
-@deffn {Scheme Procedure} tor-service [@var{config-file}] [#:tor @var{tor}]
-This procedure is deprecated and will be removed in a future release.  Return
-a service of the @code{tor-service-type} type.  @var{config-file} and
-@var{tor} have the same meaning as in @code{<tor-configuration>}.
-@end deffn
 
 @deftp {Data Type} tor-configuration
 @table @asis
@@ -22154,6 +22144,33 @@ The following is an example @code{dicod-service} configuration.
                      (options '("database=wn")))
                     %dicod-database:gcide))))
 @end example
+
+@cindex Docker
+@subsubheading Docker Service
+
+The @code{(gnu services docker)} module provides the following service.
+
+@defvr {Scheme Variable} docker-service-type
+
+This is the type of the service that runs @url{http://www.docker.com,Docker},
+a daemon that can execute application bundles (sometimes referred to as
+``containers'') in isolated environments.
+
+@end defvr
+
+@deftp {Data Type} docker-configuration
+This is the data type representing the configuration of Docker and Containerd.
+
+@table @asis
+
+@item @code{package} (default: @code{docker})
+The Docker package to use.
+
+@item @code{containerd} (default: @var{containerd})
+The Containerd package to use.
+
+@end table
+@end deftp
 
 @node Setuid Programs
 @subsection Setuid Programs

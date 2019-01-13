@@ -3473,7 +3473,7 @@ the GNU GPL.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.01.4")
+    (version "2.01.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/tintin"
@@ -3481,7 +3481,7 @@ the GNU GPL.")
                                   "/tintin" "-" version ".tar.gz"))
               (sha256
                (base32
-                "1g7bh8xs1ml0iyraps3a3dzaycci922y7fk5j0wyr4ssyjzsy8nx"))))
+                "0pnnbcm96xbj69358568rpvp164rjmcvhnnzs7nvj062pi2hqcxx"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
@@ -3500,10 +3500,10 @@ the GNU GPL.")
     (home-page "http://tintin.sourceforge.net/")
     (synopsis "MUD client")
     (description
-     "TinTin++ is a MUD client which supports MCCP (Mud Client Compression Protocol),
-MMCP (Mud Master Chat Protocol), xterm 256 colors, most TELNET options used by MUDs,
-as well as those required to login via telnet on Linux / Mac OS X servers, and an
-auto mapper with a VT100 map display.")
+     "TinTin++ is a MUD client which supports MCCP (Mud Client Compression
+Protocol), MMCP (Mud Master Chat Protocol), xterm 256 colors, most TELNET
+options used by MUDs, as well as those required to login via telnet on
+Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
     (license license:gpl2+)))
 
 (define-public laby

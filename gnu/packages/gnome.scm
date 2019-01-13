@@ -396,7 +396,7 @@ access the common Google services, and has full asynchronous support.")
 (define-public libgxps
   (package
     (name "libgxps")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -404,7 +404,7 @@ access the common Google services, and has full asynchronous support.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1bhgrpb6ndlp11qwr95g9piklmjcsca7bi04f8gy9ziipm1i6as1"))))
+                "157s4c9gjjss6yd7qp7n4q6s72gz1k4ilsx4xjvp357azk49z4qs"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -2614,9 +2614,9 @@ and the GLib main loop, to integrate well with GNOME applications.")
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html"))))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
        ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)
        ("xsltproc" ,libxslt)))
@@ -4413,7 +4413,7 @@ classes for commonly used data structures.")
 (define-public gexiv2
   (package
     (name "gexiv2")
-    (version "0.10.8")
+    (version "0.10.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4421,7 +4421,7 @@ classes for commonly used data structures.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0088m7p044n741ly1m6i7w25z513h9wpgyw0rmx5f0sy3vyjiic1"))))
+                "1qbcwq89g4r67k1dj4laqj441pj4195c8hzhxn8vc6mmg8adg6kx"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib" ,glib "bin")

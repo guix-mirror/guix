@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -137,9 +137,7 @@ it's an old Guix."
   "Given PIPE, an input/output port, return an inferior that talks over PIPE.
 PIPE is closed with CLOSE when 'close-inferior' is called on the returned
 inferior."
-  (cond-expand
-    ((and guile-2 (not guile-2.2)) #t)
-    (else (setvbuf pipe 'line)))
+  (setvbuf pipe 'line)
 
   (match (read pipe)
     (('repl-version 0 rest ...)
@@ -391,8 +389,8 @@ input/output ports.)"
 
   ;; Use buffered ports so that 'get-bytevector-some' returns up to the
   ;; whole buffer like read(2) would--see <https://bugs.gnu.org/30066>.
-  (setvbuf client _IOFBF 65536)
-  (setvbuf backend _IOFBF 65536)
+  (setvbuf client 'block 65536)
+  (setvbuf backend 'block 65536)
 
   (let loop ()
     (match (select* (list client backend) '() '())

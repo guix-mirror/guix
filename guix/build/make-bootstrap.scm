@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,7 +67,7 @@ when producing a bootstrap libc."
 util).*\\.so(\\..*)?|lib(machuser|hurduser).so.*|(libc(rt|)|libpthread)\
 _nonshared\\.a)$")
 
-  (setvbuf (current-output-port) _IOLBF)
+  (setvbuf (current-output-port) 'line)
   (let* ((libdir (string-append output "/lib")))
     (mkdir-p libdir)
     (for-each (lambda (file)

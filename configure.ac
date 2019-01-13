@@ -93,14 +93,10 @@ m4_pattern_forbid([^GUIX_])
 
 dnl Search for 'guile' and 'guild'.  This macro defines
 dnl 'GUILE_EFFECTIVE_VERSION'.
-GUILE_PKG([2.2 2.0])
+GUILE_PKG([2.2])
 GUILE_PROGS
 if test "x$GUILD" = "x"; then
    AC_MSG_ERROR(['guild' binary not found; please check your guile-2.x installation.])
-fi
-
-if test "x$GUILE_EFFECTIVE_VERSION" = "x2.0"; then
-  PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.13])
 fi
 
 dnl Installation directories for .scm and .go files.

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
@@ -362,36 +362,23 @@ the Nix package manager.")
            (delete 'wrap-program)))))))
 
 (define-public guile2.0-guix
-  (package
-    (inherit guix)
-    (name "guile2.0-guix")
-    (inputs
-     `(("guile" ,guile-2.0)
-       ,@(alist-delete "guile" (package-inputs guix))))
-    (propagated-inputs
-     `(("gnutls" ,gnutls/guile-2.0)
-       ("guile-gcrypt" ,guile2.0-gcrypt)
-       ("guile-json" ,guile2.0-json)
-       ("guile-sqlite3" ,guile2.0-sqlite3)
-       ("guile-ssh" ,guile2.0-ssh)
-       ("guile-git" ,guile2.0-git)))))
+  (deprecated-package "guile2.0-guix" guix))
 
 (define-public guix-minimal
   ;; A version of Guix which is built with the minimal set of dependencies, as
   ;; outlined in the README "Requirements" section.  Intended as a CI job, so
   ;; marked as hidden.
-  (let ((guix guile2.0-guix))
-    (hidden-package
-     (package
-       (inherit guix)
-       (name "guix-minimal")
-       (inputs
-        `(("guile" ,guile-2.0.13)
-          ,@(alist-delete "guile" (package-inputs guix))))
-       (propagated-inputs
-        (fold alist-delete
-              (package-propagated-inputs guix)
-              '("guile-ssh")))))))
+  (hidden-package
+   (package
+     (inherit guix)
+     (name "guix-minimal")
+     (inputs
+      `(("guile" ,guile-2.2)
+        ,@(alist-delete "guile" (package-inputs guix))))
+     (propagated-inputs
+      (fold alist-delete
+            (package-propagated-inputs guix)
+            '("guile-ssh"))))))
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical

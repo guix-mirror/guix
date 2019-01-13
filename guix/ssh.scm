@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -140,12 +140,12 @@ right away."
                         (match (select read write except)
                           ((read write except)
                            (select read write except 0))))))
-         (setvbuf stdout _IONBF)
+         (setvbuf stdout 'none)
 
          ;; Use buffered ports so that 'get-bytevector-some' returns up to the
          ;; whole buffer like read(2) would--see <https://bugs.gnu.org/30066>.
-         (setvbuf stdin _IOFBF 65536)
-         (setvbuf sock _IOFBF 65536)
+         (setvbuf stdin 'block 65536)
+         (setvbuf sock 'block 65536)
 
          (connect sock AF_UNIX ,socket-name)
 
@@ -218,7 +218,7 @@ can be written."
                        (consume-input (current-input-port))
                        (list 'protocol-error (nix-protocol-error-message c))))
               (with-store store
-                (setvbuf (current-input-port) _IONBF)
+                (setvbuf (current-input-port) 'none)
                 (import-paths store (current-input-port))
                 '(success))))
           (lambda args
@@ -269,7 +269,7 @@ be read.  When RECURSIVE? is true, the closure of FILES is exported."
              (write '(exporting))                 ;we're ready
              (force-output)
 
-             (setvbuf (current-output-port) _IONBF)
+             (setvbuf (current-output-port) 'none)
              (export-paths store files (current-output-port)
                            #:recursive? ,recursive?))))))
 

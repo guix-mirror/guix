@@ -530,7 +530,7 @@ multiplexer to the KMS/DRM Linux kernel devices.")
 (define-public exempi
   (package
     (name "exempi")
-    (version "2.4.5")
+    (version "2.5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -538,7 +538,7 @@ multiplexer to the KMS/DRM Linux kernel devices.")
                    name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "07i29xmg8bqriviaf4vi1mwha4lrw85kfla29cfym14fp3z8aqa0"))))
+               "06vi7dc2gappwqm3xpfyy5ihxq14bmvj3bd47yk482jlq0jgr0nw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--with-boost="
@@ -732,7 +732,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
 (define-public libmbim
   (package
     (name "libmbim")
-    (version "1.16.2")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -740,7 +740,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0qmjvjbgs9m8qsaiq5arikzglgaas9hh1968bi7sy3905kp4yjgb"))))
+                "10mjjy860aakfd3h1yaj9l1jw816amrpwmyqlx37j21xv0l03x3c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
@@ -763,7 +763,7 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
 (define-public libqmi
   (package
     (name "libqmi")
-    (version "1.20.2")
+    (version "1.22.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -771,7 +771,7 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0i6aw8jyxv84d5x8lj2g9lb8xxf1dyad8n3q0kw164pyig55jd67"))))
+                "05xamy608mhvmw9zbnv9n8w3xpk96n10v5mixnvpnqgih6s9ih91"))))
     (build-system gnu-build-system)
     (inputs
      `(("libgudev" ,libgudev)))

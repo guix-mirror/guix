@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
@@ -241,6 +241,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/irc.scm  			\
   %D%/packages/iso-codes.scm			\
   %D%/packages/java.scm				\
+  %D%/packages/java-compression.scm		\
   %D%/packages/javascript.scm			\
   %D%/packages/jemalloc.scm			\
   %D%/packages/jrnl.scm				\
@@ -483,6 +484,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/desktop.scm			\
   %D%/services/dict.scm				\
   %D%/services/dns.scm				\
+  %D%/services/docker.scm			\
   %D%/services/authentication.scm		\
   %D%/services/games.scm			\
   %D%/services/kerberos.scm			\
@@ -541,6 +543,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/databases.scm			\
   %D%/tests/desktop.scm				\
   %D%/tests/dict.scm				\
+  %D%/tests/docker.scm				\
   %D%/tests/monitoring.scm                      \
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
@@ -588,6 +591,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/antlr3-3_3-fix-java8-compilation.patch	\
   %D%/packages/patches/ao-cad-aarch64-support.patch		\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
+  %D%/packages/patches/aria2-CVE-2019-3500.patch		\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
@@ -661,6 +665,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
+  %D%/packages/patches/docker-engine-test-noinstall.patch	\
+  %D%/packages/patches/docker-fix-tests.patch			\
   %D%/packages/patches/dovecot-trees-support-dovecot-2.3.patch	\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/dropbear-CVE-2018-15599.patch		\

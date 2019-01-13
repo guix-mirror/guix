@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
@@ -293,7 +293,8 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
 
 (define %default-options
   ;; Alist of default option values.
-  `((verbosity . 0)
+  `((verbosity . 1)
+    (debug . 0)
     (graft? . #t)
     (substitutes? . #t)
     (build-hook? . #t)
@@ -346,7 +347,7 @@ Install, remove, or upgrade packages in a single transaction.\n"))
   (display (G_ "
       --bootstrap        use the bootstrap Guile to build the profile"))
   (display (G_ "
-      --verbose          produce verbose output"))
+  -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (newline)
   (display (G_ "
   -s, --search=REGEXP    search in synopsis and description using REGEXP"))
@@ -472,13 +473,21 @@ kind of search path~%")
                    (values (alist-cons 'dry-run? #t
                                        (alist-cons 'graft? #f result))
                            #f)))
+         (option '(#\v "verbosity") #t #f
+                 (lambda (opt name arg result arg-handler)
+                   (let ((level (string->number* arg)))
+                     (values (alist-cons 'verbosity level
+                                         (alist-delete 'verbosity result))
+                             #f))))
          (option '("bootstrap") #f #f
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'bootstrap? #t result)
                            #f)))
-         (option '("verbose") #f #f
+         (option '("verbose") #f #f               ;deprecated
                  (lambda (opt name arg result arg-handler)
-                   (values (alist-cons 'verbose? #t result)
+                   (values (alist-cons 'verbosity 2
+                                       (alist-delete 'verbosity
+                                                     result))
                            #f)))
          (option '("allow-collisions") #f #f
                  (lambda (opt name arg result arg-handler)
@@ -907,14 +916,12 @@ processed, #f otherwise."
   (define opts
     (parse-command-line args %options (list %default-options #f)
                         #:argument-handler handle-argument))
-  (define verbose?
-    (assoc-ref opts 'verbose?))
 
   (with-error-handling
     (or (process-query opts)
         (parameterize ((%store  (open-connection))
                        (%graft? (assoc-ref opts 'graft?)))
-          (with-status-report print-build-event/quiet
+          (with-status-verbosity (assoc-ref opts 'verbosity)
             (set-build-options-from-command-line (%store) opts)
             (parameterize ((%guile-for-build
                             (package-derivation

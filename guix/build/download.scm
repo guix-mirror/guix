@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -314,9 +314,7 @@ host name without trailing dot."
 
       ;; Write HTTP requests line by line rather than byte by byte:
       ;; <https://bugs.gnu.org/22966>.  This is possible with Guile >= 2.2.
-      (cond-expand
-        (guile-2.2 (setvbuf record 'line))
-        (else #f))
+      (setvbuf record 'line)
 
       record)))
 
@@ -359,7 +357,7 @@ ETIMEDOUT error is raised."
           (connect* s (addrinfo:addr ai) timeout)
 
           ;; Buffer input and output on this port.
-          (setvbuf s _IOFBF)
+          (setvbuf s 'block)
           ;; If we're using a proxy, make a note of that.
           (when http-proxy (set-http-proxy-port?! s #t))
           s)
@@ -403,7 +401,7 @@ VERIFY-CERTIFICATE? is true, verify HTTPS server certificates."
     (with-https-proxy
      (let ((s (open-socket-for-uri uri #:timeout timeout)))
        ;; Buffer input and output on this port.
-       (setvbuf s _IOFBF %http-receive-buffer-size)
+       (setvbuf s 'block %http-receive-buffer-size)
 
        (if https?
            (tls-wrap s (uri-host uri)
@@ -505,18 +503,6 @@ port if PORT is a TLS session record port."
              #f))))
   (module-set! (resolve-module '(web http))
                'parse-rfc-822-date parse-rfc-822-date))
-
-;; XXX: Work around <http://bugs.gnu.org/19840>, present in Guile
-;; up to 2.0.11.
-(unless (or (> (string->number (major-version)) 2)
-            (> (string->number (minor-version)) 0)
-            (> (string->number (micro-version)) 11))
-  (let ((var (module-variable (resolve-module '(web http))
-                              'declare-relative-uri-header!)))
-    ;; If 'declare-relative-uri-header!' doesn't exist, forget it.
-    (when (and var (variable-bound? var))
-      (let ((declare-relative-uri-header! (variable-ref var)))
-        (declare-relative-uri-header! "Location")))))
 
 ;; XXX: Work around broken proxy handling on Guile 2.2 <= 2.2.2, fixed in
 ;; Guile commits 7d0d9e2c25c1e872cfc7d14ab5139915f1813d56 and
@@ -791,11 +777,11 @@ otherwise simply ignore them."
                               hashes))
                 content-addressed-mirrors))
 
-  ;; Make this unbuffered so 'progress-report/file' works as expected.  _IOLBF
+  ;; Make this unbuffered so 'progress-report/file' works as expected.  'line
   ;; means '\n', not '\r', so it's not appropriate here.
-  (setvbuf (current-output-port) _IONBF)
+  (setvbuf (current-output-port) 'none)
 
-  (setvbuf (current-error-port) _IOLBF)
+  (setvbuf (current-error-port) 'line)
 
   (let try ((uri (append uri content-addressed-uris)))
     (match uri

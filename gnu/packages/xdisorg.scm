@@ -990,7 +990,7 @@ color temperature should be set to match the lamps in your room.")
 (define-public xscreensaver
   (package
     (name "xscreensaver")
-    (version "5.40")
+    (version "5.42")
     (source
      (origin
        (method url-fetch)
@@ -999,7 +999,7 @@ color temperature should be set to match the lamps in your room.")
                        version ".tar.gz"))
        (sha256
         (base32
-         "1q2sr7h6ps6d3hk8895g12rrcqiihjl7py1ly077ikv4866r181h"))))
+         "1qfbsnj7201d03vf0b2lzxmlcq4kvkvzp48r5gcgsjr17c1sl7a4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; no check target
@@ -1013,7 +1013,9 @@ color temperature should be set to match the lamps in your room.")
              #t)))
        #:configure-flags '("--with-pam" "--with-proc-interrupts"
                            "--without-readdisplay")
-       #:make-flags (list (string-append "AD_DIR="
+       ;; FIXME: Remove CFLAGS once our default compiler is GCC6 or later.
+       #:make-flags (list "CFLAGS=-std=c99"
+                          (string-append "AD_DIR="
                                          (assoc-ref %outputs "out")
                                          "/usr/lib/X11/app-defaults"))))
     (native-inputs
@@ -1105,7 +1107,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.5.1")
+    (version "1.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -1113,7 +1115,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "0wx118banbwfqdwc5y44fkp3hxg97gj3vma16528slhy408hkg7i"))))
+                "17faa0rj8vqidrijwx9jrq0c29003n8v3izvc66yssfljgb8kcpj"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)
@@ -1611,7 +1613,7 @@ colors on all monitors attached to an XRandR-capable X11 display server.")
     (synopsis "Set the color temperature of the screen")
     (description "@code{sct} is a lightweight utility to set the color
 temperature of the screen.")
-    (license license:bsd-3)))
+    (license (license:non-copyleft "file://sct.c")))) ; "OpenBSD" license
 
 (define-public wl-clipboard
   (package

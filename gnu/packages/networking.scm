@@ -82,6 +82,8 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages nettle)
+  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
@@ -90,6 +92,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
@@ -2271,3 +2274,95 @@ allow all other machines, without direct access to that network, to be relayed
 through the machine the Dante server is running on.  The external network will
 never see any machines other than the one Dante is running on.")
     (license (license:non-copyleft "file://LICENSE"))))
+
+(define-public restbed
+  (let ((commit "6eb385fa9051203f28bf96cc1844bbb5a9a6481f"))
+    (package
+      (name "restbed")
+      (version (git-version "4.6" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Corvusoft/restbed/")
+               (commit commit)))
+         (file-name (string-append name "-" version ".tar.gz"))
+         (sha256
+          (base32 "0k60i5drklqqrb4khb25fzkgz9y0sncxf1sp6lh2bm1m0gh0661n"))))
+      (build-system cmake-build-system)
+      (inputs
+       `(("asio" ,asio)
+         ("catch" ,catch-framework)
+         ("openssl" ,openssl)))
+      (arguments
+       `(#:tests? #f
+         #:configure-flags
+         '("-DBUILD_TESTS=NO"
+           "-DBUILD_EXAMPLES=NO"
+           "-DBUILD_SSL=NO"
+           "-DBUILD_SHARED=NO")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'apply-patches-and-fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((asio (assoc-ref inputs "asio"))
+                     (catch (assoc-ref inputs "catch"))
+                     (openssl (assoc-ref inputs "openssl")))
+                 (substitute* "cmake/Findasio.cmake"
+                   (("(find_path\\( asio_INCLUDE asio\\.hpp HINTS ).*$" all begin)
+                    (string-append begin " \"" asio "/include\" )")))
+                 (substitute* "cmake/Findcatch.cmake"
+                   (("(find_path\\( catch_INCLUDE catch\\.hpp HINTS ).*$" all begin)
+                    (string-append begin " \"" catch "/include\" )")))
+                 (substitute* "cmake/Findopenssl.cmake"
+                   (("(find_library\\( ssl_LIBRARY ssl ssleay32 HINTS ).*$" all begin)
+                    (string-append begin " \"" openssl "/lib\" )"))
+                   (("(find_library\\( crypto_LIBRARY crypto libeay32 HINTS ).*$" all begin)
+                    (string-append begin " \"" openssl "/lib\" )"))
+                   (("(find_path\\( ssl_INCLUDE openssl/ssl\\.h HINTS ).*$" all begin)
+                    (string-append begin " \"" openssl "/include\" )")))))))))
+      (synopsis "Asynchronous RESTful functionality to C++11 applications")
+      (description "Restbed is a comprehensive and consistent programming
+model for building applications that require seamless and secure
+communication over HTTP.")
+      (home-page "https://github.com/Corvusoft/restbed")
+      (license license:agpl3+))))
+
+(define-public opendht
+  (package
+    (name "opendht")
+    (version "1.8.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/savoirfairelinux/opendht.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0vninb5mak27wigajslyvr05vq7wbrwqhbr4wzl2nmqcb20wmlq2"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("nettle" ,nettle)
+       ("readline" ,readline)
+       ("jsoncpp" ,jsoncpp)
+       ("restbed" ,restbed)))
+    (propagated-inputs
+     `(("argon2" ,argon2)               ; TODO: Needed for the pkg-config .pc file to work?
+       ("msgpack" ,msgpack)))           ;included in several installed headers
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("pkg-config" ,pkg-config)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     `(#:configure-flags '("--disable-tools"
+                           "--disable-python"
+                           "--with-argon2")))
+    (home-page "https://github.com/savoirfairelinux/opendht/")
+    (synopsis "Distributed Hash Table (DHT) library")
+    (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may
+be used to manage peer-to-peer network connections as needed for real time
+communication.")
+    (license license:gpl3+)))

@@ -428,16 +428,16 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "2.7.3")
+    (version "2.8.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/magit/with-editor/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/magit/with-editor.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ln2s0kckzkv50qmr6x1kb2j30cfjii0vs6lpghg7ff4lav8jqgh"))))
+                "1bbzvxnjpxqyvi808isld025b3pcidn4r2xf8hnk9bmzcfdvdr6q"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -592,7 +592,7 @@ support for Git-SVN.")
 (define-public emacs-magit-popup
   (package
     (name "emacs-magit-popup")
-    (version "2.12.4")
+    (version "2.12.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -601,7 +601,7 @@ support for Git-SVN.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08952nzn0cb6gxscqyiljk4fq2zxjvr3ism0lvgw0gs9hl5phiwx"))))
+                "13riknyqr6vxqll80sfhvz165flvdz367rbd0pr5slb01bnfsi2i"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -621,6 +621,58 @@ setting options and then invoking an Emacs command which does something with
 these arguments.  The prototypical use is for the command to call an external
 process, passing on the arguments as command line arguments.")
     (license license:gpl3+)))
+
+(define-public emacs-treepy
+  (package
+    (name "emacs-treepy")
+    (version "0.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/volrath/treepy.el.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "04zwm6gx9pxfvgfkizx6pvb1ql8pqxjyzqp8flz0432x0gq5nlxk"))))
+    (build-system emacs-build-system)
+    (home-page
+     "https://github.com/volrath/treepy.el")
+    (synopsis "Tree traversal tools")
+    (description
+     "Generic tools for recursive and iterative tree traversal based on
+clojure.walk and clojure.zip respectively.")
+    (license license:gpl3+)))
+
+(define-public emacs-graphql
+  (package
+   (name "emacs-graphql")
+   (version "0.1.1")
+   (source (origin
+             (modules '((guix build utils)))
+             ;; Remove examples file with references to external packages as
+             ;; they do not exist at compilation time.
+             (snippet
+              '(begin (delete-file "examples.el")
+                 #t))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/vermiculus/graphql.el.git")
+                   (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0sp0skc1rnhi39szfbq1i99pdgd3bhn4c15cff05iqhjy2d4hniw"))))
+   (build-system emacs-build-system)
+   (home-page
+    "https://github.com/vermiculus/graphql.el")
+   (synopsis "GraphQL utilities")
+   (description
+    "GraphQL.el provides a generally-applicable domain-specific language for
+creating and executing GraphQL queries against your favorite web services.
+GraphQL is a data query language and runtime designed and used to request and
+deliver data to mobile and web apps.")
+   (license license:gpl3+)))
 
 (define-public emacs-ghub
   (package
@@ -1435,6 +1487,18 @@ environment set through Direnv.")
         (base32
          "1qa7lcrcmf76sf6dy8sxbg4adq7rg59fm0n5848w3qxgsr0h45fg"))))
     (build-system emacs-build-system)
+    (inputs
+     `(("global" ,global)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (chmod "ggtags.el" #o644)
+             (emacs-substitute-variables "ggtags.el"
+               ("ggtags-executable-directory"
+                (string-append (assoc-ref inputs "global") "/bin")))
+             #t)))))
     (home-page "https://github.com/leoliu/ggtags")
     (synopsis "Frontend to the GNU Global source code tagging system")
     (description "@code{ggtags} provides a frontend to the GNU Global source
@@ -2836,9 +2900,16 @@ These are distributed in separate files and can be used individually.")
                 "0nhjrnlmss535jbshjjd30vydbr8py21vkx4p294w6d8vg2rssf8"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
-    (arguments '())
-    (propagated-inputs
-     `(("emacs-irony-mode-server" ,emacs-irony-mode-server)))
+    (inputs `(("server" ,emacs-irony-mode-server)))
+    (arguments `(#:phases
+                 (modify-phases %standard-phases
+                   (add-after 'unpack 'configure
+                        (lambda* (#:key inputs #:allow-other-keys)
+                          (chmod "irony.el" #o644)
+                          (emacs-substitute-variables "irony.el"
+                            ("irony-server-install-prefix"
+                             (assoc-ref inputs "server")))
+                          #t)))))
     (synopsis "C/C++/ObjC Code completion and syntax checks for Emacs")
     (description "Irony-mode provides Clang-assisted syntax checking and
 completion for C, C++, and ObjC in GNU Emacs.  Using @code{libclang} it can
@@ -2853,7 +2924,6 @@ described on the homepage.")
     (name "emacs-irony-mode-server")
     (inputs
      `(("clang" ,clang)))
-    (propagated-inputs '())
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -8765,16 +8835,16 @@ object has been freed.")
 (define-public emacs-emacsql
   (package
     (name "emacs-emacsql")
-    (version "2.0.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/skeeto/emacsql/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "04hfjdgl1zc7jysgjc7d7d3xqpr7q1q9gsmzffjd91ii3hpqjgx6"))))
+    (version "3.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/skeeto/emacsql.git")
+                    (commit (string-append version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c84gxr1majqj4b59wgdy3lzm3ap66w9qsrnkx8hdbk9895ak81g"))))
     (build-system emacs-build-system)
     (arguments
      `(#:modules ((guix build emacs-build-system)
@@ -8809,8 +8879,6 @@ object has been freed.")
              (let ((file "emacsql-sqlite.el"))
                (chmod file #o644)
                (emacs-substitute-sexps file
-                 ;; Avoid interactive prompts.
-                 ("(defvar emacsql-sqlite-user-prompted" 't)
                  ;; Make sure Emacs looks for ‘GCC’ binary in the right place.
                  ("(executable-find" (which "gcc"))
                  ;; Make sure Emacs looks for ‘emacsql-sqlite’ binary
@@ -8846,16 +8914,17 @@ object @code{nil} corresponds 1:1 with @code{NULL} in the database.")
 (define-public emacs-closql
   (package
     (name "emacs-closql")
-    (version "0.5.1")
+    (version "1.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/emacscollective/closql/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacscollective/closql.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wa6r0kgbb7f19039p5f3di4dvrvxfgpd8bkam94fca7jvzj536c"))))
+         "0cy44d1fxkvah6fhjkn3mp6gzzrjmws1c4c20ayrma74y9xich3v"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-emacsql" ,emacs-emacsql)))
@@ -9336,11 +9405,11 @@ navigate and display hierarchy structures.")
       (license license:gpl3+))))
 
 (define-public emacs-md4rd
-  (let ((commit "be0fc4951b2d1f5194ffa1fcaac706dbac560500")
+  (let ((commit "c55512c2f7680db2a1e73db6bdf93adecaf40fec")
         (revision "1"))
     (package
       (name "emacs-md4rd")
-      (version (string-append "0.0.1" "-" revision "."
+      (version (string-append "0.0.2" "-" revision "."
                               (string-take commit 7)))
       (source (origin
                 (method git-fetch)
@@ -9350,7 +9419,7 @@ navigate and display hierarchy structures.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1i93shx5x192gd7cl2r6gvcvhhwyi1k08abi5w3izv1hn3pmksgq"))))
+                  "0mvv1mvsrpkrmikcpfqf2zbawnzgq33j6zjdrlv48mcw57xb2ak9"))))
       (propagated-inputs
        `(("emacs-hierarchy" ,emacs-hierarchy)
          ("emacs-request" ,emacs-request)
@@ -12840,4 +12909,35 @@ other frame parameters.")
       (synopsis "Emacs major mode for editing Arduino sketches")
       (description "Emacs major mode for editing Arduino sketches.")
       (home-page "https://github.com/bookest/arduino-mode")
+      (license license:gpl3+))))
+
+(define-public emacs-general
+  (let ((commit "675050199b5a30d54a24b58a367db32c0bdc47f5"))
+    (package
+      (name "emacs-general")
+      (version (git-version "0" "0" commit))
+      (home-page "https://github.com/noctuid/general.el")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url (string-append home-page ".git"))
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "175yyhzk57yk1sskxh3d2jzhrh2waiibbcfsll167qxr117yji5h"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (synopsis "More convenient key definitions in emacs")
+      (description "@code{general.el} provides a more convenient method for
+binding keys in emacs (for both evil and non-evil users).  Like
+@code{use-package}, which provides a convenient, unified interface for
+managing packages, @code{general.el} is intended to provide a convenient,
+unified interface for key definitions.  While this package does implement some
+completely new functionality (such as the ability to make vim-style
+keybindings under non-prefix keys with an optional timeout), its primary
+purpose is to build on existing functionality to make key definition more
+clear and concise.  @code{general-define-key} is user-extensible and supports
+defining multiple keys in multiple keymaps at once, implicitly wrapping key
+strings with (@code{kbd ...}), using named prefix key sequences (like the
+leader key in vim), and much more.")
       (license license:gpl3+))))

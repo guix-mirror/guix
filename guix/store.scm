@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -404,11 +404,6 @@
 (define (open-inet-socket host port)
   "Connect to the Unix-domain socket at HOST:PORT and return it.  Raise a
 '&nix-connection-error' upon error."
-  ;; Define 'TCP_NODELAY' on Guile 2.0.  The value is the same on all GNU
-  ;; systems.
-  (cond-expand (guile-2.2 #t)
-               (else      (define TCP_NODELAY 1)))
-
   (let ((sock (with-fluids ((%default-port-encoding #f))
                 ;; This trick allows use of the `scm_c_read' optimization.
                 (socket PF_UNIX SOCK_STREAM 0))))
@@ -613,7 +608,7 @@ to OUT, using chunks of BUFFER-SIZE bytes."
 
 (define %newlines
   ;; Newline characters triggering a flush of 'current-build-output-port'.
-  ;; Unlike Guile's _IOLBF, we flush upon #\return so that progress reports
+  ;; Unlike Guile's 'line, we flush upon #\return so that progress reports
   ;; that use that trick are correctly displayed.
   (char-set #\newline #\return))
 

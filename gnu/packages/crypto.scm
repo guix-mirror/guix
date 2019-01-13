@@ -11,6 +11,8 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,7 +73,7 @@
 (define-public libsodium
   (package
     (name "libsodium")
-    (version "1.0.16")
+    (version "1.0.17")
     (source (origin
             (method url-fetch)
             (uri (list (string-append
@@ -82,7 +84,7 @@
                         "releases/old/libsodium-" version ".tar.gz")))
             (sha256
              (base32
-              "0cq5pn7qcib7q70mm1lgjwj75xdxix27v0xl1xl0kvxww7hwgbgf"))))
+              "1cf2d9v1gylz1qcy2zappbf526qfmph6gd6fnn3w2b347vixmhqc"))))
     (build-system gnu-build-system)
     (synopsis "Portable NaCl-based crypto library")
     (description
@@ -163,53 +165,6 @@ OpenBSD tool of the same name.")
                                           "file://base64.c"
                                           "See base64.c in the distribution for
                                            the license from IBM.")))))
-
-(define-public opendht
-  (package
-    (name "opendht")
-    (version "0.6.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/savoirfairelinux/opendht.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (delete-file-recursively "src/argon2")
-                  (substitute* "src/Makefile.am"
-                    (("./argon2/libargon2.la") "")
-                    (("SUBDIRS = argon2") ""))
-                  (substitute* "src/crypto.cpp"
-                    (("argon2/argon2.h") "argon2.h"))
-                  (substitute* "configure.ac"
-                    (("src/argon2/Makefile") ""))
-                  #t))
-              (sha256
-               (base32
-                "1akk613f18rc8kqs0cxdm34iq7wwc9kffhgp5rng09arwlw8gw3w"))))
-    (build-system gnu-build-system)
-    (inputs
-     `(("gnutls" ,gnutls)
-       ("nettle" ,nettle)
-       ("readline" ,readline)
-       ("argon2" ,argon2)))
-    (propagated-inputs
-     `(("msgpack" ,msgpack)))           ;included in several installed headers
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("pkg-config" ,pkg-config)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
-    (arguments
-     `(#:configure-flags '("--disable-tools" "--disable-python")))
-    (home-page "https://github.com/savoirfairelinux/opendht/")
-    (synopsis "Distributed Hash Table (DHT) library")
-    (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may
-be used to manage peer-to-peer network connections as needed for real time
-communication.")
-    (license license:gpl3)))
 
 (define-public encfs
   (package
@@ -632,7 +587,7 @@ data on your platform, so the seed itself will be as random as possible.
 (define-public crypto++
   (package
     (name "crypto++")
-    (version "6.0.0")
+    (version "8.0.0")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://cryptopp.com/cryptopp"
@@ -640,11 +595,14 @@ data on your platform, so the seed itself will be as random as possible.
                                   ".zip"))
               (sha256
                (base32
-                "1nidm6xbdza5cbgf5md2zznmaq692rfyjasycwipl6rzdfwjvb34"))))
+                "0b5qrsm4jhy4nzxgrm13nixhvbswr242plx1jw6r4sw492rqkzdv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             ;; Override "/sbin/ldconfig" with simply "echo" since
+             ;; we don't need ldconfig(8).
+             "LDCONF=echo")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-native-optimisation
@@ -654,7 +612,28 @@ data on your platform, so the seed itself will be as random as possible.
              (substitute* "GNUmakefile"
                ((" -march=native") ""))
              #t))
-         (delete 'configure))))
+         (delete 'configure)
+         (add-after 'build 'build-shared
+           (lambda _
+             ;; By default, only the static library is built.
+             (invoke "make" "shared")))
+         (add-after 'install 'install-pkg-config
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pkg-dir (string-append out "/lib/pkgconfig")))
+               (mkdir-p pkg-dir)
+               (with-output-to-file (string-append pkg-dir "/libcrypto++.pc")
+                 (lambda _
+                   (display
+                    (string-append
+                     "prefix=" out "\n"
+                     "libdir=" out "/lib\n"
+                     "includedir=" out "/include\n\n"
+                     "Name: libcrypto++-" ,version "\n"
+                     "Description: Class library of cryptographic schemes"
+                     "Version: " ,version "\n"
+                     "Libs: -L${libdir} -lcryptopp\n"
+                     "Cflags: -I${includedir}\n"))))))))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://cryptopp.com/")
@@ -881,3 +860,44 @@ GnuPG or encrypted filesystems.  Enchive has no external dependencies and is
 trivial to build for local use.  Portability is emphasized over performance.")
     (home-page "https://github.com/skeeto/enchive")
     (license license:unlicense)))
+
+(define-public libsecp256k1
+  (let ((commit "e34ceb333b1c0e6f4115ecbb80c632ac1042fa49"))
+    (package
+      (name "libsecp256k1")
+      (version (git-version "20181126" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/bitcoin-core/secp256k1")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0as78s179hcr3ysk3fw98k5wzabgnwri7vkkc17wg31lyz6ids6c"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      ;; WARNING: This package might need additional configure flags to run properly.
+      ;; See https://git.archlinux.org/svntogit/community.git/tree/trunk/PKGBUILD?h=packages/libsecp256k1.
+      (synopsis "C library for EC operations on curve secp256k1")
+      (description
+       "Optimized C library for EC operations on curve secp256k1.
+
+This library is a work in progress and is being used to research best
+practices.  Use at your own risk.
+
+Features:
+
+@itemize
+@item secp256k1 ECDSA signing/verification and key generation.
+@item Adding/multiplying private/public keys.
+@item Serialization/parsing of private keys, public keys, signatures.
+@item Constant time, constant memory access signing and pubkey generation.
+@item Derandomized DSA (via RFC6979 or with a caller provided function.)
+@item Very efficient implementation.
+@end itemize\n")
+      (home-page "https://github.com/bitcoin-core/secp256k1")
+      (license license:unlicense))))

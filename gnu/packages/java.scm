@@ -60,6 +60,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages java-compression)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux) ;alsa
   #:use-module (gnu packages maths)

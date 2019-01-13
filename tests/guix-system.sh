@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 #
@@ -258,7 +258,9 @@ cat > "$tmpdir/config.scm"<<EOF
 
 (operating-system
   $OS_BASE
-  (services (cons (tor-service (local-file "my-torrc"))
+  (services (cons (service tor-service-type
+                           (tor-configuration
+                             (config-file (local-file "my-torrc"))))
                   %base-services)))
 EOF
 

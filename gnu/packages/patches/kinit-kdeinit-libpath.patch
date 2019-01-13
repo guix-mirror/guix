@@ -23,7 +23,7 @@ pkgs/development/libraries/kde-frameworks/kinit/kinit-libpath.patch
 -                    l.load();
 -                }
 +                // Try to load the library relative to the active profiles.
-+                QByteArrayList profiles = qgetenv("LIBRARY_PATH").split(':');
++                QByteArrayList profiles = qgetenv("KDEINIT5_LIBRARY_PATH").split(':');
 +                for (const QByteArray &profile: profiles) {
 +                    if (!profile.isEmpty()) {
 +                        l.setFileName(QFile::decodeName(profile) + QStringLiteral("/") + libpath);

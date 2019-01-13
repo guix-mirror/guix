@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -775,7 +775,16 @@
                                       (method url-fetch)
                                       (uri (%local-url))
                                       (sha256 %null-sha256))))))))))
-     github-url)))
+     github-url))
+  (test-assert "github-url: already the correct github url"
+    (string-null?
+     (with-warnings
+       (check-github-url
+        (dummy-package "x" (source
+                            (origin
+                              (method url-fetch)
+                              (uri github-url)
+                              (sha256 %null-sha256)))))))))
 
 (test-assert "cve"
   (mock ((guix scripts lint) package-vulnerabilities (const '()))
