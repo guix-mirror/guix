@@ -6338,36 +6338,6 @@ between two different types of motif instances using as much relevant
 information as possible.")
     (license (list license:gpl2+ license:gpl3+))))
 
-(define-public r-vegan
-  (package
-    (name "r-vegan")
-    (version "2.5-3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "vegan" version))
-       (sha256
-        (base32
-         "023xznh0iy0496icpchadmp7a3rk3nj9s48fvwlvp3dssw58yp3c"))))
-    (build-system r-build-system)
-    (native-inputs
-     `(("gfortran" ,gfortran)))
-    (propagated-inputs
-     `(("r-cluster" ,r-cluster)
-       ("r-knitr" ,r-knitr) ; needed for vignettes
-       ("r-lattice" ,r-lattice)
-       ("r-mass" ,r-mass)
-       ("r-mgcv" ,r-mgcv)
-       ("r-permute" ,r-permute)))
-    (home-page "https://cran.r-project.org/web/packages/vegan")
-    (synopsis "Functions for community ecology")
-    (description
-     "The vegan package provides tools for descriptive community ecology.  It
-has most basic functions of diversity analysis, community ordination and
-dissimilarity analysis.  Most of its multivariate tools can be used for other
-data types as well.")
-    (license license:gpl2+)))
-
 (define-public r-annotate
   (package
     (name "r-annotate")

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
@@ -81,6 +82,36 @@
      "This package provides simple utility functions to read from and write to
 the system clipboards.")
     (license license:gpl3)))
+
+(define-public r-vegan
+  (package
+    (name "r-vegan")
+    (version "2.5-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "vegan" version))
+       (sha256
+        (base32
+         "023xznh0iy0496icpchadmp7a3rk3nj9s48fvwlvp3dssw58yp3c"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-knitr" ,r-knitr)             ; needed for vignettes
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-mgcv" ,r-mgcv)
+       ("r-permute" ,r-permute)))
+    (home-page "https://cran.r-project.org/web/packages/vegan")
+    (synopsis "Functions for community ecology")
+    (description
+     "The vegan package provides tools for descriptive community ecology.  It
+has most basic functions of diversity analysis, community ordination and
+dissimilarity analysis.  Most of its multivariate tools can be used for other
+data types as well.")
+    (license license:gpl2+)))
 
 (define-public r-tidyverse
   (package
