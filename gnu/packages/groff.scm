@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,7 +66,11 @@
         (add-after 'unpack 'setenv
           (lambda _
             (setenv "GS_GENERATE_UUIDS" "0")
-            #t)))))
+            #t))
+        (add-after 'unpack 'fix-docdir
+          (lambda _         ;see https://savannah.gnu.org/bugs/index.php?55461
+            (substitute* "Makefile.in"
+              (("^docdir =.*") "docdir = @docdir@\n")))))))
    (synopsis "Typesetting from plain text mixed with formatting commands")
    (description
     "Groff is a typesetting package that reads plain text and produces
