@@ -228,6 +228,26 @@ database is exposed as a @code{TxDb} object.")
     (license license:artistic2.0)))
 
 
+(define-public r-biocgenerics
+  (package
+    (name "r-biocgenerics")
+    (version "0.28.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BiocGenerics" version))
+              (sha256
+               (base32
+                "0cvpsrhg7sn7lpqgxvqrsagv6j7xj5rafq5xdjfd8zc4gxrs5rb8"))))
+    (properties
+     `((upstream-name . "BiocGenerics")))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/BiocGenerics")
+    (synopsis "S4 generic functions for Bioconductor")
+    (description
+     "This package provides S4 generic functions needed by many Bioconductor
+packages.")
+    (license license:artistic2.0)))
+
 (define-public r-annotate
   (package
     (name "r-annotate")
