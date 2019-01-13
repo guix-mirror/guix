@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
@@ -29,28 +29,26 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
-  #:use-module (gnu packages check)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages flex)
-  #:use-module (gnu packages gtk)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages guile)
-  #:use-module (gnu packages bison)
-  #:use-module (gnu packages image)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gd)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages gtk)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages compression)
-  #:use-module (gnu packages gd)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
-  #:use-module (gnu packages python)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:))
 
 (define-public graphviz
