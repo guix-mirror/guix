@@ -732,7 +732,7 @@ environments.")
          (replace 'check
            (lambda _
              (setenv "HOME" "/tmp")
-             (zero? (system* "py.test")))))))
+             (invoke "py.test"))))))
     (native-inputs
      `(("python-cytoolz" ,python-cytoolz)
        ("python-ruamel.yaml" ,python-ruamel.yaml)
