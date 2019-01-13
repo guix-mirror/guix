@@ -786,7 +786,7 @@ This package provides Conda as a library.")
                ;; application form, rather than the default, library form.
                ;; With this, we are able to run commands like `conda --help`
                ;; directly on the command line
-               (zero? (system* "python" "utils/setup-testing.py" "build_py"))))
+               (invoke "python" "utils/setup-testing.py" "build_py")))
            (replace 'install
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -802,8 +802,8 @@ This package provides Conda as a library.")
 
                  ;; And it aborts if the directory doesn't exist.
                  (mkdir-p target)
-                 (zero? (system* "python" "utils/setup-testing.py" "install"
-                                 (string-append "--prefix=" out))))))
+                 (invoke "python" "utils/setup-testing.py" "install"
+                         (string-append "--prefix=" out)))))
            ;; The "activate" and "deactivate" scripts don't need wrapping.
            ;; They also break when they are renamed.
            (add-after 'wrap 'undo-wrap
