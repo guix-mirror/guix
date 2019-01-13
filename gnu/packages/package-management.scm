@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -733,7 +734,8 @@ environments.")
              (setenv "HOME" "/tmp")
              (zero? (system* "py.test")))))))
     (native-inputs
-     `(("python-ruamel.yaml" ,python-ruamel.yaml)
+     `(("python-cytoolz" ,python-cytoolz)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
        ("python-requests" ,python-requests)
        ("python-pycosat" ,python-pycosat)
        ("python-pytest" ,python-pytest)
