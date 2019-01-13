@@ -55,10 +55,12 @@
             fold-packages
 
             find-packages-by-name
+            find-package-locations
             find-best-packages-by-name
 
             specification->package
             specification->package+output
+            specification->location
             specifications->manifest
 
             generate-package-cache))
@@ -274,6 +276,31 @@ decreasing version order."
                versions modules symbols)))
       (find-packages-by-name/direct name version)))
 
+(define* (find-package-locations name #:optional version)
+  "Return a list of version/location pairs corresponding to each package
+matching NAME and VERSION."
+  (define cache
+    (load-package-cache (current-profile)))
+
+  (if (and cache (cache-is-authoritative?))
+      (match (cache-lookup cache name)
+        (#f '())
+        ((#(name versions modules symbols outputs
+                 supported? deprecated?
+                 files lines columns) ...)
+         (fold (lambda (version* file line column result)
+                 (if (and file
+                          (or (not version)
+                              (version-prefix? version version*)))
+                     (alist-cons version* (location file line column)
+                                 result)
+                     result))
+               '()
+               versions files lines columns)))
+      (map (lambda (package)
+             (cons (package-version package) (package-location package)))
+           (find-packages-by-name/direct name version))))
+
 (define (find-best-packages-by-name name version)
   "If version is #f, return the list of packages named NAME with the highest
 version numbers; otherwise, return the list of packages named NAME and at
@@ -392,6 +419,30 @@ name followed by an at-sign and a version number.  If the version number is not
 present, return the preferred newest version."
   (let-values (((name version) (package-name->name+version spec)))
     (%find-package spec name version)))
+
+(define (specification->location spec)
+  "Return the location of the highest-numbered package matching SPEC, a
+specification such as \"guile@2\" or \"emacs\"."
+  (let-values (((name version) (package-name->name+version spec)))
+    (match (find-package-locations name version)
+      (()
+       (if version
+           (leave (G_ "~A: package not found for version ~a~%") name version)
+           (leave (G_ "~A: unknown package~%") name)))
+      (lst
+       (let* ((highest   (match lst (((version . _) _ ...) version)))
+              (locations (take-while (match-lambda
+                                       ((version . location)
+                                        (string=? version highest)))
+                                     lst)))
+         (match locations
+           (((version . location) . rest)
+            (unless (null? rest)
+              (warning (G_ "ambiguous package specification `~a'~%") spec)
+              (warning (G_ "choosing ~a@~a from ~a~%")
+                       name version
+                       (location->string location)))
+            location)))))))
 
 (define* (specification->package+output spec #:optional (output "out"))
   "Return the package and output specified by SPEC, or #f and #f; SPEC may

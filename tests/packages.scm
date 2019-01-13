@@ -1131,6 +1131,29 @@
     (lambda (key . args)
       key)))
 
+(test-equal "find-package-locations"
+  (map (lambda (package)
+         (cons (package-version package)
+               (package-location package)))
+       (find-packages-by-name "guile"))
+  (find-package-locations "guile"))
+
+(test-equal "find-package-locations with cache"
+  (map (lambda (package)
+         (cons (package-version package)
+               (package-location package)))
+       (find-packages-by-name "guile"))
+  (call-with-temporary-directory
+   (lambda (cache)
+     (generate-package-cache cache)
+     (mock ((guix describe) current-profile (const cache))
+           (mock ((gnu packages) cache-is-authoritative? (const #t))
+                 (find-package-locations "guile"))))))
+
+(test-equal "specification->location"
+  (package-location (specification->package "guile@2"))
+  (specification->location "guile@2"))
+
 (test-end "packages")
 
 ;;; Local Variables:
