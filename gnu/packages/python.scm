@@ -200,6 +200,14 @@
                    (guix build utils) (guix build gnu-build-system))
         #:phases
         (modify-phases %standard-phases
+          (add-after 'unpack 'remove-findleaks-from-testopts
+            (lambda _
+              (substitute* "Makefile.pre.in"
+                ;; -l which is short for --findleaks isn't compatible with the
+                ;; -j flag added through the #:make-flags, therefore remove
+                ;; it. This only affects python-2.7.
+                (("TESTOPTS=	-l ") "TESTOPTS= "))
+              #t))
           (add-before
            'configure 'patch-lib-shells
            (lambda _
