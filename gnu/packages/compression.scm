@@ -1219,6 +1219,14 @@ well as bzip2.")
      `(#:tests? #f             ; fail: https://github.com/h5py/h5py/issues/769
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-neon-detection
+           ;; Neon is only for aarch64 ATM
+           ;; see: https://github.com/kiyo-masui/bitshuffle/pull/73
+           (lambda _
+             (substitute* "src/bitshuffle_core.c"
+               (("#define USEARMNEON")
+                "#ifdef __aarch64__\n#define USEARMNEON\n#endif"))
+             #t))
          (add-after 'unpack 'dont-build-native
            (lambda _
              (substitute* "setup.py"
