@@ -6338,33 +6338,6 @@ between two different types of motif instances using as much relevant
 information as possible.")
     (license (list license:gpl2+ license:gpl3+))))
 
-(define-public r-annotate
-  (package
-    (name "r-annotate")
-    (version "1.60.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "annotate" version))
-       (sha256
-        (base32
-         "0p6c96lay23a67dyirgnwzm2yw22m592z780vy6p4nqwla8ha18n"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-dbi" ,r-dbi)
-       ("r-rcurl" ,r-rcurl)
-       ("r-xml" ,r-xml)
-       ("r-xtable" ,r-xtable)))
-    (home-page
-     "https://bioconductor.org/packages/annotate")
-    (synopsis "Annotation for microarrays")
-    (description "This package provides R environments for the annotation of
-microarrays.")
-    (license license:artistic2.0)))
-
 (define-public r-copynumber
   (package
     (name "r-copynumber")
