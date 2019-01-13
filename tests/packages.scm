@@ -995,6 +995,28 @@
     ((one)
      (eq? one guile-2.0))))
 
+(test-assert "fold-available-packages with/without cache"
+  (let ()
+    (define no-cache
+      (fold-available-packages (lambda* (name version result #:rest rest)
+                                 (cons (cons* name version rest)
+                                       result))
+                               '()))
+
+    (define from-cache
+      (call-with-temporary-directory
+       (lambda (cache)
+         (generate-package-cache cache)
+         (mock ((guix describe) current-profile (const cache))
+               (mock ((gnu packages) cache-is-authoritative? (const #t))
+                     (fold-available-packages (lambda* (name version result
+                                                             #:rest rest)
+                                                (cons (cons* name version rest)
+                                                      result))
+                                              '()))))))
+
+    (lset= equal? no-cache from-cache)))
+
 (test-assert "find-packages-by-name"
   (match (find-packages-by-name "hello")
     (((? (cut eq? hello <>))) #t)

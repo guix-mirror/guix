@@ -53,6 +53,7 @@
             %default-package-module-path
 
             fold-packages
+            fold-available-packages
 
             find-packages-by-name
             find-package-locations
@@ -181,6 +182,50 @@ flags."
               (string-append directory "/gnu/packages/patches")
               directory))
         %load-path)))
+
+(define (fold-available-packages proc init)
+  "Fold PROC over the list of available packages.  For each available package,
+PROC is called along these lines:
+
+  (PROC NAME VERSION RESULT
+        #:outputs OUTPUTS
+        #:location LOCATION
+        …)
+
+PROC can use #:allow-other-keys to ignore the bits it's not interested in.
+When a package cache is available, this procedure does not actually load any
+package module."
+  (define cache
+    (load-package-cache (current-profile)))
+
+  (if (and cache (cache-is-authoritative?))
+      (vhash-fold (lambda (name vector result)
+                    (match vector
+                      (#(name version module symbol outputs
+                              supported? deprecated?
+                              file line column)
+                       (proc name version result
+                             #:outputs outputs
+                             #:location (and file
+                                             (location file line column))
+                             #:supported? supported?
+                             #:deprecated? deprecated?))))
+                  init
+                  cache)
+      (fold-packages (lambda (package result)
+                       (proc (package-name package)
+                             (package-version package)
+                             result
+                             #:outputs (package-outputs package)
+                             #:location (package-location package)
+                             #:supported?
+                             (->bool
+                              (member (%current-system)
+                                      (package-supported-systems package)))
+                             #:deprecated?
+                             (->bool
+                              (package-superseded package))))
+                     init)))
 
 (define* (fold-packages proc init
                         #:optional

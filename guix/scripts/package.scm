@@ -736,29 +736,34 @@ processed, #f otherwise."
 
       (('list-available regexp)
        (let* ((regexp    (and regexp (make-regexp* regexp)))
-              (available (fold-packages
-                          (lambda (p r)
-                            (let ((n (package-name p)))
-                              (if (and (supported-package? p)
-                                       (not (package-superseded p)))
-                                  (if regexp
-                                      (if (regexp-exec regexp n)
-                                          (cons p r)
-                                          r)
-                                      (cons p r))
-                                  r)))
+              (available (fold-available-packages
+                          (lambda* (name version result
+                                         #:key outputs location
+                                         supported? superseded?
+                                         #:allow-other-keys)
+                            (if (and supported? (not superseded?))
+                                (if regexp
+                                    (if (regexp-exec regexp name)
+                                        (cons `(,name ,version
+                                                      ,outputs ,location)
+                                              result)
+                                        result)
+                                    (cons `(,name ,version
+                                                  ,outputs ,location)
+                                          result))
+                                result))
                           '())))
          (leave-on-EPIPE
-          (for-each (lambda (p)
-                      (format #t "~a\t~a\t~a\t~a~%"
-                              (package-name p)
-                              (package-version p)
-                              (string-join (package-outputs p) ",")
-                              (location->string (package-location p))))
+          (for-each (match-lambda
+                      ((name version outputs location)
+                       (format #t "~a\t~a\t~a\t~a~%"
+                               name version
+                               (string-join outputs ",")
+                               (location->string location))))
                     (sort available
-                          (lambda (p1 p2)
-                            (string<? (package-name p1)
-                                      (package-name p2))))))
+                          (match-lambda*
+                            (((name1 . _) (name2 . _))
+                             (string<? name1 name2))))))
          #t))
 
       (('search _)
