@@ -235,16 +235,14 @@ Additionally, various channel-specific options can be negotiated.")
     (version "0.11.3")
     (home-page "https://github.com/artyom-poptsov/guile-ssh")
     (source (origin
-              ;; ftp://memory-heap.org/software/guile-ssh/guile-ssh-VERSION.tar.gz
-              ;; exists, but the server appears to be too slow and unreliable.
-              ;; Also, using this URL allows the GitHub updater to work.
-              (method url-fetch)
-              (uri (string-append home-page "/archive/v"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1g2jzcg1p25zrkx06j160qb8bgcwa3001ys4q02496xs61pvywqk"))
+                "03bv3hwp2s8f0bqgfjaan9jx4dyab0abv27n2zn2g0izlidv0vl6"))
               (modules '((guix build utils)))
               (snippet
                '(begin
