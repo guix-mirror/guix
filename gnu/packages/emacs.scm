@@ -19,7 +19,7 @@
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -8715,7 +8715,7 @@ standard Unix password manager\").")
 (define-public emacs-pass
   (package
     (name "emacs-pass")
-    (version "1.7")
+    (version "1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8723,7 +8723,7 @@ standard Unix password manager\").")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0zlx9v6z0q3w9qhq9bq6vb7sli4c9x7qccm2wq55j0nw7bwy2yvj"))
+                "0aiz90gklk0cb8n4v1s3l0mx6pp2b7f4k2c0fjpihwmga13yklwn"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (propagated-inputs
