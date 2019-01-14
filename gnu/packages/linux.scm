@@ -1811,9 +1811,9 @@ UnionFS-FUSE additionally supports copy-on-write.")
                #t))))))
     (inputs `(("fuse" ,fuse-static)))))
 
-(define-public sshfs-fuse
+(define-public sshfs
   (package
-    (name "sshfs-fuse")
+    (name "sshfs")
     (version "2.10")
     (source (origin
               (method url-fetch)
@@ -1837,6 +1837,11 @@ Since most SSH servers already support this protocol it is very easy to set
 up: on the server side there's nothing to do; on the client side mounting the
 file system is as easy as logging into the server with an SSH client.")
     (license license:gpl2+)))
+
+(define-public sshfs-fuse
+  (package (inherit sshfs)
+    (name "sshfs-fuse")
+    (properties `((superseded . ,sshfs)))))
 
 (define-public archivemount
   (package
