@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -67,21 +67,30 @@
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.7.7")
+    (version "0.8.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://git.libssh.org/projects/libssh.git")
                      (commit (string-append "libssh-" version))))
-              (patches (search-patches "libssh-hostname-parser-bug.patch"))
               (sha256
                (base32
-                "07adxvhmnaq2l7sq7sn4sjlikbm1zdicq8lavq5yfila6jbx9z1y"))
+                "0rq57gpmdawljx7hqya4ipzsfpcbr31yy60kl5qv66krc9wimqda"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
      '(#:configure-flags '("-DWITH_GCRYPT=ON")
+
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'avoid-werror
+                    (lambda _
+                      ;; Avoid '-Werror'.  Presumably this works fine with
+                      ;; gcc@8 on x86_64 but leads to errors with our older
+                      ;; compiler.
+                      (substitute* "CompilerChecks.cmake"
+                        (("-Werror=") "-W"))
+                      #t)))
 
        ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test suite.
        #:tests? #f))
@@ -235,7 +244,22 @@ Additionally, various channel-specific options can be negotiated.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1g2jzcg1p25zrkx06j160qb8bgcwa3001ys4q02496xs61pvywqk"))))
+                "1g2jzcg1p25zrkx06j160qb8bgcwa3001ys4q02496xs61pvywqk"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; libssh >= 0.8.0 no longer provides libssh_threads: see
+                  ;; <https://github.com/artyom-poptsov/guile-ssh/issues/9>.
+                  (substitute* "libguile-ssh/Makefile.am"
+                    (("-lssh_threads") ""))
+
+                  ;; This test would wrongfully pick DSS keys when running on
+                  ;; libssh >= 0.8.0, which fails:
+                  ;; <https://github.com/artyom-poptsov/guile-ssh/issues/10>.
+                  (substitute* "tests/server.scm"
+                    (("= %libssh-minor-version 7")
+                     ">= %libssh-minor-version 7"))
+                  #t))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
