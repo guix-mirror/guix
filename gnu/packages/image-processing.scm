@@ -29,6 +29,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -211,13 +212,14 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
     (name "opencv")
     (version "3.4.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/opencv/opencv/archive/"
-                                  version ".zip"))
-              (file-name (string-append name "-" version ".zip"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/opencv/opencv")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pycx1pz8lj794q32mlalyc3ijqxwsyin65r26nh4yc0p71xiirp"))
+                "06bc61r8myym4s8im10brdjfg4wxkrvsbhhl7vr1msdan2xddzi3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -230,7 +232,8 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
                   ;; Some jars found:
                   (for-each delete-file
                             '("modules/java/test/pure_test/lib/junit-4.11.jar"
-                              "samples/java/sbt/sbt/sbt-launch.jar"))))))
+                              "samples/java/sbt/sbt/sbt-launch.jar"))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -257,13 +260,11 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
              "-DBUILD_TESTS=ON"
 
              (string-append "-DOPENCV_EXTRA_MODULES_PATH=" (getcwd)
-                            "/opencv-contrib/opencv_contrib-" ,version
-                            "/modules")
+                            "/opencv-contrib/modules")
 
              ;;Define test data:
              (string-append "-DOPENCV_TEST_DATA_PATH=" (getcwd)
-                            "/opencv-extra/opencv_extra-" ,version
-                            "/testdata")
+                            "/opencv-extra/testdata")
 
              ;; Is ON by default and would try to rebuild 3rd-party protobuf,
              ;; which we had removed, which would lead to an error:
@@ -296,39 +297,28 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
 
              ;; This one fails with "unknown file: Failure"
              ;; But I couldn't figure out which file was missing:
-             (substitute* (list (string-append
-                                 "../opencv-contrib/opencv_contrib-"
-                                 ,version
-                                 "/modules/face/test/test_face_align.cpp"))
+             (substitute* "../opencv-contrib/modules/face/test/test_face_align.cpp"
                (("(TEST\\(CV_Face_FacemarkKazemi, )(can_detect_landmarks\\).*)"
                  all pre post)
                 (string-append pre "DISABLED_" post)))
 
              ;; Failure reason: Bad accuracy
              ;; Incorrect count of accurate poses [2nd case]: 90.000000 / 94.000000
-             (substitute* (list (string-append
-                                 "../opencv-contrib/opencv_contrib-"
-                                 ,version
-                                 "/modules/rgbd/test/test_odometry.cpp"))
+             (substitute* "../opencv-contrib/modules/rgbd/test/test_odometry.cpp"
                (("(TEST\\(RGBD_Odometry_Rgbd, )(algorithmic\\).*)" all pre post)
                 (string-append pre "DISABLED_" post)))
              #t))
 
-         ;; Idea copied from ldc.scm (ldc-bootstrap):
          (add-after 'unpack 'unpack-submodule-sources
            (lambda* (#:key inputs #:allow-other-keys)
              (mkdir "../opencv-extra")
              (mkdir "../opencv-contrib")
-             (let ((unpack (lambda (source target)
-                             (with-directory-excursion target
-                               (apply invoke "unzip"
-                                      (list (assoc-ref inputs source))))))
-                   (untar (lambda (source target)
-                            (with-directory-excursion target
-                              (apply invoke "tar" "xvf"
-                                     (list (assoc-ref inputs source)))))))
-               (unpack "opencv-extra" "../opencv-extra")
-               (untar "opencv-contrib" "../opencv-contrib"))))
+             (copy-recursively (assoc-ref inputs "opencv-extra")
+                               "../opencv-extra")
+             (invoke "tar" "xvf"
+                     (assoc-ref inputs "opencv-contrib")
+                     "--strip-components=1"
+                     "-C" "../opencv-contrib")))
 
          (add-after 'set-paths 'add-ilmbase-include-path
            (lambda* (#:key inputs #:allow-other-keys)
@@ -350,26 +340,27 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
              ;; Therefore we must do it.
              (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))))))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("pkg-config" ,pkg-config)
+     `(("pkg-config" ,pkg-config)
        ("xorg-server" ,xorg-server) ; For running the tests
        ("opencv-extra"
         ,(origin
-           (method url-fetch)
-           (uri (string-append "https://codeload.github.com/"
-                               "opencv/opencv_extra/zip/" version))
-           (file-name (string-append "opencv-extra-" version ".zip"))
+           (method git-fetch)
+           (uri (git-reference
+                  (url "https://github.com/opencv/opencv_extra")
+                  (commit version)))
+           (file-name (git-file-name "opencv_extra" version))
            (sha256
-            (base32 "0yd1vidzbg6himxyh4yzivywijg8548kfmcn421khabnipm7l74y"))))
+            (base32 "08p5xnq8n1jw8svvz0fnirfg7q8dm3p4a5dl7527s5xj0f9qn7lp"))))
        ("opencv-contrib"
         ,(origin
-           (method url-fetch)
-           (uri (string-append "https://codeload.github.com/"
-                               "opencv/opencv_contrib/zip/" version))
-           (file-name (string-append "opencv-contrib-" version ".zip"))
+           (method git-fetch)
+           (uri (git-reference
+                  (url "https://github.com/opencv/opencv_contrib")
+                  (commit version)))
+           (file-name (git-file-name "opencv_contrib" version))
            (patches (search-patches "opencv-rgbd-aarch64-test-fix.patch"))
            (sha256
-           (base32 "0j0ci6ia1qwklp9hq07ypl0vkngj1wrgh6n98n657m5d0pyp4m0g"))))))
+            (base32 "1f334glf39nk42mpqq6j732h3ql2mpz89jd4mcl678s8n73nfjh2"))))))
     (inputs `(("libjpeg" ,libjpeg)
               ("libpng" ,libpng)
               ("jasper" ,jasper)
