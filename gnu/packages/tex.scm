@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -1061,6 +1061,22 @@ book).")
                               target))
                            '("ltxguide.cls" "ltnews.cls" "minimal.cls" "idx.tex"
                              "lablst.tex" "testpage.tex" "ltxcheck.tex"))
+                 ;; Install configurations
+                 (copy-recursively
+                  (assoc-ref inputs "texlive-latex-latexconfig")
+                  (string-append out "/share/texmf-dist/tex/latex/latexconfig"))
+                 (copy-recursively
+                  (assoc-ref inputs "texlive-generic-config")
+                  (string-append out "/share/texmf-dist/tex/generic/config"))
+                 (copy-recursively
+                  (assoc-ref inputs "texlive-generic-hyphen")
+                  (string-append out "/share/texmf-dist/tex/generic/hyphen"))
+                 (copy-recursively
+                  (assoc-ref inputs "texlive-generic-ruhyphen")
+                  (string-append out "/share/texmf-dist/tex/generic/ruhyphen"))
+                 (copy-recursively
+                  (assoc-ref inputs "texlive-generic-ukrhyph")
+                  (string-append out "/share/texmf-dist/tex/generic/ukrhyph"))
                  #t))))))
       (native-inputs
        `(("texlive-bin" ,texlive-bin)
@@ -1070,7 +1086,6 @@ book).")
          ("texlive-latex-latexconfig"
           ,(texlive-dir "tex/latex/latexconfig/"
                         "1zb3j49cj8p75yph6c8iysjp7qbdvghwf0mn9j0l7qq3qkbz2xaf"))
-         ("texlive-generic-hyph-utf8" ,texlive-generic-hyph-utf8)
          ("texlive-generic-hyphen"
           ,(texlive-dir "tex/generic/hyphen/"
                         "0xim36wybw2625yd0zwlp9m2c2xrcybw58gl4rih9nkph0wqwwhd"))
@@ -1099,6 +1114,8 @@ book).")
          ("texlive-fonts-cm" ,texlive-fonts-cm)
          ("texlive-fonts-latex" ,texlive-fonts-latex)
          ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)))
+      (propagated-inputs
+       `(("texlive-generic-hyph-utf8" ,texlive-generic-hyph-utf8)))
       (home-page "https://www.ctan.org/pkg/latex-base")
       (synopsis "Base sources of LaTeX")
       (description
