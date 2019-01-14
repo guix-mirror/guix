@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
@@ -189,16 +189,16 @@ authentication and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.62.0")
+   (version "7.63.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gnunet/" name "-" version ".tar.Z"))
             (sha256
              (base32
-              "1n258my5q4rxv140xvb1qh6vsh42ii0i8p7f2m15szqabm89487q"))))
+              "021b3pdfnqywk5q07y48kxyz7g4jjg35dk3cv0ps0x50qjr4ix33"))))
    (build-system gnu-build-system)
    (outputs '("out"
-              "doc"))                             ; 1.5 MiB of man3 pages
+              "doc"))                             ; 1.7 MiB of man3 pages
    (inputs `(("gnutls" ,gnutls/dane)
              ("libidn" ,libidn)
              ("zlib" ,zlib)))
