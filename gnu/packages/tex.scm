@@ -1879,8 +1879,8 @@ standard LaTeX packages."
                                              "/bin"))
                (for-each
                 (cut wrap-program <>
-                     `("TEXMFCNF" ":" = (,(dirname texmf.cnf)))
-                     `("TEXMF"    ":" = (,(string-append out "/share/texmf-dist"))))
+                     `("TEXMFCNF" ":" suffix (,(dirname texmf.cnf)))
+                     `("TEXMF"    ":" suffix (,(string-append out "/share/texmf-dist"))))
                 (find-files (string-append out "/bin") ".*"))
                #t))))
         (inputs
