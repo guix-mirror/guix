@@ -1555,8 +1555,8 @@ programming tools and kernel sup­port.  Packages provided in this release are:
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/fontspec"))
-    (inputs
-     `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)))
+    (propagated-inputs
+     `(("texlive-latex-l3packages" ,texlive-latex-l3packages)))
     (home-page "https://www.ctan.org/pkg/fontspec")
     (synopsis "Advanced font selection in XeLaTeX and LuaLaTeX")
     (description
