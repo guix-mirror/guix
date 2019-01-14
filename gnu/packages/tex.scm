@@ -1554,7 +1554,35 @@ programming tools and kernel sup­port.  Packages provided in this release are:
                 "1p0mkn6iywl0k4m9cx3hnhylpi499inisff3f72pcf349baqsnvq"))))
     (build-system texlive-build-system)
     (arguments
-     '(#:tex-directory "latex/fontspec"))
+     '(#:tex-directory "latex/fontspec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-default-fontspec.cfg
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-output-to-file
+                 (string-append (assoc-ref outputs "out")
+                                "/share/texmf-dist/tex/latex/fontspec/fontspec.cfg")
+               (lambda _
+                 (display "\
+%%% FONTSPEC.CFG %%%
+%
+% This configuration file sets up TeX Ligatures by default for all fonts loaded
+% with `\\setmainfont` and `\\setsansfont`.
+%
+% In addition, `\\setmonofont` has default features to enforce \"monospace\"
+% settings with regard to space stretchability and shrinkability.
+
+\\defaultfontfeatures
+ [\\rmfamily,\\sffamily]
+ {Ligatures=TeX}
+
+\\defaultfontfeatures
+ [\\ttfamily]
+ {WordSpace={1,0,0},
+  HyphenChar=None,
+  PunctuationSpace=WordSpace}
+")))
+             #t)))))
     (propagated-inputs
      `(("texlive-latex-l3packages" ,texlive-latex-l3packages)))
     (home-page "https://www.ctan.org/pkg/fontspec")
