@@ -1521,7 +1521,7 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
                                       ":")))
              #t)))
        ))
-    (inputs
+    (propagated-inputs
      `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)))
     (home-page "https://www.ctan.org/pkg/l3packages")
     (synopsis "High-level LaTeX3 concepts")
