@@ -196,7 +196,7 @@ useful tools for testing Django applications and projects.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "python" "runtests.py")))))))
+             (invoke "python" "runtests.py"))))))
     (native-inputs
      `(("python-django" ,python-django)
        ("python-djangorestframework" ,python-djangorestframework)
