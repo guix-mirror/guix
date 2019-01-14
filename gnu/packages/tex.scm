@@ -1714,6 +1714,29 @@ for British English and Australian text, and default (\"american\") patterns
 for Canadian and USA text.")
     (license license:lppl1.3+)))
 
+(define-public texlive-generic-babel-german
+  (package
+    (name "texlive-generic-babel-german")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "generic" "babel-german"))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0h47s67gnhdaxfgbf8pirp5vw4z6rrhxl8zav803yjxka0096i3y"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "generic/babel-german"))
+    (home-page "https://www.ctan.org/pkg/babel-german")
+    (synopsis "Babel support for German")
+    (description
+     "This package provides the language definition file for support of German
+in @code{babel}.  It provides all the necessary macros, definitions and
+settings to typeset German documents.  The bundle includes support for the
+traditional and reformed German orthography as well as for the Austrian and
+Swiss varieties of German.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-cyrillic
   (package
     (name "texlive-latex-cyrillic")
