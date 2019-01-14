@@ -348,6 +348,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pem.scm				\
   %D%/packages/perl.scm				\
   %D%/packages/perl-check.scm			\
+  %D%/packages/perl-compression.scm		\
   %D%/packages/perl-web.scm			\
   %D%/packages/photo.scm			\
   %D%/packages/phabricator.scm 			\

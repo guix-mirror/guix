@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
@@ -50,6 +50,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config))
 

@@ -47,7 +47,6 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages assembly)
@@ -60,7 +59,6 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
@@ -709,84 +707,6 @@ sfArk file format to the uncompressed sf2 format.")
      "The purpose of libmspack is to provide both compression and
 decompression of some loosely related file formats used by Microsoft.")
     (license license:lgpl2.1+)))
-
-(define-public perl-compress-raw-bzip2
-  (package
-    (name "perl-compress-raw-bzip2")
-    (version "2.081")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
-                           "Compress-Raw-Bzip2-" version ".tar.gz"))
-       (sha256
-        (base32
-         "081mpkjy688lg48997fqh3d7ja12vazmz02fw84495civg4vb4l6"))))
-    (build-system perl-build-system)
-    ;; TODO: Use our bzip2 package.
-    (home-page "https://metacpan.org/release/Compress-Raw-Bzip2")
-    (synopsis "Low-level interface to bzip2 compression library")
-    (description "This module provides a Perl interface to the bzip2
-compression library.")
-    (license license:perl-license)))
-
-(define-public perl-compress-raw-zlib
-  (package
-    (name "perl-compress-raw-zlib")
-    (version "2.081")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
-                           "Compress-Raw-Zlib-" version ".tar.gz"))
-       (sha256
-        (base32
-         "06rsm9ahp20xfyvd3jc69sd0k8vqysryxc6apzdbn96jbcsdwmp1"))))
-    (build-system perl-build-system)
-    (inputs
-     `(("zlib" ,zlib)))
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'configure-zlib
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (call-with-output-file "config.in"
-                       (lambda (port)
-                         (format port "
-BUILD_ZLIB = False
-INCLUDE = ~a/include
-LIB = ~:*~a/lib
-OLD_ZLIB = False
-GZIP_OS_CODE = AUTO_DETECT"
-                                 (assoc-ref inputs "zlib"))))
-                     #t)))))
-    (home-page "https://metacpan.org/release/Compress-Raw-Zlib")
-    (synopsis "Low-level interface to zlib compression library")
-    (description "This module provides a Perl interface to the zlib
-compression library.")
-    (license license:perl-license)))
-
-(define-public perl-io-compress
-  (package
-    (name "perl-io-compress")
-    (version "2.081")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
-                           "IO-Compress-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1na66ns1g3nni0m9q5494ym4swr21hfgpv88mw8wbj2daiswf4aj"))))
-    (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.081
-       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.081
-    (home-page "https://metacpan.org/release/IO-Compress")
-    (synopsis "IO Interface to compressed files/buffers")
-    (description "IO-Compress provides a Perl interface to allow reading and
-writing of compressed data created with the zlib and bzip2 libraries.")
-    (license license:perl-license)))
 
 (define-public lz4
   (package
@@ -1762,29 +1682,6 @@ recreates the stored directory structure by default.")
     ;; files carry the Zlib license; see "docs/copying.html" for details.
     (license (list license:lgpl2.0+ license:mpl1.1))))
 
-(define-public perl-archive-zip
-  (package
-    (name "perl-archive-zip")
-    (version "1.64")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "mirror://cpan/authors/id/P/PH/PHRED/Archive-Zip-"
-             version ".tar.gz"))
-       (sha256
-        (base32
-         "0zfinh8nx3rxzscp57vq3w8hihpdb0zs67vvalykcf402kr88pyy"))))
-    (build-system perl-build-system)
-    (native-inputs
-     ;; For tests.
-     `(("perl-test-mockmodule" ,perl-test-mockmodule)))
-    (synopsis  "Provides an interface to Zip archive files")
-    (description "The @code{Archive::Zip} module allows a Perl program to
-create, manipulate, read, and write Zip archive files.")
-    (home-page "https://metacpan.org/release/Archive-Zip")
-    (license license:perl-license)))
-
 (define-public libzip
   (package
     (name "libzip")
@@ -1844,27 +1741,6 @@ extract files to standard out).  As @command{atool} invokes external programs
 to handle the archives, not all commands may be supported for a certain type
 of archives.")
     (license license:gpl2+)))
-
-(define-public perl-archive-extract
-  (package
-    (name "perl-archive-extract")
-    (version "0.80")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/Archive-Extract-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1x15j1q6w6z8hqyqgap0lz4qbq2174wfhksy1fdd653ccbaw5jr5"))))
-    (build-system perl-build-system)
-    (home-page "https://metacpan.org/release/Archive-Extract")
-    (synopsis "Generic archive extracting mechanism")
-    (description "It allows you to extract any archive file of the type .tar,
-.tar.gz, .gz, .Z, tar.bz2, .tbz, .bz2, .zip, .xz,, .txz, .tar.xz or .lzma
-without having to worry how it does so, or use different interfaces for each
-type by using either Perl modules, or command-line tools on your system.")
-    (license license:perl-license)))
 
 (define-public lunzip
   (package
