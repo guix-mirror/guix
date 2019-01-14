@@ -125,8 +125,7 @@ Download and deploy the latest version of Guix.\n"))
                    (alist-cons 'ref `(commit . ,arg) result)))
          (option '("branch") #t #f
                  (lambda (opt name arg result)
-                   (alist-cons 'ref `(branch . ,(string-append "origin/" arg))
-                               result)))
+                   (alist-cons 'ref `(branch . ,arg) result)))
          (option '(#\p "profile") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'profile (canonicalize-profile arg)
