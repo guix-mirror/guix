@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
@@ -940,6 +940,20 @@ specification.  These are the main features:
 
 (define-public guile2.0-json
   (package-for-guile-2.0 guile-json))
+
+(define-public guile-json-3
+  ;; This version is incompatible with 1.x; see the 'NEWS' file.
+  (package
+    (inherit guile-json)
+    (name "guile-json")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.savannah.nongnu.org/releases/"
+                                  name "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1yfqscz74i4vxylabd3s9l0wbdp8bg9qxnv1ixdm3b1l7zdx00z3"))))))
 
 (define-public guile-minikanren
   (package
