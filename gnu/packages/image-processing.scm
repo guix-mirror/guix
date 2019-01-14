@@ -322,9 +322,13 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
              (let ((unpack (lambda (source target)
                              (with-directory-excursion target
                                (apply invoke "unzip"
-                                      (list (assoc-ref inputs source)))))))
+                                      (list (assoc-ref inputs source))))))
+                   (untar (lambda (source target)
+                            (with-directory-excursion target
+                              (apply invoke "tar" "xvf"
+                                     (list (assoc-ref inputs source)))))))
                (unpack "opencv-extra" "../opencv-extra")
-               (unpack "opencv-contrib" "../opencv-contrib"))))
+               (untar "opencv-contrib" "../opencv-contrib"))))
 
          (add-after 'set-paths 'add-ilmbase-include-path
            (lambda* (#:key inputs #:allow-other-keys)
@@ -363,6 +367,7 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
            (uri (string-append "https://codeload.github.com/"
                                "opencv/opencv_contrib/zip/" version))
            (file-name (string-append "opencv-contrib-" version ".zip"))
+           (patches (search-patches "opencv-rgbd-aarch64-test-fix.patch"))
            (sha256
            (base32 "0j0ci6ia1qwklp9hq07ypl0vkngj1wrgh6n98n657m5d0pyp4m0g"))))))
     (inputs `(("libjpeg" ,libjpeg)
