@@ -1866,31 +1866,15 @@ It includes little more than the required set of LaTeX packages.")
                      '()
                      default-packages)))))
 
+;; For use in package definitions only
 (define-public texlive-union
   (lambda* (#:optional (packages '()))
     "Return 'texlive-union' package which is a union of PACKAGES and the
 standard LaTeX packages."
-    (let ((default-packages
-            (list texlive-bin
-                  texlive-dvips
-                  texlive-fontname
-                  texlive-fonts-cm
-                  texlive-fonts-latex
-                  texlive-metafont-base
-                  texlive-latex-base
-                  ;; LaTeX packages from the "required" set.
-                  texlive-latex-amsmath
-                  texlive-latex-amscls
-                  texlive-latex-babel
-                  texlive-generic-babel-english
-                  texlive-latex-cyrillic
-                  texlive-latex-graphics
-                  texlive-latex-psnfss
-                  texlive-latex-tools)))
-      (package
+    (let ((default-packages (match (package-propagated-inputs texlive-base)
+                              (((labels packages) ...) packages))))
+      (package (inherit texlive-base)
         (name "texlive-union")
-        (version (number->string %texlive-revision))
-        (source #f)
         (build-system trivial-build-system)
         (arguments
          '(#:modules ((guix build union)
@@ -1954,6 +1938,7 @@ distribution.")
                        '()
                        (append default-packages packages)))))))
 
+;; For use in package definitions only
 (define-public texlive-tiny
   (package
     (inherit (texlive-union))
