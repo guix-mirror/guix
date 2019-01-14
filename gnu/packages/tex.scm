@@ -4719,6 +4719,32 @@ space.  If there is not enough space between the command and the bottom of the
 page, a new page will be started.")
     (license license:lppl)))
 
+(define-public texlive-latex-changepage
+  (package
+    (name "texlive-latex-changepage")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "changepage"))
+       (sha256
+        (base32
+         "1rpw8xg5p4jsyh236jma9dz3l29wjx4062f154b3wak5yjcxyxyb"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/changepage"
+       #:tex-format "latex"))
+    (inputs
+     `(("texlive-latex-filecontents" ,texlive-latex-filecontents)))
+    (home-page "https://www.ctan.org/pkg/changepage")
+    (synopsis "Margin adjustment and detection of odd/even pages")
+    (description
+     "The package provides commands to change the page layout in the middle of
+a document, and to robustly check for typesetting on odd or even pages.
+Instructions for use are at the end of the file.  The package is an extraction
+of code from the @code{memoir} class, whose user interface it shares.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-latex-eukdate
   (package
     (name "texlive-latex-eukdate")
