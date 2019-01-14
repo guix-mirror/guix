@@ -1822,6 +1822,50 @@ font metrics.  The bundle as a whole is part of the LaTeX required set of
 packages.")
     (license license:lppl1.2+)))
 
+;; For user profiles
+(define-public texlive-base
+  (let ((default-packages
+          (list texlive-bin
+                texlive-dvips
+                texlive-fontname
+                texlive-fonts-cm
+                texlive-fonts-latex
+                texlive-metafont-base
+                texlive-latex-base
+                ;; LaTeX packages from the "required" set.
+                texlive-latex-amsmath
+                texlive-latex-amscls
+                texlive-latex-babel
+                texlive-generic-babel-english
+                texlive-latex-cyrillic
+                texlive-latex-graphics
+                texlive-latex-psnfss
+                texlive-latex-tools)))
+    (package
+      (name "texlive-base")
+      (version (number->string %texlive-revision))
+      (source #f)
+      (build-system trivial-build-system)
+      (arguments
+       '(#:builder
+         (begin (mkdir (assoc-ref %outputs "out")))))
+      (propagated-inputs
+       (map (lambda (package)
+              (list (package-name package) package))
+            default-packages))
+      (home-page (package-home-page texlive-bin))
+      (synopsis "TeX Live base packages")
+      (description "This is a very limited subset of the TeX Live distribution.
+It includes little more than the required set of LaTeX packages.")
+      (license (fold (lambda (package result)
+                       (match (package-license package)
+                         ((lst ...)
+                          (append lst result))
+                         ((? license:license? license)
+                          (cons license result))))
+                     '()
+                     default-packages)))))
+
 (define-public texlive-union
   (lambda* (#:optional (packages '()))
     "Return 'texlive-union' package which is a union of PACKAGES and the
