@@ -3974,7 +3974,8 @@ as the original project seems to have been abandoned circa 2007.")
         (uri (pypi-uri "pycodestyle" version))
         (sha256
           (base32
-            "0fhy4vnlgpjq4qd1wdnl6pvdw7rah0ypmn8c9mkhz8clsndskz6b"))))
+            "0fhy4vnlgpjq4qd1wdnl6pvdw7rah0ypmn8c9mkhz8clsndskz6b"))
+        (patches (search-patches "python-pycodestyle-stdlib-tokenize-fix.patch"))))
     (build-system python-build-system)
     (home-page "https://pycodestyle.readthedocs.io/")
     (synopsis "Python style guide checker")
