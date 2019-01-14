@@ -230,6 +230,15 @@
               (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin"))
               (with-directory-excursion out
                 (patch-source-shebangs))))))))
+   (native-search-paths
+    (list (search-path-specification
+           (variable "TEXMF")
+           (files '("share/texmf-dist"))
+           (separator #f))
+          (search-path-specification
+           (variable "TEXMFCNF")
+           (files '("share/texmf-dist/web2c"))
+           (separator #f))))
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
     "TeX Live provides a comprehensive TeX document production system.
