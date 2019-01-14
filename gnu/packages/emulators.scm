@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -237,26 +237,23 @@ turbo speed, networked multiplayer, and graphical enhancements.")
 (define-public dosbox
   (package
     (name "dosbox")
-    (version "0.74.svn3947")
+    (version "0.74-2")
     (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url "http://svn.code.sf.net/p/dosbox/code-0/dosbox/trunk/")
-                    (revision 3947)))
-              (file-name (string-append name "-" version "-checkout"))
-              ;; Use SVN head, since the last release (2010) is incompatible
-              ;; with GCC 4.8+ (see
-              ;; <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=624976>).
+              (method url-fetch)
+              (uri (string-append "https://sourceforge.net/projects/dosbox"
+                                  "/files/dosbox/" version "/dosbox-"
+                                  version ".tar.gz/download"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1p918j6090d1nkvgq7ifvmn506zrdmyi32y7p3ms40d5ssqjg8fj"))))
+                "1ksp1b5szi0vy4x55rm3j1y9wq5mlslpy8llpg87rpdyjlsk0xvh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after
                    'unpack 'autogen.sh
                    (lambda _
-                     (zero? (system* "sh" "autogen.sh")))))))
+                     (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
