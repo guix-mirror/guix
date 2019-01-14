@@ -237,16 +237,17 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
        (list "-DWITH_IPP=OFF"
              "-DWITH_ITT=OFF"
              "-DWITH_CAROTENE=OFF" ; only visible on arm/aarch64
+             "-DENABLE_PRECOMPILED_HEADERS=OFF"
 
              ;; CPU-Features:
              ;; See cmake/OpenCVCompilerOptimizations.cmake
              ;; (CPU_ALL_OPTIMIZATIONS) for a list of all optimizations
              ;; BASELINE is the minimum optimization all CPUs must support
              ;;
-             ;; DISPATCH is the list of optional dispatches
+             ;; DISPATCH is the list of optional dispatches. We add them all.
              "-DCPU_BASELINE=SSE2, NEON"
 
-             "-DCPU_DISPATCH=SSE3,SSSE3,SSE4_1,SSE4_2,AVX,AVX2"
+             "-DCPU_DISPATCH=NEON;VFPV3;FP16;SSE;SSE2;SSE3;SSSE3;SSE4_1;SSE4_2;POPCNT;AVX;FP16;AVX2;FMA3;AVX_512F;AVX512_SKX"
              ,@(if (string-prefix? "x86_64" (or (%current-target-system)
                                                 (%current-system)))
                    '("-DCPU_DISPATCH_REQUIRE=SSE3,SSSE3,SSE4_1,SSE4_2,AVX,AVX2")
