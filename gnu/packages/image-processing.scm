@@ -255,15 +255,12 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
              "-DBUILD_PERF_TESTS=OFF"
              "-DBUILD_TESTS=ON"
 
-             (string-append "-DOPENCV_EXTRA_MODULES_PATH="
-                            "/tmp/guix-build-opencv-" ,version ".drv-0"
+             (string-append "-DOPENCV_EXTRA_MODULES_PATH=" (getcwd)
                             "/opencv-contrib/opencv_contrib-" ,version
                             "/modules")
 
              ;;Define test data:
-             (string-append "-DOPENCV_TEST_DATA_PATH="
-                            "/tmp/guix-build-opencv-" ,version ".drv-0"
-                            ;;"/opencv-3.4.0"
+             (string-append "-DOPENCV_TEST_DATA_PATH=" (getcwd)
                             "/opencv-extra/opencv_extra-" ,version
                             "/testdata")
 
