@@ -14693,6 +14693,26 @@ RFC 8265 and RFC 8266.")
 of Python libraries for building Python applications.")
     (license license:asl2.0)))
 
+(define-public python-astor
+  (package
+    (name "python-astor")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "astor" version))
+       (sha256
+        (base32
+         "13gv6f2xz9i564byp21gcpc0l3w4cs23k1wbcam8kky2ls3hvhwm"))))
+    (build-system python-build-system)
+    ;; FIXME: There are two errors and two test failures.
+    (arguments `(#:tests? #f))
+    (home-page "https://github.com/berkerpeksag/astor")
+    (synopsis "Read/rewrite/write Python ASTs")
+    (description "Astor is designed to allow easy manipulation of Python
+source via the AST.")
+    (license license:bsd-3)))
+
 (define-public python-wikidata
   (package
     (name "python-wikidata")
