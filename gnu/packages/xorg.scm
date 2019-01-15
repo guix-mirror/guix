@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
@@ -6260,3 +6260,49 @@ selecting windows by pointing select actual focused X11 window, selecting by
 window name or id, forcing toggle, increase or decrease opacity.")
     (home-page "http://forchheimer.se/transset-df/")
     (license license:x11)))
+
+(define-public bdfresize
+  (package
+    (name "bdfresize")
+    (version "1.5-11")
+    (source (origin
+              ;; Former upstream at
+              ;; <http://openlab.ring.gr.jp/efont/dist/tools/bdfresize/>
+              ;; vanished so use Debian, which in practice is the new
+              ;; upstream.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://salsa.debian.org/debian/bdfresize.git")
+                    (commit (string-append "debian/" version))))
+              (sha256
+               (base32
+                "0n3i29wicak8n10vkkippym8yw4ir8f7a263a8rwb8q16wqrxx85"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each make-file-writable (find-files "."))
+
+                  ;; Remove broken declaration.
+                  (substitute* "charresize.c"
+                    (("char\t\\*malloc\\(\\);")
+                     ""))
+
+                  ;; Remove old configury that doesn't support modern
+                  ;; command-line options, new architectures, etc.
+                  (for-each delete-file
+                            '("configure" "install-sh"
+                              "missing" "mkinstalldirs"))
+                  #t))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (synopsis "Resize fonts in the BDF format")
+    (description
+     "This packages provides @command{bdfresize}, a command to magnify or
+reduce fonts in the Glyph Bitmap Distribution Format (BDF).  It produces BDF
+output.")
+    (home-page "https://tracker.debian.org/pkg/bdfresize")
+    (license license:gpl2+)) )
