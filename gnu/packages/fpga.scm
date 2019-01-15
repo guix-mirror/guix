@@ -212,8 +212,8 @@ For synthesis, the compiler generates netlists in the desired format.")
     (license license:isc)))
 
 (define-public icestorm
-  (let ((commit "12b2295c9087d94b75e374bb205ae4d76cf17e2f")
-        (revision "1"))
+  (let ((commit "c0cbae88ab47a3879aacf80d53b6a85710682a6b")
+        (revision "2"))
    (package
     (name "icestorm")
     (version (string-append "0.0-" revision "-" (string-take commit 9)))
@@ -225,7 +225,7 @@ For synthesis, the compiler generates netlists in the desired format.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                 (base32
-                   "1mmzlqvap6w8n4qzv3idvy51arkgn03692ssplwncy3akjrbsd2b"))))
+                   "0bqm0rpywm64yvbq75klpyzb1g9sdsp1kvdlyqg4hvm8jw9w8lya"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no unit tests that don't need an FPGA exist.
