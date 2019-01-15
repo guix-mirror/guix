@@ -14713,6 +14713,29 @@ of Python libraries for building Python applications.")
 source via the AST.")
     (license license:bsd-3)))
 
+(define-public python-astunparse
+  (package
+    (name "python-astunparse")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "astunparse" version))
+       (sha256
+        (base32
+         "1jhidwyrqn17avqh9xnnm3wd7q7aahaq009cba67g86y6gxicyyj"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; there are none
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-wheel" ,python-wheel)))
+    (home-page "https://github.com/simonpercivall/astunparse")
+    (synopsis "AST unparser for Python")
+    (description "This package provides an AST unparser for Python.  It is a
+factored out version of @code{unparse} found in the Python source
+distribution.")
+    (license license:bsd-3)))
+
 (define-public python-wikidata
   (package
     (name "python-wikidata")
