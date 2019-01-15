@@ -707,6 +707,9 @@ Language.")
                       "main.stat_tables_innodb"
                       "roles.acl_statistics"
 
+                      ;; FIXME: Fixed in mysql, but we have no patch.  See
+                      ;; https://bugs.mysql.com/bug.php?id=93778
+                      "main.mysqldump"
                       ;; FIXME: This test fails on i686:
                       ;; -myisampack: Can't create/write to file (Errcode: 17 "File exists")
                       ;; +myisampack: Can't create/write to file (Errcode: 17 "File exists)
