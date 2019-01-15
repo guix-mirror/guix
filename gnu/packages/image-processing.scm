@@ -61,7 +61,8 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (ice-9 match))
 
 ;; We use the latest snapshot of this package because the latest release is
 ;; from 2011 and has known vulnerabilities that cannot easily be fixed by
@@ -247,14 +248,19 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
              ;; (CPU_ALL_OPTIMIZATIONS) for a list of all optimizations
              ;; BASELINE is the minimum optimization all CPUs must support
              ;;
-             ;; DISPATCH is the list of optional dispatches. We add them all.
-             "-DCPU_BASELINE=SSE2, NEON"
+             ;; DISPATCH is the list of optional dispatches.
+             "-DCPU_BASELINE=SSE2"
 
-             "-DCPU_DISPATCH=NEON;VFPV3;FP16;SSE;SSE2;SSE3;SSSE3;SSE4_1;SSE4_2;POPCNT;AVX;FP16;AVX2;FMA3;AVX_512F;AVX512_SKX"
-             ,@(if (string-prefix? "x86_64" (or (%current-target-system)
-                                                (%current-system)))
-                   '("-DCPU_DISPATCH_REQUIRE=SSE3,SSSE3,SSE4_1,SSE4_2,AVX,AVX2")
-                   '())
+             ,@(match (%current-system)
+                 ("x86_64-linux"
+                  '("-DCPU_DISPATCH=NEON;VFPV3;FP16;SSE;SSE2;SSE3;SSSE3;SSE4_1;SSE4_2;POPCNT;AVX;FP16;AVX2;FMA3;AVX_512F;AVX512_SKX"
+                    "-DCPU_DISPATCH_REQUIRE=SSE3,SSSE3,SSE4_1,SSE4_2,AVX,AVX2"))
+                 ("armhf-linux"
+                  '("-DCPU_BASELINE_DISABLE=NEON")) ; causes build failures
+                 ("aarch64-linux"
+                  '("-DCPU_BASELINE=NEON"
+                    "-DCPU_DISPATCH=NEON;VFPV3;FP16"))
+                 (_ '()))
 
              "-DBUILD_PERF_TESTS=OFF"
              "-DBUILD_TESTS=ON"
