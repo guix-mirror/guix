@@ -8917,7 +8917,7 @@ object @code{nil} corresponds 1:1 with @code{NULL} in the database.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0cy44d1fxkvah6fhjkn3mp6gzzrjmws1c4c20ayrma74y9xich3v"))))
+         "1xhpfjjkjqfc1k2rj77cscclz5r7gpvv3hi202x178vdcpipjwar"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-emacsql" ,emacs-emacsql)))
