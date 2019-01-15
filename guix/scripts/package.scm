@@ -604,12 +604,12 @@ and upgrades."
     (options->upgrade-predicate opts))
 
   (define upgraded
-    (fold-right (lambda (entry transaction)
-                  (if (upgrade? (manifest-entry-name entry))
-                      (transaction-upgrade-entry entry transaction)
-                      transaction))
-                transaction
-                (manifest-entries manifest)))
+    (fold (lambda (entry transaction)
+            (if (upgrade? (manifest-entry-name entry))
+                (transaction-upgrade-entry entry transaction)
+                transaction))
+          transaction
+          (manifest-entries manifest)))
 
   (define to-install
     (filter-map (match-lambda
