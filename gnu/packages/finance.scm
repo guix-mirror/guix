@@ -299,7 +299,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "3.2.2")
+    (version "3.3.3")
     (source
      (origin
        (method url-fetch)
@@ -308,7 +308,7 @@ do so.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1fxaxlf5vm2zydj678ls3pazyriym188iwzk60kyk26cz2p3xk39"))
+         "0z2zfhyawrbzs0w1426a2w0d4wsajl34ymj77qmpm41138g2ysf2"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -326,6 +326,10 @@ do so.")
        ("python-requests" ,python-requests)
        ("python-qrcode" ,python-qrcode)
        ("python-protobuf" ,python-protobuf)
+       ("python-aiohttp" ,python-aiohttp)
+       ("python-aiohttp-socks" ,python-aiohttp-socks)
+       ("python-aiorpcx" ,python-aiorpcx)
+       ("python-certifi" ,python-certifi)
        ("python-dnspython" ,python-dnspython)
        ("python-jsonrpclib-pelix" ,python-jsonrpclib-pelix)))
     (arguments
