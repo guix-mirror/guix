@@ -49,6 +49,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
@@ -1786,6 +1787,98 @@ the l3kernel and xparse bundles from the LaTeX 3 development team.")
      "Lualibs is a collection of Lua modules useful for general programming.
 The bundle is based on Lua modules shipped with ConTeXt, and made available in
 this bundle for use independent of ConTeXt.")
+    ;; GPL version 2 only
+    (license license:gpl2)))
+
+(define-public texlive-luatex-luaotfload
+  (package
+    (name "texlive-luatex-luaotfload")
+    (version "2.8-fix-2")
+    ;; The release tarball does not contain all source files.
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/lualatex/luaotfload.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0l5l7iq3dxcxl65qaghcpjg27yd9iw1sxa8pnd7xlvlm09dhfdnf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "DESTDIR="
+                            (assoc-ref %outputs "out")
+                            "/share/texmf-dist")
+             "all")
+       #:parallel-build? #f ; not supported
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "doc/Makefile"
+               (("rst2man") "rst2man.py")
+               ;; Don't build the PDF.  This requires more of LaTeX.
+               (("\\$\\(DOCPDF\\)") ""))
+
+             (substitute* "Makefile"
+               ;; We don't build the PDF, so don't attempt to install it.
+               (("cp \\$\\(RESOURCES\\) \\$\\(DOCPDF\\)")
+                "cp $(RESOURCES)")
+               (("= \\$\\(DOCPDF\\)") "= ")
+               ;; Fix name of fontloader file
+               (("^LOADER.*= \\$\\(BUILDDIR\\)/fontloader-\\$\\(shell date \\+%F\\).lua")
+                "LOADER = $(BUILDDIR)/fontloader.lua"))
+
+             (mkdir "build")
+
+             ;; Don't download this file.
+             (copy-file (assoc-ref inputs "glyphlist")
+                        "build/glyphlist.txt")
+
+             ;; Don't use git
+             (let ((notes
+                    `((committer . "Philipp Gesang <phg@phi-gamma.net>")
+                      (description . ,version)
+                      (loader . "fontloader.lua")
+                      (revision . "ad480924393fffa2896156e1a32c22f5c61120dd")
+                      (timestamp . "2019-01-01 00:00:00 +0000"))))
+               (substitute* "scripts/mkstatus"
+                 (("local notes.*=.*")
+                  (string-append "local notes = {"
+                                 (string-join
+                                  (map (lambda (entry)
+                                         (format "[\"~a\"]=\"~a\","
+                                                 (symbol->string (car entry))
+                                                 (cdr entry)))
+                                       notes))
+                                 "}"))))
+             #t)))))
+    (native-inputs
+     `(("zip" ,zip)
+       ("unzip" ,unzip)
+       ("graphviz" ,graphviz)
+       ("lualatex" ,(texlive-union (list texlive-luatex-lualibs
+                                         texlive-context-base)))
+       ("python-docutils" ,python-docutils)
+       ("glyphlist"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://raw.githubusercontent.com/adobe-type-tools/"
+                               "agl-aglfn/b2a04cb906f9257cc06a2fe0ad4b3d663bc02136/"
+                               "glyphlist.txt"))
+           (sha256
+            (base32 "1s6svfw23rqzdvflv8frgd4xrwvrmsj8szwzqgcd39dp9rpjafjp"))))))
+    (propagated-inputs
+     `(("texlive-luatex-lualibs" ,texlive-luatex-lualibs)))
+    (home-page "https://github.com/lualatex/luaotfload")
+    (synopsis "OpenType font loader for LuaTeX")
+    (description
+     "Luaotfload is an adaptation of the ConTeXt font loading system for the
+Plain and LaTeX formats.  It allows OpenType fonts to be loaded with font
+features accessible using an extended font request syntax while providing
+compatibilitywith XeTeX.  By indexing metadata in a database it facilitates
+loading fonts by their proper names instead of file names.")
     ;; GPL version 2 only
     (license license:gpl2)))
 
