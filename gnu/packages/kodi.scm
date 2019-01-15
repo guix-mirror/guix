@@ -29,6 +29,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
@@ -278,6 +279,7 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
               (sha256
                (base32
                 "0bwi4gwmwppjw6bf0zihyg42zwnd0imq0aw4xxsgnacqakhxzii0"))
+              (patches (search-patches "kodi-skip-test-449.patch"))
               (snippet
                '(begin
                   (use-modules (guix build utils))
