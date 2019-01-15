@@ -1009,21 +1009,34 @@ symbol fonts.")
                        (find-files "." "[0-9]+\\.mf$"))
              #t))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (tfm (string-append
-                          out "/share/texmf-dist/fonts/tfm/public/amsfonts"))
-                    (mf  (string-append
-                          out "/share/texmf-dist/fonts/source/public/amsfonts")))
+                    (fonts (string-append out "/share/texmf-dist/fonts"))
+                    (tfm (string-append fonts "/tfm/public/amsfonts"))
+                    (mf  (string-append fonts "/source/public/amsfonts"))
+                    (type1 (string-append fonts "/type1/public/amsfonts")))
                (for-each (cut install-file <> tfm)
                          (find-files "build" "\\.*"))
                (for-each (cut install-file <> mf)
                          (find-files "." "\\.mf"))
+               (copy-recursively (assoc-ref inputs "amsfonts-type1") type1)
                #t))))))
     (native-inputs
      `(("texlive-fonts-cm" ,texlive-fonts-cm)
        ("texlive-metafont-base" ,texlive-metafont-base)
-       ("texlive-bin" ,texlive-bin)))
+       ("texlive-bin" ,texlive-bin)
+       ("amsfonts-type1"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/type1/public/amsfonts"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-type1-" version "-checkout"))
+           (sha256
+            (base32
+             "1zfz33vn6gm19njy74n8wmn7sljrimfhwns5z8qqhxqfh1g4qip2"))))))
     (home-page "https://www.ctan.org/pkg/amsfonts")
     (synopsis "TeX fonts from the American Mathematical Society")
     (description
