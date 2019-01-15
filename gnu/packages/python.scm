@@ -3261,6 +3261,7 @@ color scales, and color space conversion easy.  It has support for:
        ("python-sphinx" ,python-sphinx)
        ("python-numpydoc" ,python-numpydoc)
        ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
+                                        texlive-fonts-cm-super
                                         texlive-fonts-ec
                                         texlive-generic-ifxetex
                                         texlive-generic-pdftex
@@ -3281,6 +3282,7 @@ color scales, and color space conversion easy.  It has support for:
                                         texlive-latex-hyperref
                                         texlive-latex-mdwtools
                                         texlive-latex-multirow
+                                        texlive-latex-needspace
                                         texlive-latex-oberdiek
                                         texlive-latex-parskip
                                         texlive-latex-preview
