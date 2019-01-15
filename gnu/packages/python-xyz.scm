@@ -14672,6 +14672,27 @@ on regular expressions.")
 RFC 8265 and RFC 8266.")
     (license license:expat)))
 
+(define-public python-absl-py
+  (package
+    (name "python-absl-py")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "absl-py" version))
+       (sha256
+        (base32
+         "1mp9lk0b2qa37b7y6ak4lvf6ifw2ylyy6bkf9ik77md3j4xrwlc7"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/abseil/abseil-py")
+    (synopsis "Abseil Python common libraries")
+    (description
+     "This package provides the Abseil Python Common Libraries, a collection
+of Python libraries for building Python applications.")
+    (license license:asl2.0)))
+
 (define-public python-wikidata
   (package
     (name "python-wikidata")
