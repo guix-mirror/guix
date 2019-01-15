@@ -14736,6 +14736,28 @@ factored out version of @code{unparse} found in the Python source
 distribution.")
     (license license:bsd-3)))
 
+(define-public python-gast
+  (package
+    (name "python-gast")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "gast" version))
+       (sha256
+        (base32
+         "0c296xm1vz9x4w4inmdl0k8mnc0i9arw94si2i7pglpc461r0s3h"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-astunparse" ,python-astunparse)))
+    (home-page "https://pypi.org/project/gast/")
+    (synopsis "Generic Python AST that abstracts the underlying Python version")
+    (description
+     "GAST provides a compatibility layer between the AST of various Python
+versions, as produced by @code{ast.parse} from the standard @code{ast}
+module.")
+    (license license:bsd-3)))
+
 (define-public python-wikidata
   (package
     (name "python-wikidata")
