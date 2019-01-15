@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -318,6 +318,8 @@ on."
      (G_ "building XDG MIME database..."))
     ('fonts-dir
      (G_ "building fonts directory..."))
+    ('texlive-configuration
+     (G_ "building TeX Live configuration..."))
     ('manual-database
      (G_ "building database for manual pages..."))
     (_ #f)))
