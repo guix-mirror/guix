@@ -1637,7 +1637,16 @@ you send to a FIFO file.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0kzclwkfijj8xka3g9kfj53y67c34ndfy84swdbw3j7y962ndxq6"))))
+                "0kzclwkfijj8xka3g9kfj53y67c34ndfy84swdbw3j7y962ndxq6"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Install .scm files in the right place (see
+               ;; <https://github.com/OrangeShark/guile-commonmark/issues/12>.)
+               '(begin
+                  (substitute* "Makefile.in"
+                    (("^moddir = \\$\\(datadir\\)/share")
+                     "moddir = $(datadir)"))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.2)))
