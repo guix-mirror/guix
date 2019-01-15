@@ -125,6 +125,7 @@
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages slang)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)

@@ -52,7 +52,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pulseaudio)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph))
 

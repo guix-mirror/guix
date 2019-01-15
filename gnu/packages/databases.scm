@@ -90,6 +90,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages textutils)
@@ -1143,87 +1144,6 @@ console through an ncurses interface.  You can explore each table's structure,
 browse and edit the contents, add and delete entries, all while tracking your
 changes.")
       (license license:gpl3+)))) ; no headers, see README.md
-
-(define-public sqlite
-  (package
-   (name "sqlite")
-   (replacement sqlite-3.26.0)
-   (version "3.24.0")
-   (source (origin
-            (method url-fetch)
-            (uri (let ((numeric-version
-                        (match (string-split version #\.)
-                          ((first-digit other-digits ...)
-                           (string-append first-digit
-                                          (string-pad-right
-                                           (string-concatenate
-                                            (map (cut string-pad <> 2 #\0)
-                                                 other-digits))
-                                           6 #\0))))))
-                   (string-append "https://sqlite.org/2018/sqlite-autoconf-"
-                                  numeric-version ".tar.gz")))
-            (sha256
-             (base32
-              "0jmprv2vpggzhy7ma4ynmv1jzn3pfiwzkld0kkg6hvgvqs44xlfr"))))
-   (build-system gnu-build-system)
-   (inputs `(("readline" ,readline)))
-   (arguments
-    `(#:configure-flags
-      ;; Add -DSQLITE_SECURE_DELETE, -DSQLITE_ENABLE_UNLOCK_NOTIFY and
-      ;; -DSQLITE_ENABLE_DBSTAT_VTAB to CFLAGS.  GNU Icecat will refuse
-      ;; to use the system SQLite unless these options are enabled.
-      (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
-                           "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
-                           "-DSQLITE_ENABLE_DBSTAT_VTAB"))))
-   (home-page "https://www.sqlite.org/")
-   (synopsis "The SQLite database management system")
-   (description
-    "SQLite is a software library that implements a self-contained, serverless,
-zero-configuration, transactional SQL database engine.  SQLite is the most
-widely deployed SQL database engine in the world.  The source code for SQLite
-is in the public domain.")
-   (license license:public-domain)))
-
-(define-public sqlite-3.26.0
-  (package (inherit sqlite)
-    (version "3.26.0")
-    (source (origin
-              (method url-fetch)
-              (uri (let ((numeric-version
-                          (match (string-split version #\.)
-                            ((first-digit other-digits ...)
-                             (string-append first-digit
-                                            (string-pad-right
-                                             (string-concatenate
-                                              (map (cut string-pad <> 2 #\0)
-                                                   other-digits))
-                                             6 #\0))))))
-                     (string-append "https://sqlite.org/2018/sqlite-autoconf-"
-                                    numeric-version ".tar.gz")))
-              (sha256
-               (base32
-                "0pdzszb4sp73hl36siiv3p300jvfvbcdxi2rrmkwgs6inwznmajx"))))))
-
-;; This is used by Tracker.
-(define-public sqlite-with-fts5
-  (package/inherit sqlite
-    (name "sqlite-with-fts5")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sqlite)
-       ((#:configure-flags flags)
-        `(cons "--enable-fts5" ,flags))))))
-
-;; This is used by Qt.
-(define-public sqlite-with-column-metadata
-  (package/inherit sqlite
-    (name "sqlite-with-column-metadata")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sqlite)
-       ((#:configure-flags flags)
-        `(list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
-                              "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
-                              "-DSQLITE_ENABLE_DBSTAT_VTAB "
-                              "-DSQLITE_ENABLE_COLUMN_METADATA")))))))
 
 (define-public tdb
   (package

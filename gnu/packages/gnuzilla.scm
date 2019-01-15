@@ -68,7 +68,8 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages readline))
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages sqlite))
 
 (define-public mozjs
   (package

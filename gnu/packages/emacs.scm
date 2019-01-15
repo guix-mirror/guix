@@ -116,6 +116,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages video)
   #:use-module (gnu packages haskell)
