@@ -16,6 +16,7 @@
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11364,5 +11365,36 @@ embedded in your Haskell code.")
      "This package implements utilities to perform atomic output so as to
 avoid the problem of partial intermediate files.")
     (license license:expat)))
+
+(define-public ghc-tldr
+  (package
+    (name "ghc-tldr")
+    (version "0.4.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/tldr/tldr-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0nc581y9jjzwd8l88g48c72mla7k6q1w102akl7gl5jsk9ljamd3"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-cmark" ,ghc-cmark)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-typed-process" ,ghc-typed-process)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-golden" ,ghc-tasty-golden)))
+    (home-page "https://github.com/psibi/tldr-hs#readme")
+    (synopsis "Haskell tldr client")
+    (description "This package provides the @command{tldr} command and a
+Haskell client library allowing users to update and view @code{tldr} pages
+from a shell.  The @code{tldr} pages are a community effort to simplify the
+man pages with practical examples.")
+    (license license:bsd-3)))
 
 ;;; haskell.scm ends here
