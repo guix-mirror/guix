@@ -517,7 +517,6 @@ provisioning etc.")
              (let* ((out (assoc-ref outputs "out"))
                     (out-bin (string-append out "/bin")))
                (chdir "build")
-               (install-file (readlink "docker") out-bin)
                (install-file "docker" out-bin)
                #t))))))
     (native-inputs
