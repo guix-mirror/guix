@@ -211,6 +211,11 @@
                    (unpack (assoc-ref %standard-phases 'unpack))
                    (patch-source-shebangs
                     (assoc-ref %standard-phases 'patch-source-shebangs)))
+              (substitute* (string-append share "/texmf-dist/web2c/texmf.cnf")
+                ;; Don't truncate lines.
+                (("^error_line = .*$") "error_line = 254\n")
+                (("^half_error_line = .*$") "half_error_line = 238\n")
+                (("^max_print_line = .*$") "max_print_line = 1000\n"))
               ;; Create symbolic links for the latex variants and their
               ;; man pages.
               (with-directory-excursion (string-append out "/bin/")
