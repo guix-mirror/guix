@@ -27,6 +27,7 @@
                 #:select (nar-uri-abbreviation))
   #:use-module (guix store)
   #:use-module (guix derivations)
+  #:use-module (guix memoization)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-19)
@@ -229,22 +230,27 @@ build-log\" traces."
   (and (current-store-protocol-version)
        (>= (current-store-protocol-version) #x163)))
 
+(define isatty?*
+  (mlambdaq (port)
+    (isatty? port)))
+
 (define spin!
   (let ((steps (circular-list "\\" "|" "/" "-")))
     (lambda (port)
       "Display a spinner on PORT."
-      (match steps
-        ((first . rest)
-         (set! steps rest)
-         (display "\r\x1b[K" port)
-         (display first port)
-         (force-output port))))))
+      (when (isatty?* port)
+        (match steps
+          ((first . rest)
+           (set! steps rest)
+           (display "\r\x1b[K" port)
+           (display first port)
+           (force-output port)))))))
 
 (define (color-output? port)
   "Return true if we should write colored output to PORT."
   (and (not (getenv "INSIDE_EMACS"))
        (not (getenv "NO_COLOR"))
-       (isatty? port)))
+       (isatty?* port)))
 
 (define-syntax color-rules
   (syntax-rules ()
