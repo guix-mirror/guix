@@ -767,6 +767,43 @@ originals.")
     ;; With font exception
     (license license:gpl2+)))
 
+(define-public texlive-fonts-lm
+  (package
+    (name "texlive-fonts-lm")
+    (version "2.004")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.gust.org.pl/projects/e-foundry/"
+                                  "latin-modern/download/lm" version "bas.zip"))
+              (sha256
+               (base32
+                "0z2s253y751m2ci5aw8nq0sf2kyg9hpimv2gyixkch9d07m2b9wp"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/")))
+           (mkdir-p root)
+           (with-directory-excursion root
+             (invoke (string-append (assoc-ref %build-inputs "unzip")
+                                    "/bin/unzip")
+                     (assoc-ref %build-inputs "source")))
+           #t))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://www.gust.org.pl/projects/e-foundry/latin-modern/")
+    (synopsis "Latin Modern family of fonts")
+    (description "The Latin Modern fonts are derived from the famous Computer
+Modern fonts designed by Donald E. Knuth and described in Volume E of his
+Computers & Typesetting series.")
+    ;; The GUST font license (GFL) is legally identical to the LaTeX Project
+    ;; Public License (LPPL), version 1.3c or later, but comes with an
+    ;; additional but not legally binding clause.
+    (license license:lppl1.3c+)))
+
 (define-public texlive-fonts-knuth-lib
   (package
     (name "texlive-fonts-knuth-lib")
