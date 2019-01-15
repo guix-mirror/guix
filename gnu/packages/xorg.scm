@@ -18,6 +18,7 @@
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
+;;; Copyright © 2019 nee <nee@cock.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6306,3 +6307,69 @@ reduce fonts in the Glyph Bitmap Distribution Format (BDF).  It produces BDF
 output.")
     (home-page "https://tracker.debian.org/pkg/bdfresize")
     (license license:gpl2+)) )
+
+(define-public console-setup
+  (package
+    (name "console-setup")
+    (version "1.188")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://salsa.debian.org/installer-team/console-setup.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "1741mg2wc5wa63clkijmv04zd6jxhc7c6aq7mkhqw1r4dhfhih19"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (let ((bash (assoc-ref %build-inputs "bash"))
+             (out (assoc-ref %outputs "out")))
+         (list (string-append "SHELL=" bash "/bin/bash")))
+       #:tests? #f                                ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'make-doubled-bdfs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "make" "-C" "Fonts"
+                     "doubled_bdfs"
+                     (string-append "SHELL="
+                                    (assoc-ref inputs "bash")
+                                    "/bin/bash"))))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref %outputs "out")))
+               (invoke "make" "install-linux"
+                       (string-append "prefix=" out)
+                       (string-append "SHELL="
+                                      (assoc-ref inputs "bash")
+                                      "/bin/bash"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("bdftopcf" ,bdftopcf)
+       ("bdfresize" ,bdfresize)
+       ("sharutils" ,sharutils)))                 ;for 'uuencode'
+    (inputs
+     `(("perl" ,perl)))                           ;used by 'ckbcomp'
+    (synopsis "Set up the Linux console font and keyboard")
+    (description
+     "console-setup provides the console with the same keyboard
+configuration scheme that X Window System has.  In particular, the
+@command{ckbcomp} program compiles an XKB keyboard description to a keymap
+suitable for @command{loadkeys} or @command{kbdcontrol}.  As a result, there
+is no need to duplicate or change the console keyboard files just to make
+simple customizations.
+
+Besides the keyboard, the package also configures the font on the console.  It
+includes a rich collection of fonts and supports several languages that would
+otherwise be unsupported on the console (such as Armenian, Georgian, Lao, and
+Thai).")
+    (home-page "https://salsa.debian.org/installer-team/console-setup/")
+
+    ;; Most of the code is GPLv2+; the Expat license applies to 'setupcon' and
+    ;; 'ckbcomp-mini'.  The installed precompiled keyboard files are covered
+    ;; by simple permissive licenses.  See the 'COPYRIGHT' file.
+    (license (list license:gpl2+
+                   license:expat))))
