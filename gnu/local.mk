@@ -369,6 +369,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/python.scm			\
   %D%/packages/python-crypto.scm		\
   %D%/packages/python-web.scm			\
+  %D%/packages/python-xyz.scm			\
   %D%/packages/toys.scm				\
   %D%/packages/tryton.scm			\
   %D%/packages/qt.scm				\

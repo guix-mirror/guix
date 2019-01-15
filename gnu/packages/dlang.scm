@@ -36,6 +36,7 @@
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages textutils))
 
 (define-public rdmd

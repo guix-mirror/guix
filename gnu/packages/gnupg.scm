@@ -48,6 +48,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pth)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages compression)

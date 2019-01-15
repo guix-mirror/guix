@@ -42,6 +42,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ragel)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)

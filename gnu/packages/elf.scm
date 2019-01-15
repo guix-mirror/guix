@@ -34,6 +34,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages xml))
 

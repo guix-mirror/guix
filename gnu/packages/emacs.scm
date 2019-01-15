@@ -80,6 +80,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tcl)
