@@ -274,16 +274,14 @@ Includes the actual FTDI connector.")
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:make-flags
+       (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+             (string-append "ICEBOX=" (string-append
+                                       (assoc-ref %build-inputs "icestorm")
+                                       "/share/icebox")))
        #:phases (modify-phases %standard-phases
        (replace 'configure
          (lambda* (#:key outputs inputs #:allow-other-keys)
-           (substitute* '("Makefile")
-             (("DESTDIR = .*") (string-append "DESTDIR = "
-                                             (assoc-ref outputs "out")
-                                             "\n"))
-             (("ICEBOX = .*") (string-append "ICEBOX = "
-                                             (assoc-ref inputs "icestorm")
-                                             "/share/icebox\n")))
            (substitute* '("./tests/fsm/generate.py"
                           "./tests/combinatorial/generate.py")
              (("#!/usr/bin/python") "#!/usr/bin/python2"))
