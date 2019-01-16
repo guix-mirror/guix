@@ -238,6 +238,8 @@ with URL syntax.  While cURL supports many crypto backends, libgnurl only
 supports HTTP, HTTPS and GnuTLS.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
+   (properties '((ftp-server . "ftp.gnu.org")
+                 (ftp-directory . "/gnunet")))
    (home-page "https://gnunet.org/gnurl")))
 
 (define-public gnunet
