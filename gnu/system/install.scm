@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -274,7 +274,7 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                         '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
 
           ;; To facilitate copy/paste.
-          (gpm-service)
+          (service gpm-service-type)
 
           ;; Add an SSH server to facilitate remote installs.
           (service openssh-service-type
