@@ -43,7 +43,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages docbook)
-  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
