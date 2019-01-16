@@ -904,6 +904,39 @@ protocols.")
 upload files over HTTP.")
       (license (package-license prosody)))))
 
+(define-public prosody-smacks
+  (let ((changeset "67f1d1f22625")
+        (revision "1"))
+    (package
+      (name "prosody-smacks")
+      (version (string-append "0-" revision "." (string-take changeset 7)))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference
+                      (url "https://hg.prosody.im/prosody-modules/")
+                      (changeset changeset)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "020ngpax30fgarah98yvlj0ni8rcdwq60if03a9hqdw8mic0nxxs"))))
+      (build-system trivial-build-system)
+      (arguments
+       '(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((out (assoc-ref %outputs "out"))
+                 (source (assoc-ref %build-inputs "source")))
+             (with-directory-excursion (in-vicinity source "mod_smacks")
+               (install-file "mod_smacks.lua" out))
+             #t))))
+      (home-page "https://modules.prosody.im/mod_smacks.html")
+      (synopsis "XEP-0198: Reliability and fast reconnects for XMPP")
+      (description "This module implements XEP-0198: when supported by both
+the client and server, it can allow clients to resume a disconnected session,
+and prevent message loss.")
+      (license (package-license prosody)))))
+
 (define-public libtoxcore
   (let ((revision "2")
         (commit "bf69b54f64003d160d759068f4816b2d9b2e1e21"))
