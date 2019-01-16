@@ -171,6 +171,9 @@ empty list."
   "Return a string of the newest released version name given a string URL like
 'https://github.com/arq5x/bedtools2/archive/v2.24.0.tar.gz' and the name of
 the package e.g. 'bedtools2'.  Return #f if there is no releases"
+  (define (pre-release? x)
+    (hash-ref x "prerelease"))
+
   (let* ((json (fetch-releases-or-tags url)))
     (if (eq? json #f)
         (if (%github-token)
@@ -181,14 +184,9 @@ API. This may be fixed by using an access token and setting the environment
 variable GUIX_GITHUB_TOKEN, for instance one procured from
 https://github.com/settings/tokens"))
         (let loop ((releases
-                    (filter
-                     (lambda (x)
-                       ;; example pre-release:
-                       ;; https://github.com/wwood/OrfM/releases/tag/v0.5.1
-                       ;; or an all-prerelease set
-                       ;; https://github.com/powertab/powertabeditor/releases
-                       (not (hash-ref x "prerelease")))
-                     json)))
+                    (match (remove pre-release? json)
+                      (() json) ; keep everything
+                      (releases releases))))
           (match releases
             (()                                   ;empty release list
              #f)
