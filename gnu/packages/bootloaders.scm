@@ -376,7 +376,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2018.11")
+    (version "2019.01")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -384,7 +384,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0znkwljfwwn4y7j20pzz4ilqw8znphrfxns0x1lwdzh3xbr96z3k"))))
+                "08hwsmh5xsb1gcxsv8gvx00bai938dm5y3889n8jif3a8rd7xgah"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
@@ -440,6 +440,11 @@ also initializes the boards (RAM etc).")
               (("def test_ctrl_c")
                "@pytest.mark.skip(reason='Guix has problems with SIGINT')
 def test_ctrl_c"))
+             ;; This test requires a sound system, which is un-used in u-boot-tools.
+             (for-each (lambda (file)
+                              (substitute* file
+                                  (("CONFIG_SOUND=y") "CONFIG_SOUND=n")))
+                              (find-files "configs" "sandbox_.*defconfig$"))
              #t))
          (replace 'configure
            (lambda* (#:key make-flags #:allow-other-keys)
@@ -595,20 +600,7 @@ board-independent tools.")))
   (make-u-boot-sunxi64-package "pine64_plus" "aarch64-linux-gnu"))
 
 (define-public u-boot-pinebook
-  (let ((base (make-u-boot-sunxi64-package "pinebook" "aarch64-linux-gnu")))
-    (package
-      (inherit base)
-      (source (origin
-              (inherit (package-source u-boot))
-              (patches (search-patches
-                        ;; Add patches to enable Pinebook support from sunxi
-                        ;; maintainer tree: git://git.denx.de/u-boot-sunxi.git
-                        "u-boot-pinebook-a64-update-dts.patch"
-                        "u-boot-pinebook-syscon-node.patch"
-                        "u-boot-pinebook-mmc-calibration.patch"
-                        "u-boot-pinebook-video-bridge.patch"
-                        "u-boot-pinebook-r_i2c-controller.patch"
-                        "u-boot-pinebook-dts.patch")))))))
+  (make-u-boot-sunxi64-package "pinebook" "aarch64-linux-gnu"))
 
 (define-public u-boot-bananapi-m2-ultra
   (make-u-boot-package "Bananapi_M2_Ultra" "arm-linux-gnueabihf"))
