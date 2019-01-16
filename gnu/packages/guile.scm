@@ -45,7 +45,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages ed)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)

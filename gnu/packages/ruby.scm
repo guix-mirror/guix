@@ -34,6 +34,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages java)

@@ -28,7 +28,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)

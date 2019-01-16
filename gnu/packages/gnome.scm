@@ -75,6 +75,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages documentation)

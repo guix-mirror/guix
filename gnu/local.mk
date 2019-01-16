@@ -126,6 +126,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/datamash.scm			\
   %D%/packages/datastructures.scm		\
   %D%/packages/dav.scm				\
+  %D%/packages/dbm.scm				\
   %D%/packages/dc.scm				\
   %D%/packages/debian.scm			\
   %D%/packages/debug.scm			\
