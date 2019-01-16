@@ -34,9 +34,10 @@
         (height (nearest-exact-integer
                  (/ (screen-rows) 2))))
     (run-file-textbox-page
-     #:info-text (G_ "Congratulations, the installation is almost over! A \
-system configuration file has been generated, it is displayed just below. The \
-new system will be created from this file when pression the Ok button.")
+     #:info-text (G_ "We're now ready to proceed with the installation! \
+A system configuration file has been generated, it is displayed below.  \
+The new system will be created from this file once you've pressed OK.  \
+This will take a few minutes.")
      #:title (G_ "Configuration file")
      #:file (%installer-configuration-file)
      #:info-textbox-width width
@@ -52,15 +53,16 @@ new system will be created from this file when pression the Ok button.")
   (message-window
    (G_ "Installation complete")
    (G_ "Reboot")
-   (G_ "The installation finished with success. You may now remove the device \
-with the installation image and press the button to reboot.")))
+   (G_ "Congratulations!  Installation is now complete.  \
+You may remove the device containing the installation image and \
+press the button to reboot.")))
 
 (define (run-install-failed-page)
   (choice-window
    (G_ "Installation failed")
    (G_ "Restart installer")
    (G_ "Retry system install")
-   (G_ "The final system installation step failed. You can retry the \
+   (G_ "The final system installation step failed.  You can retry the \
 last step, or restart the installer.")))
 
 (define (run-install-shell)
