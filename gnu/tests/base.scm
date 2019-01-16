@@ -706,7 +706,8 @@ non-ASCII names from /tmp.")
   (operating-system
     (inherit %simple-os)
     (name-service-switch %mdns-host-lookup-nss)
-    (services (cons* (avahi-service #:debug? #t)
+    (services (cons* (service avahi-service-type
+                              (avahi-configuration (debug? #t)))
                      (dbus-service)
                      (service dhcp-client-service-type) ;needed for multicast
 
