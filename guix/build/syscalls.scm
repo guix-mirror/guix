@@ -693,9 +693,9 @@ mounted at FILE."
 from fdisk_device_is_used function of util-linux. This is particulary useful
 for devices that do not appear in /proc/self/mounts like overlayfs lowerdir
 backend device."
-  (let*-values (((port)    (open-file device "rb"))
-                ((ret err) (%ioctl (fileno port) BLKRRPART %null-pointer)))
-    (close-port port)
+  (let*-values (((fd)      (open-fdes device O_RDONLY))
+                ((ret err) (%ioctl fd BLKRRPART %null-pointer)))
+    (close-fdes fd)
     (cond
      ((= ret 0)
       #f)
