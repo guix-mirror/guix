@@ -344,7 +344,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
   (package
     (inherit electrum)
     (name "electron-cash")
-    (version "3.3.1")
+    (version "3.3.4")
     (source
      (origin
        (method url-fetch)
@@ -355,7 +355,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
                            ".tar.gz"))
        (sha256
         (base32
-         "1jdy89rfdwc2jadx3rqj5yvynpcn90cx6482ax9f1cj9gfxp9j2b"))
+         "0ipl6vf2n9a5n556sx2z57s7wdvg05xwjvz67kff9nmbx4s8vjyf"))
        (modules '((guix build utils)))
        (snippet
         '(begin
