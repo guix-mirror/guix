@@ -52,10 +52,10 @@
                   #:button-callback-procedure button-exit-action)))
     (car result)))
 
-(define (draw-formating-page)
+(define (draw-formatting-page)
   "Draw a page to indicate partitions are being formated."
   (draw-info-page
-   (format #f (G_ "Partition formating is in progress, please wait."))
+   (format #f (G_ "Partition formatting is in progress, please wait."))
    (G_ "Preparing partitions")))
 
 (define (run-device-page devices)
@@ -288,13 +288,13 @@ by USER-PART, if it is applicable for the partition type."
                         (G_ "Encryption label")))))
             (user-partition
              (inherit target-user-partition)
-             (need-formating? #t)
+             (need-formatting? #t)
              (crypt-label new-label))))
-         ((need-formating?)
+         ((need-formatting?)
           (user-partition
            (inherit target-user-partition)
-           (need-formating?
-            (not (user-partition-need-formating?
+           (need-formatting?
+            (not (user-partition-need-formatting?
                   target-user-partition)))))
          ((size)
           (let* ((old-size (user-partition-size target-user-partition))
@@ -392,7 +392,7 @@ partition. Leave this field empty if you don't want to set a mounting point.")
             (and new-partition
                  (user-partition
                   (inherit new-user-partition)
-                  (need-formating? #t)
+                  (need-formatting? #t)
                   (file-name (partition-get-path new-partition))
                   (disk-file-name (device-path device))
                   (parted-object new-partition))))
@@ -758,8 +758,8 @@ by pressing the Exit button.~%~%")))
          (user-partitions (run-page non-install-devices))
          (user-partitions-with-pass (prompt-luks-passwords
                                      user-partitions))
-         (form (draw-formating-page)))
-    ;; Make sure the disks are not in use before proceeding to formating.
+         (form (draw-formatting-page)))
+    ;; Make sure the disks are not in use before proceeding to formatting.
     (free-parted non-install-devices)
     (format-user-partitions user-partitions-with-pass)
     (destroy-form-and-pop form)

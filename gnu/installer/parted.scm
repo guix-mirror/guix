@@ -55,7 +55,7 @@
             user-partition-start
             user-partition-end
             user-partition-mount-point
-            user-partition-need-formating?
+            user-partition-need-formatting?
             user-partition-parted-object
 
             find-esp-partition
@@ -154,7 +154,7 @@
                         (default #f))
   (mount-point          user-partition-mount-point ;string
                         (default #f))
-  (need-formating?      user-partition-need-formating? ; boolean
+  (need-formatting?     user-partition-need-formatting? ; boolean
                         (default #f))
   (parted-object        user-partition-parted-object ; <partition> from parted
                         (default #f)))
@@ -541,7 +541,7 @@ determined by MAX-LENGTH-COLUMN procedure."
          (fs-type-name (user-fs-type-name fs-type))
          (bootable? (user-partition-bootable? user-partition))
          (esp? (user-partition-esp? user-partition))
-         (need-formating? (user-partition-need-formating? user-partition))
+         (need-formatting? (user-partition-need-formatting? user-partition))
          (crypt-label (user-partition-crypt-label user-partition))
          (size (user-partition-size user-partition))
          (mount-point (user-partition-mount-point user-partition)))
@@ -585,9 +585,9 @@ determined by MAX-LENGTH-COLUMN procedure."
       ,@(if (or (freespace-partition? partition)
                 (eq? fs-type 'swap))
             '()
-            `((need-formating?
+            `((need-formatting?
                . ,(string-append "Format the partition? : "
-                                 (if need-formating? "Yes" "No")))))
+                                 (if need-formatting? "Yes" "No")))))
       ,@(if (or (eq? type 'extended)
                 (eq? fs-type 'swap))
             '()
@@ -871,13 +871,13 @@ partition."
                (error
                 (format #f "Unable to create partition ~a~%" name)))))))))
 
-(define (force-user-partitions-formating user-partitions)
+(define (force-user-partitions-formatting user-partitions)
   "Set the NEED-FORMATING? fields to #t on all <user-partition> records of
 USER-PARTITIONS list and return the updated list."
   (map (lambda (p)
          (user-partition
           (inherit p)
-          (need-formating? #t)))
+          (need-formatting? #t)))
        user-partitions))
 
 (define* (auto-partition disk
@@ -992,7 +992,7 @@ swap partition, a root partition and a home partition."
                     (crypt-label (and encrypted? "crypthome"))
                     (size "100%")
                     (mount-point "/home")))))))
-           (new-partitions* (force-user-partitions-formating
+           (new-partitions* (force-user-partitions-formatting
                              new-partitions)))
       (create-adjacent-partitions disk
                                   new-partitions*
@@ -1091,8 +1091,8 @@ USER-PARTITION if it is encrypted, or the plain file-name otherwise."
 NEED-FORMATING? field set to #t."
   (for-each
    (lambda (user-partition)
-     (let* ((need-formating?
-             (user-partition-need-formating? user-partition))
+     (let* ((need-formatting?
+             (user-partition-need-formatting? user-partition))
             (type (user-partition-type user-partition))
             (crypt-label (user-partition-crypt-label user-partition))
             (file-name (user-partition-upper-file-name user-partition))
@@ -1102,11 +1102,11 @@ NEED-FORMATING? field set to #t."
 
        (case fs-type
          ((ext4)
-          (and need-formating?
+          (and need-formatting?
                (not (eq? type 'extended))
                (create-ext4-file-system file-name)))
          ((fat32)
-          (and need-formating?
+          (and need-formatting?
                (not (eq? type 'extended))
                (create-fat32-file-system file-name)))
          ((swap)
@@ -1293,7 +1293,7 @@ from (gnu system mapped-devices) and return it."
 (define (free-parted devices)
   "Deallocate memory used for DEVICES in parted, force sync them and wait for
 the devices not to be used before returning."
-  ;; XXX: Formating and further operations on disk partition table may fail
+  ;; XXX: Formatting and further operations on disk partition table may fail
   ;; because the partition table changes are not synced, or because the device
   ;; is still in use, even if parted should have finished editing
   ;; partitions. This is not well understood, but syncing devices and waiting
