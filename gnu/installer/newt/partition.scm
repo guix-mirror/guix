@@ -745,7 +745,7 @@ by pressing the Exit button.~%~%")))
            (run-disk-page (list disk) user-partitions
                           #:guided? #t)))
        ((eq? method 'manual)
-         (let* ((disks (map disk-new devices))
+         (let* ((disks (filter-map disk-new devices))
                 (user-partitions (append-map
                                   create-special-user-partitions
                                   (map disk-partitions disks)))
