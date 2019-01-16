@@ -701,6 +701,11 @@ backend device."
       #f)
      ((= err EBUSY)
       #t)
+     ((= err EINVAL)
+      ;; We get EINVAL for devices that have the GENHD_FL_NO_PART_SCAN flag
+      ;; set in the kernel, in particular loopback devices, though we do seem
+      ;; to get it for SCSI storage (/dev/sr0) on QEMU.
+      #f)
      (else
       (throw 'system-error "ioctl" "~A"
              (list (strerror err))
