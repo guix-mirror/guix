@@ -12644,6 +12644,19 @@ This is a symbol specifying the logging level: @code{quiet}, @code{fatal},
 @code{error}, @code{info}, @code{verbose}, @code{debug}, etc.  See the man
 page for @file{sshd_config} for the full list of level names.
 
+@item @code{extra-content} (default: @code{""})
+This field can be used to append arbitrary text to the configuration file.  It
+is especially useful for elaborate configurations that cannot be expressed
+otherwise.  This configuration, for example, would generally disable root
+logins, but permit them from one specific IP address:
+
+@example
+(openssh-configuration
+  (extra-content "\
+Match Address 192.168.0.1
+  PermitRootLogin yes"))
+@end example
+
 @end table
 @end deftp
 
