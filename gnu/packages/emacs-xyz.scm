@@ -12722,3 +12722,24 @@ customize the place of pop-up window, how the windows are split, how the
 buffers are located in the windows, keybinds to manipulate windows and
 buffers, etc.  It also has plug-ins to help your Emacs life.")
       (license license:gpl3+)))
+
+(define-public emacs-ctable
+  (let ((commit "b8830d1ca95abb100a81bc32011bd17d5ecba000"))
+    (package
+      (name "emacs-ctable")
+      (version (git-version "0.1.2" "1" commit))
+      (home-page "https://github.com/kiwanami/emacs-ctable")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0pg303pnqscrsbx9579hc815angszsgf9vpd2z2f8p4f4ka6a00h"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (synopsis "Table component for Emacs Lisp")
+      (description "This program is a table component for Emacs Lisp.  Other
+programs can use this table component for the application UI.")
+      (license license:gpl3+))))
