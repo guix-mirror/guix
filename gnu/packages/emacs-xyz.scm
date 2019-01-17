@@ -681,6 +681,31 @@ can take association lists, hash tables, and in some cases vectors (where the
 index is considered the key).")
     (license license:gpl3+)))
 
+(define-public emacs-anaphora
+  (package
+    (name "emacs-anaphora")
+    (version "1.0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rolandwalker/anaphora.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "11fgiy029sqz7nvdm7dcal95lacryz9zql0x5h05z48nrrcl4bib"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/rolandwalker/anaphora/")
+    (synopsis "Anaphoric expressions for Emacs Lisp")
+    (description "@code{emacs-anaphora} implements anaphoric expressions for
+Emacs Lisp.
+
+Anaphoric expressions implicitly create one or more temporary variables which
+can be referred to during the expression.  This technique can improve clarity
+in certain cases.  It also enables recursion for anonymous functions.")
+    (license license:public-domain)))
+
 
 ;;;
 ;;; Web browsing.
