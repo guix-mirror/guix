@@ -12818,3 +12818,26 @@ asynchronous communications, the RPC response is fairly good.")
       (description "This program connects the database server through Perl's
 DBI, and provides DB-accessing API and the simple management UI.")
       (license license:gpl3+))))
+
+(define-public emacs-edbi-sqlite
+  (let ((commit "52cb9ca1af7691b592f2cfd2f007847e7a4ccd5f"))
+    (package
+      (name "emacs-edbi-sqlite")
+      (version (git-version "0.1.1" "1" commit))
+      (home-page "https://github.com/proofit404/edbi-sqlite")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1vll81386fx90lq5sy4rlxcik6mvw7zx5cc51f0yaca9bkcckp51"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-edbi" ,emacs-edbi)))
+      (synopsis "Open SQLite files in Emacs")
+      (description "This package is a convenience wrapper for @command{edbi}
+to open SQLite databases.")
+      (license license:gpl3+))))
