@@ -34,7 +34,7 @@
 ;;; Copyright © 2017, 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -12678,3 +12678,23 @@ leader key in vim), and much more.")
 from within emacs.  The @code{tldr} pages are a community effort to simplify
 the man pages with practical examples.")
       (license license:wtfpl2))))
+
+(define-public emacs-window-layout
+  (package
+    (name "emacs-window-layout")
+    (version "1.4")
+    (home-page "https://github.com/kiwanami/emacs-window-layout")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0wgqi8r844lbx52fn6az8c1n8m681rp6dkfzd54wmdk1ka7zmvv6"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (synopsis "Simple window layout management framework for emacs")
+    (description "A window-layout management library that can split a frame
+or a window into some windows according to a layout recipe.")
+    (license license:gpl3+)))
