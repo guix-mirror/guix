@@ -134,7 +134,7 @@ in between these sequences may be different in both content and length.")
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))                 ; for tests
-    (home-page "http://liburcu.org/")
+    (home-page "https://liburcu.org/")
     (synopsis "User-space RCU data synchronisation library")
     (description "liburcu is a user-space @dfn{Read-Copy-Update} (RCU) data
 synchronisation library.  It provides read-side access that scales linearly
