@@ -77,7 +77,7 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
   (format #t (G_ "
       --no-check-certificate
                          do not validate the certificate of HTTPS servers "))
-  (format #f (G_ "
+  (format #t (G_ "
   -o, --output=FILE      download to FILE"))
   (newline)
   (display (G_ "
