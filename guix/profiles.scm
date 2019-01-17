@@ -1363,12 +1363,15 @@ MANIFEST."
                                       (manifest-entries manifest))
                        #:create-all-directories? #t
                        #:log-port (%make-void-port "w"))
-          (substitute* (string-append #$output
-                                      "/share/texmf-dist/web2c/texmf.cnf")
-            (("^TEXMFROOT = .*")
-             (string-append "TEXMFROOT = " #$output "/share\n"))
-            (("^TEXMF = .*")
-             "TEXMF = $TEXMFROOT/share/texmf-dist\n"))
+          (let ((texmf.cnf (string-append
+                            #$output
+                            "/share/texmf-dist/web2c/texmf.cnf")))
+            (when (file-exists? texmf.cnf)
+              (substitute* texmf.cnf
+                (("^TEXMFROOT = .*")
+                 (string-append "TEXMFROOT = " #$output "/share\n"))
+                (("^TEXMF = .*")
+                 "TEXMF = $TEXMFROOT/share/texmf-dist\n"))))
           #t)))
 
     (with-monad %store-monad
