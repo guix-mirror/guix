@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
@@ -14,7 +14,7 @@
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
-;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
@@ -508,6 +508,14 @@ interactive environment for the functional language Haskell.")
              (invoke "tar" "xvf"
                      (assoc-ref inputs "ghc-testsuite")
                      "--strip-components=1")
+             #t))
+         ;; This phase patches the 'ghc-pkg' command so that it sorts the list
+         ;; of packages in the binary cache it generates.
+         (add-before 'build 'fix-ghc-pkg-nondeterminism
+           (lambda _
+             (substitute* "utils/ghc-pkg/Main.hs"
+               (("confs = map \\(path </>\\) \\$ filter \\(\".conf\" `isSuffixOf`\\) fs")
+                "confs = map (path </>) $ filter (\".conf\" `isSuffixOf`) (sort fs)"))
              #t))
          (add-after 'unpack-testsuite 'fix-shell-wrappers
            (lambda _
