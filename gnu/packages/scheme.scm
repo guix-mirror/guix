@@ -1214,13 +1214,9 @@ The core is 12 builtin special forms and 33 builtin functions.")
                (("/bin/sh") (which "sh")))
              #t))
          (add-after 'build 'build-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
-               (with-directory-excursion "doc"
-                 (for-each
-                  (lambda (target)
-                    (invoke "make" target))
-                  '("info" "html" "htmls"))))
+           (lambda _
+             (with-directory-excursion "doc"
+               (invoke "make" "info"))
              #t))
          (add-before 'check 'patch-normalize-test
            ;; neutralize sys-normalize-pathname test as it relies on
@@ -1236,10 +1232,9 @@ The core is 12 builtin special forms and 33 builtin functions.")
                (("binary net termios") "binary termios"))
              #t))
          (add-after 'install 'install-docs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
-               (with-directory-excursion "doc"
-                 (invoke "make" "install")))
+           (lambda _
+             (with-directory-excursion "doc"
+               (invoke "make" "install"))
              #t)))))
     (synopsis "Scheme scripting engine")
     (description "Gauche is a R7RS Scheme scripting engine aiming at being a
@@ -1247,6 +1242,5 @@ handy tool that helps programmers and system administrators to write small to
 large scripts quickly.  Quick startup, built-in system interface, native
 multilingual support are some of the goals.  Gauche comes with a package
 manager/installer @code{gauche-package} which can download, compile, install
-and list gauche extension packages.  There are currently 58 packages
-available.")
+and list gauche extension packages.")
     (license bsd-3)))
