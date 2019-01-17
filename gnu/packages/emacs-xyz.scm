@@ -12743,3 +12743,29 @@ buffers, etc.  It also has plug-ins to help your Emacs life.")
       (description "This program is a table component for Emacs Lisp.  Other
 programs can use this table component for the application UI.")
       (license license:gpl3+))))
+
+(define-public emacs-epc
+  (let ((commit "e1bfa5ca163273859336e3cc89b4b6460f7f8cda"))
+    (package
+      (name "emacs-epc")
+      (version (git-version "0.1.1" "1" commit))
+      (home-page "https://github.com/kiwanami/emacs-epc")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "15nkrjgi64f829isfd6xrhl4zw8jirr8pkas7nisrbk1av868hx0"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-deferred" ,emacs-deferred)
+         ("emacs-ctable" ,emacs-ctable)))
+      (synopsis "RPC stack for Emacs Lisp")
+      (description "This program is an asynchronous RPC stack for Emacs.
+Using this RPC stack, Emacs can communicate with the peer process
+smoothly.  Because the protocol employs S-expression encoding and consists of
+asynchronous communications, the RPC response is fairly good.")
+      (license license:gpl3+))))
