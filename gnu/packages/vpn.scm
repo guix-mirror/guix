@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
@@ -241,13 +241,13 @@ the user specifically asks to proxy, so the @dfn{VPN} interface no longer
 (define-public openconnect
   (package
    (name "openconnect")
-   (version "7.08")
+   (version "8.02")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.infradead.org/pub/openconnect/"
                                 "openconnect-" version ".tar.gz"))
             (sha256 (base32
-                     "00wacb79l2c45f94gxs63b9z25wlciarasvjrb8jb8566wgyqi0w"))))
+                     "04p0vzc1791h68hd9803wsyb64zrwm8qpdqx0szhj9pig71g5a0w"))))
    (build-system gnu-build-system)
    (inputs
     `(("libxml2" ,libxml2)
