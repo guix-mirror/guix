@@ -19,7 +19,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -9721,3 +9721,28 @@ lookup in %INC or by assuming it is $0 if the caller is @code{main}
     (description "Regexp::Pattern is a convention for organizing reusable
 regexp patterns in modules.")
     (license (package-license perl))))
+
+(define-public perl-data-sexpression
+  (package
+    (name "perl-data-sexpression")
+    (version "0.41")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/N/NE/NELHAGE/Data-SExpression-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "16qls1yqcmhxrcx9agsmaypxa1nirq4nvbyzbww9984589m44ql1"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-deep" ,perl-test-deep)))
+    (propagated-inputs
+     `(("perl-class-accessor" ,perl-class-accessor)))
+    (home-page "https://metacpan.org/release/Data-SExpression")
+    (synopsis "Parse Lisp S-Expressions into Perl data structures")
+    (description "Data::SExpression parses Lisp S-Expressions into Perl data
+structures.")
+    (license perl-license)))
