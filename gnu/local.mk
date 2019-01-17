@@ -112,6 +112,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/conky.scm			\
   %D%/packages/connman.scm			\
   %D%/packages/cook.scm				\
+  %D%/packages/coq.scm				\
   %D%/packages/cpio.scm				\
   %D%/packages/cpp.scm 				\
   %D%/packages/cppi.scm				\
