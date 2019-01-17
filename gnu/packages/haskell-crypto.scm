@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -306,6 +306,9 @@ the C implementation.")
                (base32
                 "131wbbdr5yavs5k1ah9sz6fqx1ffyvaxf66pwjzsfc47mwc1mgl9"))))
     (build-system haskell-build-system)
+    ;; FIXME: tests are broken.
+    ;; See https://github.com/haskell-crypto/cryptonite/issues/260
+    (arguments '(#:tests? #f))
     (inputs
      `(("ghc-basement" ,ghc-basement)
        ("ghc-memory" ,ghc-memory)
