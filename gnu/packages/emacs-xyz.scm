@@ -67,6 +67,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
@@ -92,6 +93,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages w3m)
@@ -12768,4 +12770,51 @@ programs can use this table component for the application UI.")
 Using this RPC stack, Emacs can communicate with the peer process
 smoothly.  Because the protocol employs S-expression encoding and consists of
 asynchronous communications, the RPC response is fairly good.")
+      (license license:gpl3+))))
+
+(define-public emacs-edbi
+  (let ((commit "6f50aaf4bde75255221f2292c7a4ad3fa9d918c0"))
+    (package
+      (name "emacs-edbi")
+      (version (git-version "0.1.3" "1" commit))
+      (home-page "https://github.com/kiwanami/emacs-edbi")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0x0igyvdcm4863n7zndvcv6wgzwgn7324cbfjja6xd7r0k936zdy"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("perl" ,perl)
+         ("perl-rpc-epc-service" ,perl-rpc-epc-service)
+         ("perl-dbi" ,perl-dbi)
+         ;; TODO: Adding support for perl-dbd-mysql and others would
+         ;; dramatically increase the closure size.  Make several packages?
+         ("perl-dbd-sqlite" ,perl-dbd-sqlite)))
+      (propagated-inputs
+       `(("emacs-e2wm" ,emacs-e2wm)
+         ("emacs-epc" ,emacs-epc)))
+      (arguments
+       `(#:include '("\\.el$" "\\.pl$")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'patch-path
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((perl (assoc-ref inputs "perl"))
+                     (dir (string-append  (assoc-ref outputs "out")
+                                          "/share/emacs/site-lisp/guix.d/edbi-"
+                                          ,version)))
+                 (substitute* (string-append dir  "/edbi.el")
+                   (("\"perl\"") (string-append "\"" perl "/bin/perl\"")))
+                 (chmod (string-append dir "/edbi-bridge.pl") #o555)
+                 (wrap-program (string-append dir "/edbi-bridge.pl")
+                   `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB"))))
+                 #t))))))
+      (synopsis "Database Interface for Emacs Lisp")
+      (description "This program connects the database server through Perl's
+DBI, and provides DB-accessing API and the simple management UI.")
       (license license:gpl3+))))
