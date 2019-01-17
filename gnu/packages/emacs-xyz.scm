@@ -12491,7 +12491,7 @@ Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-matrix-client
-  (let ((commit "5d8e959a63e5de05b628ca8e1dfb974f7f618821"))
+  (let ((commit "2a95a1f1194ff65b5461b6ffbc13d1e01116f34f"))
     (package
       (name "emacs-matrix-client")
       (version (git-version "0.0.0" "1" commit))
@@ -12503,10 +12503,11 @@ Emacs.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "15mwyjq3z867v0xl4m2s3vvfn0wqncb67xawm1cjmpnambz1yz1n"))))
+                  "1y317hw63swglyqcfbi8lr1b1c6pvixxj3440ksgynrwr5j6k7q7"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("a" ,emacs-a)
+         ("anaphora" ,emacs-anaphora)
          ("dash" ,emacs-dash)
          ("esxml" ,emacs-esxml)
          ("f" ,emacs-f)
