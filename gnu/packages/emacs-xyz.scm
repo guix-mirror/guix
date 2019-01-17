@@ -12698,3 +12698,27 @@ the man pages with practical examples.")
     (description "A window-layout management library that can split a frame
 or a window into some windows according to a layout recipe.")
     (license license:gpl3+)))
+
+(define-public emacs-e2wm
+  (package
+      (name "emacs-e2wm")
+      (version "1.4")
+      (home-page "https://github.com/kiwanami/emacs-window-manager")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit (string-append "v" version))))
+                (sha256
+                 (base32
+                  "12midsrx07pdrsr1qbl2rpi7xyhxqx08bkz7n7gf8vsmqkpfp56s"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-window-layout" ,emacs-window-layout)))
+      (synopsis "Equilibrium Emacs Window Manager")
+      (description "E2WM is a window manager for Emacs.  It enables to
+customize the place of pop-up window, how the windows are split, how the
+buffers are located in the windows, keybinds to manipulate windows and
+buffers, etc.  It also has plug-ins to help your Emacs life.")
+      (license license:gpl3+)))
