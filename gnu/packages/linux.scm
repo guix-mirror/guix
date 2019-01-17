@@ -413,8 +413,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20.2")
-(define %linux-libre-hash "0y95gxckiwgz4jhkv3hq2apbq00w8281sf7lnajmpvc8bdlnmri1")
+(define %linux-libre-version "4.20.3")
+(define %linux-libre-hash "0mk996fb4bd9548xnv2as4lxm3gyj1kvn6ra03xxpb0wf8cqdazz")
 
 (define %linux-libre-4.20-patches
   (list %boot-logo-patch
