@@ -35,6 +35,7 @@
   #:autoload   (guix self) (whole-package make-config.scm)
   #:autoload   (guix inferior) (gexp->derivation-in-inferior) ;FIXME: circular dep
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:export (channel
             channel?
             channel-name
@@ -289,6 +290,34 @@ INSTANCE depends on."
                      #:commit (channel-instance-commit instance)
                      #:dependencies dependencies))
 
+(define (resolve-dependencies instances)
+  "Return a procedure that, given one of the elements of INSTANCES, returns
+list of instances it depends on."
+  (define channel-instance-name
+    (compose channel-name channel-instance-channel))
+
+  (define table                                   ;map a name to an instance
+    (fold (lambda (instance table)
+            (vhash-consq (channel-instance-name instance)
+                         instance table))
+          vlist-null
+          instances))
+
+  (define edges
+    (fold (lambda (instance edges)
+            (fold (lambda (channel edges)
+                    (let ((name (channel-name channel)))
+                      (match (vhash-assq name table)
+                        ((_ . target)
+                         (vhash-consq instance target edges)))))
+                  edges
+                  (channel-instance-dependencies instance)))
+          vlist-null
+          instances))
+
+  (lambda (instance)
+    (vhash-foldq* cons '() instance edges)))
+
 (define (channel-instance-derivations instances)
   "Return the list of derivations to build INSTANCES, in the same order as
 INSTANCES."
@@ -310,27 +339,22 @@ INSTANCES."
           (module-ref (resolve-interface '(gnu packages guile))
                       'guile-bytestructures)))
 
-  (mlet %store-monad ((core (build-channel-instance core-instance)))
-    (mapm %store-monad
-          (lambda (instance)
-            (if (eq? instance core-instance)
-                (return core)
-                (match (channel-instance-dependencies instance)
-                  (()
+  (define edges
+    (resolve-dependencies instances))
+
+  (define (instance->derivation instance)
+    (mcached (if (eq? instance core-instance)
+                 (build-channel-instance instance)
+                 (mlet %store-monad ((core (instance->derivation core-instance))
+                                     (deps (mapm %store-monad instance->derivation
+                                                 (edges instance))))
                    (build-channel-instance instance
-                                           (cons core dependencies)))
-                  (channels
-                   (mlet %store-monad ((dependencies-derivation
-                                        (latest-channel-derivation
-                                         ;; %default-channels is used here to
-                                         ;; ensure that the core channel is
-                                         ;; available for channels declared as
-                                         ;; dependencies.
-                                         (append channels %default-channels))))
-                     (build-channel-instance instance
-                                             (cons dependencies-derivation
-                                                   (cons core dependencies))))))))
-          instances)))
+                                           (cons core
+                                                 (append deps
+                                                         dependencies)))))
+             instance))
+
+  (mapm %store-monad instance->derivation instances))
 
 (define (whole-package-for-legacy name modules)
   "Return a full-blown Guix package for MODULES, a derivation that builds Guix
