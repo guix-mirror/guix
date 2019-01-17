@@ -102,6 +102,26 @@ Callback Hell.
 @end itemize")
     (license license:asl2.0)))
 
+(define-public python-aiohttp-socks
+  (package
+    (name "python-aiohttp-socks")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiohttp_socks" version))
+       (sha256
+        (base32
+         "0473702jk66xrgpm28wbdgpnak4v0dh2qmdjw7ky7hf3lwwqkggf"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)))
+    (home-page "https://github.com/romis2012/aiohttp-socks")
+    (synopsis "SOCKS proxy connector for aiohttp")
+    (description "This package provides a SOCKS proxy connector for
+aiohttp.  It supports SOCKS4(a) and SOCKS5.")
+    (license license:asl2.0)))
+
 (define-public python-aiodns
   (package
     (name "python-aiodns")
