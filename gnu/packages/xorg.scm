@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -5965,7 +5965,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.4.2")
+    (version "2.4.3")
     (source
      (origin
        (method url-fetch)
@@ -5973,7 +5973,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "01x4ri0arfq9cn01bh80h232lsj95jp6j1zw0z0q7a6mwrw4gr6i"))))
+         "0pq2pzmv5fsafp50rzl9nb6ns08rl88fhgdqc2hh27dx7b8ka8n6"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)
