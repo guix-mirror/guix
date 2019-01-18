@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ison111 <ison111@protonmail.com>
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -249,7 +249,17 @@ with freedesktop.org standard.")
                     version ".tar.gz"))
               (sha256
                 (base32
-                  "1jg7xfyr7kihjnalxp8wxyb9qjk8hqf5l36rp3s0lvkpmpyakppy"))
+                 "1jg7xfyr7kihjnalxp8wxyb9qjk8hqf5l36rp3s0lvkpmpyakppy"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "src/main.c"
+                    (("#include <sys/types\\.h>" all)
+                     ;; Add missing include for 'major' and 'minor' with glibc
+                     ;; >= 2.28.
+                     (string-append all "\n"
+                                    "#include <sys/sysmacros.h>\n")))
+                  #t))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
