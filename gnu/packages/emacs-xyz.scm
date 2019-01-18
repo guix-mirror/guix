@@ -12494,7 +12494,7 @@ Emacs.")
   (let ((commit "2a95a1f1194ff65b5461b6ffbc13d1e01116f34f"))
     (package
       (name "emacs-matrix-client")
-      (version (git-version "0.0.0" "1" commit))
+      (version (git-version "0.0.0" "2" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
