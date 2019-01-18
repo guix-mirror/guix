@@ -34,11 +34,12 @@
   #:use-module (guix channels)
   #:autoload   (guix inferior) (open-inferior)
   #:use-module (guix scripts build)
+  #:autoload   (guix build utils) (which)
   #:use-module (guix git)
   #:use-module (git)
   #:use-module (gnu packages)
   #:use-module ((guix scripts package) #:select (build-and-use-profile))
-  #:use-module (gnu packages base)
+  #:use-module ((gnu packages base) #:select (canonical-package))
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap)
                 #:select (%bootstrap-guile))
@@ -191,7 +192,16 @@ true, display what would be built without actually building it."
                       #:hooks %channel-profile-hooks
                       #:dry-run? dry-run?)
       (munless dry-run?
-        (return (display-profile-news profile))))))
+        (return (display-profile-news profile))
+        (match (which "guix")
+          (#f (return #f))
+          (str
+           (let ((command (string-append profile "/bin/guix")))
+             (unless (string=? command str)
+               (display-hint (format #f (G_ "After setting @code{PATH}, run
+@command{hash guix} to make sure your shell refers to @file{~a}.")
+                                     command)))
+             (return #f))))))))
 
 (define (honor-lets-encrypt-certificates! store)
   "Tell Guile-Git to use the Let's Encrypt certificates."
