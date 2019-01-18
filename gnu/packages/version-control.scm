@@ -5,7 +5,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2016, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -1384,6 +1384,15 @@ projects, from individuals to large-scale enterprise operations.")
              (patches (search-patches "rcs-5.9.4-noreturn.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("ed" ,ed)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-t810
+                    ;; See https://savannah.gnu.org/bugs/index.php?52288
+                    ;; Back-porting the fix is non-trivial, so disable for now.
+                    (lambda _
+                      (substitute* "tests/Makefile"
+                        ((" t810 \\\\\n") ""))
+                     #t)))))
     (home-page "https://www.gnu.org/software/rcs/")
     (synopsis "Per-file local revision control system")
     (description
