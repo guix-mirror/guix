@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -529,3 +530,41 @@ provisioning etc.")
     (description "This package provides a command line interface to Docker.")
     (home-page "https://www.docker.com/")
     (license license:asl2.0)))
+
+(define-public cqfd
+  (package
+    (name "cqfd")
+    (version "5.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/savoirfairelinux/cqfd.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1z4v16lbpbwd5ykawizdclpryp2k006lbk2mv427a4b3nvcd9wik"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; The test suite requires a docker daemon and connectivity.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Fix the directory of the bash completion.
+               (substitute* "Makefile"
+                 (("completionsdir=.*$")
+                  (string-append "completionsdir=" out
+                                 "/etc/bash_completion.d; \\\n")))
+               (invoke "make" "install"
+                       (string-append "PREFIX=" out))))))))
+    (home-page "https://github.com/savoirfairelinux/cqfd")
+    (synopsis "Convenience wrapper for Docker")
+    (description "cqfd is a Bash script that provides a quick and convenient
+way to run commands in the ecurrent directory, but within a Docker container
+defined in a per-project configuration file.")
+    (license license:gpl3+)))
