@@ -59,6 +59,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix utils)
@@ -209,6 +210,22 @@ languages.")
      `(("ncurses" ,ncurses)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))))
+
+(define-public emacs-xwidgets
+  (package
+    (inherit emacs)
+    (name "emacs-xwidgets")
+    (synopsis "The extensible, customizable, self-documenting text
+editor (with xwidgets support)")
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       '("--with-xwidgets")
+       ,@(package-arguments emacs)))
+    (inputs
+     `(("webkitgtk" ,webkitgtk)
+       ("libxcomposite" ,libxcomposite)
+       ,@(package-inputs emacs)))))
 
 (define-public emacs-no-x
   (package (inherit emacs)
