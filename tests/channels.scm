@@ -24,6 +24,7 @@
   #:use-module (guix store)
   #:use-module ((guix grafts) #:select (%graft?))
   #:use-module (guix derivations)
+  #:use-module (guix sets)
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -187,12 +188,15 @@
           (manifest-entries manifest))
 
         (define (depends? drv in out)
-          ;; Return true if DRV depends on all of IN and none of OUT.
-          (let ((lst (map derivation-input-path (derivation-inputs drv)))
+          ;; Return true if DRV depends (directly or indirectly) on all of IN
+          ;; and none of OUT.
+          (let ((set (list->set
+                      (requisites store
+                                  (list (derivation-file-name drv)))))
                 (in  (map derivation-file-name in))
                 (out (map derivation-file-name out)))
-            (and (every (cut member <> lst) in)
-                 (not (any (cut member <> lst) out)))))
+            (and (every (cut set-contains? set <>) in)
+                 (not (any (cut set-contains? set <>) out)))))
 
         (define (lookup name)
           (run-with-store store
@@ -212,8 +216,8 @@
                (depends? drv1
                          (list drv0) (list drv2 drv3))
                (depends? drv2
-                         (list drv1) (list drv0 drv3))
+                         (list drv1) (list drv3))
                (depends? drv3
-                         (list drv2 drv0) (list drv1))))))))
+                         (list drv2 drv0) (list))))))))
 
 (test-end "channels")

@@ -491,6 +491,10 @@ PACKAGE must be live."
   "Return a derivation that evaluates EXP with GUIX, an instance of Guix as
 returned for example by 'channel-instances->derivation'.  Other arguments are
 passed as-is to 'gexp->derivation'."
+  (define script
+    ;; EXP wrapped with a proper (set! %load-path …) prologue.
+    (scheme-file "inferior-script.scm" exp))
+
   (define trampoline
     ;; This is a crude way to run EXP on GUIX.  TODO: use 'raw-derivation' and
     ;; make 'guix repl' the "builder"; this will require "opening up" the
@@ -501,9 +505,12 @@ passed as-is to 'gexp->derivation'."
         (let ((pipe (open-pipe* OPEN_WRITE
                                 #+(file-append guix "/bin/guix")
                                 "repl" "-t" "machine")))
-          ;; Unquote EXP right here so that its references to #$output
-          ;; propagate to the surrounding gexp.
-          (write '#$exp pipe)                     ;XXX: load path for EXP?
+
+          ;; XXX: EXP presumably refers to #$output but that reference is lost
+          ;; so explicitly reference it here.
+          #$output
+
+          (write `(primitive-load #$script) pipe)
 
           (unless (zero? (close-pipe pipe))
             (error "inferior failed" #+guix)))))
