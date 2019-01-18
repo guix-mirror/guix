@@ -612,6 +612,11 @@ Info manual."
                  #:extra-files
                  (append (file-imports source "gnu/system/examples"
                                        (const #t))
+
+                         ;; Need so we get access system tests from an
+                         ;; inferior.
+                         (file-imports source "gnu/tests" (const #t))
+
                          ;; All the installer code is on the build-side.
                          (file-imports source "gnu/installer/"
                                        (const #t))
