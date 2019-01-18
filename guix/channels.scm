@@ -218,45 +218,48 @@ of COMMIT at URL.  Use NAME as the channel name."
   ;; place a set of compiled Guile modules in ~/.config/guix/latest.
   1)
 
-(define (standard-module-derivation name source dependencies)
-  "Return a derivation that builds the Scheme modules in SOURCE and that
-depend on DEPENDENCIES, a list of lowerable objects.  The assumption is that
-SOURCE contains package modules to be added to '%package-module-path'."
-  (define modules
-    (scheme-modules* source))
-
+(define (standard-module-derivation name source core dependencies)
+  "Return a derivation that builds with CORE, a Guix instance, the Scheme
+modules in SOURCE and that depend on DEPENDENCIES, a list of lowerable
+objects.  The assumption is that SOURCE contains package modules to be added
+to '%package-module-path'."
   ;; FIXME: We should load, say SOURCE/.guix-channel.scm, which would allow
   ;; channel publishers to specify things such as the sub-directory where .scm
   ;; files live, files to exclude from the channel, preferred substitute URLs,
   ;; etc.
-  (mlet* %store-monad ((compiled
-                        (compiled-modules modules
-                                          #:name name
-                                          #:module-path (list source)
-                                          #:extensions dependencies)))
 
-    (gexp->derivation name
-                      (with-extensions dependencies
-                        (with-imported-modules '((guix build utils))
-                          #~(begin
-                              (use-modules (guix build utils))
+  (define build
+    ;; This is code that we'll run in CORE, a Guix instance, with its own
+    ;; modules and so on.  That way, we make sure these modules are built for
+    ;; the right Guile version, with the right dependencies, and that they get
+    ;; to see the right (gnu packages …) modules.
+    (with-extensions dependencies
+      #~(begin
+          (use-modules (guix build compile)
+                       (guix build utils)
+                       (srfi srfi-26))
 
-                              (let ((go  (string-append #$output "/lib/guile/"
-                                                        (effective-version)
-                                                        "/site-ccache"))
-                                    (scm (string-append #$output
-                                                        "/share/guile/site/"
-                                                        (effective-version))))
-                                (mkdir-p (dirname go))
-                                (symlink #$compiled go)
-                                (mkdir-p (dirname scm))
-                                (symlink #$source scm))))))))
+          (define go
+            (string-append #$output "/lib/guile/" (effective-version)
+                           "/site-ccache"))
+          (define scm
+            (string-append #$output "/share/guile/site/"
+                           (effective-version)))
+
+          (compile-files #$source go
+                         (find-files #$source "\\.scm$"))
+          (mkdir-p (dirname scm))
+          (symlink #$source scm)
+          scm)))
+
+  (gexp->derivation-in-inferior name build core))
 
 (define* (build-from-source name source
-                            #:key verbose? commit
+                            #:key core verbose? commit
                             (dependencies '()))
   "Return a derivation to build Guix from SOURCE, using the self-build script
-contained therein.  Use COMMIT as the version string."
+contained therein; use COMMIT as the version string.  When CORE is true, build
+package modules under SOURCE using CORE, an instance of Guix."
   ;; Running the self-build script makes it easier to update the build
   ;; procedure: the self-build script of the Guix-to-be-installed contains the
   ;; right dependencies, build procedure, etc., which the Guix-in-use may not
@@ -278,9 +281,10 @@ contained therein.  Use COMMIT as the version string."
                #:pull-version %pull-version))
 
       ;; Build a set of modules that extend Guix using the standard method.
-      (standard-module-derivation name source dependencies)))
+      (standard-module-derivation name source core dependencies)))
 
-(define* (build-channel-instance instance #:optional (dependencies '()))
+(define* (build-channel-instance instance
+                                 #:optional core (dependencies '()))
   "Return, as a monadic value, the derivation for INSTANCE, a channel
 instance.  DEPENDENCIES is a list of extensions providing Guile modules that
 INSTANCE depends on."
@@ -288,6 +292,7 @@ INSTANCE depends on."
                       (channel-name (channel-instance-channel instance)))
                      (channel-instance-checkout instance)
                      #:commit (channel-instance-commit instance)
+                     #:core core
                      #:dependencies dependencies))
 
 (define (resolve-dependencies instances)
@@ -328,17 +333,6 @@ INSTANCES."
             (guix-channel? (channel-instance-channel instance)))
           instances))
 
-  (define dependencies
-    ;; Dependencies of CORE-INSTANCE.
-    ;; FIXME: It would be best not to hard-wire this information here and
-    ;; instead query it to CORE-INSTANCE.
-    (list (module-ref (resolve-interface '(gnu packages gnupg))
-                      'guile-gcrypt)
-          (module-ref (resolve-interface '(gnu packages guile))
-                      'guile-git)
-          (module-ref (resolve-interface '(gnu packages guile))
-                      'guile-bytestructures)))
-
   (define edges
     (resolve-dependencies instances))
 
@@ -348,10 +342,7 @@ INSTANCES."
                  (mlet %store-monad ((core (instance->derivation core-instance))
                                      (deps (mapm %store-monad instance->derivation
                                                  (edges instance))))
-                   (build-channel-instance instance
-                                           (cons core
-                                                 (append deps
-                                                         dependencies)))))
+                   (build-channel-instance instance core deps)))
              instance))
 
   (mapm %store-monad instance->derivation instances))
