@@ -37,6 +37,7 @@
   #:use-module (guix store)
   #:use-module (guix tests)
   #:use-module (guix build-system trivial)
+  #:use-module ((guix licenses) #:prefix license:)
   #:export (%test-docker))
 
 (define %docker-os
@@ -131,17 +132,24 @@ inside %DOCKER-OS."
       ((_ (set-grafting #f))
        (guile (set-guile-for-build (default-guile)))
        (guest-script-package ->
-        (dummy-package "guest-script"
-                       (build-system trivial-build-system)
-                       (arguments
-                        `(#:guile ,%bootstrap-guile
-                          #:builder
-                          (let ((out (assoc-ref %outputs "out")))
-                            (mkdir out)
-                            (call-with-output-file (string-append out "/a.scm")
-                              (lambda (port)
-                                (display "(display \"hello world\n\")" port)))
-                            #t)))))
+        (package
+          (name "guest-script")
+          (version "0")
+          (source #f)
+          (build-system trivial-build-system)
+          (arguments `(#:guile ,%bootstrap-guile
+                       #:builder
+                       (let ((out (assoc-ref %outputs "out")))
+                         (mkdir out)
+                         (call-with-output-file (string-append out "/a.scm")
+                           (lambda (port)
+                             (display "(display \"hello world\n\")" port)))
+                         #t)))
+          (synopsis "Display hello world using Guile")
+          (description "This package displays the text \"hello world\" on the
+standard output device and then enters a new line.")
+          (home-page #f)
+          (license license:public-domain)))
        (profile (profile-derivation (packages->manifest
                                      (list %bootstrap-guile
                                            guest-script-package))
