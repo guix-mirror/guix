@@ -4472,6 +4472,11 @@ directly generate PDF documents instead of DVI.")
       #:phases
         (modify-phases (map (cut assq <> %standard-phases)
                             '(set-paths unpack patch-source-shebangs))
+          (add-after 'unpack 'unset-environment-variables
+            (lambda _
+              (unsetenv "TEXMF")
+              (unsetenv "TEXMFCNF")
+              #t))
           (add-after 'patch-source-shebangs 'install
             (lambda* (#:key outputs #:allow-other-keys)
               (let ((share (string-append (assoc-ref outputs "out") "/share")))
