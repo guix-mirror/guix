@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
@@ -24,7 +24,9 @@
   #:use-module (guix grafts)
   #:use-module (guix profiles)
   #:use-module (guix packages)
+  #:use-module (guix channels)
   #:use-module (guix derivations)
+  #:use-module (guix build-system)
   #:use-module (guix monads)
   #:use-module (guix ui)
   #:use-module ((guix licenses)
@@ -188,8 +190,40 @@ system.")
                                               "iso9660"))))))
       '()))
 
-(define (system-test-jobs store system)
+(define channel-build-system
+  ;; Build system used to "convert" a channel instance to a package.
+  (let* ((build (lambda* (store name inputs
+                                #:key instance #:allow-other-keys)
+                  (run-with-store store
+                    (channel-instances->derivation (list instance)))))
+         (lower (lambda* (name #:key system instance #:allow-other-keys)
+                  (bag
+                    (name name)
+                    (system system)
+                    (build build)
+                    (arguments `(#:instance ,instance))))))
+    (build-system (name 'channel)
+                  (description "Turn a channel instance into a package.")
+                  (lower lower))))
+
+(define (channel-instance->package instance)
+  "Return a package for the given channel INSTANCE."
+  (package
+    (inherit guix)
+    (version (or (string-take (channel-instance-commit instance) 7)
+                 (string-append (package-version guix) "+")))
+    (build-system channel-build-system)
+    (arguments `(#:instance ,instance))
+    (inputs '())
+    (native-inputs '())
+    (propagated-inputs '())))
+
+(define* (system-test-jobs store system
+                           #:key source commit)
   "Return a list of jobs for the system tests."
+  (define instance
+    (checkout->channel-instance source #:commit commit))
+
   (define (test->thunk test)
     (lambda ()
       (define drv
@@ -217,7 +251,13 @@ system.")
       (cons name (test->thunk test))))
 
   (if (member system %guixsd-supported-systems)
-      (map ->job (all-system-tests))
+      ;; Override the value of 'current-guix' used by system tests.  Using a
+      ;; channel instance makes tests that rely on 'current-guix' less
+      ;; expensive.  It also makes sure we get a valid Guix package when this
+      ;; code is not running from a checkout.
+      (parameterize ((current-guix-package
+                      (channel-instance->package instance)))
+        (map ->job (all-system-tests)))
       '()))
 
 (define (tarball-jobs store system)
@@ -343,6 +383,21 @@ valid."
       ((lst ...)       lst)
       ((? string? str) (call-with-input-string str read))))
 
+  (define checkout
+    ;; Extract metadata about the 'guix' checkout.  Its key in ARGUMENTS may
+    ;; vary, so pick up the first one that's neither 'subset' nor 'systems'.
+    (any (match-lambda
+           ((key . value)
+            (and (not (memq key '(systems subset)))
+                 value)))
+         arguments))
+
+  (define commit
+    (assq-ref checkout 'revision))
+
+  (define source
+    (assq-ref checkout 'file-name))
+
   (define (cross-jobs system)
     (define (from-32-to-64? target)
       ;; Return true if SYSTEM is 32-bit and TARGET is 64-bit.  This hack
@@ -405,7 +460,9 @@ valid."
                                                 system))))
                        (append (filter-map job all)
                                (qemu-jobs store system)
-                               (system-test-jobs store system)
+                               (system-test-jobs store system
+                                                 #:source source
+                                                 #:commit commit)
                                (tarball-jobs store system)
                                (cross-jobs system))))
                     ((core)

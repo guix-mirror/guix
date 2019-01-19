@@ -399,6 +399,12 @@ generated file."
     (_
      #t)))
 
+(define-public current-guix-package
+  ;; This parameter allows callers to override the package that 'current-guix'
+  ;; returns.  This is useful when 'current-guix' cannot compute it by itself,
+  ;; for instance because it's not running from a source code checkout.
+  (make-parameter #f))
+
 (define-public current-guix
   (let* ((repository-root (canonicalize-path
                            (string-append (current-source-directory)
@@ -409,12 +415,13 @@ generated file."
       "Return a package representing Guix built from the current source tree.
 This works by adding the current source tree to the store (after filtering it
 out) and returning a package that uses that as its 'source'."
-      (package
-        (inherit guix)
-        (version (string-append (package-version guix) "+"))
-        (source (local-file repository-root "guix-current"
-                            #:recursive? #t
-                            #:select? (force select?)))))))
+      (or (current-guix-package)
+          (package
+            (inherit guix)
+            (version (string-append (package-version guix) "+"))
+            (source (local-file repository-root "guix-current"
+                                #:recursive? #t
+                                #:select? (force select?))))))))
 
 
 ;;;
