@@ -1874,11 +1874,7 @@ the bootstrap environment."
             ((#:configure-flags flags)
              `(append (list ,(string-append "--host=" (boot-triplet))
                             ,(string-append "--build="
-                                            (nix-system->gnu-triplet))
-
-                            ;; Build Sun/ONC RPC support.  In particular,
-                            ;; install rpc/*.h.
-                            "--enable-obsolete-rpc")
+                                            (nix-system->gnu-triplet)))
                       ,flags))
             ((#:phases phases)
              `(modify-phases ,phases
