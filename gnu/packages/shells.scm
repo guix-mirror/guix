@@ -102,7 +102,8 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
         (base32 "1kzjd0n0sfslkd36lzrvvvgy3qwkd9y466bkrqlnhd5h9dhx77ga"))))
     (build-system gnu-build-system)
     (inputs
-     `(("groff" ,groff)                 ; for 'fish --help'
+     `(("fish-foreign-env" ,fish-foreign-env)
+       ("groff" ,groff)                 ; for 'fish --help'
        ("ncurses" ,ncurses)
        ("pcre2" ,pcre2)      ; don't use the bundled PCRE2
        ("python" ,python)))  ; for fish_config and manpage completions
@@ -168,6 +169,25 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                  " $__guix_profile_paths\"/etc/fish/conf.d\""
                  " $__guix_profile_paths\"/share/fish/vendor_conf.d\""
                  " $__extra_confdir\n")
+                port)
+               (close-port port))
+             #t))
+         ;; Use fish-foreign-env to source /etc/profile.
+         (add-before 'install 'source-etc-profile
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((port (open-file "share/__fish_build_paths.fish" "a")))
+               (display
+                (string-append
+                 "\n\n"
+                 "# Patched by Guix.\n"
+                 "# Use fish-foreign-env to source /etc/profile.\n"
+                 "if status is-login\n"
+                 "    set fish_function_path "
+                 (assoc-ref inputs "fish-foreign-env") "/share/fish/functions"
+                 " $__fish_datadir/functions\n"
+                 "    fenv source /etc/profile\n"
+                 "    set -e fish_function_path\n"
+                 "end\n")
                 port)
                (close-port port))
              #t)))))
