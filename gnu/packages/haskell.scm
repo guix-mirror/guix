@@ -11403,4 +11403,62 @@ from a shell.  The @code{tldr} pages are a community effort to simplify the
 man pages with practical examples.")
     (license license:bsd-3)))
 
+(define-public ghc-c2hs
+  (package
+    (name "ghc-c2hs")
+    (version "0.28.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/c2hs/c2hs-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1nplgxfin139x12sb656f5870rpdclrhzi8mq8pry035qld15pci"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-language-c" ,ghc-language-c)
+       ("ghc-dlist" ,ghc-dlist)))
+    (native-inputs
+     `(("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-shelly" ,ghc-shelly)
+       ("ghc-text" ,ghc-text)
+       ("gcc" ,gcc)))
+    (arguments
+     `(;; XXX: Test failures are induced by a parse error in <bits/floatn.h>
+       ;; of glibc 2.28.
+       #:tests? #f
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-cc
+           ;; add a cc executable in the path, needed for some tests to pass
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs "gcc"))
+                   (tmpbin (tmpnam))
+                   (curpath (getenv "PATH")))
+               (mkdir-p tmpbin)
+               (symlink (which "gcc") (string-append tmpbin "/cc"))
+               (setenv "PATH" (string-append tmpbin ":" curpath)))
+             #t))
+         (add-after 'check 'remove-cc
+           ;; clean the tmp dir made in 'set-cc
+           (lambda _
+             (let* ((cc-path (which "cc"))
+                    (cc-dir (dirname cc-path)))
+               (delete-file-recursively cc-dir)
+               #t))))))
+    (home-page "https://github.com/haskell/c2hs")
+    (synopsis "Create Haskell bindings to C libraries")
+    (description "C->Haskell assists in the development of Haskell bindings to
+C libraries.  It extracts interface information from C header files and
+generates Haskell code with foreign imports and marshaling.  Unlike writing
+foreign imports by hand (or using hsc2hs), this ensures that C functions are
+imported with the correct Haskell types.")
+    (license license:gpl2)))
+
 ;;; haskell.scm ends here
