@@ -28,10 +28,15 @@
   #:use-module (guix derivations)
   #:use-module (guix store)
   #:use-module (guix i18n)
+  #:use-module ((guix utils)
+                #:select (source-properties->location
+                          &error-location))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:autoload   (guix self) (whole-package make-config.scm)
   #:autoload   (guix inferior) (gexp->derivation-in-inferior) ;FIXME: circular dep
   #:use-module (ice-9 match)
@@ -344,6 +349,17 @@ INSTANCES."
                                                  (edges instance))))
                    (build-channel-instance instance core deps)))
              instance))
+
+  (unless core-instance
+    (let ((loc (and=> (any (compose channel-location channel-instance-channel)
+                           instances)
+                      source-properties->location)))
+      (raise (apply make-compound-condition
+                    (condition
+                     (&message (message "'guix' channel is lacking")))
+                    (if loc
+                        (list (condition (&error-location (location loc))))
+                        '())))))
 
   (mapm %store-monad instance->derivation instances))
 
