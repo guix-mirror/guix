@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,8 +67,14 @@ user-friendly name of the profile is, for instance ~/.guix-profile rather than
 (define (build-etc/profile output search-paths)
   "Build the 'OUTPUT/etc/profile' shell file containing environment variable
 definitions for all the SEARCH-PATHS."
-  (mkdir-p (string-append output "/etc"))
-  (call-with-output-file (string-append output "/etc/profile")
+  (define file
+    (string-append output "/etc/profile"))
+
+  (mkdir-p (dirname file))
+  (when (file-exists? file)
+    (delete-file file))
+
+  (call-with-output-file file
     (lambda (port)
       ;; The use of $GUIX_PROFILE described below is not great.  Another
       ;; option would have been to use "$1" and have users run:
@@ -144,13 +150,22 @@ instead make DIRECTORY a \"real\" directory containing symlinks."
 create symlinks.  Write MANIFEST, an sexp, to OUTPUT/manifest.  Create
 OUTPUT/etc/profile with Bash definitions for -all the variables listed in
 SEARCH-PATHS."
+  (define manifest-file
+    (string-append output "/manifest"))
+
   ;; Make the symlinks.
   (union-build output inputs
                #:symlink symlink
                #:log-port (%make-void-port "w"))
 
+  ;; If one of the INPUTS provides a '/manifest' file, delete it.  That can
+  ;; happen if MANIFEST contains something such as a Guix instance, which is
+  ;; ultimately built as a profile.
+  (when (file-exists? manifest-file)
+    (delete-file manifest-file))
+
   ;; Store meta-data.
-  (call-with-output-file (string-append output "/manifest")
+  (call-with-output-file manifest-file
     (lambda (p)
       (pretty-print manifest p)))
 
