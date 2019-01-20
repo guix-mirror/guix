@@ -1815,7 +1815,7 @@ archive}).  If that is not the case, the service will fail to start."
   udev-configuration make-udev-configuration
   udev-configuration?
   (udev   udev-configuration-udev                 ;<package>
-          (default udev))
+          (default eudev))
   (rules  udev-configuration-rules                ;list of <package>
           (default '())))
 
@@ -1998,6 +1998,7 @@ the udev rules in use.")
                              (udev-configuration
                               (udev udev)
                               (rules (append initial-rules rules)))))))
+                (default-value (udev-configuration))
                 (description
                  "Run @command{udev}, which populates the @file{/dev}
 directory dynamically.  Get extra rules from the packages listed in the
@@ -2334,7 +2335,9 @@ to handle."
         ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
         ;; used, so enable them by default.  The FUSE and ALSA rules are
         ;; less critical, but handy.
-        (udev-service #:rules (list lvm2 fuse alsa-utils crda))
+        (service udev-service-type
+                 (udev-configuration
+                   (rules (list lvm2 fuse alsa-utils crda))))
 
         (service special-files-service-type
                  `(("/bin/sh" ,(file-append (canonical-package bash)
