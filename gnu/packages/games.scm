@@ -1469,6 +1469,8 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
     (inputs
      `(("bzip2" ,bzip2)
        ("wxwidgets" ,wxwidgets)))
+    (properties '((ftp-directory . "/freedink")
+                  (upstream-name . "dfarc")))
     (home-page "https://www.gnu.org/software/freedink/")
     (synopsis "Front-end for managing and playing Dink Modules")
     (description "DFArc makes it easy to play and manage the GNU FreeDink game
