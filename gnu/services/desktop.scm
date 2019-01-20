@@ -992,7 +992,7 @@ as expected.")))
          (accountsservice-service)
          (colord-service)
          (geoclue-service)
-         (polkit-service)
+         (service polkit-service-type)
          (elogind-service)
          (dbus-service)
 
