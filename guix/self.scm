@@ -613,10 +613,6 @@ Info manual."
                  (append (file-imports source "gnu/system/examples"
                                        (const #t))
 
-                         ;; Need so we get access system tests from an
-                         ;; inferior.
-                         (file-imports source "gnu/tests" (const #t))
-
                          ;; All the installer code is on the build-side.
                          (file-imports source "gnu/installer/"
                                        (const #t))
@@ -625,6 +621,16 @@ Info manual."
                          (file-imports source "gnu/build" (const #t)))
                  #:guile-for-build
                  guile-for-build))
+
+  (define *system-test-modules*
+    ;; Ship these modules mostly so (gnu ci) can refer to them.
+    (scheme-node "guix-system-tests"
+                 `((gnu tests)
+                   ,@(scheme-modules* source "gnu/tests"))
+                 (list *core-package-modules* *package-modules*
+                       *extra-modules* *system-modules* *core-modules*)
+                 #:extensions dependencies
+                 #:guile-for-build guile-for-build))
 
   (define *cli-modules*
     (scheme-node "guix-cli"
@@ -664,6 +670,7 @@ Info manual."
                                  ;; comes with *CORE-MODULES*.
                                  (list *config*
                                        *cli-modules*
+                                       *system-test-modules*
                                        *system-modules*
                                        *package-modules*
                                        *core-package-modules*
