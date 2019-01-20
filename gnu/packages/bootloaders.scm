@@ -729,7 +729,14 @@ board-independent tools.")))
                                         ".drv-0/source")))
                       ;; Tests require write permissions to many of these files.
                       (for-each make-file-writable (find-files "tests/futility"))
-                      #t)))
+                      #t))
+                  (add-after 'install 'install-devkeys
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (share (string-append out "/share/vboot-utils")))
+                        (copy-recursively "tests/devkeys"
+                                          (string-append share "/devkeys"))
+                        #t))))
        #:test-target "runtests"))
     (native-inputs
      `(("pkg-config" ,pkg-config)
