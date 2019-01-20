@@ -2305,23 +2305,23 @@ to handle."
                         (cons tty %default-console-font))
                       '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
 
-        (agetty-service (agetty-configuration
-                         (extra-options '("-L")) ; no carrier detect
-                         (term "vt100")
-                         (tty #f))) ; automatic
+        (service agetty-service-type (agetty-configuration
+                                       (extra-options '("-L")) ; no carrier detect
+                                       (term "vt100")
+                                       (tty #f))) ; automatic
 
-        (mingetty-service (mingetty-configuration
-                           (tty "tty1")))
-        (mingetty-service (mingetty-configuration
-                           (tty "tty2")))
-        (mingetty-service (mingetty-configuration
-                           (tty "tty3")))
-        (mingetty-service (mingetty-configuration
-                           (tty "tty4")))
-        (mingetty-service (mingetty-configuration
-                           (tty "tty5")))
-        (mingetty-service (mingetty-configuration
-                           (tty "tty6")))
+        (service mingetty-service-type (mingetty-configuration
+                                         (tty "tty1")))
+        (service mingetty-service-type (mingetty-configuration
+                                         (tty "tty2")))
+        (service mingetty-service-type (mingetty-configuration
+                                         (tty "tty3")))
+        (service mingetty-service-type (mingetty-configuration
+                                         (tty "tty4")))
+        (service mingetty-service-type (mingetty-configuration
+                                         (tty "tty5")))
+        (service mingetty-service-type (mingetty-configuration
+                                         (tty "tty6")))
 
         (service static-networking-service-type
                  (list (static-networking (interface "lo")
