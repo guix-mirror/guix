@@ -285,7 +285,8 @@ down the road.")
        ;; patch-* phases work properly, we unpack the source first, then
        ;; repack before the configure phase.
        (let ((make-dir (string-append "make-" (package-version gnu-make))))
-         `(#:configure-flags '("--with-make-tar=./make.tar.xz")
+         `(#:configure-flags '("--with-make-tar=./make.tar.xz"
+                               "make_cv_sys_gnu_glob=yes")
            #:phases
            (modify-phases %standard-phases
              (add-after 'unpack 'unpack-make

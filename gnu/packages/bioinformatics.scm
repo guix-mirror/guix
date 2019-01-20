@@ -98,7 +98,9 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
@@ -6338,63 +6340,6 @@ between two different types of motif instances using as much relevant
 information as possible.")
     (license (list license:gpl2+ license:gpl3+))))
 
-(define-public r-vegan
-  (package
-    (name "r-vegan")
-    (version "2.5-3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "vegan" version))
-       (sha256
-        (base32
-         "023xznh0iy0496icpchadmp7a3rk3nj9s48fvwlvp3dssw58yp3c"))))
-    (build-system r-build-system)
-    (native-inputs
-     `(("gfortran" ,gfortran)))
-    (propagated-inputs
-     `(("r-cluster" ,r-cluster)
-       ("r-knitr" ,r-knitr) ; needed for vignettes
-       ("r-lattice" ,r-lattice)
-       ("r-mass" ,r-mass)
-       ("r-mgcv" ,r-mgcv)
-       ("r-permute" ,r-permute)))
-    (home-page "https://cran.r-project.org/web/packages/vegan")
-    (synopsis "Functions for community ecology")
-    (description
-     "The vegan package provides tools for descriptive community ecology.  It
-has most basic functions of diversity analysis, community ordination and
-dissimilarity analysis.  Most of its multivariate tools can be used for other
-data types as well.")
-    (license license:gpl2+)))
-
-(define-public r-annotate
-  (package
-    (name "r-annotate")
-    (version "1.60.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "annotate" version))
-       (sha256
-        (base32
-         "0p6c96lay23a67dyirgnwzm2yw22m592z780vy6p4nqwla8ha18n"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-dbi" ,r-dbi)
-       ("r-rcurl" ,r-rcurl)
-       ("r-xml" ,r-xml)
-       ("r-xtable" ,r-xtable)))
-    (home-page
-     "https://bioconductor.org/packages/annotate")
-    (synopsis "Annotation for microarrays")
-    (description "This package provides R environments for the annotation of
-microarrays.")
-    (license license:artistic2.0)))
-
 (define-public r-copynumber
   (package
     (name "r-copynumber")
@@ -7091,26 +7036,6 @@ enrichment can be run with hypergeometric test or Fisher exact test, and can
 use multiple corrections.  Visualization of data can be done either by
 barplots or heatmaps.")
     (license license:gpl2+)))
-
-(define-public r-biocgenerics
-  (package
-    (name "r-biocgenerics")
-    (version "0.28.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "BiocGenerics" version))
-              (sha256
-               (base32
-                "0cvpsrhg7sn7lpqgxvqrsagv6j7xj5rafq5xdjfd8zc4gxrs5rb8"))))
-    (properties
-     `((upstream-name . "BiocGenerics")))
-    (build-system r-build-system)
-    (home-page "https://bioconductor.org/packages/BiocGenerics")
-    (synopsis "S4 generic functions for Bioconductor")
-    (description
-     "This package provides S4 generic functions needed by many Bioconductor
-packages.")
-    (license license:artistic2.0)))
 
 (define-public r-biocinstaller
   (package

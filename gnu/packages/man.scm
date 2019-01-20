@@ -6,6 +6,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,7 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages groff)
@@ -82,11 +83,19 @@ a flexible and convenient way.")
                          (remove file-is-directory?
                                  (find-files "src/tests" ".*")))
                #t)))
-         (add-after 'unpack 'patch-iconv-path
+         (add-after 'unpack 'patch-absolute-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/man.c"
                (("\"iconv\"")
                 (string-append "\"" (which "iconv") "\"")))
+             ;; Embed an absolute reference to "preconv", otherwise it
+             ;; falls back to searching in PATH and ultimately fails
+             ;; to render unicode data (see <https://bugs.gnu.org/30785>).
+             (substitute* "lib/encodings.c"
+               (("groff_preconv = NULL")
+                (string-append "groff_preconv = \""
+                               (assoc-ref inputs "groff-minimal")
+                               "/bin/preconv\"")))
              #t)))
        #:configure-flags
        (let ((groff (assoc-ref %build-inputs "groff"))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 nee <nee@cock.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@
   #:use-module (gnu packages swig)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages virtualization)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages web)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
@@ -110,6 +112,12 @@
                      ;; Make the font visible.
                      (copy-file (assoc-ref inputs "unifont") "unifont.bdf.gz")
                      (system* "gunzip" "unifont.bdf.gz")
+
+                     ;; Give the absolute file name of 'ckbcomp'.
+                     (substitute* "util/grub-kbdcomp.in"
+                       (("^ckbcomp ")
+                        (string-append (assoc-ref inputs "console-setup")
+                                       "/bin/ckbcomp ")))
                      #t))
                   (add-before 'check 'disable-flaky-test
                     (lambda _
@@ -133,6 +141,10 @@
        ;; Depend on mdadm, which is invoked by 'grub-probe' and 'grub-install'
        ;; to determine whether the root file system is RAID.
        ("mdadm" ,mdadm)
+
+       ;; Console-setup's ckbcomp is invoked by grub-kbdcomp.  It is required
+       ;; for generating alternative keyboard layouts.
+       ("console-setup" ,console-setup)
 
        ("freetype" ,freetype)
        ;; ("libusb" ,libusb)
@@ -717,7 +729,14 @@ board-independent tools.")))
                                         ".drv-0/source")))
                       ;; Tests require write permissions to many of these files.
                       (for-each make-file-writable (find-files "tests/futility"))
-                      #t)))
+                      #t))
+                  (add-after 'install 'install-devkeys
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (share (string-append out "/share/vboot-utils")))
+                        (copy-recursively "tests/devkeys"
+                                          (string-append share "/devkeys"))
+                        #t))))
        #:test-target "runtests"))
     (native-inputs
      `(("pkg-config" ,pkg-config)

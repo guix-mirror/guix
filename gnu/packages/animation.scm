@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -258,3 +259,44 @@ easy to lip sync animated characters by making the process very simple – just
 type in the words being spoken, then drag the words on top of the sound’s
 waveform until they line up with the proper sounds.")
       (license license:gpl3+))))
+
+(define-public pencil2d
+  (package
+    (name "pencil2d")
+    (version "0.6.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pencil2d/pencil")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1iv7drwxs32mqs3hybjx2lxyqn8cv2b4rw9ny7gzdacsbhi65knr"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtxmlpatterns" ,qtxmlpatterns)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsvg" ,qtsvg)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "qmake" (string-append "PREFIX=" out)))))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (plugin-path (getenv "QT_PLUGIN_PATH")))
+               (wrap-program (string-append out "/bin/pencil2d")
+                 `("QT_PLUGIN_PATH" ":" prefix (,plugin-path)))
+               #t))))))
+    (home-page "https://www.pencil2d.org")
+    (synopsis "Make 2D hand-drawn animations")
+    (description
+     "Pencil2D is an easy-to-use and intuitive animation and drawing tool.  It
+lets you create traditional hand-drawn animations (cartoons) using both bitmap
+and vector graphics.")
+    (license license:gpl2)))

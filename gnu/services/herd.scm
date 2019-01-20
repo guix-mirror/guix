@@ -252,9 +252,10 @@ when passed a service with an already-registered name."
                             services
                             (remove registered? services))))))
 
-(define (start-service name)
-  (with-shepherd-action name ('start) result
-    result))
+(define* (start-service name #:optional (arguments '()))
+  (invoke-action name 'start arguments
+                 (lambda (result)
+                   result)))
 
 (define (stop-service name)
   (with-shepherd-action name ('stop) result

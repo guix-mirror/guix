@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
@@ -45,6 +45,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
 
@@ -240,13 +241,13 @@ the user specifically asks to proxy, so the @dfn{VPN} interface no longer
 (define-public openconnect
   (package
    (name "openconnect")
-   (version "7.08")
+   (version "8.02")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.infradead.org/pub/openconnect/"
                                 "openconnect-" version ".tar.gz"))
             (sha256 (base32
-                     "00wacb79l2c45f94gxs63b9z25wlciarasvjrb8jb8566wgyqi0w"))))
+                     "04p0vzc1791h68hd9803wsyb64zrwm8qpdqx0szhj9pig71g5a0w"))))
    (build-system gnu-build-system)
    (inputs
     `(("libxml2" ,libxml2)
@@ -268,7 +269,7 @@ supported by the ASA5500 Series, by IOS 12.4(9)T or later on Cisco SR500,
 870, 880, 1800, 2800, 3800, 7200 Series and Cisco 7301 Routers,
 and probably others.")
    (license license:lgpl2.1)
-   (home-page "http://www.infradead.org/openconnect/")))
+   (home-page "https://www.infradead.org/openconnect/")))
 
 (define-public openvpn
   (package

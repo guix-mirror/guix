@@ -75,6 +75,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages documentation)
@@ -120,10 +121,12 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages slang)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
@@ -7377,3 +7380,50 @@ micro-pauses and rest breaks, and restricts you to your daily limit.")
 hexadecimal or ASCII.  It is useful for editing binary files in general.")
     (home-page "https://wiki.gnome.org/Apps/Ghex")
     (license license:gpl2)))
+
+(define-public libdazzle
+  (package
+    (name "libdazzle")
+    (version "3.28.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "08qdwv2flywnh6kibkyv0pnm67pk8xlmjh4yqx6hf13hyhkxkqgg"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-test
+           (lambda _
+             ;; Disable failing test.
+             (substitute* "tests/meson.build"
+               (("test\\('test-application") "#"))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+             #t)))))
+    (native-inputs
+     `(("glib" ,glib "bin") ; glib-compile-resources
+       ("pkg-config" ,pkg-config)
+       ;; For tests
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+" ,gtk+)
+       ("vala" ,vala)))
+    (home-page "https://gitlab.gnome.org/GNOME/libdazzle")
+    (synopsis "Companion library to GObject and Gtk+")
+    (description "The libdazzle library is a companion library to GObject and
+Gtk+.  It provides various features that the authors wish were in the
+underlying library but cannot for various reasons.  In most cases, they are
+wildly out of scope for those libraries.  In other cases, they are not quite
+generic enough to work for everyone.")
+    (license license:gpl3+)))

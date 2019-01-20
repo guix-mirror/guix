@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,7 +55,6 @@ false if none is recognized"
                                       (github-user-slash-repository url)))
               (repo    (github-repository url)))
           (cond
-           ((string-suffix? ".git" url) url)
            ((string-suffix? (string-append "/tarball/v" version) url)
             (string-append prefix "/tarball/v" new-version))
            ((string-suffix? (string-append "/tarball/" version) url)
@@ -99,7 +99,7 @@ false if none is recognized"
              ((source-uri ...)
               (find updated-url source-uri))))
      ((eq? fetch-method download:git-fetch)
-      (updated-url (download:git-reference-url source-uri)))
+      (download:git-reference-url source-uri))
      (else #f))))
 
 (define (github-package? package)

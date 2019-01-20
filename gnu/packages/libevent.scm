@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls))
@@ -238,4 +240,33 @@ not rely on XS.")
      "This module provides an interface to @code{libev}, a high performance
 full-featured event loop.  It can be used through the @code{AnyEvent} module
 and still be faster than other event loops currently supported in Perl.")
+    (license perl-license)))
+
+(define-public perl-rpc-epc-service
+  (package
+    (name "perl-rpc-epc-service")
+    (version "0.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/K/KI/KIWANAMI/RPC-EPC-Service-"
+             "v" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qwb284z4ig3xzy21m1b3w8bkb8k6l2ij6cjz93znn2j6qs42pwp"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-simple" ,perl-test-simple)))
+    (propagated-inputs
+     `(("perl-anyevent" ,perl-anyevent)
+       ("perl-data-sexpression" ,perl-data-sexpression)))
+    (arguments
+     ;; Tests seem to fail because they try to start a server.
+     `(#:tests? #f))
+    (home-page "https://metacpan.org/release/RPC-EPC-Service")
+    (synopsis "Asynchronous remote procedure stack")
+    (description "RPC::EPC::Service enables to connect the other process with
+the S-expression protocol, like the Swank protocol of the SLIME.")
     (license perl-license)))

@@ -47,8 +47,6 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system perl)
-  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
@@ -60,7 +58,6 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
@@ -463,44 +460,6 @@ LZO is written in ANSI C.  Both the source code and the compressed data
 format are designed to be portable across platforms.")
     (license license:gpl2+)))
 
-(define-public python-lzo
-  (package
-    (name "python-lzo")
-    (version "1.12")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "python-lzo" version))
-       (sha256
-        (base32
-         "0iakqgd51n1cd7r3lpdylm2rgbmd16y74cra9kcapwg84mlf9a4p"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:test-target "check"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-setuppy
-           (lambda _
-             (substitute* "setup.py"
-               (("include_dirs.append\\(.*\\)")
-                (string-append "include_dirs.append('"
-                               (assoc-ref %build-inputs "lzo")
-                               "/include/lzo"
-                               "')")))
-             #t)))))
-    (inputs
-     `(("lzo" ,lzo)))
-    (home-page "https://github.com/jd-boyd/python-lzo")
-    (synopsis "Python bindings for the LZO data compression library")
-    (description
-     "Python-LZO provides Python bindings for LZO, i.e. you can access
-the LZO library from your Python scripts thereby compressing ordinary
-Python strings.")
-    (license license:gpl2+)))
-
-(define-public python2-lzo
-  (package-with-python2 python-lzo))
-
 (define-public lzop
   (package
     (name "lzop")
@@ -710,84 +669,6 @@ sfArk file format to the uncompressed sf2 format.")
 decompression of some loosely related file formats used by Microsoft.")
     (license license:lgpl2.1+)))
 
-(define-public perl-compress-raw-bzip2
-  (package
-    (name "perl-compress-raw-bzip2")
-    (version "2.081")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
-                           "Compress-Raw-Bzip2-" version ".tar.gz"))
-       (sha256
-        (base32
-         "081mpkjy688lg48997fqh3d7ja12vazmz02fw84495civg4vb4l6"))))
-    (build-system perl-build-system)
-    ;; TODO: Use our bzip2 package.
-    (home-page "https://metacpan.org/release/Compress-Raw-Bzip2")
-    (synopsis "Low-level interface to bzip2 compression library")
-    (description "This module provides a Perl interface to the bzip2
-compression library.")
-    (license license:perl-license)))
-
-(define-public perl-compress-raw-zlib
-  (package
-    (name "perl-compress-raw-zlib")
-    (version "2.081")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
-                           "Compress-Raw-Zlib-" version ".tar.gz"))
-       (sha256
-        (base32
-         "06rsm9ahp20xfyvd3jc69sd0k8vqysryxc6apzdbn96jbcsdwmp1"))))
-    (build-system perl-build-system)
-    (inputs
-     `(("zlib" ,zlib)))
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'configure-zlib
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (call-with-output-file "config.in"
-                       (lambda (port)
-                         (format port "
-BUILD_ZLIB = False
-INCLUDE = ~a/include
-LIB = ~:*~a/lib
-OLD_ZLIB = False
-GZIP_OS_CODE = AUTO_DETECT"
-                                 (assoc-ref inputs "zlib"))))
-                     #t)))))
-    (home-page "https://metacpan.org/release/Compress-Raw-Zlib")
-    (synopsis "Low-level interface to zlib compression library")
-    (description "This module provides a Perl interface to the zlib
-compression library.")
-    (license license:perl-license)))
-
-(define-public perl-io-compress
-  (package
-    (name "perl-io-compress")
-    (version "2.081")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
-                           "IO-Compress-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1na66ns1g3nni0m9q5494ym4swr21hfgpv88mw8wbj2daiswf4aj"))))
-    (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.081
-       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.081
-    (home-page "https://metacpan.org/release/IO-Compress")
-    (synopsis "IO Interface to compressed files/buffers")
-    (description "IO-Compress provides a Perl interface to allow reading and
-writing of compressed data created with the zlib and bzip2 libraries.")
-    (license license:perl-license)))
-
 (define-public lz4
   (package
     (name "lz4")
@@ -819,54 +700,6 @@ time for compression ratio.")
     ;; The libraries (lz4, lz4hc, and xxhash) are BSD licenced. The command
     ;; line interface programs (lz4, fullbench, fuzzer, datagen) are GPL2+.
     (license (list license:bsd-2 license:gpl2+))))
-
-(define-public python-lz4
-  (package
-    (name "python-lz4")
-    (version "0.10.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "lz4" version))
-       (sha256
-        (base32
-         "0ghv1xbaq693kgww1x9c22bplz479ls9szjsaa4ig778ls834hm0"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
-    (home-page "https://github.com/python-lz4/python-lz4")
-    (synopsis "LZ4 bindings for Python")
-    (description
-     "This package provides python bindings for the lz4 compression library
-by Yann Collet.  The project contains bindings for the LZ4 block format and
-the LZ4 frame format.")
-    (license license:bsd-3)))
-
-(define-public python2-lz4
-  (package-with-python2 python-lz4))
-
-(define-public python-lzstring
-  (package
-    (name "python-lzstring")
-    (version "1.0.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "lzstring" version))
-       (sha256
-        (base32
-         "18ly9pppy2yspxzw7k1b23wk77k7m44rz2g0271bqgqrk3jn3yhs"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python-future" ,python-future)))
-    (home-page "https://github.com/gkovacs/lz-string-python")
-    (synopsis "String compression")
-    (description "Lz-string is a string compressor library for Python.")
-    (license license:expat)))
-
-(define-public python2-lzstring
-  (package-with-python2 python-lzstring))
 
 (define-public squashfs-tools
   (package
@@ -1197,46 +1030,6 @@ well as bzip2.")
     (license (list license:gpl3+
                    license:public-domain)))) ; most files in lzma/
 
-(define-public bitshuffle
-  (package
-    (name "bitshuffle")
-    (version "0.3.5")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "bitshuffle" version))
-              (sha256
-               (base32
-                "1823x61kyax4dc2hjmc1xraskxi1193y8lvxd03vqv029jrj8cjy"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Remove generated Cython files.
-                  (delete-file "bitshuffle/h5.c")
-                  (delete-file "bitshuffle/ext.c")
-                  #t))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f             ; fail: https://github.com/h5py/h5py/issues/769
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'dont-build-native
-           (lambda _
-             (substitute* "setup.py"
-               (("'-march=native', ") ""))
-             #t)))))
-    (inputs
-     `(("numpy" ,python-numpy)
-       ("h5py" ,python-h5py)
-       ("hdf5" ,hdf5)))
-    (native-inputs
-     `(("cython" ,python-cython)))
-    (home-page "https://github.com/kiyo-masui/bitshuffle")
-    (synopsis "Filter for improving compression of typed binary data")
-    (description "Bitshuffle is an algorithm that rearranges typed, binary data
-for improving compression, as well as a python/C package that implements this
-algorithm within the Numpy framework.")
-    (license license:expat)))
-
 (define-public snappy
   (package
     (name "snappy")
@@ -1262,44 +1055,6 @@ compared to the fastest mode of zlib, Snappy is an order of magnitude faster
 for most inputs, but the resulting compressed files are anywhere from 20% to
 100% bigger.")
     (license license:asl2.0)))
-
-(define-public bitshuffle-for-snappy
-  (package
-    (inherit bitshuffle)
-    (name "bitshuffle-for-snappy")
-    (build-system gnu-build-system)
-    (arguments
-     (substitute-keyword-arguments (package-arguments bitshuffle)
-       ((#:tests? _ #f) #f)
-       ((#:phases phases)
-        `(modify-phases %standard-phases
-           (replace 'configure
-             (lambda* (#:key outputs #:allow-other-keys)
-               (with-output-to-file "Makefile"
-                 (lambda _
-                   (format #t "\
-libbitshuffle.so: src/bitshuffle.o src/bitshuffle_core.o src/iochain.o lz4/lz4.o
-\tgcc -O3 -ffast-math -std=c99 -o $@ -shared -fPIC $^
-
-%.o: %.c
-\tgcc -O3 -ffast-math -std=c99 -fPIC -Isrc -Ilz4 -c $< -o $@
-
-PREFIX:=~a
-LIBDIR:=$(PREFIX)/lib
-INCLUDEDIR:=$(PREFIX)/include
-
-install: libbitshuffle.so
-\tinstall -dm755 $(LIBDIR)
-\tinstall -dm755 $(INCLUDEDIR)
-\tinstall -m755 libbitshuffle.so $(LIBDIR)
-\tinstall -m644 src/bitshuffle.h $(INCLUDEDIR)
-\tinstall -m644 src/bitshuffle_core.h $(INCLUDEDIR)
-\tinstall -m644 src/iochain.h $(INCLUDEDIR)
-\tinstall -m644 lz4/lz4.h $(INCLUDEDIR)
-" (assoc-ref outputs "out"))))
-               #t))))))
-    (inputs '())
-    (native-inputs '())))
 
 (define-public p7zip
   (package
@@ -1755,29 +1510,6 @@ recreates the stored directory structure by default.")
     ;; files carry the Zlib license; see "docs/copying.html" for details.
     (license (list license:lgpl2.0+ license:mpl1.1))))
 
-(define-public perl-archive-zip
-  (package
-    (name "perl-archive-zip")
-    (version "1.64")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "mirror://cpan/authors/id/P/PH/PHRED/Archive-Zip-"
-             version ".tar.gz"))
-       (sha256
-        (base32
-         "0zfinh8nx3rxzscp57vq3w8hihpdb0zs67vvalykcf402kr88pyy"))))
-    (build-system perl-build-system)
-    (native-inputs
-     ;; For tests.
-     `(("perl-test-mockmodule" ,perl-test-mockmodule)))
-    (synopsis  "Provides an interface to Zip archive files")
-    (description "The @code{Archive::Zip} module allows a Perl program to
-create, manipulate, read, and write Zip archive files.")
-    (home-page "https://metacpan.org/release/Archive-Zip")
-    (license license:perl-license)))
-
 (define-public libzip
   (package
     (name "libzip")
@@ -1837,27 +1569,6 @@ extract files to standard out).  As @command{atool} invokes external programs
 to handle the archives, not all commands may be supported for a certain type
 of archives.")
     (license license:gpl2+)))
-
-(define-public perl-archive-extract
-  (package
-    (name "perl-archive-extract")
-    (version "0.80")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/Archive-Extract-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1x15j1q6w6z8hqyqgap0lz4qbq2174wfhksy1fdd653ccbaw5jr5"))))
-    (build-system perl-build-system)
-    (home-page "https://metacpan.org/release/Archive-Extract")
-    (synopsis "Generic archive extracting mechanism")
-    (description "It allows you to extract any archive file of the type .tar,
-.tar.gz, .gz, .Z, tar.bz2, .tbz, .bz2, .zip, .xz,, .txz, .tar.xz or .lzma
-without having to worry how it does so, or use different interfaces for each
-type by using either Perl modules, or command-line tools on your system.")
-    (license license:perl-license)))
 
 (define-public lunzip
   (package

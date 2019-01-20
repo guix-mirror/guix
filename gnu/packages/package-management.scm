@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,9 +41,9 @@
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages docbook)
-  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -63,7 +64,9 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
@@ -396,6 +399,12 @@ generated file."
     (_
      #t)))
 
+(define-public current-guix-package
+  ;; This parameter allows callers to override the package that 'current-guix'
+  ;; returns.  This is useful when 'current-guix' cannot compute it by itself,
+  ;; for instance because it's not running from a source code checkout.
+  (make-parameter #f))
+
 (define-public current-guix
   (let* ((repository-root (canonicalize-path
                            (string-append (current-source-directory)
@@ -406,12 +415,13 @@ generated file."
       "Return a package representing Guix built from the current source tree.
 This works by adding the current source tree to the store (after filtering it
 out) and returning a package that uses that as its 'source'."
-      (package
-        (inherit guix)
-        (version (string-append (package-version guix) "+"))
-        (source (local-file repository-root "guix-current"
-                            #:recursive? #t
-                            #:select? (force select?)))))))
+      (or (current-guix-package)
+          (package
+            (inherit guix)
+            (version (string-append (package-version guix) "+"))
+            (source (local-file repository-root "guix-current"
+                                #:recursive? #t
+                                #:select? (force select?))))))))
 
 
 ;;;
@@ -731,9 +741,10 @@ environments.")
          (replace 'check
            (lambda _
              (setenv "HOME" "/tmp")
-             (zero? (system* "py.test")))))))
+             (invoke "py.test"))))))
     (native-inputs
-     `(("python-ruamel.yaml" ,python-ruamel.yaml)
+     `(("python-cytoolz" ,python-cytoolz)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
        ("python-requests" ,python-requests)
        ("python-pycosat" ,python-pycosat)
        ("python-pytest" ,python-pytest)
@@ -784,7 +795,7 @@ This package provides Conda as a library.")
                ;; application form, rather than the default, library form.
                ;; With this, we are able to run commands like `conda --help`
                ;; directly on the command line
-               (zero? (system* "python" "utils/setup-testing.py" "build_py"))))
+               (invoke "python" "utils/setup-testing.py" "build_py")))
            (replace 'install
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -800,8 +811,8 @@ This package provides Conda as a library.")
 
                  ;; And it aborts if the directory doesn't exist.
                  (mkdir-p target)
-                 (zero? (system* "python" "utils/setup-testing.py" "install"
-                                 (string-append "--prefix=" out))))))
+                 (invoke "python" "utils/setup-testing.py" "install"
+                         (string-append "--prefix=" out)))))
            ;; The "activate" and "deactivate" scripts don't need wrapping.
            ;; They also break when they are renamed.
            (add-after 'wrap 'undo-wrap

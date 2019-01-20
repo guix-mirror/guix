@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
@@ -12,12 +12,13 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
+;;; Copyright © 2019 nee <nee@cock.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,7 +72,9 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages video)
@@ -5962,7 +5965,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.4.2")
+    (version "2.4.3")
     (source
      (origin
        (method url-fetch)
@@ -5970,7 +5973,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "01x4ri0arfq9cn01bh80h232lsj95jp6j1zw0z0q7a6mwrw4gr6i"))))
+         "0pq2pzmv5fsafp50rzl9nb6ns08rl88fhgdqc2hh27dx7b8ka8n6"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)
@@ -6258,3 +6261,115 @@ selecting windows by pointing select actual focused X11 window, selecting by
 window name or id, forcing toggle, increase or decrease opacity.")
     (home-page "http://forchheimer.se/transset-df/")
     (license license:x11)))
+
+(define-public bdfresize
+  (package
+    (name "bdfresize")
+    (version "1.5-11")
+    (source (origin
+              ;; Former upstream at
+              ;; <http://openlab.ring.gr.jp/efont/dist/tools/bdfresize/>
+              ;; vanished so use Debian, which in practice is the new
+              ;; upstream.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://salsa.debian.org/debian/bdfresize.git")
+                    (commit (string-append "debian/" version))))
+              (sha256
+               (base32
+                "0n3i29wicak8n10vkkippym8yw4ir8f7a263a8rwb8q16wqrxx85"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each make-file-writable (find-files "."))
+
+                  ;; Remove broken declaration.
+                  (substitute* "charresize.c"
+                    (("char\t\\*malloc\\(\\);")
+                     ""))
+
+                  ;; Remove old configury that doesn't support modern
+                  ;; command-line options, new architectures, etc.
+                  (for-each delete-file
+                            '("configure" "install-sh"
+                              "missing" "mkinstalldirs"))
+                  #t))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (synopsis "Resize fonts in the BDF format")
+    (description
+     "This packages provides @command{bdfresize}, a command to magnify or
+reduce fonts in the Glyph Bitmap Distribution Format (BDF).  It produces BDF
+output.")
+    (home-page "https://tracker.debian.org/pkg/bdfresize")
+    (license license:gpl2+)) )
+
+(define-public console-setup
+  (package
+    (name "console-setup")
+    (version "1.188")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://salsa.debian.org/installer-team/console-setup.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "1741mg2wc5wa63clkijmv04zd6jxhc7c6aq7mkhqw1r4dhfhih19"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (let ((bash (assoc-ref %build-inputs "bash"))
+             (out (assoc-ref %outputs "out")))
+         (list (string-append "SHELL=" bash "/bin/bash")))
+       #:tests? #f                                ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'make-doubled-bdfs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "make" "-C" "Fonts"
+                     "doubled_bdfs"
+                     (string-append "SHELL="
+                                    (assoc-ref inputs "bash")
+                                    "/bin/bash"))))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref %outputs "out")))
+               (invoke "make" "install-linux"
+                       (string-append "prefix=" out)
+                       (string-append "SHELL="
+                                      (assoc-ref inputs "bash")
+                                      "/bin/bash"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("bdftopcf" ,bdftopcf)
+       ("bdfresize" ,bdfresize)
+       ("sharutils" ,sharutils)))                 ;for 'uuencode'
+    (inputs
+     `(("perl" ,perl)))                           ;used by 'ckbcomp'
+    (synopsis "Set up the Linux console font and keyboard")
+    (description
+     "console-setup provides the console with the same keyboard
+configuration scheme that X Window System has.  In particular, the
+@command{ckbcomp} program compiles an XKB keyboard description to a keymap
+suitable for @command{loadkeys} or @command{kbdcontrol}.  As a result, there
+is no need to duplicate or change the console keyboard files just to make
+simple customizations.
+
+Besides the keyboard, the package also configures the font on the console.  It
+includes a rich collection of fonts and supports several languages that would
+otherwise be unsupported on the console (such as Armenian, Georgian, Lao, and
+Thai).")
+    (home-page "https://salsa.debian.org/installer-team/console-setup/")
+
+    ;; Most of the code is GPLv2+; the Expat license applies to 'setupcon' and
+    ;; 'ckbcomp-mini'.  The installed precompiled keyboard files are covered
+    ;; by simple permissive licenses.  See the 'COPYRIGHT' file.
+    (license (list license:gpl2+
+                   license:expat))))

@@ -120,21 +120,21 @@ denote ranges as interpreted by 'matching-generations'."
 
 (define* (build-and-use-profile store profile manifest
                                 #:key
+                                (hooks %default-profile-hooks)
                                 allow-collisions?
                                 bootstrap? use-substitutes?
                                 dry-run?)
   "Build a new generation of PROFILE, a file name, using the packages
 specified in MANIFEST, a manifest object.  When ALLOW-COLLISIONS? is true,
-do not treat collisions in MANIFEST as an error."
+do not treat collisions in MANIFEST as an error.  HOOKS is a list of \"profile
+hooks\" run when building the profile."
   (when (equal? profile %current-profile)
     (ensure-default-profile))
 
   (let* ((prof-drv (run-with-store store
                      (profile-derivation manifest
                                          #:allow-collisions? allow-collisions?
-                                         #:hooks (if bootstrap?
-                                                     '()
-                                                     %default-profile-hooks)
+                                         #:hooks (if bootstrap? '() hooks)
                                          #:locales? (not bootstrap?))))
          (prof     (derivation->output-path prof-drv)))
     (show-what-to-build store (list prof-drv)
@@ -220,31 +220,32 @@ of relevance scores."
     ('dismiss
      transaction)
     (($ <manifest-entry> name version output (? string? path))
-     (match (vhash-assoc name (find-newest-available-packages))
-       ((_ candidate-version pkg . rest)
-        (match (package-superseded pkg)
-          ((? package? new)
-           (supersede entry new))
-          (#f
-           (case (version-compare candidate-version version)
-             ((>)
-              (manifest-transaction-install-entry
-               (package->manifest-entry* pkg output)
-               transaction))
-             ((<)
-              transaction)
-             ((=)
-              (let ((candidate-path (derivation->output-path
-                                     (package-derivation (%store) pkg))))
-                ;; XXX: When there are propagated inputs, assume we need to
-                ;; upgrade the whole entry.
-                (if (and (string=? path candidate-path)
-                         (null? (package-propagated-inputs pkg)))
-                    transaction
-                    (manifest-transaction-install-entry
-                     (package->manifest-entry* pkg output)
-                     transaction))))))))
-       (#f
+     (match (find-best-packages-by-name name #f)
+       ((pkg . rest)
+        (let ((candidate-version (package-version pkg)))
+          (match (package-superseded pkg)
+            ((? package? new)
+             (supersede entry new))
+            (#f
+             (case (version-compare candidate-version version)
+               ((>)
+                (manifest-transaction-install-entry
+                 (package->manifest-entry* pkg output)
+                 transaction))
+               ((<)
+                transaction)
+               ((=)
+                (let ((candidate-path (derivation->output-path
+                                       (package-derivation (%store) pkg))))
+                  ;; XXX: When there are propagated inputs, assume we need to
+                  ;; upgrade the whole entry.
+                  (if (and (string=? path candidate-path)
+                           (null? (package-propagated-inputs pkg)))
+                      transaction
+                      (manifest-transaction-install-entry
+                       (package->manifest-entry* pkg output)
+                       transaction)))))))))
+       (()
         (warning (G_ "package '~a' no longer exists~%") name)
         transaction)))))
 
@@ -604,12 +605,12 @@ and upgrades."
     (options->upgrade-predicate opts))
 
   (define upgraded
-    (fold-right (lambda (entry transaction)
-                  (if (upgrade? (manifest-entry-name entry))
-                      (transaction-upgrade-entry entry transaction)
-                      transaction))
-                transaction
-                (manifest-entries manifest)))
+    (fold (lambda (entry transaction)
+            (if (upgrade? (manifest-entry-name entry))
+                (transaction-upgrade-entry entry transaction)
+                transaction))
+          transaction
+          (manifest-entries manifest)))
 
   (define to-install
     (filter-map (match-lambda
@@ -735,29 +736,34 @@ processed, #f otherwise."
 
       (('list-available regexp)
        (let* ((regexp    (and regexp (make-regexp* regexp)))
-              (available (fold-packages
-                          (lambda (p r)
-                            (let ((n (package-name p)))
-                              (if (and (supported-package? p)
-                                       (not (package-superseded p)))
-                                  (if regexp
-                                      (if (regexp-exec regexp n)
-                                          (cons p r)
-                                          r)
-                                      (cons p r))
-                                  r)))
+              (available (fold-available-packages
+                          (lambda* (name version result
+                                         #:key outputs location
+                                         supported? superseded?
+                                         #:allow-other-keys)
+                            (if (and supported? (not superseded?))
+                                (if regexp
+                                    (if (regexp-exec regexp name)
+                                        (cons `(,name ,version
+                                                      ,outputs ,location)
+                                              result)
+                                        result)
+                                    (cons `(,name ,version
+                                                  ,outputs ,location)
+                                          result))
+                                result))
                           '())))
          (leave-on-EPIPE
-          (for-each (lambda (p)
-                      (format #t "~a\t~a\t~a\t~a~%"
-                              (package-name p)
-                              (package-version p)
-                              (string-join (package-outputs p) ",")
-                              (location->string (package-location p))))
+          (for-each (match-lambda
+                      ((name version outputs location)
+                       (format #t "~a\t~a\t~a\t~a~%"
+                               name version
+                               (string-join outputs ",")
+                               (location->string location))))
                     (sort available
-                          (lambda (p1 p2)
-                            (string<? (package-name p1)
-                                      (package-name p2))))))
+                          (match-lambda*
+                            (((name1 . _) (name2 . _))
+                             (string<? name1 name2))))))
          #t))
 
       (('search _)

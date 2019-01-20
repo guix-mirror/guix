@@ -32,7 +32,8 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages admin)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz))
 
 (define-public wicd
   (package

@@ -74,6 +74,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages guile)

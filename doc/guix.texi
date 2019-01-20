@@ -9328,12 +9328,20 @@ GuixSD in a virtual machine (VM).
 @subsection Preparing for Installation
 
 Once you have successfully booted your computer using the installation medium,
-you should end up with a root prompt.  Several console TTYs are configured
-and can be used to run commands as root.  TTY2 shows this documentation,
-browsable using the Info reader commands (@pxref{Top,,, info-stnd,
-Stand-alone GNU Info}).  The installation system runs the GPM mouse
-daemon, which allows you to select text with the left mouse button and
-to paste it with the middle button.
+you should end up with the welcome page of the graphical installer.  The
+graphical installer is a text-based user interface built upon the newt
+library.  It shall guide you through all the different steps needed to install
+GNU GuixSD.  However, as the graphical installer is still under heavy
+development, you might want to fallback to the original, shell based install
+process, by switching to TTYs 3 to 6 with the shortcuts CTRL-ALT-F[3-6]. The
+following sections describe the installation procedure assuming you're using
+one of those TTYs. They are configured and can be used to run commands as
+root.
+
+TTY2 shows this documentation, browsable using the Info reader commands
+(@pxref{Top,,, info-stnd, Stand-alone GNU Info}).  The installation system
+runs the GPM mouse daemon, which allows you to select text with the left mouse
+button and to paste it with the middle button.
 
 @quotation Note
 Installation requires access to the Internet so that any missing
@@ -9660,12 +9668,12 @@ unless your configuration specifies otherwise
 (@pxref{user-account-password, user account passwords}).
 
 @cindex upgrading GuixSD
-From then on, you can update GuixSD whenever you want by running
-@command{guix pull} as @code{root} (@pxref{Invoking guix pull}), and
-then running @command{guix system reconfigure} to build a new system
-generation with the latest packages and services (@pxref{Invoking guix
-system}).  We recommend doing that regularly so that your system
-includes the latest security updates (@pxref{Security Updates}).
+From then on, you can update GuixSD whenever you want by running @command{guix
+pull} as @code{root} (@pxref{Invoking guix pull}), and then running
+@command{guix system reconfigure /etc/config.scm}, as @code{root} too, to
+build a new system generation with the latest packages and services
+(@pxref{Invoking guix system}).  We recommend doing that regularly so that
+your system includes the latest security updates (@pxref{Security Updates}).
 
 Join us on @code{#guix} on the Freenode IRC network or on
 @email{guix-devel@@gnu.org} to share your experience---good or not so
@@ -10848,7 +10856,9 @@ system, you will want to append services to @var{%base-services}, like
 this:
 
 @example
-(cons* (avahi-service) (lsh-service) %base-services)
+(cons* (service avahi-service-type)
+       (service openssh-service-type)
+       %base-services)
 @end example
 @end defvr
 
@@ -12634,6 +12644,19 @@ This is a symbol specifying the logging level: @code{quiet}, @code{fatal},
 @code{error}, @code{info}, @code{verbose}, @code{debug}, etc.  See the man
 page for @file{sshd_config} for the full list of level names.
 
+@item @code{extra-content} (default: @code{""})
+This field can be used to append arbitrary text to the configuration file.  It
+is especially useful for elaborate configurations that cannot be expressed
+otherwise.  This configuration, for example, would generally disable root
+logins, but permit them from one specific IP address:
+
+@example
+(openssh-configuration
+  (extra-content "\
+Match Address 192.168.0.1
+  PermitRootLogin yes"))
+@end example
+
 @end table
 @end deftp
 
@@ -12709,31 +12732,54 @@ browsers, from accessing Facebook.
 
 The @code{(gnu services avahi)} provides the following definition.
 
-@deffn {Scheme Procedure} avahi-service [#:avahi @var{avahi}] @
-          [#:host-name #f] [#:publish? #t] [#:ipv4? #t] @
-          [#:ipv6? #t] [#:wide-area? #f] @
-          [#:domains-to-browse '()] [#:debug? #f]
-Return a service that runs @command{avahi-daemon}, a system-wide
+@defvr {Scheme Variable} avahi-service-type
+This is the service that runs @command{avahi-daemon}, a system-wide
 mDNS/DNS-SD responder that allows for service discovery and
-"zero-configuration" host name lookups (see @uref{http://avahi.org/}), and
-extends the name service cache daemon (nscd) so that it can resolve
-@code{.local} host names using
-@uref{http://0pointer.de/lennart/projects/nss-mdns/, nss-mdns}.  Additionally,
-add the @var{avahi} package to the system profile so that commands such as
-@command{avahi-browse} are directly usable.
+``zero-configuration'' host name lookups (see @uref{http://avahi.org/}).
+Its value must be a @code{zero-configuration} record---see below.
 
-If @var{host-name} is different from @code{#f}, use that as the host name to
+This service extends the name service cache daemon (nscd) so that it can
+resolve @code{.local} host names using
+@uref{http://0pointer.de/lennart/projects/nss-mdns/, nss-mdns}.  @xref{Name
+Service Switch}, for information on host name resolution.
+
+Additionally, add the @var{avahi} package to the system profile so that
+commands such as @command{avahi-browse} are directly usable.
+@end defvr
+
+@deftp {Data Type} avahi-configuration
+Data type representation the configuration for Avahi.
+
+@table @asis
+
+@item @code{host-name} (default: @code{#f})
+If different from @code{#f}, use that as the host name to
 publish for this machine; otherwise, use the machine's actual host name.
 
-When @var{publish?} is true, publishing of host names and services is allowed;
-in particular, avahi-daemon will publish the machine's host name and IP
-address via mDNS on the local network.
+@item @code{publish?} (default: @code{#t})
+When true, allow host names and services to be published (broadcast) over the
+network.
 
-When @var{wide-area?} is true, DNS-SD over unicast DNS is enabled.
+@item @code{publish-workstation?} (default: @code{#t})
+When true, @command{avahi-daemon} publishes the machine's host name and IP
+address via mDNS on the local network.  To view the host names published on
+your local network, you can run:
 
-Boolean values @var{ipv4?} and @var{ipv6?} determine whether to use IPv4/IPv6
-sockets.
-@end deffn
+@example
+avahi-browse _workstation._tcp
+@end example
+
+@item @code{wide-area?} (default: @code{#f})
+When true, DNS-SD over unicast DNS is enabled.
+
+@item @code{ipv4?} (default: @code{#t})
+@itemx @code{ipv6?} (default: @code{#t})
+These fields determine whether to use IPv4/IPv6 sockets.
+
+@item @code{domains-to-browse} (default: @code{'()})
+This is a list of domains to browse.
+@end table
+@end deftp
 
 @deffn {Scheme Variable} openvswitch-service-type
 This is the type of the @uref{http://www.openvswitch.org, Open vSwitch}
@@ -22339,8 +22385,8 @@ want is to have @code{.local} host lookup working.
 
 Note that, in this case, in addition to setting the
 @code{name-service-switch} of the @code{operating-system} declaration,
-you also need to use @code{avahi-service} (@pxref{Networking Services,
-@code{avahi-service}}), or @var{%desktop-services}, which includes it
+you also need to use @code{avahi-service-type} (@pxref{Networking Services,
+@code{avahi-service-type}}), or @var{%desktop-services}, which includes it
 (@pxref{Desktop Services}).  Doing this makes @code{nss-mdns} accessible
 to the name service cache daemon (@pxref{Base Services,
 @code{nscd-service}}).

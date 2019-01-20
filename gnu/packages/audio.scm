@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -18,6 +18,7 @@
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +58,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
@@ -82,6 +83,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)  ;libsndfile, libsamplerate
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages serialization)
@@ -761,7 +763,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.11.0")
+    (version "6.12.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -770,7 +772,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hlkrnv3gghx4v382nl6v6k2k1dzm5ddk35m5g3q6pzc959726s7"))))
+                "0pv4s54cayvavdp6y30n3r1l5x83x9whyyd2v24y0dh224v3hbxi"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -2154,7 +2156,11 @@ and ALSA.")
                 "1rzzqa39a6llr52vjkjr0a86nc776kmr5xs52qqga8ms9697psz5"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f))                    ; no check target
+     '(#:tests? #f ;; no check target
+       ;; Disable xunique to prevent X hanging when starting qjackctl in
+       ;; tiling window managers such as StumpWM or i3
+       ;; (see https://github.com/rncbc/qjackctl/issues/13).
+       #:configure-flags '("--disable-xunique")))
     (inputs
      `(("jack" ,jack-1)
        ("alsa-lib" ,alsa-lib)

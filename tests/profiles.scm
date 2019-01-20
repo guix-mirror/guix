@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -330,7 +330,7 @@
 
 (test-assert "package->manifest-entry, search paths"
   ;; See <http://bugs.gnu.org/22073>.
-  (let ((mpl (@ (gnu packages python) python2-matplotlib)))
+  (let ((mpl (@ (gnu packages python-xyz) python2-matplotlib)))
     (lset= eq?
            (package-transitive-native-search-paths mpl)
            (manifest-entry-search-paths
@@ -590,6 +590,36 @@
     (mbegin %store-monad
       (built-derivations (list drv))
       (return (readlink (readlink (string-append profile "/dangling")))))))
+
+(test-equalm "profile in profile"
+  '("foo" "0")
+
+  ;; Make sure we can build a profile that has another profile has one of its
+  ;; entries.  The new profile's /manifest and /etc/profile must override the
+  ;; other's.
+  (mlet* %store-monad
+      ((prof0 (profile-derivation
+               (manifest
+                (list (package->manifest-entry %bootstrap-guile)))
+               #:hooks '()
+               #:locales? #f))
+       (prof1 (profile-derivation
+               (manifest (list (manifest-entry
+                                 (name "foo")
+                                 (version "0")
+                                 (item prof0))))
+               #:hooks '()
+               #:locales? #f)))
+    (mbegin %store-monad
+      (built-derivations (list prof1))
+      (let ((out (derivation->output-path prof1)))
+        (return (and (file-exists?
+                      (string-append out "/bin/guile"))
+                     (let ((manifest (profile-manifest out)))
+                       (match (manifest-entries manifest)
+                         ((entry)
+                          (list (manifest-entry-name entry)
+                                (manifest-entry-version entry)))))))))))
 
 (test-end "profiles")
 

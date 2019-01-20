@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
@@ -45,7 +45,8 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
+  #:use-module (gnu packages disk)
   #:use-module (gnu packages ed)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
@@ -68,6 +69,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages slang)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
@@ -941,6 +943,20 @@ specification.  These are the main features:
 (define-public guile2.0-json
   (package-for-guile-2.0 guile-json))
 
+(define-public guile-json-3
+  ;; This version is incompatible with 1.x; see the 'NEWS' file.
+  (package
+    (inherit guile-json)
+    (name "guile-json")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.savannah.nongnu.org/releases/"
+                                  name "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1yfqscz74i4vxylabd3s9l0wbdp8bg9qxnv1ixdm3b1l7zdx00z3"))))))
+
 (define-public guile-minikanren
   (package
     (name "guile-minikanren")
@@ -1623,7 +1639,16 @@ you send to a FIFO file.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0kzclwkfijj8xka3g9kfj53y67c34ndfy84swdbw3j7y962ndxq6"))))
+                "0kzclwkfijj8xka3g9kfj53y67c34ndfy84swdbw3j7y962ndxq6"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Install .scm files in the right place (see
+               ;; <https://github.com/OrangeShark/guile-commonmark/issues/12>.)
+               '(begin
+                  (substitute* "Makefile.in"
+                    (("^moddir = \\$\\(datadir\\)/share")
+                     "moddir = $(datadir)"))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.2)))
@@ -2296,8 +2321,8 @@ Guile.")
 
 ;; There has not been any release yet.
 (define-public guile-newt
-  (let ((commit "a73889c57b0572347f7641facdb1bcf08922feff")
-        (revision "2"))
+  (let ((commit "80c1e9e71945f833386d1632b52573e59325804f")
+        (revision "4"))
     (package
       (name "guile-newt")
       (version (string-append "0-" revision "." (string-take commit 9)))
@@ -2309,7 +2334,7 @@ Guile.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "0k37vir22r2sq121lyy74grfai4643s7kr55z01k4j0bh27i06c3"))))
+                  "1w7qy4dw1f4bx622l6hw8mv49sf1ha8kch8j4nganyk8fj0wn695"))))
       (build-system gnu-build-system)
       (arguments
        '(#:make-flags
@@ -2358,4 +2383,42 @@ Scheme by using Guile’s foreign function interface.")
 microblogging service.")
     (license license:gpl3+)))
 
+;; There has not been any release yet.
+(define-public guile-parted
+  (let ((commit "ea3f1a1f6844775fc59d3078d2a09c62ffb341b8")
+        (revision "0"))
+    (package
+      (name "guile-parted")
+      (version (string-append "0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/mothacehe/guile-parted")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1q7425gpjlwi2wvhzq7kw046yyx7v6j6jyzkd1cr861iz34mjwiq"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags
+         '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+      (inputs
+       `(("guile" ,guile-2.2)
+         ("parted" ,parted)))
+      (propagated-inputs
+       `(("guile-bytestructures" ,guile-bytestructures)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (synopsis "Guile bindings to GNU Parted")
+      (description
+       "This package provides bindings for GNU Parted library, a C library
+allowing disk partition tables creation and manipulation. The bindings are
+written in pure Scheme by using Guile's foreign function interface.")
+      (home-page "https://gitlab.com/mothacehe/guile-parted")
+      (license license:gpl3+))))
+
 ;;; guile.scm ends here
+

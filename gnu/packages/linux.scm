@@ -65,7 +65,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -413,8 +413,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20.1")
-(define %linux-libre-hash "10b1cgx7246lxwml66bzzc57sk5bbh7mjxc9zv6qncwh0xhsjv5n")
+(define %linux-libre-version "4.20.3")
+(define %linux-libre-hash "0mk996fb4bd9548xnv2as4lxm3gyj1kvn6ra03xxpb0wf8cqdazz")
 
 (define %linux-libre-4.20-patches
   (list %boot-logo-patch
@@ -427,8 +427,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.20-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.14")
-(define %linux-libre-4.19-hash "12ihsp3k8gznc1hjvlpy8jdb27ijr3zsvn8wcgr5za18pg5ncjl9")
+(define %linux-libre-4.19-version "4.19.16")
+(define %linux-libre-4.19-hash "1dpfllfzksrr6iqhvbh2905gkvycsv5zcmgq6wmwqiry1swzdfyk")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -441,8 +441,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.92")
-(define %linux-libre-4.14-hash "09s479krcjzgp53s5i6h7ld1mdagjci6lqvkv8mc1nj0ja8niiq3")
+(define %linux-libre-4.14-version "4.14.94")
+(define %linux-libre-4.14-hash "06yf4ggdf9dn7zh17pv1kx84sn39mbxpfhsx1mdckzwpis7lcjzs")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -451,14 +451,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.149"
-                    "1qw1hahqiai8xbv769pdfnx3yan3rl2zh00fmi1nx0khan6i5as3"
+  (make-linux-libre "4.9.151"
+                    "0pjcqmn03zb0n83rlfkrq10k7fl7dbh3ll2d8k9sqi3m81c3843h"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.169"
-                    "1snjdih9iv3fg7f9h2r1gldcqmvzj1w398aysws4fialj488x1p4"
+  (make-linux-libre "4.4.171"
+                    "01jd2672fq633xw5vdmifvd6dy93pif28xkvymah82jm9xj1lbqh"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -1806,9 +1806,9 @@ UnionFS-FUSE additionally supports copy-on-write.")
                #t))))))
     (inputs `(("fuse" ,fuse-static)))))
 
-(define-public sshfs-fuse
+(define-public sshfs
   (package
-    (name "sshfs-fuse")
+    (name "sshfs")
     (version "2.10")
     (source (origin
               (method url-fetch)
@@ -1832,6 +1832,11 @@ Since most SSH servers already support this protocol it is very easy to set
 up: on the server side there's nothing to do; on the client side mounting the
 file system is as easy as logging into the server with an SSH client.")
     (license license:gpl2+)))
+
+(define-public sshfs-fuse
+  (package (inherit sshfs)
+    (name "sshfs-fuse")
+    (properties `((superseded . ,sshfs)))))
 
 (define-public archivemount
   (package

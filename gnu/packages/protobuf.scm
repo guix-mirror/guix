@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,7 +30,8 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz))
 
 (define-public fstrm
   (package
@@ -107,6 +108,19 @@ data in motion, or as a file format for data at rest.")
 yet extensible format.  Google uses Protocol Buffers for almost all of its
 internal RPC protocols and file formats.")
     (license license:bsd-3)))
+
+(define-public protobuf-next
+  (package (inherit protobuf)
+    (name "protobuf")
+    (version "3.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/google/protobuf/releases/"
+                                  "download/v" version "/protobuf-cpp-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0a955bz59ihrb5wg7dwi12xajdi5pmz4bl0g147rbdwv393jwwxk"))))))
 
 ;; XXX Remove this old version when no other packages depend on it.
 (define-public protobuf-2

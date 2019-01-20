@@ -36,6 +36,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)

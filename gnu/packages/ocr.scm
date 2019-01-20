@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +29,14 @@
 (define-public ocrad
   (package
     (name "ocrad")
-    (version "0.26")
+    (version "0.27")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/ocrad/ocrad-"
                                  version ".tar.lz"))
              (sha256
               (base32
-               "0g4fq7maybdnd1471kd05a3f5sb7spa3d26k706rk85sd5wd70y3"))))
+               "0divffvcaim89g4pvqs8kslbcxi475bcl3b4ynphf284k9zfdgx9"))))
     (build-system gnu-build-system)
     (native-inputs `(("lzip" ,lzip)))
     (home-page "https://www.gnu.org/software/ocrad/")

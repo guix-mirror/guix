@@ -32,6 +32,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages time))
 
 (define-public python-django
@@ -196,7 +197,7 @@ useful tools for testing Django applications and projects.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "python" "runtests.py")))))))
+             (invoke "python" "runtests.py"))))))
     (native-inputs
      `(("python-django" ,python-django)
        ("python-djangorestframework" ,python-djangorestframework)

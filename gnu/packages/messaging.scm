@@ -75,8 +75,10 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -783,14 +785,14 @@ a graphical desktop environment like GNOME.")
 (define-public prosody
   (package
     (name "prosody")
-    (version "0.11.1")
+    (version "0.11.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://prosody.im/downloads/source/"
                                   "prosody-" version ".tar.gz"))
               (sha256
                (base32
-                "1ak5bkx09kscyifxhzybgp5a73jr8nki6xi05c59wwlq0wzw9gli"))))
+                "0ca8ivqb4hxqka08pwnaqi1bqxrdl8zw47g6z7nw9q5r57fgc4c9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;tests require "busted"
@@ -901,6 +903,39 @@ protocols.")
       (synopsis "XEP-0363: Allow clients to upload files over HTTP")
       (description "This module implements XEP-0363: it allows clients to
 upload files over HTTP.")
+      (license (package-license prosody)))))
+
+(define-public prosody-smacks
+  (let ((changeset "67f1d1f22625")
+        (revision "1"))
+    (package
+      (name "prosody-smacks")
+      (version (string-append "0-" revision "." (string-take changeset 7)))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference
+                      (url "https://hg.prosody.im/prosody-modules/")
+                      (changeset changeset)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "020ngpax30fgarah98yvlj0ni8rcdwq60if03a9hqdw8mic0nxxs"))))
+      (build-system trivial-build-system)
+      (arguments
+       '(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((out (assoc-ref %outputs "out"))
+                 (source (assoc-ref %build-inputs "source")))
+             (with-directory-excursion (in-vicinity source "mod_smacks")
+               (install-file "mod_smacks.lua" out))
+             #t))))
+      (home-page "https://modules.prosody.im/mod_smacks.html")
+      (synopsis "XEP-0198: Reliability and fast reconnects for XMPP")
+      (description "This module implements XEP-0198: when supported by both
+the client and server, it can allow clients to resume a disconnected session,
+and prevent message loss.")
       (license (package-license prosody)))))
 
 (define-public libtoxcore

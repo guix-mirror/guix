@@ -82,7 +82,6 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages docbook)
@@ -124,6 +123,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages ruby)
@@ -131,6 +131,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
@@ -1313,15 +1314,15 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.12.17")
+    (version "2019.01.17")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://yt-dl.org/downloads/"
-                                  version "/youtube-dl-"
+              (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
+                                  "download/" version "/youtube-dl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1nd4zr3wd35vldm775m9wcgbzma2013yyj134lcz19ipjs38isrk"))))
+                "0fxajwv81b0bjw9qlwmxd4r93yp5nnqll79vhic0vy72ii0093r7"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2093,16 +2094,16 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "20.1.3")
+    (version "22.0.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/jp9000/obs-studio.git")
+                    (url "https://github.com/obsproject/obs-studio.git")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qdpa2xxiiw53ksvlrf80jm8gz6kxsn56sffv2v2ijxvy7kw5zcg"))))
+                "0ri9qkqk3h71b1a5bwpjzqdr21bbmfqbykg48l779d20zln23n1i"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no tests

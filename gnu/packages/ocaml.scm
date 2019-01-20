@@ -36,8 +36,8 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
@@ -57,6 +57,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
@@ -4749,6 +4750,37 @@ yojson package.  The program @code{atdgen} can be used to derive OCaml-JSON
 serializers and deserializers from type definitions.")
     (license license:bsd-3)))
 
+(define-public ocaml-merlin
+  (package
+    (name "ocaml-merlin")
+    (version "3.2.2")
+    (home-page "https://ocaml.github.io/merlin/")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml/merlin.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "15ssgmwdxylbwhld9p1cq8x6kadxyhll5bfyf11dddj6cldna3hb"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-biniou" ,ocaml-biniou)
+       ("ocaml-yojson" ,ocaml-yojson)
+       ("ocaml-easy-format" ,ocaml-easy-format)))
+    (native-inputs
+     `(("ocaml-findlib" ,ocaml-findlib)))
+    (arguments
+     '(#:tests? #f)) ;; Errors in tests in version 3.2.2
+    (synopsis "Context sensitive completion for OCaml in Vim and Emacs")
+    (description "Merlin is an editor service that provides modern IDE
+features for OCaml.  Emacs and Vim support is provided out-of-the-box.
+External contributors added support for Visual Studio Code, Sublime Text and
+Atom.")
+    (license license:expat)))
+
 (define-public ocaml-gsl
   (package
     (name "ocaml-gsl")
@@ -4833,3 +4865,279 @@ parametrized transition systems with states represented as arrays indexed by
 an arbitrary number of processes.  Cache coherence protocols and mutual
 exclusion algorithms are typical examples of such systems.")
     (license license:asl2.0)))
+
+(define-public ocaml-sexplib0
+  (package
+    (name "ocaml-sexplib0")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/sexplib0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07v3ggyss7xhfv14bjk1n87sr42iqwj4cgjiv2lcdfkqk49i2bmi"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:tests? #f)) ;no tests
+    (synopsis "Library containing the definition of S-expressions and some
+base converters")
+    (description "Part of Jane Street's Core library The Core suite of
+libraries is an industrial strength alternative to OCaml's standard library
+that was developed by Jane Street, the largest industrial user of OCaml.")
+(license license:expat)))
+
+(define-public ocaml-parsexp
+  (package
+    (name "ocaml-parsexp")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/parsexp")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1nyq23s5igd8cf3n4qxprjvhbmb6ighb3fy5mw7hxl0mdgsw5fvz"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (synopsis "S-expression parsing library")
+    (description
+     "This library provides generic parsers for parsing S-expressions from
+strings or other medium.
+
+The library is focused on performances but still provide full generic
+parsers that can be used with strings, bigstrings, lexing buffers,
+character streams or any other sources effortlessly.
+
+It provides three different class of parsers:
+@itemize
+@item
+the normal parsers, producing [Sexp.t] or [Sexp.t list] values
+@item
+the parsers with positions, building compact position sequences so
+that one can recover original positions in order to report properly
+located errors at little cost
+@item
+the Concrete Syntax Tree parsers, produce values of type
+@code{Parsexp.Cst.t} which record the concrete layout of the s-expression
+syntax, including comments
+@end itemize
+
+This library is portable and doesn't provide IO functions.  To read
+s-expressions from files or other external sources, you should use
+parsexp_io.")
+    (license license:expat)))
+
+(define-public ocaml-sexplib
+  (package
+    (name "ocaml-sexplib")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/sexplib")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1qfl0m04rpcjvc4yw1hzh6r16jpwmap0sa9ax6zjji67dz4szpyb"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-num" ,ocaml-num)
+       ("ocaml-parsexp" ,ocaml-parsexp)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (synopsis
+     "Library for serializing OCaml values to and from S-expressions")
+    (description
+     "This package is part of Jane Street's Core library. Sexplib contains
+functionality for parsing and pretty-printing s-expressions.")
+    (license license:expat)))
+
+(define-public ocaml-base
+  (package
+    (name "ocaml-base")
+    (version "0.11.1")
+    (home-page "https://github.com/janestreet/base")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0j6xb4265jr41vw4fjzak6yr8s30qrnzapnc6rl1dxy8bjai0nir"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           ;; make warnings non fatal (jbuilder behaviour)
+           (lambda _
+             (invoke "dune" "build" "@install" "--profile=release"))))))
+  (synopsis
+    "Full standard library replacement for OCaml")
+  (description
+    "Base is a complete and portable alternative to the OCaml standard
+library.  It provides all standard functionalities one would expect
+from a language standard library.  It uses consistent conventions
+across all of its module.
+
+Base aims to be usable in any context.  As a result system dependent
+features such as I/O are not offered by Base.  They are instead
+provided by companion libraries such as
+@url{https://github.com/janestreet/stdio, ocaml-stdio}.")
+  (license license:expat)))
+
+(define-public ocaml-compiler-libs
+  (package
+    (name "ocaml-compiler-libs")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/ocaml-compiler-libs")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03jds7bszh8wwpfwxb3dg0gyr1j1872wxwx1xqhry5ir0i84bg0s"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:tests? #f)) ;no tests
+    (synopsis "Compiler libraries repackaged")
+    (description "This packaeg simply repackages the OCaml compiler libraries
+so they don't expose everything at toplevel.  For instance, @code{Ast_helper}
+is now @code{Ocaml_common.Ast_helper}.")
+    (license license:expat)))
+
+(define-public ocaml-stdio
+  (package
+    (name "ocaml-stdio")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/stdio")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1facajqhvq34g2wrg368y0ajxd6lrj5b3lyzyj0jhdmraxajjcwn"))))
+    (build-system dune-build-system)
+    (inputs `(("ocaml-base" ,ocaml-base)
+              ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (arguments
+     '(#:tests? #f)) ;no tests
+    (synopsis "Standard IO library for OCaml")
+    (description
+     "Stdio implements simple input/output functionalities for OCaml.  It
+re-exports the input/output functions of the OCaml standard libraries using
+a more consistent API.")
+    (license license:expat)))
+
+(define-public ocaml-ppx-derivers
+  (package
+    (name "ocaml-ppx-derivers")
+    (version "1.2")
+    (home-page
+     "https://github.com/ocaml-ppx/ppx_derivers")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0bnhihl1w31as5w2czly1v3d6pbir9inmgsjg2cj6aaj9v1dzd85"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:tests? #f)) ;no tests
+    (synopsis "Shared @code{@@deriving} plugin registry")
+    (description
+     "Ppx_derivers is a tiny package whose sole purpose is to allow
+ppx_deriving and ppx_type_conv to inter-operate gracefully when linked
+as part of the same ocaml-migrate-parsetree driver.")
+    (license license:bsd-3)))
+
+(define-public ocaml-ppxlib
+  (package
+    (name "ocaml-ppxlib")
+    (version "0.4.0")
+    (home-page "https://github.com/ocaml-ppx/ppxlib")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1nr4igf5m4prvigvv470dnhfdhdw0p6hz6zw8gnm5bzcv7s2lg5l"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-compiler-libs" ,ocaml-compiler-libs)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppx-derivers" ,ocaml-ppx-derivers)
+       ("ocaml-stdio" ,ocaml-stdio)
+       ("ocaml-result" ,ocaml-result)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (native-inputs
+     `(("ocaml-findlib" ,ocaml-findlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-topfind
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; add the line #directory ".." at the top of each file
+             ;; using #use "topfind";; to be able to find topfind
+             (let* ((findlib-path (assoc-ref inputs "ocaml-findlib"))
+                    (findlib-libdir
+                     (string-append findlib-path "/lib/ocaml/site-lib")))
+               (substitute* '("test/base/test.ml"
+                              "test/deriving/test.ml"
+                              "test/driver/attributes/test.ml"
+                              "test/driver/non-compressible-suffix/test.ml"
+                              "test/driver/transformations/test.ml")
+                 (("#use \"topfind\";;" all)
+                  (string-append "#directory \"" findlib-libdir "\"\n"
+                                 all))))
+             #t)))))
+    (synopsis
+     "Base library and tools for ppx rewriters")
+    (description
+     "A comprehensive toolbox for ppx development.  It features:
+@itemize
+@item an OCaml AST / parser / pretty-printer snapshot, to create a full frontend
+independent of the version of OCaml;
+@item a library for library for ppx rewriters in general, and type-driven code
+generators in particular;
+@item
+a feature-full driver for OCaml AST transformers;
+@item a quotation mechanism allowing to write values representing the
+OCaml AST in the OCaml syntax;
+@item a generator of open recursion classes from type definitions.
+@end itemize")
+    (license license:expat)))

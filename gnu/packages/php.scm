@@ -30,6 +30,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
@@ -42,6 +43,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -56,7 +58,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.3.0")
+    (version "7.3.1")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -64,7 +66,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1db0lm84hynilrjj3k1s7skp1y2gl4ip1ihr7662i2xgannmq6bx"))
+                "0qikydmjg8k68l56azq4vg3gkynqwlpzayd5qi9wsl03pr03xsfg"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -222,6 +224,12 @@
                          ;; This bug should have been fixed in gd 2.2.2.
                          ;; Is it a regression?
                          "ext/gd/tests/bug65148.phpt"
+                         ;; These tests should not be run (disabled because
+                         ;; GD_BUNDLED = 0)
+                         "ext/gd/tests/bug77198_auto.phpt"
+                         "ext/gd/tests/bug77198_threshold.phpt"
+                         "ext/gd/tests/bug77200.phpt"
+                         "ext/gd/tests/bug77269.phpt"
                          ;; TODO: Enable these when libgd is built with xpm support.
                          "ext/gd/tests/xpm2gd.phpt"
                          "ext/gd/tests/xpm2jpg.phpt"
@@ -287,6 +295,10 @@
                          "ext/mbstring/tests/mb_ereg_variation3.phpt"
                          "ext/mbstring/tests/mb_ereg_replace_variation1.phpt"
                          "ext/mbstring/tests/bug72994.phpt"
+                         "ext/mbstring/tests/bug77367.phpt"
+                         "ext/mbstring/tests/bug77370.phpt"
+                         "ext/mbstring/tests/bug77371.phpt"
+                         "ext/mbstring/tests/bug77381.phpt"
                          "ext/ldap/tests/ldap_set_option_error.phpt"
 
                          ;; Sometimes cannot start the LDAP server.

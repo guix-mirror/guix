@@ -20,7 +20,7 @@
 
 (define-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)

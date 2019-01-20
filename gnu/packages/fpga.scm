@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -119,7 +120,7 @@ For synthesis, the compiler generates netlists in the desired format.")
 (define-public yosys
   (package
     (name "yosys")
-    (version "0.7")
+    (version "0.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -128,7 +129,7 @@ For synthesis, the compiler generates netlists in the desired format.")
                     (recursive? #t))) ; for the ‘iverilog’ submodule
               (sha256
                 (base32
-                   "1ssrpgw0j9qlm52g1hsbb9fsww4vnwi0l7zvvky7a8w7wamddky0"))
+                   "1qwbp8gynlklawzvpa4gdn2x0hs8zln0s3kxjqkhfcjfxffdcpvv"))
               (file-name (git-file-name name version))
               (modules '((guix build utils)))
               (snippet
@@ -211,8 +212,8 @@ For synthesis, the compiler generates netlists in the desired format.")
     (license license:isc)))
 
 (define-public icestorm
-  (let ((commit "12b2295c9087d94b75e374bb205ae4d76cf17e2f")
-        (revision "1"))
+  (let ((commit "c0cbae88ab47a3879aacf80d53b6a85710682a6b")
+        (revision "2"))
    (package
     (name "icestorm")
     (version (string-append "0.0-" revision "-" (string-take commit 9)))
@@ -224,7 +225,7 @@ For synthesis, the compiler generates netlists in the desired format.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                 (base32
-                   "1mmzlqvap6w8n4qzv3idvy51arkgn03692ssplwncy3akjrbsd2b"))))
+                   "0bqm0rpywm64yvbq75klpyzb1g9sdsp1kvdlyqg4hvm8jw9w8lya"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no unit tests that don't need an FPGA exist.
@@ -256,33 +257,31 @@ Includes the actual FTDI connector.")
     (license license:isc))))
 
 (define-public arachne-pnr
-  (let ((commit "52e69ed207342710080d85c7c639480e74a021d7")
-        (revision "1"))
+  (let ((commit "840bdfdeb38809f9f6af4d89dd7b22959b176fdd")
+        (revision "2"))
    (package
     (name "arachne-pnr")
     (version (string-append "0.0-" revision "-" (string-take commit 9)))
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/cseed/arachne-pnr.git")
+                     (url "https://github.com/YosysHQ/arachne-pnr.git")
                      (commit commit)))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                 (base32
-                   "15bdw5yxj76lxrwksp6liwmr6l1x77isf4bs50ys9rsnmiwh8c3w"))))
+                   "1dqvjvgvsridybishv4pnigw9gypxh7r7nrqp9z9qq92v7c5rxzl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:make-flags
+       (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+             (string-append "ICEBOX=" (string-append
+                                       (assoc-ref %build-inputs "icestorm")
+                                       "/share/icebox")))
        #:phases (modify-phases %standard-phases
        (replace 'configure
          (lambda* (#:key outputs inputs #:allow-other-keys)
-           (substitute* '("Makefile")
-             (("DESTDIR = .*") (string-append "DESTDIR = "
-                                             (assoc-ref outputs "out")
-                                             "\n"))
-             (("ICEBOX = .*") (string-append "ICEBOX = "
-                                             (assoc-ref inputs "icestorm")
-                                             "/share/icebox\n")))
            (substitute* '("./tests/fsm/generate.py"
                           "./tests/combinatorial/generate.py")
              (("#!/usr/bin/python") "#!/usr/bin/python2"))
@@ -294,7 +293,7 @@ Includes the actual FTDI connector.")
        ("yosys" ,yosys) ; for tests
        ("perl" ,perl) ; for shasum
        ("python-2" ,python-2))) ; for tests
-    (home-page "https://github.com/cseed/arachne-pnr")
+    (home-page "https://github.com/YosysHQ/arachne-pnr")
     (synopsis "Place-and-Route tool for FPGAs")
     (description "Arachne-PNR is a Place-and-Route Tool For FPGAs.")
     (license license:gpl2))))

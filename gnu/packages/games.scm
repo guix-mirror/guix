@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
@@ -79,7 +79,6 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cyrus-sasl)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
@@ -125,11 +124,13 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
@@ -151,6 +152,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system meson)
+  #:use-module (guix build-system scons)
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial))
@@ -3660,7 +3662,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.5")
+    (version "10.5d")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3671,7 +3673,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "04wk50f51xrb9vszwil4ivkfpy7xc6nw3gnp90hbna2zqi2jnvb8"))))
+                "1ls055v4pv2xmn2a8lav7wl370zn0wsd91q41bk0amxd168kcndy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3748,7 +3750,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "0r6xvnr7b56iv27n8z10qmxhsz5h7w6ayhxkz3xinlvch84bk708"))))
+             "13n9hcvf9yv7kjghm5jhjpwq1kh94i4bgvcczky9kvdvw1y9278n"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -5955,3 +5957,59 @@ order.  You rotate the blocks and move them across the screen to drop them in
 complete lines.  You score by dropping blocks fast and completing lines.  As
 your score gets higher, you level up and the blocks fall faster.")
     (license license:gpl2+)))
+
+(define-public endless-sky
+  (package
+    (name "endless-sky")
+    (version "0.9.8")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/endless-sky/endless-sky")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0i36lawypikbq8vvzfis1dn7yf6q0d2s1cllshfn7kmjb6pqfi6c"))))
+    (build-system scons-build-system)
+    (arguments
+     `(#:scons ,scons-python2
+       #:scons-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-resource-locations
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "source/Files.cpp"
+               (("/usr/local/")
+                (string-append (assoc-ref outputs "out") "/")))
+             #t))
+         (add-after 'unpack 'patch-scons
+           (lambda _
+             (substitute* "SConstruct"
+               ;; Keep environmental variables
+               (("Environment\\(\\)")
+                "Environment(ENV = os.environ)")
+               ;; Install into %out/bin
+               (("games\"") "bin\""))
+             #t)))))
+    (inputs
+     `(("glew" ,glew)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libmad" ,libmad)
+       ("libpng" ,libpng)
+       ("openal" ,openal)
+       ("sdl2" ,sdl2)))
+    (home-page "https://endless-sky.github.io/")
+    (synopsis "2D space trading and combat game")
+    (description "Endless Sky is a 2D space trading and combat game.  Explore
+other star systems.  Earn money by trading, carrying passengers, or completing
+missions.  Use your earnings to buy a better ship or to upgrade the weapons and
+engines on your current one.  Blow up pirates.  Take sides in a civil war.  Or
+leave human space behind and hope to find friendly aliens whose culture is more
+civilized than your own.")
+    (license (list license:gpl3+
+                   license:cc-by-sa3.0
+                   license:cc-by-sa4.0
+                   license:public-domain))))

@@ -613,6 +613,13 @@ Info manual."
                  (append (file-imports source "gnu/system/examples"
                                        (const #t))
 
+                         ;; Need so we get access system tests from an
+                         ;; inferior.
+                         (file-imports source "gnu/tests" (const #t))
+
+                         ;; All the installer code is on the build-side.
+                         (file-imports source "gnu/installer/"
+                                       (const #t))
                          ;; Build-side code that we don't build.  Some of
                          ;; these depend on guile-rsvg, the Shepherd, etc.
                          (file-imports source "gnu/build" (const #t)))
@@ -805,7 +812,6 @@ Info manual."
                ;; top-level or the 'toplevel-ref' in the resulting .go file are
                ;; made relative to a nonexistent anonymous module.
                #:splice? #t))
-
 
 
 ;;;

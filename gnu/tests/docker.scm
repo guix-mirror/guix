@@ -26,9 +26,18 @@
   #:use-module (gnu services networking)
   #:use-module (gnu services docker)
   #:use-module (gnu services desktop)
+  #:use-module (gnu packages bootstrap) ; %bootstrap-guile
   #:use-module (gnu packages docker)
   #:use-module (guix gexp)
+  #:use-module (guix grafts)
+  #:use-module (guix monads)
+  #:use-module (guix packages)
+  #:use-module (guix profiles)
+  #:use-module (guix scripts pack)
   #:use-module (guix store)
+  #:use-module (guix tests)
+  #:use-module (guix build-system trivial)
+  #:use-module ((guix licenses) #:prefix license:)
   #:export (%test-docker))
 
 (define %docker-os
@@ -39,8 +48,9 @@
    (service elogind-service-type)
    (service docker-service-type)))
 
-(define (run-docker-test)
-  "Run tests in %DOCKER-OS."
+(define (run-docker-test docker-tarball)
+  "Load DOCKER-TARBALL as Docker image and run it in a Docker container,
+inside %DOCKER-OS."
   (define os
     (marionette-operating-system
      %docker-os
@@ -50,8 +60,8 @@
   (define vm
     (virtual-machine
      (operating-system os)
-     (memory-size 500)
-     (disk-image-size (* 250 (expt 2 20)))
+     (memory-size 700)
+     (disk-image-size (* 1500 (expt 2 20)))
      (port-forwardings '())))
 
   (define test
@@ -87,13 +97,72 @@
                          "version"))
              marionette))
 
+          (test-equal "Load docker image and run it"
+            "hello world"
+            (marionette-eval
+             `(begin
+                (define slurp
+                  (lambda args
+                    (let* ((port (apply open-pipe* OPEN_READ args))
+                           (output (read-line port))
+                           (status (close-pipe port)))
+                      output)))
+                (let* ((raw-line (slurp ,(string-append #$docker-cli
+                                                        "/bin/docker")
+                                                        "load" "-i"
+                                                        ,#$docker-tarball))
+                       (repository&tag (string-drop raw-line
+                                                    (string-length
+                                                     "Loaded image: ")))
+                       (response (slurp
+                                  ,(string-append #$docker-cli "/bin/docker")
+                                  "run" "--entrypoint" "bin/Guile"
+                                  repository&tag
+                                  "/aa.scm")))
+                  response))
+             marionette))
+
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
 
   (gexp->derivation "docker-test" test))
 
+(define (build-tarball&run-docker-test)
+  (mlet* %store-monad
+      ((_ (set-grafting #f))
+       (guile (set-guile-for-build (default-guile)))
+       (guest-script-package ->
+        (package
+          (name "guest-script")
+          (version "0")
+          (source #f)
+          (build-system trivial-build-system)
+          (arguments `(#:guile ,%bootstrap-guile
+                       #:builder
+                       (let ((out (assoc-ref %outputs "out")))
+                         (mkdir out)
+                         (call-with-output-file (string-append out "/a.scm")
+                           (lambda (port)
+                             (display "(display \"hello world\n\")" port)))
+                         #t)))
+          (synopsis "Display hello world using Guile")
+          (description "This package displays the text \"hello world\" on the
+standard output device and then enters a new line.")
+          (home-page #f)
+          (license license:public-domain)))
+       (profile (profile-derivation (packages->manifest
+                                     (list %bootstrap-guile
+                                           guest-script-package))
+                                    #:hooks '()
+                                    #:locales? #f))
+       (tarball (docker-image "docker-pack" profile
+                              #:symlinks '(("/bin/Guile" -> "bin/guile")
+                                           ("aa.scm" -> "a.scm"))
+                              #:localstatedir? #t)))
+    (run-docker-test tarball)))
+
 (define %test-docker
   (system-test
    (name "docker")
-   (description "Connect to the running Docker service.")
-   (value (run-docker-test))))
+   (description "Test Docker container of Guix.")
+   (value (build-tarball&run-docker-test))))

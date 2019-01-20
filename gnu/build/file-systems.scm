@@ -42,6 +42,10 @@
             find-partition-by-luks-uuid
             canonicalize-device-spec
 
+            read-partition-label
+            read-partition-uuid
+            read-luks-partition-uuid
+
             bind-mount
 
             mount-flags->bit-mask
@@ -435,6 +439,12 @@ partition field reader that returned a value."
 (define read-partition-uuid
   (cut read-partition-field <> %partition-uuid-readers))
 
+(define luks-partition-field-reader
+  (partition-field-reader read-luks-header luks-header-uuid))
+
+(define read-luks-partition-uuid
+  (cut read-partition-field <> (list luks-partition-field-reader)))
+
 (define (partition-predicate reader =)
   "Return a predicate that returns true if the FIELD of partition header that
 was READ is = to the given value."
@@ -451,9 +461,7 @@ was READ is = to the given value."
   (partition-predicate read-partition-uuid uuid=?))
 
 (define luks-partition-uuid-predicate
-  (partition-predicate
-   (partition-field-reader read-luks-header luks-header-uuid)
-   uuid=?))
+  (partition-predicate luks-partition-field-reader uuid=?))
 
 (define (find-partition predicate)
   "Return the first partition found that matches PREDICATE, or #f if none

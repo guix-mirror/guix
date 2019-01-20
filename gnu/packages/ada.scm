@@ -26,7 +26,8 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz))
 
 (define-public python2-langkit
   (let ((commit "fe0bc8bf60dbd2937759810df76ac420d99fc15f")

@@ -46,6 +46,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/bootloader/grub.scm                       \
   %D%/bootloader/extlinux.scm                   \
   %D%/bootloader/u-boot.scm                     \
+  %D%/ci.scm					\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
   %D%/packages/abiword.scm			\
@@ -112,6 +113,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/conky.scm			\
   %D%/packages/connman.scm			\
   %D%/packages/cook.scm				\
+  %D%/packages/coq.scm				\
   %D%/packages/cpio.scm				\
   %D%/packages/cpp.scm 				\
   %D%/packages/cppi.scm				\
@@ -126,6 +128,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/datamash.scm			\
   %D%/packages/datastructures.scm		\
   %D%/packages/dav.scm				\
+  %D%/packages/dbm.scm				\
   %D%/packages/dc.scm				\
   %D%/packages/debian.scm			\
   %D%/packages/debug.scm			\
@@ -154,6 +157,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/elixir.scm			\
   %D%/packages/embedded.scm			\
   %D%/packages/emacs.scm			\
+  %D%/packages/emacs-xyz.scm			\
   %D%/packages/emulators.scm			\
   %D%/packages/enchant.scm			\
   %D%/packages/engineering.scm			\
@@ -348,6 +352,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pem.scm				\
   %D%/packages/perl.scm				\
   %D%/packages/perl-check.scm			\
+  %D%/packages/perl-compression.scm		\
   %D%/packages/perl-web.scm			\
   %D%/packages/photo.scm			\
   %D%/packages/phabricator.scm 			\
@@ -366,8 +371,10 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pure.scm				\
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
+  %D%/packages/python-compression.scm		\
   %D%/packages/python-crypto.scm		\
   %D%/packages/python-web.scm			\
+  %D%/packages/python-xyz.scm			\
   %D%/packages/toys.scm				\
   %D%/packages/tryton.scm			\
   %D%/packages/qt.scm				\
@@ -410,6 +417,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/sml.scm				\
   %D%/packages/speech.scm			\
   %D%/packages/spice.scm			\
+  %D%/packages/sqlite.scm			\
   %D%/packages/ssh.scm				\
   %D%/packages/sssd.scm				\
   %D%/packages/stalonetray.scm			\
@@ -555,9 +563,47 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/ssh.scm				\
   %D%/tests/version-control.scm			\
   %D%/tests/virtualization.scm			\
-  %D%/tests/web.scm				\
+  %D%/tests/web.scm
+
+if ENABLE_INSTALLER
+
+GNU_SYSTEM_MODULES +=                           \
+  %D%/installer.scm      			\
+  %D%/installer/connman.scm			\
+  %D%/installer/final.scm			\
+  %D%/installer/hostname.scm			\
+  %D%/installer/keymap.scm			\
+  %D%/installer/locale.scm			\
+  %D%/installer/newt.scm			\
+  %D%/installer/parted.scm			\
+  %D%/installer/record.scm		        \
+  %D%/installer/services.scm			\
+  %D%/installer/steps.scm			\
+  %D%/installer/timezone.scm			\
+  %D%/installer/user.scm			\
+  %D%/installer/utils.scm			\
 						\
-  %D%/ci.scm
+  %D%/installer/newt/ethernet.scm		\
+  %D%/installer/newt/final.scm  		\
+  %D%/installer/newt/hostname.scm		\
+  %D%/installer/newt/keymap.scm			\
+  %D%/installer/newt/locale.scm			\
+  %D%/installer/newt/menu.scm			\
+  %D%/installer/newt/network.scm		\
+  %D%/installer/newt/page.scm			\
+  %D%/installer/newt/partition.scm		\
+  %D%/installer/newt/services.scm		\
+  %D%/installer/newt/timezone.scm		\
+  %D%/installer/newt/utils.scm			\
+  %D%/installer/newt/welcome.scm		\
+  %D%/installer/newt/wifi.scm	
+
+installerdir = $(guilemoduledir)/%D%/installer
+dist_installer_DATA =				\
+  %D%/installer/aux-files/logo.txt	        \
+  %D%/installer/aux-files/SUPPORTED
+
+endif ENABLE_INSTALLER
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
@@ -866,6 +912,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kinit-kdeinit-libpath.patch		\
   %D%/packages/patches/kio-search-smbd-on-PATH.patch		\
   %D%/packages/patches/kmod-module-directory.patch		\
+  %D%/packages/patches/kmscon-runtime-keymap-switch.patch	\
   %D%/packages/patches/kpackage-allow-external-paths.patch	\
   %D%/packages/patches/kobodeluxe-paths.patch			\
   %D%/packages/patches/kobodeluxe-enemies-pipe-decl.patch	\
@@ -873,6 +920,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kobodeluxe-manpage-minus-not-hyphen.patch	\
   %D%/packages/patches/kobodeluxe-midicon-segmentation-fault.patch	\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
+  %D%/packages/patches/kodi-skip-test-449.patch		\
   %D%/packages/patches/laby-make-install.patch			\
   %D%/packages/patches/ldc-bootstrap-disable-tests.patch	\
   %D%/packages/patches/ldc-disable-phobos-tests.patch		\
@@ -929,7 +977,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
   %D%/packages/patches/libsndfile-CVE-2017-12562.patch		\
-  %D%/packages/patches/libssh-hostname-parser-bug.patch		\
   %D%/packages/patches/libssh2-fix-build-failure-with-gcrypt.patch	\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtheora-config-guess.patch		\
@@ -1029,11 +1076,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/ola-readdir-r.patch			\
   %D%/packages/patches/openbabel-fix-crash-on-nwchem-output.patch	\
   %D%/packages/patches/opencascade-oce-glibc-2.26.patch		\
+  %D%/packages/patches/opencv-rgbd-aarch64-test-fix.patch	\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
   %D%/packages/patches/openldap-CVE-2017-9287.patch		\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/opensmtpd-fix-crash.patch		\
+  %D%/packages/patches/openssh-CVE-2018-20685.patch		\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\

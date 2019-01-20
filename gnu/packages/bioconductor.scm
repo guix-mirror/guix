@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -228,6 +228,53 @@ database is exposed as a @code{TxDb} object.")
     (license license:artistic2.0)))
 
 
+(define-public r-biocgenerics
+  (package
+    (name "r-biocgenerics")
+    (version "0.28.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BiocGenerics" version))
+              (sha256
+               (base32
+                "0cvpsrhg7sn7lpqgxvqrsagv6j7xj5rafq5xdjfd8zc4gxrs5rb8"))))
+    (properties
+     `((upstream-name . "BiocGenerics")))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/BiocGenerics")
+    (synopsis "S4 generic functions for Bioconductor")
+    (description
+     "This package provides S4 generic functions needed by many Bioconductor
+packages.")
+    (license license:artistic2.0)))
+
+(define-public r-annotate
+  (package
+    (name "r-annotate")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "annotate" version))
+       (sha256
+        (base32
+         "0p6c96lay23a67dyirgnwzm2yw22m592z780vy6p4nqwla8ha18n"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-dbi" ,r-dbi)
+       ("r-rcurl" ,r-rcurl)
+       ("r-xml" ,r-xml)
+       ("r-xtable" ,r-xtable)))
+    (home-page
+     "https://bioconductor.org/packages/annotate")
+    (synopsis "Annotation for microarrays")
+    (description "This package provides R environments for the annotation of
+microarrays.")
+    (license license:artistic2.0)))
+
 (define-public r-hpar
   (package
     (name "r-hpar")

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,8 @@
             scheme-modules*
             fold-modules
             all-modules
-            fold-module-public-variables))
+            fold-module-public-variables
+            fold-module-public-variables*))
 
 ;;; Commentary:
 ;;;
@@ -147,10 +148,33 @@ search.  Entries in PATH can be directory names (strings) or (DIRECTORY
 SUB-DIRECTORY."
   (fold-modules cons '() path #:warn warn))
 
+(define (fold-module-public-variables* proc init modules)
+  "Call (PROC MODULE SYMBOL VARIABLE) for each variable exported by one of MODULES,
+using INIT as the initial value of RESULT.  It is guaranteed to never traverse
+the same object twice."
+  ;; Here SEEN is populated by variables; if two different variables refer to
+  ;; the same object, we still let them through.
+  (identity                                       ;discard second return value
+   (fold2 (lambda (module result seen)
+            (fold2 (lambda (sym+var result seen)
+                     (match sym+var
+                       ((sym . var)
+                        (if (not (vhash-assq var seen))
+                            (values (proc module sym var result)
+                                    (vhash-consq var #t seen))
+                            (values result seen)))))
+                   result
+                   seen
+                   (module-map cons module)))
+          init
+          vlist-null
+          modules)))
+
 (define (fold-module-public-variables proc init modules)
   "Call (PROC OBJECT RESULT) for each variable exported by one of MODULES,
 using INIT as the initial value of RESULT.  It is guaranteed to never traverse
 the same object twice."
+  ;; Note: here SEEN is populated by objects, not by variables.
   (identity   ; discard second return value
    (fold2 (lambda (module result seen)
             (fold2 (lambda (var result seen)

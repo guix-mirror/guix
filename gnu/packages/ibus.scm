@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -29,6 +29,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages anthy)
   #:use-module (gnu packages autotools)
@@ -38,6 +39,7 @@
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -48,6 +50,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages xorg))
 
@@ -76,7 +79,9 @@
        (list "CC=gcc"
              (string-append "pyoverridesdir="
                             (assoc-ref %outputs "out")
-                            "/lib/python3.6/site-packages/gi/overrides/"))
+                            "/lib/python"
+                            ,(version-major+minor (package-version python))
+                            "/site-packages/gi/overrides/"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'prepare-ucd-dir

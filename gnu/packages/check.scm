@@ -47,13 +47,20 @@
 (define-module (gnu packages check)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages time)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
@@ -2153,3 +2160,45 @@ application \"sees\".  It is meant to be loaded using the dynamic linker's
 @code{LD_PRELOAD} environment variable.  The @command{faketime} command
 provides a simple way to achieve this.")
     (license license:gpl2)))
+
+(define-public umockdev
+  (package
+    (name "umockdev")
+    (version "0.11.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/martinpitt/umockdev/"
+                                  "releases/download/" version  "/"
+                                  "umockdev-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1in2hdan1g62wpvgjlj8mci85551ipr1964j2b9j06gm3blpihcx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-broken-test
+           (lambda _
+             (substitute* "tests/test-umockdev.c"
+               (("/\\* sys/ in other dir")
+                (string-append "return; // ")))
+             #t)))))
+    (native-inputs
+     `(("vala" ,vala)
+       ("python" ,python) ; for tests
+       ("which" ,which) ; for tests
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("eudev" ,eudev)
+       ("libgudev" ,libgudev)
+       ("gobject-introspection" ,gobject-introspection)))
+    (home-page "https://github.com/martinpitt/umockdev/")
+    (synopsis "Mock hardware devices for creating unit tests")
+    (description "umockdev mocks hardware devices for creating integration
+tests for hardware related libraries and programs.  It also provides tools to
+record the properties and behaviour of particular devices, and to run a
+program or test suite under a test bed with the previously recorded devices
+loaded.")
+    (license license:lgpl2.1+)))

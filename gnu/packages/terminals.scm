@@ -59,6 +59,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages ssh)
@@ -241,6 +242,8 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
                 (sha256
                  (base32
                   "0q62kjsvy2iwy8adfiygx2bfwlh83rphgxbis95ycspqidg9py87"))
+                (patches
+                 (search-patches "kmscon-runtime-keymap-switch.patch"))
                 (modules '((guix build utils)))))
       (build-system gnu-build-system)
       (arguments

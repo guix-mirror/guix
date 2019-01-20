@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
@@ -81,6 +82,36 @@
      "This package provides simple utility functions to read from and write to
 the system clipboards.")
     (license license:gpl3)))
+
+(define-public r-vegan
+  (package
+    (name "r-vegan")
+    (version "2.5-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "vegan" version))
+       (sha256
+        (base32
+         "023xznh0iy0496icpchadmp7a3rk3nj9s48fvwlvp3dssw58yp3c"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-knitr" ,r-knitr)             ; needed for vignettes
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-mgcv" ,r-mgcv)
+       ("r-permute" ,r-permute)))
+    (home-page "https://cran.r-project.org/web/packages/vegan")
+    (synopsis "Functions for community ecology")
+    (description
+     "The vegan package provides tools for descriptive community ecology.  It
+has most basic functions of diversity analysis, community ordination and
+dissimilarity analysis.  Most of its multivariate tools can be used for other
+data types as well.")
+    (license license:gpl2+)))
 
 (define-public r-tidyverse
   (package
@@ -2503,14 +2534,14 @@ problems as well as resampling based estimators of prediction error.")
 (define-public r-psych
   (package
     (name "r-psych")
-    (version "1.8.10")
+    (version "1.8.12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "psych" version))
        (sha256
         (base32
-         "0n3frgzsfmnan6cp3yyq5h6c28v5pd7q5a42pp6byaa7n7d1v478"))))
+         "0hvp0dkkkn0szaf5rkirr3kb8qmr4bxwl775m5wmpvn1kc25w5vf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreign" ,r-foreign)
@@ -6459,13 +6490,13 @@ and coverage methods to tune the choice of threshold.")
 (define-public r-ggformula
   (package
     (name "r-ggformula")
-    (version "0.9.0")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggformula" version))
        (sha256
-        (base32 "1pmpdfjfbrc6kcpq70cr1kbj2qy711hw940g2aiis6l443z706kh"))))
+        (base32 "01ngx8qh9lhmagng6abx2ky54zi3iyj5bpxlnw59slagwv7l6icx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
@@ -6503,6 +6534,29 @@ while providing the intuitive capabilities of @code{r-ggplot2}.")
      "This package provides data sets from project Mosaic @url{http://mosaic-web.org}
 used to teach mathematics, statistics, computation and modeling.")
     (license license:gpl2+)))
+
+(define-public r-raster
+  (package
+    (name "r-raster")
+    (version "2.8-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "raster" version))
+       (sha256
+        (base32
+         "14pcfznxm5kdwd908axkr9v1l0hzxlrwd8kwrz0liqnfh9cx5rsa"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-sp" ,r-sp)))
+    (home-page "http://www.rspatial.org/")
+    (synopsis "Geographic data analysis and modeling")
+    (description
+     "The package implements basic and high-level functions for reading,
+writing, manipulating, analyzing and modeling of gridded spatial data.
+Processing of very large files is supported.")
+    (license license:gpl3+)))
 
 (define-public r-mosaic
   (package

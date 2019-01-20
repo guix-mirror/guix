@@ -18,9 +18,16 @@
 
 (define-module (test-channels)
   #:use-module (guix channels)
+  #:use-module (guix profiles)
   #:use-module ((guix build syscalls) #:select (mkdtemp!))
   #:use-module (guix tests)
+  #:use-module (guix store)
+  #:use-module ((guix grafts) #:select (%graft?))
+  #:use-module (guix derivations)
+  #:use-module (guix sets)
+  #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -34,8 +41,9 @@
   (and spec
        (with-output-to-file (string-append instance-dir "/.guix-channel")
          (lambda _ (format #t "~a" spec))))
-  ((@@ (guix channels) channel-instance)
-   name commit instance-dir))
+  (checkout->channel-instance instance-dir
+                              #:commit commit
+                              #:name name))
 
 (define instance--boring (make-instance))
 (define instance--no-deps
@@ -135,5 +143,81 @@
                                     (channel-instance-channel instance))
                                    'abc1234)))
                        instances))))))
+
+(test-assert "channel-instances->manifest"
+  ;; Compute the manifest for a graph of instances and make sure we get a
+  ;; derivation graph that mirrors the instance graph.  This test also ensures
+  ;; we don't try to access Git repositores at all at this stage.
+  (let* ((spec      (lambda deps
+                      `(channel (version 0)
+                                (dependencies
+                                 ,@(map (lambda (dep)
+                                          `(channel
+                                            (name ,dep)
+                                            (url "http://example.org")))
+                                        deps)))))
+         (guix      (make-instance #:name 'guix))
+         (instance0 (make-instance #:name 'a))
+         (instance1 (make-instance #:name 'b #:spec (spec 'a)))
+         (instance2 (make-instance #:name 'c #:spec (spec 'b)))
+         (instance3 (make-instance #:name 'd #:spec (spec 'c 'a))))
+    (%graft? #f)                                    ;don't try to build stuff
+
+    ;; Create 'build-self.scm' so that GUIX is recognized as the 'guix' channel.
+    (let ((source (channel-instance-checkout guix)))
+      (mkdir (string-append source "/build-aux"))
+      (call-with-output-file (string-append source
+                                            "/build-aux/build-self.scm")
+        (lambda (port)
+          (write '(begin
+                    (use-modules (guix) (gnu packages bootstrap))
+
+                    (lambda _
+                      (package->derivation %bootstrap-guile)))
+                 port))))
+
+    (with-store store
+      (let ()
+        (define manifest
+          (run-with-store store
+            (channel-instances->manifest (list guix
+                                               instance0 instance1
+                                               instance2 instance3))))
+
+        (define entries
+          (manifest-entries manifest))
+
+        (define (depends? drv in out)
+          ;; Return true if DRV depends (directly or indirectly) on all of IN
+          ;; and none of OUT.
+          (let ((set (list->set
+                      (requisites store
+                                  (list (derivation-file-name drv)))))
+                (in  (map derivation-file-name in))
+                (out (map derivation-file-name out)))
+            (and (every (cut set-contains? set <>) in)
+                 (not (any (cut set-contains? set <>) out)))))
+
+        (define (lookup name)
+          (run-with-store store
+            (lower-object
+             (manifest-entry-item
+              (manifest-lookup manifest
+                               (manifest-pattern (name name)))))))
+
+        (let ((drv-guix (lookup "guix"))
+              (drv0     (lookup "a"))
+              (drv1     (lookup "b"))
+              (drv2     (lookup "c"))
+              (drv3     (lookup "d")))
+          (and (depends? drv-guix '() (list drv0 drv1 drv2 drv3))
+               (depends? drv0
+                         (list) (list drv1 drv2 drv3))
+               (depends? drv1
+                         (list drv0) (list drv2 drv3))
+               (depends? drv2
+                         (list drv1) (list drv3))
+               (depends? drv3
+                         (list drv2 drv0) (list))))))))
 
 (test-end "channels")

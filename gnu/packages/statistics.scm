@@ -48,6 +48,7 @@
   #:use-module (gnu packages cran)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gettext)
@@ -63,6 +64,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tcl)
@@ -1630,14 +1632,14 @@ like tidy evaluation.")
 (define-public r-tibble
   (package
     (name "r-tibble")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tibble" version))
        (sha256
         (base32
-         "1flrvmgc77c8s0brgyha6cdz2883h6bcb2mvqi49b429x5i2vb85"))))
+         "04rxf5x9awwa9c00v9p7d3a2lqnn7j2rjg4r219hmw7cbqlwrcks"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)

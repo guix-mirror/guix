@@ -29,12 +29,12 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages image)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages qt))
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages sqlite))
 
 (define-public gpsbabel
   (package

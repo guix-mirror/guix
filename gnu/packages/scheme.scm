@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
+;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,13 +41,13 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages netpbm)
@@ -64,6 +65,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages libedit)
@@ -1168,3 +1170,77 @@ simple, elegant Scheme dialect.  It is a lisp-1 with lexical scope.
 The core is 12 builtin special forms and 33 builtin functions.")
       (home-page "https://github.com/JeffBezanson/femtolisp")
       (license bsd-3))))
+
+(define-public gauche
+  (package
+    (name "gauche")
+    (version "0.9.7")
+    (home-page "http://practical-scheme.net/gauche/index.html")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/gauche/Gauche/Gauche-"
+             version ".tgz"))
+       (sha256
+        (base32
+         "181nycikma0rwrb1h6mi3kys11f8628pq8g5r3fg5hiz5sabscrd"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Remove libatomic-ops
+                   (delete-file-recursively "gc/libatomic_ops")
+                   #t))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libatomic-ops" ,libatomic-ops)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("texinfo" ,texinfo)
+       ("openssl" ,openssl) ; needed for tests
+       ("pkg-config" ,pkg-config))) ; needed to find external libatomic-ops
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/sh
+           ;; needed only for tests
+           (lambda _
+             (substitute* '("configure"
+                            "test/www.scm"
+                            "ext/tls/test.scm"
+                            "gc/configure"
+                            "lib/gauche/configure.scm"
+                            "lib/gauche/package/util.scm"
+                            "lib/gauche/process.scm")
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'build 'build-doc
+           (lambda _
+             (with-directory-excursion "doc"
+               (invoke "make" "info"))
+             #t))
+         (add-before 'check 'patch-normalize-test
+           ;; neutralize sys-normalize-pathname test as it relies on
+           ;; the home directory; (setenv "HOME" xx) isn't enough)
+           (lambda _
+             (substitute* "test/system.scm"
+               (("~/abc") "//abc"))
+             #t))
+         (add-before 'check 'patch-network-tests
+           ;; remove net checks
+           (lambda _
+             (substitute* "ext/Makefile"
+               (("binary net termios") "binary termios"))
+             #t))
+         (add-after 'install 'install-docs
+           (lambda _
+             (with-directory-excursion "doc"
+               (invoke "make" "install"))
+             #t)))))
+    (synopsis "Scheme scripting engine")
+    (description "Gauche is a R7RS Scheme scripting engine aiming at being a
+handy tool that helps programmers and system administrators to write small to
+large scripts quickly.  Quick startup, built-in system interface, native
+multilingual support are some of the goals.  Gauche comes with a package
+manager/installer @code{gauche-package} which can download, compile, install
+and list gauche extension packages.")
+    (license bsd-3)))

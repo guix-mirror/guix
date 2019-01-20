@@ -72,6 +72,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages xml)
@@ -1626,12 +1627,7 @@ Parcellite and adds bugfixes and features.")
                (base32 "1zd2daj7y590wnzn4jw0niyc4fnzgxrcl9i7nwhy8b25ks2hz5wq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--enable-introspection=yes")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'autogen
-           (lambda _
-             (zero? (system* "./autogen.sh")))))))
+     `(#:configure-flags '("--enable-introspection=yes")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("which" ,which)

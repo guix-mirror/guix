@@ -21,18 +21,27 @@
   #:use-module (guix git)
   #:use-module (guix records)
   #:use-module (guix gexp)
+  #:use-module (guix modules)
   #:use-module (guix discovery)
   #:use-module (guix monads)
   #:use-module (guix profiles)
   #:use-module (guix derivations)
+  #:use-module (guix combinators)
   #:use-module (guix store)
   #:use-module (guix i18n)
+  #:use-module ((guix utils)
+                #:select (source-properties->location
+                          &error-location))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
-  #:autoload   (guix self) (whole-package)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
+  #:autoload   (guix self) (whole-package make-config.scm)
+  #:autoload   (guix inferior) (gexp->derivation-in-inferior) ;FIXME: circular dep
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:export (channel
             channel?
             channel-name
@@ -52,6 +61,7 @@
             checkout->channel-instance
             latest-channel-derivation
             channel-instances->manifest
+            %channel-profile-hooks
             channel-instances->derivation))
 
 ;;; Commentary:
@@ -153,44 +163,43 @@ of previously processed channels."
                    (or (channel-commit b)
                        (not (or (channel-commit a)
                                 (channel-commit b))))))))
+
   ;; Accumulate a list of instances.  A list of processed channels is also
   ;; accumulated to decide on duplicate channel specifications.
-  (match (fold (lambda (channel acc)
-                 (match acc
-                   ((#:channels previous-channels #:instances instances)
-                    (if (ignore? channel previous-channels)
-                        acc
-                        (begin
-                          (format (current-error-port)
-                                  (G_ "Updating channel '~a' from Git repository at '~a'...~%")
-                                  (channel-name channel)
-                                  (channel-url channel))
-                          (let-values (((checkout commit)
-                                        (latest-repository-commit store (channel-url channel)
-                                                                  #:ref (channel-reference
-                                                                         channel))))
-                            (let ((instance (channel-instance channel commit checkout)))
-                              (let-values (((new-instances new-channels)
-                                            (latest-channel-instances
-                                             store
-                                             (channel-instance-dependencies instance)
-                                             previous-channels)))
-                                `(#:channels
-                                  ,(append (cons channel new-channels)
-                                           previous-channels)
-                                  #:instances
-                                  ,(append (cons instance new-instances)
-                                           instances))))))))))
-               `(#:channels ,previous-channels #:instances ())
-               channels)
-    ((#:channels channels #:instances instances)
-     (let ((instance-name (compose channel-name channel-instance-channel)))
-       ;; Remove all earlier channel specifications if they are followed by a
-       ;; more specific one.
-       (values (delete-duplicates instances
-                                  (lambda (a b)
-                                    (eq? (instance-name a) (instance-name b))))
-               channels)))))
+  (define-values (resulting-channels instances)
+    (fold2 (lambda (channel previous-channels instances)
+             (if (ignore? channel previous-channels)
+                 (values previous-channels instances)
+                 (begin
+                   (format (current-error-port)
+                           (G_ "Updating channel '~a' from Git repository at '~a'...~%")
+                           (channel-name channel)
+                           (channel-url channel))
+                   (let-values (((checkout commit)
+                                 (latest-repository-commit store (channel-url channel)
+                                                           #:ref (channel-reference
+                                                                  channel))))
+                     (let ((instance (channel-instance channel commit checkout)))
+                       (let-values (((new-instances new-channels)
+                                     (latest-channel-instances
+                                      store
+                                      (channel-instance-dependencies instance)
+                                      previous-channels)))
+                         (values (append (cons channel new-channels)
+                                         previous-channels)
+                                 (append (cons instance new-instances)
+                                         instances))))))))
+           previous-channels
+           '()                                    ;instances
+           channels))
+
+  (let ((instance-name (compose channel-name channel-instance-channel)))
+    ;; Remove all earlier channel specifications if they are followed by a
+    ;; more specific one.
+    (values (delete-duplicates instances
+                               (lambda (a b)
+                                 (eq? (instance-name a) (instance-name b))))
+            resulting-channels)))
 
 (define* (checkout->channel-instance checkout
                                      #:key commit
@@ -214,45 +223,48 @@ of COMMIT at URL.  Use NAME as the channel name."
   ;; place a set of compiled Guile modules in ~/.config/guix/latest.
   1)
 
-(define (standard-module-derivation name source dependencies)
-  "Return a derivation that builds the Scheme modules in SOURCE and that
-depend on DEPENDENCIES, a list of lowerable objects.  The assumption is that
-SOURCE contains package modules to be added to '%package-module-path'."
-  (define modules
-    (scheme-modules* source))
-
+(define (standard-module-derivation name source core dependencies)
+  "Return a derivation that builds with CORE, a Guix instance, the Scheme
+modules in SOURCE and that depend on DEPENDENCIES, a list of lowerable
+objects.  The assumption is that SOURCE contains package modules to be added
+to '%package-module-path'."
   ;; FIXME: We should load, say SOURCE/.guix-channel.scm, which would allow
   ;; channel publishers to specify things such as the sub-directory where .scm
   ;; files live, files to exclude from the channel, preferred substitute URLs,
   ;; etc.
-  (mlet* %store-monad ((compiled
-                        (compiled-modules modules
-                                          #:name name
-                                          #:module-path (list source)
-                                          #:extensions dependencies)))
 
-    (gexp->derivation name
-                      (with-extensions dependencies
-                        (with-imported-modules '((guix build utils))
-                          #~(begin
-                              (use-modules (guix build utils))
+  (define build
+    ;; This is code that we'll run in CORE, a Guix instance, with its own
+    ;; modules and so on.  That way, we make sure these modules are built for
+    ;; the right Guile version, with the right dependencies, and that they get
+    ;; to see the right (gnu packages …) modules.
+    (with-extensions dependencies
+      #~(begin
+          (use-modules (guix build compile)
+                       (guix build utils)
+                       (srfi srfi-26))
 
-                              (let ((go  (string-append #$output "/lib/guile/"
-                                                        (effective-version)
-                                                        "/site-ccache"))
-                                    (scm (string-append #$output
-                                                        "/share/guile/site/"
-                                                        (effective-version))))
-                                (mkdir-p (dirname go))
-                                (symlink #$compiled go)
-                                (mkdir-p (dirname scm))
-                                (symlink #$source scm))))))))
+          (define go
+            (string-append #$output "/lib/guile/" (effective-version)
+                           "/site-ccache"))
+          (define scm
+            (string-append #$output "/share/guile/site/"
+                           (effective-version)))
+
+          (compile-files #$source go
+                         (find-files #$source "\\.scm$"))
+          (mkdir-p (dirname scm))
+          (symlink #$source scm)
+          scm)))
+
+  (gexp->derivation-in-inferior name build core))
 
 (define* (build-from-source name source
-                            #:key verbose? commit
+                            #:key core verbose? commit
                             (dependencies '()))
   "Return a derivation to build Guix from SOURCE, using the self-build script
-contained therein.  Use COMMIT as the version string."
+contained therein; use COMMIT as the version string.  When CORE is true, build
+package modules under SOURCE using CORE, an instance of Guix."
   ;; Running the self-build script makes it easier to update the build
   ;; procedure: the self-build script of the Guix-to-be-installed contains the
   ;; right dependencies, build procedure, etc., which the Guix-in-use may not
@@ -274,9 +286,10 @@ contained therein.  Use COMMIT as the version string."
                #:pull-version %pull-version))
 
       ;; Build a set of modules that extend Guix using the standard method.
-      (standard-module-derivation name source dependencies)))
+      (standard-module-derivation name source core dependencies)))
 
-(define* (build-channel-instance instance #:optional (dependencies '()))
+(define* (build-channel-instance instance
+                                 #:optional core (dependencies '()))
   "Return, as a monadic value, the derivation for INSTANCE, a channel
 instance.  DEPENDENCIES is a list of extensions providing Guile modules that
 INSTANCE depends on."
@@ -284,7 +297,36 @@ INSTANCE depends on."
                       (channel-name (channel-instance-channel instance)))
                      (channel-instance-checkout instance)
                      #:commit (channel-instance-commit instance)
+                     #:core core
                      #:dependencies dependencies))
+
+(define (resolve-dependencies instances)
+  "Return a procedure that, given one of the elements of INSTANCES, returns
+list of instances it depends on."
+  (define channel-instance-name
+    (compose channel-name channel-instance-channel))
+
+  (define table                                   ;map a name to an instance
+    (fold (lambda (instance table)
+            (vhash-consq (channel-instance-name instance)
+                         instance table))
+          vlist-null
+          instances))
+
+  (define edges
+    (fold (lambda (instance edges)
+            (fold (lambda (channel edges)
+                    (let ((name (channel-name channel)))
+                      (match (vhash-assq name table)
+                        ((_ . target)
+                         (vhash-consq instance target edges)))))
+                  edges
+                  (channel-instance-dependencies instance)))
+          vlist-null
+          instances))
+
+  (lambda (instance)
+    (vhash-foldq* cons '() instance edges)))
 
 (define (channel-instance-derivations instances)
   "Return the list of derivations to build INSTANCES, in the same order as
@@ -296,38 +338,30 @@ INSTANCES."
             (guix-channel? (channel-instance-channel instance)))
           instances))
 
-  (define dependencies
-    ;; Dependencies of CORE-INSTANCE.
-    ;; FIXME: It would be best not to hard-wire this information here and
-    ;; instead query it to CORE-INSTANCE.
-    (list (module-ref (resolve-interface '(gnu packages gnupg))
-                      'guile-gcrypt)
-          (module-ref (resolve-interface '(gnu packages guile))
-                      'guile-git)
-          (module-ref (resolve-interface '(gnu packages guile))
-                      'guile-bytestructures)))
+  (define edges
+    (resolve-dependencies instances))
 
-  (mlet %store-monad ((core (build-channel-instance core-instance)))
-    (mapm %store-monad
-          (lambda (instance)
-            (if (eq? instance core-instance)
-                (return core)
-                (match (channel-instance-dependencies instance)
-                  (()
-                   (build-channel-instance instance
-                                           (cons core dependencies)))
-                  (channels
-                   (mlet %store-monad ((dependencies-derivation
-                                        (latest-channel-derivation
-                                         ;; %default-channels is used here to
-                                         ;; ensure that the core channel is
-                                         ;; available for channels declared as
-                                         ;; dependencies.
-                                         (append channels %default-channels))))
-                     (build-channel-instance instance
-                                             (cons dependencies-derivation
-                                                   (cons core dependencies))))))))
-          instances)))
+  (define (instance->derivation instance)
+    (mcached (if (eq? instance core-instance)
+                 (build-channel-instance instance)
+                 (mlet %store-monad ((core (instance->derivation core-instance))
+                                     (deps (mapm %store-monad instance->derivation
+                                                 (edges instance))))
+                   (build-channel-instance instance core deps)))
+             instance))
+
+  (unless core-instance
+    (let ((loc (and=> (any (compose channel-location channel-instance-channel)
+                           instances)
+                      source-properties->location)))
+      (raise (apply make-compound-condition
+                    (condition
+                     (&message (message "'guix' channel is lacking")))
+                    (if loc
+                        (list (condition (&error-location (location loc))))
+                        '())))))
+
+  (mapm %store-monad instance->derivation instances))
 
 (define (whole-package-for-legacy name modules)
   "Return a full-blown Guix package for MODULES, a derivation that builds Guix
@@ -416,11 +450,40 @@ channel instances."
                                           (zip instances derivations))))
     (return (manifest entries))))
 
+(define (package-cache-file manifest)
+  "Build a package cache file for the instance in MANIFEST.  This is meant to
+be used as a profile hook."
+  (mlet %store-monad ((profile (profile-derivation manifest
+                                                   #:hooks '())))
+
+    (define build
+      #~(begin
+          (use-modules (gnu packages))
+
+          (if (defined? 'generate-package-cache)
+              (begin
+                ;; Delegate package cache generation to the inferior.
+                (format (current-error-port)
+                        "Generating package cache for '~a'...~%"
+                        #$profile)
+                (generate-package-cache #$output))
+              (mkdir #$output))))
+
+    (gexp->derivation-in-inferior "guix-package-cache" build
+                                  profile
+                                  #:properties '((type . profile-hook)
+                                                 (hook . package-cache)))))
+
+(define %channel-profile-hooks
+  ;; The default channel profile hooks.
+  (cons package-cache-file %default-profile-hooks))
+
 (define (channel-instances->derivation instances)
   "Return the derivation of the profile containing INSTANCES, a list of
 channel instances."
   (mlet %store-monad ((manifest (channel-instances->manifest instances)))
-    (profile-derivation manifest)))
+    (profile-derivation manifest
+                        #:hooks %channel-profile-hooks)))
 
 (define latest-channel-instances*
   (store-lift latest-channel-instances))

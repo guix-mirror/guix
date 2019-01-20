@@ -2,7 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
@@ -26,7 +26,7 @@
 
 (define-module (gnu packages libusb)
   #:use-module (gnu packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
@@ -44,6 +44,8 @@
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xiph))
 
 (define-public libusb
@@ -70,7 +72,7 @@
     (description
      "Libusb is a library that gives applications easy access to USB
 devices on various operating systems.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libusb-compat
   (package
@@ -96,7 +98,7 @@ devices on various operating systems.")
     (description
      "Libusb-compat provides a shim allowing applications based on older
 version of libusb to run with newer libusb.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 ;; required by 0xffff, which compiles with libusb-compat, but executes only
 ;; with libusb-0.1
@@ -154,7 +156,7 @@ version of libusb to run with newer libusb.")
       (description
        "This package provides Java JNI bindings to the libusb library for use
 with usb4java.")
-      (license expat))))
+      (license license:expat))))
 
 (define-public java-usb4java
   (package
@@ -213,7 +215,7 @@ with usb4java.")
     (description
      "This package provides a USB library for Java based on libusb and
 implementing @code{javax.usb} (JSR-80).")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python-libusb1
   (package
@@ -256,7 +258,7 @@ implementing @code{javax.usb} (JSR-80).")
     (description "Libusb is a library that gives applications easy access to
 USB devices on various operating systems.  This package provides a Python
 wrapper for accessing libusb-1.0.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public python-pyusb
   (package
@@ -295,10 +297,94 @@ wrapper for accessing libusb-1.0.")
     (synopsis "Python bindings to the libusb library")
     (description
      "PyUSB aims to be an easy to use Python module to access USB devices.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-pyusb
   (package-with-python2 python-pyusb))
+
+(define-public libplist
+  (package
+    (name "libplist")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+                                  "libplist-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "00pnh9zf3iwdji2faccns7vagbmbrwbj9a8zp9s53a6rqaa9czis"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("python" ,python)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-cython" ,python-cython)))
+    (home-page "http://www.libimobiledevice.org/")
+    (synopsis "C library to handle Apple Property List files")
+    (description "This package provides a small portable C library to handle
+Apple Property List files in binary or XML.")
+    (license license:lgpl2.1+)))
+
+(define-public libusbmuxd
+  (package
+    (name "libusbmuxd")
+    (version "1.0.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+                                  "libusbmuxd-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1wn9zq2224786mdr12c5hxad643d29wg4z6b7jn888jx4s8i78hs"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libplist" ,libplist)))
+    (home-page "http://www.libimobiledevice.org/")
+    (synopsis "Library to multiplex connections from and to iOS devices")
+    (description "This package provides a client library to multiplex
+connections from and to iOS devices by connecting to a socket provided by a
+@code{usbmuxd} daemon.")
+    (license license:lgpl2.1+)))
+
+(define-public libimobiledevice
+  (package
+    (name "libimobiledevice")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+                                  "libimobiledevice-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0dqhy4qwj30mw8pwckvjmgnj1qqrh6p8c6jknmhvylshhzh0ssvq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "PYTHON_LDFLAGS=-L"
+                            (assoc-ref %build-inputs "python")
+                            "/lib -lpython"
+                            ,(version-major+minor (package-version python))
+                            "m"))))
+    (propagated-inputs
+     `(("openssl" ,openssl)
+       ("libusbmuxd" ,libusbmuxd)))
+    (inputs
+     `(("libplist" ,libplist)
+       ("python" ,python)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-cython" ,python-cython)
+       ("libtool" ,libtool)))
+    (home-page "http://www.libimobiledevice.org/")
+    (synopsis "Protocol library and tools to communicate with Apple devices")
+    (description "libimobiledevice is a software library that talks the
+protocols to support Apple devices.  It allows other software to easily access
+the device's filesystem, retrieve information about the device and it's
+internals, backup/restore the device, manage installed applications, retrieve
+addressbook/calendars/notes and bookmarks and (using libgpod) synchronize
+music and video to the device.")
+    (license license:lgpl2.1+)))
 
 (define-public libmtp
   (package
@@ -334,7 +420,7 @@ proposed for standardization.")
     ;; "GNU Lesser General Public License as published by the Free Software
     ;; Foundation; either version 2 of the License, or (at your option) any
     ;; later version."
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public gmtp
   (package
@@ -368,7 +454,7 @@ proposed for standardization.")
     (description "gMTP is a simple graphical client for the Media Transfer Protocol
   (MTP), which allows media files to be transferred to and from many portable
 devices.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public hidapi
   (package
@@ -396,9 +482,9 @@ devices.")
      "HIDAPI is a library which allows an application to interface with USB and Bluetooth
 HID-Class devices.")
     ;; HIDAPI can be used under one of three licenses.
-    (license (list gpl3
-                   bsd-3
-                   (non-copyleft "file://LICENSE-orig.txt")))))
+    (license (list license:gpl3
+                   license:bsd-3
+                   (license:non-copyleft "file://LICENSE-orig.txt")))))
 
 (define-public python-hidapi
   (package
@@ -453,8 +539,9 @@ HID-Class devices.")
     (synopsis "Cython interface to hidapi")
     (description "This package provides a Cython interface to @code{hidapi}.")
     ;; The library can be used under either of these licenses.
-    (license (list gpl3 bsd-3
-                   (non-copyleft
+    (license (list license:gpl3
+                   license:bsd-3
+                   (license:non-copyleft
                     "https://github.com/trezor/cython-hidapi/blob/master/LICENSE-orig.txt"
                     "You are free to use cython-hidapi code for any purpose.")))))
 

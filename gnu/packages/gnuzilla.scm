@@ -58,6 +58,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages assembly)
@@ -67,7 +68,8 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages readline))
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages sqlite))
 
 (define-public mozjs
   (package
@@ -292,7 +294,10 @@ in C/C++.")
            "--with-system-zlib"
 
            ;; Intl API requires bundled ICU.
-           "--without-intl-api")
+           "--without-intl-api"
+
+           ;; Without this gnome-shell will crash at runtime.
+           "--disable-jemalloc")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'patch-and-chdir
@@ -325,6 +330,73 @@ in C/C++.")
        `(("autoconf" ,autoconf-2.13)
          ("automake" ,automake)
          ,@(package-native-inputs mozjs-38))))))
+
+(define-public mozjs-60
+  ;; No releases yet at <https://archive.mozilla.org/pub/spidermonkey/releases/>.
+  ;; While we could take a snapshot of the complete mozilla-esr60 repository at
+  ;; <https://treeherder.mozilla.org/#/jobs?repo=mozilla-esr60&filter-searchStr=sm-tc>,
+  ;; we take the Debian version instead, because it is easier to work with.
+  (package
+    (inherit mozjs-38)
+    (version "60.2.3-2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://salsa.debian.org/gnome-team/mozjs60.git")
+                    (commit (string-append "debian/" version))))
+              (file-name (git-file-name "mozjs" version))
+              (sha256
+               (base32
+                "091w050rwzrdcbgyi934k2viyccmlqxrp13sm2mql71mabb5dai6"))))
+    (arguments
+     `(#:tests? #f ; FIXME: all tests pass, but then the check phase fails anyway.
+       #:test-target "check-jstests"
+       #:configure-flags
+       '("--enable-ctypes"
+         "--enable-optimize"
+         "--enable-pie"
+         "--enable-readline"
+         "--enable-shared-js"
+         "--enable-system-ffi"
+         "--with-system-nspr"
+         "--with-system-zlib"
+         "--with-system-icu"
+         "--with-intl-api"
+         ;; This is important because without it gjs will segfault during the
+         ;; configure phase.  With jemalloc only the standalone mozjs console
+         ;; will work.
+         "--disable-jemalloc")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs configure-flags #:allow-other-keys)
+             ;; The configure script does not accept environment variables as
+             ;; arguments.  It also must be run from a different directory,
+             ;; but not the root directory either.
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir "run-configure-from-here")
+               (chdir "run-configure-from-here")
+               (setenv "SHELL" (which "sh"))
+               (setenv "CONFIG_SHELL" (which "sh"))
+               (setenv "AUTOCONF" (string-append (assoc-ref inputs "autoconf")
+                                                 "/bin/autoconf"))
+               (apply invoke "../js/src/configure"
+                      (cons (string-append "--prefix=" out)
+                            configure-flags))
+               #t)))
+         (add-after 'unpack 'disable-broken-tests
+           (lambda _
+             ;; This test assumes that /bin exists and contains certain
+             ;; executables.
+             (delete-file "js/src/tests/shell/os.js")
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("which" ,which)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)))))
 
 (define-public nspr
   (package

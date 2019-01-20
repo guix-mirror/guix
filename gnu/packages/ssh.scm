@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -51,6 +51,7 @@
   #:use-module (gnu packages popt)
   #:autoload   (gnu packages protobuf) (protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
@@ -67,21 +68,30 @@
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.7.7")
+    (version "0.8.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://git.libssh.org/projects/libssh.git")
                      (commit (string-append "libssh-" version))))
-              (patches (search-patches "libssh-hostname-parser-bug.patch"))
               (sha256
                (base32
-                "07adxvhmnaq2l7sq7sn4sjlikbm1zdicq8lavq5yfila6jbx9z1y"))
+                "0rq57gpmdawljx7hqya4ipzsfpcbr31yy60kl5qv66krc9wimqda"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
      '(#:configure-flags '("-DWITH_GCRYPT=ON")
+
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'avoid-werror
+                    (lambda _
+                      ;; Avoid '-Werror'.  Presumably this works fine with
+                      ;; gcc@8 on x86_64 but leads to errors with our older
+                      ;; compiler.
+                      (substitute* "CompilerChecks.cmake"
+                        (("-Werror=") "-W"))
+                      #t)))
 
        ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test suite.
        #:tests? #f))
@@ -139,6 +149,7 @@ a server that supports the SSH-2 protocol.")
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
                                  name "-" version ".tar.gz"))
+             (patches (search-patches "openssh-CVE-2018-20685.patch"))
              (sha256
               (base32
                "1b8sy6v0b8v4ggmknwcqx3y1rjcpsll0f1f8f4vyv11x4ni3njvb"))))
@@ -226,16 +237,29 @@ Additionally, various channel-specific options can be negotiated.")
     (version "0.11.3")
     (home-page "https://github.com/artyom-poptsov/guile-ssh")
     (source (origin
-              ;; ftp://memory-heap.org/software/guile-ssh/guile-ssh-VERSION.tar.gz
-              ;; exists, but the server appears to be too slow and unreliable.
-              ;; Also, using this URL allows the GitHub updater to work.
-              (method url-fetch)
-              (uri (string-append home-page "/archive/v"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1g2jzcg1p25zrkx06j160qb8bgcwa3001ys4q02496xs61pvywqk"))))
+                "03bv3hwp2s8f0bqgfjaan9jx4dyab0abv27n2zn2g0izlidv0vl6"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; libssh >= 0.8.0 no longer provides libssh_threads: see
+                  ;; <https://github.com/artyom-poptsov/guile-ssh/issues/9>.
+                  (substitute* "libguile-ssh/Makefile.am"
+                    (("-lssh_threads") ""))
+
+                  ;; This test would wrongfully pick DSS keys when running on
+                  ;; libssh >= 0.8.0, which fails:
+                  ;; <https://github.com/artyom-poptsov/guile-ssh/issues/10>.
+                  (substitute* "tests/server.scm"
+                    (("= %libssh-minor-version 7")
+                     ">= %libssh-minor-version 7"))
+                  #t))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments

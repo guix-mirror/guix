@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,8 +96,8 @@
 
 (test-assert "transaction-upgrade-entry, zero upgrades"
   (let* ((old (dummy-package "foo" (version "1")))
-         (tx  (mock ((gnu packages) find-newest-available-packages
-                     (const vlist-null))
+         (tx  (mock ((gnu packages) find-best-packages-by-name
+                     (const '()))
                     ((@@ (guix scripts package) transaction-upgrade-entry)
                      (manifest-entry
                        (inherit (package->manifest-entry old))
@@ -109,8 +109,8 @@
 (test-assert "transaction-upgrade-entry, one upgrade"
   (let* ((old (dummy-package "foo" (version "1")))
          (new (dummy-package "foo" (version "2")))
-         (tx  (mock ((gnu packages) find-newest-available-packages
-                     (const (vhash-cons "foo" (list "2" new) vlist-null)))
+         (tx  (mock ((gnu packages) find-best-packages-by-name
+                     (const (list new)))
                     ((@@ (guix scripts package) transaction-upgrade-entry)
                      (manifest-entry
                        (inherit (package->manifest-entry old))
@@ -126,8 +126,8 @@
   (let* ((old (dummy-package "foo" (version "1")))
          (new (dummy-package "bar" (version "2")))
          (dep (deprecated-package "foo" new))
-         (tx  (mock ((gnu packages) find-newest-available-packages
-                     (const (vhash-cons "foo" (list "2" dep) vlist-null)))
+         (tx  (mock ((gnu packages) find-best-packages-by-name
+                     (const (list dep)))
                     ((@@ (guix scripts package) transaction-upgrade-entry)
                      (manifest-entry
                        (inherit (package->manifest-entry old))
@@ -995,6 +995,28 @@
     ((one)
      (eq? one guile-2.0))))
 
+(test-assert "fold-available-packages with/without cache"
+  (let ()
+    (define no-cache
+      (fold-available-packages (lambda* (name version result #:rest rest)
+                                 (cons (cons* name version rest)
+                                       result))
+                               '()))
+
+    (define from-cache
+      (call-with-temporary-directory
+       (lambda (cache)
+         (generate-package-cache cache)
+         (mock ((guix describe) current-profile (const cache))
+               (mock ((gnu packages) cache-is-authoritative? (const #t))
+                     (fold-available-packages (lambda* (name version result
+                                                             #:rest rest)
+                                                (cons (cons* name version rest)
+                                                      result))
+                                              '()))))))
+
+    (lset= equal? no-cache from-cache)))
+
 (test-assert "find-packages-by-name"
   (match (find-packages-by-name "hello")
     (((? (cut eq? hello <>))) #t)
@@ -1004,6 +1026,24 @@
   (match (find-packages-by-name "hello" (package-version hello))
     (((? (cut eq? hello <>))) #t)
     (wrong (pk 'find-packages-by-name wrong #f))))
+
+(test-equal "find-packages-by-name with cache"
+  (find-packages-by-name "guile")
+  (call-with-temporary-directory
+   (lambda (cache)
+     (generate-package-cache cache)
+     (mock ((guix describe) current-profile (const cache))
+           (mock ((gnu packages) cache-is-authoritative? (const #t))
+                 (find-packages-by-name "guile"))))))
+
+(test-equal "find-packages-by-name + version, with cache"
+  (find-packages-by-name "guile" "2")
+  (call-with-temporary-directory
+   (lambda (cache)
+     (generate-package-cache cache)
+     (mock ((guix describe) current-profile (const cache))
+           (mock ((gnu packages) cache-is-authoritative? (const #t))
+                 (find-packages-by-name "guile" "2"))))))
 
 (test-assert "--search-paths with pattern"
   ;; Make sure 'guix package --search-paths' correctly reports environment
@@ -1112,6 +1152,29 @@
       (specification->package "this-package-does-not-exist"))
     (lambda (key . args)
       key)))
+
+(test-equal "find-package-locations"
+  (map (lambda (package)
+         (cons (package-version package)
+               (package-location package)))
+       (find-packages-by-name "guile"))
+  (find-package-locations "guile"))
+
+(test-equal "find-package-locations with cache"
+  (map (lambda (package)
+         (cons (package-version package)
+               (package-location package)))
+       (find-packages-by-name "guile"))
+  (call-with-temporary-directory
+   (lambda (cache)
+     (generate-package-cache cache)
+     (mock ((guix describe) current-profile (const cache))
+           (mock ((gnu packages) cache-is-authoritative? (const #t))
+                 (find-package-locations "guile"))))))
+
+(test-equal "specification->location"
+  (package-location (specification->package "guile@2"))
+  (specification->location "guile@2"))
 
 (test-end "packages")
 

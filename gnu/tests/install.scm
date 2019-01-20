@@ -42,7 +42,7 @@
             %test-separate-store-os
             %test-separate-home-os
             %test-raid-root-os
-            %test-encrypted-os
+            %test-encrypted-root-os
             %test-btrfs-root-os))
 
 ;;; Commentary:
@@ -735,7 +735,7 @@ to enter the LUKS passphrase."
                                                "/post-initrd-passphrase.ppm")
                                 #$marionette))))))
 
-(define %test-encrypted-os
+(define %test-encrypted-root-os
   (system-test
    (name "encrypted-root-os")
    (description

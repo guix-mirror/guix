@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,6 +119,7 @@
             boot-parameters->menu-entry
 
             local-host-aliases
+            %root-account
             %setuid-programs
             %base-packages
             %base-firmware))
@@ -792,6 +794,7 @@ use 'plain-file' instead~%")
           (file-append inetutils "/bin/ping")
           (file-append inetutils "/bin/ping6")
           (file-append sudo "/bin/sudo")
+          (file-append sudo "/bin/sudoedit")
           (file-append fuse "/bin/fusermount"))))
 
 (define %sudoers-specification

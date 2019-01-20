@@ -73,6 +73,7 @@
             file-system-mount-flags
             statfs
             free-disk-space
+            device-in-use?
 
             processes
             mkdtemp!
@@ -683,6 +684,32 @@ mounted at FILE."
 (define AT_SYMLINK_FOLLOW   #x400)
 (define AT_NO_AUTOMOUNT     #x800)
 (define AT_EMPTY_PATH       #x1000)
+
+(define-syntax BLKRRPART                         ;<sys/mount.h>
+  (identifier-syntax #x125F))
+
+(define* (device-in-use? device)
+  "Return #t if the block DEVICE is in use, #f otherwise. This is inspired
+from fdisk_device_is_used function of util-linux. This is particulary useful
+for devices that do not appear in /proc/self/mounts like overlayfs lowerdir
+backend device."
+  (let*-values (((fd)      (open-fdes device O_RDONLY))
+                ((ret err) (%ioctl fd BLKRRPART %null-pointer)))
+    (close-fdes fd)
+    (cond
+     ((= ret 0)
+      #f)
+     ((= err EBUSY)
+      #t)
+     ((= err EINVAL)
+      ;; We get EINVAL for devices that have the GENHD_FL_NO_PART_SCAN flag
+      ;; set in the kernel, in particular loopback devices, though we do seem
+      ;; to get it for SCSI storage (/dev/sr0) on QEMU.
+      #f)
+     (else
+      (throw 'system-error "ioctl" "~A"
+             (list (strerror err))
+             (list err))))))
 
 
 ;;;

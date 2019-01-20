@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,9 +24,22 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages admin)
+  #:use-module (guix deprecation)
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:export (avahi-configuration
+            avahi-configuration?
+
+            avahi-configuration-avahi
+            avahi-configuration-debug?
+            avahi-configuration-host-name
+            avahi-configuration-publish?
+            avahi-configuration-publish-workstation?
+            avahi-configuration-ipv4?
+            avahi-configuration-ipv6?
+            avahi-configuration-wide-area?
+            avahi-configuration-domains-to-browse
+
             avahi-service
             avahi-service-type))
 
@@ -37,7 +50,6 @@
 ;;;
 ;;; Code:
 
-  ;; TODO: Export.
 (define-record-type* <avahi-configuration>
   avahi-configuration make-avahi-configuration
   avahi-configuration?
@@ -45,18 +57,24 @@
                      (default avahi))
   (debug?            avahi-configuration-debug?   ;Boolean
                      (default #f))
-  (host-name         avahi-configuration-host-name) ;string
-  (publish?          avahi-configuration-publish?)  ;Boolean
+  (host-name         avahi-configuration-host-name ;string | #f
+                     (default #f))
+  (publish?          avahi-configuration-publish? ;boolean
+                     (default #t))
 
   ;; The default for this was #t in Avahi 0.6.31 and became #f in 0.7.  For
   ;; now we stick to the old default.
   (publish-workstation? avahi-configuration-publish-workstation? ;Boolean
                         (default #t))
 
-  (ipv4?             avahi-configuration-ipv4?)     ;Boolean
-  (ipv6?             avahi-configuration-ipv6?)     ;Boolean
-  (wide-area?        avahi-configuration-wide-area?) ;Boolean
-  (domains-to-browse avahi-configuration-domains-to-browse)) ;list of strings
+  (ipv4?             avahi-configuration-ipv4?    ;Boolean
+                     (default #t))
+  (ipv6?             avahi-configuration-ipv6?    ;Boolean
+                     (default #t))
+  (wide-area?        avahi-configuration-wide-area? ;Boolean
+                     (default #f))
+  (domains-to-browse avahi-configuration-domains-to-browse ;list of strings
+                     (default '())))
 
 (define* (configuration-file config)
   "Return an avahi-daemon configuration file based on CONFIG, an
@@ -145,14 +163,16 @@ service switch (NSS) with support for @code{.local} host name resolution.")
                          ;; Provide 'avahi-browse', 'avahi-resolve', etc. in
                          ;; the system profile.
                          (service-extension profile-service-type
-                                            avahi-package))))))
+                                            avahi-package)))
+                  (default-value (avahi-configuration)))))
 
-(define* (avahi-service #:key (avahi avahi) debug?
-                        host-name
-                        (publish? #t)
-                        (ipv4? #t) (ipv6? #t)
-                        wide-area?
-                        (domains-to-browse '()))
+(define-deprecated (avahi-service #:key (avahi avahi) debug?
+                                  host-name
+                                  (publish? #t)
+                                  (ipv4? #t) (ipv6? #t)
+                                  wide-area?
+                                  (domains-to-browse '()))
+  avahi-service-type
   "Return a service that runs @command{avahi-daemon}, a system-wide
 mDNS/DNS-SD responder that allows for service discovery and
 \"zero-configuration\" host name lookups (see @uref{http://avahi.org/}), and

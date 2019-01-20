@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,7 @@
   #:use-module (guix scripts)
   #:use-module (guix ssh)
   #:use-module (guix store)
+  #:use-module (guix status)
   #:use-module (guix utils)
   #:use-module (guix derivations)
   #:use-module (guix scripts build)
@@ -116,6 +117,8 @@ Copy ITEMS to or from the specified host over SSH.\n"))
       --to=HOST          send ITEMS to HOST"))
   (display (G_ "
       --from=HOST        receive ITEMS from HOST"))
+  (display (G_ "
+  -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (newline)
   (show-build-options-help)
   (newline)
@@ -134,6 +137,11 @@ Copy ITEMS to or from the specified host over SSH.\n"))
          (option '("from") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'source arg result)))
+         (option '(#\v "verbosity") #t #f
+                 (lambda (opt name arg result)
+                   (let ((level (string->number* arg)))
+                     (alist-cons 'verbosity level
+                                 (alist-delete 'verbosity result)))))
          (option '(#\h "help") #f #f
                  (lambda args
                    (show-help)
@@ -152,7 +160,11 @@ Copy ITEMS to or from the specified host over SSH.\n"))
     (substitutes? . #t)
     (build-hook? . #t)
     (graft? . #t)
-    (verbosity . 0)))
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
+    (debug . 0)
+    (verbosity . 2)))
 
 
 ;;;
@@ -164,6 +176,7 @@ Copy ITEMS to or from the specified host over SSH.\n"))
     (let* ((opts     (parse-command-line args %options (list %default-options)))
            (source   (assoc-ref opts 'source))
            (target   (assoc-ref opts 'destination)))
-      (cond (target (send-to-remote-host target opts))
-            (source (retrieve-from-remote-host source opts))
-            (else   (leave (G_ "use '--to' or '--from'~%")))))))
+      (with-status-verbosity (assoc-ref opts 'verbosity)
+        (cond (target (send-to-remote-host target opts))
+              (source (retrieve-from-remote-host source opts))
+              (else   (leave (G_ "use '--to' or '--from'~%"))))))))
