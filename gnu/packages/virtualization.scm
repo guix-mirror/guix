@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
@@ -896,7 +896,7 @@ Open Container Initiative specification.")
 (define-public umoci
   (package
     (name "umoci")
-    (version "0.4.2")
+    (version "0.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -905,7 +905,7 @@ Open Container Initiative specification.")
               (file-name (string-append "umoci-" version ".tar.xz"))
               (sha256
                (base32
-                "1rq5jxcss9cmy05x9b2kh9ld57ribi8hgnx2w67jpmf343b83m4q"))))
+                "1hy3gcs8z25153qpw4rk2lispfaf2c90hv1q64xwyjxn22j9ayy9"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/openSUSE/umoci"
