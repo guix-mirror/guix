@@ -1416,6 +1416,8 @@ interface or via an external visual interface such as GNU XBoard.")
               ("sdl-gfx" ,sdl-gfx)
               ("fontconfig" ,fontconfig)
               ("check" ,check)))
+    (properties '((ftp-directory . "/freedink")
+                  (upstream-name . "freedink")))
     (home-page "https://www.gnu.org/software/freedink/")
     (synopsis "Twisted adventures of young pig farmer Dink Smallwood")
     (description
