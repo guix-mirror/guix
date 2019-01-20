@@ -1445,6 +1445,7 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
          (delete 'configure)            ; no configure script
          (delete 'check))               ; no tests
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (properties '((ftp-directory . "/freedink")))
     (home-page "https://www.gnu.org/software/freedink/")
     (synopsis "Game data for GNU Freedink")
     (description
