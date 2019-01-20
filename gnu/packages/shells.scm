@@ -30,6 +30,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages groff)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages scheme)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
@@ -181,6 +183,54 @@ include smart terminal handling based on terminfo, an easy to search history,
 and syntax highlighting.")
     (home-page "https://fishshell.com/")
     (license gpl2)))
+
+(define-public fish-foreign-env
+  (package
+    (name "fish-foreign-env")
+    (version "0.20190116")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/oh-my-fish/plugin-foreign-env.git")
+             (commit "dddd9213272a0ab848d474d0cbde12ad034e65bc")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00xqlyl3lffc5l0viin1nyp819wf81fncqyz87jx8ljjdhilmgbs"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (out (assoc-ref %outputs "out"))
+                (func-path (string-append out "/share/fish/functions")))
+           (mkdir-p func-path)
+           (copy-recursively (string-append source "/functions")
+                             func-path)
+
+           ;; Embed absolute paths.
+           (substitute* `(,(string-append func-path "/fenv.fish")
+                          ,(string-append func-path "/fenv.apply.fish")
+                          ,(string-append func-path "/fenv.main.fish"))
+             (("bash")
+              (string-append (assoc-ref %build-inputs "bash") "/bin/bash"))
+             (("sed")
+              (string-append (assoc-ref %build-inputs "sed") "/bin/sed"))
+             ((" tr ")
+              (string-append " " (assoc-ref %build-inputs "coreutils")
+                             "/bin/tr ")))))))
+    (inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("sed" ,sed)))
+    (home-page "https://github.com/oh-my-fish/plugin-foreign-env")
+    (synopsis "Foreign environment interface for fish shell")
+    (description "@code{fish-foreign-env} wraps bash script execution in a way
+that environment variables that are exported or modified get imported back
+into fish.")
+    (license expat)))
 
 (define-public rc
   (package
