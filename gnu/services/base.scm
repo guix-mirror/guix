@@ -2326,7 +2326,7 @@ to handle."
                                           (provision '(loopback)))))
         (syslog-service)
         (service urandom-seed-service-type)
-        (guix-service)
+        (service guix-service-type)
         (nscd-service)
 
         ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
