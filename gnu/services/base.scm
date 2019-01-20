@@ -819,6 +819,7 @@ Return a service that sets up Unicode support in @var{tty} and loads
   (service-type (name 'login)
                 (extensions (list (service-extension pam-root-service-type
                                                      login-pam-service)))
+                (default-value (login-configuration))
                 (description
                  "Provide a console log-in service as specified by its
 configuration value, a @code{login-configuration} object.")))
@@ -2296,7 +2297,7 @@ to handle."
 
 (define %base-services
   ;; Convenience variable holding the basic services.
-  (list (login-service)
+  (list (service login-service-type)
 
         (service virtual-terminal-service-type)
         (service console-font-service-type
