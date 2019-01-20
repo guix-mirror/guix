@@ -8705,14 +8705,14 @@ to support both Python 2 and Python 3 with minimal overhead.")
 (define-public python-cysignals
   (package
     (name "python-cysignals")
-    (version "1.1.0")
+    (version "1.9.0")
     (source
       (origin
         (method url-fetch)
-        (uri (pypi-uri "cysignals" version ".tar.bz2"))
+        (uri (pypi-uri "cysignals" version))
         (sha256
           (base32
-            "14cbyd9znlz6cxy1s3g6v6dv5jj45hn27pywkidd9b1zanaysqc6"))))
+            "15ix8crpad26cfl1skyg7qajqqfdrm8q5ahhmlfmqi1aw0jqj2g2"))))
     (build-system python-build-system)
     (native-inputs
       `(("python-cython" ,python-cython)
