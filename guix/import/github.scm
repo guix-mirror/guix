@@ -98,7 +98,9 @@ false if none is recognized"
               (updated-url source-uri))
              ((source-uri ...)
               (find updated-url source-uri))))
-     ((eq? fetch-method download:git-fetch)
+     ((and (eq? fetch-method download:git-fetch)
+           (string-prefix? "https://github.com/"
+                           (download:git-reference-url source-uri)))
       (download:git-reference-url source-uri))
      (else #f))))
 
