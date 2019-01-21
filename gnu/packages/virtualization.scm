@@ -1110,7 +1110,6 @@ Bochs can run most Operating Systems inside the emulation including Linux,
 DOS or Microsoft Windows.")
     (license license:lgpl2.0+)))
 
-;; TODO: "make world"
 (define-public xen
   (package
     (name "xen")
