@@ -2667,15 +2667,18 @@ MPEG-2, MPEG-4, DVD (VOB)...
 (define-public mediainfo
   (package
     (name "mediainfo")
-    (version "0.7.95")
+    (version "18.12")
     (source (origin
               (method url-fetch)
+              ;; Warning: This source has proved unreliable 1 time at least.
+              ;; Consider an alternate source or report upstream if this
+              ;; happens again.
               (uri (string-append "https://mediaarea.net/download/source/"
                                   name "/" version "/"
                                   name "_" version ".tar.bz2"))
               (sha256
                (base32
-                "0dy51a3i79jppmg1gi4f6h7jx4hcgnkmfim4d7d3gmnlbkjh8anv"))))
+                "1ix95ilcjlawcq6phh25cgplm3riqa2ii7ql82g8yagqs4ldqp6a"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -2693,10 +2696,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
          (add-after 'unpack 'change-to-build-dir
            (lambda _
              (chdir "Project/GNU/CLI")
-             #t))
-         (add-after 'change-to-build-dir 'autogen
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
+             #t)))))
     (home-page "https://mediaarea.net/en/MediaInfo")
     (synopsis "Utility for reading media metadata")
     (description "MediaInfo is a utility used for retrieving technical
