@@ -10888,9 +10888,9 @@ system, you will want to append services to @var{%base-services}, like
 this:
 
 @example
-(cons* (service avahi-service-type)
-       (service openssh-service-type)
-       %base-services)
+(append (list (service avahi-service-type)
+              (service openssh-service-type))
+        %base-services)
 @end example
 @end defvr
 
@@ -11520,11 +11520,12 @@ well as in the @var{groups} field of the @var{operating-system} record.
   ;; @dots{}
 
   (services
-    (modify-services %desktop-services
-      (udev-service-type config =>
-       (udev-configuration (inherit config)
-       (rules (cons* android-udev-rules
-              (udev-configuration-rules config))))))))
+   (modify-services %desktop-services
+     (udev-service-type
+      config =>
+      (udev-configuration (inherit config)
+                          (rules (cons android-udev-rules
+                                       (udev-configuration-rules config))))))))
 @end example
 
 @defvr {Scheme Variable} urandom-seed-service-type
