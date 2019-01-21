@@ -3732,14 +3732,14 @@ a safe way.")
 (define-public perl-file-which
   (package
     (name "perl-file-which")
-    (version "1.09")
+    (version "1.23")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+              (uri (string-append "mirror://cpan/authors/id/P/PL/PLICEASE/"
                                   "File-Which-" version ".tar.gz"))
               (sha256
                (base32
-                "1hxjyh9yrv32f3g8vrnr8iylzprajsac14vjm75kf1qnj1jyqbxp"))))
+                "0y70qh5kn2hyrrvbsfhg0iws2qggk5vkpz37f7rbd5rd9cjc57dp"))))
     (build-system perl-build-system)
     (native-inputs `(("test-script" ,perl-test-script)))
     (synopsis "Portable implementation of the `which' utility")
@@ -3747,7 +3747,7 @@ a safe way.")
      "File::Which was created to be able to get the paths to executable
 programs on systems under which the `which' program wasn't implemented in the
 shell.")
-    (home-page "https://metacpan.org/release/ADAMK/File-Which-1.09")
+    (home-page "https://metacpan.org/release/File-Which")
     (license (package-license perl))))
 
 (define-public perl-file-zglob
