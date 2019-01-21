@@ -20,6 +20,7 @@
 (define-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix config)
+  #:use-module (guix deprecation)
   #:use-module (guix memoization)
   #:use-module (guix serialization)
   #:use-module (guix monads)
@@ -51,11 +52,19 @@
             %gc-roots-directory
             %default-substitute-urls
 
+            store-connection?
+            store-connection-version
+            store-connection-major-version
+            store-connection-minor-version
+            store-connection-socket
+
+            ;; Deprecated forms for 'store-connection'.
             nix-server?
             nix-server-version
             nix-server-major-version
             nix-server-minor-version
             nix-server-socket
+
             current-store-protocol-version        ;for internal use
             mcached
 
@@ -335,30 +344,38 @@
 
 ;; remote-store.cc
 
-(define-record-type* <nix-server> nix-server %make-nix-server
-  nix-server?
-  (socket nix-server-socket)
-  (major  nix-server-major-version)
-  (minor  nix-server-minor-version)
+(define-record-type* <store-connection> store-connection %make-store-connection
+  store-connection?
+  (socket store-connection-socket)
+  (major  store-connection-major-version)
+  (minor  store-connection-minor-version)
 
-  (buffer nix-server-output-port)                 ;output port
-  (flush  nix-server-flush-output)                ;thunk
+  (buffer store-connection-output-port)                 ;output port
+  (flush  store-connection-flush-output)                ;thunk
 
   ;; Caches.  We keep them per-connection, because store paths build
   ;; during the session are temporary GC roots kept for the duration of
   ;; the session.
-  (ats-cache  nix-server-add-to-store-cache)
-  (atts-cache nix-server-add-text-to-store-cache)
-  (object-cache nix-server-object-cache
+  (ats-cache    store-connection-add-to-store-cache)
+  (atts-cache   store-connection-add-text-to-store-cache)
+  (object-cache store-connection-object-cache
                 (default vlist-null)))            ;vhash
 
-(set-record-type-printer! <nix-server>
+(set-record-type-printer! <store-connection>
                           (lambda (obj port)
-                            (format port "#<build-daemon ~a.~a ~a>"
-                                    (nix-server-major-version obj)
-                                    (nix-server-minor-version obj)
+                            (format port "#<store-connection ~a.~a ~a>"
+                                    (store-connection-major-version obj)
+                                    (store-connection-minor-version obj)
                                     (number->string (object-address obj)
                                                     16))))
+
+(define-deprecated/alias nix-server? store-connection?)
+(define-deprecated/alias nix-server-major-version
+  store-connection-major-version)
+(define-deprecated/alias nix-server-minor-version
+  store-connection-minor-version)
+(define-deprecated/alias nix-server-socket store-connection-socket)
+
 
 (define-condition-type &nix-error &error
   nix-error?)
@@ -515,13 +532,13 @@ for this connection will be pinned.  Return a server object."
                           (write-int cpu-affinity port)))
                       (when (>= (protocol-minor v) 11)
                         (write-int (if reserve-space? 1 0) port))
-                      (let ((conn (%make-nix-server port
-                                                    (protocol-major v)
-                                                    (protocol-minor v)
-                                                    output flush
-                                                    (make-hash-table 100)
-                                                    (make-hash-table 100)
-                                                    vlist-null)))
+                      (let ((conn (%make-store-connection port
+                                                          (protocol-major v)
+                                                          (protocol-minor v)
+                                                          output flush
+                                                          (make-hash-table 100)
+                                                          (make-hash-table 100)
+                                                          vlist-null)))
                         (let loop ((done? (process-stderr conn)))
                           (or done? (process-stderr conn)))
                         conn)))))))))
@@ -536,27 +553,29 @@ already taken place on PORT and that we're just continuing on this established
 connection.  Use with care."
   (let-values (((output flush)
                 (buffering-output-port port (make-bytevector 8192))))
-    (%make-nix-server port
-                      (protocol-major version)
-                      (protocol-minor version)
-                      output flush
-                      (make-hash-table 100)
-                      (make-hash-table 100)
-                      vlist-null)))
+    (%make-store-connection port
+                            (protocol-major version)
+                            (protocol-minor version)
+                            output flush
+                            (make-hash-table 100)
+                            (make-hash-table 100)
+                            vlist-null)))
 
-(define (nix-server-version store)
+(define (store-connection-version store)
   "Return the protocol version of STORE as an integer."
-  (protocol-version (nix-server-major-version store)
-                    (nix-server-minor-version store)))
+  (protocol-version (store-connection-major-version store)
+                    (store-connection-minor-version store)))
+
+(define-deprecated/alias nix-server-version store-connection-version)
 
 (define (write-buffered-output server)
   "Flush SERVER's output port."
-  (force-output (nix-server-output-port server))
-  ((nix-server-flush-output server)))
+  (force-output (store-connection-output-port server))
+  ((store-connection-flush-output server)))
 
 (define (close-connection server)
   "Close the connection to SERVER."
-  (close (nix-server-socket server)))
+  (close (store-connection-socket server)))
 
 (define-syntax-rule (with-store store exp ...)
   "Bind STORE to an open connection to the store and evaluate EXPs;
@@ -566,7 +585,7 @@ automatically close the store when the dynamic extent of EXP is left."
       (const #f)
       (lambda ()
         (parameterize ((current-store-protocol-version
-                        (nix-server-version store)))
+                        (store-connection-version store)))
          exp) ...)
       (lambda ()
         (false-if-exception (close-connection store))))))
@@ -622,7 +641,7 @@ Since the build process's output cannot be assumed to be UTF-8, we
 conservatively consider it to be Latin-1, thereby avoiding possible
 encoding conversion errors."
   (define p
-    (nix-server-socket server))
+    (store-connection-socket server))
 
   ;; magic cookies from worker-protocol.hh
   (define %stderr-next  #x6f6c6d67)          ; "olmg", build log
@@ -666,7 +685,7 @@ encoding conversion errors."
            (let ((error  (read-maybe-utf8-string p))
                  ;; Currently the daemon fails to send a status code for early
                  ;; errors like DB schema version mismatches, so check for EOF.
-                 (status (if (and (>= (nix-server-minor-version server) 8)
+                 (status (if (and (>= (store-connection-minor-version server) 8)
                                   (not (eof-object? (lookahead-u8 p))))
                              (read-int p)
                              1)))
@@ -734,7 +753,7 @@ encoding conversion errors."
   ;; Must be called after `open-connection'.
 
   (define socket
-    (nix-server-socket server))
+    (store-connection-socket server))
 
   (let-syntax ((send (syntax-rules ()
                        ((_ (type option) ...)
@@ -744,22 +763,22 @@ encoding conversion errors."
     (write-int (operation-id set-options) socket)
     (send (boolean keep-failed?) (boolean keep-going?)
           (boolean fallback?) (integer verbosity))
-    (when (< (nix-server-minor-version server) #x61)
+    (when (< (store-connection-minor-version server) #x61)
       (let ((max-build-jobs (or max-build-jobs 1))
             (max-silent-time (or max-silent-time 3600)))
         (send (integer max-build-jobs) (integer max-silent-time))))
-    (when (>= (nix-server-minor-version server) 2)
+    (when (>= (store-connection-minor-version server) 2)
       (send (boolean use-build-hook?)))
-    (when (>= (nix-server-minor-version server) 4)
+    (when (>= (store-connection-minor-version server) 4)
       (send (integer build-verbosity) (integer log-type)
             (boolean print-build-trace)))
-    (when (and (>= (nix-server-minor-version server) 6)
-               (< (nix-server-minor-version server) #x61))
+    (when (and (>= (store-connection-minor-version server) 6)
+               (< (store-connection-minor-version server) #x61))
       (let ((build-cores (or build-cores (current-processor-count))))
         (send (integer build-cores))))
-    (when (>= (nix-server-minor-version server) 10)
+    (when (>= (store-connection-minor-version server) 10)
       (send (boolean use-substitutes?)))
-    (when (>= (nix-server-minor-version server) 12)
+    (when (>= (store-connection-minor-version server) 12)
       (let ((pairs `(;; This option is honored by 'guix substitute' et al.
                      ,@(if print-build-trace
                            `(("print-extended-build-trace"
@@ -884,8 +903,8 @@ bytevector) as its internal buffer, and a thunk to flush this output port."
     ((_ (name (type arg) ...) docstring return ...)
      (lambda (server arg ...)
        docstring
-       (let* ((s (nix-server-socket server))
-              (buffered (nix-server-output-port server)))
+       (let* ((s (store-connection-socket server))
+              (buffered (store-connection-output-port server)))
          (record-operation 'name)
          (write-int (operation-id name) buffered)
          (write-arg type arg buffered)
@@ -944,7 +963,7 @@ string).  Raise an error if no such path exists."
 REFERENCES is the list of store paths referred to by the resulting store
 path."
       (let* ((args  `(,bytes ,name ,references))
-             (cache (nix-server-add-text-to-store-cache server)))
+             (cache (store-connection-add-text-to-store-cache server)))
         (or (hash-ref cache args)
             (let ((path (add-text-to-store server name bytes references)))
               (hash-set! cache args path)
@@ -973,7 +992,7 @@ path."
            ;; We don't use the 'operation' macro so we can pass SELECT? to
            ;; 'write-file'.
            (record-operation 'add-to-store)
-           (let ((port (nix-server-socket server)))
+           (let ((port (store-connection-socket server)))
              (write-int (operation-id add-to-store) port)
              (write-string basename port)
              (write-int 1 port)                   ;obsolete, must be #t
@@ -999,7 +1018,7 @@ where FILE is the entry's absolute file name and STAT is the result of
       ;; Note: We don't stat FILE-NAME at each call, and thus we assume that
       ;; the file remains unchanged for the lifetime of SERVER.
       (let* ((args  `(,file-name ,basename ,recursive? ,hash-algo ,select?))
-             (cache (nix-server-add-to-store-cache server)))
+             (cache (store-connection-add-to-store-cache server)))
         (or (hash-ref cache args)
             (let ((path (add-to-store server basename recursive?
                                       hash-algo file-name
@@ -1078,14 +1097,14 @@ an arbitrary directory layout in the store without creating a derivation."
       ((_ 'directory (names . _) ...) names)))
 
   (define cache
-    (nix-server-add-to-store-cache server))
+    (store-connection-add-to-store-cache server))
 
   (or (hash-ref cache tree)
       (begin
         ;; We don't use the 'operation' macro so we can use 'write-file-tree'
         ;; instead of 'write-file'.
         (record-operation 'add-to-store/tree)
-        (let ((port (nix-server-socket server)))
+        (let ((port (store-connection-socket server)))
           (write-int (operation-id add-to-store) port)
           (write-string basename port)
           (write-int 1 port)                      ;obsolete, must be #t
@@ -1117,8 +1136,8 @@ outputs, and return when the worker is done building them.  Elements of THINGS
 that are not derivations can only be substituted and not built locally.
 Return #t on success."
       (parameterize ((current-store-protocol-version
-                      (nix-server-version store)))
-        (if (>= (nix-server-minor-version store) 15)
+                      (store-connection-version store)))
+        (if (>= (store-connection-minor-version store) 15)
             (build store things mode)
             (if (= mode (build-mode normal))
                 (build/old store things)
@@ -1334,9 +1353,9 @@ supported by STORE."
       ;; derivation builders in general, which appeared in Guix > 0.11.0.
       ;; Return the empty list if it doesn't.  Note that this RPC does not
       ;; exist in 'nix-daemon'.
-      (if (or (> (nix-server-major-version store) #x100)
-              (and (= (nix-server-major-version store) #x100)
-                   (>= (nix-server-minor-version store) #x60)))
+      (if (or (> (store-connection-major-version store) #x100)
+              (and (= (store-connection-major-version store) #x100)
+                   (>= (store-connection-minor-version store) #x60)))
           (builders store)
           '()))))
 
@@ -1366,14 +1385,14 @@ the list of store paths to delete.  IGNORE-LIVENESS? should always be
 #f.  MIN-FREED is the minimum amount of disk space to be freed, in
 bytes, before the GC can stop.  Return the list of store paths delete,
 and the number of bytes freed."
-  (let ((s (nix-server-socket server)))
+  (let ((s (store-connection-socket server)))
     (write-int (operation-id collect-garbage) s)
     (write-int action s)
     (write-store-path-list to-delete s)
     (write-arg boolean #f s)                      ; ignore-liveness?
     (write-long-long min-freed s)
     (write-int 0 s)                               ; obsolete
-    (when (>= (nix-server-minor-version server) 5)
+    (when (>= (store-connection-minor-version server) 5)
       ;; Obsolete `use-atime' and `max-atime' parameters.
       (write-int 0 s)
       (write-int 0 s))
@@ -1389,8 +1408,8 @@ and the number of bytes freed."
         ;; To be on the safe side, completely invalidate both caches.
         ;; Otherwise we could end up returning store paths that are no longer
         ;; valid.
-        (hash-clear! (nix-server-add-to-store-cache server))
-        (hash-clear! (nix-server-add-text-to-store-cache server)))
+        (hash-clear! (store-connection-add-to-store-cache server))
+        (hash-clear! (store-connection-add-text-to-store-cache server)))
 
      (values paths freed))))
 
@@ -1425,7 +1444,7 @@ collected, and the number of bytes freed."
   "Import the set of store paths read from PORT into SERVER's store.  An error
 is raised if the set of paths read from PORT is not signed (as per
 'export-path #:sign? #t'.)  Return the list of store paths imported."
-  (let ((s (nix-server-socket server)))
+  (let ((s (store-connection-socket server)))
     (write-int (operation-id import-paths) s)
     (let loop ((done? (process-stderr server port)))
       (or done? (loop (process-stderr server port))))
@@ -1433,7 +1452,7 @@ is raised if the set of paths read from PORT is not signed (as per
 
 (define* (export-path server path port #:key (sign? #t))
   "Export PATH to PORT.  When SIGN? is true, sign it."
-  (let ((s (nix-server-socket server)))
+  (let ((s (store-connection-socket server)))
     (write-int (operation-id export-path) s)
     (write-store-path path s)
     (write-arg boolean sign? s)
@@ -1502,10 +1521,10 @@ OBJECT is typically a high-level object such as a <package> or an <origin>,
 and RESULT is typically its derivation."
   (lambda (store)
     (values result
-            (nix-server
+            (store-connection
              (inherit store)
              (object-cache (vhash-consq object (cons result keys)
-                                        (nix-server-object-cache store)))))))
+                                        (store-connection-object-cache store)))))))
 
 (define record-cache-lookup!
   (if (profiled? "object-cache")
@@ -1540,7 +1559,7 @@ and KEYS.  KEYS is a list of additional keys to match against, and which are
 compared with 'equal?'.  Return #f on failure and the cached result
 otherwise."
   (lambda (store)
-    (let* ((cache (nix-server-object-cache store))
+    (let* ((cache (store-connection-object-cache store))
 
            ;; Escape as soon as we find the result.  This avoids traversing
            ;; the whole vlist chain and significantly reduces the number of

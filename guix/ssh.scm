@@ -180,7 +180,7 @@ right away."
                                    (socket-name
                                     "/var/guix/daemon-socket/socket"))
   "Connect to the remote build daemon listening on SOCKET-NAME over SESSION,
-an SSH session.  Return a <nix-server> object."
+an SSH session.  Return a <store-connection> object."
   (open-connection #:port (remote-daemon-channel session socket-name)))
 
 
@@ -288,7 +288,7 @@ REMOTE, a remote store.  When RECURSIVE? is true, send the closure of FILES.
 Return the list of store items actually sent."
   ;; Compute the subset of FILES missing on SESSION and send them.
   (let* ((files   (if recursive? (requisites local files) files))
-         (session (channel-get-session (nix-server-socket remote)))
+         (session (channel-get-session (store-connection-socket remote)))
          (missing (inferior-remote-eval
                    `(begin
                       (use-modules (guix)
@@ -345,7 +345,7 @@ Return the list of store items actually sent."
 (define (remote-store-session remote)
   "Return the SSH channel beneath REMOTE, a remote store as returned by
 'connect-to-remote-daemon', or #f."
-  (channel-get-session (nix-server-socket remote)))
+  (channel-get-session (store-connection-socket remote)))
 
 (define (remote-store-host remote)
   "Return the name of the host REMOTE is connected to, where REMOTE is a
