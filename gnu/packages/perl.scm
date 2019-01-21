@@ -3648,15 +3648,15 @@ allows you to locate these files after installation.")
 (define-public perl-file-slurp
   (package
     (name "perl-file-slurp")
-    (version "9999.19")
+    (version "9999.25")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/U/UR/URI/"
+       (uri (string-append "mirror://cpan/authors/id/C/CA/CAPOEIRAB/"
                            "File-Slurp-" version ".tar.gz"))
        (sha256
         (base32
-         "0hrn4nipwx40d6ji8ssgr5nw986z9iqq8cn0kdpbszh9jplynaff"))))
+         "1hg3bhf5m78d77p4174cnldd75ppyrvr5rkc8w289ihvwsx9gsn7"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/File-Slurp")
     (synopsis "Reading/Writing/Modifying of complete files")
