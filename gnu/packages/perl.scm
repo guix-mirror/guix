@@ -4363,15 +4363,15 @@ commands.")
 (define-public perl-json
   (package
     (name "perl-json")
-    (version "2.90")
+    (version "4.01")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/M/MA/MAKAMAKA/"
+       (uri (string-append "mirror://cpan/authors/id/I/IS/ISHIGAKI/"
                            "JSON-" version ".tar.gz"))
        (sha256
         (base32
-         "127yppvr17qik9pkd1vy901hs4l13kg6rhp76jdgcyask35v7nsd"))))
+         "1vdiw095g5rf51q8d0ipf8020jx371pma0k4sxp0wlfl76lr65b3"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-json-xs" ,perl-json-xs))) ;recommended
