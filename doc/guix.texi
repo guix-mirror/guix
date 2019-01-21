@@ -120,7 +120,15 @@ Project}.
 * Package Management::          Package installation, upgrade, etc.
 * Programming Interface::       Using Guix in Scheme.
 * Utilities::                   Package management commands.
-* GNU Distribution::            Software for your friendly GNU system.
+* System Installation::         Installing the whole operating system.
+* System Configuration::        Configuring the operating system.
+* Documentation::               Browsing software user manuals.
+* Installing Debugging Files::  Feeding the debugger.
+* Security Updates::            Deploying security fixes quickly.
+* Package Modules::             Packages from the programmer's viewpoint.
+* Packaging Guidelines::        Growing the distribution.
+* Bootstrapping::               GNU/Linux built from scratch.
+* Porting::                     Targeting another platform or kernel.
 * Contributing::                Your help needed!
 
 * Acknowledgments::             Thanks!
@@ -210,18 +218,6 @@ Invoking @command{guix build}
 * Additional Build Options::    Options specific to 'guix build'.
 * Debugging Build Failures::    Real life packaging experience.
 
-GNU Distribution
-
-* System Installation::         Installing the whole operating system.
-* System Configuration::        Configuring the operating system.
-* Documentation::               Browsing software user manuals.
-* Installing Debugging Files::  Feeding the debugger.
-* Security Updates::            Deploying security fixes quickly.
-* Package Modules::             Packages from the programmer's viewpoint.
-* Packaging Guidelines::        Growing the distribution.
-* Bootstrapping::               GNU/Linux built from scratch.
-* Porting::                     Targeting another platform or kernel.
-
 System Installation
 
 * Limitations::                 What you can expect.
@@ -297,21 +293,6 @@ Packaging Guidelines
 * Java Packages::               Coffee break.
 * Fonts::                       Fond of fonts.
 
-Contributing
-
-* Building from Git::           The latest and greatest.
-* Running Guix Before It Is Installed::  Hacker tricks.
-* The Perfect Setup::           The right tools.
-* Coding Style::                Hygiene of the contributor.
-* Submitting Patches::          Share your work.
-
-Coding Style
-
-* Programming Paradigm::        How to compose your elements.
-* Modules::                     Where to store your code?
-* Data Types and Pattern Matching::  Implementing data structures.
-* Formatting Code::             Writing conventions.
-
 @end detailmenu
 @end menu
 
@@ -322,10 +303,21 @@ Coding Style
 @cindex purpose
 GNU Guix@footnote{``Guix'' is pronounced like ``geeks'', or ``ɡiːks''
 using the international phonetic alphabet (IPA).} is a package
-management tool for the GNU system.  Guix makes it easy for unprivileged
-users to install, upgrade, or remove packages, to roll back to a
+management tool for and distribution of the GNU system.
+Guix makes it easy for unprivileged
+users to install, upgrade, or remove software packages, to roll back to a
 previous package set, to build packages from source, and generally
 assists with the creation and maintenance of software environments.
+
+@cindex Guix System
+@cindex GuixSD
+You can install GNU@tie{}Guix on top of an existing GNU/Linux system where it
+complements the available tools without interference (@pxref{Installation}),
+or you can use it as a standalone operating system distribution,
+@dfn{Guix@tie{}System} (@pxref{GNU Distribution}).
+
+@node Managing Software the Guix Way
+@section Managing Software the Guix Way
 
 @cindex user interfaces
 Guix provides a command-line package management interface
@@ -347,17 +339,6 @@ available as independent package modules (@pxref{Package Modules}).  It
 is also @emph{customizable}: users can @emph{derive} specialized package
 definitions from existing ones, including from the command line
 (@pxref{Package Transformation Options}).
-
-@cindex Guix System Distribution
-@cindex GuixSD
-You can install GNU@tie{}Guix on top of an existing GNU/Linux system
-where it complements the available tools without interference
-(@pxref{Installation}), or you can use it as part of the standalone
-@dfn{Guix System Distribution} or GuixSD (@pxref{GNU Distribution}).
-With GNU@tie{}GuixSD, you @emph{declare} all aspects of the operating
-system configuration and Guix takes care of instantiating the
-configuration in a transactional, reproducible, and stateless fashion
-(@pxref{System Configuration}).
 
 @cindex functional package management
 @cindex isolation
@@ -387,6 +368,81 @@ input yields a different directory name.
 This approach is the foundation for the salient features of Guix: support
 for transactional package upgrade and rollback, per-user installation, and
 garbage collection of packages (@pxref{Features}).
+
+
+@node GNU Distribution
+@section GNU Distribution
+
+@cindex Guix System
+@cindex GuixSD
+Guix comes with a distribution of the GNU system consisting entirely of
+free software@footnote{The term ``free'' here refers to the
+@url{http://www.gnu.org/philosophy/free-sw.html,freedom provided to
+users of that software}.}.  The
+distribution can be installed on its own (@pxref{System Installation}),
+but it is also possible to install Guix as a package manager on top of
+an installed GNU/Linux system (@pxref{Installation}).  When we need to
+distinguish between the two, we refer to the standalone distribution as
+Guix@tie{}System.
+
+The distribution provides core GNU packages such as GNU libc, GCC, and
+Binutils, as well as many GNU and non-GNU applications.  The complete
+list of available packages can be browsed
+@url{http://www.gnu.org/software/guix/packages,on-line} or by
+running @command{guix package} (@pxref{Invoking guix package}):
+
+@example
+guix package --list-available
+@end example
+
+Our goal is to provide a practical 100% free software distribution of
+Linux-based and other variants of GNU, with a focus on the promotion and
+tight integration of GNU components, and an emphasis on programs and
+tools that help users exert that freedom.
+
+Packages are currently available on the following platforms:
+
+@table @code
+
+@item x86_64-linux
+Intel/AMD @code{x86_64} architecture, Linux-Libre kernel;
+
+@item i686-linux
+Intel 32-bit architecture (IA32), Linux-Libre kernel;
+
+@item armhf-linux
+ARMv7-A architecture with hard float, Thumb-2 and NEON,
+using the EABI hard-float application binary interface (ABI),
+and Linux-Libre kernel.
+
+@item aarch64-linux
+little-endian 64-bit ARMv8-A processors, Linux-Libre kernel.  This is
+currently in an experimental stage, with limited support.
+@xref{Contributing}, for how to help!
+
+@item mips64el-linux
+little-endian 64-bit MIPS processors, specifically the Loongson series,
+n32 ABI, and Linux-Libre kernel.
+
+@end table
+
+With Guix@tie{}System, you @emph{declare} all aspects of the operating system
+configuration and Guix takes care of instantiating the configuration in a
+transactional, reproducible, and stateless fashion (@pxref{System
+Configuration}).  Guix System uses the Linux-libre kernel, the Shepherd
+initialization system (@pxref{Introduction,,, shepherd, The GNU Shepherd
+Manual}), the well-known GNU utilities and tool chain, as well as the
+graphical environment or system services of your choice.
+
+Guix System is available on all the above platforms except
+@code{mips64el-linux}.
+
+@noindent
+For information on porting to other architectures or kernels,
+@pxref{Porting}.
+
+Building this distribution is a cooperative effort, and you are invited
+to join!  @xref{Contributing}, for information about how you can help.
 
 
 @c *********************************************************************
@@ -9034,86 +9090,9 @@ ClientPID: 19419
 ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
 @end example
 
-@c *********************************************************************
-@node GNU Distribution
-@chapter GNU Distribution
-
-@cindex Guix System Distribution
-@cindex GuixSD
-Guix comes with a distribution of the GNU system consisting entirely of
-free software@footnote{The term ``free'' here refers to the
-@url{http://www.gnu.org/philosophy/free-sw.html,freedom provided to
-users of that software}.}.  The
-distribution can be installed on its own (@pxref{System Installation}),
-but it is also possible to install Guix as a package manager on top of
-an installed GNU/Linux system (@pxref{Installation}).  To distinguish
-between the two, we refer to the standalone distribution as the Guix
-System Distribution, or GuixSD.
-
-The distribution provides core GNU packages such as GNU libc, GCC, and
-Binutils, as well as many GNU and non-GNU applications.  The complete
-list of available packages can be browsed
-@url{http://www.gnu.org/software/guix/packages,on-line} or by
-running @command{guix package} (@pxref{Invoking guix package}):
-
-@example
-guix package --list-available
-@end example
-
-Our goal is to provide a practical 100% free software distribution of
-Linux-based and other variants of GNU, with a focus on the promotion and
-tight integration of GNU components, and an emphasis on programs and
-tools that help users exert that freedom.
-
-Packages are currently available on the following platforms:
-
-@table @code
-
-@item x86_64-linux
-Intel/AMD @code{x86_64} architecture, Linux-Libre kernel;
-
-@item i686-linux
-Intel 32-bit architecture (IA32), Linux-Libre kernel;
-
-@item armhf-linux
-ARMv7-A architecture with hard float, Thumb-2 and NEON,
-using the EABI hard-float application binary interface (ABI),
-and Linux-Libre kernel.
-
-@item aarch64-linux
-little-endian 64-bit ARMv8-A processors, Linux-Libre kernel.  This is
-currently in an experimental stage, with limited support.
-@xref{Contributing}, for how to help!
-
-@item mips64el-linux
-little-endian 64-bit MIPS processors, specifically the Loongson series,
-n32 ABI, and Linux-Libre kernel.
-
-@end table
-
-GuixSD itself is currently only available on @code{i686} and @code{x86_64}.
-
-@noindent
-For information on porting to other architectures or kernels,
-@pxref{Porting}.
-
-@menu
-* System Installation::         Installing the whole operating system.
-* System Configuration::        Configuring the operating system.
-* Documentation::               Browsing software user manuals.
-* Installing Debugging Files::  Feeding the debugger.
-* Security Updates::            Deploying security fixes quickly.
-* Package Modules::             Packages from the programmer's viewpoint.
-* Packaging Guidelines::        Growing the distribution.
-* Bootstrapping::               GNU/Linux built from scratch.
-* Porting::                     Targeting another platform or kernel.
-@end menu
-
-Building this distribution is a cooperative effort, and you are invited
-to join!  @xref{Contributing}, for information about how you can help.
 
 @node System Installation
-@section System Installation
+@chapter System Installation
 
 @cindex installing GuixSD
 @cindex Guix System Distribution
@@ -9147,7 +9126,7 @@ available.
 @end menu
 
 @node Limitations
-@subsection Limitations
+@section Limitations
 
 As of version @value{VERSION}, the Guix System Distribution (GuixSD) is
 not production-ready.  It may contain bugs and lack important
@@ -9191,7 +9170,7 @@ to report issues (and success stories!), and to join us in improving it.
 
 
 @node Hardware Considerations
-@subsection Hardware Considerations
+@section Hardware Considerations
 
 @cindex hardware support on GuixSD
 GNU@tie{}GuixSD focuses on respecting the user's computing freedom.  It
@@ -9226,7 +9205,7 @@ about their support in GNU/Linux.
 
 
 @node USB Stick and DVD Installation
-@subsection USB Stick and DVD Installation
+@section USB Stick and DVD Installation
 
 An ISO-9660 installation image that can be written to a USB stick or
 burnt to a DVD can be downloaded from
@@ -9265,7 +9244,7 @@ and rerun the @code{gpg --verify} command.
 This image contains the tools necessary for an installation.
 It is meant to be copied @emph{as is} to a large-enough USB stick or DVD.
 
-@unnumberedsubsubsec Copying to a USB Stick
+@unnumberedsubsec Copying to a USB Stick
 
 To copy the image to a USB stick, follow these steps:
 
@@ -9290,7 +9269,7 @@ sync
 Access to @file{/dev/sdX} usually requires root privileges.
 @end enumerate
 
-@unnumberedsubsubsec Burning on a DVD
+@unnumberedsubsec Burning on a DVD
 
 To copy the image to a DVD, follow these steps:
 
@@ -9314,7 +9293,7 @@ growisofs -dvd-compat -Z /dev/srX=guixsd-install-@value{VERSION}.@var{system}.is
 Access to @file{/dev/srX} usually requires root privileges.
 @end enumerate
 
-@unnumberedsubsubsec Booting
+@unnumberedsubsec Booting
 
 Once this is done, you should be able to reboot the system and boot from
 the USB stick or DVD.  The latter usually requires you to get in the
@@ -9325,7 +9304,7 @@ GuixSD in a virtual machine (VM).
 
 
 @node Preparing for Installation
-@subsection Preparing for Installation
+@section Preparing for Installation
 
 Once you have successfully booted your computer using the installation medium,
 you should end up with the welcome page of the graphical installer.  The
@@ -9354,7 +9333,7 @@ But it is also a full-blown GuixSD system, which means that you can
 install additional packages, should you need it, using @command{guix
 package} (@pxref{Invoking guix package}).
 
-@subsubsection Keyboard Layout
+@subsection Keyboard Layout
 
 @cindex keyboard layout
 The installation image uses the US qwerty keyboard layout.  If you want
@@ -9369,7 +9348,7 @@ See the files under @file{/run/current-system/profile/share/keymaps} for
 a list of available keyboard layouts.  Run @command{man loadkeys} for
 more information.
 
-@subsubsection Networking
+@subsection Networking
 
 Run the following command to see what your network interfaces are called:
 
@@ -9462,7 +9441,7 @@ herd start ssh-daemon
 Make sure to either set a password with @command{passwd}, or configure
 OpenSSH public key authentication before logging in.
 
-@subsubsection Disk Partitioning
+@subsection Disk Partitioning
 
 Unless this has already been done, the next step is to partition, and
 then format the target partition(s).
@@ -9583,7 +9562,7 @@ file in its file system as described above, then the encryption also
 protects the swap file, just like any other file in that file system.
 
 @node Proceeding with the Installation
-@subsection Proceeding with the Installation
+@section Proceeding with the Installation
 
 With the target partitions ready and the target root mounted on
 @file{/mnt}, we're ready to go.  First, run:
@@ -9680,7 +9659,7 @@ Join us on @code{#guix} on the Freenode IRC network or on
 good.
 
 @node Installing GuixSD in a VM
-@subsection Installing GuixSD in a Virtual Machine
+@section Installing GuixSD in a Virtual Machine
 
 @cindex virtual machine, GuixSD installation
 @cindex virtual private server (VPS)
@@ -9734,7 +9713,7 @@ Once installation is complete, you can boot the system that's on your
 that.
 
 @node Building the Installation Image
-@subsection Building the Installation Image
+@section Building the Installation Image
 
 @cindex installation image
 The installation image described above was built using the @command{guix
@@ -9748,7 +9727,7 @@ Have a look at @file{gnu/system/install.scm} in the source tree,
 and see also @ref{Invoking guix system} for more information
 about the installation image.
 
-@subsection Building the Installation Image for ARM Boards
+@section Building the Installation Image for ARM Boards
 
 Many ARM boards require a specific variant of the
 @uref{http://www.denx.de/wiki/U-Boot/, U-Boot} bootloader.
@@ -9765,7 +9744,7 @@ guix system disk-image --system=armhf-linux -e '((@@ (gnu system install) os-wit
 board, a list of possible boards will be printed.
 
 @node System Configuration
-@section System Configuration
+@chapter System Configuration
 
 @cindex system configuration
 The Guix System Distribution supports a consistent whole-system configuration
@@ -9808,7 +9787,7 @@ instance to support new system services.
 @end menu
 
 @node Using the Configuration System
-@subsection Using the Configuration System
+@section Using the Configuration System
 
 The operating system is configured by providing an
 @code{operating-system} declaration in a file that can then be passed to
@@ -9831,7 +9810,7 @@ Below we discuss the effect of some of the most important fields
 fields), and how to @dfn{instantiate} the operating system using
 @command{guix system}.
 
-@unnumberedsubsubsec Bootloader
+@unnumberedsubsec Bootloader
 
 @cindex legacy boot, on Intel machines
 @cindex BIOS boot, on Intel machines
@@ -9852,7 +9831,7 @@ the @code{bootloader} field should contain something along these lines:
 @xref{Bootloader Configuration}, for more information on the available
 configuration options.
 
-@unnumberedsubsubsec Globally-Visible Packages
+@unnumberedsubsec Globally-Visible Packages
 
 @vindex %base-packages
 The @code{packages} field lists packages that will be globally visible
@@ -9898,7 +9877,7 @@ version:
                     %base-packages)))
 @end lisp
 
-@unnumberedsubsubsec System Services
+@unnumberedsubsec System Services
 
 @cindex services
 @vindex %base-services
@@ -9990,7 +9969,7 @@ following expression returns a list that contains all the services in
         %desktop-services)
 @end example
 
-@unnumberedsubsubsec Instantiating the System
+@unnumberedsubsec Instantiating the System
 
 Assuming the @code{operating-system} declaration
 is stored in the @file{my-system-config.scm}
@@ -10023,7 +10002,7 @@ the latest (e.g., after invoking @command{guix system roll-back}), since
 the operation might overwrite a later generation (@pxref{Invoking guix
 system}).
 
-@unnumberedsubsubsec The Programming Interface
+@unnumberedsubsec The Programming Interface
 
 At the Scheme level, the bulk of an @code{operating-system} declaration
 is instantiated with the following monadic procedure (@pxref{The Store
@@ -10044,7 +10023,7 @@ guts of GuixSD.  Make sure to visit it!
 
 
 @node operating-system Reference
-@subsection @code{operating-system} Reference
+@section @code{operating-system} Reference
 
 This section summarizes all the options available in
 @code{operating-system} declarations (@pxref{Using the Configuration
@@ -10198,7 +10177,7 @@ is that only @code{root} and members of the @code{wheel} group may use
 @end deftp
 
 @node File Systems
-@subsection File Systems
+@section File Systems
 
 The list of file systems to be mounted is specified in the
 @code{file-systems} field of the operating system declaration
@@ -10363,7 +10342,7 @@ and unmount user-space FUSE file systems.  This requires the
 @end defvr
 
 @node Mapped Devices
-@subsection Mapped Devices
+@section Mapped Devices
 
 @cindex device mapping
 @cindex mapped devices
@@ -10484,7 +10463,7 @@ automatically later.
 
 
 @node User Accounts
-@subsection User Accounts
+@section User Accounts
 
 @cindex users
 @cindex accounts
@@ -10619,7 +10598,7 @@ special-case and is automatically added whether or not it is specified.
 @end defvr
 
 @node Locales
-@subsection Locales
+@section Locales
 
 @cindex locale
 A @dfn{locale} defines cultural conventions for a particular language
@@ -10707,7 +10686,7 @@ instance it has @code{uk_UA.utf8} but @emph{not}, say,
 @code{uk_UA.UTF-8}.
 @end defvr
 
-@subsubsection Locale Data Compatibility Considerations
+@subsection Locale Data Compatibility Considerations
 
 @cindex incompatibility, of locale data
 @code{operating-system} declarations provide a @code{locale-libcs} field
@@ -10759,7 +10738,7 @@ both libc 2.21 and the current version of libc in
 
 
 @node Services
-@subsection Services
+@section Services
 
 @cindex system services
 An important part of preparing an @code{operating-system} declaration is
@@ -10837,7 +10816,7 @@ declaration.
 @end menu
 
 @node Base Services
-@subsubsection Base Services
+@subsection Base Services
 
 The @code{(gnu services base)} module provides definitions for the basic
 services that one expects from the system.  The services exported by
@@ -11652,7 +11631,7 @@ commonly used for real-time audio systems.
 @end deffn
 
 @node Scheduled Job Execution
-@subsubsection Scheduled Job Execution
+@subsection Scheduled Job Execution
 
 @cindex cron
 @cindex mcron
@@ -11753,7 +11732,7 @@ specifications,, mcron, GNU@tie{}mcron}).
 
 
 @node Log Rotation
-@subsubsection Log Rotation
+@subsection Log Rotation
 
 @cindex rottlog
 @cindex log rotation
@@ -11855,7 +11834,7 @@ The list of syslog-controlled files to be rotated.  By default it is:
 @end defvr
 
 @node Networking Services
-@subsubsection Networking Services
+@subsection Networking Services
 
 The @code{(gnu services networking)} module provides services to configure
 the network interface.
@@ -12800,7 +12779,7 @@ Package object of the Open vSwitch.
 @end deftp
 
 @node X Window
-@subsubsection X Window
+@subsection X Window
 
 @cindex X11
 @cindex X Window System
@@ -13084,7 +13063,7 @@ makes the good ol' XlockMore usable.
 
 
 @node Printing Services
-@subsubsection Printing Services
+@subsection Printing Services
 
 @cindex printer support with CUPS
 The @code{(gnu services cups)} module provides a Guix service definition
@@ -13925,7 +13904,7 @@ this:
 
 
 @node Desktop Services
-@subsubsection Desktop Services
+@subsection Desktop Services
 
 The @code{(gnu services desktop)} module provides services that are
 usually useful in the context of a ``desktop'' setup---that is, on a
@@ -14233,7 +14212,7 @@ Users need to be in the @code{lp} group to access the D-Bus service.
 @end deffn
 
 @node Sound Services
-@subsubsection Sound Services
+@subsection Sound Services
 
 @cindex sound support
 @cindex ALSA
@@ -14314,7 +14293,7 @@ details.
 
 
 @node Database Services
-@subsubsection Database Services
+@subsection Database Services
 
 @cindex database
 @cindex SQL
@@ -14438,7 +14417,7 @@ Directory in which to store the database and related files.
 @end deftp
 
 @node Mail Services
-@subsubsection Mail Services
+@subsection Mail Services
 
 @cindex mail
 @cindex email
@@ -15909,7 +15888,7 @@ the @code{postmaster} mail to @code{bob} (which subsequently would
 deliver mail to @code{bob@@example.com} and @code{bob@@example2.com}).
 
 @node Messaging Services
-@subsubsection Messaging Services
+@subsection Messaging Services
 
 @cindex messaging
 @cindex jabber
@@ -16411,7 +16390,7 @@ and Error.
 @end deftp
 
 @node Telephony Services
-@subsubsection Telephony Services
+@subsection Telephony Services
 
 @cindex Murmur (VoIP server)
 @cindex VoIP server
@@ -16616,7 +16595,7 @@ If it is set your server will be linked by this host name instead.
 
 
 @node Monitoring Services
-@subsubsection Monitoring Services
+@subsection Monitoring Services
 
 @subsubheading Tailon Service
 
@@ -17121,7 +17100,7 @@ Defaults to @samp{10051}.
 @c %end of fragment
 
 @node Kerberos Services
-@subsubsection Kerberos Services
+@subsection Kerberos Services
 @cindex Kerberos
 
 The @code{(gnu services kerberos)} module provides services relating to
@@ -17247,7 +17226,7 @@ Local accounts with lower values will silently fail to authenticate.
 
 
 @node Web Services
-@subsubsection Web Services
+@subsection Web Services
 
 @cindex web
 @cindex www
@@ -18048,7 +18027,7 @@ more information on X.509 certificates.
 @end quotation
 
 @node Certificate Services
-@subsubsection Certificate Services
+@subsection Certificate Services
 
 @cindex Web
 @cindex HTTP, HTTPS
@@ -18194,7 +18173,7 @@ For each @code{certificate-configuration}, the certificate is saved to
 @code{/etc/letsencrypt/live/@var{name}/fullchain.pem} and the key is
 saved to @code{/etc/letsencrypt/live/@var{name}/privkey.pem}.
 @node DNS Services
-@subsubsection DNS Services
+@subsection DNS Services
 @cindex DNS (domain name system)
 @cindex domain name system (DNS)
 
@@ -18763,7 +18742,7 @@ Defaults to @samp{()}.
 
 
 @node VPN Services
-@subsubsection VPN Services
+@subsection VPN Services
 @cindex VPN (virtual private network)
 @cindex virtual private network (VPN)
 
@@ -19121,7 +19100,7 @@ Defaults to @samp{#f}.
 
 
 @node Network File System
-@subsubsection Network File System
+@subsection Network File System
 @cindex NFS
 
 The @code{(gnu services nfs)} module provides the following services,
@@ -19236,7 +19215,7 @@ If it is @code{#f} then the daemon will use the host's fully qualified domain na
 @end deftp
 
 @node Continuous Integration
-@subsubsection Continuous Integration
+@subsection Continuous Integration
 
 @cindex continuous integration
 @uref{https://git.savannah.gnu.org/cgit/guix/guix-cuirass.git, Cuirass} is a
@@ -19353,7 +19332,7 @@ The Cuirass package to use.
 @end deftp
 
 @node Power Management Services
-@subsubsection Power Management Services
+@subsection Power Management Services
 
 @cindex tlp
 @cindex power management with TLP
@@ -19887,7 +19866,7 @@ Package object of thermald.
 @end deftp
 
 @node Audio Services
-@subsubsection Audio Services
+@subsection Audio Services
 
 The @code{(gnu services audio)} module provides a service to start MPD
 (the Music Player Daemon).
@@ -19937,7 +19916,7 @@ an absolute path can be specified here.
 @end deftp
 
 @node Virtualization Services
-@subsubsection Virtualization services
+@subsection Virtualization services
 
 The @code{(gnu services virtualization)} module provides services for
 the libvirt and virtlog daemons, as well as other virtualization-related
@@ -20730,7 +20709,7 @@ Return the name of @var{platform}---a string such as @code{"arm"}.
 @end deffn
 
 @node Version Control Services
-@subsubsection Version Control Services
+@subsection Version Control Services
 
 The @code{(gnu services version-control)} module provides a service to
 allow remote access to local Git repositories.  There are three options:
@@ -21918,7 +21897,7 @@ This setting controls the commands and features to enable within Gitolite.
 
 
 @node Game Services
-@subsubsection Game Services
+@subsection Game Services
 
 @subsubheading The Battle for Wesnoth Service
 @cindex wesnothd
@@ -21949,7 +21928,7 @@ The port to bind the server to.
 @end deftp
 
 @node Miscellaneous Services
-@subsubsection Miscellaneous Services
+@subsection Miscellaneous Services
 
 @cindex fingerprint
 @subsubheading Fingerprint Service
@@ -22057,7 +22036,7 @@ that enables sharing the clipboard with a vm and setting the guest display
 resolution when the graphical console window resizes.
 @end deffn
 
-@subsubsection Dictionary Services
+@subsection Dictionary Services
 @cindex dictionary
 The @code{(gnu services dict)} module provides the following service:
 
@@ -22183,7 +22162,7 @@ The Containerd package to use.
 @end deftp
 
 @node Setuid Programs
-@subsection Setuid Programs
+@section Setuid Programs
 
 @cindex setuid programs
 Some programs need to run with ``root'' privileges, even when they are
@@ -22229,7 +22208,7 @@ files in this directory refer to the ``real'' binaries, which are in the
 store.
 
 @node X.509 Certificates
-@subsection X.509 Certificates
+@section X.509 Certificates
 
 @cindex HTTPS, certificates
 @cindex X.509 certificates
@@ -22292,7 +22271,7 @@ variable in the relevant documentation.
 
 
 @node Name Service Switch
-@subsection Name Service Switch
+@section Name Service Switch
 
 @cindex name service switch
 @cindex NSS
@@ -22430,7 +22409,7 @@ Reference Manual}).  For example:
 @end deftp
 
 @node Initial RAM Disk
-@subsection Initial RAM Disk
+@section Initial RAM Disk
 
 @cindex initrd
 @cindex initial RAM disk
@@ -22590,7 +22569,7 @@ automatically copied to the initrd.
 @end deffn
 
 @node Bootloader Configuration
-@subsection Bootloader Configuration
+@section Bootloader Configuration
 
 @cindex bootloader
 @cindex boot loader
@@ -22774,7 +22753,7 @@ logos.
 
 
 @node Invoking guix system
-@subsection Invoking @code{guix system}
+@section Invoking @code{guix system}
 
 Once you have written an operating system declaration as seen in the
 previous section, it can be @dfn{instantiated} using the @command{guix
@@ -23202,7 +23181,7 @@ example graph.
 @end table
 
 @node Running GuixSD in a VM
-@subsection Running GuixSD in a Virtual Machine
+@section Running GuixSD in a Virtual Machine
 
 @cindex virtual machine
 To run GuixSD in a virtual machine (VM), one can either use the
@@ -23267,7 +23246,7 @@ to your system definition and start the VM using
 it uses the ICMP protocol.  You'll have to use a different command to check for
 network connectivity, for example @command{guix download}.
 
-@subsubsection Connecting Through SSH
+@subsection Connecting Through SSH
 
 @cindex SSH
 @cindex SSH server
@@ -23293,7 +23272,7 @@ every time you modify your @command{config.scm} file and the
 @command{-o StrictHostKeyChecking=no} prevents you from having to allow a
 connection to an unknown host every time you connect.
 
-@subsubsection Using @command{virt-viewer} with Spice
+@subsection Using @command{virt-viewer} with Spice
 
 As an alternative to the default @command{qemu} graphical client you can
 use the @command{remote-viewer} from the @command{virt-viewer} package.  To
@@ -23313,7 +23292,7 @@ name=com.redhat.spice.0
 You'll also need to add the @pxref{Miscellaneous Services, Spice service}.
 
 @node Defining Services
-@subsection Defining Services
+@section Defining Services
 
 The previous sections show the available services and how one can combine
 them in an @code{operating-system} declaration.  But how do we define
@@ -23327,7 +23306,7 @@ them in the first place?  And what is a service anyway?
 @end menu
 
 @node Service Composition
-@subsubsection Service Composition
+@subsection Service Composition
 
 @cindex services
 @cindex daemons
@@ -23383,7 +23362,7 @@ The following section describes the programming interface for service
 types and services.
 
 @node Service Types and Services
-@subsubsection Service Types and Services
+@subsection Service Types and Services
 
 A @dfn{service type} is a node in the DAG described above.  Let us start
 with a simple example, the service type for the Guix build daemon
@@ -23520,7 +23499,7 @@ Still here?  The next section provides a reference of the programming
 interface for services.
 
 @node Service Reference
-@subsubsection Service Reference
+@subsection Service Reference
 
 We have seen an overview of service types (@pxref{Service Types and
 Services}).  This section provides a reference on how to manipulate
@@ -23745,7 +23724,7 @@ extend it by passing it lists of packages to add to the system profile.
 
 
 @node Shepherd Services
-@subsubsection Shepherd Services
+@subsection Shepherd Services
 
 @cindex shepherd services
 @cindex PID 1
@@ -23889,7 +23868,7 @@ This service represents PID@tie{}1.
 
 
 @node Documentation
-@section Documentation
+@chapter Documentation
 
 @cindex documentation, searching for
 @cindex searching for documentation
@@ -23953,7 +23932,7 @@ bindings to navigate manuals.  @xref{Getting Started,,, info, Info: An
 Introduction}, for an introduction to Info navigation.
 
 @node Installing Debugging Files
-@section Installing Debugging Files
+@chapter Installing Debugging Files
 
 @cindex debugging files
 Program binaries, as produced by the GCC compilers for instance, are
@@ -24019,7 +23998,7 @@ the load.  To check whether a package has a @code{debug} output, use
 
 
 @node Security Updates
-@section Security Updates
+@chapter Security Updates
 
 @cindex security updates
 @cindex security vulnerabilities
@@ -24139,7 +24118,7 @@ lsof | grep /gnu/store/.*bash
 
 
 @node Package Modules
-@section Package Modules
+@chapter Package Modules
 
 From a programming viewpoint, the package definitions of the
 GNU distribution are provided by Guile modules in the @code{(gnu packages
@@ -24201,7 +24180,7 @@ bootstrap)} module.  For more information on bootstrapping,
 @pxref{Bootstrapping}.
 
 @node Packaging Guidelines
-@section Packaging Guidelines
+@chapter Packaging Guidelines
 
 @cindex packages, creating
 The GNU distribution is nascent and may well lack some of your favorite
@@ -24278,7 +24257,7 @@ needed is to review and apply the patch.
 @end menu
 
 @node Software Freedom
-@subsection Software Freedom
+@section Software Freedom
 
 @c Adapted from http://www.gnu.org/philosophy/philosophy.html.
 @cindex free software
@@ -24306,7 +24285,7 @@ upstream source.
 
 
 @node Package Naming
-@subsection Package Naming
+@section Package Naming
 
 @cindex package name
 A package has actually two names associated with it:
@@ -24331,7 +24310,7 @@ Font package names are handled differently, @pxref{Fonts}.
 
 
 @node Version Numbers
-@subsection Version Numbers
+@section Version Numbers
 
 @cindex package version
 We usually package only the latest version of a given free software
@@ -24422,7 +24401,7 @@ definition may look like this:
 @end example
 
 @node Synopses and Descriptions
-@subsection Synopses and Descriptions
+@section Synopses and Descriptions
 
 @cindex package description
 @cindex package synopsis
@@ -24502,7 +24481,7 @@ for the X11 resize-and-rotate (RandR) extension. @dots{}")
 
 
 @node Python Modules
-@subsection Python Modules
+@section Python Modules
 
 @cindex python
 We currently package Python 2 and Python 3, under the Scheme variable names
@@ -24523,7 +24502,7 @@ for instance, the module python-dateutil is packaged under the names
 starts with @code{py} (e.g.@: @code{pytz}), we keep it and prefix it as
 described above.
 
-@subsubsection Specifying Dependencies
+@subsection Specifying Dependencies
 @cindex inputs, for Python packages
 
 Dependency information for Python packages is usually available in the
@@ -24577,7 +24556,7 @@ size}}).
 
 
 @node Perl Modules
-@subsection Perl Modules
+@section Perl Modules
 
 @cindex perl
 Perl programs standing for themselves are named as any other package,
@@ -24593,7 +24572,7 @@ prefix.  For instance, @code{libwww-perl} becomes @code{perl-libwww}.
 
 
 @node Java Packages
-@subsection Java Packages
+@section Java Packages
 
 @cindex java
 Java programs standing for themselves are named as any other package,
@@ -24613,7 +24592,7 @@ dashes and prepend the prefix @code{java-}.  So the class
 
 
 @node Fonts
-@subsection Fonts
+@section Fonts
 
 @cindex fonts
 For fonts that are in general not installed by a user for typesetting
@@ -24652,7 +24631,7 @@ fonts.
 
 
 @node Bootstrapping
-@section Bootstrapping
+@chapter Bootstrapping
 
 @c Adapted from the ELS 2013 paper.
 
@@ -24681,7 +24660,7 @@ Binutils, libc, and the other packages mentioned above---the
 These bootstrap binaries are ``taken for granted'', though we can also
 re-create them if needed (more on that later).
 
-@unnumberedsubsec Preparing to Use the Bootstrap Binaries
+@unnumberedsec Preparing to Use the Bootstrap Binaries
 
 @c As of Emacs 24.3, Info-mode displays the image, but since it's a
 @c large image, it's hard to scroll.  Oh well.
@@ -24732,7 +24711,7 @@ derivations @code{gcc-bootstrap-0.drv}, @code{glibc-bootstrap-0.drv},
 etc., at which point we have a working C tool chain.
 
 
-@unnumberedsubsec Building the Build Tools
+@unnumberedsec Building the Build Tools
 
 Bootstrapping is complete when we have a full tool chain that does not
 depend on the pre-built bootstrap tools discussed above.  This
@@ -24787,7 +24766,7 @@ implicitly used by any package that uses @code{gnu-build-system}
 (@pxref{Build Systems, @code{gnu-build-system}}).
 
 
-@unnumberedsubsec Building the Bootstrap Binaries
+@unnumberedsec Building the Bootstrap Binaries
 
 @cindex bootstrap binaries
 Because the final tool chain does not depend on the bootstrap binaries,
@@ -24813,7 +24792,7 @@ unknown, but if you would like to investigate further (and have
 significant computational and storage resources to do so), then let us
 know.
 
-@unnumberedsubsec Reducing the Set of Bootstrap Binaries
+@unnumberedsec Reducing the Set of Bootstrap Binaries
 
 Our bootstrap binaries currently include GCC, Guile, etc.  That's a lot
 of binary code!  Why is that a problem?  It's a problem because these
@@ -24836,7 +24815,7 @@ a simple and auditable assembler.  Your help is welcome!
 
 
 @node Porting
-@section Porting to a New Platform
+@chapter Porting to a New Platform
 
 As discussed above, the GNU distribution is self-contained, and
 self-containment is achieved by relying on pre-built ``bootstrap
