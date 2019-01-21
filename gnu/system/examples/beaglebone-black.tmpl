@@ -43,15 +43,15 @@
                %base-user-accounts))
 
   ;; Globally-installed packages.
-  (packages (cons* screen openssh %base-packages))
+  (packages (append (list screen openssh) %base-packages))
 
-  (services (cons* (service dhcp-client-service-type)
-                   ;; mingetty does not work on serial lines.
-                   ;; Use agetty with board-specific serial parameters.
-                   (agetty-service
-                    (agetty-configuration
-                     (extra-options '("-L"))
-                     (baud-rate "115200")
-                     (term "vt100")
-                     (tty "ttyO0")))
-                   %base-services)))
+  (services (append (list (service dhcp-client-service-type)
+                          ;; mingetty does not work on serial lines.
+                          ;; Use agetty with board-specific serial parameters.
+                          (agetty-service
+                           (agetty-configuration
+                            (extra-options '("-L"))
+                            (baud-rate "115200")
+                            (term "vt100")
+                            (tty "ttyO0"))))
+                  %base-services)))

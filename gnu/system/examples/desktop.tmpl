@@ -47,17 +47,20 @@
                %base-user-accounts))
 
   ;; This is where we specify system-wide packages.
-  (packages (cons* nss-certs         ;for HTTPS access
-                   gvfs              ;for user mounts
-                   %base-packages))
+  (packages (append (list
+                     ;; for HTTPS access
+                     nss-certs
+                     ;; for user mounts
+                     gvfs)
+                    %base-packages))
 
   ;; Add GNOME and/or Xfce---we can choose at the log-in
   ;; screen with F1.  Use the "desktop" services, which
   ;; include the X11 log-in service, networking with
   ;; NetworkManager, and more.
-  (services (cons* (gnome-desktop-service)
-                   (xfce-desktop-service)
-                   %desktop-services))
+  (services (append (list (gnome-desktop-service)
+                          (xfce-desktop-service))
+                    %desktop-services))
 
   ;; Allow resolution of '.local' host names with mDNS.
   (name-service-switch %mdns-host-lookup-nss))

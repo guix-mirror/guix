@@ -24,7 +24,7 @@ partprobe, and then 2) resizing the filesystem with resize2fs.\n"))
   (timezone "Etc/UTC")
   (locale "en_US.utf8")
 
-(firmware '())
+  (firmware '())
 
   ;; Assuming /dev/sdX is the target hard disk, and "my-root" is
   ;; the label of the target root file system.
@@ -44,10 +44,12 @@ partprobe, and then 2) resizing the filesystem with resize2fs.\n"))
   (users %base-user-accounts)
 
   ;; Globally-installed packages.
-  (packages (cons* nvi fdisk
-                   grub   ; mostly so xrefs to its manual work
-                   parted ; partprobe
-                   %base-packages))
+  (packages (append (list nvi fdisk
+                          ;; mostly so xrefs to its manual work
+                          grub
+                          ;; partprobe
+                          parted)
+                    %base-packages))
 
   (services (modify-services %base-services
               (login-service-type config =>
