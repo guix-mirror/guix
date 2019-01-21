@@ -12867,3 +12867,27 @@ DBI, and provides DB-accessing API and the simple management UI.")
       (description "This package is a convenience wrapper for @command{edbi}
 to open SQLite databases.")
       (license license:gpl3+))))
+
+(define-public emacs-nix-mode
+  (package
+    (name "emacs-nix-mode")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/NixOS/nix-mode/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06aqz0czznsj8835jqnk794sy2p6pa8kxfqwh0nl5d5vxivria6z"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("emacs-company" ,emacs-company)
+       ("emacs-mmm-mode" ,emacs-mmm-mode)))
+    (home-page "https://github.com/NixOS/nix-mode")
+    (synopsis "Emacs major mode for editing Nix expressions")
+    (description "@code{nixos-mode} provides an Emacs major mode for editing
+Nix expressions.  It supports syntax highlighting, indenting and refilling of
+comments.")
+    (license license:lgpl2.1+)))
