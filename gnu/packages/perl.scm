@@ -4438,7 +4438,7 @@ either uses the first module it finds or throws an error.")
 (define-public perl-json-xs
   (package
     (name "perl-json-xs")
-    (version "3.01")
+    (version "4.0")
     (source
      (origin
        (method url-fetch)
@@ -4446,8 +4446,10 @@ either uses the first module it finds or throws an error.")
                            "JSON-XS-" version ".tar.gz"))
        (sha256
         (base32
-         "1aviik480m61ykwvyix83grywzbk828wvfz19hqfvaasd8jz73af"))))
+         "0118yrzagwlcfj5yldn3h23zzqs2rx282jlm068nf7fjlvy4m7s7"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-canary-stability" ,perl-canary-stability)))
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)
        ("perl-types-serialiser" ,perl-types-serialiser)))
