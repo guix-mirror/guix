@@ -3559,7 +3559,7 @@ the input record separator string on a per file basis.")
 (define-public perl-file-remove
   (package
     (name "perl-file-remove")
-    (version "1.57")
+    (version "1.58")
     (source
      (origin
        (method url-fetch)
@@ -3567,14 +3567,16 @@ the input record separator string on a per file basis.")
                            "File-Remove-" version ".tar.gz"))
        (sha256
         (base32
-         "1b814lw181kkqh6c1n4p2zlzzsq6ic5pfpr831nphf2w2rhcvgmk"))))
+         "1n6h5w3sp2bs4cfrifdx2z15cfpb4r536179mx1a12xbmj1yrxl1"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (home-page "https://metacpan.org/release/File-Remove")
     (synopsis "Remove files and directories in Perl")
-    (description "File::Remove::remove removes files and directories.  It acts
-like /bin/rm, for the most part.  Although \"unlink\" can be given a list of
-files, it will not remove directories; this module remedies that.  It also
-accepts wildcards, * and ?, as arguments for file names.")
+    (description "@code{File::Remove::remove} removes files and directories.
+It acts like @code{/bin/rm}, for the most part.  Although @code{unlink} can be
+given a list of files, it will not remove directories; this module remedies
+that.  It also accepts wildcards, * and ?, as arguments for file names.")
     (license (package-license perl))))
 
 (define-public perl-file-sharedir
