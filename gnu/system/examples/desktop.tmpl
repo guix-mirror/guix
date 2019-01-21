@@ -25,12 +25,17 @@
           (target "my-root")
           (type luks-device-mapping))))
 
-  (file-systems (cons (file-system
-                        (device (file-system-label "my-root"))
-                        (mount-point "/")
-                        (type "ext4")
-                        (dependencies mapped-devices))
-                      %base-file-systems))
+  (file-systems (append
+                 (list (file-system
+                         (device (file-system-label "my-root"))
+                         (mount-point "/")
+                         (type "ext4")
+                         (dependencies mapped-devices))
+                       (file-system
+                         (device (uuid "1234-ABCD" 'fat))
+                         (mount-point "/boot/efi")
+                         (type "vfat")))
+                 %base-file-systems))
 
   (users (cons (user-account
                 (name "bob")
