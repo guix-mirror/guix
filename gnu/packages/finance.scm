@@ -115,6 +115,11 @@
                          "/bin/lupdate"))
        #:phases
         (modify-phases %standard-phases
+          (add-before 'configure 'make-qt-deterministic
+           (lambda _
+            ;; Make Qt deterministic.
+            (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+            #t))
           (add-before 'check 'set-home
            (lambda _
             (setenv "HOME" (getenv "TMPDIR"))))))) ; Tests write to $HOME.
