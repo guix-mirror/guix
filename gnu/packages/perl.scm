@@ -3431,7 +3431,7 @@ provide a quick dropin when such functionality is needed.")
 (define-public perl-file-homedir
   (package
     (name "perl-file-homedir")
-    (version "1.002")
+    (version "1.004")
     (source
      (origin
        (method url-fetch)
@@ -3439,7 +3439,7 @@ provide a quick dropin when such functionality is needed.")
                            "File-HomeDir-" version ".tar.gz"))
        (sha256
         (base32
-         "0x62hn8rc7ninf9nlp69h61yh21g4cbq2g81sh64cf2ify2hqk7b"))))
+         "1bciyzwv7gwsnaykqz0czj6mlbkkg4hg1s40s1q7j2p6nlmpxxj5"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-which" ,perl-file-which)))
