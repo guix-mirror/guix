@@ -8389,7 +8389,7 @@ algorism to indicate multiplication by 1000.")
 (define-public perl-text-template
   (package
     (name "perl-text-template")
-    (version "1.47")
+    (version "1.54")
     (source
      (origin
        (method url-fetch)
@@ -8399,8 +8399,11 @@ algorism to indicate multiplication by 1000.")
              ".tar.gz"))
        (sha256
         (base32
-         "1z781cgz7wbn80lf3kqr2ad0pg6g1wlnim0822h8liw28k3l5msh"))))
+         "0s56jgak9ccbbbybf5v8hvvhyplbfhzl6p6v1751inly80rlj1kv"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-more-utf8" ,perl-test-more-utf8)
+       ("perl-test-warnings" ,perl-test-warnings)))
     (home-page
      "https://metacpan.org/release/Text-Template")
     (synopsis
