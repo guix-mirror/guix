@@ -1129,7 +1129,6 @@ DOS or Microsoft Windows.")
        (list "--enable-rpath"
              "--disable-qemu-traditional" ; It tries to do "git clone"
              "--disable-rombios" ; would try to "git clone" via etherboot.
-             ;"--disable-seabios" ; It tries to do "git clone"
              ;; TODO: Re-enable stubdom (it's "more secure" to use it).
              "--disable-stubdom" ; tries to "git clone" old patched newlib.
              (string-append "--with-initddir="
