@@ -20,7 +20,7 @@
   #:use-module (guix i18n)
   #:use-module (ice-9 format)
   #:export (define-deprecated
-            without-deprecation-warnings
+            define-deprecated/alias
             deprecation-warning-port))
 
 ;;; Commentary:
@@ -87,3 +87,23 @@ This will write a deprecation warning to DEPRECATION-WARNING-PORT."
                    (id
                     (identifier? #'id)
                     #'real))))))))))
+
+(define-syntax-rule (define-deprecated/alias deprecated replacement)
+  "Define as an alias a deprecated variable, procedure, or macro, along
+these lines:
+
+  (define-deprecated/alias nix-server? store-connection?)
+
+where 'nix-server?' is the deprecated name for 'store-connection?'.
+
+This will write a deprecation warning to DEPRECATION-WARNING-PORT."
+  (define-syntax deprecated
+    (lambda (s)
+      (warn-about-deprecation 'deprecated (syntax-source s)
+                              #:replacement 'replacement)
+      (syntax-case s ()
+        ((_ args (... ...))
+         #'(replacement args (... ...)))
+        (id
+         (identifier? #'id)
+         #'replacement)))))
