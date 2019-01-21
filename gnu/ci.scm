@@ -250,7 +250,11 @@ system.")
                                 "." system))))
       (cons name (test->thunk test))))
 
-  (if (member system %guixsd-supported-systems)
+  (if (and (member system %guixsd-supported-systems)
+
+           ;; XXX: Our build farm has too few ARMv7 machines and they are very
+           ;; slow, so skip system tests there.
+           (not (string=? system "armhf-linux")))
       ;; Override the value of 'current-guix' used by system tests.  Using a
       ;; channel instance makes tests that rely on 'current-guix' less
       ;; expensive.  It also makes sure we get a valid Guix package when this
