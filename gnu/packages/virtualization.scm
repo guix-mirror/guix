@@ -1191,9 +1191,6 @@ override CC = " (assoc-ref inputs "cross-gcc") "/bin/i686-linux-gnu-gcc"))
               (string-append "CFLAGS += -march=i686 -I"
                              (assoc-ref inputs "cross-libc")
                              "/include")))
-            ;; Tries to use "git clone".
-            (substitute* "tools/firmware/Makefile"
-             (("\\+= etherboot") "+="))
             ;; /var is not in /gnu/store , so don't try to create it.
             (substitute* '("tools/Makefile"
                            "tools/xenstore/Makefile"
