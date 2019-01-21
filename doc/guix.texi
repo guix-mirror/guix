@@ -117,10 +117,10 @@ Project}.
 @menu
 * Introduction::                What is Guix about?
 * Installation::                Installing Guix.
+* System Installation::         Installing the whole operating system.
 * Package Management::          Package installation, upgrade, etc.
 * Programming Interface::       Using Guix in Scheme.
 * Utilities::                   Package management commands.
-* System Installation::         Installing the whole operating system.
 * System Configuration::        Configuring the operating system.
 * Documentation::               Browsing software user manuals.
 * Installing Debugging Files::  Feeding the debugger.
@@ -153,6 +153,16 @@ Setting Up the Daemon
 * Build Environment Setup::     Preparing the isolated build environment.
 * Daemon Offload Setup::        Offloading builds to remote machines.
 * SELinux Support::             Using an SELinux policy for the daemon.
+
+System Installation
+
+* Limitations::                 What you can expect.
+* Hardware Considerations::     Supported hardware.
+* USB Stick and DVD Installation::  Preparing the installation medium.
+* Preparing for Installation::  Networking, partitioning, etc.
+* Proceeding with the Installation::  The real thing.
+* Installing GuixSD in a VM::   GuixSD playground.
+* Building the Installation Image::  How this comes to be.
 
 Package Management
 
@@ -217,16 +227,6 @@ Invoking @command{guix build}
 * Package Transformation Options::  Creating variants of packages.
 * Additional Build Options::    Options specific to 'guix build'.
 * Debugging Build Failures::    Real life packaging experience.
-
-System Installation
-
-* Limitations::                 What you can expect.
-* Hardware Considerations::     Supported hardware.
-* USB Stick and DVD Installation::  Preparing the installation medium.
-* Preparing for Installation::  Networking, partitioning, etc.
-* Proceeding with the Installation::  The real thing.
-* Installing GuixSD in a VM::   GuixSD playground.
-* Building the Installation Image::  How this comes to be.
 
 System Configuration
 
@@ -1743,6 +1743,659 @@ store you need to define the environment variable
 @code{GUIX_LD_WRAPPER_ALLOW_IMPURITIES}.
 
 @c TODO What else?
+
+@c *********************************************************************
+@node System Installation
+@chapter System Installation
+
+@cindex installing GuixSD
+@cindex Guix System Distribution
+This section explains how to install the Guix System Distribution (GuixSD)
+on a machine.  The Guix package manager can
+also be installed on top of a running GNU/Linux system,
+@pxref{Installation}.
+
+@ifinfo
+@quotation Note
+@c This paragraph is for people reading this from tty2 of the
+@c installation image.
+You are reading this documentation with an Info reader.  For details on
+how to use it, hit the @key{RET} key (``return'' or ``enter'') on the
+link that follows: @pxref{Top, Info reader,, info-stnd, Stand-alone GNU
+Info}.  Hit @kbd{l} afterwards to come back here.
+
+Alternately, run @command{info info} in another tty to keep the manual
+available.
+@end quotation
+@end ifinfo
+
+@menu
+* Limitations::                 What you can expect.
+* Hardware Considerations::     Supported hardware.
+* USB Stick and DVD Installation::  Preparing the installation medium.
+* Preparing for Installation::  Networking, partitioning, etc.
+* Proceeding with the Installation::  The real thing.
+* Installing GuixSD in a VM::   GuixSD playground.
+* Building the Installation Image::  How this comes to be.
+@end menu
+
+@node Limitations
+@section Limitations
+
+As of version @value{VERSION}, the Guix System Distribution (GuixSD) is
+not production-ready.  It may contain bugs and lack important
+features.  Thus, if you are looking for a stable production system that
+respects your freedom as a computer user, a good solution at this point
+is to consider @url{http://www.gnu.org/distros/free-distros.html, one of
+the more established GNU/Linux distributions}.  We hope you can soon switch
+to the GuixSD without fear, of course.  In the meantime, you can
+also keep using your distribution and try out the package manager on top
+of it (@pxref{Installation}).
+
+Before you proceed with the installation, be aware of the following
+noteworthy limitations applicable to version @value{VERSION}:
+
+@itemize
+@item
+The installation process does not include a graphical user interface and
+requires familiarity with GNU/Linux (see the following subsections to
+get a feel of what that means.)
+
+@item
+Support for the Logical Volume Manager (LVM) is missing.
+
+@item
+More and more system services are provided (@pxref{Services}), but some
+may be missing.
+
+@item
+More than 8,500 packages are available, but you might
+occasionally find that a useful package is missing.
+
+@item
+GNOME, Xfce, LXDE, and Enlightenment are available (@pxref{Desktop Services}),
+as well as a number of X11 window managers.  However, some graphical
+applications may be missing, as well as KDE.
+@end itemize
+
+You have been warned!  But more than a disclaimer, this is an invitation
+to report issues (and success stories!), and to join us in improving it.
+@xref{Contributing}, for more info.
+
+
+@node Hardware Considerations
+@section Hardware Considerations
+
+@cindex hardware support on GuixSD
+GNU@tie{}GuixSD focuses on respecting the user's computing freedom.  It
+builds around the kernel Linux-libre, which means that only hardware for
+which free software drivers and firmware exist is supported.  Nowadays,
+a wide range of off-the-shelf hardware is supported on
+GNU/Linux-libre---from keyboards to graphics cards to scanners and
+Ethernet controllers.  Unfortunately, there are still areas where
+hardware vendors deny users control over their own computing, and such
+hardware is not supported on GuixSD.
+
+@cindex WiFi, hardware support
+One of the main areas where free drivers or firmware are lacking is WiFi
+devices.  WiFi devices known to work include those using Atheros chips
+(AR9271 and AR7010), which corresponds to the @code{ath9k} Linux-libre
+driver, and those using Broadcom/AirForce chips (BCM43xx with
+Wireless-Core Revision 5), which corresponds to the @code{b43-open}
+Linux-libre driver.  Free firmware exists for both and is available
+out-of-the-box on GuixSD, as part of @var{%base-firmware}
+(@pxref{operating-system Reference, @code{firmware}}).
+
+@cindex RYF, Respects Your Freedom
+The @uref{https://www.fsf.org/, Free Software Foundation} runs
+@uref{https://www.fsf.org/ryf, @dfn{Respects Your Freedom}} (RYF), a
+certification program for hardware products that respect your freedom
+and your privacy and ensure that you have control over your device.  We
+encourage you to check the list of RYF-certified devices.
+
+Another useful resource is the @uref{https://www.h-node.org/, H-Node}
+web site.  It contains a catalog of hardware devices with information
+about their support in GNU/Linux.
+
+
+@node USB Stick and DVD Installation
+@section USB Stick and DVD Installation
+
+An ISO-9660 installation image that can be written to a USB stick or
+burnt to a DVD can be downloaded from
+@indicateurl{https://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz},
+where @var{system} is one of:
+
+@table @code
+@item x86_64-linux
+for a GNU/Linux system on Intel/AMD-compatible 64-bit CPUs;
+
+@item i686-linux
+for a 32-bit GNU/Linux system on Intel-compatible CPUs.
+@end table
+
+@c start duplication of authentication part from ``Binary Installation''
+Make sure to download the associated @file{.sig} file and to verify the
+authenticity of the image against it, along these lines:
+
+@example
+$ wget https://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
+$ gpg --verify guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
+@end example
+
+If that command fails because you do not have the required public key,
+then run this command to import it:
+
+@example
+$ gpg --keyserver @value{KEY-SERVER} \
+      --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
+@end example
+
+@noindent
+and rerun the @code{gpg --verify} command.
+@c end duplication
+
+This image contains the tools necessary for an installation.
+It is meant to be copied @emph{as is} to a large-enough USB stick or DVD.
+
+@unnumberedsubsec Copying to a USB Stick
+
+To copy the image to a USB stick, follow these steps:
+
+@enumerate
+@item
+Decompress the image using the @command{xz} command:
+
+@example
+xz -d guixsd-install-@value{VERSION}.@var{system}.iso.xz
+@end example
+
+@item
+Insert a USB stick of 1@tie{}GiB or more into your machine, and determine
+its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
+copy the image with:
+
+@example
+dd if=guixsd-install-@value{VERSION}.@var{system}.iso of=/dev/sdX
+sync
+@end example
+
+Access to @file{/dev/sdX} usually requires root privileges.
+@end enumerate
+
+@unnumberedsubsec Burning on a DVD
+
+To copy the image to a DVD, follow these steps:
+
+@enumerate
+@item
+Decompress the image using the @command{xz} command:
+
+@example
+xz -d guixsd-install-@value{VERSION}.@var{system}.iso.xz
+@end example
+
+@item
+Insert a blank DVD into your machine, and determine
+its device name.  Assuming that the DVD drive is known as @file{/dev/srX},
+copy the image with:
+
+@example
+growisofs -dvd-compat -Z /dev/srX=guixsd-install-@value{VERSION}.@var{system}.iso
+@end example
+
+Access to @file{/dev/srX} usually requires root privileges.
+@end enumerate
+
+@unnumberedsubsec Booting
+
+Once this is done, you should be able to reboot the system and boot from
+the USB stick or DVD.  The latter usually requires you to get in the
+BIOS or UEFI boot menu, where you can choose to boot from the USB stick.
+
+@xref{Installing GuixSD in a VM}, if, instead, you would like to install
+GuixSD in a virtual machine (VM).
+
+
+@node Preparing for Installation
+@section Preparing for Installation
+
+Once you have successfully booted your computer using the installation medium,
+you should end up with the welcome page of the graphical installer.  The
+graphical installer is a text-based user interface built upon the newt
+library.  It shall guide you through all the different steps needed to install
+GNU GuixSD.  However, as the graphical installer is still under heavy
+development, you might want to fallback to the original, shell based install
+process, by switching to TTYs 3 to 6 with the shortcuts CTRL-ALT-F[3-6]. The
+following sections describe the installation procedure assuming you're using
+one of those TTYs. They are configured and can be used to run commands as
+root.
+
+TTY2 shows this documentation, browsable using the Info reader commands
+(@pxref{Top,,, info-stnd, Stand-alone GNU Info}).  The installation system
+runs the GPM mouse daemon, which allows you to select text with the left mouse
+button and to paste it with the middle button.
+
+@quotation Note
+Installation requires access to the Internet so that any missing
+dependencies of your system configuration can be downloaded.  See the
+``Networking'' section below.
+@end quotation
+
+The installation system includes many common tools needed for this task.
+But it is also a full-blown GuixSD system, which means that you can
+install additional packages, should you need it, using @command{guix
+package} (@pxref{Invoking guix package}).
+
+@subsection Keyboard Layout
+
+@cindex keyboard layout
+The installation image uses the US qwerty keyboard layout.  If you want
+to change it, you can use the @command{loadkeys} command.  For example,
+the following command selects the Dvorak keyboard layout:
+
+@example
+loadkeys dvorak
+@end example
+
+See the files under @file{/run/current-system/profile/share/keymaps} for
+a list of available keyboard layouts.  Run @command{man loadkeys} for
+more information.
+
+@subsection Networking
+
+Run the following command to see what your network interfaces are called:
+
+@example
+ifconfig -a
+@end example
+
+@noindent
+@dots{} or, using the GNU/Linux-specific @command{ip} command:
+
+@example
+ip a
+@end example
+
+@c http://cgit.freedesktop.org/systemd/systemd/tree/src/udev/udev-builtin-net_id.c#n20
+Wired interfaces have a name starting with @samp{e}; for example, the
+interface corresponding to the first on-board Ethernet controller is
+called @samp{eno1}.  Wireless interfaces have a name starting with
+@samp{w}, like @samp{w1p2s0}.
+
+@table @asis
+@item Wired connection
+To configure a wired network run the following command, substituting
+@var{interface} with the name of the wired interface you want to use.
+
+@example
+ifconfig @var{interface} up
+@end example
+
+@item Wireless connection
+@cindex wireless
+@cindex WiFi
+To configure wireless networking, you can create a configuration file
+for the @command{wpa_supplicant} configuration tool (its location is not
+important) using one of the available text editors such as
+@command{nano}:
+
+@example
+nano wpa_supplicant.conf
+@end example
+
+As an example, the following stanza can go to this file and will work
+for many wireless networks, provided you give the actual SSID and
+passphrase for the network you are connecting to:
+
+@example
+network=@{
+  ssid="@var{my-ssid}"
+  key_mgmt=WPA-PSK
+  psk="the network's secret passphrase"
+@}
+@end example
+
+Start the wireless service and run it in the background with the
+following command (substitute @var{interface} with the name of the
+network interface you want to use):
+
+@example
+wpa_supplicant -c wpa_supplicant.conf -i @var{interface} -B
+@end example
+
+Run @command{man wpa_supplicant} for more information.
+@end table
+
+@cindex DHCP
+At this point, you need to acquire an IP address.  On a network where IP
+addresses are automatically assigned @i{via} DHCP, you can run:
+
+@example
+dhclient -v @var{interface}
+@end example
+
+Try to ping a server to see if networking is up and running:
+
+@example
+ping -c 3 gnu.org
+@end example
+
+Setting up network access is almost always a requirement because the
+image does not contain all the software and tools that may be needed.
+
+@cindex installing over SSH
+If you want to, you can continue the installation remotely by starting
+an SSH server:
+
+@example
+herd start ssh-daemon
+@end example
+
+Make sure to either set a password with @command{passwd}, or configure
+OpenSSH public key authentication before logging in.
+
+@subsection Disk Partitioning
+
+Unless this has already been done, the next step is to partition, and
+then format the target partition(s).
+
+The installation image includes several partitioning tools, including
+Parted (@pxref{Overview,,, parted, GNU Parted User Manual}),
+@command{fdisk}, and @command{cfdisk}.  Run it and set up your disk with
+the partition layout you want:
+
+@example
+cfdisk
+@end example
+
+If your disk uses the GUID Partition Table (GPT) format and you plan to
+install BIOS-based GRUB (which is the default), make sure a BIOS Boot
+Partition is available (@pxref{BIOS installation,,, grub, GNU GRUB
+manual}).
+
+@cindex EFI, installation
+@cindex UEFI, installation
+@cindex ESP, EFI system partition
+If you instead wish to use EFI-based GRUB, a FAT32 @dfn{EFI System Partition}
+(ESP) is required.  This partition should be mounted at @file{/boot/efi} and
+must have the @code{esp} flag set.  E.g., for @command{parted}:
+
+@example
+parted /dev/sda set 1 esp on
+@end example
+
+@quotation Note
+@vindex grub-bootloader
+@vindex grub-efi-bootloader
+Unsure whether to use EFI- or BIOS-based GRUB?  If the directory
+@file{/sys/firmware/efi} exists in the installation image, then you should
+probably perform an EFI installation, using @code{grub-efi-bootloader}.
+Otherwise you should use the BIOS-based GRUB, known as
+@code{grub-bootloader}.  @xref{Bootloader Configuration}, for more info on
+bootloaders.
+@end quotation
+
+Once you are done partitioning the target hard disk drive, you have to
+create a file system on the relevant partition(s)@footnote{Currently
+GuixSD only supports ext4 and btrfs file systems.  In particular, code
+that reads file system UUIDs and labels only works for these file system
+types.}.  For the ESP, if you have one and assuming it is
+@file{/dev/sda1}, run:
+
+@example
+mkfs.fat -F32 /dev/sda1
+@end example
+
+Preferably, assign file systems a label so that you can easily and
+reliably refer to them in @code{file-system} declarations (@pxref{File
+Systems}).  This is typically done using the @code{-L} option of
+@command{mkfs.ext4} and related commands.  So, assuming the target root
+partition lives at @file{/dev/sda2}, a file system with the label
+@code{my-root} can be created with:
+
+@example
+mkfs.ext4 -L my-root /dev/sda2
+@end example
+
+@cindex encrypted disk
+If you are instead planning to encrypt the root partition, you can use
+the Cryptsetup/LUKS utilities to do that (see @inlinefmtifelse{html,
+@uref{https://linux.die.net/man/8/cryptsetup, @code{man cryptsetup}},
+@code{man cryptsetup}} for more information.)  Assuming you want to
+store the root partition on @file{/dev/sda2}, the command sequence would
+be along these lines:
+
+@example
+cryptsetup luksFormat /dev/sda2
+cryptsetup open --type luks /dev/sda2 my-partition
+mkfs.ext4 -L my-root /dev/mapper/my-partition
+@end example
+
+Once that is done, mount the target file system under @file{/mnt}
+with a command like (again, assuming @code{my-root} is the label of the
+root file system):
+
+@example
+mount LABEL=my-root /mnt
+@end example
+
+Also mount any other file systems you would like to use on the target
+system relative to this path.  If you have @file{/boot} on a separate
+partition for example, mount it at @file{/mnt/boot} now so it is found
+by @code{guix system init} afterwards.
+
+Finally, if you plan to use one or more swap partitions (@pxref{Memory
+Concepts, swap space,, libc, The GNU C Library Reference Manual}), make
+sure to initialize them with @command{mkswap}.  Assuming you have one
+swap partition on @file{/dev/sda3}, you would run:
+
+@example
+mkswap /dev/sda3
+swapon /dev/sda3
+@end example
+
+Alternatively, you may use a swap file.  For example, assuming that in
+the new system you want to use the file @file{/swapfile} as a swap file,
+you would run@footnote{This example will work for many types of file
+systems (e.g., ext4).  However, for copy-on-write file systems (e.g.,
+btrfs), the required steps may be different.  For details, see the
+manual pages for @command{mkswap} and @command{swapon}.}:
+
+@example
+# This is 10 GiB of swap space.  Adjust "count" to change the size.
+dd if=/dev/zero of=/mnt/swapfile bs=1MiB count=10240
+# For security, make the file readable and writable only by root.
+chmod 600 /mnt/swapfile
+mkswap /mnt/swapfile
+swapon /mnt/swapfile
+@end example
+
+Note that if you have encrypted the root partition and created a swap
+file in its file system as described above, then the encryption also
+protects the swap file, just like any other file in that file system.
+
+@node Proceeding with the Installation
+@section Proceeding with the Installation
+
+With the target partitions ready and the target root mounted on
+@file{/mnt}, we're ready to go.  First, run:
+
+@example
+herd start cow-store /mnt
+@end example
+
+This makes @file{/gnu/store} copy-on-write, such that packages added to it
+during the installation phase are written to the target disk on @file{/mnt}
+rather than kept in memory.  This is necessary because the first phase of
+the @command{guix system init} command (see below) entails downloads or
+builds to @file{/gnu/store} which, initially, is an in-memory file system.
+
+Next, you have to edit a file and
+provide the declaration of the operating system to be installed.  To
+that end, the installation system comes with three text editors.  We
+recommend GNU nano (@pxref{Top,,, nano, GNU nano Manual}), which
+supports syntax highlighting and parentheses matching; other editors
+include GNU Zile (an Emacs clone), and
+nvi (a clone of the original BSD @command{vi} editor).
+We strongly recommend storing that file on the target root file system, say,
+as @file{/mnt/etc/config.scm}.  Failing to do that, you will have lost your
+configuration file once you have rebooted into the newly-installed system.
+
+@xref{Using the Configuration System}, for an overview of the
+configuration file.  The example configurations discussed in that
+section are available under @file{/etc/configuration} in the
+installation image.  Thus, to get started with a system configuration
+providing a graphical display server (a ``desktop'' system), you can run
+something along these lines:
+
+@example
+# mkdir /mnt/etc
+# cp /etc/configuration/desktop.scm /mnt/etc/config.scm
+# nano /mnt/etc/config.scm
+@end example
+
+You should pay attention to what your configuration file contains, and
+in particular:
+
+@itemize
+@item
+Make sure the @code{bootloader-configuration} form refers to the target
+you want to install GRUB on.  It should mention @code{grub-bootloader} if
+you are installing GRUB in the legacy way, or @code{grub-efi-bootloader}
+for newer UEFI systems.  For legacy systems, the @code{target} field
+names a device, like @code{/dev/sda}; for UEFI systems it names a path
+to a mounted EFI partition, like @code{/boot/efi}, and do make sure the
+path is actually mounted.
+
+@item
+Be sure that your file system labels match the value of their respective
+@code{device} fields in your @code{file-system} configuration, assuming
+your @code{file-system} configuration uses the @code{file-system-label}
+procedure in its @code{device} field.
+
+@item
+If there are encrypted or RAID partitions, make sure to add a
+@code{mapped-devices} field to describe them (@pxref{Mapped Devices}).
+@end itemize
+
+Once you are done preparing the configuration file, the new system must
+be initialized (remember that the target root file system is mounted
+under @file{/mnt}):
+
+@example
+guix system init /mnt/etc/config.scm /mnt
+@end example
+
+@noindent
+This copies all the necessary files and installs GRUB on
+@file{/dev/sdX}, unless you pass the @option{--no-bootloader} option.  For
+more information, @pxref{Invoking guix system}.  This command may trigger
+downloads or builds of missing packages, which can take some time.
+
+Once that command has completed---and hopefully succeeded!---you can run
+@command{reboot} and boot into the new system.  The @code{root} password
+in the new system is initially empty; other users' passwords need to be
+initialized by running the @command{passwd} command as @code{root},
+unless your configuration specifies otherwise
+(@pxref{user-account-password, user account passwords}).
+
+@cindex upgrading GuixSD
+From then on, you can update GuixSD whenever you want by running @command{guix
+pull} as @code{root} (@pxref{Invoking guix pull}), and then running
+@command{guix system reconfigure /etc/config.scm}, as @code{root} too, to
+build a new system generation with the latest packages and services
+(@pxref{Invoking guix system}).  We recommend doing that regularly so that
+your system includes the latest security updates (@pxref{Security Updates}).
+
+Join us on @code{#guix} on the Freenode IRC network or on
+@email{guix-devel@@gnu.org} to share your experience---good or not so
+good.
+
+@node Installing GuixSD in a VM
+@section Installing GuixSD in a Virtual Machine
+
+@cindex virtual machine, GuixSD installation
+@cindex virtual private server (VPS)
+@cindex VPS (virtual private server)
+If you'd like to install GuixSD in a virtual machine (VM) or on a
+virtual private server (VPS) rather than on your beloved machine, this
+section is for you.
+
+To boot a @uref{http://qemu.org/,QEMU} VM for installing GuixSD in a
+disk image, follow these steps:
+
+@enumerate
+@item
+First, retrieve and decompress the GuixSD installation image as
+described previously (@pxref{USB Stick and DVD Installation}).
+
+@item
+Create a disk image that will hold the installed system.  To make a
+qcow2-formatted disk image, use the @command{qemu-img} command:
+
+@example
+qemu-img create -f qcow2 guixsd.img 50G
+@end example
+
+The resulting file will be much smaller than 50 GB (typically less than
+1 MB), but it will grow as the virtualized storage device is filled up.
+
+@item
+Boot the USB installation image in an VM:
+
+@example
+qemu-system-x86_64 -m 1024 -smp 1 \
+  -net user -net nic,model=virtio -boot menu=on \
+  -drive file=guixsd-install-@value{VERSION}.@var{system}.iso \
+  -drive file=guixsd.img
+@end example
+
+The ordering of the drives matters.
+
+In the VM console, quickly press the @kbd{F12} key to enter the boot
+menu.  Then press the @kbd{2} key and the @kbd{RET} key to validate your
+selection.
+
+@item
+You're now root in the VM, proceed with the installation process.
+@xref{Preparing for Installation}, and follow the instructions.
+@end enumerate
+
+Once installation is complete, you can boot the system that's on your
+@file{guixsd.img} image.  @xref{Running GuixSD in a VM}, for how to do
+that.
+
+@node Building the Installation Image
+@section Building the Installation Image
+
+@cindex installation image
+The installation image described above was built using the @command{guix
+system} command, specifically:
+
+@example
+guix system disk-image gnu/system/install.scm
+@end example
+
+Have a look at @file{gnu/system/install.scm} in the source tree,
+and see also @ref{Invoking guix system} for more information
+about the installation image.
+
+@section Building the Installation Image for ARM Boards
+
+Many ARM boards require a specific variant of the
+@uref{http://www.denx.de/wiki/U-Boot/, U-Boot} bootloader.
+
+If you build a disk image and the bootloader is not available otherwise
+(on another boot drive etc), it's advisable to build an image that
+includes the bootloader, specifically:
+
+@example
+guix system disk-image --system=armhf-linux -e '((@@ (gnu system install) os-with-u-boot) (@@ (gnu system install) installation-os) "A20-OLinuXino-Lime2")'
+@end example
+
+@code{A20-OLinuXino-Lime2} is the name of the board.  If you specify an invalid
+board, a list of possible boards will be printed.
 
 @c *********************************************************************
 @node Package Management
@@ -9090,658 +9743,6 @@ ClientPID: 19419
 ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
 @end example
 
-
-@node System Installation
-@chapter System Installation
-
-@cindex installing GuixSD
-@cindex Guix System Distribution
-This section explains how to install the Guix System Distribution (GuixSD)
-on a machine.  The Guix package manager can
-also be installed on top of a running GNU/Linux system,
-@pxref{Installation}.
-
-@ifinfo
-@quotation Note
-@c This paragraph is for people reading this from tty2 of the
-@c installation image.
-You are reading this documentation with an Info reader.  For details on
-how to use it, hit the @key{RET} key (``return'' or ``enter'') on the
-link that follows: @pxref{Top, Info reader,, info-stnd, Stand-alone GNU
-Info}.  Hit @kbd{l} afterwards to come back here.
-
-Alternately, run @command{info info} in another tty to keep the manual
-available.
-@end quotation
-@end ifinfo
-
-@menu
-* Limitations::                 What you can expect.
-* Hardware Considerations::     Supported hardware.
-* USB Stick and DVD Installation::  Preparing the installation medium.
-* Preparing for Installation::  Networking, partitioning, etc.
-* Proceeding with the Installation::  The real thing.
-* Installing GuixSD in a VM::   GuixSD playground.
-* Building the Installation Image::  How this comes to be.
-@end menu
-
-@node Limitations
-@section Limitations
-
-As of version @value{VERSION}, the Guix System Distribution (GuixSD) is
-not production-ready.  It may contain bugs and lack important
-features.  Thus, if you are looking for a stable production system that
-respects your freedom as a computer user, a good solution at this point
-is to consider @url{http://www.gnu.org/distros/free-distros.html, one of
-the more established GNU/Linux distributions}.  We hope you can soon switch
-to the GuixSD without fear, of course.  In the meantime, you can
-also keep using your distribution and try out the package manager on top
-of it (@pxref{Installation}).
-
-Before you proceed with the installation, be aware of the following
-noteworthy limitations applicable to version @value{VERSION}:
-
-@itemize
-@item
-The installation process does not include a graphical user interface and
-requires familiarity with GNU/Linux (see the following subsections to
-get a feel of what that means.)
-
-@item
-Support for the Logical Volume Manager (LVM) is missing.
-
-@item
-More and more system services are provided (@pxref{Services}), but some
-may be missing.
-
-@item
-More than 8,500 packages are available, but you might
-occasionally find that a useful package is missing.
-
-@item
-GNOME, Xfce, LXDE, and Enlightenment are available (@pxref{Desktop Services}),
-as well as a number of X11 window managers.  However, some graphical
-applications may be missing, as well as KDE.
-@end itemize
-
-You have been warned!  But more than a disclaimer, this is an invitation
-to report issues (and success stories!), and to join us in improving it.
-@xref{Contributing}, for more info.
-
-
-@node Hardware Considerations
-@section Hardware Considerations
-
-@cindex hardware support on GuixSD
-GNU@tie{}GuixSD focuses on respecting the user's computing freedom.  It
-builds around the kernel Linux-libre, which means that only hardware for
-which free software drivers and firmware exist is supported.  Nowadays,
-a wide range of off-the-shelf hardware is supported on
-GNU/Linux-libre---from keyboards to graphics cards to scanners and
-Ethernet controllers.  Unfortunately, there are still areas where
-hardware vendors deny users control over their own computing, and such
-hardware is not supported on GuixSD.
-
-@cindex WiFi, hardware support
-One of the main areas where free drivers or firmware are lacking is WiFi
-devices.  WiFi devices known to work include those using Atheros chips
-(AR9271 and AR7010), which corresponds to the @code{ath9k} Linux-libre
-driver, and those using Broadcom/AirForce chips (BCM43xx with
-Wireless-Core Revision 5), which corresponds to the @code{b43-open}
-Linux-libre driver.  Free firmware exists for both and is available
-out-of-the-box on GuixSD, as part of @var{%base-firmware}
-(@pxref{operating-system Reference, @code{firmware}}).
-
-@cindex RYF, Respects Your Freedom
-The @uref{https://www.fsf.org/, Free Software Foundation} runs
-@uref{https://www.fsf.org/ryf, @dfn{Respects Your Freedom}} (RYF), a
-certification program for hardware products that respect your freedom
-and your privacy and ensure that you have control over your device.  We
-encourage you to check the list of RYF-certified devices.
-
-Another useful resource is the @uref{https://www.h-node.org/, H-Node}
-web site.  It contains a catalog of hardware devices with information
-about their support in GNU/Linux.
-
-
-@node USB Stick and DVD Installation
-@section USB Stick and DVD Installation
-
-An ISO-9660 installation image that can be written to a USB stick or
-burnt to a DVD can be downloaded from
-@indicateurl{https://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz},
-where @var{system} is one of:
-
-@table @code
-@item x86_64-linux
-for a GNU/Linux system on Intel/AMD-compatible 64-bit CPUs;
-
-@item i686-linux
-for a 32-bit GNU/Linux system on Intel-compatible CPUs.
-@end table
-
-@c start duplication of authentication part from ``Binary Installation''
-Make sure to download the associated @file{.sig} file and to verify the
-authenticity of the image against it, along these lines:
-
-@example
-$ wget https://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
-$ gpg --verify guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
-@end example
-
-If that command fails because you do not have the required public key,
-then run this command to import it:
-
-@example
-$ gpg --keyserver @value{KEY-SERVER} \
-      --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
-@end example
-
-@noindent
-and rerun the @code{gpg --verify} command.
-@c end duplication
-
-This image contains the tools necessary for an installation.
-It is meant to be copied @emph{as is} to a large-enough USB stick or DVD.
-
-@unnumberedsubsec Copying to a USB Stick
-
-To copy the image to a USB stick, follow these steps:
-
-@enumerate
-@item
-Decompress the image using the @command{xz} command:
-
-@example
-xz -d guixsd-install-@value{VERSION}.@var{system}.iso.xz
-@end example
-
-@item
-Insert a USB stick of 1@tie{}GiB or more into your machine, and determine
-its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
-copy the image with:
-
-@example
-dd if=guixsd-install-@value{VERSION}.@var{system}.iso of=/dev/sdX
-sync
-@end example
-
-Access to @file{/dev/sdX} usually requires root privileges.
-@end enumerate
-
-@unnumberedsubsec Burning on a DVD
-
-To copy the image to a DVD, follow these steps:
-
-@enumerate
-@item
-Decompress the image using the @command{xz} command:
-
-@example
-xz -d guixsd-install-@value{VERSION}.@var{system}.iso.xz
-@end example
-
-@item
-Insert a blank DVD into your machine, and determine
-its device name.  Assuming that the DVD drive is known as @file{/dev/srX},
-copy the image with:
-
-@example
-growisofs -dvd-compat -Z /dev/srX=guixsd-install-@value{VERSION}.@var{system}.iso
-@end example
-
-Access to @file{/dev/srX} usually requires root privileges.
-@end enumerate
-
-@unnumberedsubsec Booting
-
-Once this is done, you should be able to reboot the system and boot from
-the USB stick or DVD.  The latter usually requires you to get in the
-BIOS or UEFI boot menu, where you can choose to boot from the USB stick.
-
-@xref{Installing GuixSD in a VM}, if, instead, you would like to install
-GuixSD in a virtual machine (VM).
-
-
-@node Preparing for Installation
-@section Preparing for Installation
-
-Once you have successfully booted your computer using the installation medium,
-you should end up with the welcome page of the graphical installer.  The
-graphical installer is a text-based user interface built upon the newt
-library.  It shall guide you through all the different steps needed to install
-GNU GuixSD.  However, as the graphical installer is still under heavy
-development, you might want to fallback to the original, shell based install
-process, by switching to TTYs 3 to 6 with the shortcuts CTRL-ALT-F[3-6]. The
-following sections describe the installation procedure assuming you're using
-one of those TTYs. They are configured and can be used to run commands as
-root.
-
-TTY2 shows this documentation, browsable using the Info reader commands
-(@pxref{Top,,, info-stnd, Stand-alone GNU Info}).  The installation system
-runs the GPM mouse daemon, which allows you to select text with the left mouse
-button and to paste it with the middle button.
-
-@quotation Note
-Installation requires access to the Internet so that any missing
-dependencies of your system configuration can be downloaded.  See the
-``Networking'' section below.
-@end quotation
-
-The installation system includes many common tools needed for this task.
-But it is also a full-blown GuixSD system, which means that you can
-install additional packages, should you need it, using @command{guix
-package} (@pxref{Invoking guix package}).
-
-@subsection Keyboard Layout
-
-@cindex keyboard layout
-The installation image uses the US qwerty keyboard layout.  If you want
-to change it, you can use the @command{loadkeys} command.  For example,
-the following command selects the Dvorak keyboard layout:
-
-@example
-loadkeys dvorak
-@end example
-
-See the files under @file{/run/current-system/profile/share/keymaps} for
-a list of available keyboard layouts.  Run @command{man loadkeys} for
-more information.
-
-@subsection Networking
-
-Run the following command to see what your network interfaces are called:
-
-@example
-ifconfig -a
-@end example
-
-@noindent
-@dots{} or, using the GNU/Linux-specific @command{ip} command:
-
-@example
-ip a
-@end example
-
-@c http://cgit.freedesktop.org/systemd/systemd/tree/src/udev/udev-builtin-net_id.c#n20
-Wired interfaces have a name starting with @samp{e}; for example, the
-interface corresponding to the first on-board Ethernet controller is
-called @samp{eno1}.  Wireless interfaces have a name starting with
-@samp{w}, like @samp{w1p2s0}.
-
-@table @asis
-@item Wired connection
-To configure a wired network run the following command, substituting
-@var{interface} with the name of the wired interface you want to use.
-
-@example
-ifconfig @var{interface} up
-@end example
-
-@item Wireless connection
-@cindex wireless
-@cindex WiFi
-To configure wireless networking, you can create a configuration file
-for the @command{wpa_supplicant} configuration tool (its location is not
-important) using one of the available text editors such as
-@command{nano}:
-
-@example
-nano wpa_supplicant.conf
-@end example
-
-As an example, the following stanza can go to this file and will work
-for many wireless networks, provided you give the actual SSID and
-passphrase for the network you are connecting to:
-
-@example
-network=@{
-  ssid="@var{my-ssid}"
-  key_mgmt=WPA-PSK
-  psk="the network's secret passphrase"
-@}
-@end example
-
-Start the wireless service and run it in the background with the
-following command (substitute @var{interface} with the name of the
-network interface you want to use):
-
-@example
-wpa_supplicant -c wpa_supplicant.conf -i @var{interface} -B
-@end example
-
-Run @command{man wpa_supplicant} for more information.
-@end table
-
-@cindex DHCP
-At this point, you need to acquire an IP address.  On a network where IP
-addresses are automatically assigned @i{via} DHCP, you can run:
-
-@example
-dhclient -v @var{interface}
-@end example
-
-Try to ping a server to see if networking is up and running:
-
-@example
-ping -c 3 gnu.org
-@end example
-
-Setting up network access is almost always a requirement because the
-image does not contain all the software and tools that may be needed.
-
-@cindex installing over SSH
-If you want to, you can continue the installation remotely by starting
-an SSH server:
-
-@example
-herd start ssh-daemon
-@end example
-
-Make sure to either set a password with @command{passwd}, or configure
-OpenSSH public key authentication before logging in.
-
-@subsection Disk Partitioning
-
-Unless this has already been done, the next step is to partition, and
-then format the target partition(s).
-
-The installation image includes several partitioning tools, including
-Parted (@pxref{Overview,,, parted, GNU Parted User Manual}),
-@command{fdisk}, and @command{cfdisk}.  Run it and set up your disk with
-the partition layout you want:
-
-@example
-cfdisk
-@end example
-
-If your disk uses the GUID Partition Table (GPT) format and you plan to
-install BIOS-based GRUB (which is the default), make sure a BIOS Boot
-Partition is available (@pxref{BIOS installation,,, grub, GNU GRUB
-manual}).
-
-@cindex EFI, installation
-@cindex UEFI, installation
-@cindex ESP, EFI system partition
-If you instead wish to use EFI-based GRUB, a FAT32 @dfn{EFI System Partition}
-(ESP) is required.  This partition should be mounted at @file{/boot/efi} and
-must have the @code{esp} flag set.  E.g., for @command{parted}:
-
-@example
-parted /dev/sda set 1 esp on
-@end example
-
-@quotation Note
-@vindex grub-bootloader
-@vindex grub-efi-bootloader
-Unsure whether to use EFI- or BIOS-based GRUB?  If the directory
-@file{/sys/firmware/efi} exists in the installation image, then you should
-probably perform an EFI installation, using @code{grub-efi-bootloader}.
-Otherwise you should use the BIOS-based GRUB, known as
-@code{grub-bootloader}.  @xref{Bootloader Configuration}, for more info on
-bootloaders.
-@end quotation
-
-Once you are done partitioning the target hard disk drive, you have to
-create a file system on the relevant partition(s)@footnote{Currently
-GuixSD only supports ext4 and btrfs file systems.  In particular, code
-that reads file system UUIDs and labels only works for these file system
-types.}.  For the ESP, if you have one and assuming it is
-@file{/dev/sda1}, run:
-
-@example
-mkfs.fat -F32 /dev/sda1
-@end example
-
-Preferably, assign file systems a label so that you can easily and
-reliably refer to them in @code{file-system} declarations (@pxref{File
-Systems}).  This is typically done using the @code{-L} option of
-@command{mkfs.ext4} and related commands.  So, assuming the target root
-partition lives at @file{/dev/sda2}, a file system with the label
-@code{my-root} can be created with:
-
-@example
-mkfs.ext4 -L my-root /dev/sda2
-@end example
-
-@cindex encrypted disk
-If you are instead planning to encrypt the root partition, you can use
-the Cryptsetup/LUKS utilities to do that (see @inlinefmtifelse{html,
-@uref{https://linux.die.net/man/8/cryptsetup, @code{man cryptsetup}},
-@code{man cryptsetup}} for more information.)  Assuming you want to
-store the root partition on @file{/dev/sda2}, the command sequence would
-be along these lines:
-
-@example
-cryptsetup luksFormat /dev/sda2
-cryptsetup open --type luks /dev/sda2 my-partition
-mkfs.ext4 -L my-root /dev/mapper/my-partition
-@end example
-
-Once that is done, mount the target file system under @file{/mnt}
-with a command like (again, assuming @code{my-root} is the label of the
-root file system):
-
-@example
-mount LABEL=my-root /mnt
-@end example
-
-Also mount any other file systems you would like to use on the target
-system relative to this path.  If you have @file{/boot} on a separate
-partition for example, mount it at @file{/mnt/boot} now so it is found
-by @code{guix system init} afterwards.
-
-Finally, if you plan to use one or more swap partitions (@pxref{Memory
-Concepts, swap space,, libc, The GNU C Library Reference Manual}), make
-sure to initialize them with @command{mkswap}.  Assuming you have one
-swap partition on @file{/dev/sda3}, you would run:
-
-@example
-mkswap /dev/sda3
-swapon /dev/sda3
-@end example
-
-Alternatively, you may use a swap file.  For example, assuming that in
-the new system you want to use the file @file{/swapfile} as a swap file,
-you would run@footnote{This example will work for many types of file
-systems (e.g., ext4).  However, for copy-on-write file systems (e.g.,
-btrfs), the required steps may be different.  For details, see the
-manual pages for @command{mkswap} and @command{swapon}.}:
-
-@example
-# This is 10 GiB of swap space.  Adjust "count" to change the size.
-dd if=/dev/zero of=/mnt/swapfile bs=1MiB count=10240
-# For security, make the file readable and writable only by root.
-chmod 600 /mnt/swapfile
-mkswap /mnt/swapfile
-swapon /mnt/swapfile
-@end example
-
-Note that if you have encrypted the root partition and created a swap
-file in its file system as described above, then the encryption also
-protects the swap file, just like any other file in that file system.
-
-@node Proceeding with the Installation
-@section Proceeding with the Installation
-
-With the target partitions ready and the target root mounted on
-@file{/mnt}, we're ready to go.  First, run:
-
-@example
-herd start cow-store /mnt
-@end example
-
-This makes @file{/gnu/store} copy-on-write, such that packages added to it
-during the installation phase are written to the target disk on @file{/mnt}
-rather than kept in memory.  This is necessary because the first phase of
-the @command{guix system init} command (see below) entails downloads or
-builds to @file{/gnu/store} which, initially, is an in-memory file system.
-
-Next, you have to edit a file and
-provide the declaration of the operating system to be installed.  To
-that end, the installation system comes with three text editors.  We
-recommend GNU nano (@pxref{Top,,, nano, GNU nano Manual}), which
-supports syntax highlighting and parentheses matching; other editors
-include GNU Zile (an Emacs clone), and
-nvi (a clone of the original BSD @command{vi} editor).
-We strongly recommend storing that file on the target root file system, say,
-as @file{/mnt/etc/config.scm}.  Failing to do that, you will have lost your
-configuration file once you have rebooted into the newly-installed system.
-
-@xref{Using the Configuration System}, for an overview of the
-configuration file.  The example configurations discussed in that
-section are available under @file{/etc/configuration} in the
-installation image.  Thus, to get started with a system configuration
-providing a graphical display server (a ``desktop'' system), you can run
-something along these lines:
-
-@example
-# mkdir /mnt/etc
-# cp /etc/configuration/desktop.scm /mnt/etc/config.scm
-# nano /mnt/etc/config.scm
-@end example
-
-You should pay attention to what your configuration file contains, and
-in particular:
-
-@itemize
-@item
-Make sure the @code{bootloader-configuration} form refers to the target
-you want to install GRUB on.  It should mention @code{grub-bootloader} if
-you are installing GRUB in the legacy way, or @code{grub-efi-bootloader}
-for newer UEFI systems.  For legacy systems, the @code{target} field
-names a device, like @code{/dev/sda}; for UEFI systems it names a path
-to a mounted EFI partition, like @code{/boot/efi}, and do make sure the
-path is actually mounted.
-
-@item
-Be sure that your file system labels match the value of their respective
-@code{device} fields in your @code{file-system} configuration, assuming
-your @code{file-system} configuration uses the @code{file-system-label}
-procedure in its @code{device} field.
-
-@item
-If there are encrypted or RAID partitions, make sure to add a
-@code{mapped-devices} field to describe them (@pxref{Mapped Devices}).
-@end itemize
-
-Once you are done preparing the configuration file, the new system must
-be initialized (remember that the target root file system is mounted
-under @file{/mnt}):
-
-@example
-guix system init /mnt/etc/config.scm /mnt
-@end example
-
-@noindent
-This copies all the necessary files and installs GRUB on
-@file{/dev/sdX}, unless you pass the @option{--no-bootloader} option.  For
-more information, @pxref{Invoking guix system}.  This command may trigger
-downloads or builds of missing packages, which can take some time.
-
-Once that command has completed---and hopefully succeeded!---you can run
-@command{reboot} and boot into the new system.  The @code{root} password
-in the new system is initially empty; other users' passwords need to be
-initialized by running the @command{passwd} command as @code{root},
-unless your configuration specifies otherwise
-(@pxref{user-account-password, user account passwords}).
-
-@cindex upgrading GuixSD
-From then on, you can update GuixSD whenever you want by running @command{guix
-pull} as @code{root} (@pxref{Invoking guix pull}), and then running
-@command{guix system reconfigure /etc/config.scm}, as @code{root} too, to
-build a new system generation with the latest packages and services
-(@pxref{Invoking guix system}).  We recommend doing that regularly so that
-your system includes the latest security updates (@pxref{Security Updates}).
-
-Join us on @code{#guix} on the Freenode IRC network or on
-@email{guix-devel@@gnu.org} to share your experience---good or not so
-good.
-
-@node Installing GuixSD in a VM
-@section Installing GuixSD in a Virtual Machine
-
-@cindex virtual machine, GuixSD installation
-@cindex virtual private server (VPS)
-@cindex VPS (virtual private server)
-If you'd like to install GuixSD in a virtual machine (VM) or on a
-virtual private server (VPS) rather than on your beloved machine, this
-section is for you.
-
-To boot a @uref{http://qemu.org/,QEMU} VM for installing GuixSD in a
-disk image, follow these steps:
-
-@enumerate
-@item
-First, retrieve and decompress the GuixSD installation image as
-described previously (@pxref{USB Stick and DVD Installation}).
-
-@item
-Create a disk image that will hold the installed system.  To make a
-qcow2-formatted disk image, use the @command{qemu-img} command:
-
-@example
-qemu-img create -f qcow2 guixsd.img 50G
-@end example
-
-The resulting file will be much smaller than 50 GB (typically less than
-1 MB), but it will grow as the virtualized storage device is filled up.
-
-@item
-Boot the USB installation image in an VM:
-
-@example
-qemu-system-x86_64 -m 1024 -smp 1 \
-  -net user -net nic,model=virtio -boot menu=on \
-  -drive file=guixsd-install-@value{VERSION}.@var{system}.iso \
-  -drive file=guixsd.img
-@end example
-
-The ordering of the drives matters.
-
-In the VM console, quickly press the @kbd{F12} key to enter the boot
-menu.  Then press the @kbd{2} key and the @kbd{RET} key to validate your
-selection.
-
-@item
-You're now root in the VM, proceed with the installation process.
-@xref{Preparing for Installation}, and follow the instructions.
-@end enumerate
-
-Once installation is complete, you can boot the system that's on your
-@file{guixsd.img} image.  @xref{Running GuixSD in a VM}, for how to do
-that.
-
-@node Building the Installation Image
-@section Building the Installation Image
-
-@cindex installation image
-The installation image described above was built using the @command{guix
-system} command, specifically:
-
-@example
-guix system disk-image gnu/system/install.scm
-@end example
-
-Have a look at @file{gnu/system/install.scm} in the source tree,
-and see also @ref{Invoking guix system} for more information
-about the installation image.
-
-@section Building the Installation Image for ARM Boards
-
-Many ARM boards require a specific variant of the
-@uref{http://www.denx.de/wiki/U-Boot/, U-Boot} bootloader.
-
-If you build a disk image and the bootloader is not available otherwise
-(on another boot drive etc), it's advisable to build an image that
-includes the bootloader, specifically:
-
-@example
-guix system disk-image --system=armhf-linux -e '((@@ (gnu system install) os-with-u-boot) (@@ (gnu system install) installation-os) "A20-OLinuXino-Lime2")'
-@end example
-
-@code{A20-OLinuXino-Lime2} is the name of the board.  If you specify an invalid
-board, a list of possible boards will be printed.
 
 @node System Configuration
 @chapter System Configuration
