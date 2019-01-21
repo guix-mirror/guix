@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -185,9 +185,9 @@
       (set-build-options %store
                          #:use-substitutes? #f
                          #:keep-going? #t)
-      (guard (c ((nix-protocol-error? c)
-                 (and (= 100 (nix-protocol-error-status c))
-                      (string-contains (nix-protocol-error-message c)
+      (guard (c ((store-protocol-error? c)
+                 (and (= 100 (store-protocol-error-status c))
+                      (string-contains (store-protocol-error-message c)
                                        (derivation-file-name d1))
                       (not (valid-path? %store (derivation->output-path d1)))
                       (valid-path? %store (derivation->output-path d2)))))
@@ -222,8 +222,8 @@
 
 (test-assert "unknown built-in builder"
   (let ((drv (derivation %store "ohoh" "builtin:does-not-exist" '())))
-    (guard (c ((nix-protocol-error? c)
-               (string-contains (nix-protocol-error-message c) "failed")))
+    (guard (c ((store-protocol-error? c)
+               (string-contains (store-protocol-error-message c) "failed")))
       (build-derivations %store (list drv))
       #f)))
 
@@ -253,8 +253,8 @@
                                           . ,(object->string (%local-url))))
                             #:hash-algo 'sha256
                             #:hash (sha256 (random-bytevector 100))))) ;wrong
-      (guard (c ((nix-protocol-error? c)
-                 (string-contains (nix-protocol-error-message c) "failed")))
+      (guard (c ((store-protocol-error? c)
+                 (string-contains (store-protocol-error-message c) "failed")))
         (build-derivations %store (list drv))
         #f))))
 
@@ -268,8 +268,8 @@
                                           . ,(object->string (%local-url))))
                             #:hash-algo 'sha256
                             #:hash (sha256 (random-bytevector 100)))))
-      (guard (c ((nix-protocol-error? c)
-                 (string-contains (nix-protocol-error-message (pk c)) "failed")))
+      (guard (c ((store-protocol-error? c)
+                 (string-contains (store-protocol-error-message (pk c)) "failed")))
         (build-derivations %store (list drv))
         #f))))
 
@@ -279,8 +279,8 @@
          (drv    (derivation %store "world"
                              "builtin:download" '()
                              #:env-vars `(("url" . ,(object->string url))))))
-    (guard (c ((nix-protocol-error? c)
-               (string-contains (nix-protocol-error-message c) "failed")))
+    (guard (c ((store-protocol-error? c)
+               (string-contains (store-protocol-error-message c) "failed")))
       (build-derivations %store (list drv))
       #f)))
 
@@ -607,7 +607,7 @@
                           `("-c" ,(string-append "echo " txt "> $out"))
                           #:inputs `((,%bash) (,txt))
                           #:allowed-references '())))
-    (guard (c ((nix-protocol-error? c)
+    (guard (c ((store-protocol-error? c)
                ;; There's no specific error message to check for.
                #t))
       (build-derivations %store (list drv))
@@ -625,7 +625,7 @@
                          `("-c" ,"echo $out > $out")
                          #:inputs `((,%bash))
                          #:allowed-references '())))
-    (guard (c ((nix-protocol-error? c)
+    (guard (c ((store-protocol-error? c)
                ;; There's no specific error message to check for.
                #t))
       (build-derivations %store (list drv))
@@ -644,7 +644,7 @@
                           `("-c" ,(string-append "echo " txt "> $out"))
                           #:inputs `((,%bash) (,txt))
                           #:disallowed-references (list txt))))
-    (guard (c ((nix-protocol-error? c)
+    (guard (c ((store-protocol-error? c)
                ;; There's no specific error message to check for.
                #t))
       (build-derivations %store (list drv))
@@ -765,8 +765,8 @@
          (builder    '(begin (sleep 100) (mkdir %output) #t))
          (drv        (build-expression->derivation store "silent" builder))
          (out-path   (derivation->output-path drv)))
-    (guard (c ((nix-protocol-error? c)
-               (and (string-contains (nix-protocol-error-message c)
+    (guard (c ((store-protocol-error? c)
+               (and (string-contains (store-protocol-error-message c)
                                      "failed")
                     (not (valid-path? store out-path)))))
       (build-derivations store (list drv))
@@ -779,8 +779,8 @@
          (builder    '(begin (sleep 100) (mkdir %output) #t))
          (drv        (build-expression->derivation store "slow" builder))
          (out-path   (derivation->output-path drv)))
-    (guard (c ((nix-protocol-error? c)
-               (and (string-contains (nix-protocol-error-message c)
+    (guard (c ((store-protocol-error? c)
+               (and (string-contains (store-protocol-error-message c)
                                      "failed")
                     (not (valid-path? store out-path)))))
       (build-derivations store (list drv))
@@ -942,11 +942,11 @@
                       #f))                        ; fail!
          (drv      (build-expression->derivation %store "fail" builder))
          (out-path (derivation->output-path drv)))
-    (guard (c ((nix-protocol-error? c)
+    (guard (c ((store-protocol-error? c)
                ;; Note that the output path may exist at this point, but it
                ;; is invalid.
                (and (string-match "build .* failed"
-                                  (nix-protocol-error-message c))
+                                  (store-protocol-error-message c))
                     (not (valid-path? %store out-path)))))
       (build-derivations %store (list drv))
       #f)))

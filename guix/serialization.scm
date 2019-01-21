@@ -59,7 +59,7 @@
 
 ;; Similar to serialize.cc in Nix.
 
-(define-condition-type &nar-error &error      ; XXX: inherit from &nix-error ?
+(define-condition-type &nar-error &error      ; XXX: inherit from &store-error ?
   nar-error?
   (file  nar-error-file)                       ; file we were restoring, or #f
   (port  nar-error-port))                      ; port from which we read

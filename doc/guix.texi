@@ -5027,7 +5027,7 @@ Return @code{#t} when @var{path} designates a valid store item and
 invalid, for instance because it is the result of an aborted or failed
 build.)
 
-A @code{&nix-protocol-error} condition is raised if @var{path} is not
+A @code{&store-protocol-error} condition is raised if @var{path} is not
 prefixed by the store directory (@file{/gnu/store}).
 @end deffn
 

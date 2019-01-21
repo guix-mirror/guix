@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -358,12 +358,12 @@ MACHINE."
   (format (current-error-port) "@ build-remote ~a ~a~%"
           (derivation-file-name drv) (build-machine-name machine))
 
-  (guard (c ((nix-protocol-error? c)
+  (guard (c ((store-protocol-error? c)
              (format (current-error-port)
                      (G_ "derivation '~a' offloaded to '~a' failed: ~a~%")
                      (derivation-file-name drv)
                      (build-machine-name machine)
-                     (nix-protocol-error-message c))
+                     (store-protocol-error-message c))
              (let* ((inferior (false-if-exception (remote-inferior session)))
                     (space (false-if-exception
                             (node-free-disk-space inferior))))

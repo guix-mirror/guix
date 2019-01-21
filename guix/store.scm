@@ -68,6 +68,15 @@
             current-store-protocol-version        ;for internal use
             mcached
 
+            &store-error store-error?
+            &store-connection-error store-connection-error?
+            store-connection-error-file
+            store-connection-error-code
+            &store-protocol-error store-protocol-error?
+            store-protocol-error-message
+            store-protocol-error-status
+
+            ;; Deprecated forms for '&store-error' et al.
             &nix-error nix-error?
             &nix-connection-error nix-connection-error?
             nix-connection-error-file
@@ -377,34 +386,50 @@
 (define-deprecated/alias nix-server-socket store-connection-socket)
 
 
-(define-condition-type &nix-error &error
-  nix-error?)
+(define-condition-type &store-error &error
+  store-error?)
 
-(define-condition-type &nix-connection-error &nix-error
-  nix-connection-error?
-  (file   nix-connection-error-file)
-  (errno  nix-connection-error-code))
+(define-condition-type &store-connection-error &store-error
+  store-connection-error?
+  (file   store-connection-error-file)
+  (errno  store-connection-error-code))
 
-(define-condition-type &nix-protocol-error &nix-error
-  nix-protocol-error?
-  (message nix-protocol-error-message)
-  (status  nix-protocol-error-status))
+(define-condition-type &store-protocol-error &store-error
+  store-protocol-error?
+  (message store-protocol-error-message)
+  (status  store-protocol-error-status))
+
+(define-deprecated/alias &nix-error &store-error)
+(define-deprecated/alias nix-error? store-error?)
+(define-deprecated/alias &nix-connection-error &store-connection-error)
+(define-deprecated/alias nix-connection-error? store-connection-error?)
+(define-deprecated/alias nix-connection-error-file
+  store-connection-error-file)
+(define-deprecated/alias nix-connection-error-code
+  store-connection-error-code)
+(define-deprecated/alias &nix-protocol-error &store-protocol-error)
+(define-deprecated/alias nix-protocol-error? store-protocol-error?)
+(define-deprecated/alias nix-protocol-error-message
+  store-protocol-error-message)
+(define-deprecated/alias nix-protocol-error-status
+  store-protocol-error-status)
+
 
 (define-syntax-rule (system-error-to-connection-error file exp ...)
   "Catch 'system-error' exceptions and translate them to
-'&nix-connection-error'."
+'&store-connection-error'."
   (catch 'system-error
     (lambda ()
       exp ...)
     (lambda args
       (let ((errno (system-error-errno args)))
-        (raise (condition (&nix-connection-error
+        (raise (condition (&store-connection-error
                            (file file)
                            (errno errno))))))))
 
 (define (open-unix-domain-socket file)
   "Connect to the Unix-domain socket at FILE and return it.  Raise a
-'&nix-connection-error' upon error."
+'&store-connection-error' upon error."
   (let ((s (with-fluids ((%default-port-encoding #f))
              ;; This trick allows use of the `scm_c_read' optimization.
              (socket PF_UNIX SOCK_STREAM 0)))
@@ -420,7 +445,7 @@
 
 (define (open-inet-socket host port)
   "Connect to the Unix-domain socket at HOST:PORT and return it.  Raise a
-'&nix-connection-error' upon error."
+'&store-connection-error' upon error."
   (let ((sock (with-fluids ((%default-port-encoding #f))
                 ;; This trick allows use of the `scm_c_read' optimization.
                 (socket PF_UNIX SOCK_STREAM 0))))
@@ -452,7 +477,7 @@
                ;; Connection failed, so try one of the other addresses.
                (close s)
                (if (null? rest)
-                   (raise (condition (&nix-connection-error
+                   (raise (condition (&store-connection-error
                                       (file host)
                                       (errno (system-error-errno args)))))
                    (loop rest))))))))))
@@ -461,7 +486,7 @@
   "Connect to the daemon at URI, a string that may be an actual URI or a file
 name."
   (define (not-supported)
-    (raise (condition (&nix-connection-error
+    (raise (condition (&store-connection-error
                        (file uri)
                        (errno ENOTSUP)))))
 
@@ -510,8 +535,8 @@ for this connection will be pinned.  Return a server object."
              ;; One of the 'write-' or 'read-' calls below failed, but this is
              ;; really a connection error.
              (raise (condition
-                     (&nix-connection-error (file (or port uri))
-                                            (errno EPROTO))
+                     (&store-connection-error (file (or port uri))
+                                              (errno EPROTO))
                      (&message (message "build daemon handshake failed"))))))
     (let*-values (((port)
                    (or port (connect-to-daemon uri)))
@@ -689,14 +714,14 @@ encoding conversion errors."
                                   (not (eof-object? (lookahead-u8 p))))
                              (read-int p)
                              1)))
-             (raise (condition (&nix-protocol-error
+             (raise (condition (&store-protocol-error
                                 (message error)
                                 (status  status))))))
           ((= k %stderr-last)
            ;; The daemon is done (see `stopWork' in `nix-worker.cc'.)
            #t)
           (else
-           (raise (condition (&nix-protocol-error
+           (raise (condition (&store-protocol-error
                               (message "invalid error code")
                               (status   k))))))))
 
@@ -926,7 +951,7 @@ bytevector) as its internal buffer, and a thunk to flush this output port."
 invalid item may exist on disk but still be invalid, for instance because it
 is the result of an aborted or failed build.)
 
-A '&nix-protocol-error' condition is raised if PATH is not prefixed by the
+A '&store-protocol-error' condition is raised if PATH is not prefixed by the
 store directory (/gnu/store)."
   boolean)
 
@@ -1141,7 +1166,7 @@ Return #t on success."
             (build store things mode)
             (if (= mode (build-mode normal))
                 (build/old store things)
-                (raise (condition (&nix-protocol-error
+                (raise (condition (&store-protocol-error
                                    (message "unsupported build mode")
                                    (status  1))))))))))
 
@@ -1201,12 +1226,12 @@ error if there is no such root."
 (define (references/substitutes store items)
   "Return the list of list of references of ITEMS; the result has the same
 length as ITEMS.  Query substitute information for any item missing from the
-store at once.  Raise a '&nix-protocol-error' exception if reference
+store at once.  Raise a '&store-protocol-error' exception if reference
 information for one of ITEMS is missing."
   (let* ((requested  items)
          (local-refs (map (lambda (item)
                             (or (hash-ref %reference-cache item)
-                                (guard (c ((nix-protocol-error? c) #f))
+                                (guard (c ((store-protocol-error? c) #f))
                                   (references store item))))
                           items))
          (missing    (fold-right (lambda (item local-ref result)
@@ -1222,7 +1247,7 @@ information for one of ITEMS is missing."
                          '()
                          (substitutable-path-info store missing))))
     (when (< (length substs) (length missing))
-      (raise (condition (&nix-protocol-error
+      (raise (condition (&store-protocol-error
                          (message "cannot determine \
 the list of references")
                          (status 1)))))
@@ -1673,7 +1698,7 @@ where FILE is the entry's absolute file name and STAT is the result of
   "Monadic version of 'query-path-info' that returns #f when ITEM is not in
 the store."
   (lambda (store)
-    (guard (c ((nix-protocol-error? c)
+    (guard (c ((store-protocol-error? c)
                ;; ITEM is not in the store; return #f.
                (values #f store)))
       (values (query-path-info store item) store))))

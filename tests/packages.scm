@@ -570,7 +570,7 @@
                    (symlink %output (string-append %output "/self"))
                    #t)))))
          (d (package-derivation %store p)))
-    (guard (c ((nix-protocol-error? c) #t))
+    (guard (c ((store-protocol-error? c) #t))
       (build-derivations %store (list d))
       #f)))
 

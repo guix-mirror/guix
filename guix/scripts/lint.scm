@@ -833,11 +833,11 @@ descriptions maintained upstream."
   (define (try system)
     (catch #t
       (lambda ()
-        (guard (c ((nix-protocol-error? c)
+        (guard (c ((store-protocol-error? c)
                    (emit-warning package
                                  (format #f (G_ "failed to create ~a derivation: ~a")
                                          system
-                                         (nix-protocol-error-message c))))
+                                         (store-protocol-error-message c))))
                   ((message-condition? c)
                    (emit-warning package
                                  (format #f (G_ "failed to create ~a derivation: ~a")

@@ -328,17 +328,17 @@ Return the list of store items actually sent."
          missing)
         (('protocol-error message)
          (raise (condition
-                 (&nix-protocol-error (message message) (status 42)))))
+                 (&store-protocol-error (message message) (status 42)))))
         (('error key args ...)
          (raise (condition
-                 (&nix-protocol-error
+                 (&store-protocol-error
                   (message (call-with-output-string
                              (lambda (port)
                                (print-exception port #f key args))))
                   (status 43)))))
         (_
          (raise (condition
-                 (&nix-protocol-error
+                 (&store-protocol-error
                   (message "unknown error while sending files over SSH")
                   (status 44)))))))))
 

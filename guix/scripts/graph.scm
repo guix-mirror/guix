@@ -299,7 +299,7 @@ this type of graph")))))))
 information available in the local store or using information about
 substitutes."
   (lambda (store)
-    (guard (c ((nix-protocol-error? c)
+    (guard (c ((store-protocol-error? c)
                (match (substitutable-path-info store (list item))
                  ((info)
                   (values (substitutable-references info) store))

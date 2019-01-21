@@ -919,7 +919,7 @@
                                      (chdir #$output)
                                      (symlink #$%bootstrap-guile "guile"))
                                  #:allowed-references '()))))
-    (guard (c ((nix-protocol-error? c) #t))
+    (guard (c ((store-protocol-error? c) #t))
       (build-derivations %store (list drv))
       #f)))
 
@@ -943,7 +943,7 @@
                                      (chdir #$output)
                                      (symlink #$%bootstrap-guile "guile"))
                                  #:disallowed-references (list %bootstrap-guile)))))
-    (guard (c ((nix-protocol-error? c) #t))
+    (guard (c ((store-protocol-error? c) #t))
       (build-derivations %store (list drv))
       #f)))
 
