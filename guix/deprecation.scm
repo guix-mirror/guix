@@ -33,7 +33,7 @@
 
 (define deprecation-warning-port
   ;; Port where deprecation warnings go.
-  (make-parameter (current-warning-port)))
+  (make-parameter (current-error-port)))
 
 (define (source-properties->location-string properties)
   "Return a human-friendly, GNU-standard representation of PROPERTIES, a
