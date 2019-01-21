@@ -582,6 +582,8 @@ Language.")
                       "main.explain_non_select"
                       "main.stat_tables_innodb"
                       "roles.acl_statistics"
+                      "main.mysqldump"
+                      "innodb_fts.crash_recovery"
 
                       ;; FIXME: This test fails on i686:
                       ;; -myisampack: Can't create/write to file (Errcode: 17 "File exists")
