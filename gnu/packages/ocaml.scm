@@ -10,7 +10,7 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
-;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
+;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1802,14 +1802,14 @@ most of the POSIX and GNU conventions.")
 (define-public ocaml-fmt
   (package
     (name "ocaml-fmt")
-    (version "0.8.0")
+    (version "0.8.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://erratique.ch/software/fmt/releases/fmt-"
                             version ".tbz"))
         (sha256 (base32
-                  "16y7ibndnairb53j8a6qgipyqwjxncn4pl9jiw5bxjfjm59108px"))))
+                  "1zj9azcxcn6skmb69ykgmi9z8c50yskwg03wqgh87lypgjdcz060"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
@@ -1817,6 +1817,7 @@ most of the POSIX and GNU conventions.")
        ("topkg" ,ocaml-topkg)))
     (propagated-inputs
      `(("result" ,ocaml-result)
+       ("ocaml-uchar" ,ocaml-uchar)
        ("cmdliner" ,ocaml-cmdliner)))
     (arguments `(#:tests? #f
                  #:build-flags (list "build" "--with-base-unix" "true"
