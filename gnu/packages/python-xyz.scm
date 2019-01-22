@@ -6052,14 +6052,14 @@ and MAC network addresses.")
 (define-public python-wrapt
   (package
     (name "python-wrapt")
-    (version "1.10.11")
+    (version "1.11.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "wrapt" version))
         (sha256
           (base32
-            "1ip3dwib39xhp79kblskgvz3fjzcwxgx3fs3ahdixhpjg7a61mfl"))))
+            "0cqmysny1pz01jw26q48q5zasvns6507rwhgm6wcw743f0r01sja"))))
     (build-system python-build-system)
     (arguments
      ;; Tests are not included in the tarball, they are only available in the
