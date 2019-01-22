@@ -5038,3 +5038,25 @@ file systems.")
     ;; The library "libhandle" and the headers in "xfslibs-dev" are
     ;; licensed under lgpl2.1. the other stuff is licensed under gpl2.
     (license (list license:gpl2 license:lgpl2.1))))
+
+(define-public genext2fs
+  (package
+    (name "genext2fs")
+    (version "1.4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jeremie-koenig/genext2fs.git")
+                    (commit (string-append "genext2fs-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1r0n74pyypv63qfqqpvx75dwijcsvcrvqrlv8sldbhv0nwr1gk53"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/jeremie-koenig/genext2fs")
+    (synopsis "Generate ext2 filesystem as a normal user")
+    (description "This package provides a program to general an ext2
+filesystem as a normal (non-root) user.  It does not require you to mount
+the image file to copy files on it, nor does it require that you become
+the superuser to make device nodes.")
+    (license license:gpl2)))
