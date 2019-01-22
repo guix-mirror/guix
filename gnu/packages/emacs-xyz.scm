@@ -6959,7 +6959,9 @@ Emacs.")
          (modify-phases %standard-phases
            (add-after 'install 'install-executable
              (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
+               (let ((out (assoc-ref outputs "out"))
+                     (source-directory (string-append
+                                  (getenv "TMPDIR") "/source")))
                  (substitute* "bin/ert-runner"
                    (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
                     (string-append "ERT_RUNNER=\"" out
@@ -6968,7 +6970,10 @@ Emacs.")
                  (install-file "bin/ert-runner" (string-append out "/bin"))
                  (wrap-program (string-append out "/bin/ert-runner")
                    (list "EMACSLOADPATH" ":" 'prefix
-                         (string-split (getenv "EMACSLOADPATH") #\:)))
+                         ;; Do not capture the transient source directory in
+                         ;; the wrapper.
+                         (delete source-directory
+                                 (string-split (getenv "EMACSLOADPATH") #\:))))
                  #t))))
          #:include (cons* "^reporters/.*\\.el$" %default-include)))
       (home-page "https://github.com/rejeep/ert-runner.el")
