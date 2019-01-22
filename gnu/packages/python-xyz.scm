@@ -11396,17 +11396,18 @@ builds partial trees by inspecting living objects.")
 (define-public python-isort
   (package
     (name "python-isort")
-    (version "4.2.5")
+    (version "4.3.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/timothycrosley/isort/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              ;; Tests pass only from the Github sources
+              (url "https://github.com/timothycrosley/isort")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zsrgkb0krn5476yncy5dd56k7dk34zqb4bnlvwy44ixgilyjmfh"))))
+         "1q0mlrpki5vjbgwxag5rghljjcfg7mvb0pbkwid80p0sqrxlm2p6"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -11417,10 +11418,16 @@ builds partial trees by inspecting living objects.")
 imports alphabetically, and automatically separated into sections.  It
 provides a command line utility, a python library and plugins for various
 editors.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-isort))))))
 
 (define-public python2-isort
-  (package-with-python2 python-isort))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-isort))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-futures" ,python2-futures)
+         ,@(package-native-inputs base))))))
 
 (define-public python2-backports-functools-lru-cache
   (package
