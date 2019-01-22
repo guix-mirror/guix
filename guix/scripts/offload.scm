@@ -712,18 +712,31 @@ machine."
                    (warning (G_ "failed to run 'guix repl' on machine '~a'~%")
                             (build-machine-name machine)))
                   ((? inferior? inferior)
-                   (let ((uts  (inferior-eval '(uname) inferior))
-                         (load (node-load inferior))
-                         (free (node-free-disk-space inferior)))
-                     (close-inferior inferior)
-                     (format #t "~a~%  kernel: ~a ~a~%  architecture: ~a~%\
-  host name: ~a~%  normalized load: ~a~%  free disk space: ~,2f MiB~%"
-                             (build-machine-name machine)
-                             (utsname:sysname uts) (utsname:release uts)
-                             (utsname:machine uts)
-                             (utsname:nodename uts)
-                             (normalized-load machine load)
-                             (/ free (expt 2 20) 1.)))))
+                   (let ((now (car (gettimeofday))))
+                     (match (inferior-eval '(list (uname)
+                                                  (car (gettimeofday)))
+                                           inferior)
+                       ((uts time)
+                        (when (< time now)
+                          ;; Build machine clocks must not be behind as this
+                          ;; could cause timestamp issues.
+                          (warning (G_ "machine '~a' is ~a seconds behind~%")
+                                   (build-machine-name machine)
+                                   (- now time)))
+
+                        (let ((load (node-load inferior))
+                              (free (node-free-disk-space inferior)))
+                          (close-inferior inferior)
+                          (format #t "~a~%  kernel: ~a ~a~%  architecture: ~a~%\
+  host name: ~a~%  normalized load: ~a~%  free disk space: ~,2f MiB~%\
+  time difference: ~a s~%"
+                                  (build-machine-name machine)
+                                  (utsname:sysname uts) (utsname:release uts)
+                                  (utsname:machine uts)
+                                  (utsname:nodename uts)
+                                  (normalized-load machine load)
+                                  (/ free (expt 2 20) 1.)
+                                  (- time now))))))))
 
                 (disconnect! session))
               machines)))
