@@ -4758,6 +4758,35 @@ speedup, polymorphic variants and optional syntax for tuples and variants.
 yojson package.  The program @code{atdgen} can be used to derive OCaml-JSON
 serializers and deserializers from type definitions.")
     (license license:bsd-3)))
+ 
+(define-public ocaml-craml
+  (package
+    (name "ocaml-craml")
+    (version "1.0.0")
+    (home-page "https://github.com/realworldocaml/craml")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "197xjp4vmzdymf2ndinw271ihpf45h04mx8gqj8ypspxdr5fj1a5"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-fmt" ,ocaml-fmt)
+       ("ocaml-astring" ,ocaml-astring)
+       ("ocaml-logs" ,ocaml-logs)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)))
+    (synopsis
+     "CRAM-testing framework for testing command line applications")
+    (description "CRAM is a is functional testing framework for command line
+applications.  @code{craml} is freely inspired by the
+Mercurial's @code{https://www.selenic.com/blog/?p=663, unified test
+format}.  @code{craml} is released as a single binary (called @code{craml}).")
+    (license license:isc)))
 
 (define-public ocaml-merlin
   (package
