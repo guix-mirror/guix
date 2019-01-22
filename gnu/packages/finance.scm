@@ -122,7 +122,8 @@
             #t))
           (add-before 'check 'set-home
            (lambda _
-            (setenv "HOME" (getenv "TMPDIR"))))))) ; Tests write to $HOME.
+            (setenv "HOME" (getenv "TMPDIR"))  ; Tests write to $HOME.
+            #t)))))
     (home-page "https://bitcoin.org/en/")
     (synopsis "Bitcoin peer-to-peer client")
     (description
