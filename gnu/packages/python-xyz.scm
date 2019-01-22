@@ -1997,25 +1997,25 @@ e.g. filters, callbacks and errbacks can all be promises.")
 (define-public python-virtualenv
   (package
     (name "python-virtualenv")
-    (version "15.0.3")
+    (version "16.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "virtualenv" version))
        (sha256
         (base32
-         "07cbajzk8l05k5zhlw0b9wbf2is65bl9v6zrn2a0iyn57w6pd73d"))))
+         "0242cg3hdq3qdvx5flyrki8lpwlgwf5k45c21ks5049fv7ygm6gq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check
+         (add-before 'check 'disable-failing-test
            (lambda _
              ;; Disable failing test.  See upstream bug report
              ;; https://github.com/pypa/virtualenv/issues/957
              (substitute* "tests/test_virtualenv.py"
                (("skipif.*") "skipif(True, reason=\"Guix\")\n"))
-             (zero? (system* "py.test")))))))
+             #t)))))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)))
