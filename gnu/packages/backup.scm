@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
-;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017, 2021 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2021 Arun Isaac <arunisaac@systemreboot.net>
@@ -42,6 +42,7 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -50,6 +51,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system qt)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages autotools)
@@ -81,13 +83,16 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml))
@@ -1266,4 +1271,64 @@ compression parameters used by Gzip.")
 and workstations.  Protect your files with client-side encryption.  Backup
 your databases too.  Monitor it all with integrated third-party services.
 borgmatic is powered by borg.")
+    (license license:gpl3+)))
+
+(define-public vorta
+  (package
+    (name "vorta")
+    (version "0.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "vorta" version))
+              (sha256
+               (base32
+                "1cl7kyh14h38xavbq23b8ifvk8abkiqdkpgaxfxvd223fm02zz26"))))
+    (build-system python-build-system)
+    (arguments
+     (list
+      #:imported-modules `((guix build qt-utils)
+                           (guix build cmake-build-system)
+                           (guix build qt-build-system)
+                           ,@%python-build-system-modules)
+      #:modules '((guix build utils)
+                  (guix build python-build-system)
+                  ((guix build qt-build-system) #:prefix qt:))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-borg-path
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "src/vorta/borg/borg_job.py"
+                (("which\\('borg'\\)")
+                 (string-append "which('" #$(this-package-input "borg")
+                                "/bin/borg')")))))
+          ;; XXX This phase tries to write to $HOME
+          (add-before 'sanity-check 'set-HOME
+            (lambda _
+              (setenv "HOME" "/tmp")))
+          ;; Otherwise, the user interface's icons will be missing.
+          (add-after 'wrap 'qt-wrap
+            (assoc-ref qt:%standard-phases 'qt-wrap)))))
+    (native-inputs
+     (list python-pytest-mock
+           python-pytest-qt
+           python-pytest-runner
+           python-setuptools-git))
+    (inputs
+     (list borg
+           python-appdirs
+           python-dateutil
+           python-keyring
+           python-paramiko
+           python-peewee
+           python-psutil
+           python-pyqt
+           python-secretstorage
+           ;; This is included so that the qt-wrap phase picks it up.
+           qtsvg))
+    (home-page "https://github.com/borgbase/vorta")
+    (synopsis "Graphical backup client based on BorgBackup")
+    (description "Vorta is a graphical backup client based on the Borg backup
+tool.  It supports the use of remote backup repositories.  It can perform
+scheduled backups, and has a graphical tool for browsing and extracting the Borg
+archives.")
     (license license:gpl3+)))
