@@ -2269,14 +2269,14 @@ representation of the data.")
 (define-public ocaml-uchar
   (package
     (name "ocaml-uchar")
-    (version "0.0.1")
+    (version "0.0.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/ocaml/uchar/releases/download/v"
                             version "/uchar-" version ".tbz"))
         (sha256 (base32
-                  "0ficw1x7ymbd6m8hqw3w1aycwm1hbwd6bad3c5pspwnzh3qlikhi"))))
+                  "1w2saw7zanf9m9ffvz2lvcxvlm118pws2x1wym526xmydhqpyfa7"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f
