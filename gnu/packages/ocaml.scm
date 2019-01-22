@@ -1768,15 +1768,17 @@ spans without being subject to operating system calendar time adjustments.")
 (define-public ocaml-cmdliner
   (package
     (name "ocaml-cmdliner")
-    (version "0.9.8")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/cmdliner/releases/"
                                   "cmdliner-" version ".tbz"))
               (sha256
                (base32
-                "0hdxlkgiwjml9dpaa80282a8350if7mc1m6yz2mrd7gci3fszykx"))))
+                "18jqphjiifljlh9jg8zpl6310p3iwyaqphdkmf89acyaix0s4kj1"))))
     (build-system ocaml-build-system)
+    (inputs
+     `(("ocaml-result" ,ocaml-result)))
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
        ("opam" ,opam)))
@@ -1785,6 +1787,12 @@ spans without being subject to operating system calendar time adjustments.")
        #:build-flags '("native=true" "native-dynlink=true")
        #:phases
        (modify-phases %standard-phases
+         (replace 'install
+           ;; The makefile says 'adjust on cli invocation'
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "make" "install" (string-append "PREFIX=" out))
+               #t)))
          (delete 'configure))))
     (home-page "http://erratique.ch/software/cmdliner")
     (synopsis "Declarative definition of command line interfaces for OCaml")
