@@ -621,16 +621,6 @@ Info manual."
                  #:guile-for-build
                  guile-for-build))
 
-  (define *system-test-modules*
-    ;; Ship these modules mostly so (gnu ci) can refer to them.
-    (scheme-node "guix-system-tests"
-                 `((gnu tests)
-                   ,@(scheme-modules* source "gnu/tests"))
-                 (list *core-package-modules* *package-modules*
-                       *extra-modules* *system-modules* *core-modules*)
-                 #:extensions dependencies
-                 #:guile-for-build guile-for-build))
-
   (define *cli-modules*
     (scheme-node "guix-cli"
                  (append (scheme-modules* source "/guix/scripts")
@@ -638,6 +628,17 @@ Info manual."
                  (list *core-modules* *extra-modules*
                        *core-package-modules* *package-modules*
                        *system-modules*)
+                 #:extensions dependencies
+                 #:guile-for-build guile-for-build))
+
+  (define *system-test-modules*
+    ;; Ship these modules mostly so (gnu ci) can discover them.
+    (scheme-node "guix-system-tests"
+                 `((gnu tests)
+                   ,@(scheme-modules* source "gnu/tests"))
+                 (list *core-package-modules* *package-modules*
+                       *extra-modules* *system-modules* *core-modules*
+                       *cli-modules*)           ;for (guix scripts pack), etc.
                  #:extensions dependencies
                  #:guile-for-build guile-for-build))
 
