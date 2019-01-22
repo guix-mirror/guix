@@ -5060,3 +5060,66 @@ filesystem as a normal (non-root) user.  It does not require you to mount
 the image file to copy files on it, nor does it require that you become
 the superuser to make device nodes.")
     (license license:gpl2)))
+
+(define-public fakeroot
+  (package
+    (name "fakeroot")
+    (version "1.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ftp.debian.org/debian/pool/main/f/"
+                                  "fakeroot/fakeroot_" version ".orig.tar.xz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xpl0s2yjyjwlf832b6kbkaa5921liybaar13k7n45ckd9lxd700"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+        (add-after 'configure 'patch-Makefile
+          (lambda _
+            ;; Note: The root of the problem is already in "Makefile.am".
+            (substitute* "Makefile"
+             (("/bin/sh") (which "sh")))
+            #t))
+        (add-after 'unpack 'patch-getopt
+          (lambda*  (#:key inputs #:allow-other-keys)
+            (substitute* "scripts/fakeroot.in"
+             (("getopt")
+              (string-append (assoc-ref inputs "util-linux")
+                             "/bin/getopt")))
+            #t))
+        (add-before 'check 'prepare-check
+          (lambda _
+            (setenv "SHELL" (which "bash"))
+            (setenv "VERBOSE" "1")
+            (substitute* "test/t.touchinstall"
+             ;; We don't have the name of the root user, so use ID=0.
+             (("grep root") "grep \"\\<0\\>\""))
+            (substitute* "test/tartest"
+             ;; We don't have the name of the root group, so use ID=0.
+             (("ROOTGROUP=root") "ROOTGROUP=0")
+             ;; We don't have the name of the daemon user, so use IDs.
+             (("daemon:sys") "1:3")
+             (("daemon:") "1:"))
+            ;; We don't have an /etc/passwd entry for "root" - use numeric IDs.
+            (substitute* "test/compare-tar"
+             (("tar -tvf") "tar --numeric-owner -tvf"))
+            #t)))))
+    (native-inputs
+     `(("sharutils" ,sharutils) ; for the tests
+       ("xz" ,xz))) ; for the tests
+    (inputs
+     `(("libcap" ,libcap)
+       ("util-linux" ,util-linux)))
+    (synopsis "Provides a fake root environment")
+    (description "@command{fakeroot} runs a command in an environment where
+it appears to have root privileges for file manipulation. This is useful
+for allowing users to create archives (tar, ar, .deb etc.) with files in
+them with root permissions/ownership. Without fakeroot one would have to
+have root privileges to create the constituent files of the archives with
+the correct permissions and ownership, and then pack them up, or one would
+have to construct the archives directly, without using the archiver.")
+    (home-page "http://freshmeat.sourceforge.net/projects/fakeroot")
+    (license license:gpl3+)))
