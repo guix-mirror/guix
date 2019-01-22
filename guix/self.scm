@@ -36,8 +36,7 @@
   #:export (make-config.scm
             whole-package                     ;for internal use in 'guix pull'
             compiled-guix
-            guix-derivation
-            reload-guix))
+            guix-derivation))
 
 
 ;;;
