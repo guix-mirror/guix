@@ -71,7 +71,7 @@
 (define-public wine
   (package
     (name "wine")
-    (version "3.0.4")
+    (version "4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.winehq.org/wine/source/"
@@ -79,7 +79,7 @@
                                   "/wine-" version ".tar.xz"))
               (sha256
                (base32
-                "037vlrk80lagy362w7500i2ldwvdwsadrknajzi67cvxpvnqhnnl"))))
+                "0k8d90mgjzv8vjspmnxzr3i5mbccxnbr9hf03q1bpf5jjppcsdk7"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
@@ -122,8 +122,10 @@
        ("ncurses" ,ncurses)
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
+       ("sdl2" ,sdl2)
        ("unixodbc" ,unixodbc)
        ("v4l-utils" ,v4l-utils)
+       ("vulkan-loader" ,vulkan-loader)
        ("zlib" ,zlib)))
     (arguments
      `(;; Force a 32-bit build targeting a similar architecture, i.e.:
@@ -288,10 +290,8 @@ integrate Windows applications into your desktop.")
               ("libva" ,libva)
               ("mesa" ,mesa)
               ("python" ,python)
-              ("sdl2" ,sdl2)
               ("util-linux" ,util-linux) ; for hexdump
               ("vkd3d" ,vkd3d)
-              ("vulkan-loader" ,vulkan-loader)
               ("wine-staging-patchset-data" ,wine-staging-patchset-data)
               ,@(package-inputs wine)))
     (arguments
