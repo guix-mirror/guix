@@ -113,6 +113,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
@@ -451,6 +452,33 @@ concepts.")
     (description "This package provides a replacement for Python's
 @code{subprocess} feature.")
     (license license:expat)))
+
+(define-public python-cftime
+  (package
+    (name "python-cftime")
+    (version "1.0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cftime" version))
+       (sha256
+        (base32
+         "0362dhxbzk593walyjz30dll6y2y79wialik647cbwdsf3ad0x6x"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-coveralls" ,python-coveralls)
+       ("python-cython" ,python-cython)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/Unidata/cftime")
+    (synopsis "Library for time handling")
+    (description
+     "This package provides time-handling functionality that used to be part
+of the netcdf4 package before.")
+    ;; This package claims to include code under the GPLv3 but is released
+    ;; under ISC.
+    (license (list license:isc license:gpl3+))))
 
 (define-public python-netcdf4
   (package
