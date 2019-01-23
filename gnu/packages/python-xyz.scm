@@ -6167,14 +6167,14 @@ printing of sub-tables by specifying a row range.")
              #t))
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "python" "setup.py" "build"
-                             (string-append "--hdf5="
-                                            (assoc-ref inputs "hdf5"))))))
+             (invoke "python" "setup.py" "build"
+                     (string-append "--hdf5="
+                                    (assoc-ref inputs "hdf5")))))
          (replace 'check
            (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "python" "setup.py" "check"
-                             (string-append "--hdf5="
-                                            (assoc-ref inputs "hdf5")))))))))
+             (invoke "python" "setup.py" "check"
+                     (string-append "--hdf5="
+                                    (assoc-ref inputs "hdf5"))))))))
     (propagated-inputs
      `(("python-numexpr" ,python-numexpr)
        ("python-numpy" ,python-numpy)))
