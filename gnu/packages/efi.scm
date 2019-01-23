@@ -21,6 +21,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
@@ -115,3 +116,64 @@ environment presented by Intel's EFI.")
     (description "This package provides tools for signing EFI binaries.")
     (home-page "https://git.kernel.org/pub/scm/linux/kernel/git/jejb/sbsigntools.git/")
     (license license:gpl3+)))
+
+(define-public efitools
+  (package
+    (name "efitools")
+    (version "1.9.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://git.kernel.org/pub/scm/linux/kernel/git/jejb/efitools.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0jabgl2pxvfl780yvghq131ylpf82k7banjz0ksjhlm66ik8gb1i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; No tests exist.
+       #:make-flags
+       '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "Make.rules"
+              (("/usr/include/efi")
+               (string-append (assoc-ref inputs "gnu-efi")
+                              "/include/efi"))
+              (("\\$\\(DESTDIR\\)/usr")
+               (string-append (assoc-ref outputs "out")))
+              (("/usr/lib/gnuefi")
+               (string-append (assoc-ref inputs "gnu-efi")
+                              "/lib")))
+             #t))
+         (add-after 'unpack 'patch-more-shebangs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "xxdi.pl"
+              (("#!.*")
+               (string-append "#!"
+                              (assoc-ref inputs "perl")
+                              "/bin/perl\n")))
+             #t))
+         (delete 'configure))))
+    (native-inputs
+     `(("help2man" ,help2man)
+       ("perl" ,perl)
+       ("perl-file-slurp" ,perl-file-slurp)
+       ("sbsigntools" ,sbsigntools)))
+    (inputs
+     `(("gnu-efi" ,gnu-efi)
+       ("openssl" ,openssl)))
+    (synopsis "EFI tools (key management, variable management)")
+    (description "This package provides EFI tools for EFI key management
+and EFI variable management.")
+    (home-page "https://blog.hansenpartnership.com/efitools-1-4-with-linux-key-manipulation-utilities-released/")
+    ;; Programs are under GPL 2.
+    ;; Library routines (in lib/) are under LGPL 2.1.
+    ;; Compiling/linking/using OpenSSL is permitted.
+    (license (list license:gpl2
+                   license:lgpl2.1))))
