@@ -1749,7 +1749,7 @@ version numbers.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _ (zero? (system* "nosetests")))))))
+         (replace 'check (lambda _ (invoke "nosetests"))))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-vcversioner" ,python-vcversioner)))
