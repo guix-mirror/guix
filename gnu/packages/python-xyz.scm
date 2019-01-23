@@ -3805,7 +3805,8 @@ a general image processing tool.")
          (replace 'check
            (lambda _
              (with-directory-excursion "tests"
-               (zero? (system* "python" "all_tests.py")))))
+               (invoke "python" "all_tests.py"))
+             #t))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
