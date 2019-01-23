@@ -13184,9 +13184,9 @@ is the new Pyro version that is actively developed.")
        (modify-phases %standard-phases
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "python" "setup.py" "build"
-                             (string-append "--netcdf_prefix="
-                                            (assoc-ref inputs "netcdf")))))))))
+             (invoke "python" "setup.py" "build"
+                     (string-append "--netcdf_prefix="
+                                    (assoc-ref inputs "netcdf"))))))))
     (home-page "https://bitbucket.org/khinsen/scientificpython")
     (synopsis "Python modules for scientific computing")
     (description "ScientificPython is a collection of Python modules that are
