@@ -3393,7 +3393,7 @@ toolkits.")
        ("python2-pandas" ,python2-pandas)))
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "http://research.microsoft.com/en-us/um/redmond/projects/mscompbio/")
+    (home-page "http://microsoftgenomics.github.io/PySnpTools/")
     (synopsis "Library for reading and manipulating genetic data")
     (description
      "PySnpTools is a library for reading and manipulating genetic data.  It
