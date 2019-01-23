@@ -5756,8 +5756,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-                  (lambda _
-                    (zero? (system* "nosetests")))))))
+           (lambda _ (invoke "nosetests"))))))
     (home-page "https://github.com/pexpect/ptyprocess")
     (synopsis "Run a subprocess in a pseudo terminal")
     (description
