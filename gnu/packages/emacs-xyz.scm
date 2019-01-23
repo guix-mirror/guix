@@ -535,13 +535,13 @@ for editing Racket's Scribble documentation syntax in Emacs.")
     (name "emacs-haskell-mode")
     (version "16.1")
     (source (origin
-              (method url-fetch)
-              (file-name (string-append name "-" version ".tar.gz"))
-              (uri (string-append
-                    "https://github.com/haskell/haskell-mode/archive/v"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/haskell/haskell-mode")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
-               (base32 "0g6lcjw7lcgavv3yrd8xjcyqgfyjl787y32r1z14amw2f009m78h"))
+               (base32 "1qk36y0v9fzass6785il65c6wb5cfj4ihhwkvgnzmbafpa8p4dvq"))
               (patches
                (search-patches ; backport test failure fixes
                 "haskell-mode-unused-variables.patch"
