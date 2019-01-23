@@ -1021,13 +1021,14 @@ light user interface.")
     (version "0.2.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/momomo5717/emms-mode-line-cycle"
-                           "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/momomo5717/emms-mode-line-cycle")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ifszi930pnaxk1x8pcydmvnp06868gc7nfx14q17zbajbx735k6"))))
+         "0q80f0plch6k4lhs8c9qm3mfycfbp3kn5sjrk9zxgxwnn901y9mp"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emms" ,emacs-emms)))
