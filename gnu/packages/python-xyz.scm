@@ -12338,7 +12338,7 @@ Swagger 2.0).")
              (setenv "PYTHONPATH" (string-append (getcwd)
                                                  ":"
                                                  (getenv "PYTHONPATH")))
-             (zero? (system* "py.test")))))))
+             (invoke "py.test"))))))
     (propagated-inputs
      `(("python-flask" ,python-flask)
        ("python-pyyaml" ,python-pyyaml)
