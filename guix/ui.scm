@@ -690,7 +690,7 @@ or remove one of them from the profile.")
                     (strerror (store-connection-error-code c))))
             ((store-protocol-error? c)
              ;; FIXME: Server-provided error messages aren't i18n'd.
-             (leave (G_ "build failed: ~a~%")
+             (leave (G_ "~a~%")
                     (store-protocol-error-message c)))
             ((derivation-missing-output-error? c)
              (leave (G_ "reference to invalid output '~a' of derivation '~a'~%")
