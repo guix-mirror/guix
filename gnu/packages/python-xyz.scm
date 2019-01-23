@@ -11262,8 +11262,7 @@ iterating over input files.")
          ;; and fails.
          (delete 'check)
          (add-before 'build 'check
-           (lambda _
-             (zero? (system* "make" "check")))))))
+           (lambda _ (invoke "make" "check"))))))
     (home-page "https://liw.fi/ttystatus/")
     (synopsis "Python library for showing progress reporting and
 status updates on terminals")
