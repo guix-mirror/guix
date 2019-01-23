@@ -3001,12 +3001,12 @@ color scales, and color space conversion easy.  It has support for:
                (with-directory-excursion "doc"
                  (copy-recursively sphinx-theme-checkout scipy-sphinx-theme)
                  (mkdir-p html)
-                 (system* "make" "html" pyver)
-                 (system* "make" "latex" "PAPER=a4" pyver)
-                 (system* "make" "-C" "build/latex"
+                 (invoke "make" "html" pyver)
+                 (invoke "make" "latex" "PAPER=a4" pyver)
+                 (invoke "make" "-C" "build/latex"
                           "all-pdf" "PAPER=a4" pyver)
                  ;; FIXME: Generation of the info file fails.
-                 ;; (system* "make" "info" pyver)
+                 ;; (invoke "make" "info" pyver)
                  ;; (mkdir-p info)
                  ;; (copy-file "build/texinfo/numpy.info"
                  ;;            (string-append info "/numpy.info"))
