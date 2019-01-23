@@ -64,7 +64,7 @@
 
 (define* (open-connection-for-tests #:optional (uri (%daemon-socket-uri)))
   "Open a connection to the build daemon for tests purposes and return it."
-  (guard (c ((nix-error? c)
+  (guard (c ((store-error? c)
              (format (current-error-port)
                      "warning: build daemon error: ~s~%" c)
              #f))

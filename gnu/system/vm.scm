@@ -30,7 +30,6 @@
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix modules)
-  #:use-module (guix scripts pack)
   #:use-module (guix utils)
   #:use-module (gcrypt hash)
   #:use-module (guix base32)

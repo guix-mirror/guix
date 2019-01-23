@@ -31,7 +31,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
-;;; Copyright © 2017, 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017, 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -6906,49 +6906,53 @@ Emacs.")
 ;; Tests for ert-runner have a circular dependency with ecukes, and therefore
 ;; cannot be run
 (define-public emacs-ert-runner
-  (package
-    (name "emacs-ert-runner")
-    (version "0.7.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/rejeep/ert-runner.el/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1657nck9i96a4xgl8crfqq0s8gflzp21pkkzwg6m3z5npjxklgwp"))))
-    (build-system emacs-build-system)
-    (inputs
-     `(("emacs-ansi" ,emacs-ansi)
-       ("emacs-commander" ,emacs-commander)
-       ("emacs-dash" ,emacs-dash)
-       ("emacs-f" ,emacs-f)
-       ("emacs-s" ,emacs-s)
-       ("emacs-shut-up" ,emacs-shut-up)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "bin/ert-runner"
-                 (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
-                  (string-append "ERT_RUNNER=\"" out
-                                 "/share/emacs/site-lisp/guix.d/ert-runner-"
-                                 ,version)))
-               (install-file "bin/ert-runner" (string-append out "/bin"))
-               (wrap-program (string-append out "/bin/ert-runner")
-                 (list "EMACSLOADPATH" ":" 'prefix
-                       (string-split (getenv "EMACSLOADPATH") #\:)))
-               #t))))
-       #:include (cons* "^reporters/.*\\.el$" %default-include)))
-    (home-page "https://github.com/rejeep/ert-runner.el")
-    (synopsis "Opinionated Ert testing workflow")
-    (description "@code{ert-runner} is a tool for Emacs projects tested
+  (let ((version "0.7.0")
+        (revision "1")
+        (commit "90b8fdd5970ef76a4649be60003b37f82cdc1a65"))
+    (package
+      (name "emacs-ert-runner")
+      (version (git-version "0.7.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rejeep/ert-runner.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "04nxmyzncacj2wmzd84vv9wkkr2dk9lcb10dvygqmg3p1gadnwzz"))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("emacs-ansi" ,emacs-ansi)
+         ("emacs-commander" ,emacs-commander)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-s" ,emacs-s)
+         ("emacs-shut-up" ,emacs-shut-up)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'install-executable
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "bin/ert-runner"
+                   (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
+                    (string-append "ERT_RUNNER=\"" out
+                                   "/share/emacs/site-lisp/guix.d/ert-runner-"
+                                   ,version)))
+                 (install-file "bin/ert-runner" (string-append out "/bin"))
+                 (wrap-program (string-append out "/bin/ert-runner")
+                   (list "EMACSLOADPATH" ":" 'prefix
+                         (string-split (getenv "EMACSLOADPATH") #\:)))
+                 #t))))
+         #:include (cons* "^reporters/.*\\.el$" %default-include)))
+      (home-page "https://github.com/rejeep/ert-runner.el")
+      (synopsis "Opinionated Ert testing workflow")
+      (description "@code{ert-runner} is a tool for Emacs projects tested
 using ERT.  It assumes a certain test structure setup and can therefore make
 running tests easier.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public ert-runner
   (deprecated-package "ert-runner" emacs-ert-runner))
@@ -12867,3 +12871,27 @@ DBI, and provides DB-accessing API and the simple management UI.")
       (description "This package is a convenience wrapper for @command{edbi}
 to open SQLite databases.")
       (license license:gpl3+))))
+
+(define-public emacs-nix-mode
+  (package
+    (name "emacs-nix-mode")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/NixOS/nix-mode/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06aqz0czznsj8835jqnk794sy2p6pa8kxfqwh0nl5d5vxivria6z"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("emacs-company" ,emacs-company)
+       ("emacs-mmm-mode" ,emacs-mmm-mode)))
+    (home-page "https://github.com/NixOS/nix-mode")
+    (synopsis "Emacs major mode for editing Nix expressions")
+    (description "@code{nixos-mode} provides an Emacs major mode for editing
+Nix expressions.  It supports syntax highlighting, indenting and refilling of
+comments.")
+    (license license:lgpl2.1+)))

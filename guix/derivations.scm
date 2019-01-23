@@ -113,7 +113,7 @@
 ;;; Error conditions.
 ;;;
 
-(define-condition-type &derivation-error &nix-error
+(define-condition-type &derivation-error &store-error
   derivation-error?
   (derivation derivation-error-derivation))
 

@@ -73,15 +73,15 @@
 (define-public bitcoin-core
   (package
     (name "bitcoin-core")
-    (version "0.16.1")
+    (version "0.17.1")
     (source (origin
              (method url-fetch)
              (uri
-              (string-append "https://bitcoin.org/bin/bitcoin-core-"
+              (string-append "https://bitcoincore.org/bin/bitcoin-core-"
                              version "/bitcoin-" version ".tar.gz"))
              (sha256
               (base32
-               "1zkqp93yircd3pbxczxfnibkpq0sgcv5r7wg6d196b9pwgr9zd39"))))
+               "0am4pnaf2cisv172jqx6jdpzx770agm8777163lkjbw3ryslymiy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -115,9 +115,15 @@
                          "/bin/lupdate"))
        #:phases
         (modify-phases %standard-phases
+          (add-before 'configure 'make-qt-deterministic
+           (lambda _
+            ;; Make Qt deterministic.
+            (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+            #t))
           (add-before 'check 'set-home
            (lambda _
-            (setenv "HOME" (getenv "TMPDIR"))))))) ; Tests write to $HOME.
+            (setenv "HOME" (getenv "TMPDIR"))  ; Tests write to $HOME.
+            #t)))))
     (home-page "https://bitcoin.org/en/")
     (synopsis "Bitcoin peer-to-peer client")
     (description

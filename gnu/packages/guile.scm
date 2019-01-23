@@ -1672,7 +1672,7 @@ is no support for parsing block and inline level HTML.")
 (define-public guile-bytestructures
   (package
     (name "guile-bytestructures")
-    (version "1.0.3")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/TaylanUB/scheme-bytestructures"
@@ -1680,7 +1680,7 @@ is no support for parsing block and inline level HTML.")
                                   "/bytestructures-" version ".tar.gz"))
               (sha256
                (base32
-                "0xf6s8gd3656j8k2ar6y7i62r68azawyzxhsagsk8nvldnrs1r18"))))
+                "0ibk7fjwpb450lnrva4bx45sgln3pbyb645az4ansvh1spgani43"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

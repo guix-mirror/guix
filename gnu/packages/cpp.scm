@@ -41,12 +41,15 @@
     (version "0.4.37")
     (source (origin
               (method url-fetch)
+              ;; Warning: This source has proved unreliable 1 time at least.
+              ;; Consider an alternate source or report upstream if this
+              ;; happens again.
               (uri (string-append "https://mediaarea.net/download/source/"
                                   name "/" version "/"
                                   name "_" version ".tar.bz2"))
               (sha256
                (base32
-                "1hcsrmn85b0xp0mp33aazk7g071q1v3f163nnhv8b0mv9c4bgsfn"))))
+                "1dkqbgabzpa6bd7dkqrvd35sdxrhr6qxalb88f3dw0afk65xqb0k"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -58,10 +61,8 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'pre-configure
            (lambda _
-             (chdir "Project/GNU/Library")))
-         (add-after 'pre-configure 'autogen
-           (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (chdir "Project/GNU/Library")
+             #t)))))
     (home-page "https://github.com/MediaArea/ZenLib")
     (synopsis "C++ utility library")
     (description "ZenLib is a C++ utility library.  It includes classes for handling

@@ -103,7 +103,7 @@ Running mkfs.ext4 on /dev/sda2 ...
 
 [              40%              ]
 Running mkfs.ext4 on /dev/sda3 ...
-
+*** Add a confirmation page before formating/partitioning
 ** Desktop environments
 *** Allow for no desktop environments
 Propose to choose between "headless server" and "lightweight X11" in a new
@@ -119,3 +119,6 @@ Under the form:
 (UTC + 1) Europe/Paris
 (UTC + 2) Africa/Cairo
 ...
+** Display issue
+*** Investigate display issue described here:
+https://lists.gnu.org/archive/html/guix-devel/2019-01/msg00305.html

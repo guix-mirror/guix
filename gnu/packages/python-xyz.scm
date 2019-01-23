@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
@@ -1997,25 +1997,25 @@ e.g. filters, callbacks and errbacks can all be promises.")
 (define-public python-virtualenv
   (package
     (name "python-virtualenv")
-    (version "15.0.3")
+    (version "16.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "virtualenv" version))
        (sha256
         (base32
-         "07cbajzk8l05k5zhlw0b9wbf2is65bl9v6zrn2a0iyn57w6pd73d"))))
+         "0242cg3hdq3qdvx5flyrki8lpwlgwf5k45c21ks5049fv7ygm6gq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check
+         (add-before 'check 'disable-failing-test
            (lambda _
              ;; Disable failing test.  See upstream bug report
              ;; https://github.com/pypa/virtualenv/issues/957
              (substitute* "tests/test_virtualenv.py"
                (("skipif.*") "skipif(True, reason=\"Guix\")\n"))
-             (zero? (system* "py.test")))))))
+             #t)))))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)))
@@ -3391,8 +3391,6 @@ toolkits.")
      `(("python2-numpy" ,python2-numpy)
        ("python2-scipy" ,python2-scipy)
        ("python2-pandas" ,python2-pandas)))
-    (native-inputs
-     `(("python2-cython" ,python2-cython)))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "http://research.microsoft.com/en-us/um/redmond/projects/mscompbio/")
@@ -6052,14 +6050,14 @@ and MAC network addresses.")
 (define-public python-wrapt
   (package
     (name "python-wrapt")
-    (version "1.10.11")
+    (version "1.11.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "wrapt" version))
         (sha256
           (base32
-            "1ip3dwib39xhp79kblskgvz3fjzcwxgx3fs3ahdixhpjg7a61mfl"))))
+            "0cqmysny1pz01jw26q48q5zasvns6507rwhgm6wcw743f0r01sja"))))
     (build-system python-build-system)
     (arguments
      ;; Tests are not included in the tarball, they are only available in the
@@ -8705,14 +8703,14 @@ to support both Python 2 and Python 3 with minimal overhead.")
 (define-public python-cysignals
   (package
     (name "python-cysignals")
-    (version "1.1.0")
+    (version "1.9.0")
     (source
       (origin
         (method url-fetch)
-        (uri (pypi-uri "cysignals" version ".tar.bz2"))
+        (uri (pypi-uri "cysignals" version))
         (sha256
           (base32
-            "14cbyd9znlz6cxy1s3g6v6dv5jj45hn27pywkidd9b1zanaysqc6"))))
+            "15ix8crpad26cfl1skyg7qajqqfdrm8q5ahhmlfmqi1aw0jqj2g2"))))
     (build-system python-build-system)
     (native-inputs
       `(("python-cython" ,python-cython)
@@ -11396,17 +11394,18 @@ builds partial trees by inspecting living objects.")
 (define-public python-isort
   (package
     (name "python-isort")
-    (version "4.2.5")
+    (version "4.3.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/timothycrosley/isort/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              ;; Tests pass only from the Github sources
+              (url "https://github.com/timothycrosley/isort")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zsrgkb0krn5476yncy5dd56k7dk34zqb4bnlvwy44ixgilyjmfh"))))
+         "1q0mlrpki5vjbgwxag5rghljjcfg7mvb0pbkwid80p0sqrxlm2p6"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -11417,10 +11416,16 @@ builds partial trees by inspecting living objects.")
 imports alphabetically, and automatically separated into sections.  It
 provides a command line utility, a python library and plugins for various
 editors.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-isort))))))
 
 (define-public python2-isort
-  (package-with-python2 python-isort))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-isort))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-futures" ,python2-futures)
+         ,@(package-native-inputs base))))))
 
 (define-public python2-backports-functools-lru-cache
   (package

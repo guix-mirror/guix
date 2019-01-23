@@ -26,9 +26,9 @@
                           version>? version-prefix?
                           cache-directory))
   #:use-module ((guix store)
-                #:select (nix-server-socket
-                          nix-server-major-version
-                          nix-server-minor-version
+                #:select (store-connection-socket
+                          store-connection-major-version
+                          store-connection-minor-version
                           store-lift))
   #:use-module ((guix derivations)
                 #:select (read-derivation-from-file))
@@ -424,8 +424,8 @@ thus be the code of a one-argument procedure that accepts a store."
      (chmod directory #o700)
      (let* ((name     (string-append directory "/inferior"))
             (socket   (socket AF_UNIX SOCK_STREAM 0))
-            (major    (nix-server-major-version store))
-            (minor    (nix-server-minor-version store))
+            (major    (store-connection-major-version store))
+            (minor    (store-connection-minor-version store))
             (proto    (logior major minor)))
        (bind socket AF_UNIX name)
        (listen socket 1024)
@@ -451,7 +451,7 @@ thus be the code of a one-argument procedure that accepts a store."
         inferior)
        (match (accept socket)
          ((client . address)
-          (proxy client (nix-server-socket store))))
+          (proxy client (store-connection-socket store))))
        (close-port socket)
        (read-inferior-response inferior)))))
 

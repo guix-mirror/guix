@@ -788,6 +788,28 @@ set_relative_time, set_absolute_time or set_fixed_time to alter future calls
 to gmtime,time or localtime.")
     (license perl-license)))
 
+(define-public perl-test-more-utf8
+  (package
+    (name "perl-test-more-utf8")
+    (version "0.05")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/M/MO/MONS/Test-More-UTF8-"
+               version ".tar.gz"))
+        (sha256
+         (base32
+          "016fs77lmw8xxrcnapvp6wq4hjwgsdfi3l9ylpxgxkcpdarw9wdr"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Test-More-UTF8")
+    (synopsis "Enhance Test::More for UTF8-based projects")
+    (description "@code{Test::More::UTF8} is a simple extension for the widely
+used @code{Test::More} module.  By default, it will do a @code{binmode ':utf8'}
+on all of @code{Test::Builder}'s output handles thus enabling the easy use
+flagged strings without warnings like \"Wide character in print @dots{}\"")
+    (license perl-license)))
+
 (define-public perl-test-most
   (package
     (name "perl-test-most")

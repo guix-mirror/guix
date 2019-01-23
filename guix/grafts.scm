@@ -189,7 +189,7 @@ available."
        items)))
 
   (define (references* items)
-    (guard (c ((nix-protocol-error? c)
+    (guard (c ((store-protocol-error? c)
                ;; As a last resort, build DRV and query the references of the
                ;; build result.
 

@@ -43,7 +43,6 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages docbook)
-  #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -76,7 +75,6 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
@@ -458,30 +456,6 @@ Haskell—they are built by functions that don't have side-effects, and they
 never change after they have been built.  Nix stores packages in the Nix
 store, usually the directory /nix/store, where each package has its own unique
 sub-directory.")
-    (license license:lgpl2.1+)))
-
-(define-public emacs-nix-mode
-  (package
-    (name "emacs-nix-mode")
-    (version "1.2.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/NixOS/nix-mode/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "06aqz0czznsj8835jqnk794sy2p6pa8kxfqwh0nl5d5vxivria6z"))))
-    (build-system emacs-build-system)
-    (inputs
-     `(("emacs-company" ,emacs-company)
-       ("emacs-mmm-mode" ,emacs-mmm-mode)))
-    (home-page "https://github.com/NixOS/nix-mode")
-    (synopsis "Emacs major mode for editing Nix expressions")
-    (description "@code{nixos-mode} provides an Emacs major mode for editing
-Nix expressions.  It supports syntax highlighting, indenting and refilling of
-comments.")
     (license license:lgpl2.1+)))
 
 (define-public stow

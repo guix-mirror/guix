@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
@@ -1218,14 +1218,14 @@ verification of the SSL peer.")
 (define-public python-websocket-client
   (package
     (name "python-websocket-client")
-    (version "0.37.0")
+    (version "0.54.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "websocket_client" version))
        (sha256
         (base32
-         "0h9glp1jll3z76ly3kg08aqgxqk0a68p4zi9yn50353bh5nj92v7"))))
+         "0j88zmikaypf38lvpkf4aaxrjp9j07dmy5ghj7kli0fv3p4n45g5"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
@@ -1233,10 +1233,18 @@ verification of the SSL peer.")
     (synopsis "WebSocket client for Python")
     (description "The Websocket-client module provides the low level APIs for
 WebSocket usage in Python programs.")
+    (properties `((python2-variant . ,(delay python2-websocket-client))))
     (license license:lgpl2.1+)))
 
 (define-public python2-websocket-client
-  (package-with-python2 python-websocket-client))
+  (let ((base (package-with-python2
+                (strip-python2-variant python-websocket-client))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-backport-ssl-match-hostname"
+          ,python2-backport-ssl-match-hostname)
+         ,@(package-native-inputs base))))))
 
 (define-public python-requests
   (package

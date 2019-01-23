@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -413,8 +413,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20.3")
-(define %linux-libre-hash "0mk996fb4bd9548xnv2as4lxm3gyj1kvn6ra03xxpb0wf8cqdazz")
+(define %linux-libre-version "4.20.4")
+(define %linux-libre-hash "1p7ixkqvnr0mzyivyby8hfix44np7w1nvyxghz8wa1h2nhsszvzv")
 
 (define %linux-libre-4.20-patches
   (list %boot-logo-patch
@@ -427,8 +427,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.20-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.16")
-(define %linux-libre-4.19-hash "1dpfllfzksrr6iqhvbh2905gkvycsv5zcmgq6wmwqiry1swzdfyk")
+(define %linux-libre-4.19-version "4.19.17")
+(define %linux-libre-4.19-hash "0friqd9wyhddjli4m41wd994ygnwng40a95ry14478rkadfv7iwh")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -5039,3 +5039,88 @@ file systems.")
     ;; The library "libhandle" and the headers in "xfslibs-dev" are
     ;; licensed under lgpl2.1. the other stuff is licensed under gpl2.
     (license (list license:gpl2 license:lgpl2.1))))
+
+(define-public genext2fs
+  (package
+    (name "genext2fs")
+    (version "1.4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jeremie-koenig/genext2fs.git")
+                    (commit (string-append "genext2fs-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1r0n74pyypv63qfqqpvx75dwijcsvcrvqrlv8sldbhv0nwr1gk53"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/jeremie-koenig/genext2fs")
+    (synopsis "Generate ext2 filesystem as a normal user")
+    (description "This package provides a program to general an ext2
+filesystem as a normal (non-root) user.  It does not require you to mount
+the image file to copy files on it, nor does it require that you become
+the superuser to make device nodes.")
+    (license license:gpl2)))
+
+(define-public fakeroot
+  (package
+    (name "fakeroot")
+    (version "1.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ftp.debian.org/debian/pool/main/f/"
+                                  "fakeroot/fakeroot_" version ".orig.tar.xz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xpl0s2yjyjwlf832b6kbkaa5921liybaar13k7n45ckd9lxd700"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+        (add-after 'configure 'patch-Makefile
+          (lambda _
+            ;; Note: The root of the problem is already in "Makefile.am".
+            (substitute* "Makefile"
+             (("/bin/sh") (which "sh")))
+            #t))
+        (add-after 'unpack 'patch-getopt
+          (lambda*  (#:key inputs #:allow-other-keys)
+            (substitute* "scripts/fakeroot.in"
+             (("getopt")
+              (string-append (assoc-ref inputs "util-linux")
+                             "/bin/getopt")))
+            #t))
+        (add-before 'check 'prepare-check
+          (lambda _
+            (setenv "SHELL" (which "bash"))
+            (setenv "VERBOSE" "1")
+            (substitute* "test/t.touchinstall"
+             ;; We don't have the name of the root user, so use ID=0.
+             (("grep root") "grep \"\\<0\\>\""))
+            (substitute* "test/tartest"
+             ;; We don't have the name of the root group, so use ID=0.
+             (("ROOTGROUP=root") "ROOTGROUP=0")
+             ;; We don't have the name of the daemon user, so use IDs.
+             (("daemon:sys") "1:3")
+             (("daemon:") "1:"))
+            ;; We don't have an /etc/passwd entry for "root" - use numeric IDs.
+            (substitute* "test/compare-tar"
+             (("tar -tvf") "tar --numeric-owner -tvf"))
+            #t)))))
+    (native-inputs
+     `(("sharutils" ,sharutils) ; for the tests
+       ("xz" ,xz))) ; for the tests
+    (inputs
+     `(("libcap" ,libcap)
+       ("util-linux" ,util-linux)))
+    (synopsis "Provides a fake root environment")
+    (description "@command{fakeroot} runs a command in an environment where
+it appears to have root privileges for file manipulation. This is useful
+for allowing users to create archives (tar, ar, .deb etc.) with files in
+them with root permissions/ownership. Without fakeroot one would have to
+have root privileges to create the constituent files of the archives with
+the correct permissions and ownership, and then pack them up, or one would
+have to construct the archives directly, without using the archiver.")
+    (home-page "http://freshmeat.sourceforge.net/projects/fakeroot")
+    (license license:gpl3+)))

@@ -30,7 +30,7 @@
 
 (define (built-derivations* drv)
   (lambda (store)
-    (guard (c ((nix-protocol-error? c)
+    (guard (c ((store-protocol-error? c)
                (values #f store)))
       (values (build-derivations store drv) store))))
 

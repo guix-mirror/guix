@@ -13,7 +13,7 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -975,7 +975,7 @@ with the Linux kernel.")
                   (("/bin/pwd") "pwd"))
                 #t))))))))
 
-(define-public glibc-locales
+(define-public (make-glibc-locales glibc)
   (package
     (inherit glibc)
     (name "glibc-locales")
@@ -1010,7 +1010,7 @@ the 'share/locale' sub-directory of this package.")
                                         ,(version-major+minor
                                           (package-version glibc)))))))))))
 
-(define-public glibc-utf8-locales
+(define-public (make-glibc-utf8-locales glibc)
   (package
     (name "glibc-utf8-locales")
     (version (package-version glibc))
@@ -1059,6 +1059,18 @@ the 'share/locale' sub-directory of this package.")
 test environments.")
     (home-page (package-home-page glibc))
     (license (package-license glibc))))
+
+(define-public glibc-locales
+  (make-glibc-locales glibc))
+(define-public glibc-utf8-locales
+  (make-glibc-utf8-locales glibc))
+
+(define-public glibc-locales-2.27
+  (package (inherit (make-glibc-locales glibc-2.27))
+           (name "glibc-locales-2.27")))
+(define-public glibc-utf8-locales-2.27
+  (package (inherit (make-glibc-utf8-locales glibc-2.27))
+           (name "glibc-utf8-locales-2.27")))
 
 (define-public which
   (package

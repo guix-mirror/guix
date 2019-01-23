@@ -178,6 +178,10 @@
                   (pyqt (assoc-ref inputs "python2-pyqt")))
               (substitute* "setup/build_environment.py"
                 (("sys.prefix") (string-append "'" pyqt "'")))
+              (substitute* "src/calibre/ebooks/pdf/pdftohtml.py"
+                (("PDFTOHTML = 'pdftohtml'")
+                 (string-append "PDFTOHTML = \"" (assoc-ref inputs "poppler")
+                  "/bin/pdftohtml\"")))
               (setenv "PODOFO_INC_DIR" (string-append podofo "/include/podofo"))
               (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib"))
               #t)))

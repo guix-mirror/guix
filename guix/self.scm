@@ -36,8 +36,7 @@
   #:export (make-config.scm
             whole-package                     ;for internal use in 'guix pull'
             compiled-guix
-            guix-derivation
-            reload-guix))
+            guix-derivation))
 
 
 ;;;
@@ -613,10 +612,6 @@ Info manual."
                  (append (file-imports source "gnu/system/examples"
                                        (const #t))
 
-                         ;; Need so we get access system tests from an
-                         ;; inferior.
-                         (file-imports source "gnu/tests" (const #t))
-
                          ;; All the installer code is on the build-side.
                          (file-imports source "gnu/installer/"
                                        (const #t))
@@ -633,6 +628,17 @@ Info manual."
                  (list *core-modules* *extra-modules*
                        *core-package-modules* *package-modules*
                        *system-modules*)
+                 #:extensions dependencies
+                 #:guile-for-build guile-for-build))
+
+  (define *system-test-modules*
+    ;; Ship these modules mostly so (gnu ci) can discover them.
+    (scheme-node "guix-system-tests"
+                 `((gnu tests)
+                   ,@(scheme-modules* source "gnu/tests"))
+                 (list *core-package-modules* *package-modules*
+                       *extra-modules* *system-modules* *core-modules*
+                       *cli-modules*)           ;for (guix scripts pack), etc.
                  #:extensions dependencies
                  #:guile-for-build guile-for-build))
 
@@ -664,6 +670,7 @@ Info manual."
                                  ;; comes with *CORE-MODULES*.
                                  (list *config*
                                        *cli-modules*
+                                       *system-test-modules*
                                        *system-modules*
                                        *package-modules*
                                        *core-package-modules*
