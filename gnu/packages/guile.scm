@@ -1303,49 +1303,40 @@ key-value cache and store.")
                   (guix build utils)
                   (ice-9 rdelim)
                   (ice-9 popen))
-
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'substitute-before-config
-
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((bash (assoc-ref inputs "bash")))
-              ;; Puts together some test files with /bin/bash hardcoded
-              (substitute* "Makefile.in"
-                (("/usr/bin/env bash")
-                 (string-append bash "/bin/bash"))
-                (("\\$\\(GUILE_EFFECTIVE_VERSION\\)/site")
-                 "site/$(GUILE_EFFECTIVE_VERSION)")) ;use the right order
-              #t)))
-
+         (add-before 'configure 'patch-/usr/bin/env
+           (lambda _
+             (substitute* "Makefile.in"
+               (("/usr/bin/env bash") (which "bash"))
+               (("\\$\\(GUILE_EFFECTIVE_VERSION\\)/site")
+                "site/$(GUILE_EFFECTIVE_VERSION)")) ;use the right order
+             #t))
          ;; auto compilation breaks, but if we set HOME to /tmp,
          ;; that works ok
-         (add-before
-          'check 'auto-compile-hacky-workaround
-          (lambda _
-            (setenv "HOME" "/tmp")
-            #t))
+         (add-before 'check 'auto-compile-hacky-workaround
+           (lambda _ (setenv "HOME" "/tmp") #t))
          (add-after 'install 'install-go-files
-          (lambda* (#:key outputs inputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (effective (read-line
-                               (open-pipe* OPEN_READ
-                                           "guile" "-c"
-                                           "(display (effective-version))")))
-                   (module-dir (string-append out "/share/guile/site/"
-                                              effective))
-                   (object-dir (string-append out "/lib/guile/" effective
-                                              "/site-ccache"))
-                   (prefix     (string-length module-dir)))
-              ;; compile to the destination
-              (for-each (lambda (file)
-                          (let* ((base (string-drop (string-drop-right file 4)
-                                                    prefix))
-                                 (go   (string-append object-dir base ".go")))
-                           (invoke "guild" "compile" "-L" module-dir
-                                    file "-o" go)))
-                        (find-files module-dir "\\.scm$"))
-              #t))))))
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (effective (read-line
+                                (open-pipe* OPEN_READ
+                                            "guile" "-c"
+                                            "(display (effective-version))")))
+                    (module-dir (string-append out "/share/guile/site/"
+                                               effective))
+                    (object-dir (string-append out "/lib/guile/" effective
+                                               "/site-ccache"))
+                    (prefix     (string-length module-dir)))
+               ;; compile to the destination
+               (for-each (lambda (file)
+                           (let* ((base (string-drop (string-drop-right file 4)
+                                                     prefix))
+                                  (go   (string-append object-dir base ".go")))
+                             (invoke "guild" "compile" "-L" module-dir
+                                     file "-o" go)))
+                         (find-files module-dir "\\.scm$"))
+               #t))))))
     (home-page "https://draketo.de/english/wisp")
     (inputs
      `(("guile" ,guile-2.2)))
