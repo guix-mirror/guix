@@ -5810,7 +5810,7 @@ pseudo terminal (pty), and interact with both the process and its pty.")
              (add-installed-pythonpath inputs outputs)
              (setenv "PATH" (string-append (getenv "PATH") ":"
                                            (assoc-ref outputs "out") "/bin"))
-             (zero? (system* "make" "test")))))))
+             (invoke "make" "test"))))))
     (build-system python-build-system)
     (native-inputs
      `(("python-coverage" ,python-coverage)
