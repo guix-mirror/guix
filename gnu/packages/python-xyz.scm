@@ -8489,7 +8489,7 @@ module, adding support for Unicode strings.")
        (modify-phases %standard-phases
          (replace 'check
            ;; Many tests fail, but the installation proceeds.
-           (lambda _ (zero? (system* "make" "-C" "test" "test")))))))
+           (lambda _ (invoke "make" "-C" "test" "test"))))))
     (native-inputs
      `(("which" ,which))) ; required for tests
     (propagated-inputs
