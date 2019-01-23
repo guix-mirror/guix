@@ -11222,7 +11222,7 @@ protocols.")
              ;; Disable python3 tests
              (substitute* "check"
                (("python3") "# python3"))
-             (zero? (system* "./check")))))))
+             (invoke "./check"))))))
     (native-inputs
      `(("python2-coverage-test-runner" ,python2-coverage-test-runner)
        ("python2-pep8" ,python2-pep8)))
