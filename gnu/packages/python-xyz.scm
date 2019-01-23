@@ -10965,7 +10965,7 @@ Problem} (SAT) solver.")
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "python" "test/testordereddict.py")))))))
+             (invoke "python" "test/testordereddict.py"))))))
     (home-page "https://bitbucket.org/ruamel/ordereddict")
     (synopsis "Version of dict that keeps keys in insertion order")
     (description
