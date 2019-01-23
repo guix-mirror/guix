@@ -17,9 +17,16 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages efi)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages man)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix utils))
 
@@ -50,3 +57,61 @@ environment presented by Intel's EFI.")
     (home-page "https://directory.fsf.org/wiki/GNU_EFI")
     ;; Distribution is allowed only when accepting all those licenses.
     (license (list license:bsd-2 license:bsd-3 license:bsd-4 license:expat))))
+
+(define-public sbsigntools
+  (package
+    (name "sbsigntools")
+    (version "0.9.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://git.kernel.org/pub/scm/linux/kernel/git/jejb/sbsigntools.git")
+         (commit (string-append "v" version))
+         (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "116649ixr6gvw9fqiljfflxsv4293hgm73bmba5ilxrzn4kpbzvb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-more-shebangs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/ccan.git/tools/create-ccan-tree"
+              (("#!/bin/bash")
+               (string-append "#!"
+                              (assoc-ref inputs "bash")
+                              "/bin/bash")))
+             #t))
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* '("configure.ac"
+                            "tests/Makefile.am")
+              (("/usr/include/efi")
+               (string-append (assoc-ref inputs "gnu-efi")
+                              "/include/efi"))
+              (("/usr/lib/gnuefi")
+               (string-append (assoc-ref inputs "gnu-efi")
+                              "/lib")))
+             #t))
+         (add-after 'unpack 'setenv
+           (lambda _
+             (setenv "CC" "gcc")
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bash" ,bash)
+       ("help2man" ,help2man)
+       ("pkg-config" ,pkg-config)
+       ("util-linux" ,util-linux))) ; getopt
+    (inputs
+     `(("gnu-efi" ,gnu-efi)
+       ("openssl" ,openssl)))
+    (synopsis "EFI signing tools")
+    (description "This package provides tools for signing EFI binaries.")
+    (home-page "https://git.kernel.org/pub/scm/linux/kernel/git/jejb/sbsigntools.git/")
+    (license license:gpl3+)))
