@@ -2894,8 +2894,7 @@ objects.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (zero? (system* "nosetests" "-v")))))))
+           (lambda _ (invoke "nosetests" "-v"))))))
     (propagated-inputs
      `(("python-colormath" ,python-colormath)))
     (native-inputs
