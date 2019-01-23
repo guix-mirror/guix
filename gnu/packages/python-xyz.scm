@@ -3376,23 +3376,24 @@ toolkits.")
 (define-public python2-pysnptools
   (package
     (name "python2-pysnptools")
-    (version "0.3.9")
+    (version "0.3.13")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "pysnptools" version ".zip"))
+       (uri (pypi-uri "pysnptools" version))
        (sha256
         (base32
-         "1wybggjzz8zw7aav4pjsg2h22xp17a1lghrprza1pxwlm7wf96y2"))))
+         "0lnis5xsl7bi0hz4f7gbicahzi5zlxkc21nk3g374xv8fb5hb3qm"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2)) ; only Python 2.7 is supported
+     `(#:python ,python-2 ; only Python 2.7 is supported
+       #:tests? #f))      ; test files (e.g. examples/toydata.bim) not included
     (propagated-inputs
      `(("python2-numpy" ,python2-numpy)
        ("python2-scipy" ,python2-scipy)
        ("python2-pandas" ,python2-pandas)))
     (native-inputs
-     `(("unzip" ,unzip)))
+     `(("python2-cython" ,python2-cython)))
     (home-page "http://microsoftgenomics.github.io/PySnpTools/")
     (synopsis "Library for reading and manipulating genetic data")
     (description
