@@ -6091,7 +6091,7 @@ and MAC network addresses.")
        (modify-phases %standard-phases
          ;; Current test in setup.py does not work as of 1.0.0, so use nose to
          ;; run tests instead for now.
-         (replace 'check (lambda _ (zero? (system* "nosetests")))))))
+         (replace 'check (lambda _ (invoke "nosetests"))))))
     (native-inputs `(("python-nose"       ,python-nose)))
     (home-page "http://www.python-excel.org/")
     (synopsis "Library for extracting data from Excel files")
