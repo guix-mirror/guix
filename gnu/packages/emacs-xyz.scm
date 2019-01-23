@@ -477,14 +477,14 @@ deliver data to mobile and web apps.")
     (name "emacs-ghub")
     (version "2.0.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/magit/ghub/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/magit/ghub")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d0qj5r1bm2aidi61rigrdaycxnyb7y1ivb3h8rpvvapsf8sk7z0"))))
+                "1b5jrpj3z989r3mf4jfch8rnaaa5hyb2395xz3v37f0vsphd7s0y"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
