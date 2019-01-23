@@ -323,18 +323,16 @@ operations.")
     (name "emacs-magit-svn")
     (version "2.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/magit/magit-svn/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/magit/magit-svn")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c3n377v436zaxamlsz04y1ahdhp96x1vd43zaryv4y10m02ba47"))))
+                "128ra3habdqk1rsnmy87m0aw2pqi033dqmmjmgsmfblnfvi987p9"))))
     (build-system trivial-build-system)
-    (native-inputs `(("emacs" ,emacs-minimal)
-                     ("tar" ,tar)
-                     ("gzip" ,gzip)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (propagated-inputs `(("dash" ,emacs-dash)
                          ("with-editor" ,emacs-with-editor)
                          ("magit" ,emacs-magit)))
@@ -347,26 +345,20 @@ operations.")
          (use-modules (guix build utils)
                       (guix build emacs-utils))
 
-         (let* ((tar      (string-append (assoc-ref %build-inputs "tar")
-                                         "/bin/tar"))
-                (PATH     (string-append (assoc-ref %build-inputs "gzip")
-                                         "/bin"))
-                (emacs    (string-append (assoc-ref %build-inputs "emacs")
-                                         "/bin/emacs"))
-                (magit    (string-append (assoc-ref %build-inputs "magit")
-                                         "/share/emacs/site-lisp"))
-                (dash     (string-append (assoc-ref %build-inputs "dash")
-                                         "/share/emacs/site-lisp/guix.d/dash-"
-                                         ,(package-version emacs-dash)))
-                (with-editor (string-append (assoc-ref %build-inputs "with-editor")
-                                            "/share/emacs/site-lisp/guix.d/with-editor-"
-                                            ,(package-version emacs-with-editor)))
-                (source   (assoc-ref %build-inputs "source"))
-                (lisp-dir (string-append %output "/share/emacs/site-lisp")))
-           (setenv "PATH" PATH)
-           (invoke tar "xvf" source)
+         (let ((emacs    (string-append (assoc-ref %build-inputs "emacs")
+                                        "/bin/emacs"))
+               (magit    (string-append (assoc-ref %build-inputs "magit")
+                                        "/share/emacs/site-lisp"))
+               (dash     (string-append (assoc-ref %build-inputs "dash")
+                                        "/share/emacs/site-lisp/guix.d/dash-"
+                                        ,(package-version emacs-dash)))
+               (with-editor (string-append (assoc-ref %build-inputs "with-editor")
+                                           "/share/emacs/site-lisp/guix.d/with-editor-"
+                                           ,(package-version emacs-with-editor)))
+               (source   (assoc-ref %build-inputs "source"))
+               (lisp-dir (string-append %output "/share/emacs/site-lisp")))
 
-           (install-file (string-append "magit-svn-" ,version "/magit-svn.el")
+           (install-file (string-append source "/magit-svn.el")
                          lisp-dir)
 
            (with-directory-excursion lisp-dir
