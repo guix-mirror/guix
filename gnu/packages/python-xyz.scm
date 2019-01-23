@@ -5326,7 +5326,7 @@ Python 2 and Python 3.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "py.test" "-v")))))))
+             (invoke "py.test" "-v"))))))
     (native-inputs
      `(("python2-pytest" ,python2-pytest)))
     (home-page "https://github.com/chrippa/backports.shutil_get_terminal_size")
