@@ -177,3 +177,42 @@ and EFI variable management.")
     ;; Compiling/linking/using OpenSSL is permitted.
     (license (list license:gpl2
                    license:lgpl2.1))))
+
+(define-public efilinux
+  (package
+    (name "efilinux")
+    (version "1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mfleming/efilinux.git")
+                    (commit (string-append "efilinux-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0b4nxzr3wl5v4b52r79iw1arfgasz26xb38r2blw9v2qz2s1q9w2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "INCDIR=" (assoc-ref %build-inputs "gnu-efi")
+                            "/include")
+             (string-append "LIBDIR=" (assoc-ref %build-inputs "gnu-efi")
+                            "/lib"))
+       #:tests? #f ; No tests exist.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "efilinux.efi"
+                           (string-append (assoc-ref outputs "out")
+                           "/libexec"))
+             #t)))))
+    (inputs
+     `(("gnu-efi" ,gnu-efi)))
+    (synopsis "Minimal Linux loader for UEFI")
+    (description "This package provides a minimal Linux loader as an UEFI
+program.")
+    (home-page "https://github.com/mfleming/efilinux")
+    (license license:bsd-2)))
