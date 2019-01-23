@@ -6279,8 +6279,7 @@ implementations of ASN.1-based codecs and protocols.")
        #:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* _
-             (zero? (system* "python" "ipaddr_test.py")))))))
+           (lambda _ (invoke "python" "ipaddr_test.py"))))))
     (home-page "https://github.com/google/ipaddr-py")
     (synopsis "IP address manipulation library")
     (description
