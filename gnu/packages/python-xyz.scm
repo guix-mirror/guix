@@ -4857,7 +4857,7 @@ libxml2 and libxslt.")
          ;; For more information, see the file 'convert-py3k' in the source
          ;; distribution.
          (replace 'check
-           (lambda _ (zero? (system* "./convert-py3k")))))))
+           (lambda _ (invoke "./convert-py3k"))))))
     (home-page
      "https://www.crummy.com/software/BeautifulSoup/bs4/")
     (synopsis
