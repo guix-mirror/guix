@@ -434,6 +434,24 @@ concepts.")
 (define-public python2-h5py
   (package-with-python2 python-h5py))
 
+(define-public python-sh
+  (package
+    (name "python-sh")
+    (version "1.12.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sh" version))
+       (sha256
+        (base32
+         "1z2hx357xp3v4cv44xmqp7lli3frndqpyfmpbxf7n76h7s1zaaxm"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/amoffat/sh")
+    (synopsis "Python subprocess replacement")
+    (description "This package provides a replacement for Python's
+@code{subprocess} feature.")
+    (license license:expat)))
+
 (define-public python-netcdf4
   (package
     (name "python-netcdf4")
