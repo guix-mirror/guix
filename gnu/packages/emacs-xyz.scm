@@ -321,7 +321,7 @@ operations.")
 (define-public emacs-magit-svn
   (package
     (name "emacs-magit-svn")
-    (version "2.2.0")
+    (version "2.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -330,7 +330,7 @@ operations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "128ra3habdqk1rsnmy87m0aw2pqi033dqmmjmgsmfblnfvi987p9"))))
+                "01kcsc53q3mbhgjssjpby7ypnhqsr48rkl1xz3ahaypmlp929gl9"))))
     (build-system trivial-build-system)
     (native-inputs `(("emacs" ,emacs-minimal)))
     (propagated-inputs `(("dash" ,emacs-dash)
