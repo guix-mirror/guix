@@ -2145,7 +2145,7 @@ logic-free templating system Mustache.")
               (modify-phases %standard-phases
                 (replace 'check
                   (lambda _
-                    (zero? (system* "python" "test_pystache.py")))))))))
+                    (invoke "python" "test_pystache.py"))))))))
 
 (define-public python-joblib
   (package
