@@ -10429,7 +10429,7 @@ is used by PostgreSQL and the OpenSSH Server for example.")
              (setenv "PYTHONPATH"
                      (string-append (getcwd) "/build/lib:"
                                     (getenv "PYTHONPATH")))
-             (zero? (system* "py.test" "-vv" )))))))
+             (invoke "py.test" "-vv" ))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page
