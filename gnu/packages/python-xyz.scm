@@ -10549,7 +10549,7 @@ PNG, JPEG, JPEG2000 and GIF files in pure Python.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "python" "test3.py")))))))
+             (invoke "python" "test3.py"))))))
     (home-page "https://github.com/gfxmonk/termstyle")
     (synopsis "Console text coloring for Python")
     (description "This package provides console text coloring for Python.")
