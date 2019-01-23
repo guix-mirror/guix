@@ -144,7 +144,7 @@ actions.")
        ("lcms" ,lcms)
        ("exiv2" ,exiv2)
        ("libpng" ,libpng)
-       ("gtk+" ,gtk+-2)))
+       ("gtk+" ,gtk+)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
