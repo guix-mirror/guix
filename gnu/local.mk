@@ -371,6 +371,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pure.scm				\
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
+  %D%/packages/python-check.scm			\
   %D%/packages/python-compression.scm		\
   %D%/packages/python-crypto.scm		\
   %D%/packages/python-web.scm			\
