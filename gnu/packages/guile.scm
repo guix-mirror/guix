@@ -1346,7 +1346,7 @@ key-value cache and store.")
                                     file "-o" go)))
                         (find-files module-dir "\\.scm$"))
               #t))))))
-    (home-page "http://draketo.de/english/wisp")
+    (home-page "https://draketo.de/english/wisp")
     (inputs
      `(("guile" ,guile-2.2)))
     (native-inputs
