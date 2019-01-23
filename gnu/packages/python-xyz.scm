@@ -10757,7 +10757,7 @@ protocols written in pure Python.")
              (setenv "PYTHONPATH"
                      (string-append (getcwd) "/build/lib:"
                                     (getenv "PYTHONPATH")))
-             (zero? (system* "python" "test/test_pbkdf2.py")))))))
+             (invoke "python" "test/test_pbkdf2.py"))))))
     (propagated-inputs
      `(("python-pycrypto" ,python-pycrypto)))  ; optional
     (home-page "https://www.dlitz.net/software/python-pbkdf2/")
