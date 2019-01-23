@@ -483,39 +483,32 @@ of the netcdf4 package before.")
 (define-public python-netcdf4
   (package
     (name "python-netcdf4")
-    (version "1.2.9")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "netCDF4" version))
        (sha256
         (base32
-         "1h6jq338amlbk0ilzvjyl7cck80i0bah9a5spn9in71vy2qxm7i5"))))
+         "0c0sklgrmv15ygliin8qq0hp7vanmbi74m6zpi0r1ksr0hssyd5r"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure-locations
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "HDF5_DIR" (assoc-ref inputs "hdf5"))
+             #t)))))
     (native-inputs
      `(("python-cython" ,python-cython)))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     `(("python-numpy" ,python-numpy)
+       ("python-cftime" ,python-cftime)))
     (inputs
      `(("netcdf" ,netcdf)
        ("hdf4" ,hdf4)
        ("hdf5" ,hdf5)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (setenv "NO_NET" "1") ; disable opendap tests
-             (with-directory-excursion "test"
-               (setenv "PYTHONPATH" ; find and add the library we just built
-                       (string-append
-                        (car (find-files "../build" "lib.*"
-                                         #:directories? #:t
-                                         #:fail-on-error? #:t))
-                        ":" (getenv "PYTHONPATH")))
-               (zero? (system* "python" "run_all.py"))))))))
-    (home-page
-     "https://github.com/Unidata/netcdf4-python")
+    (home-page "https://github.com/Unidata/netcdf4-python")
     (synopsis "Python/numpy interface to the netCDF library")
     (description "Netcdf4-python is a Python interface to the netCDF C
 library.  netCDF version 4 has many features not found in earlier
