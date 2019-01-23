@@ -9497,8 +9497,7 @@ parsing UK postcodes.")
    '(#:phases
      (modify-phases %standard-phases
        (replace 'check
-         (lambda _
-           (zero? (system* "python" "-m" "unittest" "-v" "tests")))))))
+         (lambda _ (invoke "python" "-m" "unittest" "-v" "tests"))))))
   (native-inputs
    `(;; For testing
      ("python-email-validator" ,python-email-validator)
