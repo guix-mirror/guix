@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Caleb Ristvedt <caleb.ristvedt@cune.org>
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,8 +109,9 @@ Note: TARGET, TO-REPLACE, and SWAP-DIRECTORY must be on the same file system."
         (get-temp-link target swap-directory))
       (lambda args
         ;; We get ENOSPC when we can't fit an additional entry in
-        ;; SWAP-DIRECTORY.
-        (if (= ENOSPC (system-error-errno args))
+        ;; SWAP-DIRECTORY.  If it's EMLINK, then TARGET has reached its
+        ;; maximum number of links.
+        (if (memv (system-error-errno args) `(,ENOSPC ,EMLINK))
             #f
             (apply throw args)))))
 
@@ -168,5 +169,9 @@ under STORE."
                          ;; There's not enough room in the directory index for
                          ;; more entries in .links, but that's fine: we can
                          ;; just stop.
+                         #f)
+                        ((= errno EMLINK)
+                         ;; PATH has reached the maximum number of links, but
+                         ;; that's OK: we just can't deduplicate it more.
                          #f)
                         (else (apply throw args))))))))))
