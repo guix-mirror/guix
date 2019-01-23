@@ -269,6 +269,8 @@ on stdout instead of using a socket as the Emacsclient does.")
     (propagated-inputs
      `(("dash" ,emacs-dash)
        ("ghub" ,emacs-ghub)
+       ("graphql" ,emacs-graphql)
+       ("treepy" ,emacs-treepy)
        ("magit-popup" ,emacs-magit-popup)
        ("with-editor" ,emacs-with-editor)))
     (arguments
@@ -287,6 +289,14 @@ on stdout instead of using a socket as the Emacsclient does.")
                             (assoc-ref %build-inputs "ghub")
                             "/share/emacs/site-lisp/guix.d/ghub-"
                             ,(package-version emacs-ghub))
+             (string-append "GRAPHQL_DIR="
+                            (assoc-ref %build-inputs "graphql")
+                            "/share/emacs/site-lisp/guix.d/graphql-"
+                            ,(package-version emacs-graphql))
+             (string-append "TREEPY_DIR="
+                            (assoc-ref %build-inputs "treepy")
+                            "/share/emacs/site-lisp/guix.d/treepy-"
+                            ,(package-version emacs-treepy))
              (string-append "MAGIT_POPUP_DIR="
                             (assoc-ref %build-inputs "magit-popup")
                             "/share/emacs/site-lisp/guix.d/magit-popup-"
@@ -336,6 +346,8 @@ operations.")
     (native-inputs `(("emacs" ,emacs-minimal)))
     (propagated-inputs `(("dash" ,emacs-dash)
                          ("ghub" ,emacs-ghub)
+                         ("graphql" ,emacs-graphql)
+                         ("treepy" ,emacs-treepy)
                          ("with-editor" ,emacs-with-editor)
                          ("magit" ,emacs-magit)
                          ("magit-popup" ,emacs-magit-popup)))
@@ -358,6 +370,12 @@ operations.")
                (ghub     (string-append (assoc-ref %build-inputs "ghub")
                                         "/share/emacs/site-lisp/guix.d/ghub-"
                                         ,(package-version emacs-ghub)))
+               (graphql  (string-append (assoc-ref %build-inputs "graphql")
+                                        "/share/emacs/site-lisp/guix.d/graphql-"
+                                        ,(package-version emacs-graphql)))
+               (treepy   (string-append (assoc-ref %build-inputs "treepy")
+                                        "/share/emacs/site-lisp/guix.d/treepy-"
+                                        ,(package-version emacs-treepy)))
                (dash     (string-append (assoc-ref %build-inputs "dash")
                                         "/share/emacs/site-lisp/guix.d/dash-"
                                         ,(package-version emacs-dash)))
@@ -375,7 +393,7 @@ operations.")
                (emacs-generate-autoloads ,name lisp-dir)
                (setenv "EMACSLOADPATH"
                        (string-append ":" magit ":" magit-popup ":" ghub ":"
-                                      dash ":" with-editor))
+                                      ":" graphql ":" treepy ":" dash ":" with-editor))
                (emacs-batch-eval '(byte-compile-file "magit-svn.el"))))
            #t))))
     (home-page "https://github.com/magit/magit-svn")
@@ -476,7 +494,7 @@ deliver data to mobile and web apps.")
 (define-public emacs-ghub
   (package
     (name "emacs-ghub")
-    (version "2.0.1")
+    (version "3.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -485,7 +503,7 @@ deliver data to mobile and web apps.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1b5jrpj3z989r3mf4jfch8rnaaa5hyb2395xz3v37f0vsphd7s0y"))))
+                "0lp52qygyavddl1lrgsyb6mq7hcf9h89dy2pzya3mb2va49f0vvl"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -495,13 +513,17 @@ deliver data to mobile and web apps.")
              (invoke "make" "info"))))))
     (native-inputs
      `(("texinfo" ,texinfo)))
+    (propagated-inputs
+     `(("dash" ,emacs-dash)
+       ("graphql" ,emacs-graphql)
+       ("treepy" ,emacs-treepy)))
     (home-page "https://github.com/magit/ghub")
-    (synopsis "Emacs client library for Github API and Gitlab API")
+    (synopsis "Emacs client libraries for the APIs of various Git forges")
     (description
-     "This package provides 2 files: @file{ghub.el} and @file{glab.el},
-which are the libraries that provide basic support for using the Github and
-Gitlab APIs from Emacs packages.  It abstracts access to API resources using
-only a handful of functions that are not resource-specific.")
+     "Ghub provides basic support for using the APIs of various Git forges from
+Emacs packages.  It supports the REST APIs of Github, Github GraphQL, Gitlab,
+Gitea, Gogs and Bitbucket.  It abstracts access to API resources using only a
+handful of functions that are not resource-specific.")
     (license license:gpl3+)))
 
 (define-public emacs-scribble-mode
