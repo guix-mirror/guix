@@ -250,15 +250,16 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public emacs-magit
   (package
     (name "emacs-magit")
-    (version "2.13.0")
+    (version "2.13.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/magit/magit/releases/download/"
-                   version "/magit-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/magit/magit")
+                    (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1ygaah3dd3nxpyd17297xgvdcgr7pgzzwlmpnmchki0kiwgg3sbc"))))
+               "1kmjjcvhcb21qi6kmrlhf92ync8va5l41n9ban8kj25h7dbqyiym"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-minimal)))
