@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -2430,14 +2430,14 @@ supported players in addition to this package.")
 (define-public handbrake
   (package
     (name "handbrake")
-    (version "1.1.2")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.handbrake.fr/releases/"
                                   version "/HandBrake-" version "-source.tar.bz2"))
               (sha256
                (base32
-                "0bny0hwlr55g2c69rsamv0xvwmfh1s4a582b9vq20xv5ly84m6ms"))
+                "03clkknaq3mz84p85cvr21gsy9b8vv2g4vvyfz44hz8la253jfqi"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove "contrib" and source not necessary for
@@ -2451,11 +2451,13 @@ supported players in addition to this package.")
                     ;; which would lead to fetching and building of these
                     ;; libraries.  Use our own instead.
                     (("MODULES \\+= contrib") "# MODULES += contrib"))
-                  #t))))
+                  #t))
+              (patches (search-patches "handbrake-opt-in-nvenc.patch"))))
     (build-system  glib-or-gtk-build-system)
     (native-inputs
      `(("automake" ,automake)           ;gui subpackage must be bootstrapped
        ("autoconf" ,autoconf)
+       ("cmake" ,cmake) ;TODO: could probably strip check from make/configure.py
        ("curl" ,curl)                   ;not actually used, but tested for
        ("intltool" ,intltool)
        ("libtool" ,libtool)
@@ -2488,12 +2490,14 @@ supported players in addition to this package.")
        ("libvpx" ,libvpx)
        ("libxml2" ,libxml2)
        ("libx264" ,libx264)
+       ("speex" ,speex)
        ("x265" ,x265)
        ("zlib" ,zlib)))
     (arguments
      `(#:tests? #f             ;tests require Ruby and claim to be unsupported
        #:configure-flags
-       (list (string-append "CPPFLAGS=-I"
+       (list "--disable-gtk-update-checks"
+             (string-append "CPPFLAGS=-I"
                             (assoc-ref %build-inputs "libxml2")
                             "/include/libxml2")
              "LDFLAGS=-lx265")
