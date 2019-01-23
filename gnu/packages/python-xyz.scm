@@ -3604,7 +3604,8 @@ where key might be occurred more than once in the container.")
              ;; The package uses nosetest for running the tests.
              ;; Adding this initfile allows to run the test suite
              ;; without requiring nosetest.
-             (zero? (system* "touch" "tests/__init__.py")))))))
+             (with-output-to-file "tests/__init__.py" newline)
+             #t)))))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (native-inputs
