@@ -12920,3 +12920,28 @@ to open SQLite databases.")
 Nix expressions.  It supports syntax highlighting, indenting and refilling of
 comments.")
     (license license:lgpl2.1+)))
+
+(define-public emacs-simple-mpc
+  ;; There have been no releases.
+  (let ((commit "bee8520e81292b4c7353e45b193f9a13b482f5b2")
+        (revision "1"))
+    (package
+      (name "emacs-simple-mpc")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jorenvo/simple-mpc.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1ja06pv007cmzjjgka95jlg31k7d29jrih1yxyblsxv85s9sg21q"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/jorenvo/simple-mpc")
+      (synopsis "Simple Emacs frontend to mpc")
+      (description "This package provides an Emacs major mode which acts as a
+front end to mpc, a client for the @dfn{Music Player Daemon} (MPD).")
+      (license license:gpl3+))))
