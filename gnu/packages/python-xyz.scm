@@ -11324,8 +11324,7 @@ happens using the @code{logging} library.")
          ;; and fails.
          (delete 'check)
          (add-before 'build 'check
-           (lambda _
-             (zero? (system* "make" "check")))))))
+           (lambda _ (invoke "make" "check"))))))
     (native-inputs
      `(("cmdtest" ,cmdtest)
        ("python2-coverage-test-runner" ,python2-coverage-test-runner)))
