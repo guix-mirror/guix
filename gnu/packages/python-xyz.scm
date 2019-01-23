@@ -9990,9 +9990,9 @@ discovery, monitoring and configuration.")
            ;; The test runner invokes python2 and python3 for test*.py.
            ;; To avoid having both in inputs, we replicate it here.
            (lambda _
-             (every (lambda (test-file)
-                      (zero? (system* "python" test-file)))
-                    (find-files "tests" "^test.*\\.py$")))))))
+             (for-each (lambda (test-file) (invoke "python" test-file))
+                       (find-files "tests" "^test.*\\.py$"))
+             #t)))))
     (build-system python-build-system)
     (home-page "https://github.com/eea/odfpy")
     (synopsis "Python API and tools to manipulate OpenDocument files")
