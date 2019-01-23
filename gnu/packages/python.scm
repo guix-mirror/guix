@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
@@ -194,20 +194,12 @@
                             (assoc-ref %outputs "out") "/lib"))
        ;; With no -j argument tests use all available cpus, so provide one.
        #:make-flags
-       (list (format #f "EXTRATESTOPTS=-j~d" (parallel-job-count)))
+       (list (format #f "TESTOPTS=-j~d" (parallel-job-count)))
 
         #:modules ((ice-9 ftw) (ice-9 match)
                    (guix build utils) (guix build gnu-build-system))
         #:phases
         (modify-phases %standard-phases
-          (add-after 'unpack 'remove-findleaks-from-testopts
-            (lambda _
-              (substitute* "Makefile.pre.in"
-                ;; -l which is short for --findleaks isn't compatible with the
-                ;; -j flag added through the #:make-flags, therefore remove
-                ;; it. This only affects python-2.7.
-                (("TESTOPTS=	-l ") "TESTOPTS= "))
-              #t))
           (add-before
            'configure 'patch-lib-shells
            (lambda _
