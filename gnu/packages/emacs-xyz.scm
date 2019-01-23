@@ -203,14 +203,14 @@ when typing parentheses directly or commenting out code line by line.")
     (name "emacs-git-modes")
     (version "1.2.8")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/magit/git-modes/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/magit/git-modes")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0h49f68yn0q4lg054adqii4qja1z2pzybm7nf4kvpq7fzjrzgv1q"))))
+                "08hy7rbfazs6grkpk54i82bz0i0c74zcjk96cip8970h6jn3mj72"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/magit/git-modes")
     (synopsis "Emacs major modes for Git configuration files")
@@ -250,15 +250,16 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public emacs-magit
   (package
     (name "emacs-magit")
-    (version "2.13.0")
+    (version "2.13.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/magit/magit/releases/download/"
-                   version "/magit-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/magit/magit")
+                    (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1ygaah3dd3nxpyd17297xgvdcgr7pgzzwlmpnmchki0kiwgg3sbc"))))
+               "1kmjjcvhcb21qi6kmrlhf92ync8va5l41n9ban8kj25h7dbqyiym"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-minimal)))
@@ -268,6 +269,8 @@ on stdout instead of using a socket as the Emacsclient does.")
     (propagated-inputs
      `(("dash" ,emacs-dash)
        ("ghub" ,emacs-ghub)
+       ("graphql" ,emacs-graphql)
+       ("treepy" ,emacs-treepy)
        ("magit-popup" ,emacs-magit-popup)
        ("with-editor" ,emacs-with-editor)))
     (arguments
@@ -286,6 +289,14 @@ on stdout instead of using a socket as the Emacsclient does.")
                             (assoc-ref %build-inputs "ghub")
                             "/share/emacs/site-lisp/guix.d/ghub-"
                             ,(package-version emacs-ghub))
+             (string-append "GRAPHQL_DIR="
+                            (assoc-ref %build-inputs "graphql")
+                            "/share/emacs/site-lisp/guix.d/graphql-"
+                            ,(package-version emacs-graphql))
+             (string-append "TREEPY_DIR="
+                            (assoc-ref %build-inputs "treepy")
+                            "/share/emacs/site-lisp/guix.d/treepy-"
+                            ,(package-version emacs-treepy))
              (string-append "MAGIT_POPUP_DIR="
                             (assoc-ref %build-inputs "magit-popup")
                             "/share/emacs/site-lisp/guix.d/magit-popup-"
@@ -321,23 +332,25 @@ operations.")
 (define-public emacs-magit-svn
   (package
     (name "emacs-magit-svn")
-    (version "2.2.0")
+    (version "2.2.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/magit/magit-svn/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/magit/magit-svn")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c3n377v436zaxamlsz04y1ahdhp96x1vd43zaryv4y10m02ba47"))))
+                "01kcsc53q3mbhgjssjpby7ypnhqsr48rkl1xz3ahaypmlp929gl9"))))
     (build-system trivial-build-system)
-    (native-inputs `(("emacs" ,emacs-minimal)
-                     ("tar" ,tar)
-                     ("gzip" ,gzip)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (propagated-inputs `(("dash" ,emacs-dash)
+                         ("ghub" ,emacs-ghub)
+                         ("graphql" ,emacs-graphql)
+                         ("treepy" ,emacs-treepy)
                          ("with-editor" ,emacs-with-editor)
-                         ("magit" ,emacs-magit)))
+                         ("magit" ,emacs-magit)
+                         ("magit-popup" ,emacs-magit-popup)))
     (arguments
      `(#:modules ((guix build utils)
                   (guix build emacs-utils))
@@ -347,33 +360,40 @@ operations.")
          (use-modules (guix build utils)
                       (guix build emacs-utils))
 
-         (let* ((tar      (string-append (assoc-ref %build-inputs "tar")
-                                         "/bin/tar"))
-                (PATH     (string-append (assoc-ref %build-inputs "gzip")
-                                         "/bin"))
-                (emacs    (string-append (assoc-ref %build-inputs "emacs")
-                                         "/bin/emacs"))
-                (magit    (string-append (assoc-ref %build-inputs "magit")
-                                         "/share/emacs/site-lisp"))
-                (dash     (string-append (assoc-ref %build-inputs "dash")
-                                         "/share/emacs/site-lisp/guix.d/dash-"
-                                         ,(package-version emacs-dash)))
-                (with-editor (string-append (assoc-ref %build-inputs "with-editor")
-                                            "/share/emacs/site-lisp/guix.d/with-editor-"
-                                            ,(package-version emacs-with-editor)))
-                (source   (assoc-ref %build-inputs "source"))
-                (lisp-dir (string-append %output "/share/emacs/site-lisp")))
-           (setenv "PATH" PATH)
-           (invoke tar "xvf" source)
+         (let ((emacs    (string-append (assoc-ref %build-inputs "emacs")
+                                        "/bin/emacs"))
+               (magit    (string-append (assoc-ref %build-inputs "magit")
+                                        "/share/emacs/site-lisp"))
+               (magit-popup (string-append (assoc-ref %build-inputs "magit-popup")
+                                           "/share/emacs/site-lisp/guix.d/magit-popup-"
+                                           ,(package-version emacs-magit-popup)))
+               (ghub     (string-append (assoc-ref %build-inputs "ghub")
+                                        "/share/emacs/site-lisp/guix.d/ghub-"
+                                        ,(package-version emacs-ghub)))
+               (graphql  (string-append (assoc-ref %build-inputs "graphql")
+                                        "/share/emacs/site-lisp/guix.d/graphql-"
+                                        ,(package-version emacs-graphql)))
+               (treepy   (string-append (assoc-ref %build-inputs "treepy")
+                                        "/share/emacs/site-lisp/guix.d/treepy-"
+                                        ,(package-version emacs-treepy)))
+               (dash     (string-append (assoc-ref %build-inputs "dash")
+                                        "/share/emacs/site-lisp/guix.d/dash-"
+                                        ,(package-version emacs-dash)))
+               (with-editor (string-append (assoc-ref %build-inputs "with-editor")
+                                           "/share/emacs/site-lisp/guix.d/with-editor-"
+                                           ,(package-version emacs-with-editor)))
+               (source   (assoc-ref %build-inputs "source"))
+               (lisp-dir (string-append %output "/share/emacs/site-lisp")))
 
-           (install-file (string-append "magit-svn-" ,version "/magit-svn.el")
+           (install-file (string-append source "/magit-svn.el")
                          lisp-dir)
 
            (with-directory-excursion lisp-dir
              (parameterize ((%emacs emacs))
                (emacs-generate-autoloads ,name lisp-dir)
                (setenv "EMACSLOADPATH"
-                       (string-append ":" magit ":" dash ":" with-editor))
+                       (string-append ":" magit ":" magit-popup ":" ghub ":"
+                                      ":" graphql ":" treepy ":" dash ":" with-editor))
                (emacs-batch-eval '(byte-compile-file "magit-svn.el"))))
            #t))))
     (home-page "https://github.com/magit/magit-svn")
@@ -474,16 +494,16 @@ deliver data to mobile and web apps.")
 (define-public emacs-ghub
   (package
     (name "emacs-ghub")
-    (version "2.0.1")
+    (version "3.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/magit/ghub/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/magit/ghub")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d0qj5r1bm2aidi61rigrdaycxnyb7y1ivb3h8rpvvapsf8sk7z0"))))
+                "0lp52qygyavddl1lrgsyb6mq7hcf9h89dy2pzya3mb2va49f0vvl"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -493,13 +513,17 @@ deliver data to mobile and web apps.")
              (invoke "make" "info"))))))
     (native-inputs
      `(("texinfo" ,texinfo)))
+    (propagated-inputs
+     `(("dash" ,emacs-dash)
+       ("graphql" ,emacs-graphql)
+       ("treepy" ,emacs-treepy)))
     (home-page "https://github.com/magit/ghub")
-    (synopsis "Emacs client library for Github API and Gitlab API")
+    (synopsis "Emacs client libraries for the APIs of various Git forges")
     (description
-     "This package provides 2 files: @file{ghub.el} and @file{glab.el},
-which are the libraries that provide basic support for using the Github and
-Gitlab APIs from Emacs packages.  It abstracts access to API resources using
-only a handful of functions that are not resource-specific.")
+     "Ghub provides basic support for using the APIs of various Git forges from
+Emacs packages.  It supports the REST APIs of Github, Github GraphQL, Gitlab,
+Gitea, Gogs and Bitbucket.  It abstracts access to API resources using only a
+handful of functions that are not resource-specific.")
     (license license:gpl3+)))
 
 (define-public emacs-scribble-mode
@@ -534,13 +558,13 @@ for editing Racket's Scribble documentation syntax in Emacs.")
     (name "emacs-haskell-mode")
     (version "16.1")
     (source (origin
-              (method url-fetch)
-              (file-name (string-append name "-" version ".tar.gz"))
-              (uri (string-append
-                    "https://github.com/haskell/haskell-mode/archive/v"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/haskell/haskell-mode")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
-               (base32 "0g6lcjw7lcgavv3yrd8xjcyqgfyjl787y32r1z14amw2f009m78h"))
+               (base32 "1qk36y0v9fzass6785il65c6wb5cfj4ihhwkvgnzmbafpa8p4dvq"))
               (patches
                (search-patches ; backport test failure fixes
                 "haskell-mode-unused-variables.patch"
@@ -997,13 +1021,14 @@ light user interface.")
     (version "0.2.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/momomo5717/emms-mode-line-cycle"
-                           "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/momomo5717/emms-mode-line-cycle")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ifszi930pnaxk1x8pcydmvnp06868gc7nfx14q17zbajbx735k6"))))
+         "0q80f0plch6k4lhs8c9qm3mfycfbp3kn5sjrk9zxgxwnn901y9mp"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emms" ,emacs-emms)))
