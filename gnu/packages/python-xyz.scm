@@ -3231,7 +3231,7 @@ To address this and enable easy cycling over arbitrary @code{kwargs}, the
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "nosetests" "--all-modules" "-v" "colorspacious")))))))
+             (invoke "nosetests" "--all-modules" "-v" "colorspacious"))))))
     (home-page "https://github.com/njsmith/colorspacious")
     (synopsis "Python library for colorspace conversions")
     (description "@code{colorspacious} is a Python library that lets you
