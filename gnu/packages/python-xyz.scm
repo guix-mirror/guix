@@ -5104,8 +5104,7 @@ and statistical routines from scipy and statsmodels.")
      (modify-phases %standard-phases
        (replace 'check
          (lambda _
-           (zero?
-            (system* "python" "mpmath/tests/runtests.py" "-local")))))))
+           (invoke "python" "mpmath/tests/runtests.py" "-local"))))))
   (home-page "http://mpmath.org")
   (synopsis "Arbitrary-precision floating-point arithmetic in python")
   (description
