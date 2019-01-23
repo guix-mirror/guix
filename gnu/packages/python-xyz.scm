@@ -4148,7 +4148,7 @@ cluster without needing to write any wrapper code yourself.")
              ;; It's easier to run tests after install.
              ;; Make installed package available for running the tests
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "py.test" "-v")))))))
+             (invoke "py.test" "-v"))))))
     (home-page "https://github.com/nickstenning/honcho")
     (synopsis "Manage Procfile-based applications")
     (description
