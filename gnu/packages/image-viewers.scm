@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,21 +126,18 @@ actions.")
 
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
+         (add-before 'bootstrap 'pre-bootstrap
            (lambda _
              (define (write-dummy-changelog port)
                (display "See Git history for a change log.\n" port))
-
-             (setenv "NOCONFIGURE" "true")
-
              ;; Create ChangeLog{,.html} to placate the makefile, which would
              ;; otherwise require access to the Git repo.
              (call-with-output-file "ChangeLog"
                write-dummy-changelog)
              (call-with-output-file "ChangeLog.html"
                write-dummy-changelog)
-
-             (zero? (system* "sh" "autogen.sh")))))))
+             (setenv "NOCONFIGURE" "true")
+             #t)))))
     (inputs
      `(("clutter" ,clutter)
        ("libchamplain" ,libchamplain)
