@@ -5670,7 +5670,7 @@ PEP8_PLUGIN('break_before_binary_operator'),"))
              (setenv "PYTHONPATH"
                      (string-append (getcwd) "/build/lib:"
                                     (getenv "PYTHONPATH")))
-             (zero? (system* "py.test" "-v")))))))
+             (invoke "py.test" "-v"))))))
     (native-inputs
      `(("python-flake8" ,python-flake8)
        ("python-mock" ,python-mock)
