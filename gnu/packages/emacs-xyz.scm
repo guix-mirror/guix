@@ -203,14 +203,14 @@ when typing parentheses directly or commenting out code line by line.")
     (name "emacs-git-modes")
     (version "1.2.8")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/magit/git-modes/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/magit/git-modes")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0h49f68yn0q4lg054adqii4qja1z2pzybm7nf4kvpq7fzjrzgv1q"))))
+                "08hy7rbfazs6grkpk54i82bz0i0c74zcjk96cip8970h6jn3mj72"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/magit/git-modes")
     (synopsis "Emacs major modes for Git configuration files")
