@@ -151,6 +151,27 @@
 
        #:phases
        (modify-phases %standard-phases
+         ;; Explicitely set the 32-bit version of vulkan-loader when installing
+         ;; to i686-linux or x86_64-linux.
+         ;; TODO: Add more JSON files as they become available in Mesa.
+         ,@(match (%current-system)
+             ((or "i686-linux" "x86_64-linux")
+              `((add-after 'install 'wrap-executable
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (icd (string-append out "/share/vulkan/icd.d")))
+                      (mkdir-p icd)
+                      (copy-file (string-append (assoc-ref inputs "mesa")
+                                 "/share/vulkan/icd.d/radeon_icd.i686.json")
+                                 (string-append icd "/radeon_icd.i686.json"))
+                      (wrap-program (string-append out "/bin/wine-preloader")
+                                    `("VK_ICD_FILENAMES" ":" =
+                                      (,(string-append icd
+                                        "/radeon_icd.i686.json"))))
+                      #t)))))
+             (_
+              `())
+             )
          (add-after 'configure 'patch-dlopen-paths
            ;; Hardcode dlopened sonames to absolute paths.
            (lambda _
@@ -188,6 +209,34 @@ integrate Windows applications into your desktop.")
              (string-append "libdir=" %output "/lib/wine64"))
        #:phases
        (modify-phases %standard-phases
+         ;; Explicitely set both the 64-bit and 32-bit versions of vulkan-loader
+         ;; when installing to x86_64-linux so both are available.
+         ;; TODO: Add more JSON files as they become available in Mesa.
+         ,@(match (%current-system)
+           ((or "x86_64-linux")
+             `((add-after 'copy-wine32-binaries 'wrap-executable
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out")))
+                   (wrap-program (string-append out "/bin/wine-preloader")
+                                 `("VK_ICD_FILENAMES" ":" =
+                                   (,(string-append (assoc-ref inputs "mesa")
+                                     "/share/vulkan/icd.d/radeon_icd.x86_64.json" ":"
+                                     (assoc-ref inputs "mesa")
+                                     "/share/vulkan/icd.d/intel_icd.x86_64.json" ":"
+                                     (assoc-ref inputs "wine")
+                                     "/share/vulkan/icd.d/radeon_icd.i686.json"))))
+                   (wrap-program (string-append out "/bin/wine64-preloader")
+                                 `("VK_ICD_FILENAMES" ":" =
+                                   (,(string-append (assoc-ref inputs "mesa")
+                                     "/share/vulkan/icd.d/radeon_icd.x86_64.json"
+                                     ":" (assoc-ref inputs "mesa")
+                                     "/share/vulkan/icd.d/intel_icd.x86_64.json"
+                                     ":" (assoc-ref inputs "wine")
+                                     "/share/vulkan/icd.d/radeon_icd.i686.json"))))
+                   #t)))))
+           (_
+            `())
+           )
          (add-after 'install 'copy-wine32-binaries
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((wine32 (assoc-ref %build-inputs "wine"))
@@ -195,7 +244,9 @@ integrate Windows applications into your desktop.")
                ;; Copy the 32-bit binaries needed for WoW64.
                (copy-file (string-append wine32 "/bin/wine")
                           (string-append out "/bin/wine"))
-               (copy-file (string-append wine32 "/bin/wine-preloader")
+               ;; Copy the real 32-bit wine-preloader instead of the wrapped
+               ;; version.
+               (copy-file (string-append wine32 "/bin/.wine-preloader-real")
                           (string-append out "/bin/wine-preloader"))
                #t)))
          (add-after 'compress-documentation 'copy-wine32-manpage
@@ -237,10 +288,23 @@ integrate Windows applications into your desktop.")
     (inputs `())
     (arguments
      `(#:validate-runpath? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-dlopen-paths
+           ;; Hardcode dlopened sonames to absolute paths.
+           (lambda _
+             (let* ((library-path (search-path-as-string->list
+                                   (getenv "LIBRARY_PATH")))
+                    (find-so (lambda (soname)
+                               (search-path library-path soname))))
+               (substitute* "include/config.h"
+                 (("(#define SONAME_.* )\"(.*)\"" _ defso soname)
+                  (format #f "~a\"~a\"" defso (find-so soname))))
+               #t))))
        #:configure-flags
        (list "--without-freetype"
              "--without-x")
-       ,@(strip-keyword-arguments '(#:configure-flags)
+       ,@(strip-keyword-arguments '(#:configure-flags #:phases)
                                   (package-arguments wine))))))
 
 (define-public wine-staging-patchset-data
