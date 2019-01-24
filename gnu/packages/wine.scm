@@ -126,6 +126,7 @@
        ("sdl2" ,sdl2)
        ("unixodbc" ,unixodbc)
        ("v4l-utils" ,v4l-utils)
+       ("vkd3d" ,vkd3d)
        ("vulkan-loader" ,vulkan-loader)
        ("zlib" ,zlib)))
     (arguments
@@ -309,7 +310,6 @@ integrate Windows applications into your desktop.")
               ("mesa" ,mesa)
               ("python" ,python)
               ("util-linux" ,util-linux) ; for hexdump
-              ("vkd3d" ,vkd3d)
               ("wine-staging-patchset-data" ,wine-staging-patchset-data)
               ,@(package-inputs wine)))
     (arguments
