@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -197,7 +198,7 @@ installed as well as Yelp, the Gnome help browser.")
 ;; This package is not public, since we use it to build the "doc" output of
 ;; the gnucash package (see above).  It would be confusing if it were public.
 (define gnucash-docs
-  (let ((revision "1"))              ;set to the empty string when no revision
+  (let ((revision "a"))              ;set to the empty string when no revision
     (package
       (name "gnucash-docs")
       (version (package-version gnucash))
@@ -205,11 +206,7 @@ installed as well as Yelp, the Gnome help browser.")
        (origin
          (method url-fetch)
          (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
-                             version "/gnucash-docs-" version
-                             (if (string-null? revision)
-                                 ""
-                                 (string-append "-" revision))
-                             ".tar.gz"))
+                             version "/gnucash-docs-" version revision ".tar.gz"))
          (sha256
           (base32
            "0bgjxpxgk7hy8ihn1kvd8p6vv191q5md2hz6jb9mqc4aykpvdlq7"))))
