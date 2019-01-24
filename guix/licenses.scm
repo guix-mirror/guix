@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
@@ -65,7 +65,7 @@
             ipa
             knuth
             lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
-            lppl lppl1.0+ lppl1.2 lppl1.2+
+            lppl lppl1.0+ lppl1.1+ lppl1.2 lppl1.2+
             lppl1.3 lppl1.3+
             lppl1.3a lppl1.3a+
             lppl1.3b lppl1.3b+
@@ -420,6 +420,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "LPPL 1.0+"
            "https://www.latex-project.org/lppl/lppl-1-0/"
            "LaTeX Project Public License 1.0"))
+
+(define lppl1.1+
+  (license "LPPL 1.1+"
+           "https://www.latex-project.org/lppl/lppl-1-1/"
+           "LaTeX Project Public License 1.1"))
 
 (define lppl1.2
   (license "LPPL 1.2"
