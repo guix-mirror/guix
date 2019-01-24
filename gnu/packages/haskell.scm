@@ -11461,4 +11461,36 @@ foreign imports by hand (or using hsc2hs), this ensures that C functions are
 imported with the correct Haskell types.")
     (license license:gpl2)))
 
+(define-public ghc-libmpd
+  (package
+    (name "ghc-libmpd")
+    (version "0.9.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/libmpd/libmpd-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1931m23iqb4wddpdidm4ph746zpaw41kkjzmb074j7yyfpk7x1jv"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-text" ,ghc-text)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-network" ,ghc-network)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/vimus/libmpd-haskell")
+    (synopsis "Haskell client library for the Music Player Daemon")
+    (description "This package provides a pure Haskell client library for the
+Music Player Daemon.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
