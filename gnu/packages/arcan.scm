@@ -18,12 +18,14 @@
 
 (define-module (gnu packages arcan)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
@@ -39,8 +41,10 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
 
 (define-public arcan
@@ -177,3 +181,70 @@ engine programmable using Lua.")
               "-DENABLE_LWA=on" "-DSTATIC_SQLITE3=off"
               "-DSTATIC_FREETYPE=off" "-DSHMIF_TUI_ACCEL=on")))))
     (synopsis "Combined display server, multimedia framework and game engine (SDL)")))
+
+(define-public xarcan
+  (let ((commit "8e6ee029388326cfe5cddeffe482eb3702e9b7f3")
+        (revision "1" ))
+    (package
+      (name "xarcan")
+      (version (git-version "0.5.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (file-name (git-file-name name version))
+         (uri (git-reference
+               (url "https://github.com/letoram/xarcan.git")
+               (commit commit)))
+         (sha256
+          (base32 "0zng7cs6733mnf0p6g5wv02981f2sf567n56csax6cmzb8fpamym"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags
+         `("--enable-kdrive" "--enable-xarcan"
+           "--disable-xorg" "--disable-xwayland"
+           "--disable-xnest" "--disable-xvfb"
+           "--enable-glamor" "--enable-glx"
+           "--disable-int10-module" "--enable-ipv6"
+           "--enable-record" "--without-systemd-daemon"
+           "--enable-xcsecurity" "--disable-static"
+           ,(string-append "--with-xkb-path="
+                           (assoc-ref %build-inputs "xkeyboard-config")
+                           "/share/X11/xkb")
+           ,(string-append "--with-xkb-bin-directory="
+                           (assoc-ref %build-inputs "xkbcomp")
+                           "/bin")
+           ,(string-append "--with-xkb-output="
+                           "/tmp"))     ; FIXME: Copied from xorg
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'noconfigure
+             (lambda _
+               (setenv "NOCONFIGURE" "true")
+               #t)))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("util-macros" ,util-macros)))
+      (inputs
+       `(("arcan" ,arcan)
+         ("font-util" ,font-util)
+         ("libdrm" ,libdrm)
+         ("libepoxy" ,libepoxy)
+         ("libkbfile" ,libxkbfile)
+         ("libressl" ,libressl)
+         ("libx11" ,libx11)
+         ("libxfont2" ,libxfont2)
+         ("mesa" ,mesa)
+         ("pixman" ,pixman)
+         ("xkeyboard-config" ,xkeyboard-config)
+         ("xkbcomp" ,xkbcomp)
+         ("xorgproto" ,xorgproto)
+         ("xtrans" ,xtrans)))
+      (home-page "https://arcan-fe.com")
+      (synopsis "Patched Xserver that bridges connections to Arcan")
+      (description "Patched Xserver with a KDrive backend that uses the arcan-shmif
+ to map Xlib/Xcb/X clients to a running arcan instance.  It allows running an X session
+as a window under Arcan.")
+      (license license:expat))))
