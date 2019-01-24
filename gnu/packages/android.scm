@@ -759,7 +759,7 @@ def _FindRepo():
          (delete 'build) ; nothing to build
          (replace 'check
            (lambda _
-             (zero? (system* "python" "-m" "nose"))))
+             (invoke "python" "-m" "nose")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
