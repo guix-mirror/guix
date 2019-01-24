@@ -186,14 +186,15 @@ around in a large, deeply nested project.")
                                   (mkdir-p (string-append out
                                                           "/share/man/man1"))
                                   (mkdir-p (string-append out
-                                                          "/share/doc")))))
+                                                          "/share/doc"))
+                                  #t)))
                   (replace 'check
                            (lambda _
                              (setenv "HOME" (getcwd))
                              (setenv "PATH"
                                      (string-append (getcwd) ":"
                                                     (getenv "PATH")))
-                             (zero? (system* "make" "test")))))
+                             (invoke "make" "test"))))
 
         #:make-flags (list (string-append "PREFIX="
                                           (assoc-ref %outputs "out")))))
