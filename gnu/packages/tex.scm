@@ -543,6 +543,42 @@ converters, will completely supplant the older patterns.")
 build fonts using the Metafont system.")
     (license license:knuth)))
 
+(define-public texlive-tex-fontinst-base
+  (package
+    (name "texlive-tex-fontinst-base")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/fontinst/base"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "12gnb8hc45p47pqn31msvi4mpr3wxbbbf2k4xhmshjqykwzlx508"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/fontinst/base")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/fontinst")
+    (synopsis "Tools for converting and installing fonts for TeX and LaTeX")
+    (description "This package provides TeX macros for converting Adobe Font
+Metric files to TeX metric and virtual font format.  Fontinst helps mainly
+with the number crunching and shovelling parts of font installation.  This
+means in practice that it creates a number of files which give the TeX
+metrics (and related information) for a font family that TeX needs to do any
+typesetting in these fonts.")
+    (license license:lppl1.1+)))
+
 (define-public texlive-fontname
   (package
     (name "texlive-fontname")
