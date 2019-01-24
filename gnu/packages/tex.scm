@@ -612,31 +612,37 @@ documents.")
                        (string-append (getcwd) ":"
                                       mf "/share/texmf-dist/metafont/base")))
              (mkdir "build")
+             (mkdir-p "pk/ljfour/public/cm/dpi600")
              (for-each (lambda (font)
                          (format #t "building font ~a\n" font)
                          (invoke "mf" "-progname=mf"
                                  "-output-directory=build"
                                  (string-append "\\"
                                                 "mode:=ljfour; "
-                                                "mag:=1; "
+                                                "mag:=1+0/600; "
                                                 "batchmode; "
                                                 "input "
-                                                (basename font ".mf"))))
+                                                (basename font ".mf")))
+                         (invoke "gftopk"
+                                 (string-append "build/"
+                                                (basename font ".mf") ".600gf")
+                                 (string-append "pk/ljfour/public/cm/dpi600/"
+                                                (basename font ".mf") ".pk")))
                        (find-files "." "cm(.*[0-9]+.*|inch)\\.mf$"))
              #t))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (tfm (string-append
-                          out "/share/texmf-dist/fonts/tfm/public/cm"))
-                    (mf (string-append
-                         out "/share/texmf-dist/fonts/source/public/cm"))
-                    (type1 (string-append
-                            out "/share/texmf-dist/fonts/type1/public/amsfonts/cm")))
+             (let* ((out   (assoc-ref outputs "out"))
+                    (fonts (string-append out "/share/texmf-dist/fonts/"))
+                    (pk    (string-append fonts "pk"))
+                    (tfm   (string-append fonts "tfm/public/cm"))
+                    (mf    (string-append fonts "source/public/cm"))
+                    (type1 (string-append fonts "type1/public/amsfonts/cm")))
                (for-each (cut install-file <> tfm)
                          (find-files "build" "\\.*"))
                (for-each (cut install-file <> mf)
                          (find-files "." "\\.mf"))
+               (copy-recursively "pk" pk)
                (mkdir-p type1)
                (copy-recursively (assoc-ref inputs "cm-type1") type1)
                #t))))))
