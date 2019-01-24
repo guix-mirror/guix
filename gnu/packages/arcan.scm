@@ -21,6 +21,7 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages compression)
@@ -36,9 +37,11 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages video)
-  #:use-module (gnu packages xdisorg))
+  #:use-module (gnu packages xdisorg)
+  #:use-module (srfi srfi-1))
 
 (define-public arcan
   (let ((commit "b4dd1fbd1938492ff4b269189d3c8524be7450a9")
@@ -156,3 +159,21 @@ engine programmable using Lua.")
                      license:lgpl2.0+
                      license:public-domain
                      license:bsd-3)))))
+
+(define-public arcan-sdl
+  (package
+    (inherit arcan)
+    (name "arcan-sdl")
+    (inputs
+     `(("sdl" ,sdl)
+       ,@(fold alist-delete (package-inputs arcan)
+               '("libdrm"))))
+    (arguments
+     `(,@(ensure-keyword-arguments
+          (package-arguments arcan)
+          '(#:configure-flags
+            '("-DVIDEO_PLATFORM=sdl" "-DBUILTIN_LUA=off"
+              "-DSTATIC_OPENAL=off" "-DDISABLE_JIT=off"
+              "-DENABLE_LWA=on" "-DSTATIC_SQLITE3=off"
+              "-DSTATIC_FREETYPE=off" "-DSHMIF_TUI_ACCEL=on")))))
+    (synopsis "Combined display server, multimedia framework and game engine (SDL)")))
