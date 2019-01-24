@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -94,10 +94,10 @@
          (add-after 'unpack 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
              ;; prepare ChibiOS
-             (and (zero? (system* "unzip" "-o" (assoc-ref inputs "chibios")))
-                  (zero? (system* "mv" "ChibiOS_2.6.9" "chibios"))
-                  (with-directory-excursion "chibios/ext"
-                    (zero? (system* "unzip" "-o" "fatfs-0.9-patched.zip"))))
+             (invoke "unzip" "-o" (assoc-ref inputs "chibios"))
+             (invoke "mv" "ChibiOS_2.6.9" "chibios")
+             (with-directory-excursion "chibios/ext"
+               (invoke "unzip" "-o" "fatfs-0.9-patched.zip"))
 
              ;; Remove source of non-determinism in ChibiOS
              (substitute* "chibios/os/various/shell.c"
@@ -149,7 +149,7 @@
                        (string-append toolchain
                                       "/arm-none-eabi/lib")))
              (with-directory-excursion "platform_linux"
-               (zero? (system* "sh" "compile_firmware.sh")))))
+               (invoke "sh" "compile_firmware.sh"))))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
