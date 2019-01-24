@@ -29,11 +29,13 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages pcre)
@@ -248,3 +250,35 @@ engine programmable using Lua.")
  to map Xlib/Xcb/X clients to a running arcan instance.  It allows running an X session
 as a window under Arcan.")
       (license license:expat))))
+
+(define-public arcan-wayland
+  (package
+    (inherit arcan)
+    (name "arcan-wayland")
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("arcan" ,arcan)
+       ("libseccomp" ,libseccomp)
+       ("libxkbcommon" ,libxkbcommon)
+       ("mesa" ,mesa)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "src/tools/waybridge")
+             #t))
+         (add-after 'unpack 'fix-cmake-find-shmif
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/platform/cmake/modules/Findarcan_shmif.cmake"
+               (("/usr/local") (assoc-ref inputs "arcan")))
+             #t)))))
+    (synopsis "Wayland protocol service for Arcan")
+    (description "Arcan-wayland (waybridge) bridges Wayland connections
+with an Arcan connection point.  It allows Wayland compatible clients
+to connect and render using Arcan.")
+    (license license:bsd-3)))
