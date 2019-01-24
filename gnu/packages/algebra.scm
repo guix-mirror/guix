@@ -357,11 +357,11 @@ or text interfaces) or as a C++ library.")
                    (mpfr (assoc-ref inputs "mpfr")))
                ;; do not pass "--enable-fast-install", which makes the
                ;; homebrew configure process fail
-               (zero? (system*
-                       "./configure"
+               (invoke "./configure"
                        (string-append "--prefix=" out)
                        (string-append "--with-gmp=" gmp)
-                       (string-append "--with-mpfr=" mpfr)))))))))
+                       (string-append "--with-mpfr=" mpfr))
+               #t))))))
    (synopsis "Fast library for number theory")
    (description
     "FLINT is a C library for number theory.  It supports arithmetic
