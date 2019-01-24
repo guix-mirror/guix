@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -143,7 +143,7 @@
                            (default-value 'dflt)
                            (compose concatenate)
                            (extend cons)))
-         (t2 (service-type (name 't2) (extensions '())
+         (t2 (service-type (name 't2)
                            (default-value 'dflt2)
                            (compose concatenate)
                            (extend cons)
