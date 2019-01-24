@@ -284,14 +284,14 @@ runtime.")
                     port)))
 
                ;; Build it!
-               (zero? (system* "ant"
-                               (string-append "-Djavac.classpath=" classpath)
-                               "-Dbuild.runtime=true"
-                               "-Dbuild.time=01/01/1970 00:00:00"
-                               "-Djavac.source=1.7"
-                               "-Djavac.target=1.7"
-                               (string-append "-Dtag.short.version="
-                                              ,version))))))
+               (invoke "ant"
+                       (string-append "-Djavac.classpath=" classpath)
+                       "-Dbuild.runtime=true"
+                       "-Dbuild.time=01/01/1970 00:00:00"
+                       "-Djavac.source=1.7"
+                       "-Djavac.target=1.7"
+                       (string-append "-Dtag.short.version="
+                                      ,version)))))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
