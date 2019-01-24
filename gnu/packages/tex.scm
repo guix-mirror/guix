@@ -1402,9 +1402,7 @@ users, via its Plain TeX version.)")
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/fancyvrb"
-       ;; We exclude "fvrb-ex" to avoid a dependency on texlive-luaotfload and
-       ;; thus texlive-luatex-lualibs.
-       #:build-targets '("fancyvrb.ins")))
+       #:tex-format "latex"))
     (home-page "https://www.ctan.org/pkg/fancyvrb")
     (synopsis "Sophisticated verbatim text")
     (description
