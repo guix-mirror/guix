@@ -1165,15 +1165,8 @@ book).")
                         (getcwd) ":"
                         (getcwd) "/build:"
                         (string-join
-                         (append-map (match-lambda
-                                       ((_ . dir)
-                                        (find-files dir
-                                                    (lambda (_ stat)
-                                                      (eq? 'directory (stat:type stat)))
-                                                    #:directories? #t
-                                                    #:stat stat)))
-                                     inputs)
-                         ":")))
+                         (map (match-lambda ((_ . dir) dir)) inputs)
+                         "//:")))
 
                ;; Create an empty texsys.cfg, because latex.ltx wants to include
                ;; it.  This file must exist and it's fine if it's empty.
