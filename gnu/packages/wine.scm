@@ -66,7 +66,8 @@
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1))
 
 (define-public wine
   (package
@@ -223,6 +224,23 @@ integrate Windows applications into your desktop.")
                                   (package-arguments wine))))
     (synopsis "Implementation of the Windows API (WoW64 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
+
+;; This minimal build of Wine is needed to prevent a circular dependency with
+;; vkd3d.
+(define-public wine-minimal
+  (package
+    (inherit wine)
+    (name "wine-minimal")
+    (native-inputs (fold alist-delete (package-native-inputs wine)
+               '("gettext" "perl" "pkg-config")))
+    (inputs `())
+    (arguments
+     `(#:validate-runpath? #f
+       #:configure-flags
+       (list "--without-freetype"
+             "--without-x")
+       ,@(strip-keyword-arguments '(#:configure-flags)
+                                  (package-arguments wine))))))
 
 (define-public wine-staging-patchset-data
   (package
