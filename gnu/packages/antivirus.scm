@@ -112,8 +112,10 @@
        ;; install sample .conf files to %output/etc rather than /etc/clamav
        #:make-flags (list (string-append "sysconfdir=" %output "/etc"))
        #:phases (modify-phases %standard-phases
+                  ;; Regenerate configure script.  Without this we don't get
+                  ;; the correct value for LLVM linker variables.
                   (add-after 'unpack 'reconf
-                    (lambda _ (zero? (system* "autoreconf" "-vfi"))))
+                    (lambda _ (invoke "autoreconf" "-vfi")))
                   (add-before 'configure 'patch-llvm-config
                     (lambda _
                       (substitute* '("libclamav/c++/detect.cpp"
