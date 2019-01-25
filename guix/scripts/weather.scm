@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;;
@@ -51,7 +51,10 @@
                       (cons* replacement package result))
                      (#f
                       (cons package result))))
-                 '()))
+                 '()
+
+                 ;; Dismiss deprecated packages but keep hidden packages.
+                 #:select? (negate package-superseded)))
 
 (define (call-with-progress-reporter reporter proc)
   "This is a variant of 'call-with-progress-reporter' that works with monadic
