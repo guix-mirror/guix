@@ -225,12 +225,12 @@ identi.ca and status.net).")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
+         (add-after 'unpack 'patch-autogen
            (lambda _
              (let ((sh (which "sh")))
                (substitute* "autogen.sh" (("/bin/sh") sh))
-               (setenv "CONFIG_SHELL" sh)
-               (zero? (system* "./autogen.sh")))))
+               (setenv "CONFIG_SHELL" sh))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (invoke "./configure"
