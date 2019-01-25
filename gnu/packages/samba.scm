@@ -320,9 +320,9 @@ destructors.  It is the core memory allocator used in Samba.")
            ;; tevent uses a custom configuration script that runs waf.
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)
-                               "--bundled-libraries=NONE"))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       "--bundled-libraries=NONE")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python-2)))
