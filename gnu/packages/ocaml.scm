@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -253,7 +254,7 @@ functional, imperative and object-oriented styles of programming.")
            (replace 'build
              (lambda _
                ;; Specifying '-j' at all causes the build to fail.
-               (zero? (system* "make" "world.opt"))))
+               (invoke "make" "world.opt")))
            ,@(if (string=? "aarch64-linux" (%current-system))
                ;; Custom configure script doesn't recongnize aarch64.
                '((replace 'configure
@@ -268,11 +269,9 @@ functional, imperative and object-oriented styles of programming.")
            (replace 'check
              (lambda _
                (with-directory-excursion "testsuite"
-                 (zero? (system*
-                         "make"
-                         "all"
+                 (invoke "make" "all"
                          (string-append
-                          "TOPDIR=" (getcwd) "/.."))))))))))))
+                          "TOPDIR=" (getcwd) "/..")))))))))))
 
 (define-public ocaml-4.07
   (package
