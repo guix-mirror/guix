@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
@@ -390,9 +390,9 @@ optimizer; and it can produce photorealistic and design review images.")
          (replace 'configure
            ;; The configure script doesn't tolerate most of our configure flags.
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "sh" "configure"
-                             (string-append "--prefix="
-                                            (assoc-ref outputs "out")))))))))
+             (invoke "sh" "configure"
+                     (string-append "--prefix="
+                                    (assoc-ref outputs "out"))))))))
     (home-page "http://repo.hu/projects/pcb-rnd/")
     (description "PCB RND is a fork of the GNU PCB circuit board editing tool
 featuring various improvements and bug fixes.")))
