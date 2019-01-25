@@ -3494,7 +3494,11 @@ in finite element programs.")
         ``("-DMPI_C_COMPILER=mpicc"
            "-DMPI_CXX_COMPILER=mpicxx"
            "-DMPI_Fortran_COMPILER=mpifort"
-           ,@,cf))))
+           ,@,cf))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'mpi-setup
+             ,%openmpi-setup)))))
     (synopsis "Finite element library (with MPI support)")))
 
 (define-public flann
