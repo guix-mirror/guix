@@ -135,10 +135,9 @@ is to write a job file matching the I/O load one wants to simulate.")
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((mpi-home (assoc-ref inputs "mpi")))
-               (zero?
-                ;; Not safe for parallel build
-                (system* "make" "-C" "imb/src" "-f" "make_mpich" "SHELL=sh"
-                         (string-append "MPI_HOME=" mpi-home))))))
+               ;; Not safe for parallel build
+               (invoke "make" "-C" "imb/src" "-f" "make_mpich" "SHELL=sh"
+                       (string-append "MPI_HOME=" mpi-home)))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
