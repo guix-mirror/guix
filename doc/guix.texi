@@ -9709,7 +9709,9 @@ key is authorized.  It also reports the size of the compressed archives
 (``nars'') provided by the server, the size the corresponding store
 items occupy in the store (assuming deduplication is turned off), and
 the server's throughput.  The second part gives continuous integration
-(CI) statistics, if the server supports it.
+(CI) statistics, if the server supports it.  In addition, using the
+@option{--coverage} option, @command{guix weather} can list ``important''
+package substitutes missing on the server (see below).
 
 To achieve that, @command{guix weather} queries over HTTP(S) meta-data
 (@dfn{narinfos}) for all the relevant store items.  Like @command{guix
@@ -9737,6 +9739,37 @@ Instead of querying substitutes for all the packages, only ask for those
 specified in @var{file}.  @var{file} must contain a @dfn{manifest}, as
 with the @code{-m} option of @command{guix package} (@pxref{Invoking
 guix package}).
+
+@item --coverage[=@var{count}]
+@itemx -c [@var{count}]
+Report on substitute coverage for packages: list packages with at least
+@var{count} dependents (zero by default) for which substitutes are
+unavailable.  Dependent packages themselves are not listed: if @var{b} depends
+on @var{a} and @var{a} has no substitutes, only @var{a} is listed, even though
+@var{b} usually lacks substitutes as well.  The result looks like this:
+
+@example
+$ guix weather --substitute-urls=https://ci.guix.info -c 10
+computing 8,983 package derivations for x86_64-linux...
+looking for 9,343 store items on https://ci.guix.info...
+updating substitutes from 'https://ci.guix.info'... 100.0%
+https://ci.guix.info
+  64.7% substitutes available (6,047 out of 9,343)
+@dots{}
+2502 packages are missing from 'https://ci.guix.info' for 'x86_64-linux', among which:
+    58  kcoreaddons@@5.49.0      /gnu/store/@dots{}-kcoreaddons-5.49.0
+    46  qgpgme@@1.11.1           /gnu/store/@dots{}-qgpgme-1.11.1
+    37  perl-http-cookiejar@@0.008  /gnu/store/@dots{}-perl-http-cookiejar-0.008
+    @dots{}
+@end example
+
+What this example shows is that @code{kcoreaddons} and presumably the 58
+packages that depend on it have no substitutes at @code{ci.guix.info};
+likewise for @code{qgpgme} and the 46 packages that depend on it.
+
+If you are a Guix developer, or if you are taking care of this build farm,
+you'll probably want to have a closer look at these packages: they may simply
+fail to build.
 @end table
 
 @node Invoking guix processes

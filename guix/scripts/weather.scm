@@ -32,6 +32,9 @@
   #:use-module (guix scripts substitute)
   #:use-module (guix http-client)
   #:use-module (guix ci)
+  #:use-module (guix sets)
+  #:use-module (guix graph)
+  #:autoload   (guix scripts graph) (%bag-node-type)
   #:use-module (gnu packages)
   #:use-module (web uri)
   #:use-module (srfi srfi-1)
@@ -41,6 +44,7 @@
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 vlist)
   #:export (guix-weather))
 
 (define (all-packages)
@@ -257,6 +261,10 @@ Report the availability of substitutes.\n"))
   -m, --manifest=MANIFEST
                          look up substitutes for packages specified in MANIFEST"))
   (display (G_ "
+  -c, --coverage[=COUNT]
+                         show substitute coverage for packages with at least
+                         COUNT dependents"))
+  (display (G_ "
   -s, --system=SYSTEM    consider substitutes for SYSTEM--e.g., \"i686-linux\""))
   (newline)
   (display (G_ "
@@ -289,6 +297,11 @@ Report the availability of substitutes.\n"))
          (option '(#\m "manifest") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'manifest arg result)))
+         (option '(#\c "coverage") #f #t
+                 (lambda (opt name arg result)
+                   (alist-cons 'coverage
+                               (if arg (string->number* arg) 0)
+                               result)))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg result)))))
@@ -302,6 +315,153 @@ Report the availability of substitutes.\n"))
          (manifest    (load* file user-module)))
     (map manifest-entry-item
          (manifest-transitive-entries manifest))))
+
+
+;;;
+;;; Missing package substitutes.
+;;;
+
+(define* (package-partition-boundary pred packages
+                                     #:key (system (%current-system)))
+  "Return the subset of PACKAGES that are at the \"boundary\" between those
+that match PRED and those that don't.  The returned packages themselves do not
+match PRED but they have at least one direct dependency that does.
+
+Note: The assumption is that, if P matches PRED, then all the dependencies of
+P match PRED as well."
+  ;; XXX: Graph theoreticians surely have something to teach us about this...
+  (let loop ((packages packages)
+             (result (setq))
+             (visited vlist-null))
+    (define (visited? package)
+      (vhash-assq package visited))
+
+    (match packages
+      ((package . rest)
+       (cond ((visited? package)
+              (loop rest result visited))
+             ((pred package)
+              (loop rest result (vhash-consq package #t visited)))
+             (else
+              (let* ((bag  (package->bag package system))
+                     (deps (filter-map (match-lambda
+                                         ((label (? package? package) . _)
+                                          (and (not (pred package))
+                                               package))
+                                         (_ #f))
+                                       (bag-direct-inputs bag))))
+                (loop (append deps rest)
+                      (if (null? deps)
+                          (set-insert package result)
+                          result)
+                      (vhash-consq package #t visited))))))
+      (()
+       (set->list result)))))
+
+(define (package->output-mapping packages system)
+  "Return a vhash that maps each item of PACKAGES to its corresponding output
+store file names for SYSTEM."
+  (foldm %store-monad
+         (lambda (package mapping)
+           (mlet %store-monad ((drv (package->derivation package system
+                                                         #:graft? #f)))
+             (return (vhash-consq package
+                                  (match (derivation->output-paths drv)
+                                    (((names . outputs) ...)
+                                     outputs))
+                                  mapping))))
+         vlist-null
+         packages))
+
+(define (substitute-oracle server items)
+  "Return a procedure that, when passed a store item (one of those listed in
+ITEMS), returns true if SERVER has a substitute for it, false otherwise."
+  (define available
+    (fold (lambda (narinfo set)
+            (set-insert (narinfo-path narinfo) set))
+          (set)
+          (lookup-narinfos server items)))
+
+  (cut set-contains? available <>))
+
+(define* (report-package-coverage-per-system server packages system
+                                             #:key (threshold 0))
+  "Report on the subset of PACKAGES that lacks SYSTEM substitutes on SERVER,
+sorted by decreasing number of dependents.  Do not display those with less
+than THRESHOLD dependents."
+  (mlet* %store-monad ((packages -> (package-closure packages #:system system))
+                       (mapping    (package->output-mapping packages system))
+                       (back-edges (node-back-edges %bag-node-type packages)))
+    (define items
+      (vhash-fold (lambda (package items result)
+                    (append items result))
+                  '()
+                  mapping))
+
+    (define substitutable?
+      (substitute-oracle server items))
+
+    (define substitutable-package?
+      (lambda (package)
+        (match (vhash-assq package mapping)
+          ((_ . items)
+           (find substitutable? items))
+          (#f
+           #f))))
+
+    (define missing
+      (package-partition-boundary substitutable-package? packages
+                                  #:system system))
+
+    (define missing-count
+      (length missing))
+
+    (if (zero? threshold)
+        (format #t (N_ "The following ~a package is missing from '~a' for \
+'~a':~%"
+                       "The following ~a packages are missing from '~a' for \
+'~a':~%"
+                       missing-count)
+                missing-count server system)
+        (format #t (N_ "~a package is missing from '~a' for '~a':~%"
+                       "~a packages are missing from '~a' for '~a', among \
+which:~%"
+                       missing-count)
+                missing-count server system))
+
+    (for-each (match-lambda
+                ((package count)
+                 (match (vhash-assq package mapping)
+                   ((_ . items)
+                    (when (>= count threshold)
+                      (format #t "  ~4d\t~a@~a\t~{~a ~}~%"
+                              count
+                              (package-name package) (package-version package)
+                              items)))
+                   (#f                      ;PACKAGE must be an internal thing
+                    #f))))
+              (sort (zip missing
+                         (map (lambda (package)
+                                (node-reachable-count (list package)
+                                                      back-edges))
+                              missing))
+                    (match-lambda*
+                      (((_ count1) (_ count2))
+                       (< count2 count1)))))
+    (return #t)))
+
+(define* (report-package-coverage server packages systems
+                                  #:key (threshold 0))
+  "Report on the substitute coverage for PACKAGES, for each of SYSTEMS, on
+SERVER.  Display information for packages with at least THRESHOLD dependents."
+  (with-store store
+    (run-with-store store
+      (foldm %store-monad
+             (lambda (system _)
+               (report-package-coverage-per-system server packages system
+                                                   #:threshold threshold))
+             #f
+             systems))))
 
 
 ;;;
@@ -334,7 +494,12 @@ Report the availability of substitutes.\n"))
                                       (package-outputs packages system))
                                     systems)))))))
         (for-each (lambda (server)
-                    (report-server-coverage server items))
+                    (report-server-coverage server items)
+                    (match (assoc-ref opts 'coverage)
+                      (#f #f)
+                      (threshold
+                       (report-package-coverage server packages systems
+                                                #:threshold threshold))))
                   urls)))))
 
 ;;; Local Variables:
