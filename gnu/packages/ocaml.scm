@@ -447,26 +447,26 @@ Git-friendly development workflow.")
        ;; which  fails on the second attempt.
        #:parallel-build? #f
        #:make-flags '("all")
-       #:phases (modify-phases %standard-phases
-                  (replace
-                   'configure
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     ;; This is a home-made 'configure' script.
-                     (let ((out (assoc-ref outputs "out")))
-                       (zero? (system* "./configure"
-                                       (string-append "--libdir=" out
-                                                      "/lib/ocaml/site-lib")
-                                       (string-append "--bindir=" out "/bin")
-                                       (string-append "--pkgdir=" out
-                                                      "/lib/ocaml/site-lib"))))))
-                  (add-after 'install 'install-meta
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        (substitute* "camlp4/META.in"
-                          (("directory = .*")
-                            (string-append "directory = \"" out
-                                           "/lib/ocaml/site-lib/camlp4\"\n")))
-                        (zero? (system* "make" "install-META"))))))))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This is a home-made 'configure' script.
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "./configure"
+                       (string-append "--libdir=" out
+                                      "/lib/ocaml/site-lib")
+                       (string-append "--bindir=" out "/bin")
+                       (string-append "--pkgdir=" out
+                                      "/lib/ocaml/site-lib")))))
+         (add-after 'install 'install-meta
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "camlp4/META.in"
+                 (("directory = .*")
+                  (string-append "directory = \"" out
+                                 "/lib/ocaml/site-lib/camlp4\"\n")))
+               (invoke "make" "install-META")))))))
     (home-page "https://github.com/ocaml/camlp4")
     (synopsis "Write parsers in OCaml")
     (description
