@@ -347,16 +347,14 @@ part of the distribution.")
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
+               (("/bin/sh") (which "sh")))
+             #t))
          (replace 'build
-           (lambda _
-             (zero? (system* "./remake"))))
+           (lambda _ (invoke "./remake")))
          (replace 'check
-           (lambda _
-             (zero? (system* "./remake" "check"))))
+           (lambda _ (invoke "./remake" "check")))
          (replace 'install
-           (lambda _
-             (zero? (system* "./remake" "install")))))))
+           (lambda _ (invoke "./remake" "install"))))))
     (home-page "http://coquelicot.saclay.inria.fr/index.html")
     (synopsis "Coq library for Reals")
     (description "Coquelicot is an easier way of writing formulas and theorem
