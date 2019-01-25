@@ -295,15 +295,14 @@ assistant.")
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'build 'chdir
-           (lambda _
-             (chdir "mathcomp")))
+           (lambda _ (chdir "mathcomp") #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
-             (zero? (system* "make" "-f" "Makefile.coq"
-                             (string-append "COQLIB=" (assoc-ref outputs "out")
-                                            "/lib/coq/")
-                             "install")))))))
+             (invoke "make" "-f" "Makefile.coq"
+                     (string-append "COQLIB=" (assoc-ref outputs "out")
+                                    "/lib/coq/")
+                     "install"))))))
     (home-page "https://math-comp.github.io/math-comp/")
     (synopsis "Mathematical Components for Coq")
     (description "Mathematical Components for Coq has its origins in the formal
