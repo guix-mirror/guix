@@ -582,7 +582,7 @@ in transmittable and storable formats, such as JSON and MessagePack.")
          (add-before 'check 'init-git
            (lambda _
              ;; reno expects a git repo
-             (zero? (system* "git" "init")))))))
+             (invoke "git" "init"))))))
     (propagated-inputs
       `(("python-dulwich" ,python-dulwich)
         ("python-pbr" ,python-pbr)
@@ -596,7 +596,7 @@ in transmittable and storable formats, such as JSON and MessagePack.")
         ("python-docutils" ,python-docutils)
         ("python-sphinx" ,python-sphinx)
         ("gnupg" ,gnupg)
-        ("git" ,git)))
+        ("git" ,git-minimal)))
     (home-page "http://docs.openstack.org/developer/reno/")
     (synopsis "Release notes manager")
     (description "Reno is a tool for storing release notes in a git repository
@@ -626,7 +626,7 @@ and building documentation from them.")
              ;; Note: Upstream tests would have also built the release notes.
              ;; That only would work if we were in a git checkout.
              ;; Therefore, we don't do it here.
-             (zero? (system* "python" "setup.py" "build_sphinx")))))))
+             (invoke "python" "setup.py" "build_sphinx"))))))
     (propagated-inputs
       `(("python-requests" ,python-requests)))
     (native-inputs

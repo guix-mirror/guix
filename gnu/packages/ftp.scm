@@ -126,9 +126,9 @@ reliability in mind.")
                     (let ((out (assoc-ref outputs "out")))
                       (setenv "CONFIG_SHELL" (which "sh"))
                       (setenv "SHELL" (which "sh"))
-                      (zero? (system* "./configure"
-                                      (string-append "--prefix=" out)))))))
-                #:tests? #f))           ;there are no tests
+                      (invoke "./configure"
+                              (string-append "--prefix=" out))))))
+       #:tests? #f)) ;there are no tests
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://www.ncftp.com/ncftp/")
     (synopsis "Command-line File Transfer Protocol (FTP) client")

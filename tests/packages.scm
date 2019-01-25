@@ -249,6 +249,28 @@
           (package-transitive-supported-systems d)
           (package-transitive-supported-systems e))))
 
+(test-assert "package-closure"
+  (let-syntax ((dummy-package/no-implicit
+                (syntax-rules ()
+                  ((_ name rest ...)
+                   (package
+                     (inherit (dummy-package name rest ...))
+                     (build-system trivial-build-system))))))
+    (let* ((a (dummy-package/no-implicit "a"))
+           (b (dummy-package/no-implicit "b"
+                (propagated-inputs `(("a" ,a)))))
+           (c (dummy-package/no-implicit "c"
+                (inputs `(("a" ,a)))))
+           (d (dummy-package/no-implicit "d"
+                (native-inputs `(("b" ,b)))))
+           (e (dummy-package/no-implicit "e"
+                (inputs `(("c" ,c) ("d" ,d))))))
+      (lset= eq?
+             (list a b c d e)
+             (package-closure (list e))
+             (package-closure (list e d))
+             (package-closure (list e c b))))))
+
 (test-equal "origin-actual-file-name"
   "foo-1.tar.gz"
   (let ((o (dummy-origin (uri "http://www.example.com/foo-1.tar.gz"))))
@@ -1180,4 +1202,5 @@
 
 ;;; Local Variables:
 ;;; eval: (put 'dummy-package 'scheme-indent-function 1)
+;;; eval: (put 'dummy-package/no-implicit 'scheme-indent-function 1)
 ;;; End:

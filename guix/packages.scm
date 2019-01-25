@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -133,6 +133,7 @@
             bag-transitive-host-inputs
             bag-transitive-build-inputs
             bag-transitive-target-inputs
+            package-closure
 
             default-guile
             default-guile-derivation
@@ -797,6 +798,28 @@ dependencies are known to build on SYSTEM."
 (define (bag-transitive-target-inputs bag)
   "Return the \"target inputs\" of BAG, recursively."
   (transitive-inputs (bag-target-inputs bag)))
+
+(define* (package-closure packages #:key (system (%current-system)))
+  "Return the closure of PACKAGES on SYSTEM--i.e., PACKAGES and the list of
+packages they depend on, recursively."
+  (let loop ((packages packages)
+             (visited  vlist-null)
+             (closure  (list->setq packages)))
+    (match packages
+      (()
+       (set->list closure))
+      ((package . rest)
+       (if (vhash-assq package visited)
+           (loop rest visited closure)
+           (let* ((bag          (package->bag package system))
+                  (dependencies (filter-map (match-lambda
+                                              ((label (? package? package) . _)
+                                               package)
+                                              (_ #f))
+                                            (bag-direct-inputs bag))))
+             (loop (append dependencies rest)
+                   (vhash-consq package #t visited)
+                   (fold set-insert closure dependencies))))))))
 
 (define* (package-mapping proc #:optional (cut? (const #f)))
   "Return a procedure that, given a package, applies PROC to all the packages

@@ -10,8 +10,9 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
-;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
+;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -191,19 +192,18 @@ patch-/bin/sh-references: ~a: changing `\"/bin/sh\"' to `~a'~%"
                     (mandir (string-append out "/share/man")))
                ;; Custom configure script doesn't recognize
                ;; --prefix=<PREFIX> syntax (with equals sign).
-               (zero? (system* "./configure"
-                               "--prefix" out
-                               "--mandir" mandir)))))
+               (invoke "./configure"
+                       "--prefix" out
+                       "--mandir" mandir))))
          (replace 'build
            (lambda _
-             (zero? (system* "make" "-j" (number->string
-                                          (parallel-job-count))
-                             "world.opt"))))
+             (invoke "make" "-j" (number->string (parallel-job-count))
+                     "world.opt")))
          (delete 'check)
          (add-after 'install 'check
            (lambda _
              (with-directory-excursion "testsuite"
-               (zero? (system* "make" "all")))))
+               (invoke "make" "all"))))
          (add-before 'check 'prepare-socket-test
            (lambda _
              (format (current-error-port)
@@ -254,7 +254,7 @@ functional, imperative and object-oriented styles of programming.")
            (replace 'build
              (lambda _
                ;; Specifying '-j' at all causes the build to fail.
-               (zero? (system* "make" "world.opt"))))
+               (invoke "make" "world.opt")))
            ,@(if (string=? "aarch64-linux" (%current-system))
                ;; Custom configure script doesn't recongnize aarch64.
                '((replace 'configure
@@ -269,11 +269,9 @@ functional, imperative and object-oriented styles of programming.")
            (replace 'check
              (lambda _
                (with-directory-excursion "testsuite"
-                 (zero? (system*
-                         "make"
-                         "all"
+                 (invoke "make" "all"
                          (string-append
-                          "TOPDIR=" (getcwd) "/.."))))))))))))
+                          "TOPDIR=" (getcwd) "/..")))))))))))
 
 (define-public ocaml-4.07
   (package
@@ -449,26 +447,26 @@ Git-friendly development workflow.")
        ;; which  fails on the second attempt.
        #:parallel-build? #f
        #:make-flags '("all")
-       #:phases (modify-phases %standard-phases
-                  (replace
-                   'configure
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     ;; This is a home-made 'configure' script.
-                     (let ((out (assoc-ref outputs "out")))
-                       (zero? (system* "./configure"
-                                       (string-append "--libdir=" out
-                                                      "/lib/ocaml/site-lib")
-                                       (string-append "--bindir=" out "/bin")
-                                       (string-append "--pkgdir=" out
-                                                      "/lib/ocaml/site-lib"))))))
-                  (add-after 'install 'install-meta
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        (substitute* "camlp4/META.in"
-                          (("directory = .*")
-                            (string-append "directory = \"" out
-                                           "/lib/ocaml/site-lib/camlp4\"\n")))
-                        (zero? (system* "make" "install-META"))))))))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This is a home-made 'configure' script.
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "./configure"
+                       (string-append "--libdir=" out
+                                      "/lib/ocaml/site-lib")
+                       (string-append "--bindir=" out "/bin")
+                       (string-append "--pkgdir=" out
+                                      "/lib/ocaml/site-lib")))))
+         (add-after 'install 'install-meta
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "camlp4/META.in"
+                 (("directory = .*")
+                  (string-append "directory = \"" out
+                                 "/lib/ocaml/site-lib/camlp4\"\n")))
+               (invoke "make" "install-META")))))))
     (home-page "https://github.com/ocaml/camlp4")
     (synopsis "Write parsers in OCaml")
     (description
@@ -1151,8 +1149,7 @@ files in these formats.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key #:allow-other-keys)
-             (zero? (system* "./configure")))))))
+           (lambda _ (invoke "./configure"))))))
     (home-page "https://forge.ocamlcore.org/projects/zarith/")
     (synopsis "Implements arbitrary-precision integers")
     (description "Implements arithmetic and logical operations over
@@ -1768,15 +1765,17 @@ spans without being subject to operating system calendar time adjustments.")
 (define-public ocaml-cmdliner
   (package
     (name "ocaml-cmdliner")
-    (version "0.9.8")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/cmdliner/releases/"
                                   "cmdliner-" version ".tbz"))
               (sha256
                (base32
-                "0hdxlkgiwjml9dpaa80282a8350if7mc1m6yz2mrd7gci3fszykx"))))
+                "18jqphjiifljlh9jg8zpl6310p3iwyaqphdkmf89acyaix0s4kj1"))))
     (build-system ocaml-build-system)
+    (inputs
+     `(("ocaml-result" ,ocaml-result)))
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
        ("opam" ,opam)))
@@ -1785,6 +1784,12 @@ spans without being subject to operating system calendar time adjustments.")
        #:build-flags '("native=true" "native-dynlink=true")
        #:phases
        (modify-phases %standard-phases
+         (replace 'install
+           ;; The makefile says 'adjust on cli invocation'
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "make" "install" (string-append "PREFIX=" out))
+               #t)))
          (delete 'configure))))
     (home-page "http://erratique.ch/software/cmdliner")
     (synopsis "Declarative definition of command line interfaces for OCaml")
@@ -1802,14 +1807,14 @@ most of the POSIX and GNU conventions.")
 (define-public ocaml-fmt
   (package
     (name "ocaml-fmt")
-    (version "0.8.0")
+    (version "0.8.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://erratique.ch/software/fmt/releases/fmt-"
                             version ".tbz"))
         (sha256 (base32
-                  "16y7ibndnairb53j8a6qgipyqwjxncn4pl9jiw5bxjfjm59108px"))))
+                  "1zj9azcxcn6skmb69ykgmi9z8c50yskwg03wqgh87lypgjdcz060"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
@@ -1817,6 +1822,7 @@ most of the POSIX and GNU conventions.")
        ("topkg" ,ocaml-topkg)))
     (propagated-inputs
      `(("result" ,ocaml-result)
+       ("ocaml-uchar" ,ocaml-uchar)
        ("cmdliner" ,ocaml-cmdliner)))
     (arguments `(#:tests? #f
                  #:build-flags (list "build" "--with-base-unix" "true"
@@ -2269,14 +2275,14 @@ representation of the data.")
 (define-public ocaml-uchar
   (package
     (name "ocaml-uchar")
-    (version "0.0.1")
+    (version "0.0.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/ocaml/uchar/releases/download/v"
                             version "/uchar-" version ".tbz"))
         (sha256 (base32
-                  "0ficw1x7ymbd6m8hqw3w1aycwm1hbwd6bad3c5pspwnzh3qlikhi"))))
+                  "1w2saw7zanf9m9ffvz2lvcxvlm118pws2x1wym526xmydhqpyfa7"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f
@@ -4342,13 +4348,12 @@ is provide a description of your project and Jbuilder will do the rest.")
        (modify-phases %standard-phases
          (delete 'configure)
          (replace 'build
-           (lambda* (#:key #:allow-other-keys)
-             (zero? (system* "jbuilder" "build"))))
+           (lambda _ (invoke "jbuilder" "build")))
          (delete 'check)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "jbuilder" "install" "--prefix" out))))))))
+               (invoke "jbuilder" "install" "--prefix" out)))))))
     (native-inputs
      `(("jbuilder" ,ocaml-jbuilder)))
     (propagated-inputs
@@ -4420,9 +4425,9 @@ instead of bindings to a C library.")
              (let* ((out (assoc-ref outputs "out"))
                     (libdir (string-append out "/lib/ocaml/site-lib")))
                (mkdir-p libdir)
-               (zero? (system* "jbuilder" "install"
-                               "--prefix" out
-                               "--libdir" libdir))))))))
+               (invoke "jbuilder" "install"
+                       "--prefix" out
+                       "--libdir" libdir)))))))
     (native-inputs
      `(("ocaml" ,ocaml)
        ("cppo" ,ocaml-cppo)
@@ -4749,6 +4754,35 @@ speedup, polymorphic variants and optional syntax for tuples and variants.
 yojson package.  The program @code{atdgen} can be used to derive OCaml-JSON
 serializers and deserializers from type definitions.")
     (license license:bsd-3)))
+ 
+(define-public ocaml-craml
+  (package
+    (name "ocaml-craml")
+    (version "1.0.0")
+    (home-page "https://github.com/realworldocaml/craml")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "197xjp4vmzdymf2ndinw271ihpf45h04mx8gqj8ypspxdr5fj1a5"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-fmt" ,ocaml-fmt)
+       ("ocaml-astring" ,ocaml-astring)
+       ("ocaml-logs" ,ocaml-logs)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)))
+    (synopsis
+     "CRAM-testing framework for testing command line applications")
+    (description "CRAM is a is functional testing framework for command line
+applications.  @code{craml} is freely inspired by the
+Mercurial's @code{https://www.selenic.com/blog/?p=663, unified test
+format}.  @code{craml} is released as a single binary (called @code{craml}).")
+    (license license:isc)))
 
 (define-public ocaml-merlin
   (package

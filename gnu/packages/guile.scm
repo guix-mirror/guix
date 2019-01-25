@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2016 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
@@ -1288,7 +1288,7 @@ key-value cache and store.")
 (define-public guile-wisp
   (package
     (name "guile-wisp")
-    (version "0.9.8")
+    (version "0.9.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/ArneBab/"
@@ -1296,57 +1296,48 @@ key-value cache and store.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1f2bbicq1rxnwmiplrm4r75wj06w385mjkyvi7g4k740bgwcrzxr"))))
+                "1xa0f0fvcrimqap50azv5872bfx8jbhc6baxa1prpbwcksbh8gdz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (ice-9 rdelim)
                   (ice-9 popen))
-
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'substitute-before-config
-
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((bash (assoc-ref inputs "bash")))
-              ;; Puts together some test files with /bin/bash hardcoded
-              (substitute* "Makefile.in"
-                (("/usr/bin/env bash")
-                 (string-append bash "/bin/bash"))
-                (("\\$\\(GUILE_EFFECTIVE_VERSION\\)/site")
-                 "site/$(GUILE_EFFECTIVE_VERSION)")) ;use the right order
-              #t)))
-
+         (add-before 'configure 'patch-/usr/bin/env
+           (lambda _
+             (substitute* "Makefile.in"
+               (("/usr/bin/env bash") (which "bash"))
+               (("\\$\\(GUILE_EFFECTIVE_VERSION\\)/site")
+                "site/$(GUILE_EFFECTIVE_VERSION)")) ;use the right order
+             #t))
          ;; auto compilation breaks, but if we set HOME to /tmp,
          ;; that works ok
-         (add-before
-          'check 'auto-compile-hacky-workaround
-          (lambda _
-            (setenv "HOME" "/tmp")
-            #t))
+         (add-before 'check 'auto-compile-hacky-workaround
+           (lambda _ (setenv "HOME" "/tmp") #t))
          (add-after 'install 'install-go-files
-          (lambda* (#:key outputs inputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (effective (read-line
-                               (open-pipe* OPEN_READ
-                                           "guile" "-c"
-                                           "(display (effective-version))")))
-                   (module-dir (string-append out "/share/guile/site/"
-                                              effective))
-                   (object-dir (string-append out "/lib/guile/" effective
-                                              "/site-ccache"))
-                   (prefix     (string-length module-dir)))
-              ;; compile to the destination
-              (for-each (lambda (file)
-                          (let* ((base (string-drop (string-drop-right file 4)
-                                                    prefix))
-                                 (go   (string-append object-dir base ".go")))
-                           (invoke "guild" "compile" "-L" module-dir
-                                    file "-o" go)))
-                        (find-files module-dir "\\.scm$"))
-              #t))))))
-    (home-page "http://draketo.de/english/wisp")
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (effective (read-line
+                                (open-pipe* OPEN_READ
+                                            "guile" "-c"
+                                            "(display (effective-version))")))
+                    (module-dir (string-append out "/share/guile/site/"
+                                               effective))
+                    (object-dir (string-append out "/lib/guile/" effective
+                                               "/site-ccache"))
+                    (prefix     (string-length module-dir)))
+               ;; compile to the destination
+               (for-each (lambda (file)
+                           (let* ((base (string-drop (string-drop-right file 4)
+                                                     prefix))
+                                  (go   (string-append object-dir base ".go")))
+                             (invoke "guild" "compile" "-L" module-dir
+                                     file "-o" go)))
+                         (find-files module-dir "\\.scm$"))
+               #t))))))
+    (home-page "https://draketo.de/english/wisp")
     (inputs
      `(("guile" ,guile-2.2)))
     (native-inputs

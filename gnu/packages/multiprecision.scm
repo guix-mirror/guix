@@ -255,11 +255,11 @@ and numerical quadrature programs are included.")
          (delete 'configure)            ;no configuration
          (replace 'check
            (lambda* (#:key make-flags #:allow-other-keys)
-             (and (zero? (apply system* "make"
-                                "stest" "test_standalone"
-                                make-flags))
-                  (zero? (system* "./stest"))
-                  (zero? (system* "./test")))))
+             (apply invoke "make"
+                    "stest" "test_standalone"
+                    make-flags)
+             (invoke "./stest")
+             (invoke "./test")))
          (add-before 'install 'install-nogroup
            (lambda _
              ;; Let permissions inherit from the current process

@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,28 +126,25 @@ actions.")
 
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
+         (add-before 'bootstrap 'pre-bootstrap
            (lambda _
              (define (write-dummy-changelog port)
                (display "See Git history for a change log.\n" port))
-
-             (setenv "NOCONFIGURE" "true")
-
              ;; Create ChangeLog{,.html} to placate the makefile, which would
              ;; otherwise require access to the Git repo.
              (call-with-output-file "ChangeLog"
                write-dummy-changelog)
              (call-with-output-file "ChangeLog.html"
                write-dummy-changelog)
-
-             (zero? (system* "sh" "autogen.sh")))))))
+             (setenv "NOCONFIGURE" "true")
+             #t)))))
     (inputs
      `(("clutter" ,clutter)
        ("libchamplain" ,libchamplain)
        ("lcms" ,lcms)
        ("exiv2" ,exiv2)
        ("libpng" ,libpng)
-       ("gtk+" ,gtk+-2)))
+       ("gtk+" ,gtk+)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -304,37 +301,24 @@ your images.  Among its features are:
      `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((magic (assoc-ref %build-inputs "imagemagick"))
-                    (convert (string-append magic "/bin/convert")))
-               (substitute* "catimg"
-                 ;; By replacing "convert", we also replace the "convert"
-                 ;; in the message 'The version of convert is too old, don't
-                 ;; expect good results :('.  This should not happen, but in
-                 ;; practice this error message should not affect us.
-                 (("convert") convert))
-               #t)))
-         (replace 'build
+         (add-after 'unpack 'patch-convert
            (lambda _
-             (let* ((out (assoc-ref %outputs "out"))
-                    (man (string-append out "/share/man/man1")))
-               (zero? (system* "cmake"
-                               (string-append "-DCMAKE_INSTALL_PREFIX=" out)
-                               (string-append "-DMAN_OUTPUT_PATH=" man)
-                               "."))
-               (zero? (system* "make")))))
-         (add-before 'install 'install-script
+             (substitute* "catimg"
+               ;; By replacing "convert", we also replace the "convert"
+               ;; in the message 'The version of convert is too old, don't
+               ;; expect good results :('.  This should not happen, but in
+               ;; practice this error message should not affect us.
+               (("convert") (which "convert")))
+             #t))
+         (add-after 'install 'install-script
            (lambda* (#:key outputs #:allow-other-keys)
              ;; The bash script lacks an file extension.  We have to rename
              ;; it so that the C program and the bash script can be happy
              ;; side by side.
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
-               (install-file "catimg" bin)
-               (rename-file (string-append bin "/catimg")
-                            (string-append bin "/catimg.sh"))
-               #t))))))
+             (copy-file "../source/catimg"
+                        (string-append (assoc-ref outputs "out")
+                                       "/bin/catimg.sh"))
+             #t)))))
     (inputs
      `(("imagemagick" ,imagemagick))) ; for the bash script version
     (home-page "https://github.com/posva/catimg")

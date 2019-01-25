@@ -4648,7 +4648,7 @@ indentation (space indentation only).
 (define-public emacs-elpy
   (package
     (name "emacs-elpy")
-    (version "1.27.0")
+    (version "1.28.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4657,7 +4657,7 @@ indentation (space indentation only).
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1b76y0kzk7s9ya8k9bpsgn31i9l0rxs4iz6lg7snhjgh03k0ssgv"))))
+                "073bwxwjzcbmvpcz9q2xjwzx9x7hkvjni6fwvikh6yawzjp56jis"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons* "^elpy/[^/]+\\.py$" "^snippets\\/" %default-include)
@@ -6037,7 +6037,7 @@ highlights quasi-quoted expressions.")
 (define-public emacspeak
   (package
     (name "emacspeak")
-    (version "48.0")
+    (version "49.0")
     (source
      (origin
        (method url-fetch)
@@ -6046,7 +6046,7 @@ highlights quasi-quoted expressions.")
              version "/emacspeak-" version ".tar.bz2"))
        (sha256
         (base32
-         "07imi3hji06b3r7v7v59978q76s8a7ynmxwfc9j03pgnv965lpjy"))))
+         "1smf26m7201z0bk49lzbw9zhbjfi6wylidfjixb8ylp6g0wnh8dx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "prefix="
@@ -6081,9 +6081,8 @@ highlights quasi-quoted expressions.")
                   "stumpwm" "xsl"))
                ;; Make sure emacspeak is loaded from the correct directory.
                (substitute* "etc/emacspeak.sh"
-                 (("exec FLAVOR.*")
-                  (string-append "exec " emacs " -l " lisp
-                                 "/lisp/emacspeak-setup.el $CL_ALL")))
+                 (("/lisp/emacspeak-setup.el")
+                  (string-append lisp "/lisp/emacspeak-setup.el")))
                ;; Install the convenient startup script.
                (mkdir-p bin)
                (copy-file "etc/emacspeak.sh" (string-append bin "/emacspeak")))
@@ -10160,6 +10159,32 @@ time is being spent during Emacs startup in order to optimize startup time.")
   ;; A new mpv backend is included in Emms from 5.0.
   (deprecated-package "emacs-emms-player-simple-mpv" emacs-emms))
 
+(define-public emacs-magit-gerrit
+  (let ((version "0.3")
+        (revision "1")
+        (commit "ece6f369694aca17f3ac166ed2801b432acfe20d"))
+    (package
+      (name "emacs-magit-gerrit")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/terranpro/magit-gerrit.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0mms0gxv9a3ns8lk5k2wjibm3088y1cmpr3axjdh6ppv7r5wdvii"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-magit" ,emacs-magit)))
+      (home-page "https://github.com/terranpro/magit-gerrit")
+      (synopsis "Magit extension for Gerrit")
+      (description "This Magit extension provides integration with Gerrit,
+which makes it possible to conduct Gerrit code reviews directly from within
+Emacs.")
+      (license license:gpl3+))))
+
 (define-public emacs-magit-org-todos-el
   (let ((commit "df206287737b9671f2e36ae7b1474ebbe9940d2a"))
     (package
@@ -12920,3 +12945,28 @@ to open SQLite databases.")
 Nix expressions.  It supports syntax highlighting, indenting and refilling of
 comments.")
     (license license:lgpl2.1+)))
+
+(define-public emacs-simple-mpc
+  ;; There have been no releases.
+  (let ((commit "bee8520e81292b4c7353e45b193f9a13b482f5b2")
+        (revision "1"))
+    (package
+      (name "emacs-simple-mpc")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jorenvo/simple-mpc.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1ja06pv007cmzjjgka95jlg31k7d29jrih1yxyblsxv85s9sg21q"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/jorenvo/simple-mpc")
+      (synopsis "Simple Emacs frontend to mpc")
+      (description "This package provides an Emacs major mode which acts as a
+front end to mpc, a client for the @dfn{Music Player Daemon} (MPD).")
+      (license license:gpl3+))))

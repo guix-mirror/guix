@@ -2106,8 +2106,8 @@ manual}).
 @cindex UEFI, installation
 @cindex ESP, EFI system partition
 If you instead wish to use EFI-based GRUB, a FAT32 @dfn{EFI System Partition}
-(ESP) is required.  This partition should be mounted at @file{/boot/efi} and
-must have the @code{esp} flag set.  E.g., for @command{parted}:
+(ESP) is required.  This partition can be mounted at @file{/boot/efi} for
+instance and must have the @code{esp} flag set.  E.g., for @command{parted}:
 
 @example
 parted /dev/sda set 1 esp on
@@ -2169,9 +2169,9 @@ mount LABEL=my-root /mnt
 @end example
 
 Also mount any other file systems you would like to use on the target
-system relative to this path.  If you have @file{/boot} on a separate
-partition for example, mount it at @file{/mnt/boot} now so it is found
-by @code{guix system init} afterwards.
+system relative to this path.  If you have opted for @file{/boot/efi} as an
+EFI mount point for example, mount it at @file{/mnt/boot/efi} now so it is
+found by @code{guix system init} afterwards.
 
 Finally, if you plan to use one or more swap partitions (@pxref{Memory
 Concepts, swap space,, libc, The GNU C Library Reference Manual}), make
@@ -2253,8 +2253,9 @@ you want to install GRUB on.  It should mention @code{grub-bootloader} if
 you are installing GRUB in the legacy way, or @code{grub-efi-bootloader}
 for newer UEFI systems.  For legacy systems, the @code{target} field
 names a device, like @code{/dev/sda}; for UEFI systems it names a path
-to a mounted EFI partition, like @code{/boot/efi}, and do make sure the
-path is actually mounted.
+to a mounted EFI partition, like @code{/boot/efi}; do make sure the path is
+currently mounted and a @code{file-sytem} entry is specified in your
+configuration.
 
 @item
 Be sure that your file system labels match the value of their respective
@@ -9708,7 +9709,9 @@ key is authorized.  It also reports the size of the compressed archives
 (``nars'') provided by the server, the size the corresponding store
 items occupy in the store (assuming deduplication is turned off), and
 the server's throughput.  The second part gives continuous integration
-(CI) statistics, if the server supports it.
+(CI) statistics, if the server supports it.  In addition, using the
+@option{--coverage} option, @command{guix weather} can list ``important''
+package substitutes missing on the server (see below).
 
 To achieve that, @command{guix weather} queries over HTTP(S) meta-data
 (@dfn{narinfos}) for all the relevant store items.  Like @command{guix
@@ -9736,6 +9739,37 @@ Instead of querying substitutes for all the packages, only ask for those
 specified in @var{file}.  @var{file} must contain a @dfn{manifest}, as
 with the @code{-m} option of @command{guix package} (@pxref{Invoking
 guix package}).
+
+@item --coverage[=@var{count}]
+@itemx -c [@var{count}]
+Report on substitute coverage for packages: list packages with at least
+@var{count} dependents (zero by default) for which substitutes are
+unavailable.  Dependent packages themselves are not listed: if @var{b} depends
+on @var{a} and @var{a} has no substitutes, only @var{a} is listed, even though
+@var{b} usually lacks substitutes as well.  The result looks like this:
+
+@example
+$ guix weather --substitute-urls=https://ci.guix.info -c 10
+computing 8,983 package derivations for x86_64-linux...
+looking for 9,343 store items on https://ci.guix.info...
+updating substitutes from 'https://ci.guix.info'... 100.0%
+https://ci.guix.info
+  64.7% substitutes available (6,047 out of 9,343)
+@dots{}
+2502 packages are missing from 'https://ci.guix.info' for 'x86_64-linux', among which:
+    58  kcoreaddons@@5.49.0      /gnu/store/@dots{}-kcoreaddons-5.49.0
+    46  qgpgme@@1.11.1           /gnu/store/@dots{}-qgpgme-1.11.1
+    37  perl-http-cookiejar@@0.008  /gnu/store/@dots{}-perl-http-cookiejar-0.008
+    @dots{}
+@end example
+
+What this example shows is that @code{kcoreaddons} and presumably the 58
+packages that depend on it have no substitutes at @code{ci.guix.info};
+likewise for @code{qgpgme} and the 46 packages that depend on it.
+
+If you are a Guix developer, or if you are taking care of this build farm,
+you'll probably want to have a closer look at these packages: they may simply
+fail to build.
 @end table
 
 @node Invoking guix processes
@@ -10887,9 +10921,9 @@ system, you will want to append services to @var{%base-services}, like
 this:
 
 @example
-(cons* (service avahi-service-type)
-       (service openssh-service-type)
-       %base-services)
+(append (list (service avahi-service-type)
+              (service openssh-service-type))
+        %base-services)
 @end example
 @end defvr
 
@@ -11519,11 +11553,12 @@ well as in the @var{groups} field of the @var{operating-system} record.
   ;; @dots{}
 
   (services
-    (modify-services %desktop-services
-      (udev-service-type config =>
-       (udev-configuration (inherit config)
-       (rules (cons* android-udev-rules
-              (udev-configuration-rules config))))))))
+   (modify-services %desktop-services
+     (udev-service-type
+      config =>
+      (udev-configuration (inherit config)
+                          (rules (cons android-udev-rules
+                                       (udev-configuration-rules config))))))))
 @end example
 
 @defvr {Scheme Variable} urandom-seed-service-type

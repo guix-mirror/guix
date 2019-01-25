@@ -400,7 +400,7 @@ the latest known version of ~a (~a)~%")
                    (package-version package)))
 
   (mlet %store-monad ((edges (node-back-edges %bag-node-type
-                                              (all-packages))))
+                                              (package-closure (all-packages)))))
     (let* ((dependents (node-transitive-edges packages edges))
            (covering   (filter (lambda (node)
                                  (null? (edges node)))
@@ -419,8 +419,8 @@ the latest known version of ~a (~a)~%")
                  (full-name x)))
         (lst
          (format (current-output-port)
-                 (N_ "Building the following package would ensure ~d \
-dependent packages are rebuilt: ~*~{~a~^ ~}~%"
+                 (N_ "Building the following ~*package would ensure ~d \
+dependent packages are rebuilt: ~{~a~^ ~}~%"
                      "Building the following ~d packages would ensure ~d \
 dependent packages are rebuilt: ~{~a~^ ~}~%"
                      (length covering))

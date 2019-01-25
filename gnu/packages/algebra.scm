@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -138,43 +138,46 @@ solve the shortest vector problem.")
 
 (define-public pari-gp
   (package
-   (name "pari-gp")
-   (version "2.11.1")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://pari.math.u-bordeaux.fr/pub/pari/unix/pari-"
-                  version ".tar.gz"))
-            (sha256
-              (base32
+    (name "pari-gp")
+    (version "2.11.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pari.math.u-bordeaux.fr/pub/pari/unix/pari-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
                 "1jfax92jpydjd02fwl30r6b8kfzqqd6sm4yx94gidyz9lqjb7a94"))))
-   (build-system gnu-build-system)
-   (native-inputs `(("texlive" ,texlive-tiny)))
-   (inputs `(("gmp" ,gmp)
-             ("libx11" ,libx11)
-             ("perl" ,perl)
-             ("readline" ,readline)))
-   (arguments
-    '(#:make-flags '("all")
-      #:test-target "dobench"
-      #:phases (modify-phases %standard-phases
-                 (replace 'configure
-                          (lambda* (#:key outputs #:allow-other-keys)
-                           (let ((out (assoc-ref outputs "out")))
-                            (zero?
-                             (system* "./Configure"
-                                      (string-append "--prefix=" out)))))))))
-   (synopsis "PARI/GP, a computer algebra system for number theory")
-   (description
-    "PARI/GP is a widely used computer algebra system designed for fast
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("texlive" ,(texlive-union
+                    (list texlive-fonts-amsfonts
+                          texlive-latex-amsfonts)))))
+    (inputs `(("gmp" ,gmp)
+              ("libx11" ,libx11)
+              ("perl" ,perl)
+              ("readline" ,readline)))
+    (arguments
+     '(#:make-flags '("all")
+       #:test-target "dobench"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "./Configure"
+                     (string-append "--prefix="
+                                    (assoc-ref outputs "out"))))))))
+    (synopsis "PARI/GP, a computer algebra system for number theory")
+    (description
+     "PARI/GP is a widely used computer algebra system designed for fast
 computations in number theory (factorisations, algebraic number theory,
 elliptic curves...), but it also contains a large number of other useful
 functions to compute with mathematical entities such as matrices,
 polynomials, power series, algebraic numbers, etc., and a lot of
 transcendental functions.
 PARI is also available as a C library to allow for faster computations.")
-   (license license:gpl2+)
-   (home-page "https://pari.math.u-bordeaux.fr/")))
+    (license license:gpl2+)
+    (home-page "https://pari.math.u-bordeaux.fr/")))
 
 (define-public gp2c
   (package
@@ -354,11 +357,11 @@ or text interfaces) or as a C++ library.")
                    (mpfr (assoc-ref inputs "mpfr")))
                ;; do not pass "--enable-fast-install", which makes the
                ;; homebrew configure process fail
-               (zero? (system*
-                       "./configure"
+               (invoke "./configure"
                        (string-append "--prefix=" out)
                        (string-append "--with-gmp=" gmp)
-                       (string-append "--with-mpfr=" mpfr)))))))))
+                       (string-append "--with-mpfr=" mpfr))
+               #t))))))
    (synopsis "Fast library for number theory")
    (description
     "FLINT is a C library for number theory.  It supports arithmetic

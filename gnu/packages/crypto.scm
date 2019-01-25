@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -303,13 +303,12 @@ secure operations. ")
            (delete 'configure)
            (replace 'check
              (lambda _
-               (and
-                 (zero? (system* "./worgen" "8-12" "top1000.txt" "3-10" "top400nouns.txt"
-                                 "3-6" "top150adjectives.txt" "3-6"))
-                 (zero? (system* "./eschalot" "-r" "^guix|^guixsd"))
-                 (zero? (system* "./eschalot" "-r" "^gnu|^free"))
-                 (zero? (system* "./eschalot" "-r" "^cyber|^hack"))
-                 (zero? (system* "./eschalot" "-r" "^troll")))))
+               (invoke "./worgen" "8-12" "top1000.txt" "3-10" "top400nouns.txt"
+                       "3-6" "top150adjectives.txt" "3-6")
+               (invoke "./eschalot" "-r" "^guix|^guixsd")
+               (invoke "./eschalot" "-r" "^gnu|^free")
+               (invoke "./eschalot" "-r" "^cyber|^hack")
+               (invoke "./eschalot" "-r" "^troll")))
            ;; Make install can not create the bin dir, create it.
            (add-before 'install 'create-bin-dir
              (lambda* (#:key outputs #:allow-other-keys)

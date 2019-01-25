@@ -505,8 +505,9 @@ statistical profiler, a code coverage tool, and many other extensions.")
        (modify-phases %standard-phases
          (replace 'unpack
            (lambda* (#:key inputs #:allow-other-keys)
-             (and (zero? (system* "tar" "xzvf" (assoc-ref inputs "ccl")))
-                  (begin (chdir "ccl") #t))))
+             (invoke "tar" "xzvf" (assoc-ref inputs "ccl"))
+             (chdir "ccl")
+             #t))
          (delete 'configure)
          (add-before 'build 'pre-build
            ;; Enter the source directory for the current platform's lisp
@@ -527,7 +528,7 @@ statistical profiler, a code coverage tool, and many other extensions.")
              (substitute* '("Makefile")
                (("/bin/rm") "rm"))
              (setenv "CC" "gcc")
-             (zero? (system* "make" "clean"))))
+             (invoke "make" "clean")))
          ;; XXX Do we need to recompile the heap image as well for Guix?
          ;; For now just use the one we already got in the tarball.
          (replace 'install

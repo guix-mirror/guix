@@ -800,7 +800,7 @@ experience.")
            (lambda _
              ;; There aren't any tests, so just make sure the binary
              ;; gets built and can be run successfully.
-             (zero? (system* "../build/awesome" "-v"))))
+             (invoke "../build/awesome" "-v")))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((awesome (assoc-ref outputs "out"))

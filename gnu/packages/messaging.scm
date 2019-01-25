@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -186,18 +186,18 @@ end-to-end encryption.")
        (modify-phases %standard-phases
          (add-after 'install 'install-etc
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "install-etc" make-flags))))
+             (apply invoke "make" "install-etc" make-flags)))
          (add-after 'install-etc 'install-lib
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "install-dev" make-flags))))
+             (apply invoke "make" "install-dev" make-flags)))
          (replace 'configure
            ;; bitlbee's configure script does not tolerate many of the
            ;; variable settings that Guix would pass to it.
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "./configure"
-                             (string-append "--prefix="
-                                            (assoc-ref outputs "out"))
-                             "--otr=1")))))))
+             (invoke "./configure"
+                     (string-append "--prefix="
+                                    (assoc-ref outputs "out"))
+                     "--otr=1"))))))
     (synopsis "IRC to instant messaging gateway")
     (description "BitlBee brings IM (instant messaging) to IRC clients, for
 people who have an IRC client running all the time and don't want to run an
@@ -225,12 +225,12 @@ identi.ca and status.net).")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
+         (add-after 'unpack 'patch-autogen
            (lambda _
              (let ((sh (which "sh")))
                (substitute* "autogen.sh" (("/bin/sh") sh))
-               (setenv "CONFIG_SHELL" sh)
-               (zero? (system* "./autogen.sh")))))
+               (setenv "CONFIG_SHELL" sh))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (invoke "./configure"
@@ -718,20 +718,20 @@ on Axolotl and PEP.")
 (define-public dino
   ;; The only release tarball is for version 0.0, but it is very old and fails
   ;; to build.
-  (let ((commit "f25fadde2d6c9492b9cafe2cddbcc7b966942e47")
-        (revision "3"))
+  (let ((commit "8e14ac6d714b7f88e16de31a6c795e811dc27417")
+        (revision "4"))
     (package
       (name "dino")
-      (version (string-append "0.0-" revision "." (string-take commit 9)))
+      (version (git-version "0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/dino/dino.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1nhzrw3pbpybn9qclckk6z427vbgnqd0y1l63zd1rfw4zw099mzs"))))
+                  "0xfmwnc2f8lsvmp7m8ggikzqjaw5z6wmxrv6j5ljha5ckffrdd9m"))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #f ; there are no tests
@@ -750,14 +750,10 @@ on Axolotl and PEP.")
            ;; libsignal-protocol-c, so we need to put the sources there.
            (add-after 'unpack 'unpack-sources
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((unpack (lambda (source target)
-                               (with-directory-excursion target
-                                 (zero? (system* "tar" "xvf"
-                                                 (assoc-ref inputs source)
-                                                 "--strip-components=1"))))))
-                 (unpack "libsignal-protocol-c-source"
-                         "plugins/signal-protocol/libsignal-protocol-c")
-                 #t)))
+               (with-directory-excursion "plugins/signal-protocol/libsignal-protocol-c"
+                 (invoke "tar" "xvf"
+                         (assoc-ref inputs "libsignal-protocol-c-source")
+                         "--strip-components=1"))))
            (add-after 'install 'glib-or-gtk-wrap
              (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
       (inputs
@@ -765,7 +761,8 @@ on Axolotl and PEP.")
          ("libsignal-protocol-c" ,libsignal-protocol-c)
          ("libgcrypt" ,libgcrypt)
          ("libsoup" ,libsoup)
-         ("sqlite" ,sqlite)
+         ("qrencode" ,qrencode)
+         ("sqlite" ,sqlite-with-column-metadata)
          ("gpgme" ,gpgme)
          ("gtk+" ,gtk+)
          ("glib-networking" ,glib-networking)
@@ -1269,7 +1266,7 @@ into existing applications.")
 (define-public perl-net-psyc
   (package
     (name "perl-net-psyc")
-    (version "1.1")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
@@ -1278,13 +1275,10 @@ into existing applications.")
        (file-name (string-append name "-" version ".zip"))
        (sha256
         (base32
-         "1lw6807qrbmvzbrjn1rna1dhir2k70xpcjvyjn45y35hav333a42"))
-       ;; psycmp3 currently depends on MP3::List and rxaudio (shareware),
-       ;; we can add it back when this is no longer the case.
-       (snippet '(begin
-                   (delete-file "contrib/psycmp3")
-                   #t))))
+         "0vsjclglkwgbyd9m5ad642fyysxw2x725nhq4r2m9pvqaq6s5yf2"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
     (inputs
      `(("perl-curses" ,perl-curses)
        ("perl-io-socket-ssl" ,perl-io-socket-ssl)))
@@ -1296,8 +1290,7 @@ into existing applications.")
          ;; (leaves out psycion) and says
          ;; "# Just to give you a rough idea". XXX: Fix it upstream.
          (replace 'build
-           (lambda _
-             (zero? (system* "make" "manuals"))))
+           (lambda _ (invoke "make" "manuals")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1538,9 +1531,6 @@ support, and more.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (zero? (system* "sh" "autogen.sh"))))
          ;; For 'system' commands in Scheme code.
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)

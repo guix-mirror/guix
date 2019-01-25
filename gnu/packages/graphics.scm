@@ -651,8 +651,8 @@ output.")
                     (replace 'configure
                       (lambda* (#:key outputs #:allow-other-keys)
                         (let ((out (assoc-ref outputs "out")))
-                          (zero? (system* "qmake"
-                                          (string-append "prefix=" out))))))
+                          (invoke "qmake"
+                                  (string-append "prefix=" out)))))
                     (add-after 'install 'wrap-program
                       (lambda* (#:key outputs #:allow-other-keys)
                         (let* ((out (assoc-ref outputs "out"))
@@ -668,7 +668,8 @@ output.")
 cd \"~a\"
 exec -a \"$0\" ~a/.brdf-real~%"
                                         data bin)))
-                            (chmod "brdf" #o555))))))))
+                            (chmod "brdf" #o555)))
+                        #t)))))
       (native-inputs
        `(("qttools" ,qttools))) ;for 'qmake'
       (inputs

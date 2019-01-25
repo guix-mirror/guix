@@ -168,7 +168,7 @@
                  (format #t
                          "running ~s with command ~s and parameters ~s~%"
                          "python setup.py" "configure" params)
-                 (zero? (apply system* "python" "setup.py" "configure" params))))))
+                 (apply invoke "python" "setup.py" "configure" params)))))
          (add-after 'install 'post-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))

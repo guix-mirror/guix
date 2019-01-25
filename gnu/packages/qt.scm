@@ -1907,11 +1907,11 @@ contain over 620 classes.")
                     (lib (string-append out "/lib/python"
                                         python-major+minor
                                         "/site-packages")))
-               (zero? (system* "python" "configure.py"
-                               "--confirm-license"
-                               "--bindir" bin
-                               "--destdir" lib
-                               "--sipdir" sip))))))))
+               (invoke "python" "configure.py"
+                       "--confirm-license"
+                       "--bindir" bin
+                       "--destdir" lib
+                       "--sipdir" sip)))))))
     (license (list license:gpl2 license:gpl3)))) ; choice of either license
 
 (define-public qscintilla
@@ -2103,7 +2103,7 @@ securely.  It will not store any data unencrypted unless explicitly requested.")
              (substitute* '("doc/doc.pro")
                ;; We'll install them in the 'install-man-pages' phase.
                (("^unix:doc\\.files.*") ""))
-             (zero? (system* "qmake")))))
+             (invoke "qmake"))))
        (add-after 'install 'install-man-pages
          (lambda* (#:key outputs #:allow-other-keys)
            (let* ((out (assoc-ref outputs "out"))

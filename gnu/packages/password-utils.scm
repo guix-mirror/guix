@@ -381,15 +381,14 @@ random passwords that pass the checks.")
                #t)))
          (add-after 'install 'manpage
            (lambda* (#:key outputs #:allow-other-keys)
-             (and
-              ;; Without this substitution, it fails with
-              ;; ImportError: No module named 'gpg'
-              (substitute* "Makefile"
-                (("PYTHONPATH=.") ""))
-              (zero? (system* "make" "assword.1"))
-              (install-file
-               "assword.1"
-               (string-append (assoc-ref outputs "out") "/share/man/man1"))))))))
+             ;; Without this substitution, it fails with
+             ;; ImportError: No module named 'gpg'
+             (substitute* "Makefile"
+               (("PYTHONPATH=.") ""))
+             (invoke "make" "assword.1")
+             (install-file
+              "assword.1"
+              (string-append (assoc-ref outputs "out") "/share/man/man1")))))))
     (build-system python-build-system)
     (native-inputs
      `(("txt2man" ,txt2man)))

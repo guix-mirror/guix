@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
@@ -441,8 +441,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.94")
-(define %linux-libre-4.14-hash "06yf4ggdf9dn7zh17pv1kx84sn39mbxpfhsx1mdckzwpis7lcjzs")
+(define %linux-libre-4.14-version "4.14.95")
+(define %linux-libre-4.14-hash "07bxbwb5fan96aws6g91vxkrvl80a53wjbl8xkh4q3c6iah8wkvf")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -451,8 +451,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.151"
-                    "0pjcqmn03zb0n83rlfkrq10k7fl7dbh3ll2d8k9sqi3m81c3843h"
+  (make-linux-libre "4.9.152"
+                    "0qssksykzbcy58aqvmxk9h1xpaqvfwp31xvxfmwxdh7z4n3yn60y"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -1506,25 +1506,23 @@ transparently through a bridge.")
          (add-after 'install 'install-python
            (lambda* (#:key outputs #:allow-other-keys)
              (define (python-inst python)
-               (let ((ldflags (format #f "LDFLAGS=-Wl,-rpath=~a/lib"
-                                      (assoc-ref %outputs "out")))
-                     (pyout (assoc-ref %outputs python)))
-                 (and
-                  (zero? (system (format #f "~a ~a setup.py build"
-                                         ldflags python pyout)))
-                  (zero?
-                   (system (format #f "~a ~a setup.py install --prefix=~a"
-                                   ldflags python pyout)))
-                  (zero? (system* python "setup.py" "clean")))))
+               (invoke python "setup.py" "build")
+               (invoke python "setup.py" "install"
+                       (string-append "--prefix="
+                                      (assoc-ref %outputs python)))
+               (invoke python "setup.py" "clean"))
+             (setenv "LDFLAGS" (format #f "-Wl,-rpath=~a/lib"
+                                       (assoc-ref %outputs "out")))
              (with-directory-excursion "./python"
-               (every python-inst '("python2" "python3")))))
+               (for-each python-inst '("python2" "python3")))
+             #t))
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((dest (string-append (assoc-ref outputs "doc")
                                         "/share/doc/libnl")))
                (mkdir-p dest)
-               (zero? (system* "tar" "xf" (assoc-ref inputs "libnl3-doc")
-                               "--strip-components=1" "-C" dest))))))))
+               (invoke "tar" "xf" (assoc-ref inputs "libnl3-doc")
+                       "--strip-components=1" "-C" dest)))))))
     (home-page "https://www.infradead.org/~tgr/libnl/")
     (synopsis "NetLink protocol library suite")
     (description

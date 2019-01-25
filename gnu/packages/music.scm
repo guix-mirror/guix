@@ -2771,8 +2771,10 @@ of tools for manipulating and accessing your music.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
+       ("rtmidi" ,rtmidi)
        ("sdl" ,sdl2)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("zziplib" ,zziplib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (synopsis "Music tracker for working with .MOD/.XM module files")

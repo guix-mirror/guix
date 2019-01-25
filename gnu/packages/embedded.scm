@@ -348,8 +348,8 @@ SEGGER J-Link and compatible devices.")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (home-page "http://jim.tcl.tk")
     (synopsis "Small footprint Tcl implementation")
     (description "Jim is a small footprint implementation of the Tcl programming
@@ -575,7 +575,7 @@ with a layered architecture of JTAG interface and TAP support.")
            ;; have to create the target directories at build time.
            (add-before 'build 'create-target-directories
              (lambda* (#:key make-flags #:allow-other-keys)
-               (zero? (apply system* "make" "install-dirs" make-flags))))
+               (apply invoke "make" "install-dirs" make-flags)))
            (add-before 'build 'set-cross-environment-variables
              (lambda* (#:key outputs #:allow-other-keys)
                (setenv "CROSS_LIBRARY_PATH"
@@ -589,7 +589,7 @@ with a layered architecture of JTAG interface and TAP support.")
                #t))
            (add-before 'install 'install-includes
              (lambda* (#:key make-flags #:allow-other-keys)
-               (zero? (apply system* "make" "install-includes" make-flags)))))))
+               (apply invoke "make" "install-includes" make-flags))))))
       (native-inputs
        `(("propeller-gcc" ,propeller-gcc)
          ("propeller-binutils" ,propeller-binutils)

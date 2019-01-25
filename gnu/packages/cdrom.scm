@@ -11,7 +11,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -246,7 +246,12 @@ reconstruction capability.")
     (inputs
      `(("linux-headers" ,linux-libre-headers)))
     (arguments
-     `(#:phases
+     `(#:make-flags
+       (list "RM=rm" "LN=ln" "SYMLINK=ln -s"
+             "CONFIG_SHELL=sh" "CCOM=gcc"
+             (string-append "INS_BASE=" (assoc-ref %outputs "out"))
+             (string-append "INS_RBASE=" (assoc-ref %outputs "out")))
+       #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'build 'set-linux-headers
@@ -261,19 +266,7 @@ reconstruction capability.")
                                   (find-files "DEFAULTS_ENG" "^Defaults\\.")
                                   (find-files "TEMPLATES" "^Defaults\\."))
                (("/opt/schily") (assoc-ref %outputs "out")))
-             #t))
-         (replace 'build
-           (lambda _
-             (zero?
-              (system* "make" "CONFIG_SHELL=sh" "CCOM=gcc" "RM=rm"))))
-         (replace 'install
-           (lambda _
-             (zero?
-              (system* "make"
-                       "RM=rm" "LN=ln" "SYMLINK=ln -s"
-                       (string-append "INS_BASE=" (assoc-ref %outputs "out"))
-                       (string-append "INS_RBASE=" (assoc-ref %outputs "out"))
-                       "install" )))))
+             #t)))
        #:tests? #f))  ; no tests
    (synopsis "Command line utilities to manipulate and burn CD/DVD/BD images")
    (description "cdrtools is a collection of command line utilities to create

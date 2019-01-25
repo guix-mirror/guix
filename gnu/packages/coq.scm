@@ -155,17 +155,16 @@ It is developed using Objective Caml and Camlp5.")
                                           "EMACS=" emacs "/bin/emacs")))
                         #t)))
          (add-after 'unpack 'clean
-                    (lambda _
-                      ;; Delete the pre-compiled elc files for Emacs 23.
-                      (zero? (system* "make" "clean"))))
+           (lambda _
+             ;; Delete the pre-compiled elc files for Emacs 23.
+             (invoke "make" "clean")))
          (add-after 'install 'install-doc
-                    (lambda* (#:key make-flags #:allow-other-keys)
-                      ;; XXX FIXME avoid building/installing pdf files,
-                      ;; due to unresolved errors building them.
-                      (substitute* "Makefile"
-                        ((" [^ ]*\\.pdf") ""))
-                      (zero? (apply system* "make" "install-doc"
-                                    make-flags)))))))
+           (lambda* (#:key make-flags #:allow-other-keys)
+             ;; XXX FIXME avoid building/installing pdf files,
+             ;; due to unresolved errors building them.
+             (substitute* "Makefile"
+               ((" [^ ]*\\.pdf") ""))
+             (apply invoke "make" "install-doc" make-flags))))))
     (home-page "http://proofgeneral.inf.ed.ac.uk/")
     (synopsis "Generic front-end for proof assistants based on Emacs")
     (description
@@ -255,16 +254,14 @@ inside Coq.")
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
+               (("/bin/sh") (which "sh")))
+             #t))
          (replace 'build
-           (lambda _
-             (zero? (system* "./remake"))))
+           (lambda _ (invoke "./remake")))
          (replace 'check
-           (lambda _
-             (zero? (system* "./remake" "check"))))
+           (lambda _ (invoke "./remake" "check")))
          (replace 'install
-           (lambda _
-             (zero? (system* "./remake" "install")))))))
+           (lambda _ (invoke "./remake" "install"))))))
     (home-page "http://gappa.gforge.inria.fr/")
     (synopsis "Verify and formally prove properties on numerical programs")
     (description "Gappa is a tool intended to help verifying and formally proving
@@ -298,15 +295,14 @@ assistant.")
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'build 'chdir
-           (lambda _
-             (chdir "mathcomp")))
+           (lambda _ (chdir "mathcomp") #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
-             (zero? (system* "make" "-f" "Makefile.coq"
-                             (string-append "COQLIB=" (assoc-ref outputs "out")
-                                            "/lib/coq/")
-                             "install")))))))
+             (invoke "make" "-f" "Makefile.coq"
+                     (string-append "COQLIB=" (assoc-ref outputs "out")
+                                    "/lib/coq/")
+                     "install"))))))
     (home-page "https://math-comp.github.io/math-comp/")
     (synopsis "Mathematical Components for Coq")
     (description "Mathematical Components for Coq has its origins in the formal
@@ -351,16 +347,14 @@ part of the distribution.")
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
+               (("/bin/sh") (which "sh")))
+             #t))
          (replace 'build
-           (lambda _
-             (zero? (system* "./remake"))))
+           (lambda _ (invoke "./remake")))
          (replace 'check
-           (lambda _
-             (zero? (system* "./remake" "check"))))
+           (lambda _ (invoke "./remake" "check")))
          (replace 'install
-           (lambda _
-             (zero? (system* "./remake" "install")))))))
+           (lambda _ (invoke "./remake" "install"))))))
     (home-page "http://coquelicot.saclay.inria.fr/index.html")
     (synopsis "Coq library for Reals")
     (description "Coquelicot is an easier way of writing formulas and theorem
@@ -436,16 +430,14 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
+               (("/bin/sh") (which "sh")))
+             #t))
          (replace 'build
-           (lambda _
-             (zero? (system* "./remake"))))
+           (lambda _ (invoke "./remake")))
          (replace 'check
-           (lambda _
-             (zero? (system* "./remake" "check"))))
+           (lambda _ (invoke "./remake" "check")))
          (replace 'install
-           (lambda _
-             (zero? (system* "./remake" "install")))))))
+           (lambda _ (invoke "./remake" "install"))))))
     (home-page "http://coq-interval.gforge.inria.fr/")
     (synopsis "Coq tactics to simplify inequality proofs")
     (description "Interval provides vernacular files containing tactics for

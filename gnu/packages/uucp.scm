@@ -43,10 +43,10 @@
              ;; that we pass by default.
              (setenv "CONFIG_SHELL" (which "sh"))
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)
-                               (string-append "--infodir=" out
-                                              "/share/info")))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--infodir=" out
+                                      "/share/info"))))))))
     (home-page "https://www.gnu.org/software/uucp/uucp.html")
     (synopsis "UUCP protocol implementation")
     (description

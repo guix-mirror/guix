@@ -47,7 +47,7 @@
          (replace 'check
            (lambda _
              (with-directory-excursion "test"
-               (zero? (system* "./anthy" "--all"))))))))
+               (invoke "./anthy" "--all")))))))
     (home-page "http://anthy.osdn.jp/")
     (synopsis "Japanese input method")
     (description "Anthy is a Japanese input method for converting

@@ -113,6 +113,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
@@ -434,42 +435,80 @@ concepts.")
 (define-public python2-h5py
   (package-with-python2 python-h5py))
 
+(define-public python-sh
+  (package
+    (name "python-sh")
+    (version "1.12.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sh" version))
+       (sha256
+        (base32
+         "1z2hx357xp3v4cv44xmqp7lli3frndqpyfmpbxf7n76h7s1zaaxm"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/amoffat/sh")
+    (synopsis "Python subprocess replacement")
+    (description "This package provides a replacement for Python's
+@code{subprocess} feature.")
+    (license license:expat)))
+
+(define-public python-cftime
+  (package
+    (name "python-cftime")
+    (version "1.0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cftime" version))
+       (sha256
+        (base32
+         "0362dhxbzk593walyjz30dll6y2y79wialik647cbwdsf3ad0x6x"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-coveralls" ,python-coveralls)
+       ("python-cython" ,python-cython)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://github.com/Unidata/cftime")
+    (synopsis "Library for time handling")
+    (description
+     "This package provides time-handling functionality that used to be part
+of the netcdf4 package before.")
+    ;; This package claims to include code under the GPLv3 but is released
+    ;; under ISC.
+    (license (list license:isc license:gpl3+))))
+
 (define-public python-netcdf4
   (package
     (name "python-netcdf4")
-    (version "1.2.9")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "netCDF4" version))
        (sha256
         (base32
-         "1h6jq338amlbk0ilzvjyl7cck80i0bah9a5spn9in71vy2qxm7i5"))))
+         "0c0sklgrmv15ygliin8qq0hp7vanmbi74m6zpi0r1ksr0hssyd5r"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure-locations
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "HDF5_DIR" (assoc-ref inputs "hdf5"))
+             #t)))))
     (native-inputs
      `(("python-cython" ,python-cython)))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)))
+     `(("python-numpy" ,python-numpy)
+       ("python-cftime" ,python-cftime)))
     (inputs
      `(("netcdf" ,netcdf)
        ("hdf4" ,hdf4)
        ("hdf5" ,hdf5)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (setenv "NO_NET" "1") ; disable opendap tests
-             (with-directory-excursion "test"
-               (setenv "PYTHONPATH" ; find and add the library we just built
-                       (string-append
-                        (car (find-files "../build" "lib.*"
-                                         #:directories? #:t
-                                         #:fail-on-error? #:t))
-                        ":" (getenv "PYTHONPATH")))
-               (zero? (system* "python" "run_all.py"))))))))
-    (home-page
-     "https://github.com/Unidata/netcdf4-python")
+    (home-page "https://github.com/Unidata/netcdf4-python")
     (synopsis "Python/numpy interface to the netCDF library")
     (description "Netcdf4-python is a Python interface to the netCDF C
 library.  netCDF version 4 has many features not found in earlier
@@ -1710,7 +1749,7 @@ version numbers.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _ (zero? (system* "nosetests")))))))
+         (replace 'check (lambda _ (invoke "nosetests"))))))
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-vcversioner" ,python-vcversioner)))
@@ -2106,7 +2145,7 @@ logic-free templating system Mustache.")
               (modify-phases %standard-phases
                 (replace 'check
                   (lambda _
-                    (zero? (system* "python" "test_pystache.py")))))))))
+                    (invoke "python" "test_pystache.py"))))))))
 
 (define-public python-joblib
   (package
@@ -2855,8 +2894,7 @@ objects.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (zero? (system* "nosetests" "-v")))))))
+           (lambda _ (invoke "nosetests" "-v"))))))
     (propagated-inputs
      `(("python-colormath" ,python-colormath)))
     (native-inputs
@@ -2963,12 +3001,12 @@ color scales, and color space conversion easy.  It has support for:
                (with-directory-excursion "doc"
                  (copy-recursively sphinx-theme-checkout scipy-sphinx-theme)
                  (mkdir-p html)
-                 (system* "make" "html" pyver)
-                 (system* "make" "latex" "PAPER=a4" pyver)
-                 (system* "make" "-C" "build/latex"
+                 (invoke "make" "html" pyver)
+                 (invoke "make" "latex" "PAPER=a4" pyver)
+                 (invoke "make" "-C" "build/latex"
                           "all-pdf" "PAPER=a4" pyver)
                  ;; FIXME: Generation of the info file fails.
-                 ;; (system* "make" "info" pyver)
+                 ;; (invoke "make" "info" pyver)
                  ;; (mkdir-p info)
                  ;; (copy-file "build/texinfo/numpy.info"
                  ;;            (string-append info "/numpy.info"))
@@ -3193,7 +3231,7 @@ To address this and enable easy cycling over arbitrary @code{kwargs}, the
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "nosetests" "--all-modules" "-v" "colorspacious")))))))
+             (invoke "nosetests" "--all-modules" "-v" "colorspacious"))))))
     (home-page "https://github.com/njsmith/colorspacious")
     (synopsis "Python library for colorspace conversions")
     (description "@code{colorspacious} is a Python library that lets you
@@ -3376,24 +3414,25 @@ toolkits.")
 (define-public python2-pysnptools
   (package
     (name "python2-pysnptools")
-    (version "0.3.9")
+    (version "0.3.13")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "pysnptools" version ".zip"))
+       (uri (pypi-uri "pysnptools" version))
        (sha256
         (base32
-         "1wybggjzz8zw7aav4pjsg2h22xp17a1lghrprza1pxwlm7wf96y2"))))
+         "0lnis5xsl7bi0hz4f7gbicahzi5zlxkc21nk3g374xv8fb5hb3qm"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2)) ; only Python 2.7 is supported
+     `(#:python ,python-2 ; only Python 2.7 is supported
+       #:tests? #f))      ; test files (e.g. examples/toydata.bim) not included
     (propagated-inputs
      `(("python2-numpy" ,python2-numpy)
        ("python2-scipy" ,python2-scipy)
        ("python2-pandas" ,python2-pandas)))
     (native-inputs
-     `(("unzip" ,unzip)))
-    (home-page "http://research.microsoft.com/en-us/um/redmond/projects/mscompbio/")
+     `(("python2-cython" ,python2-cython)))
+    (home-page "http://microsoftgenomics.github.io/PySnpTools/")
     (synopsis "Library for reading and manipulating genetic data")
     (description
      "PySnpTools is a library for reading and manipulating genetic data.  It
@@ -3603,7 +3642,8 @@ where key might be occurred more than once in the container.")
              ;; The package uses nosetest for running the tests.
              ;; Adding this initfile allows to run the test suite
              ;; without requiring nosetest.
-             (zero? (system* "touch" "tests/__init__.py")))))))
+             (with-output-to-file "tests/__init__.py" newline)
+             #t)))))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (native-inputs
@@ -3803,7 +3843,8 @@ a general image processing tool.")
          (replace 'check
            (lambda _
              (with-directory-excursion "tests"
-               (zero? (system* "python" "all_tests.py")))))
+               (invoke "python" "all_tests.py"))
+             #t))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
@@ -4145,7 +4186,7 @@ cluster without needing to write any wrapper code yourself.")
              ;; It's easier to run tests after install.
              ;; Make installed package available for running the tests
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "py.test" "-v")))))))
+             (invoke "py.test" "-v"))))))
     (home-page "https://github.com/nickstenning/honcho")
     (synopsis "Manage Procfile-based applications")
     (description
@@ -4854,7 +4895,7 @@ libxml2 and libxslt.")
          ;; For more information, see the file 'convert-py3k' in the source
          ;; distribution.
          (replace 'check
-           (lambda _ (zero? (system* "./convert-py3k")))))))
+           (lambda _ (invoke "./convert-py3k"))))))
     (home-page
      "https://www.crummy.com/software/BeautifulSoup/bs4/")
     (synopsis
@@ -5101,8 +5142,7 @@ and statistical routines from scipy and statsmodels.")
      (modify-phases %standard-phases
        (replace 'check
          (lambda _
-           (zero?
-            (system* "python" "mpmath/tests/runtests.py" "-local")))))))
+           (invoke "python" "mpmath/tests/runtests.py" "-local"))))))
   (home-page "http://mpmath.org")
   (synopsis "Arbitrary-precision floating-point arithmetic in python")
   (description
@@ -5324,7 +5364,7 @@ Python 2 and Python 3.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "py.test" "-v")))))))
+             (invoke "py.test" "-v"))))))
     (native-inputs
      `(("python2-pytest" ,python2-pytest)))
     (home-page "https://github.com/chrippa/backports.shutil_get_terminal_size")
@@ -5668,7 +5708,7 @@ PEP8_PLUGIN('break_before_binary_operator'),"))
              (setenv "PYTHONPATH"
                      (string-append (getcwd) "/build/lib:"
                                     (getenv "PYTHONPATH")))
-             (zero? (system* "py.test" "-v")))))))
+             (invoke "py.test" "-v"))))))
     (native-inputs
      `(("python-flake8" ,python-flake8)
        ("python-mock" ,python-mock)
@@ -5754,8 +5794,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-                  (lambda _
-                    (zero? (system* "nosetests")))))))
+           (lambda _ (invoke "nosetests"))))))
     (home-page "https://github.com/pexpect/ptyprocess")
     (synopsis "Run a subprocess in a pseudo terminal")
     (description
@@ -5809,7 +5848,7 @@ pseudo terminal (pty), and interact with both the process and its pty.")
              (add-installed-pythonpath inputs outputs)
              (setenv "PATH" (string-append (getenv "PATH") ":"
                                            (assoc-ref outputs "out") "/bin"))
-             (zero? (system* "make" "test")))))))
+             (invoke "make" "test"))))))
     (build-system python-build-system)
     (native-inputs
      `(("python-coverage" ,python-coverage)
@@ -6090,7 +6129,7 @@ and MAC network addresses.")
        (modify-phases %standard-phases
          ;; Current test in setup.py does not work as of 1.0.0, so use nose to
          ;; run tests instead for now.
-         (replace 'check (lambda _ (zero? (system* "nosetests")))))))
+         (replace 'check (lambda _ (invoke "nosetests"))))))
     (native-inputs `(("python-nose"       ,python-nose)))
     (home-page "http://www.python-excel.org/")
     (synopsis "Library for extracting data from Excel files")
@@ -6166,14 +6205,14 @@ printing of sub-tables by specifying a row range.")
              #t))
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "python" "setup.py" "build"
-                             (string-append "--hdf5="
-                                            (assoc-ref inputs "hdf5"))))))
+             (invoke "python" "setup.py" "build"
+                     (string-append "--hdf5="
+                                    (assoc-ref inputs "hdf5")))))
          (replace 'check
            (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "python" "setup.py" "check"
-                             (string-append "--hdf5="
-                                            (assoc-ref inputs "hdf5")))))))))
+             (invoke "python" "setup.py" "check"
+                     (string-append "--hdf5="
+                                    (assoc-ref inputs "hdf5"))))))))
     (propagated-inputs
      `(("python-numexpr" ,python-numexpr)
        ("python-numpy" ,python-numpy)))
@@ -6278,8 +6317,7 @@ implementations of ASN.1-based codecs and protocols.")
        #:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda* _
-             (zero? (system* "python" "ipaddr_test.py")))))))
+           (lambda _ (invoke "python" "ipaddr_test.py"))))))
     (home-page "https://github.com/google/ipaddr-py")
     (synopsis "IP address manipulation library")
     (description
@@ -8489,7 +8527,7 @@ module, adding support for Unicode strings.")
        (modify-phases %standard-phases
          (replace 'check
            ;; Many tests fail, but the installation proceeds.
-           (lambda _ (zero? (system* "make" "-C" "test" "test")))))))
+           (lambda _ (invoke "make" "-C" "test" "test"))))))
     (native-inputs
      `(("which" ,which))) ; required for tests
     (propagated-inputs
@@ -9497,8 +9535,7 @@ parsing UK postcodes.")
    '(#:phases
      (modify-phases %standard-phases
        (replace 'check
-         (lambda _
-           (zero? (system* "python" "-m" "unittest" "-v" "tests")))))))
+         (lambda _ (invoke "python" "-m" "unittest" "-v" "tests"))))))
   (native-inputs
    `(;; For testing
      ("python-email-validator" ,python-email-validator)
@@ -9634,17 +9671,17 @@ characters, mouse support, and auto suggestions.")
 (define-public python-jedi
   (package
     (name "python-jedi")
-    (version "0.13.1")
+    (version "0.13.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jedi" version))
        (sha256
         (base32
-         "0j11q42g5vjkyhhjpyy8nb0gdxs78m3rpjai7p1hvgpyl9rkyjdp"))))
+         "1za944msp0f8x36qa8l309jhv0kzlsdh7r9nj3z12y8npnsh45sp"))))
     (build-system python-build-system)
     (arguments
-     `( ;; Many tests are failing with Python 3.7.x as of version 0.13.1 (see:
+     `( ;; Many tests are failing with Python 3.7.x as of version 0.13.2 (see:
         ;; https://github.com/davidhalter/jedi/issues/1263)
        #:tests? #f
        #:phases
@@ -9991,9 +10028,9 @@ discovery, monitoring and configuration.")
            ;; The test runner invokes python2 and python3 for test*.py.
            ;; To avoid having both in inputs, we replicate it here.
            (lambda _
-             (every (lambda (test-file)
-                      (zero? (system* "python" test-file)))
-                    (find-files "tests" "^test.*\\.py$")))))))
+             (for-each (lambda (test-file) (invoke "python" test-file))
+                       (find-files "tests" "^test.*\\.py$"))
+             #t)))))
     (build-system python-build-system)
     (home-page "https://github.com/eea/odfpy")
     (synopsis "Python API and tools to manipulate OpenDocument files")
@@ -10392,7 +10429,7 @@ is used by PostgreSQL and the OpenSSH Server for example.")
              (setenv "PYTHONPATH"
                      (string-append (getcwd) "/build/lib:"
                                     (getenv "PYTHONPATH")))
-             (zero? (system* "py.test" "-vv" )))))))
+             (invoke "py.test" "-vv" ))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page
@@ -10512,7 +10549,7 @@ PNG, JPEG, JPEG2000 and GIF files in pure Python.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "python" "test3.py")))))))
+             (invoke "python" "test3.py"))))))
     (home-page "https://github.com/gfxmonk/termstyle")
     (synopsis "Console text coloring for Python")
     (description "This package provides console text coloring for Python.")
@@ -10720,7 +10757,7 @@ protocols written in pure Python.")
              (setenv "PYTHONPATH"
                      (string-append (getcwd) "/build/lib:"
                                     (getenv "PYTHONPATH")))
-             (zero? (system* "python" "test/test_pbkdf2.py")))))))
+             (invoke "python" "test/test_pbkdf2.py"))))))
     (propagated-inputs
      `(("python-pycrypto" ,python-pycrypto)))  ; optional
     (home-page "https://www.dlitz.net/software/python-pbkdf2/")
@@ -10928,7 +10965,7 @@ Problem} (SAT) solver.")
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "python" "test/testordereddict.py")))))))
+             (invoke "python" "test/testordereddict.py"))))))
     (home-page "https://bitbucket.org/ruamel/ordereddict")
     (synopsis "Version of dict that keeps keys in insertion order")
     (description
@@ -11185,7 +11222,7 @@ protocols.")
              ;; Disable python3 tests
              (substitute* "check"
                (("python3") "# python3"))
-             (zero? (system* "./check")))))))
+             (invoke "./check"))))))
     (native-inputs
      `(("python2-coverage-test-runner" ,python2-coverage-test-runner)
        ("python2-pep8" ,python2-pep8)))
@@ -11225,8 +11262,7 @@ iterating over input files.")
          ;; and fails.
          (delete 'check)
          (add-before 'build 'check
-           (lambda _
-             (zero? (system* "make" "check")))))))
+           (lambda _ (invoke "make" "check"))))))
     (home-page "https://liw.fi/ttystatus/")
     (synopsis "Python library for showing progress reporting and
 status updates on terminals")
@@ -11288,8 +11324,7 @@ happens using the @code{logging} library.")
          ;; and fails.
          (delete 'check)
          (add-before 'build 'check
-           (lambda _
-             (zero? (system* "make" "check")))))))
+           (lambda _ (invoke "make" "check"))))))
     (native-inputs
      `(("cmdtest" ,cmdtest)
        ("python2-coverage-test-runner" ,python2-coverage-test-runner)))
@@ -12303,7 +12338,7 @@ Swagger 2.0).")
              (setenv "PYTHONPATH" (string-append (getcwd)
                                                  ":"
                                                  (getenv "PYTHONPATH")))
-             (zero? (system* "py.test")))))))
+             (invoke "py.test"))))))
     (propagated-inputs
      `(("python-flask" ,python-flask)
        ("python-pyyaml" ,python-pyyaml)
@@ -13149,9 +13184,9 @@ is the new Pyro version that is actively developed.")
        (modify-phases %standard-phases
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "python" "setup.py" "build"
-                             (string-append "--netcdf_prefix="
-                                            (assoc-ref inputs "netcdf")))))))))
+             (invoke "python" "setup.py" "build"
+                     (string-append "--netcdf_prefix="
+                                    (assoc-ref inputs "netcdf"))))))))
     (home-page "https://bitbucket.org/khinsen/scientificpython")
     (synopsis "Python modules for scientific computing")
     (description "ScientificPython is a collection of Python modules that are

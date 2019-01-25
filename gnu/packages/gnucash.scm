@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,20 +50,20 @@
   #:use-module (gnu packages xml))
 
 (define-public gnucash
+  ;; TODO: Unbundle libraries such as guile-json found under the "borrowed/"
+  ;; directory.
   (package
     (name "gnucash")
-    (version "3.3")
+    (version "3.4")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
-                          version "/gnucash-" version ".tar.bz2"))
-      (sha256
-       (base32
-        "0grr5qi5rn1xvr7qx5d7mcxa2mcgycy2b325ry73bb485a6yv5l3"))
-      (patches (search-patches "gnucash-price-quotes-perl.patch"
-                               "gnucash-disable-failing-tests.patch"
-                               "gnucash-fix-test-transaction-failure.patch"))))
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
+                           version "/gnucash-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1ms2wg4sh5gq3rpjmmnp85rh5nc9ahca1imxkvhz4d3yiwy8hm52"))
+       (patches (search-patches "gnucash-fix-test-transaction-failure.patch"))))
     (build-system cmake-build-system)
     (inputs
      `(("guile" ,guile-2.2)
@@ -79,18 +80,18 @@
        ("perl-finance-quote" ,perl-finance-quote)
        ("tzdata" ,tzdata-for-tests)))
     (native-inputs
-     `(("glib" ,glib "bin") ; glib-compile-schemas, etc.
+     `(("glib" ,glib "bin")             ; glib-compile-schemas, etc.
        ("intltool" ,intltool)
        ("googlemock" ,(package-source googletest))
        ("googletest" ,googletest)
        ("gnucash-docs" ,gnucash-docs)
        ("pkg-config" ,pkg-config)))
-    (outputs '("out" "doc"))
+    (outputs '("out" "doc" "debug"))
     (arguments
      `(#:test-target "check"
        #:configure-flags
-       (list "-DWITH_OFX=OFF"  ; libofx is not available yet
-             "-DWITH_SQL=OFF") ; without dbi.h
+       (list "-DWITH_OFX=OFF"           ; libofx is not available yet
+             "-DWITH_SQL=OFF")          ; without dbi.h
        #:make-flags '("GUILE_AUTO_COMPILE=0")
        #:modules ((guix build cmake-build-system)
                   ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
@@ -119,44 +120,64 @@
                  (("set\\(SHELL /bin/bash\\)")
                   (string-append "set(SHELL " (which "bash") ")")))
                #t)))
+         ;; After wrapping gnc-fq-check and gnc-fq-helper we can no longer
+         ;; execute them with perl, so execute them directly instead.
+         (add-after 'unpack 'fix-finance-quote-check
+           (lambda _
+             (substitute* "libgnucash/scm/price-quotes.scm"
+               (("\"perl\" \"-w\" ") ""))
+             #t))
+         ;; The test-stress-options unit test is known to fail, so we disable
+         ;; it (see: https://bugs.gnucash.org/show_bug.cgi?id=796877).
+         (add-after 'unpack 'disable-stress-options-test
+           (lambda _
+             (substitute* "gnucash/report/standard-reports/test/CMakeLists.txt"
+               (("test-stress-options.scm") ""))
+             #t))
+         ;; The qof test requires the en_US, en_GB, and fr_FR locales.
+         (add-before 'check 'install-locales
+           (lambda _
+             (setenv "LOCPATH" (getcwd))
+             (invoke "localedef" "-i" "en_US" "-f" "UTF-8" "./en_US.UTF-8")
+             (invoke "localedef" "-i" "en_GB" "-f" "UTF-8" "./en_GB.UTF-8")
+             (invoke "localedef" "-i" "fr_FR" "-f" "UTF-8" "./fr_FR.UTF-8")
+             #t))
          ;; There are about 100 megabytes of documentation.
-         (add-after
-          'install 'install-docs
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((docs (assoc-ref inputs "gnucash-docs"))
-                  (doc-output (assoc-ref outputs "doc")))
-              (mkdir-p (string-append doc-output "/share"))
-              (symlink (string-append docs "/share/gnome")
-                       (string-append doc-output "/share/gnome"))
-              #t)))
-         (add-after
-          'install-docs 'wrap-programs
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (for-each (lambda (prog)
-                        (wrap-program (string-append (assoc-ref outputs "out")
-                                                     "/bin/" prog)
-                          `("PERL5LIB" ":" prefix
-                            ,(map (lambda (o)
-                                    (string-append o "/lib/perl5/site_perl/"
-                                                   ,(package-version perl)))
-                                  (if (string=? prog "gnc-fq-helper")
-                                      (list
-                                       ,@(transitive-input-references
-                                          'inputs
-                                          (map (lambda (l)
-                                                 (assoc l (inputs)))
-                                               '("perl-finance-quote"
-                                                 "perl-date-manip"))))
-                                      (list
-                                       ,@(transitive-input-references
-                                          'inputs
-                                          (map (lambda (l)
-                                                 (assoc l (inputs)))
-                                               '("perl-finance-quote")))))))))
-                      '("gnucash"
-                        "gnc-fq-check"
-                        "gnc-fq-helper"
-                        "gnc-fq-dump"))))
+         (add-after 'install 'install-docs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((docs (assoc-ref inputs "gnucash-docs"))
+                   (doc-output (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc-output "/share"))
+               (symlink (string-append docs "/share/gnome")
+                        (string-append doc-output "/share/gnome"))
+               #t)))
+         (add-after 'install-docs 'wrap-programs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (for-each (lambda (prog)
+                         (wrap-program (string-append (assoc-ref outputs "out")
+                                                      "/bin/" prog)
+                           `("PERL5LIB" ":" prefix
+                             ,(map (lambda (o)
+                                     (string-append o "/lib/perl5/site_perl/"
+                                                    ,(package-version perl)))
+                                   (if (string=? prog "gnc-fq-helper")
+                                       (list
+                                        ,@(transitive-input-references
+                                           'inputs
+                                           (map (lambda (l)
+                                                  (assoc l (inputs)))
+                                                '("perl-finance-quote"
+                                                  "perl-date-manip"))))
+                                       (list
+                                        ,@(transitive-input-references
+                                           'inputs
+                                           (map (lambda (l)
+                                                  (assoc l (inputs)))
+                                                '("perl-finance-quote")))))))))
+                       '("gnucash"
+                         "gnc-fq-check"
+                         "gnc-fq-helper"
+                         "gnc-fq-dump"))))
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'install 'glib-or-gtk-wrap
@@ -168,44 +189,46 @@
 It can be used to track bank accounts, stocks, income and expenses, based on
 the double-entry accounting practice.  It includes support for QIF/OFX/HBCI
 import and transaction matching.  It also automates several tasks, such as
-financial calculations or scheduled transactions.")
+financial calculations or scheduled transactions.
+
+To make the GnuCash documentation available, its doc output must be
+installed as well as Yelp, the Gnome help browser.")
     (license license:gpl3+)))
 
 ;; This package is not public, since we use it to build the "doc" output of
 ;; the gnucash package (see above).  It would be confusing if it were public.
 (define gnucash-docs
-  (package
-    (name "gnucash-docs")
-    (version (package-version gnucash))
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
-                           version "/gnucash-docs-" version ".tar.gz"))
-       (sha256
-        (base32
-         "10v4hw4lh888r8yv473pqrvzfjg8dwamk62sghs93rn88ndwm16c"))))
-    (build-system gnu-build-system)
-    ;; These are native-inputs because they are only required for building the
-    ;; documentation.
-    (native-inputs
-     `(("libxml2" ,libxml2)
-       ;; The "check" target needs the docbook xml packages for validating the
-       ;; DocBook XML during the tests.
-       ("docbook-xml-4.4" ,docbook-xml-4.4)
-       ("docbook-xml-4.2" ,docbook-xml-4.2)
-       ("docbook-xml-4.1.2" ,docbook-xml-4.1.2)
-       ("libxslt" ,libxslt)
-       ("docbook-xsl" ,docbook-xsl)
-       ("scrollkeeper" ,scrollkeeper)))
-    (home-page "https://www.gnucash.org/")
-    (synopsis "Documentation for GnuCash")
-    (description
-     "User guide and other documentation for GnuCash in various languages.
+  (let ((revision "a"))              ;set to the empty string when no revision
+    (package
+      (name "gnucash-docs")
+      (version (package-version gnucash))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "mirror://sourceforge/gnucash/gnucash%20%28stable%29/"
+                             version "/gnucash-docs-" version revision ".tar.gz"))
+         (sha256
+          (base32
+           "0bgjxpxgk7hy8ihn1kvd8p6vv191q5md2hz6jb9mqc4aykpvdlq7"))))
+      (build-system gnu-build-system)
+      ;; These are native-inputs because they are only required for building the
+      ;; documentation.
+      (native-inputs
+       `(("libxml2" ,libxml2)
+         ;; The "check" target needs the docbook xml package for validating the
+         ;; DocBook XML during the tests.
+         ("docbook-xml" ,docbook-xml)
+         ("libxslt" ,libxslt)
+         ("docbook-xsl" ,docbook-xsl)
+         ("scrollkeeper" ,scrollkeeper)))
+      (home-page "https://www.gnucash.org/")
+      (synopsis "Documentation for GnuCash")
+      (description
+       "User guide and other documentation for GnuCash in various languages.
 This package exists because the GnuCash project maintains its documentation in
 an entirely separate package from the actual GnuCash program.  It is intended
 to be read using the GNOME Yelp program.")
-    (license (list license:fdl1.1+ license:gpl3+))))
+      (license (list license:fdl1.1+ license:gpl3+)))))
 
 (define-public gwenhywfar
   (package
