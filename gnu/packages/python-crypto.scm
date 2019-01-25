@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -434,14 +434,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "18.0.0")
+    (version "19.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "1055rb456nvrjcij3sqj6c6l3kmh5cqqay0nsmx3pxq07d1g3234"))))
+         "007j40y7x3k8xj54dy2qnij9lldfp71k9mkflhd9vqbdiwrndjmf"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -450,15 +450,15 @@ message digests and key derivation functions.")
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "py.test" "-v" "-k"
-                             (string-append
-                              ;; This test tries to look up certificates from
-                              ;; the compiled-in default path in OpenSSL, which
-                              ;; does not exist in the build environment.
-                              "not test_fallback_default_verify_paths "
-                              ;; This test attempts to make a connection to
-                              ;; an external web service.
-                              "and not test_set_default_verify_paths"))))))))
+             (invoke "py.test" "-v" "-k"
+                     (string-append
+                      ;; This test tries to look up certificates from
+                      ;; the compiled-in default path in OpenSSL, which
+                      ;; does not exist in the build environment.
+                      "not test_fallback_default_verify_paths "
+                      ;; This test attempts to make a connection to
+                      ;; an external web service.
+                      "and not test_set_default_verify_paths")))))))
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
        ("python-six" ,python-six)))
