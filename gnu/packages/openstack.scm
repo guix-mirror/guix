@@ -582,7 +582,7 @@ in transmittable and storable formats, such as JSON and MessagePack.")
          (add-before 'check 'init-git
            (lambda _
              ;; reno expects a git repo
-             (zero? (system* "git" "init")))))))
+             (invoke "git" "init"))))))
     (propagated-inputs
       `(("python-dulwich" ,python-dulwich)
         ("python-pbr" ,python-pbr)
@@ -596,7 +596,7 @@ in transmittable and storable formats, such as JSON and MessagePack.")
         ("python-docutils" ,python-docutils)
         ("python-sphinx" ,python-sphinx)
         ("gnupg" ,gnupg)
-        ("git" ,git)))
+        ("git" ,git-minimal)))
     (home-page "http://docs.openstack.org/developer/reno/")
     (synopsis "Release notes manager")
     (description "Reno is a tool for storing release notes in a git repository
