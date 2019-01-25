@@ -287,15 +287,9 @@ destructors.  It is the core memory allocator used in Samba.")
         `(modify-phases ,phases
            (replace 'build
              (lambda _
-               (letrec-syntax ((shell (syntax-rules ()
-                                        ((_ (command ...) rest ...)
-                                         (and (zero? (system* command ...))
-                                              (shell rest ...)))
-                                        ((_)
-                                         #t))))
-                 (shell ("gcc" "-c" "-Ibin/default" "-I" "lib/replace"
-                         "-I." "-Wall" "-g" "talloc.c")
-                        ("ar" "rc" "libtalloc.a" "talloc.o")))))
+               (invoke "gcc" "-c" "-Ibin/default" "-I" "lib/replace"
+                       "-I." "-Wall" "-g" "talloc.c")
+               (invoke "ar" "rc" "libtalloc.a" "talloc.o")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out     (assoc-ref outputs "out"))
