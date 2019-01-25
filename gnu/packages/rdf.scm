@@ -304,13 +304,10 @@ ideal (e.g. in LV2 implementations or embedded applications).")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-              "https://pypi.python.org/packages/source/r/rdflib/rdflib-"
-              version
-              ".tar.gz"))
+        (uri (pypi-uri "rdflib" version))
         (sha256
-          (base32
-            "0398c714znnhaa2x7v51b269hk20iz073knq2mvmqp2ma92z27fs"))))
+         (base32
+          "0398c714znnhaa2x7v51b269hk20iz073knq2mvmqp2ma92z27fs"))))
     (build-system python-build-system)
     (arguments
      '(;; FIXME: Three test failures. Should be fixed next release.
@@ -321,7 +318,7 @@ ideal (e.g. in LV2 implementations or embedded applications).")
        ;;     (lambda _
        ;;       ;; Run tests from the build directory so python3 only
        ;;       ;; sees the installed 2to3 version.
-       ;;       (zero? (system* "nosetests" "--where=./build/src")))))))
+       ;;       (invoke "nosetests" "--where=./build/src"))))))
     (native-inputs
      `(("python-nose" ,python-nose)))
     (propagated-inputs
@@ -329,13 +326,12 @@ ideal (e.g. in LV2 implementations or embedded applications).")
         ("python-isodate" ,python-isodate)
         ("python-pyparsing" ,python-pyparsing)))
     (home-page "https://github.com/RDFLib/rdflib")
-    (synopsis
-      "Python RDF library")
+    (synopsis "Python RDF library")
     (description
       "RDFLib is a Python library for working with RDF, a simple yet
 powerful language for representing information.")
     (license (non-copyleft "file://LICENSE"
-                        "See LICENSE in the distribution."))))
+                           "See LICENSE in the distribution."))))
 
 (define-public python2-rdflib
   (package-with-python2 python-rdflib))
