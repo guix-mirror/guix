@@ -159,7 +159,7 @@ System Installation
 * USB Stick and DVD Installation::  Preparing the installation medium.
 * Preparing for Installation::  Networking, partitioning, etc.
 * Proceeding with the Installation::  The real thing.
-* Installing GuixSD in a VM::   GuixSD playground.
+* Installing Guix in a VM::   Guix System playground.
 * Building the Installation Image::  How this comes to be.
 
 Package Management
@@ -242,7 +242,7 @@ System Configuration
 * Initial RAM Disk::            Linux-Libre bootstrapping.
 * Bootloader Configuration::    Configuring the boot loader.
 * Invoking guix system::        Instantiating a system configuration.
-* Running GuixSD in a VM::      How to run GuixSD in a virtual machine.
+* Running Guix in a VM::      How to run Guix System in a virtual machine.
 * Defining Services::           Adding new service definitions.
 
 Services
@@ -298,11 +298,16 @@ previous package set, to build packages from source, and generally
 assists with the creation and maintenance of software environments.
 
 @cindex Guix System
-@cindex GuixSD
+@cindex GuixSD, now Guix System
+@cindex Guix System Distribution, now Guix System
 You can install GNU@tie{}Guix on top of an existing GNU/Linux system where it
 complements the available tools without interference (@pxref{Installation}),
 or you can use it as a standalone operating system distribution,
-@dfn{Guix@tie{}System} (@pxref{GNU Distribution}).
+@dfn{Guix@tie{}System}@footnote{We used to refer to Guix System as ``Guix
+System Distribution'' or ``GuixSD''.  We now consider it makes more sense to
+group everything under the ``Guix'' banner since, after all, Guix System is
+readily available through the @command{guix system} command, even if you're
+using a different distro underneath!}.  @xref{GNU Distribution}.
 
 @node Managing Software the Guix Way
 @section Managing Software the Guix Way
@@ -362,7 +367,6 @@ garbage collection of packages (@pxref{Features}).
 @section GNU Distribution
 
 @cindex Guix System
-@cindex GuixSD
 Guix comes with a distribution of the GNU system consisting entirely of
 free software@footnote{The term ``free'' here refers to the
 @url{http://www.gnu.org/philosophy/free-sw.html,freedom provided to
@@ -799,7 +803,7 @@ as well as version numbers of the dependencies (@pxref{Requirements}) in
 your message.
 
 Guix also comes with a whole-system test suite that tests complete
-GuixSD operating system instances.  It can only run on systems where
+Guix System instances.  It can only run on systems where
 Guix is already installed, using:
 
 @example
@@ -1177,8 +1181,8 @@ main node:
 Guix includes an SELinux policy file at @file{etc/guix-daemon.cil} that
 can be installed on a system where SELinux is enabled, in order to label
 Guix files and to specify the expected behavior of the daemon.  Since
-GuixSD does not provide an SELinux base policy, the daemon policy cannot
-be used on GuixSD.
+Guix System does not provide an SELinux base policy, the daemon policy cannot
+be used on Guix System.
 
 @subsubsection Installing the SELinux policy
 @cindex SELinux, policy installation
@@ -1526,14 +1530,14 @@ connections on the Unix-domain socket located at
 @section Application Setup
 
 @cindex foreign distro
-When using Guix on top of GNU/Linux distribution other than GuixSD---a
+When using Guix on top of GNU/Linux distribution other than Guix System---a
 so-called @dfn{foreign distro}---a few additional steps are needed to
 get everything in place.  Here are some of them.
 
 @subsection Locales
 
 @anchor{locales-and-locpath}
-@cindex locales, when not on GuixSD
+@cindex locales, when not on Guix System
 @vindex LOCPATH
 @vindex GUIX_LOCPATH
 Packages installed @i{via} Guix will not use the locale data of the
@@ -1736,10 +1740,10 @@ store you need to define the environment variable
 @node System Installation
 @chapter System Installation
 
-@cindex installing GuixSD
-@cindex Guix System Distribution
-This section explains how to install the Guix System Distribution (GuixSD)
-on a machine.  The Guix package manager can
+@cindex installing Guix System
+@cindex Guix System, installation
+This section explains how to install Guix System
+on a machine.  Guix, as a package manager, can
 also be installed on top of a running GNU/Linux system,
 @pxref{Installation}.
 
@@ -1763,20 +1767,20 @@ available.
 * USB Stick and DVD Installation::  Preparing the installation medium.
 * Preparing for Installation::  Networking, partitioning, etc.
 * Proceeding with the Installation::  The real thing.
-* Installing GuixSD in a VM::   GuixSD playground.
+* Installing Guix in a VM::   Guix System playground.
 * Building the Installation Image::  How this comes to be.
 @end menu
 
 @node Limitations
 @section Limitations
 
-As of version @value{VERSION}, the Guix System Distribution (GuixSD) is
+As of version @value{VERSION}, Guix System is
 not production-ready.  It may contain bugs and lack important
 features.  Thus, if you are looking for a stable production system that
 respects your freedom as a computer user, a good solution at this point
 is to consider @url{http://www.gnu.org/distros/free-distros.html, one of
 the more established GNU/Linux distributions}.  We hope you can soon switch
-to the GuixSD without fear, of course.  In the meantime, you can
+to the Guix System without fear, of course.  In the meantime, you can
 also keep using your distribution and try out the package manager on top
 of it (@pxref{Installation}).
 
@@ -1814,15 +1818,15 @@ to report issues (and success stories!), and to join us in improving it.
 @node Hardware Considerations
 @section Hardware Considerations
 
-@cindex hardware support on GuixSD
-GNU@tie{}GuixSD focuses on respecting the user's computing freedom.  It
+@cindex hardware support on Guix System
+GNU@tie{}Guix focuses on respecting the user's computing freedom.  It
 builds around the kernel Linux-libre, which means that only hardware for
 which free software drivers and firmware exist is supported.  Nowadays,
 a wide range of off-the-shelf hardware is supported on
 GNU/Linux-libre---from keyboards to graphics cards to scanners and
 Ethernet controllers.  Unfortunately, there are still areas where
 hardware vendors deny users control over their own computing, and such
-hardware is not supported on GuixSD.
+hardware is not supported on Guix System.
 
 @cindex WiFi, hardware support
 One of the main areas where free drivers or firmware are lacking is WiFi
@@ -1831,7 +1835,7 @@ devices.  WiFi devices known to work include those using Atheros chips
 driver, and those using Broadcom/AirForce chips (BCM43xx with
 Wireless-Core Revision 5), which corresponds to the @code{b43-open}
 Linux-libre driver.  Free firmware exists for both and is available
-out-of-the-box on GuixSD, as part of @var{%base-firmware}
+out-of-the-box on Guix System, as part of @var{%base-firmware}
 (@pxref{operating-system Reference, @code{firmware}}).
 
 @cindex RYF, Respects Your Freedom
@@ -1941,8 +1945,8 @@ Once this is done, you should be able to reboot the system and boot from
 the USB stick or DVD.  The latter usually requires you to get in the
 BIOS or UEFI boot menu, where you can choose to boot from the USB stick.
 
-@xref{Installing GuixSD in a VM}, if, instead, you would like to install
-GuixSD in a virtual machine (VM).
+@xref{Installing Guix in a VM}, if, instead, you would like to install
+Guix System in a virtual machine (VM).
 
 
 @node Preparing for Installation
@@ -1952,7 +1956,7 @@ Once you have successfully booted your computer using the installation medium,
 you should end up with the welcome page of the graphical installer.  The
 graphical installer is a text-based user interface built upon the newt
 library.  It shall guide you through all the different steps needed to install
-GNU GuixSD.  However, as the graphical installer is still under heavy
+GNU@tie{}Guix System.  However, as the graphical installer is still under heavy
 development, you might want to fallback to the original, shell based install
 process, by switching to TTYs 3 to 6 with the shortcuts CTRL-ALT-F[3-6]. The
 following sections describe the installation procedure assuming you're using
@@ -1971,7 +1975,7 @@ dependencies of your system configuration can be downloaded.  See the
 @end quotation
 
 The installation system includes many common tools needed for this task.
-But it is also a full-blown GuixSD system, which means that you can
+But it is also a full-blown Guix System, which means that you can
 install additional packages, should you need it, using @command{guix
 package} (@pxref{Invoking guix package}).
 
@@ -2126,7 +2130,7 @@ bootloaders.
 
 Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
-GuixSD only supports ext4 and btrfs file systems.  In particular, code
+Guix System only supports ext4 and btrfs file systems.  In particular, code
 that reads file system UUIDs and labels only works for these file system
 types.}.  For the ESP, if you have one and assuming it is
 @file{/dev/sda1}, run:
@@ -2289,8 +2293,8 @@ initialized by running the @command{passwd} command as @code{root},
 unless your configuration specifies otherwise
 (@pxref{user-account-password, user account passwords}).
 
-@cindex upgrading GuixSD
-From then on, you can update GuixSD whenever you want by running @command{guix
+@cindex upgrading Guix System
+From then on, you can update the system whenever you want by running @command{guix
 pull} as @code{root} (@pxref{Invoking guix pull}), and then running
 @command{guix system reconfigure /etc/config.scm}, as @code{root} too, to
 build a new system generation with the latest packages and services
@@ -2301,22 +2305,22 @@ Join us on @code{#guix} on the Freenode IRC network or on
 @email{guix-devel@@gnu.org} to share your experience---good or not so
 good.
 
-@node Installing GuixSD in a VM
-@section Installing GuixSD in a Virtual Machine
+@node Installing Guix in a VM
+@section Installing Guix in a Virtual Machine
 
-@cindex virtual machine, GuixSD installation
+@cindex virtual machine, Guix System installation
 @cindex virtual private server (VPS)
 @cindex VPS (virtual private server)
-If you'd like to install GuixSD in a virtual machine (VM) or on a
+If you'd like to install Guix System in a virtual machine (VM) or on a
 virtual private server (VPS) rather than on your beloved machine, this
 section is for you.
 
-To boot a @uref{http://qemu.org/,QEMU} VM for installing GuixSD in a
+To boot a @uref{http://qemu.org/,QEMU} VM for installing Guix System in a
 disk image, follow these steps:
 
 @enumerate
 @item
-First, retrieve and decompress the GuixSD installation image as
+First, retrieve and decompress the Guix system installation image as
 described previously (@pxref{USB Stick and DVD Installation}).
 
 @item
@@ -2352,7 +2356,7 @@ You're now root in the VM, proceed with the installation process.
 @end enumerate
 
 Once installation is complete, you can boot the system that's on your
-@file{guixsd.img} image.  @xref{Running GuixSD in a VM}, for how to do
+@file{guixsd.img} image.  @xref{Running Guix in a VM}, for how to do
 that.
 
 @node Building the Installation Image
@@ -2458,7 +2462,7 @@ In addition, any package transaction may be @emph{rolled back}.  So, if,
 for example, an upgrade installs a new version of a package that turns
 out to have a serious bug, users may roll back to the previous instance
 of their profile, which was known to work well.  Similarly, the global
-system configuration on GuixSD is subject to
+system configuration on Guix is subject to
 transactional upgrades and roll-back
 (@pxref{Using the Configuration System}).
 
@@ -3308,8 +3312,8 @@ guix gc -F 5G
 @end example
 
 It is perfectly safe to run as a non-interactive periodic job
-(@pxref{Scheduled Job Execution}, for how to set up such a job on
-GuixSD).  Running @command{guix gc} with no arguments will collect as
+(@pxref{Scheduled Job Execution}, for how to set up such a job).
+Running @command{guix gc} with no arguments will collect as
 much garbage as it can, but that is often inconvenient: you may find
 yourself having to rebuild or re-download software that is ``dead'' from
 the GC viewpoint but that is necessary to build other pieces of
@@ -8973,7 +8977,7 @@ guix environment guix --ad-hoc git strace
 
 Sometimes it is desirable to isolate the environment as much as
 possible, for maximal purity and reproducibility.  In particular, when
-using Guix on a host distro that is not GuixSD, it is desirable to
+using Guix on a host distro that is not Guix System, it is desirable to
 prevent access to @file{/usr/bin} and other system-wide resources from
 the development environment.  For example, the following command spawns
 a Guile REPL in a ``container'' where only the store and the current
@@ -9026,7 +9030,7 @@ Running:
 guix environment --ad-hoc -e '(@@ (gnu) %base-packages)'
 @end example
 
-starts a shell with all the GuixSD base packages available.
+starts a shell with all the base system packages available.
 
 The above commands only use the default output of the given packages.
 To select other outputs, two element tuples can be specified:
@@ -9375,7 +9379,7 @@ Reference Manual}) on @var{port} (37146 by default).  This is used
 primarily for debugging a running @command{guix publish} server.
 @end table
 
-Enabling @command{guix publish} on a GuixSD system is a one-liner: just
+Enabling @command{guix publish} on Guix System is a one-liner: just
 instantiate a @code{guix-publish-service-type} service in the @code{services} field
 of the @code{operating-system} declaration (@pxref{guix-publish-service-type,
 @code{guix-publish-service-type}}).
@@ -9649,7 +9653,7 @@ system of the container.  @var{arguments} are the additional options that
 will be passed to @var{program}.
 
 The following command launches an interactive login shell inside a
-GuixSD container, started by @command{guix system container}, and whose
+Guix system container, started by @command{guix system container}, and whose
 process ID is 9001:
 
 @example
@@ -9868,7 +9872,7 @@ instance to support new system services.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
 * Bootloader Configuration::    Configuring the boot loader.
 * Invoking guix system::        Instantiating a system configuration.
-* Running GuixSD in a VM::      How to run GuixSD in a virtual machine.
+* Running Guix in a VM::      How to run Guix System in a virtual machine.
 * Defining Services::           Adding new service definitions.
 @end menu
 
@@ -10105,7 +10109,7 @@ instantiate @var{os}.
 
 This procedure is provided by the @code{(gnu system)} module.  Along
 with @code{(gnu services)} (@pxref{Services}), this module contains the
-guts of GuixSD.  Make sure to visit it!
+guts of Guix System.  Make sure to visit it!
 
 
 @node operating-system Reference
@@ -10794,7 +10798,7 @@ all, of the locale data from libc 2.21 (specifically, @code{LC_COLLATE}
 data is incompatible); thus calls to @code{setlocale} may fail, but
 programs will not abort.
 
-The ``problem'' in GuixSD is that users have a lot of freedom: They can
+The ``problem'' with Guix is that users have a lot of freedom: They can
 choose whether and when to upgrade software in their profiles, and might
 be using a libc version different from the one the system administrator
 used to build the system-wide locale data.
@@ -10833,7 +10837,7 @@ Configuration System}).  System services are typically daemons launched
 when the system boots, or other actions needed at that time---e.g.,
 configuring network access.
 
-GuixSD has a broad definition of ``service'' (@pxref{Service
+Guix has a broad definition of ``service'' (@pxref{Service
 Composition}), but many services are managed by the GNU@tie{}Shepherd
 (@pxref{Shepherd Services}).  On a running system, the @command{herd}
 command allows you to list the available services, show their status,
@@ -13154,7 +13158,7 @@ makes the good ol' XlockMore usable.
 
 @cindex printer support with CUPS
 The @code{(gnu services cups)} module provides a Guix service definition
-for the CUPS printing service.  To add printer support to a GuixSD
+for the CUPS printing service.  To add printer support to a Guix
 system, add a @code{cups-service} to the operating system definition:
 
 @deffn {Scheme Variable} cups-service-type
@@ -15847,7 +15851,7 @@ Defaults to @samp{""}.
 
 
 Whew!  Lots of configuration options.  The nice thing about it though is
-that GuixSD has a complete interface to Dovecot's configuration
+that Guix has a complete interface to Dovecot's configuration
 language.  This allows not only a nice way to declare configurations,
 but also offers reflective capabilities as well: users can write code to
 inspect and transform configurations from within Scheme.
@@ -16238,7 +16242,7 @@ Defaults to @samp{"internal_plain"}.
 
 @deftypevr {@code{prosody-configuration} parameter} maybe-string log
 Set logging options.  Advanced logging configuration is not yet supported
-by the GuixSD Prosody Service.  See @url{https://prosody.im/doc/logging}.
+by the Guix Prosody Service.  See @url{https://prosody.im/doc/logging}.
 Defaults to @samp{"*syslog"}.
 @end deftypevr
 
@@ -16493,7 +16497,7 @@ look like this:
 (service murmur-service-type
          (murmur-configuration
           (welcome-text
-            "Welcome to this Mumble server running on GuixSD!")
+            "Welcome to this Mumble server running on Guix!")
           (cert-required? #t) ;disallow text password logins
           (ssl-cert "/etc/letsencrypt/live/mumble.example.com/fullchain.pem")
           (ssl-key "/etc/letsencrypt/live/mumble.example.com/privkey.pem")))
@@ -22316,9 +22320,9 @@ However, most other programs that can talk HTTPS---@command{wget},
 certificates can be found.
 
 @cindex @code{nss-certs}
-In GuixSD, this is done by adding a package that provides certificates
+In Guix, this is done by adding a package that provides certificates
 to the @code{packages} field of the @code{operating-system} declaration
-(@pxref{operating-system Reference}).  GuixSD includes one such package,
+(@pxref{operating-system Reference}).  Guix includes one such package,
 @code{nss-certs}, which is a set of CA certificates provided as part of
 Mozilla's Network Security Services.
 
@@ -22567,7 +22571,7 @@ honors several options passed on the Linux kernel command line
 Tell the initial RAM disk to load @var{boot}, a file containing a Scheme
 program, once it has mounted the root file system.
 
-GuixSD uses this option to yield control to a boot program that runs the
+Guix uses this option to yield control to a boot program that runs the
 service activation programs and then spawns the GNU@tie{}Shepherd, the
 initialization system.
 
@@ -22896,7 +22900,7 @@ As for @command{guix package --search}, the result is written in
 Build the operating system described in @var{file}, activate it, and
 switch to it@footnote{This action (and the related actions
 @code{switch-generation} and @code{roll-back}) are usable only on
-systems already running GuixSD.}.
+systems already running Guix System.}.
 
 This effects all the configuration specified in @var{file}: user
 accounts, system services, global package list, setuid programs, etc.
@@ -22986,7 +22990,7 @@ This action does not actually install anything.
 @item init
 Populate the given directory with all the files necessary to run the
 operating system specified in @var{file}.  This is useful for first-time
-installations of GuixSD.  For instance:
+installations of Guix System.  For instance:
 
 @example
 guix system init my-os-config.scm /mnt
@@ -23069,7 +23073,7 @@ You can specify the root file system type by using the
 @option{--file-system-type} option.  It defaults to @code{ext4}.
 
 When using @code{vm-image}, the returned image is in qcow2 format, which
-the QEMU emulator can efficiently use. @xref{Running GuixSD in a VM},
+the QEMU emulator can efficiently use. @xref{Running Guix in a VM},
 for more information on how to run the image in a virtual machine.
 
 When using @code{disk-image}, a raw disk image is produced; it can be
@@ -23095,7 +23099,7 @@ docker run -e GUIX_NEW_SYSTEM=/var/guix/profiles/system \\
 @end example
 
 This command starts a new Docker container from the specified image.  It
-will boot the GuixSD system in the usual manner, which means it will
+will boot the Guix system in the usual manner, which means it will
 start any services you have defined in the operating system
 configuration.  Depending on what you run in the Docker container, it
 may be necessary to give the container additional permissions.  For
@@ -23140,7 +23144,7 @@ following:
 Consider the operating-system @var{expr} evaluates to.
 This is an alternative to specifying a file which evaluates to an
 operating system.
-This is used to generate the GuixSD installer @pxref{Building the
+This is used to generate the Guix system installer @pxref{Building the
 Installation Image}).
 
 @item --system=@var{system}
@@ -23215,7 +23219,7 @@ a list of available debugging commands.
 @end table
 
 Once you have built, configured, re-configured, and re-re-configured
-your GuixSD installation, you may find it useful to list the operating
+your Guix installation, you may find it useful to list the operating
 system generations available on disk---and that you can choose from the
 bootloader boot menu:
 
@@ -23268,12 +23272,12 @@ example graph.
 
 @end table
 
-@node Running GuixSD in a VM
-@section Running GuixSD in a Virtual Machine
+@node Running Guix in a VM
+@section Running Guix in a Virtual Machine
 
 @cindex virtual machine
-To run GuixSD in a virtual machine (VM), one can either use the
-pre-built GuixSD VM image distributed at
+To run Guix in a virtual machine (VM), one can either use the
+pre-built Guix VM image distributed at
 @indicateurl{https://alpha.gnu.org/gnu/guix/guixsd-vm-image-@value{VERSION}.@var{system}.xz}
 , or build their own virtual machine image using @command{guix system
 vm-image} (@pxref{Invoking guix system}).  The returned image is in
@@ -23412,8 +23416,8 @@ daemon; the @file{/etc} service populates the @file{/etc} directory
 of the system.
 
 @cindex service extensions
-GuixSD services are connected by @dfn{extensions}.  For instance, the
-secure shell service @emph{extends} the Shepherd---the GuixSD
+Guix system services are connected by @dfn{extensions}.  For instance, the
+secure shell service @emph{extends} the Shepherd---the
 initialization system, running as PID@tie{}1---by giving it the command
 lines to start and stop the secure shell daemon (@pxref{Networking
 Services, @code{lsh-service}}); the UPower service extends the D-Bus
@@ -23818,7 +23822,7 @@ extend it by passing it lists of packages to add to the system profile.
 @cindex PID 1
 @cindex init system
 The @code{(gnu services shepherd)} module provides a way to define
-services managed by the GNU@tie{}Shepherd, which is the GuixSD
+services managed by the GNU@tie{}Shepherd, which is the
 initialization system---the first process that is started when the
 system boots, also known as PID@tie{}1
 (@pxref{Introduction,,, shepherd, The GNU Shepherd Manual}).
@@ -24191,7 +24195,7 @@ guix gc -R `readlink -f ~/.guix-profile` | grep bash
 
 @noindent
 @dots{} and compare the store file names that you get with those above.
-Likewise for a complete GuixSD system generation:
+Likewise for a complete Guix system generation:
 
 @example
 guix gc -R `guix system build my-config.scm` | grep bash
