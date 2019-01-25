@@ -400,7 +400,7 @@ the latest known version of ~a (~a)~%")
                    (package-version package)))
 
   (mlet %store-monad ((edges (node-back-edges %bag-node-type
-                                              (all-packages))))
+                                              (package-closure (all-packages)))))
     (let* ((dependents (node-transitive-edges packages edges))
            (covering   (filter (lambda (node)
                                  (null? (edges node)))
