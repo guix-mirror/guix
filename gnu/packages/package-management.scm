@@ -301,9 +301,6 @@ the Nix package manager.")
       (license license:gpl3+)
       (properties '((ftp-server . "alpha.gnu.org"))))))
 
-;; Alias for backward compatibility.
-(define-public guix-devel guix)
-
 (define-public guix-daemon
   ;; This package is for internal consumption: it allows us to quickly build
   ;; the 'guix-daemon' program and use that in (guix self), used by 'guix
