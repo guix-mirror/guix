@@ -4503,9 +4503,7 @@ files and writing bioinformatics applications.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/W/WarpedLMM/WarpedLMM-"
-             version ".zip"))
+       (uri (pypi-uri "WarpedLMM" version ".zip"))
        (sha256
         (base32
          "1agfz6zqa8nc6cw47yh0s3y14gkpa9wqazwcj7mwwj3ffnw39p3j"))))
