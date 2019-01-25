@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,9 +121,6 @@ running the opensm daemon.")
              "--disable-static")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'autotools
-           (lambda _
-             (zero? (system "./autogen.sh"))))
          (add-after 'install 'licence
            (lambda _
              (let ((doc (string-append (assoc-ref %outputs "lib") "/share/doc")))
