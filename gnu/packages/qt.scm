@@ -1909,11 +1909,11 @@ contain over 620 classes.")
                     (lib (string-append out "/lib/python"
                                         python-major+minor
                                         "/site-packages")))
-               (zero? (system* "python" "configure.py"
-                               "--confirm-license"
-                               "--bindir" bin
-                               "--destdir" lib
-                               "--sipdir" sip))))))))
+               (invoke "python" "configure.py"
+                       "--confirm-license"
+                       "--bindir" bin
+                       "--destdir" lib
+                       "--sipdir" sip)))))))
     (license (list license:gpl2 license:gpl3)))) ; choice of either license
 
 (define-public qscintilla
