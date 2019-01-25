@@ -1266,7 +1266,7 @@ into existing applications.")
 (define-public perl-net-psyc
   (package
     (name "perl-net-psyc")
-    (version "1.1")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
@@ -1275,13 +1275,10 @@ into existing applications.")
        (file-name (string-append name "-" version ".zip"))
        (sha256
         (base32
-         "1lw6807qrbmvzbrjn1rna1dhir2k70xpcjvyjn45y35hav333a42"))
-       ;; psycmp3 currently depends on MP3::List and rxaudio (shareware),
-       ;; we can add it back when this is no longer the case.
-       (snippet '(begin
-                   (delete-file "contrib/psycmp3")
-                   #t))))
+         "0vsjclglkwgbyd9m5ad642fyysxw2x725nhq4r2m9pvqaq6s5yf2"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
     (inputs
      `(("perl-curses" ,perl-curses)
        ("perl-io-socket-ssl" ,perl-io-socket-ssl)))
@@ -1293,8 +1290,7 @@ into existing applications.")
          ;; (leaves out psycion) and says
          ;; "# Just to give you a rough idea". XXX: Fix it upstream.
          (replace 'build
-           (lambda _
-             (zero? (system* "make" "manuals"))))
+           (lambda _ (invoke "make" "manuals")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
