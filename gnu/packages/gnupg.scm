@@ -523,11 +523,9 @@ distributed separately.")
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'make-build
-           (lambda _
-             (zero? (system* "make" "build"))))
+           (lambda _ (invoke "make" "build")))
          (replace 'check
-           (lambda _
-             (zero? (system* "make" "check")))))))
+           (lambda _ (invoke "make" "check"))))))
     (build-system python-build-system)
     (native-inputs
      `(("gnupg" ,gnupg-1)))
