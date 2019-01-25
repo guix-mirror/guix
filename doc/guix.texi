@@ -1723,16 +1723,11 @@ including GCC itself, the GNU C Library (headers and binaries, plus
 debugging symbols in the @code{debug} output), Binutils, and a linker
 wrapper.
 
-@cindex attempt to use impure library, error message
-
 The wrapper's purpose is to inspect the @code{-L} and @code{-l} switches
 passed to the linker, add corresponding @code{-rpath} arguments, and
-invoke the actual linker with this new set of arguments.  By default,
-the linker wrapper refuses to link to libraries outside the store to
-ensure ``purity''.  This can be annoying when using the toolchain to
-link with local libraries.  To allow references to libraries outside the
-store you need to define the environment variable
-@code{GUIX_LD_WRAPPER_ALLOW_IMPURITIES}.
+invoke the actual linker with this new set of arguments.  You can instruct the
+wrapper to refuse to link against libraries not in the store by setting the
+@code{GUIX_LD_WRAPPER_ALLOW_IMPURITIES} environment variable to @code{no}.
 
 @c TODO What else?
 
