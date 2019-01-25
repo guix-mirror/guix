@@ -254,16 +254,14 @@ inside Coq.")
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
+               (("/bin/sh") (which "sh")))
+             #t))
          (replace 'build
-           (lambda _
-             (zero? (system* "./remake"))))
+           (lambda _ (invoke "./remake")))
          (replace 'check
-           (lambda _
-             (zero? (system* "./remake" "check"))))
+           (lambda _ (invoke "./remake" "check")))
          (replace 'install
-           (lambda _
-             (zero? (system* "./remake" "install")))))))
+           (lambda _ (invoke "./remake" "install"))))))
     (home-page "http://gappa.gforge.inria.fr/")
     (synopsis "Verify and formally prove properties on numerical programs")
     (description "Gappa is a tool intended to help verifying and formally proving
