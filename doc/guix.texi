@@ -23008,6 +23008,16 @@ passed.
 @anchor{guix system vm}
 Build a virtual machine that contains the operating system declared in
 @var{file}, and return a script to run that virtual machine (VM).
+
+@quotation Note
+The @code{vm} action and others below
+can use KVM support in the Linux-libre kernel.  Specifically, if the
+machine has hardware virtualization support, the corresponding
+KVM kernel module should be loaded, and the @file{/dev/kvm} device node
+must exist and be readable and writable by the user and by the
+build users of the daemon (@pxref{Build Environment Setup}).
+@end quotation
+
 Arguments given to the script are passed to QEMU as in the example
 below, which enables networking and requests 1@tie{}GiB of RAM for the
 emulated machine:
@@ -23203,15 +23213,6 @@ program.  @xref{Debug Commands,,, guile, GNU Guile Reference Manual}, for
 a list of available debugging commands.
 @end table
 @end table
-
-@quotation Note
-All the actions above, except @code{build} and @code{init},
-can use KVM support in the Linux-libre kernel.  Specifically, if the
-machine has hardware virtualization support, the corresponding
-KVM kernel module should be loaded, and the @file{/dev/kvm} device node
-must exist and be readable and writable by the user and by the
-build users of the daemon (@pxref{Build Environment Setup}).
-@end quotation
 
 Once you have built, configured, re-configured, and re-re-configured
 your GuixSD installation, you may find it useful to list the operating
