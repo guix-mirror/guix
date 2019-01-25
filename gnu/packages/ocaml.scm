@@ -191,19 +191,18 @@ patch-/bin/sh-references: ~a: changing `\"/bin/sh\"' to `~a'~%"
                     (mandir (string-append out "/share/man")))
                ;; Custom configure script doesn't recognize
                ;; --prefix=<PREFIX> syntax (with equals sign).
-               (zero? (system* "./configure"
-                               "--prefix" out
-                               "--mandir" mandir)))))
+               (invoke "./configure"
+                       "--prefix" out
+                       "--mandir" mandir))))
          (replace 'build
            (lambda _
-             (zero? (system* "make" "-j" (number->string
-                                          (parallel-job-count))
-                             "world.opt"))))
+             (invoke "make" "-j" (number->string (parallel-job-count))
+                     "world.opt")))
          (delete 'check)
          (add-after 'install 'check
            (lambda _
              (with-directory-excursion "testsuite"
-               (zero? (system* "make" "all")))))
+               (invoke "make" "all"))))
          (add-before 'check 'prepare-socket-test
            (lambda _
              (format (current-error-port)
