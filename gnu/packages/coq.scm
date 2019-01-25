@@ -155,17 +155,16 @@ It is developed using Objective Caml and Camlp5.")
                                           "EMACS=" emacs "/bin/emacs")))
                         #t)))
          (add-after 'unpack 'clean
-                    (lambda _
-                      ;; Delete the pre-compiled elc files for Emacs 23.
-                      (zero? (system* "make" "clean"))))
+           (lambda _
+             ;; Delete the pre-compiled elc files for Emacs 23.
+             (invoke "make" "clean")))
          (add-after 'install 'install-doc
-                    (lambda* (#:key make-flags #:allow-other-keys)
-                      ;; XXX FIXME avoid building/installing pdf files,
-                      ;; due to unresolved errors building them.
-                      (substitute* "Makefile"
-                        ((" [^ ]*\\.pdf") ""))
-                      (zero? (apply system* "make" "install-doc"
-                                    make-flags)))))))
+           (lambda* (#:key make-flags #:allow-other-keys)
+             ;; XXX FIXME avoid building/installing pdf files,
+             ;; due to unresolved errors building them.
+             (substitute* "Makefile"
+               ((" [^ ]*\\.pdf") ""))
+             (apply invoke "make" "install-doc" make-flags))))))
     (home-page "http://proofgeneral.inf.ed.ac.uk/")
     (synopsis "Generic front-end for proof assistants based on Emacs")
     (description
