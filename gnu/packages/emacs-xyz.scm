@@ -6037,7 +6037,7 @@ highlights quasi-quoted expressions.")
 (define-public emacspeak
   (package
     (name "emacspeak")
-    (version "48.0")
+    (version "49.0")
     (source
      (origin
        (method url-fetch)
@@ -6046,7 +6046,7 @@ highlights quasi-quoted expressions.")
              version "/emacspeak-" version ".tar.bz2"))
        (sha256
         (base32
-         "07imi3hji06b3r7v7v59978q76s8a7ynmxwfc9j03pgnv965lpjy"))))
+         "1smf26m7201z0bk49lzbw9zhbjfi6wylidfjixb8ylp6g0wnh8dx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "prefix="
@@ -6081,9 +6081,8 @@ highlights quasi-quoted expressions.")
                   "stumpwm" "xsl"))
                ;; Make sure emacspeak is loaded from the correct directory.
                (substitute* "etc/emacspeak.sh"
-                 (("exec FLAVOR.*")
-                  (string-append "exec " emacs " -l " lisp
-                                 "/lisp/emacspeak-setup.el $CL_ALL")))
+                 (("/lisp/emacspeak-setup.el")
+                  (string-append lisp "/lisp/emacspeak-setup.el")))
                ;; Install the convenient startup script.
                (mkdir-p bin)
                (copy-file "etc/emacspeak.sh" (string-append bin "/emacspeak")))
