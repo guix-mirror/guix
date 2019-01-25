@@ -430,16 +430,14 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
+               (("/bin/sh") (which "sh")))
+             #t))
          (replace 'build
-           (lambda _
-             (zero? (system* "./remake"))))
+           (lambda _ (invoke "./remake")))
          (replace 'check
-           (lambda _
-             (zero? (system* "./remake" "check"))))
+           (lambda _ (invoke "./remake" "check")))
          (replace 'install
-           (lambda _
-             (zero? (system* "./remake" "install")))))))
+           (lambda _ (invoke "./remake" "install"))))))
     (home-page "http://coq-interval.gforge.inria.fr/")
     (synopsis "Coq tactics to simplify inequality proofs")
     (description "Interval provides vernacular files containing tactics for
