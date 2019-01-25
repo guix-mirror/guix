@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -405,7 +405,7 @@ regular expression object can be specified.")
              #t))
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* "make" `("global_install" ,@make-flags))))))))
+             (apply invoke "make" `("global_install" ,@make-flags)))))))
     (home-page "http://www.winfield.demon.nl/")
     (synopsis "Microsoft Word document reader")
     (description "Antiword is an application for displaying Microsoft Word
