@@ -2103,7 +2103,7 @@ securely.  It will not store any data unencrypted unless explicitly requested.")
              (substitute* '("doc/doc.pro")
                ;; We'll install them in the 'install-man-pages' phase.
                (("^unix:doc\\.files.*") ""))
-             (zero? (system* "qmake")))))
+             (invoke "qmake"))))
        (add-after 'install 'install-man-pages
          (lambda* (#:key outputs #:allow-other-keys)
            (let* ((out (assoc-ref outputs "out"))
