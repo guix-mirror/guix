@@ -369,7 +369,7 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.11.1")
+    (version "1.12.0")
     (source
      (origin
       (method url-fetch)
@@ -377,7 +377,7 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "0vxx5xaag3rhp4g2arp5qm77gvz4kj0m3hnpvhkdvqyjfhbi26rd"))
+        "1n4c1q2ls7sqx1vpr3p5n8vbjkw6kqp8jxqa28p0x9j36wf9bp5l"))
       ;; One test fails because the conflict keys have expired.  See
       ;; https://dev.gnupg.org/T3815
       (patches (list (origin
