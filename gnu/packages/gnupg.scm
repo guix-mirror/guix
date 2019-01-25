@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
@@ -377,7 +377,16 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "0vxx5xaag3rhp4g2arp5qm77gvz4kj0m3hnpvhkdvqyjfhbi26rd"))))
+        "0vxx5xaag3rhp4g2arp5qm77gvz4kj0m3hnpvhkdvqyjfhbi26rd"))
+      ;; One test fails because the conflict keys have expired.  See
+      ;; https://dev.gnupg.org/T3815
+      (patches (list (origin
+                       (method url-fetch)
+                       (uri "https://dev.gnupg.org/rM66376f3e206a1aa791d712fb8577bb3490268f60?diff=1")
+                       (file-name "gpgme-fix-conflict-test-keys.patch")
+                       (sha256
+                        (base32
+                         "0j718iy5a9fhkrfs4gzrnm4ggi163prqf1i8lfmqczswvz88zfly")))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gnupg" ,gnupg)))
