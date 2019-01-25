@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
@@ -12970,3 +12970,25 @@ comments.")
       (description "This package provides an Emacs major mode which acts as a
 front end to mpc, a client for the @dfn{Music Player Daemon} (MPD).")
       (license license:gpl3+))))
+
+(define-public emacs-mkmcc-gnuplot-mode
+  (package
+    (name "emacs-mkmcc-gnuplot-mode")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mkmcc/gnuplot-mode")
+             (commit "601f6392986f0cba332c87678d31ae0d0a496ce7")))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "14f0yh1rjqc3337j4sbqzfb7pjim2c8a7wk1a73xkrdkmjn82vgb"))))
+    (build-system emacs-build-system)
+    (home-page "https://mkmcc.github.io/software/gnuplot-mode.html")
+    (synopsis "Minimal emacs major mode for editing gnuplot scripts")
+    (description "@code{emacs-mkmcc-gnuplot-mode} is a minimal emacs major
+mode for editing gnuplot scripts.  It provides syntax highlighting,
+indentation and a command to plot the file.")
+    (license license:gpl3+)))
