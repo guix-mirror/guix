@@ -626,7 +626,7 @@ and building documentation from them.")
              ;; Note: Upstream tests would have also built the release notes.
              ;; That only would work if we were in a git checkout.
              ;; Therefore, we don't do it here.
-             (zero? (system* "python" "setup.py" "build_sphinx")))))))
+             (invoke "python" "setup.py" "build_sphinx"))))))
     (propagated-inputs
       `(("python-requests" ,python-requests)))
     (native-inputs
