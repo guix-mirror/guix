@@ -91,9 +91,9 @@ Python.  It is a C++ library.")
              ;; The tests require the availability of the
              ;; 'en_US.ISO-8859-1' locale.
              (setenv "LOCPATH" (getcwd))
-             (zero? (system* "localedef" "--no-archive"
-                             "--prefix" (getcwd) "-i" "en_US"
-                             "-f" "ISO-8859-1" "./en_US.ISO-8859-1")))))))
+             (invoke "localedef" "--no-archive"
+                     "--prefix" (getcwd) "-i" "en_US"
+                     "-f" "ISO-8859-1" "./en_US.ISO-8859-1"))))))
     (synopsis "Approximate regex matching library and agrep utility")
     (description "Superset of the POSIX regex API, enabling approximate
 matching.  Also ships a version of the agrep utility which behaves similar to
