@@ -107,7 +107,7 @@
          (replace 'check
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             (zero? (system* "dbus-launch" "ctest" "."))))
+             (invoke "dbus-launch" "ctest" ".")))
          (add-before 'check 'check-setup
            (lambda _
              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
