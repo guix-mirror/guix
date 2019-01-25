@@ -1569,9 +1569,7 @@ specified directories.")
    (source
     (origin
       (method url-fetch)
-      (uri (string-append
-            "https://pypi.python.org/packages/source/g/graphios/graphios-"
-            version ".tar.gz"))
+      (uri (pypi-uri "graphios" version))
       (sha256
        (base32
         "1h87hvc315wg6lklbf4l7csd3n5pgljwrfli1p3nasdi0izgn66i"))))
