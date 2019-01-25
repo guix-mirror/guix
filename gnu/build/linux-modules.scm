@@ -114,7 +114,7 @@ contains module names, not actual file names."
       (match tokens
        ((token rest ...)
         (if (string=? (string-take-right token 1) ":") ; section
-            (loop value rest (string-trim-both token))
+            (loop value rest (string-trim-both (string-drop-right token 1)))
             (loop (cons (cons section token) value) rest section)))
        (()
         value))))
