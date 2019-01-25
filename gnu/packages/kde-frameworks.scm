@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -577,6 +578,13 @@ propagate their changes to their respective configuration files.")
              (with-output-to-file "autotests/BLACKLIST"
                (lambda _
                  (display "[test_channels]\n*\n")))
+             #t))
+         ;; See upstream commit ee424e9b62368485bba4193053cabb553a1d268e
+         (add-after 'unpack 'fix-broken-test
+           (lambda _
+             (substitute* "autotests/kdirwatch_unittest.cpp"
+               (("QVERIFY\\(waitForRecreationSignal\\(watch, existingFile\\)\\);" m)
+                (string-append m "\nwaitUntilNewSecond();")))
              #t))
          (add-before 'check 'check-setup
            (lambda _
