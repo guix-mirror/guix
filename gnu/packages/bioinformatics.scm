@@ -9129,8 +9129,7 @@ may optionally be provided to further inform the peak-calling process.")
     (version "1.0.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://pypi.python.org/packages/source/P"
-                                  "/PePr/PePr-" version ".tar.gz"))
+              (uri (pypi-uri "PePr" version))
               (sha256
                (base32
                 "0qxjfdpl1b1y53nccws2d85f6k74zwmx8y8sd9rszcqhfayx6gdx"))))
