@@ -1531,9 +1531,6 @@ support, and more.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (zero? (system* "sh" "autogen.sh"))))
          ;; For 'system' commands in Scheme code.
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
