@@ -4425,9 +4425,9 @@ instead of bindings to a C library.")
              (let* ((out (assoc-ref outputs "out"))
                     (libdir (string-append out "/lib/ocaml/site-lib")))
                (mkdir-p libdir)
-               (zero? (system* "jbuilder" "install"
-                               "--prefix" out
-                               "--libdir" libdir))))))))
+               (invoke "jbuilder" "install"
+                       "--prefix" out
+                       "--libdir" libdir)))))))
     (native-inputs
      `(("ocaml" ,ocaml)
        ("cppo" ,ocaml-cppo)
