@@ -4348,13 +4348,12 @@ is provide a description of your project and Jbuilder will do the rest.")
        (modify-phases %standard-phases
          (delete 'configure)
          (replace 'build
-           (lambda* (#:key #:allow-other-keys)
-             (zero? (system* "jbuilder" "build"))))
+           (lambda _ (invoke "jbuilder" "build")))
          (delete 'check)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "jbuilder" "install" "--prefix" out))))))))
+               (invoke "jbuilder" "install" "--prefix" out)))))))
     (native-inputs
      `(("jbuilder" ,ocaml-jbuilder)))
     (propagated-inputs
