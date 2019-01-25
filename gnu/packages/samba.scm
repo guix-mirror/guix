@@ -368,11 +368,11 @@ many event types, including timers, signals, and the classic file descriptor eve
            ;; ldb use a custom configuration script that runs waf.
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)
-                               (string-append "--with-modulesdir=" out
-                                              "/lib/ldb/modules")
-                               "--bundled-libraries=NONE"))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--with-modulesdir=" out
+                                      "/lib/ldb/modules")
+                       "--bundled-libraries=NONE")))))))
     (native-inputs
      `(("cmocka" ,cmocka)
        ("pkg-config" ,pkg-config)
