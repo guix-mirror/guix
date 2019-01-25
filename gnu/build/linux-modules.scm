@@ -33,6 +33,7 @@
             ensure-dot-ko
             module-aliases
             module-dependencies
+            module-soft-dependencies
             normalize-module-name
             file-name->module-name
             find-module-file
@@ -99,6 +100,33 @@ contains module names, not actual file names."
     (match (assq 'depends info)
       (('depends . what)
        (string-tokenize what %not-comma)))))
+
+(define not-softdep-whitespace
+  (char-set-complement (char-set #\space #\tab)))
+
+(define (module-soft-dependencies file)
+  "Return a list of (cons section soft-dependency) of module FILE."
+  ;; TEXT: "pre: baz blubb foo post: bax bar"
+  (define (parse-softdep text)
+    (let loop ((value '())
+               (tokens (string-tokenize text not-softdep-whitespace))
+               (section #f))
+      (match tokens
+       ((token rest ...)
+        (if (string=? (string-take-right token 1) ":") ; section
+            (loop value rest (string-trim-both token))
+            (loop (cons (cons section token) value) rest section)))
+       (()
+        value))))
+
+  ;; Note: Multiple 'softdep sections are allowed.
+  (let ((info (modinfo-section-contents file)))
+    (concatenate
+     (filter-map (match-lambda
+                  (('softdep . value)
+                   (parse-softdep value))
+                  (_ #f))
+                 (modinfo-section-contents file)))))
 
 (define (module-aliases file)
   "Return the list of aliases of module FILE."
