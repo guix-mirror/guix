@@ -1149,8 +1149,7 @@ files in these formats.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key #:allow-other-keys)
-             (zero? (system* "./configure")))))))
+           (lambda _ (invoke "./configure"))))))
     (home-page "https://forge.ocamlcore.org/projects/zarith/")
     (synopsis "Implements arbitrary-precision integers")
     (description "Implements arithmetic and logical operations over
