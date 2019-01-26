@@ -290,7 +290,7 @@ down the road.")
            (modify-phases %standard-phases
              (add-after 'unpack 'unpack-make
                (lambda* (#:key inputs #:allow-other-keys)
-                 (zero? (system* "tar" "xf" (assoc-ref inputs "make-source")))))
+                 (invoke "tar" "xf" (assoc-ref inputs "make-source"))))
              (add-after 'unpack-make 'set-default-shell
                (lambda _
                  ;; Taken mostly directly from (@ (gnu packages base) gnu-make)
@@ -300,7 +300,7 @@ down the road.")
                             (which "sh"))))))
              (add-before 'configure 'repack-make
                (lambda _
-                 (zero? (system* "tar" "cJf" "./make.tar.xz" ,make-dir))))))))
+                 (invoke "tar" "cJf" "./make.tar.xz" ,make-dir)))))))
       (home-page "https://github.com/losalamos/stress-make")
       (synopsis "Expose race conditions in Makefiles")
       (description
