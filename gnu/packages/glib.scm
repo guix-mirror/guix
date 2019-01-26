@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
@@ -709,7 +709,15 @@ up the Gnome environment, and are used in many unrelated projects.")
              "0z261fwrszxb28ccg3hsg9rizig4s84zvwmx6y31a4pyv7bvs5w3")))))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-vala-bindings")))
+     '(#:configure-flags '("--enable-vala-bindings")
+
+       ;; '../tools/glib-*.py' generate files but the target dependencies are
+       ;; (presumably) not fully specified in the makefile, leading to
+       ;; parallel build errors like:
+       ;;
+       ;;   EOFError: EOF read where object expected
+       ;;   make[2]: *** [Makefile:1906: _gen/register-dbus-glib-marshallers-body.h] Error 1
+       #:parallel-build? #f))
     (native-inputs
      `(("glib" ,glib "bin") ; uses glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
