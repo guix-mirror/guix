@@ -674,18 +674,18 @@ many readers as needed).")
        (modify-phases %standard-phases
          (add-before 'build 'fix-libguile-ncurses-file-name
            (lambda* (#:key outputs #:allow-other-keys)
-             (and (zero? (system* "make" "install"
-                                  "-C" "src/ncurses"
-                                  "-j" (number->string
-                                        (parallel-job-count))))
-                  (let* ((out   (assoc-ref outputs "out"))
-                         (dir   "src/ncurses")
-                         (files (find-files dir ".scm")))
-                    (substitute* files
-                      (("\"libguile-ncurses\"")
-                       (format #f "\"~a/lib/guile/2.2/libguile-ncurses\""
-                               out)))
-                    #t)))))))
+             (invoke "make" "install"
+                     "-C" "src/ncurses"
+                     "-j" (number->string
+                           (parallel-job-count)))
+             (let* ((out   (assoc-ref outputs "out"))
+                    (dir   "src/ncurses")
+                    (files (find-files dir ".scm")))
+               (substitute* files
+                 (("\"libguile-ncurses\"")
+                  (format #f "\"~a/lib/guile/2.2/libguile-ncurses\""
+                          out)))
+               #t))))))
     (home-page "https://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")
     (description
