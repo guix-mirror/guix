@@ -4404,10 +4404,10 @@ shapes are arranged in a series of increasingly complex patterns, forming
              (let ((data (string-append (assoc-ref outputs "out")
                                         "/share/games/fillets-ng")))
                (mkdir-p data)
-               (zero? (system* "tar" "-xvf"
-                               (assoc-ref inputs "fillets-ng-data")
-                               "--strip-components=1"
-                               "-C" data))))))))
+               (invoke "tar" "-xvf"
+                       (assoc-ref inputs "fillets-ng-data")
+                       "--strip-components=1"
+                       "-C" data)))))))
     (inputs
      `(("sdl-union" ,(sdl-union (list sdl
                                       sdl-mixer
