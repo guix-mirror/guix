@@ -1178,7 +1178,7 @@ lower level classes for interaction with the X Windowing System.")
          (replace 'check
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             (zero? (system* "dbus-launch" "ctest" ".")))))))
+             (invoke "dbus-launch" "ctest" "."))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Qt wrapper for ModemManager DBus API")
     (description "ModemManagerQt provides access to all ModemManager features
