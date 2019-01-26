@@ -571,7 +571,7 @@ basic needs and easy to configure for those who want special setups.")
          (replace 'check
            (lambda _
              ;; TODO: Fix this failing test-case
-             (zero? (system* "ctest" "-E" "processtest")))))))
+             (invoke "ctest" "-E" "processtest"))))))
     (home-page "https://www.kde.org/info/plasma-5.13.4.php")
     (synopsis "Network enabled task and system monitoring")
     (description "KSysGuard can obtain information on system load and
