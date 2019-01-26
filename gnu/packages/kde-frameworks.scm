@@ -2014,7 +2014,7 @@ gallons).")
          (replace 'check
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             (zero? (system* "dbus-launch" "ctest" ".")))))))
+             (invoke "dbus-launch" "ctest" "."))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "File searching and indexing")
     (description "Baloo provides file searching and indexing.  It does so by
