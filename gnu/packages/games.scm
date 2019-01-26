@@ -4489,10 +4489,10 @@ fish.  The whole game is accompanied by quiet, comforting music.")
              (setenv "HOME" (getcwd))
              ;; Fake a terminal for the test cases.
              (setenv "TERM" "xterm-256color")
-             (zero? (apply system* "make" "debug" "test"
-                           (format #f "-j~d" (parallel-job-count))
-                           ;; Force command line build for test cases.
-                           (append make-flags '("GAME=crawl" "TILES=")))))))))
+             (apply invoke "make" "debug" "test"
+                    (format #f "-j~d" (parallel-job-count))
+                    ;; Force command line build for test cases.
+                    (append make-flags '("GAME=crawl" "TILES="))))))))
     (synopsis "Roguelike dungeon crawler game")
     (description "Dungeon Crawl Stone Soup is a roguelike adventure through
 dungeons filled with dangerous monsters in a quest to find the mystifyingly
