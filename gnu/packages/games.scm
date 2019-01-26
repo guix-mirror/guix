@@ -1533,7 +1533,6 @@ fully interactive graphical interface and it can load and save games in the
 Portable Game Notation.")
     (license license:gpl3+)))
 
-
 (define-public xboing
   (package
     (name "xboing")
@@ -1564,14 +1563,11 @@ Portable Game Notation.")
 
              ;; FIXME: HIGH_SCORE_FILE should be set to somewhere writeable
 
-             (zero? (system* "xmkmf" "-a"
-                             (string-append "-DProjectRoot="
-                                            (assoc-ref outputs "out"))))))
-        (replace 'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (and
-             (zero? (system* "make" "install.man"))
-             (zero? (system* "make" "install"))))))))
+             (invoke "xmkmf" "-a"
+                     (string-append "-DProjectRoot="
+                                    (assoc-ref outputs "out")))))
+        (add-before 'install 'install-man-pages
+          (lambda _ (invoke "make" "install.man"))))))
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
               ("libxpm" ,libxpm)))
