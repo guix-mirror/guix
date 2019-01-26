@@ -171,8 +171,7 @@ queues, stacks, and doubly-linked lists.")
          (replace 'check
            (lambda* (#:key make-flags #:allow-other-keys)
              (with-directory-excursion "tests"
-               (zero? (apply system* "make"
-                             make-flags)))))
+               (apply invoke "make" make-flags))))
          (replace 'install
            ;; There is no top-level Makefile to do this for us.
            (lambda* (#:key outputs #:allow-other-keys)
