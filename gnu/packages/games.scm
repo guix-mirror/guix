@@ -156,7 +156,9 @@
   #:use-module (guix build-system scons)
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module ((srfi srfi-1) #:hide (zip))
+  #:use-module (srfi srfi-26))
 
 (define-public armagetronad
   (package
@@ -6045,6 +6047,12 @@ civilized than your own.")
        #:out-of-source? #f              ;for the 'install-desktop' phase
        #:configure-flags
        (list "-DWITH_SYSTEM_FFMPEG=1"
+             ;; SSE instructions are available on Intel systems only.
+             ,@(if (any (cute string-prefix? <> (or (%current-target-system)
+                                                    (%current-system)))
+                        '("x64_64" "i686"))
+                   '()
+                   '("-DWITH_SSE2=NO"))
              ;; Configuration cannot find GTK2 without the two following
              ;; flags.
              (string-append "-DGTK2_GDKCONFIG_INCLUDE_DIR="
