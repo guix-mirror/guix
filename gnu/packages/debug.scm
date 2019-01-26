@@ -194,10 +194,8 @@ tools that process C/C++ code.")
                                   (patch-dir
                                    (string-append afl-dir
                                                   "/qemu_mode/patches")))
-                             (unless (zero?
-                                      (system* "tar" "xf"
-                                               (assoc-ref inputs "afl-src")))
-                               (error "tar failed to unpack afl-src"))
+                             (invoke "tar" "xf"
+                                     (assoc-ref inputs "afl-src"))
                              (install-file (string-append patch-dir
                                                           "/afl-qemu-cpu-inl.h")
                                            ".")
@@ -210,11 +208,12 @@ tools that process C/C++ code.")
                              (substitute* (string-append patch-dir
                                                          "/cpu-exec.diff")
                                (("\\.\\./patches/") ""))
-                             (every (lambda (patch-file)
-                                      (zero? (system* "patch" "--force" "-p1"
-                                                      "--input" patch-file)))
-                                    (find-files patch-dir
-                                                "\\.diff$"))))))))))))))
+                             (for-each (lambda (patch-file)
+                                         (invoke "patch" "--force" "-p1"
+                                                 "--input" patch-file))
+                                       (find-files patch-dir
+                                                   "\\.diff$"))
+                             #t))))))))))))
       (arguments
        `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                             "CC=gcc")
