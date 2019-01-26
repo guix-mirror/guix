@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
@@ -149,13 +150,14 @@ queues, stacks, and doubly-linked lists.")
     (version "2.0.2")
     (source
      (origin
-       (method url-fetch)
-       (file-name (string-append name "-" version ".tar.gz"))
-       (uri (string-append "https://github.com/troydhanson/uthash/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/troydhanson/uthash.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1la82gdlyl7m8ahdjirigwfh7zjgkc24cvydrqcri0vsvm8iv8rl"))))
+         "0kslz8k6lssh7fl7ayzwlj62p0asxs3dq03357ls5ywjad238gqg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
