@@ -1363,9 +1363,8 @@ a C library, so they can easily be integrated into other programs.")
              ;; variables passed as arguments.
              (let ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://www.asty.org/cmatrix")
     (synopsis "Simulate the display from \"The Matrix\"")
