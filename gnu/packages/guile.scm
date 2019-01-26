@@ -435,20 +435,10 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
                (base32
                 "00sprsshy16y8pxjy126hr2adqcvvzzz96hjyjwgg8swva1qh6b0"))))
     (arguments
-     (substitute-keyword-arguments `(;; Tests aren't passing for now.
-                                     ;; Obviously we should re-enable this!
-                                     #:tests? #f
-                                     ,@(package-arguments guile-2.2))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'autogen
-                      (lambda _
-                        (zero? (system* "sh" "autogen.sh"))))
-           (add-before 'autogen 'patch-/bin/sh
-                       (lambda _
-                         (substitute* "build-aux/git-version-gen"
-                           (("#!/bin/sh") (string-append "#!" (which "sh"))))
-                         #t))))))
+     `(;; Tests aren't passing for now.
+       ;; Obviously we should re-enable this!
+       #:tests? #f
+       ,@(package-arguments guile-2.2)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
