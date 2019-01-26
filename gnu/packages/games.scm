@@ -338,14 +338,14 @@ and against the others like yourself, that want what you have.")
          (delete 'build)                ; nothing to be built
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "sh" "install.sh"
-                             (assoc-ref outputs "out")))))
+             (invoke "sh" "install.sh"
+                     (assoc-ref outputs "out"))))
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* (string-append (assoc-ref outputs "out")
-                                            "/bin/cowsay")
-                             "We're done!")))))))
+             (invoke (string-append (assoc-ref outputs "out")
+                                    "/bin/cowsay")
+                     "We're done!"))))))
     (inputs
      `(("perl" ,perl)))
     (home-page (string-append "https://web.archive.org/web/20071026043648/"
