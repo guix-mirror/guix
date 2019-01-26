@@ -322,11 +322,11 @@ etc.).  The package is structured to make adding new modules easy.")
         "0482rmi2x6p78wl2kz8qzyq21xz1sbbfwnv5x7dggar4vkwxhzfx"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-pycrypto" ,python-pycrypto)))
-    (arguments
-     `(#:tests? #f))                      ;TODO: tests require pytest
     (home-page "https://github.com/jaraco/keyring")
     (synopsis "Store and access your passwords safely")
     (description
