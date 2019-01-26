@@ -516,7 +516,7 @@ board-independent tools.")))
              (lambda* (#:key outputs make-flags #:allow-other-keys)
                (let ((config-name (string-append ,board "_defconfig")))
                  (if (file-exists? (string-append "configs/" config-name))
-                     (zero? (apply system* "make" `(,@make-flags ,config-name)))
+                     (apply invoke "make" `(,@make-flags ,config-name))
                      (begin
                        (display "Invalid board name. Valid board names are:"
                                 (current-error-port))
