@@ -4112,7 +4112,7 @@ over 100 user-created campaigns.")
          (add-before 'build 'build-kodilib
            (lambda* (#:key make-flags #:allow-other-keys)
              (with-directory-excursion "kodilib/linux"
-               (zero? (apply system* "make" make-flags)))))
+               (apply invoke "make" make-flags))))
          (add-after 'build-kodilib 'chdir
            (lambda _ (chdir "linux") #t))
          (replace 'install
