@@ -176,8 +176,7 @@ work, such as sentence length and other readability measures.")
          (delete 'configure)
          (delete 'build)
          (delete 'check)
-         (replace
-             'install
+         (replace 'install
            (lambda _
              (let ((bindir (string-append
                             (assoc-ref %outputs "out") "/bin"))
@@ -209,8 +208,7 @@ work, such as sentence length and other readability measures.")
                   (string-append "DEFLIBDIR=\"" libdir "\"")))
                (install-file "ding.desktop" sharedir)
                (install-file "ding.png" sharedir)
-               (zero?
-                (system* "./install.sh"))))))))
+               (invoke "./install.sh")))))))
     (synopsis "Dictionary lookup program with a German-English dictionary")
     (description "Ding is a dictionary lookup program for the X window system.
 It comes with a German-English dictionary with approximately 270,000 entries.")
