@@ -1809,7 +1809,7 @@ asynchronous jobs.")
          (replace 'check
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             (zero? (system* "dbus-launch" "ctest" ".")))))))
+             (invoke "dbus-launch" "ctest" "."))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Desktop notifications")
     (description "KNotification is used to notify the user of an event.  It
