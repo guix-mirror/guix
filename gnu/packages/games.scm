@@ -2346,15 +2346,14 @@ world}, @uref{http://evolonline.org, Evol Online} and
                      #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (lzo (assoc-ref inputs "lzo")))
-               (zero?
-                (apply system* "./configure"
-                       (string-append "--prefix=" out)
-                       ;; Provide the "lzo" path.
-                       (string-append "--with-liblzo2="
-                                      lzo "/lib/liblzo2.a")
-                       ;; Put the binary in 'bin' instead of 'games'.
-                       "--binary-dir=bin"
-                       configure-flags))))))))
+               (apply invoke "./configure"
+                      (string-append "--prefix=" out)
+                      ;; Provide the "lzo" path.
+                      (string-append "--with-liblzo2="
+                                     lzo "/lib/liblzo2.a")
+                      ;; Put the binary in 'bin' instead of 'games'.
+                      "--binary-dir=bin"
+                      configure-flags)))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("allegro" ,allegro)
