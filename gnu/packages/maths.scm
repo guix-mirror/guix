@@ -2705,6 +2705,7 @@ to BMP, JPEG or PNG image formats.")
     (inputs
      `(("gcl" ,gcl)
        ("gnuplot" ,gnuplot)                       ;for plots
+       ("sed" ,sed)
        ("tk" ,tk)))                               ;Tcl/Tk is used by 'xmaxima'
     (native-inputs
      `(("texinfo" ,texinfo)
@@ -2727,6 +2728,17 @@ to BMP, JPEG or PNG image formats.")
        #:make-flags (list "TMPDIR=/tmp")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((sed (string-append (assoc-ref inputs "sed") "/bin/sed"))
+                    (coreutils (assoc-ref inputs "coreutils"))
+                    (dirname (string-append coreutils "/bin/dirname"))
+                    (head (string-append coreutils "/bin/head")))
+               (substitute* "src/maxima.in"
+                 (("sed ") (string-append sed " "))
+                 (("dirname") dirname)
+                 (("head") head))
+               #t)))
          (add-before 'check 'pre-check
            (lambda _
              (chmod "src/maxima" #o555)
