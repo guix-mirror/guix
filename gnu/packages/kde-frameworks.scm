@@ -573,11 +573,14 @@ propagate their changes to their respective configuration files.")
        (modify-phases %standard-phases
          (add-before 'check 'blacklist-failing-test
            (lambda _
-             ;; Blacklist a failing test-function. FIXME: Make it pass.
-             ;; Test failure caused by stout/stderr being interleaved.
+             ;; Blacklist failing tests.
              (with-output-to-file "autotests/BLACKLIST"
                (lambda _
-                 (display "[test_channels]\n*\n")))
+                 ;; FIXME: Make it pass.  Test failure caused by stout/stderr
+                 ;; being interleaved.
+                 (display "[test_channels]\n*\n")
+                 ;; This fails with ENOSPC because of too many inotify watches.
+                 (display "[benchNotifyWatcher]\n*\n")))
              #t))
          ;; See upstream commit ee424e9b62368485bba4193053cabb553a1d268e
          (add-after 'unpack 'fix-broken-test
