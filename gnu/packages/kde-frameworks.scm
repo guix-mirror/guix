@@ -1330,7 +1330,7 @@ feel.")
          (replace 'check
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             (zero? (system* "dbus-launch" "ctest" ".")))))))
+             (invoke "dbus-launch" "ctest" "."))))))
     (native-inputs
      `(("bison" ,bison)
        ("dbus" ,dbus)
