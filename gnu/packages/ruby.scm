@@ -1530,6 +1530,32 @@ assertion messages for tests.")
     (home-page "https://github.com/k-tsj/power_assert")
     (license (list license:bsd-2 license:ruby))))
 
+(define-public ruby-powerpack
+  (package
+    (name "ruby-powerpack")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "powerpack" version))
+       (sha256
+        (base32
+         "1r51d67wd467rpdfl6x43y84vwm8f5ql9l9m85ak1s2sp3nc5hyv"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Useful extensions to core Ruby classes")
+    (description
+     "This package provides a few useful extensions to core Ruby classes,
+including @code{Array}, @code{Enumerable}, @code{Hash}, @code{Numeric}, and
+@code{String}.")
+    (home-page "https://github.com/bbatsov/powerpack")
+    (license license:expat)))
+
 (define-public ruby-locale
   (package
     (name "ruby-locale")
