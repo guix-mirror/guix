@@ -1251,6 +1251,38 @@ failure.")
     (home-page "https://github.com/thekompanee/fuubar")
     (license license:expat)))
 
+(define-public ruby-hashdiff
+  (package
+    (name "ruby-hashdiff")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "hashdiff" version))
+       (sha256
+        (base32
+         "19ykg5pax8798nh1yv71adkx0zzs7gn2rxjj86v7nsw0jba5lask"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; Run tests directly via rspec to avoid Rake issue:
+         ;; NoMethodError: undefined method `last_comment'
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec"))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec-2)))
+    (synopsis "HashDiff computes the smallest difference between two hashes")
+    (description
+     "HashDiff is a Ruby library to compute the smallest difference between
+two hashes.")
+    (home-page "https://github.com/liufengyun/hashdiff")
+    (license license:expat)))
+
 (define-public ruby-shindo
   (package
     (name "ruby-shindo")
