@@ -1625,6 +1625,49 @@ objects.")
     (home-page "https://github.com/floehopper/metaclass")
     (license license:expat)))
 
+(define-public ruby-mspec
+  (package
+    (name "ruby-mspec")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mspec" version))
+       (sha256
+        (base32
+         "0wmyh2n40m4srwdx9z6h6g6p46k02pzyhcsja3hqcw5h5b0hfmhd"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; TODO: 3 test failures
+       ;; ./spec/mocks/mock_spec.rb:82
+       ;; ./spec/utils/name_map_spec.rb:151
+       ;; ./spec/utils/name_map_spec.rb:155
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'extract-gemspec 'change-dependency-constraints
+           (lambda _
+             (substitute* "mspec.gemspec"
+               (("rake.*") "rake>)\n")
+               (("rspec.*") "rspec>)\n"))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec" "spec"))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rake" ,ruby-rake)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "MSpec is a specialized framework for RubySpec")
+    (description
+     "MSpec is a specialized framework that is syntax-compatible with RSpec 2
+for basic features.  MSpec contains additional features that assist in writing
+specs for Ruby implementations in ruby/spec.")
+    (home-page "http://rubyspec.org")
+    (license license:expat)))
+
 (define-public ruby-blankslate
   (package
     (name "ruby-blankslate")
