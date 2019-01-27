@@ -2034,14 +2034,14 @@ pretty printer and a tree visitor.")
 (define-public python-flask-restful
   (package
     (name "python-flask-restful")
-    (version "0.3.5")
+    (version "0.3.7")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "Flask-RESTful" version))
         (sha256
-          (base32
-            "0hjcmdb56b7z4bkw848lxfkyrpnkwzmqn2dgnlv12mwvjpzsxr6c"))))
+         (base32
+          "1a9cbwkr6krryyzq4sd3f415nkkc6dyfls5i3pgyibs94g0hw97q"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-aniso8601" ,python-aniso8601)
