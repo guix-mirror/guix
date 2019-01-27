@@ -412,20 +412,55 @@ outcomes of a code example.")
     (version "1.2.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (rubygems-uri "rspec-its" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rspec/rspec-its.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1pwphny5jawcm1hda3vs9pjv1cybaxy17dc1s75qd7drrvx697p3"))))
+         "190rz7v4q4wk80fzhr5hknvxx4vb2pywmqr8wc41w2blj9ylzi0f"))
+       (patches
+        (list
+         (origin (method url-fetch)
+                 (uri (string-append
+                       "https://github.com/rspec/rspec-its/commit/"
+                       "bfaab439c7c879f5ef25552f41827891f6308373.patch"))
+                 (file-name "ruby-rspec-its-fix-specs-for-ruby-2.4.patch")
+                 (sha256
+                  (base32
+                   "0lnik0kvrpgkakvdb2fmzg22pdlraf6kiidr9sv6rnfyviiqwxgh")))))))
     (build-system ruby-build-system)
     (arguments
-     `(#:tests? #f)) ; needs cucumber.
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'dont-install-gems-from-gemfile
+           (lambda _
+             (substitute* "Gemfile"
+               (("rspec rspec-core rspec-expectations rspec-mocks rspec-support")
+                ""))
+             #t))
+         (add-before 'build 'remove-unnecessary-dependency-versions-from-gemfile
+           (lambda _
+             (substitute* "rspec-its.gemspec"
+               (("rake.*") "rake'\n")
+               (("cucumber.*") "cucumber'\n")
+               (("bundler.*") "bundler'\n")
+               (("aruba.*") "aruba'\n"))
+             #t)))))
     (propagated-inputs
      `(("ruby-rspec-core" ,ruby-rspec-core)
        ("ruby-rspec-expectations" ,ruby-rspec-expectations)))
-    (synopsis "RSpec extension gem for attribute matching")
-    (description "@code{rspec-its} is an RSpec extension gem for attribute
-matching.")
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-cucumber" ,ruby-cucumber)
+       ("ruby-aruba" ,ruby-aruba)))
+    (synopsis "RSpec extension that provides the @code{its} method")
+    (description
+     "RSpec::Its provides the its method as a short-hand to specify the expected
+value of an attribute.  For example, one can use @code{its(:size)\\{should
+eq(1)\\}}.")
     (home-page "https://github.com/rspec/rspec-its")
     (license license:expat)))
 
