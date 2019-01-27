@@ -441,14 +441,29 @@ addition to build events."
         (cut colorize-string <> 'RED 'BOLD)
         identity))
 
+  (define (report-build-progress %)
+    (let ((% (min (max % 0) 100)))                ;sanitize
+      (erase-current-line port)
+      (format port "~3d% " (inexact->exact (round %)))
+      (display (progress-bar % (- (current-terminal-columns) 5))
+               port)
+      (force-output port)))
+
   (define print-log-line
     (if print-log?
         (if colorize?
-            (lambda (line)
+            (lambda (id line)
               (display (colorize-log-line line) port))
-            (cut display <> port))
-        (lambda (line)
-          (spin! port))))
+            (lambda (id line)
+              (display line port)))
+        (lambda (id line)
+          (match (build-status-building status)
+            ((build)                              ;single job
+             (match (build-completion build)
+               ((? number? %) (report-build-progress %))
+               (_ (spin! port))))
+            (_
+             (spin! port))))))
 
   (unless print-log?
     (display "\r" port))                          ;erase the spinner
@@ -552,7 +567,7 @@ addition to build events."
                ;; through.
                (display line port)
                (force-output port))
-             (print-log-line line))
+             (print-log-line pid line))
          (cond ((string-prefix? "substitute: " line)
                 ;; The daemon prefixes early messages coming with 'guix
                 ;; substitute' with "substitute:".  These are useful ("updating
@@ -565,7 +580,7 @@ addition to build events."
                 (display (info (string-trim-right line)) port)
                 (newline))
                (else
-                (print-log-line line)))))
+                (print-log-line pid line)))))
     (_
      event)))
 
