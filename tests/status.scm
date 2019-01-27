@@ -36,18 +36,18 @@
 
 (test-equal "compute-status, builds + substitutes"
   (list (build-status
-         (building '("foo.drv"))
+         (building (list (build "foo.drv" "x86_64-linux")))
          (downloading (list (download "bar" "http://example.org/bar"
                                       #:size 500
                                       #:start 'now))))
         (build-status
-         (building '("foo.drv"))
+         (building (list (build "foo.drv" "x86_64-linux")))
          (downloading (list (download "bar" "http://example.org/bar"
                                       #:size 500
                                       #:transferred 42
                                       #:start 'now))))
         (build-status
-         (builds-completed '("foo.drv"))
+         (builds-completed (list (build "foo.drv" "x86_64-linux")))
          (downloads-completed (list (download "bar" "http://example.org/bar"
                                               #:size 500
                                               #:transferred 500
@@ -58,7 +58,7 @@
                                            (compute-status event status
                                                            #:current-time
                                                            (const 'now))))))
-    (display "@ build-started foo.drv\n" port)
+    (display "@ build-started foo.drv - x86_64-linux \n" port)
     (display "@ substituter-started bar\n" port)
     (display "@ download-started bar http://example.org/bar 500\n" port)
     (display "various\nthings\nget\nwritten\n" port)
@@ -76,7 +76,8 @@
 
 (test-equal "compute-status, missing events"
   (list (build-status
-         (building '("foo.drv"))
+         (building (list (build "foo.drv" "x86_64-linux"
+                                #:log-file "foo.log")))
          (downloading (list (download "baz" "http://example.org/baz"
                                       #:size 500
                                       #:transferred 42
@@ -86,7 +87,8 @@
                                       #:transferred 0
                                       #:start 'now))))
         (build-status
-         (builds-completed '("foo.drv"))
+         (builds-completed (list (build "foo.drv" "x86_64-linux"
+                                        #:log-file "foo.log")))
          (downloads-completed (list (download "baz" "http://example.org/baz"
                                               #:size 500
                                               #:transferred 500
@@ -103,7 +105,7 @@
                                            (compute-status event status
                                                            #:current-time
                                                            (const 'now))))))
-    (display "@ build-started foo.drv\n" port)
+    (display "@ build-started foo.drv - x86_64-linux foo.log\n" port)
     (display "@ download-started bar http://example.org/bar 999\n" port)
     (display "various\nthings\nget\nwritten\n" port)
     (display "@ download-progress baz http://example.org/baz 500 42\n"
@@ -136,19 +138,19 @@
 
 (test-equal "compute-status, multiplexed build output"
   (list (build-status
-         (building '("foo.drv"))
+         (building (list (build "foo.drv" "x86_64-linux" #:id 121)))
          (downloading (list (download "bar" "http://example.org/bar"
                                       #:size 999
                                       #:start 'now))))
         (build-status
-         (building '("foo.drv"))
+         (building (list (build "foo.drv" "x86_64-linux" #:id 121)))
          (downloading (list (download "bar" "http://example.org/bar"
                                       #:size 999
                                       #:transferred 42
                                       #:start 'now))))
         (build-status
-         ;; XXX: Should "bar.drv" be present twice?
-         (builds-completed '("bar.drv" "foo.drv"))
+         ;; "bar" is now only listed as a download.
+         (builds-completed (list (build "foo.drv" "x86_64-linux" #:id 121)))
          (downloads-completed (list (download "bar" "http://example.org/bar"
                                               #:size 999
                                               #:transferred 999
@@ -162,8 +164,8 @@
                                                            #:derivation-path->output-path
                                                            (match-lambda
                                                              ("bar.drv" "bar")))))))
-    (display "@ build-started foo.drv 121\n" port)
-    (display "@ build-started bar.drv 144\n" port)
+    (display "@ build-started foo.drv - x86_64-linux  121\n" port)
+    (display "@ build-started bar.drv - armhf-linux bar.log 144\n" port)
     (display "@ build-log 121 6\nHello!" port)
     (display "@ build-log 144 50
 @ download-started bar http://example.org/bar 999\n" port)
