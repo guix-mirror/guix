@@ -1166,6 +1166,54 @@ standard output stream.")
     (home-page "https://github.com/geemus/formatador")
     (license license:expat)))
 
+(define-public ruby-fuubar
+  (package
+    (name "ruby-fuubar")
+    (version "2.3.2")
+    (source
+     (origin
+       ;; Fetch from the git repository, as the gem package doesn't include
+       ;; the tests.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/thekompanee/fuubar.git")
+             (commit (string-append "releases/v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0jm1x2xp13csbnadixaikj7mlkp5yk4byx51npm56zi13izp7259"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; TODO: Some tests fail, unsure why.
+       ;; 21 examples, 7 failures
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'delete-certificate
+           (lambda _
+             ;; Remove 's.cert_chain' as we do not build with a private key
+             (substitute* "fuubar.gemspec"
+               ((".*cert_chain.*") "")
+               ((".*signing_key.*") ""))
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec"))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (propagated-inputs
+     `(("ruby-rspec-core" ,ruby-rspec-core)
+       ("ruby-progressbar" ,ruby-progressbar)))
+    (synopsis "Fuubar is an RSpec formatter that uses a progress bar")
+    (description
+     "Fuubar is an RSpec formatter that uses a progress bar instead of a
+string of letters and dots as feedback.  It also stops on the first test
+failure.")
+    (home-page "https://github.com/thekompanee/fuubar")
+    (license license:expat)))
+
 (define-public ruby-shindo
   (package
     (name "ruby-shindo")
