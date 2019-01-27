@@ -69,7 +69,7 @@
     (multiplexed-build-output? . #t)
     (graft? . #t)
     (debug . 0)
-    (verbosity . 2)))
+    (verbosity . 1)))
 
 (define (show-help)
   (display (G_ "Usage: guix pull [OPTION]...
