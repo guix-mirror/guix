@@ -3817,17 +3817,20 @@ files.")
 (define-public ruby-cucumber-core
   (package
     (name "ruby-cucumber-core")
-    (version "2.0.0")
+    ;; Stick to major version 3, until version 4 of Cucumber is released.
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "cucumber-core" version))
        (sha256
         (base32
-         "136hnvqv444qyxzcgy1k60y4i6cn3sn9lbqr4wan9dzz1yzllqbm"))))
+         "1iavlh8hqj9lwljbpkw06259gdicbr1bdb6pbj5yy3n8szgr8k3c"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-gherkin" ,ruby-gherkin)))
+     `(("ruby-backports" ,ruby-backports)
+       ("ruby-gherkin" ,ruby-gherkin)
+       ("ruby-cucumber-tag-expressions" ,ruby-cucumber-tag-expressions)))
     (native-inputs
      `(("bundler" ,bundler)))
     (arguments
