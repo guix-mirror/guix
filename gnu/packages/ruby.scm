@@ -5226,6 +5226,53 @@ display width of strings in Ruby.")
     (home-page "https://github.com/janlelis/unicode-display_width")
     (license license:expat)))
 
+;; There is another gem called 'ruby-version' so we use an underscore in this
+;; name
+(define-public ruby_version
+  (package
+    (name "ruby_version")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ruby_version" version))
+       (sha256
+        (base32
+         "0854i1bjy56176anr05l5m0vc81nl53c7fyfg7sljj62m1d64dgj"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-dependencies
+           (lambda _
+             ;; Remove the Gemfile.lock, as we want to use Guix packages at
+             ;; whatever versions.
+             (delete-file "Gemfile.lock")
+             ;; Remove the incldued gem file as it's unnecessary.
+             (delete-file "pkg/ruby_version-1.0.0.gem")
+             (substitute* "ruby_version.gemspec"
+               ;; Don't require rdoc and rubygems-tasks as they're unnecessary
+               ((".*rdoc.*") "\n")
+               ((".*rubygems-tasks.*") "\n")
+               ;; Accept any version of rake and rspec
+               (("%q<rake.*") "%q<rake>)\n")
+               (("%q<rspec.*") "%q<rspec>)\n"))
+             ;; Remove the use of rubygems-tasks from the Rakefile, as it's
+             ;; unnecessary.
+             (substitute* "Rakefile"
+               (("^require 'rubygems/tasks'") "")
+               (("Gem::Tasks.new") ""))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Ruby library to help check the Ruby version")
+    (description
+     "@code{ruby_version} provides a @code{RubyVersion} module to simplify
+checking for the right Ruby version in software.")
+    (home-page "https://github.com/janlelis/ruby_version")
+    (license license:expat)))
+
 (define-public ruby-domain-name
   (package
     (name "ruby-domain-name")
