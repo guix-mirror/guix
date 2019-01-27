@@ -3773,6 +3773,31 @@ and trust on your team.")
     (home-page "https://cucumber.io/")
     (license license:expat)))
 
+(define-public ruby-cucumber-expressions
+  (package
+    (name "ruby-cucumber-expressions")
+    (version "6.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "cucumber-expressions" version))
+       (sha256
+        (base32
+         "0zwmv6hznyz9vk81f5dhwcr9jhxx2vmbk8yyazayvllvhy0fkpdw"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-simplecov" ,ruby-simplecov)))
+    (synopsis "Simpler alternative to Regular Expressions")
+    (description "Cucumber Expressions offer similar functionality to Regular
+Expressions, with a syntax that is easier to read and write.  Cucumber
+Expressions are extensible with parameter types.")
+    (home-page "https://github.com/cucumber/cucumber-expressions-ruby")
+    (license license:expat)))
+
 (define-public ruby-cucumber-wire
   (package
     (name "ruby-cucumber-wire")
