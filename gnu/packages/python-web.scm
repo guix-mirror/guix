@@ -2603,18 +2603,28 @@ List.  Forked from and using the same API as the publicsuffix package.")
 (define-public python-werkzeug
   (package
     (name "python-werkzeug")
-    (version "0.11.15")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "Werkzeug" version))
+       (uri (pypi-uri "werkzeug" version))
        (sha256
         (base32
-         "1h5wycw8yj7q0grqsjnsqflmrlsdagvl2j4dsgdncci6mjc7fpa5"))))
+         "0z2m4snn1vc9518r2vzgdj1nc90kcgi60wijvd29yvcp85ypmzf3"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "python" "-m" "pytest"))))))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://werkzeug.pocoo.org/")
+    (home-page "https://www.palletsprojects.org/p/werkzeug/")
     (synopsis "Utilities for WSGI applications")
     (description "One of the most advanced WSGI utility modules.  It includes a
 powerful debugger, full-featured request and response objects, HTTP utilities to
