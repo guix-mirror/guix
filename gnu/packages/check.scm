@@ -2039,13 +2039,13 @@ mocks, stubs and fakes.")
 (define-public python-flaky
   (package
     (name "python-flaky")
-    (version "3.4.0")
+    (version "3.5.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "flaky" version))
               (sha256
                (base32
-                "18pkmf79rfkfpy1d2rrx3v55nxj762ilyk9rvd6s6dccxw58imsa"))))
+                "1nm1kjf857z5aw7v642ffsy1vwf255c6wjvmil71kckjyd0mxg8j"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Tests require 'coveralls' and 'genty' which are not in Guix yet.
