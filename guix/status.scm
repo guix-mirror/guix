@@ -101,16 +101,17 @@
 
 ;; On-going or completed build.
 (define-record-type <build>
-  (%build derivation id system log-file)
+  (%build derivation id system log-file completion)
   build?
   (derivation  build-derivation)                ;string (.drv file name)
   (id          build-id)                        ;#f | integer
   (system      build-system)                    ;string
-  (log-file    build-log-file))                 ;#f | string
+  (log-file    build-log-file)                  ;#f | string
+  (completion  build-completion))               ;#f | integer (percentage)
 
-(define* (build derivation system #:key id log-file)
+(define* (build derivation system #:key id log-file completion)
   "Return a new build."
-  (%build derivation id system log-file))
+  (%build derivation id system log-file completion))
 
 ;; On-going or completed downloads.  Downloads can be stem from substitutes
 ;; and from "builtin:download" fixed-output derivations.
@@ -140,6 +141,57 @@
   "Return a predicate that matches downloads of ITEM."
   (lambda (download)
     (string=? item (download-item download))))
+
+(define %percentage-line-rx
+  ;; Things like CMake write lines like "[ 10%] gcc -c …".  This regexp
+  ;; matches them.
+  (make-regexp "^[[:space:]]*\\[ *([0-9]+)%\\]"))
+
+(define %fraction-line-rx
+  ;; The 'compiled-modules' derivations and Ninja produce reports like
+  ;; "[ 1/32]" at the beginning of each line, while GHC prints "[ 6 of 45]".
+  ;; This regexp matches these.
+  (make-regexp "^[[:space:]]*\\[ *([0-9]+) *(/|of) *([0-9]+)\\]"))
+
+(define (update-build status id line)
+  "Update STATUS based on LINE, a build output line for ID that might contain
+a completion indication."
+  (define (set-completion b %)
+    (build (build-derivation b)
+           (build-system b)
+           #:id (build-id b)
+           #:log-file (build-log-file b)
+           #:completion %))
+
+  (define (find-build)
+    (find (lambda (build)
+            (and (build-id build)
+                 (= (build-id build) id)))
+          (build-status-building status)))
+
+  (define (update %)
+    (let ((build (find-build)))
+      (build-status
+       (inherit status)
+       (building (cons (set-completion build %)
+                       (delq build (build-status-building status)))))))
+
+  (cond ((string-any #\nul line)
+         ;; Don't try to match a regexp here.
+         status)
+        ((regexp-exec %percentage-line-rx line)
+         =>
+         (lambda (match)
+           (let ((% (string->number (match:substring match 1))))
+             (update %))))
+        ((regexp-exec %fraction-line-rx line)
+         =>
+         (lambda (match)
+           (let ((done  (string->number (match:substring match 1)))
+                 (total (string->number (match:substring match 3))))
+             (update (* 100. (/ done total))))))
+        (else
+         status)))
 
 (define* (compute-status event status
                          #:key
@@ -242,6 +294,8 @@ compute a new status based on STATUS."
                                          (current-time time-monotonic))
                                      #:transferred transferred)
                            downloads)))))
+    (('build-log (? integer? pid) line)
+     (update-build status pid line))
     (_
      status)))
 
