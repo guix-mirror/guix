@@ -6657,16 +6657,14 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
 (define-public python-entrypoints
   (package
     (name "python-entrypoints")
-    (version "0.2.3")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/takluyver/entrypoints/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (pypi-uri "entrypoints" version))
        (sha256
         (base32
-         "1pdvgfr5bxyvnfvxbsd3zi0dh3il71pc4k6rinx6zpps91b84a56"))))
+         "0lc4si3xb7hza424414rdqdc3vng3kcrph8jbvjqb32spqddf3f7"))))
     (build-system python-build-system)
     ;; The package does not come with a setup.py file, so we have to generate
     ;; one ourselves.
