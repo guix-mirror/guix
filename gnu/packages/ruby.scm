@@ -3915,6 +3915,54 @@ wrapping them in ANSI escape codes.")
     (home-page "https://github.com/sickill/rainbow")
     (license license:expat)))
 
+(define-public ruby-rest-client
+  (package
+    (name "ruby-rest-client")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rest-client" version))
+       (sha256
+        (base32
+         "1hzcs2r7b5bjkf2x2z3n8z6082maz0j8vqjiciwgg3hzb63f958j"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'remove-unnecessary-development-dependencies
+           (lambda _
+             (substitute* "rest-client.gemspec"
+               ;; Remove rubocop as it's unused. Rubocop also indirectly
+               ;; depends on this package through ruby-parser and ruby-ast so
+               ;; this avoids a dependency loop.
+               ((".*rubocop.*") "\n")
+               ;; Remove pry as it's unused, it's a debugging tool
+               ((".*pry.*") "\n")
+               ;; Remove an unnecessarily strict rdoc dependency
+               ((".*rdoc.*") "\n"))
+             #t))
+         (add-before 'check 'delete-network-dependent-tests
+           (lambda _
+             (delete-file "spec/integration/request_spec.rb")
+             (delete-file "spec/integration/httpbin_spec.rb")
+             #t)))))
+    (propagated-inputs
+     `(("ruby-http-cookie" ,ruby-http-cookie)
+       ("ruby-mime-types" ,ruby-mime-types)
+       ("ruby-netrc" ,ruby-netrc)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-webmock", ruby-webmock-2)
+       ("ruby-rspec", ruby-rspec)))
+    (synopsis "Simple HTTP and REST client for Ruby")
+    (description
+     "@code{rest-client} provides a simple HTTP and REST client for Ruby,
+inspired by the Sinatra microframework style of specifying actions:
+@code{get}, @code{put}, @code{post}, @code{delete}.")
+    (home-page "https://github.com/rest-client/rest-client")
+    (license license:expat)))
+
 (define-public ruby-contest
   (package
     (name "ruby-contest")
