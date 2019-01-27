@@ -1638,14 +1638,14 @@ files.")
 (define-public python-click
   (package
     (name "python-click")
-    (version "6.7")
+    (version "7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "click" version))
        (sha256
         (base32
-         "02qkfpykbq35id8glfgwc38yc430427yd05z1wc5cnld8zgicmgi"))))
+         "1mzjixd4vjbjvzb6vylki9w1556a9qmdh35kzmq6cign46av952v"))))
     (build-system python-build-system)
     (arguments
      `(;; The tests are fragile, depending on a specific version of pytest:
@@ -1663,7 +1663,7 @@ files.")
              #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://click.pocoo.org")
+    (home-page "https://palletsprojects.com/p/click/")
     (synopsis "Command line library for Python")
     (description
      "Click is a Python package for creating command line interfaces in a
