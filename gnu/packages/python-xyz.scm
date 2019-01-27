@@ -1648,10 +1648,7 @@ files.")
          "1mzjixd4vjbjvzb6vylki9w1556a9qmdh35kzmq6cign46av952v"))))
     (build-system python-build-system)
     (arguments
-     `(;; The tests are fragile, depending on a specific version of pytest:
-       ;; <https://github.com/pallets/click/issues/823>
-       #:tests? #f
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1660,7 +1657,10 @@ files.")
                (substitute* "click/_unicodefun.py"
                  (("'locale'")
                   (string-append "'" glibc "/bin/locale'"))))
-             #t)))))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "pytest"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://palletsprojects.com/p/click/")
