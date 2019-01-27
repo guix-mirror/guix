@@ -2466,6 +2466,51 @@ instance, it provides @code{assert_true}, @code{assert_false} and
     (home-page "https://github.com/halostatue/minitest-bonus-assertions")
     (license license:expat)))
 
+(define-public ruby-minitest-reporters
+  (package
+    (name "ruby-minitest-reporters")
+    (version "1.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "minitest-reporters" version))
+       (sha256
+        (base32
+         "1a3das80rwgys5rj48i5ly144nvszyqyi748bk9bss74jblcf5ay"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; Remove the requirement on Rubocop, as it isn't useful to run, and
+         ;; including it as an input can lead to circular dependencies.
+         (add-after 'unpack 'remove-rubocop-from-Rakefile
+           (lambda _
+             (substitute* "Rakefile"
+               (("require 'rubocop/rake\\_task'") "")
+               (("RuboCop::RakeTask\\.new\\(:rubocop\\)") "[].each"))
+             #t))
+         (add-after 'extract-gemspec 'remove-rubocop-from-gemspec
+           (lambda _
+             (substitute* "minitest-reporters.gemspec"
+               ((".*%q<rubocop>.*") "\n"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-ansi" ,ruby-ansi)
+       ("ruby-builder" ,ruby-builder)
+       ("ruby-minitest" ,ruby-minitest)
+       ("ruby-progressbar" ,ruby-progressbar)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-maruku" ,ruby-maruku)))
+    (synopsis "Enhanced reporting for Minitest tests")
+    (description
+     "@code{minitest/reporters} provides a custom Minitest runner to improve
+how the test state is reported.  A number of different reporters are
+available, including a spec reporter, progress bar reporter, a HTML
+reporter.")
+    (home-page "https://github.com/kern/minitest-reporters")
+    (license license:expat)))
+
 (define-public ruby-minitest-rg
   (package
     (name "ruby-minitest-rg")
