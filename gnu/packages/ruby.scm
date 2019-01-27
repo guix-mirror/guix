@@ -4820,6 +4820,32 @@ support to both Ruby and JRuby.  It uses @code{unf_ext} on CRuby and
     (home-page "https://github.com/knu/ruby-unf")
     (license license:bsd-2)))
 
+(define-public ruby-webmock-2
+  (package
+    (name "ruby-webmock")
+    (version "2.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "webmock" version))
+       (sha256
+        (base32
+         "04hkcqsmbfnp8g237pisnc834vpgildklicbjbyikqg0bg1rwcy5"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs
+     `(("ruby-addressable" ,ruby-addressable)
+       ("ruby-crack" ,ruby-crack)
+       ("ruby-hashdiff" ,ruby-hashdiff)))
+    (synopsis "Allows stubbing and setting expectations on HTTP requests")
+    (description
+     "WebMock allows stubbing HTTP requests and setting expectations on HTTP
+requests.  This is useful when testing software.")
+    (home-page "https://github.com/bblimke/webmock")
+    (license license:expat)))
+
 (define-public ruby-domain-name
   (package
     (name "ruby-domain-name")
