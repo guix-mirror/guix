@@ -148,10 +148,7 @@ to providing full-strength password hashing for multi-user application.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/py-bcrypt/py-bcrypt-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "py-bcrypt" version))
        (sha256
         (base32
          "0y6smdggwi5s72v6p1nn53dg6w05hna3d264cq6kas0lap73p8az"))))
