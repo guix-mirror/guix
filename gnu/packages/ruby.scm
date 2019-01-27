@@ -3669,6 +3669,41 @@ and trust on your team.")
     (home-page "https://cucumber.io/")
     (license license:expat)))
 
+(define-public ruby-cucumber-wire
+  (package
+    (name "ruby-cucumber-wire")
+    ;; Package version 0.0.1 initially, as this is what's needed by Cucumber
+    ;; 3, and Cucumber 4 hasn't been released yet.
+    (version "0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "cucumber-wire" version))
+       (sha256
+        (base32
+         "09ymvqb0sbw2if1nxg8rcj33sf0va88ancq5nmp8g01dfwzwma2f"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; TODO: Currently, the tests can't be run as cucumber is required,
+       ;; which would lead to a circular dependency.
+       #:tests? #f
+       #:test-target "default"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-CUCUMBER_USE_RELEASED_GEMS
+           (lambda _
+             (setenv "CUCUMBER_USE_RELEASED_GEMS" "true")
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Cucumber wire protocol plugin")
+    (description
+     "Cucumber's wire protocol allows step definitions to be implemented and
+invoked on any platform.")
+    (home-page "https://github.com/cucumber/cucumber-ruby-wire")
+    (license license:expat)))
+
 (define-public ruby-bio-logger
   (package
     (name "ruby-bio-logger")
