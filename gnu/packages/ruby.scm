@@ -3352,6 +3352,29 @@ when working with Ruby code.")
     ;; There is no mention of the "or later" clause.
     (license license:gpl2)))
 
+(define-public ruby-jaro-winkler
+  (package
+    (name "ruby-jaro-winkler")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "jaro_winkler" version))
+       (sha256
+        (base32
+         "1zz27z88qznix4r65gd9h56gl177snlfpgv10b0s69vi8qpl909l"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f))
+    (synopsis "Ruby implementation of Jaro-Winkler distance algorithm")
+    (description
+     "@code{jaro_winkler} is an implementation of Jaro-Winkler distance
+algorithm.  It is written as a C extension and will fallback to a pure Ruby
+implementation on platforms where this is unsupported.")
+    (home-page "https://github.com/tonytonyjan/jaro_winkler")
+    (license license:expat)))
+
 (define-public ruby-json
   (package
     (name "ruby-json")
