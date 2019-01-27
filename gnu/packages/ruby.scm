@@ -6164,8 +6164,21 @@ programs running in the background, in Ruby.")
                 "08q64b5br692dd3v0a9wq9q5dvycc6kmiqmjbdxkxbfizggsvx6l"))))
     (build-system ruby-build-system)
     (arguments
-     ;; Tests require network
-     `(#:tests? #f))
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; Remove the requirement on Rubocop, as it isn't useful to run, and
+         ;; including it as an input can lead to circular dependencies.
+         (add-after 'unpack 'remove-rubocop-from-Rakefile
+           (lambda _
+             (substitute* "Rakefile"
+               (("require \"rubocop/rake\\_task\"") "")
+               (("RuboCop::RakeTask\\.new") ""))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-mocha" ,ruby-mocha)
+       ("ruby-minitest-reporters" ,ruby-minitest-reporters)))
     (home-page "https://simonecarletti.com/code/publicsuffix-ruby/")
     (synopsis "Domain name parser")
     (description "The gem @code{public_suffix} is a domain name parser,
