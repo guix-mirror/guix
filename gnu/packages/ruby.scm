@@ -1536,6 +1536,30 @@ disable tests, have before and after blocks that run once and more.")
     (home-page "https://github.com/cldwalker/bacon-bits")
     (license license:expat)))
 
+(define-public ruby-bacon-colored-output
+  (package
+    (name "ruby-bacon-colored-output")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bacon-colored_output" version))
+       (sha256
+        (base32
+         "1znyh3vkfdlmf19p3k4zip88ibym41dn5g4p4n5hmks2iznb7qpx"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f))
+    (propagated-inputs
+     `(("ruby-bacon" ,ruby-bacon)))
+    (synopsis "Colored output for Bacon test framework")
+    (description
+     "This package adds color through ANSI escape codes to Bacon test
+output.")
+    (home-page "https://github.com/whitequark/bacon-colored_output")
+    (license license:expat)))
+
 (define-public ruby-connection-pool
   (package
     (name "ruby-connection-pool")
