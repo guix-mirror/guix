@@ -1369,6 +1369,31 @@ User Agents.")
     (home-page "https://github.com/gshutler/useragent")
     (license license:expat)))
 
+(define-public ruby-backports
+  (package
+  (name "ruby-backports")
+  (version "3.11.4")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (rubygems-uri "backports" version))
+      (sha256
+        (base32
+          "1hshjxww2h7s0dk57njrygq4zpp0nlqrjfya7zwm27iq3rhc3y8g"))))
+  (build-system ruby-build-system)
+  (arguments
+   '(;; TODO: This should be default, but there is one test failure
+     #:test-target "all_spec"))
+  (native-inputs
+   `(("ruby-mspec" ,ruby-mspec)
+     ("ruby-activesupport" ,ruby-activesupport)))
+  (synopsis "Backports of the features in newer Ruby versions")
+  (description
+    "Backports enables more compatibility across Ruby versions by providing
+backports of some features.")
+  (home-page "https://github.com/marcandre/backports")
+  (license license:expat)))
+
 (define-public ruby-bacon
   (package
     (name "ruby-bacon")
