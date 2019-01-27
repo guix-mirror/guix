@@ -740,6 +740,40 @@ format.")
     (home-page "https://github.com/nicksieger/ci_reporter")
     (license license:expat)))
 
+(define-public ruby-contracts
+  (package
+    (name "ruby-contracts")
+    (version "0.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "contracts" version))
+       (sha256
+        (base32
+         "119f5p1n6r5svbx8h09za6a4vrsnj5i1pzr9cqdn9hj3wrxvyl3a"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         ;; Don't run or require rubocop, the code linting tool, as this is a
+         ;; bit unnecessary.
+         (add-after 'unpack 'dont-run-rubocop
+          (lambda _
+            (substitute* "Rakefile"
+              ((".*rubocop.*") "")
+              ((".*RuboCop.*") ""))
+            #t)))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Method contracts for Ruby")
+    (description
+     "This library provides contracts for Ruby.  A contract describes the
+correct inputs and output for a method, and will raise an error if a incorrect
+value is found.")
+    (home-page "https://github.com/egonSchiele/contracts.ruby")
+    (license license:bsd-2)))
+
 (define-public ruby-czmq-ffi-gen
   (package
     (name "ruby-czmq-ffi-gen")
