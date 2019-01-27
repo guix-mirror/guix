@@ -5026,6 +5026,28 @@ requests.  This is useful when testing software.")
     (home-page "https://github.com/bblimke/webmock")
     (license license:expat)))
 
+(define-public ruby-unicode-display-width
+  (package
+    (name "ruby-unicode-display-width")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "unicode-display_width" version))
+       (sha256
+        (base32
+         "0bq528fibi8s0jmxz0xzlgzggdq0x4fx46wfqz49478pv8gb2diq"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; Test data not included.
+       #:tests? #f))
+    (synopsis "Determine the monospace display width of Ruby strings")
+    (description
+     "@code{Unicode::DisplayWidth} is a Ruby library which can determine the
+display width of strings in Ruby.")
+    (home-page "https://github.com/janlelis/unicode-display_width")
+    (license license:expat)))
+
 (define-public ruby-domain-name
   (package
     (name "ruby-domain-name")
