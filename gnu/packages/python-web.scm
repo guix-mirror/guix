@@ -1583,20 +1583,20 @@ minimum of WSGI.")
 (define-public python-flask
   (package
     (name "python-flask")
-    (version "0.11.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "Flask" version))
+              (uri (pypi-uri "flask" version))
               (sha256
                (base32
-                "03kbfll4sj3v5z7r31c7bhfpi11r1np076d4p1k2kg4yzcmkywdl"))))
+                "0j6f4a9rpfh25k1gp7azqhnni4mb4fgy50jammgjgddw1l3w0w92"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-itsdangerous" ,python-itsdangerous)
        ("python-jinja2" ,python-jinja2)
        ("python-click" ,python-click)
        ("python-werkzeug" ,python-werkzeug)))
-    (home-page "https://github.com/mitsuhiko/flask/")
+    (home-page "https://www.palletsprojects.com/p/flask/")
     (synopsis "Microframework based on Werkzeug, Jinja2 and good intentions")
     (description "Flask is a micro web framework based on the Werkzeug toolkit
 and Jinja2 template engine.  It is called a micro framework because it does not
