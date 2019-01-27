@@ -665,13 +665,14 @@ teams extension for python-openid.")
 (define-public python-tornado
   (package
     (name "python-tornado")
-    (version "4.5.1")
+    (version "5.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tornado" version))
        (sha256
-        (base32 "1zbkgcdfq81k298awrm8p0xwbwwn2p3nbizdglzfbkskhai082fv"))))
+        (base32
+         "02clqk2116jbnq8lnaqmdw3p52nqrd9ib59r4xz2ll43fpcmhlaf"))))
     (build-system python-build-system)
     (arguments
      '(;; FIXME: Two tests error out with:
@@ -682,14 +683,12 @@ teams extension for python-openid.")
        ;;     (lambda _
        ;;       ;; 'setup.py test' hits an AssertionError on BSD-specific
        ;;       ;; "tornado/platform/kqueue.py". This is the supported method:
-       ;;       (invoke- "python" "-m" "tornado.test")
+       ;;       (invoke "python" "-m" "tornado.test.runtests")
        ;;       #t)))
        #:tests? #f))
     (native-inputs
      `(("python-certifi" ,python-certifi)))
-    (propagated-inputs
-     `(("python-backports-abc" ,python-backports-abc)))
-    (home-page "http://www.tornadoweb.org/")
+    (home-page "https://www.tornadoweb.org/")
     (synopsis "Python web framework and asynchronous networking library")
     (description
      "Tornado is a Python web framework and asynchronous networking library,
@@ -706,6 +705,7 @@ connection to each user.")
       (propagated-inputs
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
+         ("python2-backports-abc" ,python2-backports-abc)
          ("python2-singledispatch" ,python2-singledispatch)
           ,@(package-propagated-inputs tornado))))))
 
