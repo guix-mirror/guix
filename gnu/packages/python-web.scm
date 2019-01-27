@@ -1591,6 +1591,14 @@ minimum of WSGI.")
                (base32
                 "0j6f4a9rpfh25k1gp7azqhnni4mb4fgy50jammgjgddw1l3w0w92"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "pytest"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-itsdangerous" ,python-itsdangerous)
        ("python-jinja2" ,python-jinja2)
