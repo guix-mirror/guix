@@ -2843,6 +2843,33 @@ for select languages.")
     (home-page "http://coderay.rubychan.de")
     (license license:expat)))
 
+(define-public ruby-parser
+  (package
+    (name "ruby-parser")
+    (version "2.6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "parser" version))
+       (sha256
+        (base32
+         "1hhz2k5417vr2k1llwqgjdnmyrhlpqicy0y2arr6r1gp04fg9wlm"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-cliver" ,ruby-cliver)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-racc" ,ruby-racc)))
+    (inputs
+     `(("ragel" ,ragel)))
+    (propagated-inputs
+     `(("ruby-ast" ,ruby-ast)))
+    (synopsis "Ruby parser written in pure Ruby")
+    (description
+     "This package provides a Ruby parser written in pure Ruby.")
+    (home-page "https://github.com/whitequark/parser")
+    (license license:expat)))
+
 (define-public ruby-progress_bar
   (package
     (name "ruby-progress_bar")
