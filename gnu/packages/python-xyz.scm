@@ -1961,18 +1961,16 @@ visualisation and class tracker statistics.")
 (define-public python-itsdangerous
   (package
     (name "python-itsdangerous")
-    (version "0.24")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/i/itsdangerous/itsdangerous-"
-             version ".tar.gz"))
+       (uri (pypi-uri "itsdangerous" version))
        (sha256
         (base32
-         "06856q6x675ly542ig0plbqcyab6ksfzijlyf1hzhgg3sgwgrcyb"))))
+         "068zpbksq5q2z4dckh2k1zbcq43ay74ylqn77rni797j0wyh66rj"))))
     (build-system python-build-system)
-    (home-page "https://github.com/mitsuhiko/itsdangerous")
+    (home-page "https://palletsprojects.com/p/itsdangerous/")
     (synopsis "Python library for passing data to/from untrusted environments")
     (description
      "Itsdangerous provides various helpers to pass trusted data to untrusted
