@@ -40,6 +40,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
@@ -2013,6 +2014,52 @@ completion since it uses the full line of input when completing as opposed to
 irb's last-word approach.")
     (home-page "http://tagaholic.me/bond/")
     (license license:expat)))
+
+(define-public ruby-idn-ruby
+  (package
+    (name "ruby-idn-ruby")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "idn-ruby" version))
+       (sha256
+        (base32
+         "07vblcyk3g72sbq12xz7xj28snpxnh3sbcnxy8bglqbfqqhvmawr"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key tests? outputs #:allow-other-keys)
+             (when tests?
+               (let* ((gem-file (cadr (find-files "." "\\.gem")))
+                      (name-and-version (basename gem-file ".gem")))
+                 (apply invoke
+                        "ruby" "--verbose"
+                        (string-append "-I"
+                                       (assoc-ref outputs "out")
+                                       "/lib/ruby/vendor_ruby/gems/"
+                                       name-and-version
+                                       "/lib")
+                        (find-files "./test" ".*\\.rb"))))
+             #t)))))
+    (inputs
+     `(("libidn" ,libidn)))
+    (synopsis "Ruby Bindings for the GNU LibIDN library")
+    (description
+     "Ruby Bindings for the GNU LibIDN library, an implementation of the
+Stringprep, Punycode and IDNA specifications.  These are used to encode and
+decode internationalized domain + names according to the IDNA2003
+specifications.
+
+Included are the most important parts of the Stringprep, Punycode and IDNA
+APIs like performing Stringprep processings, encoding to and decoding from
+Punycode strings and converting entire domain names to and from the ACE
+encoded form.")
+    (home-page "https://github.com/deepfryed/idn-ruby")
+    (license license:asl2.0)))
 
 (define-public ruby-instantiator
   (package
