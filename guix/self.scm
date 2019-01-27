@@ -856,13 +856,23 @@ containing MODULE-FILES and possibly other files as well."
           (define (report-load file total completed)
             (display #\cr)
             (format #t
-                    "loading...\t~5,1f% of ~d files" ;FIXME: i18n
+                    "[~3@a/~3@a] loading...\t~5,1f% of ~d files"
+
+                    ;; Note: Multiply TOTAL by two to account for the
+                    ;; compilation phase that follows.
+                    completed (* total 2)
+
                     (* 100. (/ completed total)) total)
             (force-output))
 
           (define (report-compilation file total completed)
             (display #\cr)
-            (format #t "compiling...\t~5,1f% of ~d files" ;FIXME: i18n
+            (format #t "[~3@a/~3@a] compiling...\t~5,1f% of ~d files"
+
+                    ;; Add TOTAL to account for the load phase that came
+                    ;; before.
+                    (+ total completed) (* total 2)
+
                     (* 100. (/ completed total)) total)
             (force-output))
 
@@ -874,8 +884,8 @@ containing MODULE-FILES and possibly other files as well."
                              #:report-load report-load
                              #:report-compilation report-compilation)))
 
-          (setvbuf (current-output-port) 'none)
-          (setvbuf (current-error-port) 'none)
+          (setvbuf (current-output-port) 'line)
+          (setvbuf (current-error-port) 'line)
 
           (set! %load-path (cons #+module-tree %load-path))
           (set! %load-path
