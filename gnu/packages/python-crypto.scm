@@ -237,10 +237,7 @@ Python interface around SSH networking concepts.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/e/ecdsa/ecdsa-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "ecdsa" version))
        (sha256
         (base32
          "1yj31j0asmrx4an9xvsaj2icdmzy6pw0glfpqrrkrphwdpi1xkv4"))))
