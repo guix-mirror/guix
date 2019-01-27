@@ -811,6 +811,38 @@ value is found.")
     (home-page "https://github.com/egonSchiele/contracts.ruby")
     (license license:bsd-2)))
 
+(define-public ruby-crack
+  (package
+    (name "ruby-crack")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "crack" version))
+       (sha256
+        (base32
+         "0abb0fvgw00akyik1zxnq7yv391va148151qxdghnzngv66bl62k"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (for-each (lambda (file)
+                           (display file)(display "\n")
+                           (invoke "ruby" "-Ilib" "-Itest" "-rrubygems" file))
+                         (find-files "test" ".*rb$")))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-safe-yaml" ,ruby-safe-yaml)))
+    (synopsis "Simple JSON and XML parsing for Ruby")
+    (description
+     "@code{crack} provides really simple JSON and XML parsing, extracted from
+code in Merb and Rails.")
+    (home-page "https://github.com/jnunemaker/crack")
+    (license license:expat)))
+
 (define-public ruby-czmq-ffi-gen
   (package
     (name "ruby-czmq-ffi-gen")
