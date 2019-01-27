@@ -719,6 +719,53 @@ AsciiDoc content to HTML5, DocBook 5 (or 4.5), PDF, and other formats.")
   (home-page "https://asciidoctor.org")
   (license license:expat)))
 
+(define-public ruby-ast
+  (package
+    (name "ruby-ast")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ast" version))
+       (sha256
+        (base32
+         "184ssy3w93nkajlz2c70ifm79jp3j737294kbc5fjw69v1w0n9x7"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-coveralls-requirement
+           (lambda _
+             (substitute* "test/helper.rb"
+               (("require 'coveralls'") "")
+               (("Coveralls::SimpleCov::Formatter") ""))
+             #t))
+         (add-after 'extract-gemspec 'remove-unnecessary-requirements
+           (lambda _
+             (substitute* "ast.gemspec"
+               ((".*coveralls.*") "\n")
+               (("%q<rest-client>.*") "%q<rest-client>.freeze, [\">= 0\"])\n")
+               (("%q<mime-types>.*") "%q<mime-types>.freeze, [\">= 0\"])\n")
+               (("%q<rake>.*") "%q<rake>.freeze, [\">= 0\"])\n"))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-json-pure" ,ruby-json-pure)
+       ("ruby-mime-times" ,ruby-mime-types)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-kramdown" ,ruby-kramdown)
+       ("ruby-rest-client" ,ruby-rest-client)
+       ("ruby-bacon" ,ruby-bacon)
+       ("ruby-bacon-colored-output" ,ruby-bacon-colored-output)
+       ("ruby-racc" ,ruby-racc)))
+    (synopsis "Library for working with Abstract Syntax Trees")
+    (description
+     "@code{ast} is a Ruby library for working with Abstract Syntax Trees.
+It does this through immutable data structures.")
+    (home-page "https://whitequark.github.io/ast/")
+    (license license:expat)))
+
 (define-public ruby-sporkmonger-rack-mount
   ;; Testing the addressable gem requires a newer commit than that released, so
   ;; use an up to date version.
