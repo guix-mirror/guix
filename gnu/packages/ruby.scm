@@ -4118,6 +4118,36 @@ inspired by the Sinatra microframework style of specifying actions:
     (home-page "https://github.com/rest-client/rest-client")
     (license license:expat)))
 
+(define-public ruby-rubocop
+  (package
+    (name "ruby-rubocop")
+    (version "0.64.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rubocop" version))
+       (sha256
+        (base32
+         "07shi6kncwhkvlh9ci9rgccrjsq4448hbic3yrakh2w65ppynvbj"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f))
+    (propagated-inputs
+     `(("ruby-parser" ,ruby-parser)
+       ("ruby-powerpack" ,ruby-powerpack)
+       ("ruby-rainbow" ,ruby-rainbow)
+       ("ruby-progressbar" ,ruby-progressbar)
+       ("ruby-parallel" ,ruby-parallel)
+       ("ruby-jaro-winkler" ,ruby-jaro-winkler)
+       ("ruby-unicode-display-width" ,ruby-unicode-display-width)))
+    (synopsis "Ruby code style checking tool")
+    (description
+     "@code{rubocop} is a Ruby code style checking tool.  It aims to enforce
+the community-driven Ruby Style Guide.")
+    (home-page "https://github.com/rubocop-hq/rubocop")
+    (license license:expat)))
+
 (define-public ruby-contest
   (package
     (name "ruby-contest")
