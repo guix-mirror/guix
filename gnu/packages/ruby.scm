@@ -6239,19 +6239,40 @@ all known public suffixes.")
 (define-public ruby-addressable
   (package
     (name "ruby-addressable")
-    (version "2.5.2")
+    (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "addressable" version))
               (sha256
                (base32
-                "0viqszpkggqi8hq87pqp0xykhvz60g99nwmkwsb0v45kc2liwxvk"))))
+                "0bcm2hchn897xjhqj9zzsxf3n9xhddymj4lsclz508f4vw3av46l"))))
     (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-unnecessary-dependencies-from-Gemfile
+          (lambda _
+            (substitute* "Gemfile"
+              (("git: 'https://github.com/sporkmonger/rack-mount.git',") "")
+              ((".*launchy.*") "")
+              ((".*rake.*") "gem 'rake'\n")
+              ((".*redcarpet.*") ""))
+            #t))
+         (add-before 'check 'delete-network-dependent-test
+           (lambda _
+             (delete-file "spec/addressable/net_http_compat_spec.rb")
+             #t)))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("bundler" ,bundler)
+       ("ruby-idn-ruby" ,ruby-idn-ruby)
+       ("ruby-sporkmonger-rack-mount" ,ruby-sporkmonger-rack-mount)
+       ("ruby-rspec-its", ruby-rspec-its)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-simplecov" ,ruby-simplecov)))
     (propagated-inputs
      `(("ruby-public-suffix" ,ruby-public-suffix)))
-    (arguments
-     ;; No test target
-     `(#:tests? #f))
     (home-page "https://github.com/sporkmonger/addressable")
     (synopsis "Alternative URI implementation")
     (description "Addressable is a replacement for the URI implementation that
