@@ -890,6 +890,40 @@ code in Merb and Rails.")
     (home-page "https://github.com/jnunemaker/crack")
     (license license:expat)))
 
+(define-public ruby-cliver
+  (package
+    (name "ruby-cliver")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "cliver" version))
+       (sha256
+        (base32
+         "096f4rj7virwvqxhkavy0v55rax10r4jqf8cymbvn4n631948xc7"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; Avoid a incompatibility between rspec@2 and rake. Using rspec@3
+         ;; would be nice, but the tests look to be incompatible:
+         ;;
+         ;; NoMethodError: undefined method `last_comment'
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec"))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec-2)))
+    (synopsis "Assertions for command-line dependencies in Ruby")
+    (description
+     "@code{cliver} provides a way to detect missing command-line
+dependencies, including versions.")
+    (home-page "https://github.com/yaauie/cliver")
+    (license license:expat)))
+
 (define-public ruby-czmq-ffi-gen
   (package
     (name "ruby-czmq-ffi-gen")
