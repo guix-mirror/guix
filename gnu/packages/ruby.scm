@@ -3677,6 +3677,32 @@ differences (added or removed nodes) between two XML/HTML documents.")
       (home-page "https://github.com/postmodern/nokogiri-diff")
       (license license:expat))))
 
+(define-public ruby-racc
+  (package
+    (name "ruby-racc")
+    (version "1.4.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "racc" version))
+       (sha256
+        (base32
+         "00yhs2ag7yy5v83mqvkbnhk9bvsh6mx3808k53n61ddzx446v1zl"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "LALR(1) parser generator for Ruby")
+    (description
+     "Racc is a LALR(1) parser generator.  It is written in Ruby itself, and
+generates Ruby program.")
+    (home-page "http://i.loveruby.net/en/projects/racc/")
+    (license (list
+              ;; Generally licensed under the LGPL2.1, and some files also
+              ;; available under the same license as Ruby.
+              license:lgpl2.1
+              license:ruby))))
+
 (define-public ruby-rack
   (package
     (name "ruby-rack")
