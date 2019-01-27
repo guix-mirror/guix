@@ -3793,6 +3793,38 @@ clickjacking, directory traversal, session hijacking and IP spoofing.")
     (home-page "https://github.com/sinatra/sinatra/tree/master/rack-protection")
     (license license:expat)))
 
+(define-public ruby-rainbow
+  (package
+    (name "ruby-rainbow")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rainbow" version))
+       (sha256
+        (base32
+         "0bb2fpjspydr6x0s8pn1pqkzmxszvkfapv0p4627mywl7ky4zkhk"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; Run rspec directly, to avoid requiring Rubocop which is used from
+         ;; the Rakefile.
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec"))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Colorize printed text on ANSI terminals")
+    (description
+     "@code{rainbow} provides a string presenter object to colorize strings by
+wrapping them in ANSI escape codes.")
+    (home-page "https://github.com/sickill/rainbow")
+    (license license:expat)))
+
 (define-public ruby-contest
   (package
     (name "ruby-contest")
