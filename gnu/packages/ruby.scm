@@ -32,6 +32,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
@@ -55,7 +56,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages web)
-  #:use-module (guix build-system ruby))
+  #:use-module (guix build-system ruby)
+  #:use-module ((srfi srfi-1) #:select (alist-delete)))
 
 (define-public ruby
   (package
@@ -3813,6 +3815,150 @@ It is intended be used by all Cucumber implementations to parse
 @file{.feature} files.")
     (home-page "https://github.com/cucumber-attic/gherkin")
     (license license:expat)))
+
+(define-public ruby-aruba
+  (package
+    (name "ruby-aruba")
+    (version "0.14.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "aruba" version))
+       (sha256
+        (base32
+         "0zdd81l1lp0x78sxa6kkfqclpj5il3xl70nz05wqv2sfzzhqydxh"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "spec/aruba/api_spec.rb"
+               ;; This resolves some errors in the specs
+               ;;
+               ;; undefined method `parse' for Time:Class
+               (("require 'spec_helper'")
+                "require 'spec_helper'\nrequire 'time'"))
+             ;; Avoid shebang issues in this spec file
+             (substitute* "spec/aruba/matchers/command_spec.rb"
+               (("/usr/bin/env bash")
+                (which "bash")))
+             #t))
+         (add-before 'check 'remove-unnecessary-dependencies
+           (lambda _
+             (substitute* "Gemfile"
+               ((".*byebug.*") "\n")
+               ((".*pry.*") "\n")
+               ((".*yaml.*") "\n")
+               ((".*bcat.*") "\n")
+               ((".*kramdown.*") "\n")
+               ((".*rubocop.*") "\n")
+               ((".*cucumber-pro.*") "\n")
+               ((".*cucumber.*") "\n")
+               ((".*license_finder.*") "\n")
+               ((".*rake.*") "gem 'rake'\n")
+               ((".*simplecov.*") "\n")
+               ((".*relish.*") "\n"))
+             (substitute* "spec/spec_helper.rb"
+               ((".*simplecov.*") "")
+               (("^SimpleCov.*") ""))
+             (substitute* "aruba.gemspec"
+               (("spec\\.add\\_runtime\\_dependency 'cucumber'.*")
+                "spec.add_runtime_dependency 'cucumber'"))
+             #t))
+         (add-before 'check 'set-home
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-fuubar" ,ruby-fuubar)))
+    (propagated-inputs
+     `(("ruby-childprocess" ,ruby-childprocess)
+       ("ruby-contracts" ,ruby-contracts)
+       ("ruby-cucumber" ,ruby-cucumber)
+       ("ruby-ffi" ,ruby-ffi)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations)
+       ("ruby-thor" ,ruby-thor)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Test command-line applications with Cucumber, RSpec or Minitest")
+    (description
+     "Aruba is an extension for Cucumber, RSpec and Minitest for testing
+command-line applications.  It supports applications written in any
+language.")
+    (home-page "https://github.com/cucumber/aruba")
+    (license license:expat)))
+
+;; A version of ruby-aruba without tests run so that circular dependencies can
+;; be avoided.
+(define ruby-aruba-without-tests
+  (package
+    (inherit ruby-aruba)
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-cucumber" ,ruby-cucumber-without-tests)
+       ,@(alist-delete "ruby-cucumber"
+                       (package-propagated-inputs ruby-aruba))))
+    (native-inputs '())))
+
+(define-public ruby-cucumber
+  (package
+    (name "ruby-cucumber")
+    (version "3.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cucumber/cucumber-ruby.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0764wp2cjg60qa3l69q1dxda5g06a01n5w92szqbf89d2hgl47n3"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         ;; Don't run or require rubocop, the code linting tool, as this is a
+         ;; bit unnecessary.
+         (add-after 'unpack 'dont-run-rubocop
+           (lambda _
+             (substitute* "Rakefile"
+               ((".*rubocop/rake\\_task.*") "")
+               ((".*RuboCop.*") ""))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-builder" ,ruby-builder)
+       ("ruby-cucumber-core" ,ruby-cucumber-core)
+       ("ruby-cucumber-wire" ,ruby-cucumber-wire)
+       ("ruby-cucumber-expressions" ,ruby-cucumber-expressions)
+       ("ruby-diff-lcs" ,ruby-diff-lcs)
+       ("ruby-gherkin" ,ruby-gherkin)
+       ("ruby-multi-json" ,ruby-multi-json)
+       ("ruby-multi-test" ,ruby-multi-test)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ;; Use a untested version of aruba, to avoid a circular dependency, as
+       ;; ruby-aruba depends on ruby-cucumber.
+       ("ruby-aruba", ruby-aruba-without-tests)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-pry" ,ruby-pry)
+       ("ruby-nokogiri" ,ruby-nokogiri)))
+    (synopsis "Describe automated tests in plain language")
+    (description
+     "Cucumber is a tool for running automated tests written in plain
+language.  It's designed to support a Behaviour Driven Development (BDD)
+software development workflow.")
+    (home-page "https://cucumber.io/")
+    (license license:expat)))
+
+(define ruby-cucumber-without-tests
+  (package (inherit ruby-cucumber)
+    (arguments
+     '(#:tests? #f))
+    (native-inputs
+     '())))
 
 (define-public ruby-cucumber-core
   (package
