@@ -3794,14 +3794,14 @@ Ruby classes.")
 (define-public ruby-gherkin
   (package
     (name "ruby-gherkin")
-    (version "4.1.3")
+    (version "5.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (rubygems-uri "gherkin" version))
         (sha256
           (base32
-            "1d18r8mf2qyd9jbq9xxvca8adyysdzvwdy8v9c2s5hrd6p02kg79"))))
+            "1cgcdchwwdm10rsk44frjwqd4ihprhxjbm799nscqy2q1raqfj5s"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
@@ -3809,9 +3809,9 @@ Ruby classes.")
      '(#:tests? #f)) ; needs simplecov, among others
     (synopsis "Gherkin parser for Ruby")
     (description "Gherkin is a parser and compiler for the Gherkin language.
-It is intended be used by all Cucumber implementations to parse '.feature'
-files.")
-    (home-page "https://github.com/cucumber/gherkin3")
+It is intended be used by all Cucumber implementations to parse
+@file{.feature} files.")
+    (home-page "https://github.com/cucumber-attic/gherkin")
     (license license:expat)))
 
 (define-public ruby-cucumber-core
