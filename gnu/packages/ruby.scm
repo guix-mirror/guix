@@ -2526,6 +2526,28 @@ rate.")
     (home-page "https://github.com/paul/progress_bar")
     (license license:wtfpl2)))
 
+(define-public ruby-progressbar
+  (package
+    (name "ruby-progressbar")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ruby-progressbar" version))
+       (sha256
+        (base32
+         "1cv2ym3rl09svw8940ny67bav7b2db4ms39i4raaqzkf59jmhglk"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; TODO: There looks to be a circular dependency with ruby-fuubar.
+       #:tests? #f))
+    (synopsis "Text progress bar library for Ruby")
+    (description
+     "Ruby/ProgressBar is an flexible text progress bar library for Ruby.
+The output can be customized with a formatting system.")
+    (home-page "https://github.com/jfelchner/ruby-progressbar")
+    (license license:expat)))
+
 (define-public ruby-pry
   (package
     (name "ruby-pry")
