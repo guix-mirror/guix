@@ -1416,29 +1416,30 @@ authenticated session objects providing things like keep-alive.")
 (define-public python-urllib3
   (package
     (name "python-urllib3")
-    (version "1.23")
+    (version "1.24.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urllib3" version))
         (sha256
          (base32
-          "1bvbd35q3zdcd7gsv38fwpizy7p06dr0154g5gfybrvnbvhwb2m6"))))
+          "08lwd9f3hqznyf32vnzwvp87pchx062nkbgyrf67rwlkgj0jk5fy"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (native-inputs
      `(;; some packages for tests
-       ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
        ("python-tornado" ,python-tornado)))
     (propagated-inputs
      `(;; These 5 inputs are used to build urrlib3[secure]
        ("python-certifi" ,python-certifi)
-       ("python-cryptography" ,python-cryptography) ;
+       ("python-cryptography" ,python-cryptography)
        ("python-idna" ,python-idna)
        ("python-ipaddress" ,python-ipaddress)
-       ("python-pyopenssl" ,python-pyopenssl)))
-    (home-page "https://urllib3.readthedocs.org/")
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-pysocks" ,python-pysocks)))
+    (home-page "https://urllib3.readthedocs.io/")
     (synopsis "HTTP library with thread-safe connection pooling")
     (description
      "Urllib3 supports features left out of urllib and urllib2 libraries.  It
