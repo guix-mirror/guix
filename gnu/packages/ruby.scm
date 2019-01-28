@@ -3101,6 +3101,40 @@ for select languages.")
     (home-page "https://github.com/whitequark/parser")
     (license license:expat)))
 
+(define-public ruby-prawn-manual-builder
+  (package
+    (name "ruby-prawn-manual-builder")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "prawn-manual_builder" version))
+       (sha256
+        (base32
+         "0wbjnkqp55p5wmz85ldypcray223glckd209hmdxhnzk8s5pb3za"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'extract-gemspec 'patch-gemspec
+           (lambda _
+             (substitute* ".gemspec"
+               ;; Loosen the requirement for pdf-inspector
+               (("~> 1\\.0\\.7") ">= 0")))))))
+    (propagated-inputs
+     `(("ruby-coderay" ,ruby-coderay)))
+    (synopsis "Tool for writing manuals for Prawn and Prawn accessories")
+    (description
+     "This package provides a tool for writing manuals for Prawn and Prawn
+accessories")
+    (home-page "https://github.com/prawnpdf/prawn-manual_builder")
+    (license (list
+              ;; GPLv2 or GPLv3 or custom license described in LICENSE file
+              license:gpl2
+              license:gpl3))))
+
 (define-public ruby-progress_bar
   (package
     (name "ruby-progress_bar")
