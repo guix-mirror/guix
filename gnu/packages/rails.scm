@@ -254,3 +254,29 @@ Ruby.")
 applications.  These work with any Rack-compatible server.")
    (home-page "https://rubyonrails.org/")
    (license license:expat)))
+
+(define-public ruby-actioncable
+  (package
+   (name "ruby-actioncable")
+   (version "5.2.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (rubygems-uri "actioncable" version))
+     (sha256
+      (base32
+       "0826k5ch0l03f9yrkxy69aiv039z4qi00lnahw2rzywd2iz6r68x"))))
+   (build-system ruby-build-system)
+   (arguments
+    '(;; No included tests
+      #:tests? #f))
+   (propagated-inputs
+    `(("ruby-actionpack" ,ruby-actionpack)
+      ("ruby-nio4r" ,ruby-nio4r)
+      ("ruby-websocket-driver" ,ruby-websocket-driver)))
+   (synopsis "Integrate integrates WebSockets with Rails applications")
+   (description
+    "Action Cable integrates WebSockets with Rails applications.  Through
+WebSockets it allows for real-time features in web applications.")
+   (home-page "https://rubyonrails.org/")
+   (license license:expat)))
