@@ -1133,9 +1133,7 @@ Python tests.")))
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/t/testrepository/testrepository-"
-             version ".tar.gz"))
+       (uri (pypi-uri "testrepository" version))
        (sha256
         (base32
          "1ssqb07c277010i6gzzkbdd46gd9mrj0bi0i8vn560n2k2y4j93m"))))
