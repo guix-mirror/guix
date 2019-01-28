@@ -499,6 +499,29 @@ support for stubbing and mocking.")
     (propagated-inputs
      `(("ruby-diff-lcs" ,ruby-diff-lcs)))))
 
+(define-public ruby-rspec-rerun
+  (package
+    (name "ruby-rspec-rerun")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rspec-rerun" version))
+       (sha256
+        (base32
+         "1gy7znkcaqhpccfnk2nvaqbsvgxy3q57cmjwkl9fi1zabaq5lbkj"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f))
+    (propagated-inputs `(("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Track failed RSpec tests to re-run them")
+    (description
+     "This package provides an automated way to track, and then re-run failed
+RSpec tests.")
+    (home-page "https://github.com/dblock/rspec-rerun")
+    (license license:expat)))
+
 (define-public ruby-rspec
   (package
     (name "ruby-rspec")
