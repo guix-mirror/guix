@@ -1124,6 +1124,25 @@ functions.")
     (home-page "https://github.com/ahoward/options")
     (license license:ruby)))
 
+(define-public ruby-erubi
+  (package
+    (name "ruby-erubi")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "erubi" version))
+       (sha256
+        (base32
+         "1kagnf6ziahj0d781s6ryy6fwqwa3ad4xbzzj84p9m4nv4c2jir1"))))
+    (build-system ruby-build-system)
+    (synopsis "ERB template engine for Ruby")
+    (description
+     "Erubi is a ERB template engine for Ruby.  It is a simplified fork of
+Erubis")
+    (home-page "https://github.com/jeremyevans/erubi")
+    (license license:expat)))
+
 (define-public ruby-erubis
   (package
     (name "ruby-erubis")
