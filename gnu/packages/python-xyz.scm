@@ -1731,10 +1731,7 @@ version numbers.")
     (version "2.6.0")
     (source (origin
              (method url-fetch)
-             (uri
-              (string-append
-               "https://pypi.python.org/packages/source/j/jsonschema/jsonschema-"
-               version ".tar.gz"))
+             (uri (pypi-uri "jsonschema" version))
              (sha256
               (base32
                "00kf3zmpp9ya4sydffpifn0j0mzm342a2vzh82p6r0vh10cg7xbg"))))
