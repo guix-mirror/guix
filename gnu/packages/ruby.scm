@@ -584,6 +584,28 @@ supported: XML Markup and XML Events.")
     (home-page "https://github.com/jimweirich/builder")
     (license license:expat)))
 
+(define-public ruby-bump
+  (package
+    (name "ruby-bump")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bump" version))
+       (sha256
+        (base32
+         "1xinbr9rzh6cj75x24niwgqcnbhdxc68a8bc41lk8xv6fd906fym"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f))
+    (synopsis "Tool for working with Rubygems")
+    (description
+     "Bump provides commands to manage Rubygem versioning, updating to the
+next patch version for example.")
+    (home-page "https://github.com/gregorym/bump")
+    (license license:expat)))
+
 (define-public ruby-rjb
   (package
     (name "ruby-rjb")
