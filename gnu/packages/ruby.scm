@@ -3703,14 +3703,14 @@ you about the changes.")
 (define-public ruby-activesupport
   (package
     (name "ruby-activesupport")
-    (version "5.2.1")
+    (version "5.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activesupport" version))
        (sha256
         (base32
-         "0ziy6xk31k4fs115cdkba1ys4i8nzcyri7a2jig7nx7k5h7li6l2"))))
+         "1iya7vxqwxysr74s7b4z1x19gmnx5advimzip3cbmsd5bd43wfgz"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
