@@ -22,6 +22,7 @@
   #:use-module (guix licenses)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages lout)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages plotutils)

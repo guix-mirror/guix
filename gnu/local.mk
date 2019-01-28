@@ -220,6 +220,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gtk.scm				\
   %D%/packages/guile.scm			\
   %D%/packages/guile-wm.scm			\
+  %D%/packages/guile-xyz.scm			\
   %D%/packages/gv.scm				\
   %D%/packages/gxmessage.scm			\
   %D%/packages/hardware.scm			\

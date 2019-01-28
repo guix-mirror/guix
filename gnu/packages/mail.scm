@@ -76,6 +76,7 @@
   #:use-module (gnu packages gsasl)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libcanberra)

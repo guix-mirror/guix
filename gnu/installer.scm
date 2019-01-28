@@ -31,6 +31,7 @@
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:autoload   (gnu packages gnupg) (guile-gcrypt)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages linux)

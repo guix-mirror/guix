@@ -87,6 +87,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages java)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages image)
