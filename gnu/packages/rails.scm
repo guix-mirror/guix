@@ -305,3 +305,31 @@ WebSockets it allows for real-time features in web applications.")
 applications.")
    (home-page "https://rubyonrails.org/")
    (license license:expat)))
+
+(define-public ruby-actionmailer
+  (package
+   (name "ruby-actionmailer")
+   (version "5.2.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (rubygems-uri "actionmailer" version))
+     (sha256
+      (base32
+       "0sfpb8s95cmkpp9ybyp2c88r55r5llscmmnkfwcwgasz9ncjiq5n"))))
+   (build-system ruby-build-system)
+   (arguments
+    '(;; No included tests
+      #:tests? #f))
+   (propagated-inputs
+    `(("ruby-actionpack" ,ruby-actionpack)
+      ("ruby-actionview" ,ruby-actionview)
+      ("ruby-activejob" ,ruby-activejob)
+      ("ruby-mail" ,ruby-mail)
+      ("ruby-rails-dom-testing" ,ruby-rails-dom-testing)))
+   (synopsis "Work with emails using the controller/view pattern")
+   (description
+    "Compose, deliver, receive, and test emails using the controller/view
+pattern.  Including support for multipart email and attachments.")
+   (home-page "https://rubyonrails.org/")
+   (license license:expat)))
