@@ -7484,3 +7484,52 @@ logic in Jekyll.  It calculates and generates the pagination pages.")
 interface over different adapters.")
     (home-page "https://github.com/lostisland/faraday")
     (license license:expat)))
+
+(define-public ruby-nio4r
+  (package
+   (name "ruby-nio4r")
+   (version "2.3.1")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (rubygems-uri "nio4r" version))
+     (sha256
+      (base32
+       "1a41ca1kpdmrypjp9xbgvckpy8g26zxphkja9vk7j5wl4n8yvlyr"))))
+   (build-system ruby-build-system)
+   (arguments
+    '(#:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'remove-unnecessary-dependencies
+          (lambda _
+            (substitute* "spec/spec_helper.rb"
+              ;; Coveralls is for uploading test coverage information to an
+              ;; online service, and thus unnecessary for building the Guix
+              ;; package
+              (("require \"coveralls\"") "")
+              (("Coveralls\\.wear!") "")
+              ;; Remove rspec/retry as we are not retrying the tests
+              (("require \"rspec/retry\"") "")
+              (("config\\.display_try_failure_messages = true") "")
+              (("config\\.verbose_retry = true") ""))
+            #t))
+        (add-before 'check 'compile
+          (lambda _
+            (invoke "rake" "compile")
+            #t))
+        (replace 'check
+          (lambda* (#:key tests? #:allow-other-keys)
+            (when tests?
+              (invoke "rspec"))
+            #t)))))
+   (native-inputs
+    `(("bundler" ,bundler)
+      ("ruby-rake-compiler" ,ruby-rake-compiler)
+      ("ruby-rspec" ,ruby-rspec)
+      ("ruby-rubocop" ,ruby-rubocop)))
+   (synopsis "New I/O for Ruby")
+   (description
+    "@code{nio} provides cross-platform asynchronous I/O primitives in Ruby
+for scalable network clients and servers.")
+   (home-page "https://github.com/socketry/nio4r")
+   (license license:expat)))
