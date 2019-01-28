@@ -1071,8 +1071,7 @@ brokering, etc.) for which the proxy is responsible.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.location/zope.location-" version ".tar.gz"))
+       (uri (pypi-uri "zope.location" version))
        (sha256
         (base32
          "1nj9da4ksiyv3h8n2vpzwd0pb03mdsh7zy87hfpx72b6p2zcwg74"))))
