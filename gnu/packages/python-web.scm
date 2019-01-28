@@ -1017,9 +1017,7 @@ defining data schemas.")
     (version "4.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://pypi.python.org/packages/source/z"
-                                  "/zope.configuration/zope.configuration-"
-                                  version ".tar.gz"))
+              (uri (pypi-uri "zope.configuration" version))
               (sha256
                (base32
                 "1x9dfqypgympnlm25p9m43xh4qv3p7d75vksv9pzqibrb4cggw5n"))))
