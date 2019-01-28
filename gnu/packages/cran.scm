@@ -8538,18 +8538,17 @@ Scientific.")
 (define-public r-activity
   (package
     (name "r-activity")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "activity" version))
        (sha256
         (base32
-         "1lqajgxfps2h6amz1791vp3f52rs9ghmanq1nqfxqd2jmk3idkrx"))))
+         "11w2bz6p9xbzdh6773dmbbh6rws0h5dj18p8m0ivzizgq932vdzs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-circular" ,r-circular)
-       ("r-overlap" ,r-overlap)
        ("r-pbapply" ,r-pbapply)))
     (home-page "https://cran.r-project.org/web/packages/activity/")
     (synopsis "Animal activity statistics")
