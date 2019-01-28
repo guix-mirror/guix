@@ -7,7 +7,7 @@
 # Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 # Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
-# Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+# Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -596,6 +596,7 @@ GNU_SYSTEM_MODULES +=                           \
   %D%/installer/newt/partition.scm		\
   %D%/installer/newt/services.scm		\
   %D%/installer/newt/timezone.scm		\
+  %D%/installer/newt/user.scm			\
   %D%/installer/newt/utils.scm			\
   %D%/installer/newt/welcome.scm		\
   %D%/installer/newt/wifi.scm	
