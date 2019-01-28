@@ -7182,14 +7182,14 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
 (define-public r-optparse
   (package
     (name "r-optparse")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "optparse" version))
        (sha256
         (base32
-         "1d7v5gl45x4amsfmzn5zyyffyqlc7a82h01szlnda22viyxids0h"))))
+         "04vyb6dhcga30mvghsg1p052jmf69xqxkvh3hzqz7dscyppy76w1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-getopt" ,r-getopt)))
