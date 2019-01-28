@@ -3088,16 +3088,18 @@ structure.")
 (define-public r-vioplot
   (package
     (name "r-vioplot")
-    (version "0.2")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vioplot" version))
        (sha256
         (base32
-         "16wkb26kv6qr34hv5zgqmgq6zzgysg9i78pvy2c097lr60v087v0"))))
+         "1ddmmqq7qrnvr5q518afnysrl7ccr8am9njknv3dpwaqzcdr9akn"))))
     (build-system r-build-system)
-    (propagated-inputs `(("r-sm" ,r-sm)))
+    (propagated-inputs
+     `(("r-sm" ,r-sm)
+       ("r-zoo" ,r-zoo)))
     (home-page "http://wsopuppenkiste.wiso.uni-goettingen.de/~dadler")
     (synopsis "Violin plot")
     (description
