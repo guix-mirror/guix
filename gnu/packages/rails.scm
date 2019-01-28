@@ -360,3 +360,29 @@ pattern.  Including support for multipart email and attachments.")
 application bootup, plugins, generators, and Rake tasks.")
    (home-page "https://rubyonrails.org/")
    (license license:expat)))
+
+(define-public ruby-sprockets-rails
+  (package
+   (name "ruby-sprockets-rails")
+   (version "3.2.1")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (rubygems-uri "sprockets-rails" version))
+     (sha256
+      (base32
+       "0ab42pm8p5zxpv3sfraq45b9lj39cz9mrpdirm30vywzrwwkm5p1"))))
+   (build-system ruby-build-system)
+   (arguments
+    '(;; No included tests
+      #:tests? #f))
+   (propagated-inputs
+    `(("ruby-actionpack" ,ruby-actionpack)
+      ("ruby-activesupport" ,ruby-activesupport)
+      ("ruby-sprockets" ,ruby-sprockets)))
+   (synopsis "Sprockets Rails integration")
+   (description
+    "Provides Sprockets implementation for the Rails Asset Pipeline.")
+   (home-page
+    "https://github.com/rails/sprockets-rails")
+   (license license:expat)))
