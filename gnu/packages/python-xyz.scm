@@ -6358,8 +6358,7 @@ domains support.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/"
-                           "pretend/pretend-" version ".tar.gz"))
+       (uri (pypi-uri "pretend" version))
        (sha256
         (base32
          "040vm94lcbscg5p81g1icmwwwa2jm7wrd1ybmxnv1sz8rl8bh3n9"))))
