@@ -5520,15 +5520,12 @@ complexity of Python source code.")
   (package (inherit python-pep8)
     (version "1.5.7")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/p/pep8/pep8-"
-               version
-               ".tar.gz"))
-        (sha256
-          (base32
-           "12b9bbdbwnspxgak14xg58c130x2n0blxzlms5jn2dszn8qj3d0m"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pep8" version))
+       (sha256
+        (base32
+         "12b9bbdbwnspxgak14xg58c130x2n0blxzlms5jn2dszn8qj3d0m"))))
     (arguments
      ;; XXX Tests not compatible with Python 3.5.
      '(#:tests? #f))))
