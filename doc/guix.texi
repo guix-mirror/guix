@@ -3705,9 +3705,8 @@ share your improvements, which are basic tenets of
 email us at @email{guix-devel@@gnu.org} if you'd like to discuss this.
 @end quotation
 
-Once you have a Git repository containing your own package modules, you can
-write @code{~/.config/guix/channels.scm} to instruct @command{guix pull} to
-pull from your personal channel @emph{in addition} to the default Guix
+To use a channel, write @code{~/.config/guix/channels.scm} to instruct
+@command{guix pull} to pull from it @emph{in addition} to the default Guix
 channel(s):
 
 @vindex %default-channels
@@ -3750,6 +3749,17 @@ both Guix and packages from the @code{my-personal-packages} channel.  Among
 the new and upgraded packages that are listed, some like @code{my-gimp} and
 @code{my-emacs-with-cool-features} might come from
 @code{my-personal-packages}, while others come from the Guix default channel.
+
+To create a channel, create a Git repository containing your own package
+modules and make it available.  The repository can contain anything, but a
+useful channel will contain Guile modules that export packages.  Once you
+start using a channel, Guix will behave as if the root directory of that
+channel's Git repository has been added to the Guile load path (@pxref{Load
+Paths,,, guile, GNU Guile Reference Manual}).  For example, if your channel
+contains a file at @file{my-packages/my-tools.scm} that defines a Guile
+module, then the module will be available under the name @code{(my-packages
+my-tools)}, and you will be able to use it like any other module
+(@pxref{Modules,,, guile, GNU Guile Reference Manual}).
 
 @cindex dependencies, channels
 @cindex meta-data, channels
