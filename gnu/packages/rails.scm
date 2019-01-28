@@ -306,6 +306,32 @@ applications.")
    (home-page "https://rubyonrails.org/")
    (license license:expat)))
 
+(define-public ruby-activestorage
+  (package
+    (name "ruby-activestorage")
+    (version "5.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "activestorage" version))
+       (sha256
+        (base32
+         "0c72837098sw384vk6dmrb2p7q3wx4swnibk6sw9dp4hn1vc4p31"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f))
+    (propagated-inputs
+     `(("ruby-actionpack" ,ruby-actionpack)
+       ("ruby-activerecord" ,ruby-activerecord)
+       ("ruby-marcel" ,ruby-marcel)))
+    (synopsis "Integrate file storage services in to Rails applications")
+    (description
+     "ActiveStorage integrates file storage services with Rails applications,
+allowing files to be attached to ActiveRecord models..")
+    (home-page "https://rubyonrails.org/")
+    (license license:expat)))
+
 (define-public ruby-actionmailer
   (package
    (name "ruby-actionmailer")
