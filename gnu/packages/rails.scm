@@ -93,3 +93,28 @@ API.")
     (home-page
      "https://github.com/banister/debug_inspector")
     (license license:expat)))
+
+(define-public ruby-activemodel
+  (package
+   (name "ruby-activemodel")
+   (version "5.2.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (rubygems-uri "activemodel" version))
+     (sha256
+      (base32
+       "1xmwi3mw8g4shbjvkhk72ra3r5jccbdsd4piphqka2y1h8s7sxvi"))))
+   (build-system ruby-build-system)
+   (arguments
+    '(;; No included tests
+      #:tests? #f))
+   (propagated-inputs
+    `(("ruby-activesupport" ,ruby-activesupport)))
+   (synopsis "Toolkit for building modeling frameworks like Active Record")
+   (description
+    "This package provides a toolkit for building modeling frameworks like
+Active Record.  ActiveSupport handles attributes, callbacks, validations,
+serialization, internationalization, and testing.")
+   (home-page "https://rubyonrails.org/")
+   (license license:expat)))
