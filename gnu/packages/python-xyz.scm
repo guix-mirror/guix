@@ -6126,9 +6126,7 @@ Unicode-aware.  It is not intended as an end-user tool.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/P/PrettyTable/"
-             "prettytable-" version ".tar.bz2"))
+       (uri (pypi-uri "prettytable" version ".tar.bz2"))
        (sha256
         (base32
          "0diwsicwmiq2cpzpxri7cyl5fmsvicafw6nfqf6p6p322dji2g45"))))
