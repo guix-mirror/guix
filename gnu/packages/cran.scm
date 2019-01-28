@@ -973,14 +973,14 @@ applications.  That is, compute distances and related measures for angular
 (define-public r-ggmap
   (package
     (name "r-ggmap")
-    (version "2.6.1")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggmap" version))
        (sha256
         (base32
-         "0mssb09w818jv58h7mly9y181pzv22sgcd4a079cfpq04bs0wigw"))))
+         "144x6ycb2c3fvy5c68ww53m6gzi6kfvas7cpbn071z08n4xgb72f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
