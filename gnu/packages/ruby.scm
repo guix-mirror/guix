@@ -939,6 +939,24 @@ code in Merb and Rails.")
     (home-page "https://github.com/jnunemaker/crack")
     (license license:expat)))
 
+(define-public ruby-crass
+  (package
+    (name "ruby-crass")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "crass" version))
+       (sha256
+        (base32
+         "0bpxzy6gjw9ggjynlxschbfsgmx8lv3zw1azkjvnb8b9i895dqfi"))))
+    (build-system ruby-build-system)
+    (synopsis "Pure Ruby CSS parser based on CSS Syntax Level 3")
+    (description
+     "Crass is a pure Ruby CSS parser based on the CSS Syntax Level 3 spec.")
+    (home-page "https://github.com/rgrove/crass/")
+    (license license:expat)))
+
 (define-public ruby-cliver
   (package
     (name "ruby-cliver")
