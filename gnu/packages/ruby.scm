@@ -36,11 +36,14 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages rails)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages lsof)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
@@ -6691,15 +6694,58 @@ interface.  It allows Jekyll to rebuild your site when a file changes.")
 (define-public ruby-parallel
   (package
     (name "ruby-parallel")
-    (version "1.12.1")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "parallel" version))
-              (sha256
-               (base32
-                "01hj8v1qnyl5ndrs33g8ld8ibk0rbcqdpkpznr04gkbxd11pqn67"))))
+    (version "1.13.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/grosser/parallel.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1isqzbqxz2ndad4i5z3lb9ldrhaijfncj8bmffv04sq44sv87ikv"))))
     (build-system ruby-build-system)
-    (arguments `(#:tests? #f)); No rakefile
+    (arguments
+     `(;; TODO 3 test failures
+       ;; rspec ./spec/parallel_spec.rb:190 # Parallel.in_processes does not
+       ;; open unnecessary pipes
+       ;; rspec './spec/parallel_spec.rb[1:9:7]' # Parallel.each works with
+       ;; SQLite in processes
+       ;; rspec './spec/parallel_spec.rb[1:9:16]' # Parallel.each works with
+       ;; SQLite in threads
+       #:tests? #f
+       #:test-target "rspec-rerun:spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-Gemfile
+           (lambda _
+             (substitute* "Gemfile"
+               (("gem 'rspec-legacy_formatters'") "")
+               (("gem 'activerecord.*$") "gem 'activerecord'\n"))))
+         (add-before 'check 'delete-Gemfile.lock
+           (lambda _
+             ;; Bundler isn't being used for fetching dependendencies, so
+             ;; delete the Gemfile.lock
+             (delete-file "Gemfile.lock")
+             #t))
+         (add-before 'build 'patch-gemspec
+           (lambda _
+             (substitute* "parallel.gemspec"
+               (("git ls-files") "find"))
+             #t)))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-rspec-rerun" ,ruby-rspec-rerun)
+       ("bundler" ,bundler)
+       ("ruby-activerecord" ,ruby-activerecord)
+       ("ruby-progressbar" ,ruby-progressbar)
+       ("ruby-bump" ,ruby-bump)
+       ("procps" ,procps)
+       ("lsof" ,lsof)
+       ("ruby-mysql2" ,ruby-mysql2)
+       ("ruby-sqlite3" ,ruby-sqlite3)
+       ("ruby-i18n" ,ruby-i18n)))
     (home-page "https://github.com/grosser/parallel")
     (synopsis "Parallel processing in Ruby")
     (description "Parallel allows you to run any code in parallel Processes
