@@ -4312,8 +4312,7 @@ common operations on files to be invoked on those path objects directly.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/s/"
-                           "simplegeneric/simplegeneric-" version ".zip"))
+       (uri (pypi-uri "simplegeneric" version ".zip"))
        (sha256
         (base32 "0wwi1c6md4vkbcsfsf8dklf3vr4mcdj4mpxkanwgb6jb1432x5yw"))))
     (build-system python-build-system)
