@@ -2289,12 +2289,25 @@ unless your configuration specifies otherwise
 (@pxref{user-account-password, user account passwords}).
 
 @cindex upgrading Guix System
-From then on, you can update the system whenever you want by running @command{guix
-pull} as @code{root} (@pxref{Invoking guix pull}), and then running
-@command{guix system reconfigure /etc/config.scm}, as @code{root} too, to
-build a new system generation with the latest packages and services
+From then on, you can update the system whenever you want by running, say:
+
+@example
+guix pull
+sudo guix system reconfigure /etc/config.scm
+@end example
+
+@noindent
+This builds a new system generation with the latest packages and services
 (@pxref{Invoking guix system}).  We recommend doing that regularly so that
 your system includes the latest security updates (@pxref{Security Updates}).
+
+@c See <https://lists.gnu.org/archive/html/guix-devel/2019-01/msg00268.html>.
+@quotation Note
+@cindex sudo vs. @command{guix pull}
+Note that @command{sudo guix} runs your user's @command{guix} command and
+@emph{not} root's, because @command{sudo} leaves @code{PATH} unchanged.  To
+explicitly run root's @command{guix}, type @command{sudo -i guix @dots{}}.
+@end quotation
 
 Join us on @code{#guix} on the Freenode IRC network or on
 @email{guix-devel@@gnu.org} to share your experience---good or not so
