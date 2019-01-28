@@ -528,8 +528,7 @@ to users of that module.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/l/lockfile/"
-                           "lockfile-" version ".tar.gz"))
+       (uri (pypi-uri "lockfile" version))
        (sha256
         (base32
          "16gpx5hm73ah5n1079ng0vy381hl802v606npkx4x8nb0gg05vba"))))
