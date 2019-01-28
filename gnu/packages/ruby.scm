@@ -7316,3 +7316,26 @@ Pathname.")
     (description "The Pagination Generator forms the core of the pagination
 logic in Jekyll.  It calculates and generates the pagination pages.")
     (license license:expat)))
+
+(define-public ruby-faraday
+  (package
+    (name "ruby-faraday")
+    (version "0.15.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "faraday" version))
+       (sha256
+        (base32
+         "0s72m05jvzc1pd6cw1i289chas399q0a14xrwg4rvkdwy7bgzrh0"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-multipart-post" ,ruby-multipart-post)))
+    (synopsis "Ruby HTTP/REST API client library")
+    (description
+     "Faraday is a HTTP/REST API client library which provides a common
+interface over different adapters.")
+    (home-page "https://github.com/lostisland/faraday")
+    (license license:expat)))
