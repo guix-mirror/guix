@@ -5512,6 +5512,30 @@ checking for the right Ruby version in software.")
     (home-page "https://github.com/janlelis/ruby_version")
     (license license:expat)))
 
+(define-public ruby-websocket-driver
+  (package
+   (name "ruby-websocket-driver")
+   (version "0.7.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (rubygems-uri "websocket-driver" version))
+     (sha256
+      (base32
+       "1551k3fs3kkb3ghqfj3n5lps0ikb9pyrdnzmvgfdxy8574n4g1dn"))))
+   (build-system ruby-build-system)
+   (arguments
+    '(;; No included tests
+      #:tests? #f))
+   (propagated-inputs
+    `(("ruby-websocket-extensions" ,ruby-websocket-extensions)))
+   (synopsis "WebSocket protocol handler with pluggable I/O")
+   (description
+    "@code{websocket-driver} provides a complete implementation of the
+WebSocket protocols that can be hooked up to any TCP library")
+   (home-page "https://github.com/faye/websocket-driver-ruby")
+   (license license:expat)))
+
 (define-public ruby-websocket-extensions
   (package
     (name "ruby-websocket-extensions")
