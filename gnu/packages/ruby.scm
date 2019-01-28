@@ -4335,6 +4335,30 @@ wrapping them in ANSI escape codes.")
     (home-page "https://github.com/sickill/rainbow")
     (license license:expat)))
 
+(define-public ruby-rr
+  (package
+    (name "ruby-rr")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rr" version))
+       (sha256
+        (base32
+         "1n9g78ba4c2zzmz8cdb97c38h1xm0clircag00vbcxwqs4dq0ymp"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; test files not included
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Ruby test double framework")
+    (description
+     "RR is a test double framework that features a rich selection of double
+techniques and a terse syntax.")
+    (home-page "https://rr.github.io/rr/")
+    (license license:expat)))
+
 (define-public ruby-rest-client
   (package
     (name "ruby-rest-client")
