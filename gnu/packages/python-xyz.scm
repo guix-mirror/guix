@@ -5539,15 +5539,12 @@ complexity of Python source code.")
   (package (inherit python-pyflakes)
     (version "0.8.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/p/pyflakes/pyflakes-"
-               version
-               ".tar.gz"))
-        (sha256
-          (base32
-           "0sbpq6pqm1i9wqi41mlfrsc5rk92jv4mskvlyxmnhlbdnc80ma1z"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyflakes" version))
+       (sha256
+        (base32
+         "0sbpq6pqm1i9wqi41mlfrsc5rk92jv4mskvlyxmnhlbdnc80ma1z"))))
     (arguments
      ;; XXX Tests not compatible with Python 3.5.
      '(#:tests? #f))))
