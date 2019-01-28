@@ -83,6 +83,31 @@
 the system clipboards.")
     (license license:gpl3)))
 
+(define-public r-sys
+  (package
+    (name "r-sys")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sys" version))
+       (sha256
+        (base32
+         "10ml2492bdllh6cz2zl192ip0fdgjkkgayggd3ghswsj5gjv5hrh"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/jeroen/sys")
+    (synopsis "Powerful and reliable tools for running system commands in R")
+    (description
+     "This package provides drop-in replacements for the base @code{system2()}
+function with fine control and consistent behavior across platforms.  It
+supports clean interruption, timeout, background tasks, and streaming STDIN /
+STDOUT / STDERR over binary or text connections.  The package also provides
+functions for evaluating expressions inside a temporary fork.  Such
+evaluations have no side effects on the main R process, and support reliable
+interrupts and timeouts.  This provides the basis for a sandboxing
+mechanism.")
+    (license license:expat)))
+
 (define-public r-vegan
   (package
     (name "r-vegan")
