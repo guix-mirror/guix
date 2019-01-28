@@ -1395,9 +1395,7 @@ software.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/python-mimeparse/python-mimeparse-"
-             version ".tar.gz"))
+       (uri (pypi-uri "python-mimeparse" version))
        (sha256
         (base32
          "0y2g6cl660bpz11srgqyvvm8gmywpgyx8g0xfvbiyr0af0yv1r3n"))))
