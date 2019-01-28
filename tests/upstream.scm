@@ -24,6 +24,9 @@
 
 (test-begin "upstream")
 
+;; FIXME: Temporarily skipping this test; see <https://bugs.gnu.org/34229>.
+(test-skip 1)
+
 (test-equal "coalesce-sources same version"
   (list (upstream-source
          (package "foo") (version "1")
