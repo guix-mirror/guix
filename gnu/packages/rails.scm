@@ -118,3 +118,29 @@ Active Record.  ActiveSupport handles attributes, callbacks, validations,
 serialization, internationalization, and testing.")
    (home-page "https://rubyonrails.org/")
    (license license:expat)))
+
+(define-public ruby-activerecord
+  (package
+   (name "ruby-activerecord")
+   (version "5.2.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (rubygems-uri "activerecord" version))
+     (sha256
+      (base32
+       "19a0sns6a5wz2wym25lb1dv4lbrrl5sd1n15s5ky2636znmhz30y"))))
+   (build-system ruby-build-system)
+   (arguments
+    '(;; No included tests
+      #:tests? #f))
+   (propagated-inputs
+    `(("ruby-activemodel" ,ruby-activemodel)
+      ("ruby-activesupport" ,ruby-activesupport)
+      ("ruby-arel" ,ruby-arel)))
+   (synopsis "Ruby library to connect to relational databases")
+   (description
+    "Active Record connects classes to relational database table to establish
+an almost zero-configuration persistence layer for applications.")
+   (home-page "https://rubyonrails.org")
+   (license license:expat)))
