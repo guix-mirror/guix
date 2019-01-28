@@ -280,3 +280,28 @@ applications.  These work with any Rack-compatible server.")
 WebSockets it allows for real-time features in web applications.")
    (home-page "https://rubyonrails.org/")
    (license license:expat)))
+
+(define-public ruby-activejob
+  (package
+   (name "ruby-activejob")
+   (version "5.2.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (rubygems-uri "activejob" version))
+     (sha256
+      (base32
+       "1jjkl62x2aprg55x9rpm0h2c82vr2qr989hg3l9r21l01q4822ir"))))
+   (build-system ruby-build-system)
+   (arguments
+    '(;; No included tests
+      #:tests? #f))
+   (propagated-inputs
+    `(("ruby-activesupport" ,ruby-activesupport)
+      ("ruby-globalid" ,ruby-globalid)))
+   (synopsis "Declare job classes for multiple backends")
+   (description
+    "ActiveJob allows declaring job classes in a common way across Rails
+applications.")
+   (home-page "https://rubyonrails.org/")
+   (license license:expat)))
