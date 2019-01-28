@@ -2623,6 +2623,29 @@ as USB mice.")
      "xf86-input-void is a null input driver for the Xorg X server.")
     (license license:x11)))
 
+(define-public xf86-video-amdgpu
+  (package
+    (name "xf86-video-amdgpu")
+    (version "18.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/driver/xf86-video-amdgpu-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+           "0wlnb929l3yqj4hdkzyxyhbaph13ac4villajgmbh66pa6xja7z1"))))
+    (build-system gnu-build-system)
+    (inputs `(("xorg-server" ,xorg-server)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "AMD Radeon video driver for X server")
+    (description
+     "xf86-video-amdgpu is an AMD Radeon video driver for the Xorg
+X server.")
+    (license license:x11)))
 
 (define-public xf86-video-ark
   (package
