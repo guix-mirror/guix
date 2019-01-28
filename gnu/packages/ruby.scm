@@ -2881,13 +2881,13 @@ rogue test/unit/autorun requires.")
 (define-public ruby-arel
   (package
     (name "ruby-arel")
-    (version "8.0.0")
+    (version "9.0.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "arel" version))
               (sha256
                (base32
-                "0nw0qbc6ph625p6n3maqq9f527vz3nbl0hk72fbyka8jzsmplxzl"))))
+                "1jk7wlmkr61f6g36w9s2sn46nmdg6wn2jfssrhbhirv5x9n95nk0"))))
     (build-system ruby-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (home-page "https://github.com/rails/arel")
