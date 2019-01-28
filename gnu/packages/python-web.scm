@@ -987,8 +987,7 @@ internationalized messages within program source text.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.schema/zope.schema-" version ".tar.gz"))
+       (uri (pypi-uri "zope.schema" version))
        (sha256
         (base32
          "1p943jdxb587dh7php4vx04qvn7b2877hr4qs5zyckvp5afhhank"))))
