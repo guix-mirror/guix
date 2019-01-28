@@ -2297,17 +2297,21 @@ collation, and NAMESPACE files.")
 (define-public r-openssl
   (package
     (name "r-openssl")
-    (version "1.1")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openssl" version))
        (sha256
         (base32
-         "0ldxgcr33lawwr8wp14kdk2678gpkvqkzv6g333bhck1hn6qspzv"))))
+         "0ypa41qr58jgipzkqn3wjqdsjyi7qk57i46s5wy88xy3j8jl9jkv"))))
     (build-system r-build-system)
     (inputs
      `(("libressl" ,libressl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("r-askpass" ,r-askpass)))
     (home-page "https://github.com/jeroenooms/openssl")
     (synopsis "Toolkit for encryption, signatures and certificates")
     (description
