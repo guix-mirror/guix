@@ -1860,6 +1860,231 @@ new Date();"))
        ("which" ,which)
        ("zip" ,zip)))))
 
+(define-public openjdk11
+  (package
+    (name "openjdk")
+    (version "11.28")
+    (source (origin
+              (method url-fetch)
+              (uri "http://hg.openjdk.java.net/jdk/jdk/archive/76072a077ee1.tar.bz2")
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0v705w1s9lrqalzahir78pk397rkk9gfvzq821yv8h3xha0bqi6w"))
+              (modules '((guix build utils)))
+              (snippet
+                `(begin
+                   (for-each delete-file (find-files "." ".*.bin$"))
+                   (for-each delete-file (find-files "." ".*.exe$"))
+                   (for-each delete-file (find-files "." ".*.jar$"))
+                   #t))))
+    (build-system gnu-build-system)
+    (outputs '("out" "jdk" "doc"))
+    (arguments
+     `(#:imported-modules
+       ((guix build syscalls)
+        (ice-9 binary-ports)
+        (rnrs bytevectors)
+        ,@%gnu-build-system-modules)
+       #:tests? #f; requires jtreg
+       ;; TODO package jtreg
+       ;; disable parallel builds, as the openjdk build system does not like -j
+       #:parallel-build? #f
+       #:parallel-tests? #f
+       ;; reenable parallel builds and tests by adding the flags manually
+       #:make-flags (list (string-append "JOBS=" (number->string (parallel-job-count))))
+       #:configure-flags
+       `("--disable-option-checking" ; --enable-fast-install default flag errors otherwise
+         "--disable-warnings-as-errors"
+         ;; make validate-runpath pass, see: http://issues.guix.info/issue/32894
+         "--with-native-debug-symbols=zipped"
+         ;; do not use the bundled libraries
+         "--with-giflib=system"
+         "--with-lcms=system"
+         "--with-libjpeg=system"
+         "--with-libpng=system"
+         ;; allow the build system to locate the system freetype
+         ,(string-append "--with-freetype-include="
+                         (assoc-ref %build-inputs "freetype") "/include")
+         ,(string-append "--with-freetype-lib="
+                         (assoc-ref %build-inputs "freetype") "/lib"))
+       ;; TODO
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'fix-java-shebangs
+           (lambda _
+             ;; This file was "fixed" by patch-source-shebangs, but it requires
+             ;; this exact first line.
+             (substitute* "make/data/blacklistedcertsconverter/blacklisted.certs.pem"
+               (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))
+             #t))
+         (replace 'build
+           (lambda _
+             (with-output-to-file ".src-rev"
+               (lambda _
+                 (display ,version)))
+             (setenv "GUIX_LD_WRAPPER_ALLOW_IMPURITIES" "yes")
+             (invoke "make" "all")
+             #t))
+         ;; jdk 11 does not build jre by default any more
+         ;; building it anyways
+         ;; for further information see:
+         ;; https://github.com/AdoptOpenJDK/openjdk-build/issues/356
+         (add-after 'build 'build-jre
+           (lambda _
+             (invoke "make" "legacy-jre-image")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (jdk (assoc-ref outputs "jdk"))
+                   (doc (assoc-ref outputs "doc"))
+                   (images (car (find-files "build" ".*-server-release"
+                                            #:directories? #t))))
+               (copy-recursively (string-append images "/images/jdk") jdk)
+               (copy-recursively (string-append images "/images/jre") out)
+               (copy-recursively (string-append images "/images/docs") doc))
+             #t))
+         ;; Some of the libraries in the lib/ folder link to libjvm.so.
+         ;; But that shared object is located in the server/ folder, so it
+         ;; cannot be found.  This phase creates a symbolic link in the
+         ;; lib/ folder so that the other libraries can find it.
+         ;;
+         ;; See:
+         ;; https://lists.gnu.org/archive/html/guix-devel/2017-10/msg00169.html
+         ;;
+         ;; FIXME: Find the bug in the build system, so that this symlink is
+         ;; not needed.
+         (add-after 'install 'install-libjvm
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((lib-out (string-append (assoc-ref outputs "out")
+                                             "/lib"))
+                    (lib-jdk (string-append (assoc-ref outputs "jdk")
+                                             "/lib")))
+               (symlink (string-append lib-jdk "/server/libjvm.so")
+                        (string-append lib-jdk "/libjvm.so"))
+               (symlink (string-append lib-out "/server/libjvm.so")
+                        (string-append lib-out "/libjvm.so")))
+             #t))
+         (add-after 'install 'strip-character-data-timestamps
+           (lambda* (#:key outputs #:allow-other-keys)
+             (use-modules (guix build syscalls))
+             (let ((archive (string-append
+                             (assoc-ref outputs "jdk") "/lib/src.zip"))
+                   (dir (mkdtemp! "zip-contents.XXXXXX")))
+               (with-directory-excursion dir
+                 (invoke "unzip" archive))
+               (delete-file archive)
+               (with-directory-excursion dir
+                 (let ((char-data-files (find-files "." "CharacterData.*")))
+                   (for-each (lambda (file)
+                               (substitute* file
+                                 (((string-append "This file was generated "
+                                                 "AUTOMATICALLY from a template "
+                                                 "file.*"))
+                                  (string-append "This file was generated "
+                                                 "AUTOMATICALLY from a template "
+                                                 "file"))))
+                             char-data-files)))
+               (with-directory-excursion dir
+                 (let ((files (find-files "." ".*" #:directories? #t)))
+                   (apply invoke "zip" "-0" "-X" archive files))))))
+         (add-after 'strip-character-data-timestamps 'strip-archive-timestamps
+           (lambda* (#:key outputs #:allow-other-keys)
+             (use-modules (guix build syscalls)
+                          (ice-9 binary-ports)
+                          (rnrs bytevectors))
+             (letrec ((repack-archive
+                    (lambda (archive)
+                      (let ((dir (mkdtemp! "zip-contents.XXXXXX")))
+                        (with-directory-excursion dir
+                          (invoke "unzip" archive))
+                        (delete-file archive)
+                        (for-each (compose repack-archive canonicalize-path)
+                                  (find-files dir "(ct.sym|.*.jar)$"))
+                        (let ((reset-file-timestamp
+                               (lambda (file)
+                                 (let ((s (lstat file)))
+                                   (unless (eq? (stat:type s) 'symlink)
+                                     (format #t "reset ~a~%" file)
+                                     (utime file 0 0 0 0))))))
+                          (for-each reset-file-timestamp
+                                    (find-files dir #:directories? #t)))
+                        (with-directory-excursion dir
+                          (let ((files (find-files "." ".*" #:directories? #t)))
+                            (apply invoke "zip" "-0" "-X" archive files)))))))
+               (for-each repack-archive
+                         (find-files (assoc-ref outputs "doc") ".*.zip$"))
+               (for-each repack-archive
+                         (find-files (assoc-ref outputs "jdk")
+                                     ".*.(zip|jar|diz)$"))
+               (repack-archive (string-append (assoc-ref outputs "jdk") "/lib/ct.sym"))
+               (let ((repack-jmod
+                      (lambda (file-name)
+                        (call-with-input-file file-name
+                          (lambda (file)
+                            (let ((header #vu8(#x4a #x4d #x01 #x00)))
+                              (if (equal? (get-bytevector-n
+                                           file (bytevector-length header))
+                                          header)
+                                  (let* ((header-length (bytevector-length header))
+                                         (temp-file (mkstemp!
+                                                     (string-copy
+                                                      "temp-file.XXXXXX")))
+                                         (temp-filename (port-filename temp-file))
+                                         (content-length
+                                          (- (stat:size (stat file))
+                                             header-length)))
+                             (sendfile temp-file file content-length header-length)
+                             (delete-file file-name)
+                             (close-port temp-file)
+                             (repack-archive (canonicalize-path temp-filename))
+                             (call-with-output-file file-name
+                               (lambda (file)
+                                 (put-bytevector file header)
+                                 (call-with-input-file temp-filename
+                                   (lambda (temp-file)
+                                     (sendfile
+                                      file temp-file
+                                      (stat:size (stat temp-file)) 0)))))))))))))
+                 (for-each repack-jmod
+                           (find-files (assoc-ref outputs "jdk") ".*.jmod$")))
+             #t)))
+         (add-after 'install 'remove-timestamp-from-api-summary
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* (string-append (assoc-ref outputs "doc")
+                                         "/api/overview-summary.html")
+               (("Generated by javadoc \\(11-internal\\).*$")
+                "Generated by javadoc (11-internal) -->\n"))
+             #t)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("cups" ,cups)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("giflib" ,giflib)
+       ("lcms" ,lcms)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxrender" ,libxrender)
+       ("libxt" ,libxt)
+       ("libxtst" ,libxtst)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("openjdk10" ,openjdk10)
+       ("openjdk10:jdk" ,openjdk10 "jdk")
+       ("pkg-config" ,pkg-config)
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (home-page "https://openjdk.java.net/projects/jdk/11/")
+    (synopsis "Java development kit")
+    (description
+     "This package provides the Java development kit OpenJDK.")
+    (license license:gpl2+)))
+
 (define-public icedtea icedtea-8)
 
 
