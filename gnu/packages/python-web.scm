@@ -1043,8 +1043,7 @@ Markup Language.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.proxy/zope.proxy-" version ".tar.gz"))
+       (uri (pypi-uri "zope.proxy" version))
        (sha256
         (base32
          "0pqwwmvm1prhwv1ziv9lp8iirz7xkwb6n2kyj36p2h0ppyyhjnm4"))))
