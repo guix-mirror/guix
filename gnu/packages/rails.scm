@@ -20,6 +20,7 @@
 (define-module (gnu packages rails)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (gnu packages ruby)
   #:use-module (guix build-system ruby))
@@ -169,3 +170,30 @@ you need similar functionality in non Rails apps consider using Loofah
 directly.")
     (home-page "https://github.com/rails/rails-html-sanitizer")
     (license license:expat)))
+
+(define-public ruby-rails-dom-testing
+  (package
+   (name "ruby-rails-dom-testing")
+   (version "2.0.2")
+   (source
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/rails/rails-dom-testing.git")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "0zrg6x1w3wjgklbhcphjmggl11jx5s8cl21qjqij7wknm412i5wl"))))
+   (build-system ruby-build-system)
+   (native-inputs
+    `(("bundler" ,bundler)))
+   (propagated-inputs
+    `(("ruby-activesupport" ,ruby-activesupport)
+      ("ruby-nokogiri" ,ruby-nokogiri)))
+   (synopsis "Compare HTML DOMs and assert certain elements exists")
+   (description
+    "This gem can compare HTML and assert certain elements exists.  This is
+useful when writing tests.")
+   (home-page "https://github.com/rails/rails-dom-testing")
+   (license license:expat)))
