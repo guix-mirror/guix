@@ -412,3 +412,56 @@ application bootup, plugins, generators, and Rake tasks.")
    (home-page
     "https://github.com/rails/sprockets-rails")
    (license license:expat)))
+
+(define-public ruby-rails
+  (package
+   (name "ruby-rails")
+   (version "5.2.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (rubygems-uri "rails" version))
+     (sha256
+      (base32
+       "1m9cszds68dsiycciiayd3c9g90s2yzn1izkr3gpgqkfw6dmvzyr"))))
+   (build-system ruby-build-system)
+   (arguments
+    '(#:phases
+      (modify-phases %standard-phases
+        ;; This gem acts as glue between the gems that actually make up
+        ;; Rails. The important thing to check is that the gemspec matches up
+        ;; with the Guix packages and Rubygems can successfully activate the
+        ;; Rails gem.
+        ;;
+        ;; The following check phase tests this.
+        (delete 'check)
+        (add-after 'install 'check
+          (lambda* (#:key tests? outputs #:allow-other-keys)
+            (setenv "GEM_PATH"
+                    (string-append
+                     (getenv "GEM_PATH")
+                     ":"
+                     (assoc-ref outputs "out") "/lib/ruby/vendor_ruby"))
+            (when tests?
+              (invoke "ruby" "-e" "gem 'rails'"))
+            #t)))))
+   (propagated-inputs
+    `(("ruby-activesupport" ,ruby-activesupport)
+      ("ruby-actionpack" ,ruby-actionpack)
+      ("ruby-actionview" ,ruby-actionview)
+      ("ruby-activemodel" ,ruby-activemodel)
+      ("ruby-activerecord" ,ruby-activerecord)
+      ("ruby-actionmailer" ,ruby-actionmailer)
+      ("ruby-activejob" ,ruby-activejob)
+      ("ruby-actioncable" ,ruby-actioncable)
+      ("ruby-activestorage" ,ruby-activestorage)
+      ("ruby-railties" ,ruby-railties)
+      ("bundler" ,bundler)
+      ("ruby-sprockets-rails" ,ruby-sprockets-rails)))
+   (synopsis "Full-stack web framework optimized for programmer happiness")
+   (description
+    "Ruby on Rails is a full-stack web framework optimized for programmer
+happiness and sustainable productivity.  It encourages beautiful code by
+favoring convention over configuration.")
+   (home-page "https://rubyonrails.org/")
+   (license license:expat)))
