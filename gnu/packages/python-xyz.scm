@@ -998,8 +998,7 @@ doing practical, real world data analysis in Python.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/m/mechanize/mechanize-"
-                          version ".tar.gz"))
+      (uri (pypi-uri "mechanize" version))
       (sha256
        (base32
         "0rj7r166i1dyrq0ihm5rijfmvhs8a04im28lv05c0c3v206v4rrf"))))
