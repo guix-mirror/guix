@@ -225,3 +225,32 @@ useful when writing tests.")
 Ruby.")
    (home-page "https://rubyonrails.org/")
    (license license:expat)))
+
+(define-public ruby-actionpack
+  (package
+   (name "ruby-actionpack")
+   (version "5.2.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (rubygems-uri "actionpack" version))
+     (sha256
+      (base32
+       "0iwhbqqn0cm39dq040iwq8cfyclqk3kyzwlp5k3j5cz8k2668wws"))))
+   (build-system ruby-build-system)
+   (arguments
+    '(;; No included tests
+      #:tests? #f))
+   (propagated-inputs
+    `(("ruby-actionview" ,ruby-actionview)
+      ("ruby-activesupport" ,ruby-activesupport)
+      ("ruby-rack" ,ruby-rack)
+      ("ruby-rack-test" ,ruby-rack-test)
+      ("ruby-rails-dom-testing" ,ruby-rails-dom-testing)
+      ("ruby-rails-html-sanitizer" ,ruby-rails-html-sanitizer)))
+   (synopsis "Conventions for building and testing MVC web applications")
+   (description
+    "ActionPack provides conventions for building and testing MVC web
+applications.  These work with any Rack-compatible server.")
+   (home-page "https://rubyonrails.org/")
+   (license license:expat)))
