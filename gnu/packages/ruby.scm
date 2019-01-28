@@ -6945,9 +6945,40 @@ functionality from Prawn.")
                (base32
                 "1nxd6qmxqwl850icp18wjh5k0s3amxcajdrkjyzpfgq0kvilcv9k"))))
     (build-system ruby-build-system)
-    (arguments `(#:tests? #f)); No rakefile
     (propagated-inputs
-     `(("ruby-prawn" ,ruby-prawn)))
+     `(("ruby-prawn" ,ruby-prawn)
+       ("ruby-pdf-inspector" ,ruby-pdf-inspector)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-mocha" ,ruby-mocha)
+       ("ruby-coderay" ,ruby-coderay)
+       ("ruby-prawn-manual-builder" ,ruby-prawn-manual-builder)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-rspec-2" ,ruby-rspec-2)))
+    (arguments
+     '(;; TODO: 1 test fails
+       ;; Failure/Error: pdf.page_count.should == 1
+       ;;   expected: 1
+       ;;        got: 2 (using ==)
+       ;; # ./spec/table_spec.rb:1308
+       ;;
+       ;; 225 examples, 1 failure
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-gemspec
+           (lambda _
+             (substitute* "prawn-table.gemspec"
+               ;; Loosen the requirement for pdf-inspector
+               (("~> 1\\.1\\.0") ">= 0")
+               ;; Loosen the requirement for pdf-reader
+               (("~> 1\\.2") ">= 0"))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec"))
+             #t)))))
     (home-page "https://github.com/prawnpdf/prawn-table")
     (synopsis "Tables support for Prawn")
     (description "This gem provides tables support for Prawn.")
