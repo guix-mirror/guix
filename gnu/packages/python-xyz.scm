@@ -2062,9 +2062,7 @@ e.g. filters, callbacks and errbacks can all be promises.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/M/MarkupSafe/MarkupSafe-"
-             version ".tar.gz"))
+       (uri (pypi-uri "MarkupSafe" version))
        (sha256
         (base32
          "0rdn1s8x9ni7ss8rfiacj7x1085lx8mh2zdwqslnw8xc3l4nkgm6"))))
