@@ -852,8 +852,7 @@ dispatching systems can be built.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.interface/zope.interface-" version ".tar.gz"))
+       (uri (pypi-uri "zope.interface" version))
        (sha256
         (base32
          "0ks8h73b2g4bkad821qbv0wzjppdrwys33i7ka45ik3wxjg1l8if"))))
