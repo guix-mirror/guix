@@ -9215,10 +9215,7 @@ programming errors.")
     (version "2.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                     "https://pypi.python.org/packages/8b/3e/"
-                     "384eeff406b06315738b62483fd2126c6e4f544167116b17cc04ea7d2a59/"
-                     "pykafka-" version ".tar.gz"))
+              (uri (pypi-uri "pykafka" version))
               (sha256
                (base32
                 "1id6sr159p6aa13bxcqyr9gln8sqg1l0ddzns5iws8kk5q1p5cfv"))))
