@@ -877,9 +877,7 @@ conforming to a given API or contract.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.exceptions/zope.exceptions-"
-                           version ".tar.gz"))
+       (uri (pypi-uri "zope.exceptions" version))
        (sha256
         (base32
          "0zwxaaa66sqxg5k7zcrvs0fbg9ym1njnxnr28dfmchzhwjvwnfzl"))))
