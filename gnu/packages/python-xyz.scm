@@ -9268,9 +9268,7 @@ specified in POSIX.1-2001 and POSIX.1-2008.")
     (version "0.1.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/j/jsonrpclib/"
-                    "jsonrpclib-" version ".tar.gz"))
+              (uri (pypi-uri "jsonrpclib" version))
               (sha256
                (base32
                 "02vgirw2bcgvpcxhv5hf3yvvb4h5wzd1lpjx8na5psdmaffj6l3z"))))
