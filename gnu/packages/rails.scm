@@ -144,3 +144,28 @@ serialization, internationalization, and testing.")
 an almost zero-configuration persistence layer for applications.")
    (home-page "https://rubyonrails.org")
    (license license:expat)))
+
+(define-public ruby-rails-html-sanitizer
+  (package
+    (name "ruby-rails-html-sanitizer")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rails-html-sanitizer" version))
+       (sha256
+        (base32
+         "1gv7vr5d9g2xmgpjfq4nxsqr70r9pr042r9ycqqnfvw5cz9c7jwr"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f))
+    (propagated-inputs
+     `(("ruby-loofah" ,ruby-loofah)))
+    (synopsis "HTML sanitization for Rails applications")
+    (description
+     "This gem is used to handle HTML sanitization in Rails applications.  If
+you need similar functionality in non Rails apps consider using Loofah
+directly.")
+    (home-page "https://github.com/rails/rails-html-sanitizer")
+    (license license:expat)))
