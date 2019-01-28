@@ -4340,9 +4340,7 @@ standard library.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/i/"
-                          "ipython_genutils/ipython_genutils-"
-                          version ".tar.gz"))
+      (uri (pypi-uri "ipython_genutils" version))
       (sha256
        (base32 "19l2pp1c64ansr89l3cqh19jdi2ixhssdzx0vz4n6r52a6i281is"))))
     (build-system python-build-system)
