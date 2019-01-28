@@ -5512,6 +5512,28 @@ checking for the right Ruby version in software.")
     (home-page "https://github.com/janlelis/ruby_version")
     (license license:expat)))
 
+(define-public ruby-websocket-extensions
+  (package
+    (name "ruby-websocket-extensions")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "websocket-extensions" version))
+       (sha256
+        (base32
+         "034sdr7fd34yag5l6y156rkbhiqgmy395m231dwhlpcswhs6d270"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f))
+    (synopsis "Generic extension manager for WebSocket connections")
+    (description
+     "@code{websocket-extensions} provides a container for registering
+extension plugins.")
+    (home-page "https://github.com/faye/websocket-extensions-ruby")
+    (license license:expat)))
+
 (define-public ruby-domain-name
   (package
     (name "ruby-domain-name")
