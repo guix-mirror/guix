@@ -197,3 +197,31 @@ directly.")
 useful when writing tests.")
    (home-page "https://github.com/rails/rails-dom-testing")
    (license license:expat)))
+
+(define-public ruby-actionview
+  (package
+   (name "ruby-actionview")
+   (version "5.2.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (rubygems-uri "actionview" version))
+     (sha256
+      (base32
+       "1lz04drbi1z0xhvb8jnr14pbf505lilr02arahxq7y3mxiz0rs8z"))))
+   (build-system ruby-build-system)
+   (arguments
+    '(;; No included tests
+      #:tests? #f))
+   (propagated-inputs
+    `(("ruby-activesupport" ,ruby-activesupport)
+      ("ruby-builder" ,ruby-builder)
+      ("ruby-erubi" ,ruby-erubi)
+      ("ruby-rails-dom-testing" ,ruby-rails-dom-testing)
+      ("ruby-rails-html-sanitizer" ,ruby-rails-html-sanitizer)))
+   (synopsis "Conventions and helpers for building web pages")
+   (description
+    "ActionView provides conventions and helpers for building web pages in
+Ruby.")
+   (home-page "https://rubyonrails.org/")
+   (license license:expat)))
