@@ -929,9 +929,7 @@ forms, HTTP servers, regular expressions, and more.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.testrunner/zope.testrunner-"
-                           version ".zip"))
+       (uri (pypi-uri "zope.testrunner" version ".zip"))
        (sha256
         (base32
          "1r7iqknhh55y45f64mz5hghgvzx34h1i11k350s0avx6q8gznja1"))))
