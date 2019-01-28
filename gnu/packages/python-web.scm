@@ -1097,8 +1097,7 @@ Zope3, which are are special objects that have a structural location.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.security/zope.security-" version ".tar.gz"))
+       (uri (pypi-uri "zope.security" version))
        (sha256
         (base32
          "14zmf684amc0x32kq05yxnhfqd1cmyhafkw05gn81rn90zjv6ssy"))))
