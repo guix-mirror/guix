@@ -966,10 +966,7 @@ tests.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/z"
-             "/zope.i18nmessageid/zope.i18nmessageid-"
-             version ".tar.gz"))
+       (uri (pypi-uri "zope.i18nmessageid" version))
        (sha256
         (base32
          "1rslyph0klk58dmjjy4j0jxy21k03azksixc3x2xhqbkv97cmzml"))))
