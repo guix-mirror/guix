@@ -7557,3 +7557,28 @@ for scalable network clients and servers.")
 uniquely identify it.")
    (home-page "https://rubyonrails.org/")
    (license license:expat)))
+
+(define-public ruby-sprockets
+  (package
+    (name "ruby-sprockets")
+    (version "3.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "sprockets" version))
+       (sha256
+        (base32
+         "182jw5a0fbqah5w9jancvfmjbk88h8bxdbwnl4d3q809rpxdg8ay"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; No included tests
+       #:tests? #f))
+    (propagated-inputs
+     `(("ruby-concurrent" ,ruby-concurrent)
+       ("ruby-rack" ,ruby-rack)))
+    (synopsis "Sprockets is a Rack-based asset packaging system")
+    (description
+     "Sprockets is a Rack-based asset packaging system that concatenates and
+serves JavaScript, CoffeeScript, CSS, LESS, Sass, and SCSS.")
+    (home-page "https://github.com/rails/sprockets")
+    (license license:expat)))
