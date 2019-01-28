@@ -1959,6 +1959,64 @@ specs for Ruby implementations in ruby/spec.")
     (home-page "http://rubyspec.org")
     (license license:expat)))
 
+(define-public ruby-mysql2
+  (package
+    (name "ruby-mysql2")
+    (version "0.5.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/brianmario/mysql2.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "11lvfgc2rmvkm52jp0nbi6pvhk06klznghr7llldfw8basl9n5wv"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; TODO: Tests require a running MySQL/MariaDB service
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'replace-git-ls-files
+           (lambda _
+             (substitute* "mysql2.gemspec"
+               (("git ls-files .*`") "find . -type f |sort`"))
+             #t))
+         (add-before 'install 'set-MAKEFLAGS
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "MAKEFLAGS"
+                     (string-append
+                      "V=1 "
+                      "prefix=" (assoc-ref outputs "out")))
+             #t))
+         ;; Move the 'check phase to after 'install, as then you can test
+         ;; using the installed mysql2 gem in the store.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs tests? #:allow-other-keys)
+             (setenv "GEM_PATH"
+                     (string-append
+                      (getenv "GEM_PATH")
+                      ":"
+                      (assoc-ref outputs "out") "/lib/ruby/vendor_ruby"))
+             (when tests?
+               (invoke "rspec"))
+             #t)))))
+    (inputs
+     `(("mariadb" ,mariadb)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "MySQL library for Ruby, binding to libmysql")
+    (description
+     "This package provides a simple, fast MySQL library for Ruby, binding to
+libmysql.")
+    (home-page "https://github.com/brianmario/mysql2")
+    (license license:expat)))
+
 (define-public ruby-blankslate
   (package
     (name "ruby-blankslate")
