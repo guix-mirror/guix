@@ -7106,9 +7106,7 @@ This allows one to make simple text-mode user interfaces on Unix-like systems")
     (version "5.0.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/c/configobj/"
-                    "configobj-" version ".tar.gz"))
+              (uri (pypi-uri "configobj" version))
               (sha256
                (base32
                 "00h9rcmws03xvdlfni11yb60bz3kxfvsj6dg6nrpzj71f03nbxd2"))
