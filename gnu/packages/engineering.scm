@@ -420,7 +420,7 @@ featuring various improvements and bug fixes.")))
      ;; FIXME: with texlive-tiny citation references are rendered as question
      ;; marks.  During the build warnings like these are printed:
      ;; LaTeX Warning: Citation `nabors91' on page 2 undefined on input line 3.
-     `(("texlive" ,texlive-tiny)
+     `(("texlive" ,(texlive-union (list texlive-fonts-amsfonts)))
        ("ghostscript" ,ghostscript)))
     (arguments
      `(#:make-flags '("CC=gcc" "RM=rm" "SHELL=sh" "all")
@@ -432,8 +432,7 @@ featuring various improvements and bug fixes.")))
        (modify-phases %standard-phases
          (add-after 'build 'make-doc
            (lambda _
-             (zero? (system* "make" "CC=gcc" "RM=rm" "SHELL=sh"
-                             "manual"))))
+             (invoke "make" "CC=gcc" "RM=rm" "SHELL=sh" "manual")))
          (add-before 'make-doc 'fix-doc
            (lambda _
              (substitute* "doc/Makefile" (("/bin/rm") (which "rm")))
@@ -474,13 +473,13 @@ featuring various improvements and bug fixes.")))
              (setenv "HOME" "/tmp")     ; FIXME: for texlive font cache
              (with-directory-excursion "doc"
                (and
-                (every (lambda (file)
-                         (zero? (system* "dvips" file "-o")))
-                       (find-files "." "\\.dvi"))
-                (every (lambda (file)
-                         (zero? (system* "ps2pdf" file)))
-                       '("mtt.ps" "ug.ps" "tcad.ps"))
-                (zero? (system* "make" "clean"))))))
+                (for-each (lambda (file)
+                            (invoke "dvips" file "-o"))
+                          (find-files "." "\\.dvi"))
+                (for-each (lambda (file)
+                            (invoke "ps2pdf" file))
+                          '("mtt.ps" "ug.ps" "tcad.ps"))
+                (invoke "make" "clean")))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
