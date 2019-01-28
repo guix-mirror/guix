@@ -1802,9 +1802,7 @@ especially -cover-package.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/d/discover/discover-"
-             version ".tar.gz"))
+       (uri (pypi-uri "discover" version))
        (sha256
         (base32
          "0y8d0zwiqar51kxj8lzmkvwc3b8kazb04gk5zcb4nzg5k68zmhq5"))))
