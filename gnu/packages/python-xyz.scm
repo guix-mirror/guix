@@ -321,10 +321,7 @@ etc. ")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append
-            "https://pypi.python.org/packages/source/b/"
-            "backports.ssl_match_hostname/backports.ssl_match_hostname-"
-            version ".tar.gz"))
+      (uri (pypi-uri "backports.ssl_match_hostname" version))
       (sha256
        (base32
         "1wndipik52cyqy0677zdgp90i435pmvwd89cz98lm7ri0y3xjajh"))))
