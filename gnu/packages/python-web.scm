@@ -829,8 +829,7 @@ object to help create WSGI responses.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.event/zope.event-" version ".tar.gz"))
+       (uri (pypi-uri "zope.event" version))
        (sha256
         (base32
          "11p75zpfz3ffhz21nzx9wb23xs993ck5s6hkjcvhswwizni5jynw"))))
