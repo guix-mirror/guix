@@ -1337,18 +1337,30 @@ existing ones.")
 (define-public scons
   (package
     (name "scons")
-    (version "3.0.1")
+    (version "3.0.3")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://sourceforge/scons/scons/" version
-                                 "/scons-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/SCons/scons.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "0wzid419mlwqw9llrg8gsx4nkzhqy16m4m40r0xnh6cwscw5wir4"))))
+               "1xizkjgrvydkjhpv7i5rx0mdkp3618sis7jsckjh57nxcynlk5dc"))))
     (build-system python-build-system)
     (arguments
      `(#:use-setuptools? #f                ; still relies on distutils
-       #:tests? #f))                       ; no 'python setup.py test' command
+       #:tests? #f                         ; no 'python setup.py test' command
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'bootstrap
+           (lambda _
+             (substitute* "src/engine/SCons/compat/__init__.py"
+               (("sys.modules\\[new\\] = imp.load_module\\(old, \\*imp.find_module\\(old\\)\\)")
+                "sys.modules[new] = __import__(old)"))
+             (invoke "python" "bootstrap.py" "build/scons" "DEVELOPER=guix")
+             (chdir "build/scons")
+             #t)))))
     (home-page "http://scons.org/")
     (synopsis "Software construction tool written in Python")
     (description
