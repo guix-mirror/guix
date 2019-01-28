@@ -1305,9 +1305,7 @@ tools for mocking system commands and recording calls to those.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/t/testlib/testlib-"
-             version ".zip"))
+       (uri (pypi-uri "testlib" version ".zip"))
        (sha256
         (base32 "1mz26cxn4x8bbgv0rn0mvj2z05y31rkc8009nvdlb3lam5b4mj3y"))))
     (build-system python-build-system)
