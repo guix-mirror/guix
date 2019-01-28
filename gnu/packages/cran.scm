@@ -108,6 +108,27 @@ interrupts and timeouts.  This provides the basis for a sandboxing
 mechanism.")
     (license license:expat)))
 
+(define-public r-askpass
+  (package
+    (name "r-askpass")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "askpass" version))
+       (sha256
+        (base32
+         "07q0ik8jzk44vpwh48rr3fnpd7dzsdhjjsl4l850rffv3dyq4h6v"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-sys" ,r-sys)))
+    (home-page "https://github.com/jeroen/askpass")
+    (synopsis "Safe password entry for R")
+    (description
+     "This package provides cross-platform utilities for prompting the user
+for credentials or a passphrase, for example to authenticate with a server or
+read a protected key.")
+    (license license:expat)))
+
 (define-public r-vegan
   (package
     (name "r-vegan")
