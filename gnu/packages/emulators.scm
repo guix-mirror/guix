@@ -406,15 +406,16 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.6.3")
+    (version "0.7.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mgba-emu/mgba/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mgba-emu/mgba.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "16hgs6r5iym3lp2cjcnv9955333976yc5sgy2kkxlsi005n91j1m"))
+                "0s4dl4pi8rxqahvzxnh37xdgsfax36cn5wlh1srdcmabwsrfpb3w"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
@@ -430,9 +431,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
      `(#:tests? #f                      ;no "test" target
        #:configure-flags
        (list "-DUSE_LZMA=OFF"           ;do not use bundled LZMA
-             "-DUSE_LIBZIP=OFF"         ;use "zlib" instead
-             (string-append "-DCMAKE_INSTALL_LIBDIR="
-                            (assoc-ref %outputs "out") "/lib"))))
+             "-DUSE_LIBZIP=OFF")))      ;use "zlib" instead
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ffmpeg" ,ffmpeg)
               ("imagemagick" ,imagemagick)
