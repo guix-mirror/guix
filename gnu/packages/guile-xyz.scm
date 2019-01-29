@@ -1753,7 +1753,7 @@ key-value cache and store.")
 (define-public guile-commonmark
   (package
     (name "guile-commonmark")
-    (version "0.1.1")
+    (version "0.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OrangeShark/" name
@@ -1761,16 +1761,7 @@ key-value cache and store.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0kzclwkfijj8xka3g9kfj53y67c34ndfy84swdbw3j7y962ndxq6"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Install .scm files in the right place (see
-               ;; <https://github.com/OrangeShark/guile-commonmark/issues/12>.)
-               '(begin
-                  (substitute* "Makefile.in"
-                    (("^moddir = \\$\\(datadir\\)/share")
-                     "moddir = $(datadir)"))
-                  #t))))
+                "17lrsdisa3kckh24q114vfmzdc4wkqa6ccwl4hdlrng5wpn1iman"))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.2)))
