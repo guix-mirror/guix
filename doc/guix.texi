@@ -34,6 +34,7 @@ Copyright @copyright{} 2016, 2017 Nils Gillmann@*
 Copyright @copyright{} 2016, 2017, 2018 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
+Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
 Copyright @copyright{} 2017, 2018 Clément Lassieur@*
 Copyright @copyright{} 2017, 2018 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
@@ -14291,24 +14292,79 @@ capabilities to ordinary users.  For example, an ordinary user can be granted
 the capability to suspend the system if the user is logged in locally.
 @end deffn
 
-@deffn {Scheme Procedure} upower-service [#:upower @var{upower}] @
-                         [#:watts-up-pro? #f] @
-                         [#:poll-batteries? #t] @
-                         [#:ignore-lid? #f] @
-                         [#:use-percentage-for-policy? #f] @
-                         [#:percentage-low 10] @
-                         [#:percentage-critical 3] @
-                         [#:percentage-action 2] @
-                         [#:time-low 1200] @
-                         [#:time-critical 300] @
-                         [#:time-action 120] @
-                         [#:critical-power-action 'hybrid-sleep]
-Return a service that runs @uref{http://upower.freedesktop.org/,
-@command{upowerd}}, a system-wide monitor for power consumption and battery
-levels, with the given configuration settings.  It implements the
-@code{org.freedesktop.UPower} D-Bus interface, and is notably used by
-GNOME.
-@end deffn
+@defvr {Scheme Variable} upower-service-type
+Service that runs @uref{http://upower.freedesktop.org/, @command{upowerd}}, a
+system-wide monitor for power consumption and battery levels, with the given
+configuration settings.
+
+It implements the @code{org.freedesktop.UPower} D-Bus interface, and is
+notably used by GNOME.
+@end defvr
+
+@deftp {Data Type} upower-configuration
+Data type representation the configuration for UPower.
+
+@table @asis
+
+@item @code{upower} (default: @var{upower})
+Package to use for @code{upower}.
+
+@item @code{watts-up-pro?} (default: @code{#f})
+Enable the Watts Up Pro device.
+
+@item @code{poll-batteries?} (default: @code{#t})
+Enable polling the kernel for battery level changes.
+
+@item @code{ignore-lid?} (default: @code{#f})
+Ignore the lid state, this can be useful if it's incorrect on a device.
+
+@item @code{use-percentage-for-policy?} (default: @code{#f})
+Whether battery percentage based policy should be used.  The default is to use
+the time left, change to @code{#t} to use the percentage.
+
+@item @code{percentage-low} (default: @code{10})
+When @code{use-percentage-for-policy?} is @code{#t}, this sets the percentage
+at which the battery is considered low.
+
+@item @code{percentage-critical} (default: @code{3})
+When @code{use-percentage-for-policy?} is @code{#t}, this sets the percentage
+at which the battery is considered critical.
+
+@item @code{percentage-action} (default: @code{2})
+When @code{use-percentage-for-policy?} is @code{#t}, this sets the percentage
+at which action will be taken.
+
+@item @code{time-low} (default: @code{1200})
+When @code{use-time-for-policy?} is @code{#f}, this sets the time remaining in
+seconds at which the battery is considered low.
+
+@item @code{time-critical} (default: @code{300})
+When @code{use-time-for-policy?} is @code{#f}, this sets the time remaining in
+seconds at which the battery is considered critical.
+
+@item @code{time-action} (default: @code{120})
+When @code{use-time-for-policy?} is @code{#f}, this sets the time remaining in
+seconds at which action will be taken.
+
+@item @code{critical-power-action} (default: @code{'hybrid-sleep})
+The action taken when @code{percentage-action} or @code{time-action} is
+reached (depending on the configuration of @code{use-percentage-for-policy?}).
+
+Possible values are:
+
+@itemize @bullet
+@item
+@code{'power-off}
+
+@item
+@code{'hibernate}
+
+@item
+@code{'hybrid-sleep}.
+@end itemize
+
+@end table
+@end deftp
 
 @deffn {Scheme Procedure} udisks-service [#:udisks @var{udisks}]
 Return a service for @uref{http://udisks.freedesktop.org/docs/latest/,

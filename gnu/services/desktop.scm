@@ -273,6 +273,11 @@ is set to @var{value} when the bus daemon launches it."
 (define upower-service-type
   (let ((upower-package (compose list upower-configuration-upower)))
     (service-type (name 'upower)
+                  (description
+                   "Run @command{upowerd}}, a system-wide monitor for power
+consumption and battery levels, with the given configuration settings.  It
+implements the @code{org.freedesktop.UPower} D-Bus interface, and is notably
+used by GNOME.")
                   (extensions
                    (list (service-extension dbus-root-service-type
                                             upower-dbus-service)
@@ -285,7 +290,8 @@ is set to @var{value} when the bus daemon launches it."
 
                          ;; Make the 'upower' command visible.
                          (service-extension profile-service-type
-                                            upower-package))))))
+                                            upower-package)))
+                  (default-value (upower-configuration)))))
 
 (define* (upower-service #:key (upower upower)
                          (watts-up-pro? #f)
@@ -1029,7 +1035,7 @@ as expected.")))
          (service wpa-supplicant-service-type)    ;needed by NetworkManager
          (service avahi-service-type)
          (udisks-service)
-         (upower-service)
+         (service upower-service-type)
          (accountsservice-service)
          (service cups-pk-helper-service-type)
          (colord-service)
