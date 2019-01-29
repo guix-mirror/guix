@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,8 +58,22 @@
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
-  #:export (upower-configuration
+  #:export (<upower-configuration>
+            upower-configuration
             upower-configuration?
+            upower-configuration-upower
+            upower-configuration-watts-up-pro?
+            upower-configuration-poll-batteries?
+            upower-configuration-ignore-lid?
+            upower-configuration-use-percentage-for-policy?
+            upower-configuration-percentage-low
+            upower-configuration-percentage-critical
+            upower-configuration-percentage-action
+            upower-configuration-time-low
+            upower-configuration-time-critical
+            upower-configuration-time-action
+            upower-configuration-critical-power-action
+
             upower-service
             upower-service-type
 
@@ -174,23 +189,33 @@ is set to @var{value} when the bus daemon launches it."
 ;;; Upower D-Bus service.
 ;;;
 
-;; TODO: Export.
 (define-record-type* <upower-configuration>
   upower-configuration make-upower-configuration
   upower-configuration?
-  (upower        upower-configuration-upower
-                 (default upower))
-  (watts-up-pro? upower-configuration-watts-up-pro?)
-  (poll-batteries? upower-configuration-poll-batteries?)
-  (ignore-lid? upower-configuration-ignore-lid?)
-  (use-percentage-for-policy? upower-configuration-use-percentage-for-policy?)
-  (percentage-low upower-configuration-percentage-low)
-  (percentage-critical upower-configuration-percentage-critical)
-  (percentage-action upower-configuration-percentage-action)
-  (time-low upower-configuration-time-low)
-  (time-critical upower-configuration-time-critical)
-  (time-action upower-configuration-time-action)
-  (critical-power-action upower-configuration-critical-power-action))
+  (upower                     upower-configuration-upower
+                              (default upower))
+  (watts-up-pro?              upower-configuration-watts-up-pro?
+                              (default #f))
+  (poll-batteries?            upower-configuration-poll-batteries?
+                              (default #t))
+  (ignore-lid?                upower-configuration-ignore-lid?
+                              (default #f))
+  (use-percentage-for-policy? upower-configuration-use-percentage-for-policy?
+                              (default #f))
+  (percentage-low             upower-configuration-percentage-low
+                              (default 10))
+  (percentage-critical        upower-configuration-percentage-critical
+                              (default 3))
+  (percentage-action          upower-configuration-percentage-action
+                              (default 2))
+  (time-low                   upower-configuration-time-low
+                              (default 1200))
+  (time-critical              upower-configuration-time-critical
+                              (default 300))
+  (time-action                upower-configuration-time-action
+                              (default 120))
+  (critical-power-action      upower-configuration-critical-power-action
+                              (default 'hybrid-sleep)))
 
 (define* upower-configuration-file
   ;; Return an upower-daemon configuration file.
