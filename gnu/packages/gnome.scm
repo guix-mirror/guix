@@ -975,6 +975,88 @@ for translations, though this is only a dependency for the maintainers.  This
 database is translated at Transifex.")
     (license license:gpl2+)))
 
+(define-public system-config-printer
+  (package
+    (name "system-config-printer")
+    (version "1.5.11")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/zdohnal/system-config-printer/releases/"
+                   "download/" version
+                   "/system-config-printer-" version ".tar.xz"))
+             (sha256
+              (base32
+               "1lq0q51bhanirpjjvvh4xiafi8hgpk8r32h0dj6dn3f32z8pib9q"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%glib-or-gtk-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-Makefile.am
+           (lambda _
+             ;; The Makefile generates some scripts, so set a valid shebang
+             (substitute* "Makefile.am"
+               (("/bin/bash") (which "bash")))
+             (delete-file "configure")
+             #t))
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Modify the man XML otherwise xmlto tries to access the network
+             (substitute* "man/system-config-printer.xml"
+               (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                (string-append (assoc-ref inputs "docbook-xml")
+                               "/xml/dtd/docbook/")))
+             #t))
+         (add-after 'install 'wrap-for-python
+           (@@ (guix build python-build-system) wrap))
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+               (for-each
+                (lambda (program)
+                  (wrap-program program
+                    `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+                (map (lambda (name)
+                       (string-append out "/bin/" name))
+                     '("system-config-printer"
+                       "system-config-printer-applet"
+                       "install-printerdriver"
+                       "scp-dbus-service"))))
+             #t)))))
+    (inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gobject-introspection" ,gobject-introspection)
+       ("python" ,python)
+       ("cups" ,cups)
+       ("python-dbus" ,python-dbus)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pycups" ,python-pycups)
+       ("python-requests" ,python-requests)
+       ("python-pycairo" ,python-pycairo)
+       ("libnotify" ,libnotify)
+       ("packagekit" ,packagekit)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("glib" ,glib)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("intltool" ,intltool)
+       ("xmlto" ,xmlto)
+       ("docbook-xml" ,docbook-xml-4.1.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxml2" ,libxml2)))
+    (home-page "https://github.com/zdohnal/system-config-printer")
+    (synopsis "CUPS administration tool")
+    (description
+     "system-config-printer is a CUPS administration tool.  It's written in
+Python using GTK+, and uses the @acronym{IPP, Internet Printing Protocol} when
+configuring CUPS.")
+    (license license:gpl2+)))
+
 (define-public hicolor-icon-theme
   (package
     (name "hicolor-icon-theme")
