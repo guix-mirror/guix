@@ -478,7 +478,8 @@ be used as a profile hook."
     (gexp->derivation-in-inferior "guix-package-cache" build
                                   profile
                                   #:properties '((type . profile-hook)
-                                                 (hook . package-cache)))))
+                                                 (hook . package-cache))
+                                  #:local-build? #t)))
 
 (define %channel-profile-hooks
   ;; The default channel profile hooks.
