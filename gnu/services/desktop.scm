@@ -39,6 +39,7 @@
   #:use-module (gnu system pam)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages cups)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages xfce)
@@ -802,6 +803,21 @@ accountsservice web site} for more information."
 
 
 ;;;
+;;; cups-pk-helper service.
+;;;
+
+(define cups-pk-helper-service-type
+  (service-type
+   (name 'cups-pk-helper)
+   (description
+    "PolicyKit helper to configure CUPS with fine-grained privileges.")
+   (extensions
+    (list (service-extension dbus-root-service-type list)
+          (service-extension polkit-service-type list)))
+   (default-value cups-pk-helper)))
+
+
+;;;
 ;;; GNOME desktop service.
 ;;;
 
@@ -990,6 +1006,7 @@ as expected.")))
          (udisks-service)
          (upower-service)
          (accountsservice-service)
+         (service cups-pk-helper-service-type)
          (colord-service)
          (geoclue-service)
          (service polkit-service-type)
