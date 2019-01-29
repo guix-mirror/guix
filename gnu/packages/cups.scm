@@ -46,6 +46,7 @@
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages tls)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -707,4 +708,28 @@ System (CUPS).  It offers high-quality printing with Seiko Epson color ink jet
 printers.  It can only be used with printers that support the Epson ESC/P-R
 language.")
     (home-page "http://download.ebz.epson.net/dsc/search/01/search")
+    (license license:gpl2+)))
+
+(define-public python-pycups
+  (package
+    (name "python-pycups")
+    (version "1.9.74")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pycups" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1ffp7sswhdsfpy88zg0cc8kl04wygkjs01rlm9f0spbwk8jhy2c6"))))
+    (build-system python-build-system)
+    (arguments
+     '(;; Tests require CUPS to be running
+       #:tests? #f))
+    (inputs
+     `(("cups" ,cups)))
+    (home-page "https://github.com/zdohnal/pycups")
+    (synopsis "Python bindings for libcups")
+    (description
+     "This package provides Python bindings for libcups, wrapping the CUPS
+API.")
     (license license:gpl2+)))
