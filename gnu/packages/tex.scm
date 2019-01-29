@@ -2766,8 +2766,17 @@ re-processing.")
               (sha256
                (base32
                 "0y4i651b75y6006n03x8n86bsqvjsailvvz9bhzy51dzsznqidq0"))))
-    (build-system texlive-build-system)
-    (arguments '(#:tex-directory "latex/seminar"))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/seminar")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
     (home-page "https://www.ctan.org/pkg/seminar")
     (synopsis "Make overhead slides")
     ;; TODO: This package may need fancybox and xcomment at runtime.
