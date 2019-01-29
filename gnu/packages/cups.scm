@@ -38,6 +38,7 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -379,6 +380,32 @@ device-specific programs to convert and print many types of files.")
        ("gnutls" ,gnutls)
        ("cups-filters" ,cups-filters)
        ("zlib"  ,zlib)))))
+
+(define-public cups-pk-helper
+  (package
+    (name "cups-pk-helper")
+    (version "0.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://freedesktop.org/software/"
+                                  name "/releases/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0a52jw6rm7lr5nbyksiia0rn7sasyb5cjqcb95z1wxm2yprgi6lm"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("glib" ,glib)
+       ("polkit" ,polkit)
+       ("cups" ,cups)))
+    (home-page "https://www.freedesktop.org/wiki/Software/cups-pk-helper/")
+    (synopsis "PolicyKit helper to configure CUPS with fine-grained privileges")
+    (description
+     "This package provides the org.opensuse.CupsPkHelper.Mechanism DBus
+system service which uses @file{cups-pk-helper-mechanism}.  This package
+should only be used as part of the Guix cups-pk-helper service.")
+    (license license:gpl2+)))
 
 (define-public hplip
   (package
