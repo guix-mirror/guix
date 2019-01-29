@@ -2305,7 +2305,36 @@ $(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")))))))
      "Guile-Lib is intended as an accumulation place for pure-scheme Guile
 modules, allowing for people to cooperate integrating their generic Guile
 modules into a coherent library.  Think \"a down-scaled, limited-scope CPAN
-for Guile\".")
+for Guile\".  It provides the following modules:
++@itemize
++@item (apicheck) Describe and verify library programming interfaces.
++@item (config load) Loading configuration files.
++@item (container async-queue) A thread-safe message queue.
++@item (container nodal-tree) A tree consisting of nodes with attributes.
++@item (container delay-tree) A nodal tree with lazily evaluated fields.
++@item (debugging assert) Helpful assert macro.
++@item (debugging time) A simple macro to time the execution of an expression.
++@item (graph topological-sort) Routines to perform topological sorts.
++@item (htmlprag) Neil Van Dyke's permissive (\"pragmatic\") HTML parser.
++@item (io string) SLIB's IO routines dealing with strings.
++@item (logging logger) A flexible logging system.
++@item (logging port-log) A logger that outputs to a port.
++@item (logging rotating-log) A logger that rotates its output files.
++@item (match-bind) Nifty and concise regular expression routines.
++@item (math minima) A golden-section minimum finder.
++@item (math primes) Functions related to prime numbers and factorization.
++@item (os process) Spawning processes and capturing their output.
++@item (scheme documentation) Macros to define different kinds of variables
++with documentation.
++@item (scheme kwargs) Defining functions with flexible keyword arguments.
++@item (search basic) Classic search functions.
++@item (string completion) Building blocks for tab completion.
++@item (string soundex) The SOUNDEX string categorization algorithm.
++@item (string transform) Beyond SRFI-13.
++@item (string wrap) A versatile string formatter.
++@item (term ansi-color) Generate ANSI color escape sequences.
++@item (unit-test) A JUnit-style unit testing framework.
++@end itemize")
     ;; The whole is under GPLv3+, but some modules are under laxer
     ;; distribution terms such as LGPL and public domain.  See `COPYING' for
     ;; details.
