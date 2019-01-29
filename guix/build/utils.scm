@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
@@ -101,7 +101,27 @@
 
             locale-category->string))
 
+
+;;;
+;;; Guile 2.0 compatibility later.
+;;;
 
+;; The bootstrap Guile is Guile 2.0, so provide a compatibility layer.
+(cond-expand
+  ((and guile-2 (not guile-2.2))
+   (define (setvbuf port mode . rest)
+     (apply (@ (guile) setvbuf) port
+            (match mode
+              ('line _IOLBF)
+              ('block _IOFBF)
+              ('none _IONBF)
+              (_ mode))                           ;an _IO* integer
+            rest))
+
+   (module-replace! (current-module) '(setvbuf)))
+  (else #f))
+
+
 ;;;
 ;;; Directories.
 ;;;
@@ -989,8 +1009,8 @@ known as `nuke-refs' in Nixpkgs."
         ;; We cannot use `regexp-exec' here because it cannot deal with
         ;; strings containing NUL characters.
         (format #t "removing store references from `~a'...~%" file)
-        (setvbuf in _IOFBF 65536)
-        (setvbuf out _IOFBF 65536)
+        (setvbuf in 'block 65536)
+        (setvbuf out 'block 65536)
         (fold-port-matches (lambda (match result)
                              (put-bytevector out (string->utf8 store))
                              (put-u8 out (char->integer #\/))

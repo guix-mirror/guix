@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -784,8 +784,8 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
       (+ (time-second diff)
          (/ (time-nanosecond diff) 1e9))))
 
-  (setvbuf (current-output-port) _IOLBF)
-  (setvbuf (current-error-port) _IOLBF)
+  (setvbuf (current-output-port) 'line)
+  (setvbuf (current-error-port) 'line)
 
   ;; Encoding/decoding errors shouldn't be silent.
   (fluid-set! %default-port-conversion-strategy 'error)
