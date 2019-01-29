@@ -98,6 +98,7 @@
             invoke-error-exit-status
             invoke-error-term-signal
             invoke-error-stop-signal
+            report-invoke-error
 
             locale-category->string))
 
@@ -622,6 +623,11 @@ Where every <*-phase-name> is an expression evaluating to a symbol, and
     ((_ phases (add-after old-phase-name new-phase-name new-phase))
      (alist-cons-after old-phase-name new-phase-name new-phase phases))))
 
+
+;;;
+;;; Program invocation.
+;;;
+
 (define-condition-type &invoke-error &error
   invoke-error?
   (program      invoke-error-program)
@@ -642,6 +648,17 @@ if the exit code is non-zero; otherwise return #t."
                          (term-signal (status:term-sig code))
                          (stop-signal (status:stop-sig code))))))
     #t))
+
+(define* (report-invoke-error c #:optional (port (current-error-port)))
+  "Report to PORT about C, an '&invoke-error' condition, in a human-friendly
+way."
+  (format port "command~{ ~s~} failed with ~:[signal~;status~] ~a~%"
+          (cons (invoke-error-program c)
+                (invoke-error-arguments c))
+          (invoke-error-exit-status c)
+          (or (invoke-error-exit-status c)
+              (invoke-error-term-signal c)
+              (invoke-error-stop-signal c))))
 
 
 ;;;
