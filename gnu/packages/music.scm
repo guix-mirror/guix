@@ -2578,6 +2578,28 @@ MusicBrainz database.")
 (define-public python2-musicbrainzngs
   (package-with-python2 python-musicbrainzngs))
 
+(define-public python-isrcsubmit
+  (package
+    (name "python-isrcsubmit")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "isrcsubmit" version))
+       (sha256
+        (base32
+         "0jh4cni8qhri6dh83cmp0i0m0384vv0vznlygv49wj9xzh1d99qv"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-discid" ,python-discid)
+       ("python-musicbrainzngs" ,python-musicbrainzngs)))
+    (home-page "https://github.com/JonnyJD/musicbrainz-isrcsubmit")
+    (synopsis "Submit ISRCs from CDs to MusicBrainz")
+    (description "@code{isrcsubmit} is a tool to extract @dfn{International
+Standard Recording Code} (ISRCs) from audio CDs and submit them to
+@url{https://musicbrainz.org/, MusicBrainz}.")
+    (license license:gpl3+)))
+
 (define-public python2-pyechonest
   (package
     (name "python2-pyechonest")
