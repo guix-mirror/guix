@@ -158,7 +158,7 @@ of external libraries that provide additional functionality.")
     (version "7.1.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.vtk.org/files/release/"
+              (uri (string-append "https://vtk.org/files/release/"
                                   (version-major+minor version)
                                   "/VTK-" version ".tar.gz"))
               (sha256
@@ -196,7 +196,7 @@ of external libraries that provide additional functionality.")
        ("png" ,libpng)
        ("tiff" ,libtiff)
        ("zlib" ,zlib)))
-    (home-page "http://www.vtk.org/")
+    (home-page "https://vtk.org/")
     (synopsis "Libraries for 3D computer graphics")
     (description
      "The Visualization Toolkit (VTK) is a C++ library for 3D computer graphics,
