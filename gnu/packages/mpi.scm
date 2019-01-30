@@ -50,7 +50,7 @@
   ;; to migrate to 2.0.
   (package
     (name "hwloc")
-    (version "1.11.10")
+    (version "1.11.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.open-mpi.org/software/hwloc/v"
@@ -58,7 +58,7 @@
                                   "/downloads/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ryibcng40xcq22lsj85fn2vcvrksdx9rr3wwxpq8dw37lw0is1b"))))
+                "0za1b9lvrm3rhn0lrxja5f64r0aq1qs4m0pxn1ji2mbi8ndppyyx"))))
     (build-system gnu-build-system)
     (outputs '("out"           ;'lstopo' & co., depends on Cairo, libx11, etc.
                "lib"           ;small closure
