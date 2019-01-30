@@ -203,15 +203,16 @@ as ordering relation.")
   (package
     (name "json-modern-cxx")
     (version "3.1.2")
+    (home-page "https://github.com/nlohmann/json")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/nlohmann/json/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference (url home-page)
+                           (commit (string-append "v" version))))
        (sha256
         (base32
-         "0m5fhdpx2qll933db2nsi30nns3cifavzvijzz6mxhdkpmngmzz8"))
-       (file-name (string-append name "-" version ".tar.gz"))
+         "1mpr781fb2dfbyscrr7nil75lkxsazg4wkm749168lcf2ksrrbfi"))
+       (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -227,13 +228,13 @@ as ordering relation.")
                (substitute* files
                  (("#include ?\"(fifo_map.hpp)\"" all fifo-map-hpp)
                   (string-append
-                   "#include <fifo_map/" fifo-map-hpp ">")))))))))
+                   "#include <fifo_map/" fifo-map-hpp ">")))))
+           #t))))
     (native-inputs
      `(("amalgamate" ,amalgamate)))
     (inputs
      `(("catch2" ,catch-framework2)
        ("fifo-map" ,fifo-map)))
-    (home-page "https://github.com/nlohmann/json")
     (build-system cmake-build-system)
     (synopsis "JSON parser and printer library for C++")
     (description "JSON for Modern C++ is a C++ JSON library that provides
