@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -33,12 +33,17 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
+  #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cargo)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages glib)
@@ -558,6 +563,174 @@ security standards.")
                         changeset))
     (sha256 (base32 hash))
     (file-name file-name)))
+
+(define* (computed-origin-method gexp-promise hash-algo hash
+                                 #:optional (name "source")
+                                 #:key (system (%current-system))
+                                 (guile (default-guile)))
+  "Return a derivation that executes the G-expression that results
+from forcing GEXP-PROMISE."
+  (mlet %store-monad ((guile (package->derivation guile system)))
+    (gexp->derivation (or name "computed-origin")
+                      (force gexp-promise)
+                      #:system system
+                      #:guile-for-build guile)))
+
+(define %icecat-version "60.5.0-guix1")
+
+;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
+;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
+;; script from the upstream IceCat project.
+(define icecat-source
+  (let* ((base-version (first (string-split %icecat-version #\-)))
+
+         (major-version (first  (string-split base-version #\.)))
+         (minor-version (second (string-split base-version #\.)))
+         (sub-version   (third  (string-split base-version #\.)))
+
+         (upstream-firefox-version (string-append base-version "esr"))
+         (upstream-firefox-source
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://ftp.mozilla.org/pub/firefox/releases/"
+                  upstream-firefox-version "/source/"
+                  "firefox-" upstream-firefox-version ".source.tar.xz"))
+            (sha256
+             (base32
+              "09a0kk250r03984n1hdwr2rg1vmhi2jkyzzgbbvkf9h9hzp6j7qs"))))
+
+         (upstream-icecat-base-version "60.3.0") ; maybe older than base-version
+         (upstream-icecat-gnu-version "1")
+         (upstream-icecat-version (string-append upstream-icecat-base-version
+                                                 "-gnu"
+                                                 upstream-icecat-gnu-version))
+         (upstream-icecat-source
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "mirror://gnu/gnuzilla/" upstream-icecat-base-version
+                  "/icecat-" upstream-icecat-version ".tar.bz2"))
+            (sha256
+             (base32
+              "0icnl64nxcyf7dprpdpygxhabsvyhps8c3ixysj9bcdlj9q34ib1"))))
+
+         (gnuzilla-commit (string-append "v" upstream-icecat-base-version))
+         (gnuzilla-source
+          (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "git://git.savannah.gnu.org/gnuzilla.git")
+                  (commit gnuzilla-commit)))
+            (file-name (git-file-name "gnuzilla" upstream-icecat-base-version))
+            (sha256
+             (base32
+              "19wal7hkbb4wvk40hs6d7a5paal2bfday08hwssm02srcbv48fj0"))))
+
+         (makeicecat-patch
+          (local-file (search-patch "icecat-makeicecat.patch"))))
+
+    (origin
+      (method computed-origin-method)
+      (file-name (string-append "icecat-" %icecat-version ".tar.xz"))
+      (sha256 #f)
+      (uri
+       (delay
+        (with-imported-modules '((guix build utils))
+          #~(begin
+              (use-modules (guix build utils))
+              (let ((firefox-dir
+                     (string-append "firefox-" #$base-version))
+                    (icecat-dir
+                     (string-append "icecat-" #$%icecat-version))
+                    (old-icecat-dir
+                     (string-append "icecat-" #$upstream-icecat-base-version)))
+
+                (mkdir "/tmp/bin")
+                (set-path-environment-variable
+                 "PATH" '("bin")
+                 (list "/tmp"
+                       #+(canonical-package bash)
+                       #+(canonical-package coreutils)
+                       #+(canonical-package findutils)
+                       #+(canonical-package patch)
+                       #+(canonical-package xz)
+                       #+(canonical-package sed)
+                       #+(canonical-package grep)
+                       #+(canonical-package bzip2)
+                       #+(canonical-package gzip)
+                       #+(canonical-package tar)
+                       #+rename))
+
+                (symlink #+(file-append rename "/bin/rename")
+                         "/tmp/bin/prename")
+
+                ;; We copy the gnuzilla source directory because it is
+                ;; read-only in 'gnuzilla-source', and the makeicecat script
+                ;; uses "cp -a" to copy parts of it and assumes that the
+                ;; copies will be writable.
+                (copy-recursively #+gnuzilla-source "/tmp/gnuzilla"
+                                  #:log (%make-void-port "w"))
+
+                (with-directory-excursion "/tmp/gnuzilla"
+                  (make-file-writable "makeicecat")
+                  (invoke "patch" "--force" "--no-backup-if-mismatch"
+                          "-p1" "--input" #+makeicecat-patch)
+                  (patch-shebang "makeicecat")
+                  (substitute* "makeicecat"
+                    (("^FFMAJOR=.*")
+                     (string-append "FFMAJOR=" #$major-version "\n"))
+                    (("^FFMINOR=.*")
+                     (string-append "FFMINOR=" #$minor-version "\n"))
+                    (("^FFSUB=.*")
+                     (string-append "FFSUB=" #$sub-version "\n"))
+                    (("^GNUVERSION=.*")
+                     (string-append "GNUVERSION="
+                                    #$upstream-icecat-gnu-version "\n"))
+                    (("^DATA=.*")
+                     "DATA=/tmp/gnuzilla/data\n")
+                    (("^sed .* debian/" all)
+                     (string-append "echo warning: skipped: " all))
+                    (("^debian/rules " all)
+                     (string-append "echo warning: skipped: " all))
+                    (("^find extensions/gnu/ ")
+                     "find extensions/gnu/ | sort ")
+                    (("/bin/sed")
+                     #+(file-append (canonical-package sed) "/bin/sed"))))
+
+                (format #t "Unpacking upstream firefox tarball...~%")
+                (force-output)
+                (invoke "tar" "xf" #+upstream-firefox-source)
+                (rename-file firefox-dir icecat-dir)
+
+                (with-directory-excursion icecat-dir
+                  (for-each mkdir-p '("l10n" "debian/config"))
+                  (call-with-output-file "debian/control" (const #t))
+                  (format #t "Running makeicecat script...~%")
+                  (force-output)
+                  (invoke "bash" "/tmp/gnuzilla/makeicecat")
+                  (for-each delete-file-recursively '("l10n" "debian")))
+
+                (format #t (string-append "Unpacking l10n/* and debian/* from"
+                                          " upstream IceCat tarball...~%"))
+                (force-output)
+                (unless (string=? icecat-dir old-icecat-dir)
+                  (symlink icecat-dir old-icecat-dir))
+                (invoke "tar" "xf" #+upstream-icecat-source
+                        (string-append old-icecat-dir "/l10n")
+                        (string-append old-icecat-dir "/debian"))
+
+                (format #t (string-append "Packing new IceCat tarball...~%"))
+                (force-output)
+                (invoke "tar" "cfa" #$output
+                        ;; avoid non-determinism in the archive
+                        "--mtime=@0"
+                        "--owner=root:0"
+                        "--group=root:0"
+                        "--sort=name"
+                        icecat-dir)
+
+                #t))))))))
 
 (define-public icecat
   (package
