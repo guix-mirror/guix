@@ -155,7 +155,7 @@ of external libraries that provide additional functionality.")
 (define-public vtk
   (package
     (name "vtk")
-    (version "7.1.0")
+    (version "8.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://vtk.org/files/release/"
@@ -163,7 +163,7 @@ of external libraries that provide additional functionality.")
                                   "/VTK-" version ".tar.gz"))
               (sha256
                (base32
-                "0yj96z58haan77gzilnqp7xpf8hg5jk11a3jx55p2ksd400s0gjz"))))
+                "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))))
     (build-system cmake-build-system)
     (arguments
      '(#:build-type "Release"           ;Build without '-g' to save space.
