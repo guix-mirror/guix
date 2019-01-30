@@ -19,6 +19,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4075,6 +4076,42 @@ an identifier which can be used to lookup the CD at MusicBrainz.  Additionally,
 it provides a submission URL for adding the disc ID to the database and gathers
 ISRCs and the MCN (=UPC/EAN) from disc.")
     (license license:lgpl2.1+)))
+
+(define-public python-discid
+  (package
+    (name "python-discid")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "discid" version))
+       (sha256
+        (base32
+         "1fgp67nhqlbvhhwrcxq5avil7alpzw4s4579hlyvxzbphdnbz8vq"))))
+    (build-system python-build-system)
+    (inputs
+     `(("libdiscid" ,libdiscid)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-libdiscid
+           ;; Set path of libdiscid
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((discid (assoc-ref inputs "libdiscid")))
+               (substitute* "discid/libdiscid.py"
+                 (("lib_name = (.*)$" all name)
+                  (string-append "lib_name = \"" discid
+                                 "/lib/libdiscid.so.0\"\n")))
+               #t))))))
+    (home-page "https://python-discid.readthedocs.io/")
+    (synopsis "Python bindings for Libdiscid")
+    (description
+     "This package provides Python bindings for the Libdiscid library.  The
+main purpose is the calculation of @url{https://musicbrainz.org/doc/Disc%20ID,
+Disc IDs} for use with the MusicBrainz database.  Additionally the disc
+@dfn{Media Catalog Number} (MCN) and track @dfn{International Standard
+Recording Code} (ISRC) can be extracted.}")
+    (license license:lgpl3+)))
 
 (define-public libmusicbrainz
   (package
