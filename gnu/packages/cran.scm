@@ -1827,7 +1827,10 @@ matrices.")
     (properties `((upstream-name . "Rmpi")))
     (build-system r-build-system)
     (arguments
-     `(#:configure-flags '("--configure-args=\"--with-Rmpi-type=OPENMPI\"")))
+     `(#:configure-flags '("--configure-args=\"--with-Rmpi-type=OPENMPI\"")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'install 'mpi-setup
+                    ,%openmpi-setup))))
     (inputs
      `(("openmpi" ,openmpi)))
     (native-inputs
