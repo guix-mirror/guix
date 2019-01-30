@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -663,7 +663,11 @@ cosine/ sine transforms or DCT/DST).")
     (arguments
      (substitute-keyword-arguments (package-arguments fftw)
        ((#:configure-flags cf)
-        `(cons "--enable-mpi" ,cf))))
+        `(cons "--enable-mpi" ,cf))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'mpi-setup
+             ,%openmpi-setup)))))
     (description
      (string-append (package-description fftw)
                     "  With OpenMPI parallelism support."))))
