@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -5285,20 +5285,18 @@ snippets on @url{https://commandlinefu.com}.")
 (define-public rss-bridge
   (package
     (name "rss-bridge")
-    (version "2018-11-10")
+    (version "2019-01-13")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/RSS-Bridge/rss-bridge/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/RSS-Bridge/rss-bridge")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1l9a82smh6k37bjvzbmkdlssxywlmr40ig4cykgsns1iiszwv4ia"))))
+         "1m0dq491954f0d7k4508ddlywk09whcz9j21rc4yk3lbwpf0nd4c"))))
     (build-system trivial-build-system)
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
     (arguments
      '(#:modules ((guix build utils))
        #:builder
@@ -5307,12 +5305,9 @@ snippets on @url{https://commandlinefu.com}.")
                       (ice-9 match))
          (let* ((out (assoc-ref %outputs "out"))
                 (share-rss-bridge (string-append out "/share/rss-bridge")))
-           (set-path-environment-variable
-            "PATH" '("bin") (map (match-lambda ((_ . input) input))
-                                 %build-inputs))
            (mkdir-p share-rss-bridge)
-           (invoke "tar" "xvf" (assoc-ref %build-inputs "source")
-                   "--strip-components" "1" "-C" share-rss-bridge)))))
+           (copy-recursively (assoc-ref %build-inputs "source") share-rss-bridge)
+           #t))))
     (home-page "https://github.com/RSS-Bridge/rss-bridge")
     (synopsis "Generate Atom feeds for social networking websites")
     (description "rss-bridge generates Atom feeds for social networking
