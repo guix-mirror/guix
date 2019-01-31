@@ -83,6 +83,52 @@
 the system clipboards.")
     (license license:gpl3)))
 
+(define-public r-sys
+  (package
+    (name "r-sys")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sys" version))
+       (sha256
+        (base32
+         "10ml2492bdllh6cz2zl192ip0fdgjkkgayggd3ghswsj5gjv5hrh"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/jeroen/sys")
+    (synopsis "Powerful and reliable tools for running system commands in R")
+    (description
+     "This package provides drop-in replacements for the base @code{system2()}
+function with fine control and consistent behavior across platforms.  It
+supports clean interruption, timeout, background tasks, and streaming STDIN /
+STDOUT / STDERR over binary or text connections.  The package also provides
+functions for evaluating expressions inside a temporary fork.  Such
+evaluations have no side effects on the main R process, and support reliable
+interrupts and timeouts.  This provides the basis for a sandboxing
+mechanism.")
+    (license license:expat)))
+
+(define-public r-askpass
+  (package
+    (name "r-askpass")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "askpass" version))
+       (sha256
+        (base32
+         "07q0ik8jzk44vpwh48rr3fnpd7dzsdhjjsl4l850rffv3dyq4h6v"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-sys" ,r-sys)))
+    (home-page "https://github.com/jeroen/askpass")
+    (synopsis "Safe password entry for R")
+    (description
+     "This package provides cross-platform utilities for prompting the user
+for credentials or a passphrase, for example to authenticate with a server or
+read a protected key.")
+    (license license:expat)))
+
 (define-public r-vegan
   (package
     (name "r-vegan")
@@ -927,14 +973,14 @@ applications.  That is, compute distances and related measures for angular
 (define-public r-ggmap
   (package
     (name "r-ggmap")
-    (version "2.6.1")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggmap" version))
        (sha256
         (base32
-         "0mssb09w818jv58h7mly9y181pzv22sgcd4a079cfpq04bs0wigw"))))
+         "144x6ycb2c3fvy5c68ww53m6gzi6kfvas7cpbn071z08n4xgb72f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
@@ -1062,13 +1108,13 @@ XML.  To learn more about the Abbyy OCR API, see @url{http://ocrsdk.com/}.")
 (define-public r-colorspace
   (package
     (name "r-colorspace")
-    (version "1.3-2")
+    (version "1.4-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "colorspace" version))
        (sha256
-        (base32 "0d1ya7hx4y58n5ivwmdmq2zgh0g2sbv7ykh13n85c1355csd57yx"))))
+        (base32 "0mpmvz2sycjp4c9y3v3qin7mdjy812hwi7cyjnblcw6xb1ckq06f"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/colorspace")
     (synopsis "Color space manipulation")
@@ -2038,14 +2084,14 @@ functions from LINPACK.")
 (define-public r-fitdistrplus
   (package
     (name "r-fitdistrplus")
-    (version "1.0-11")
+    (version "1.0-14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fitdistrplus" version))
        (sha256
         (base32
-         "12hckg3y5j3zh9q1gwxkc27q813p2r42iqp7wdfiq6nj55jrh6w6"))))
+         "10q08wsv8v3w7797jdvvv60bgrf1bi6438wf0jcqv81ays82a245"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)
@@ -2809,14 +2855,14 @@ Laplace approximation and adaptive Gauss-Hermite quadrature.")
 (define-public r-jomo
   (package
     (name "r-jomo")
-    (version "2.6-5")
+    (version "2.6-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "jomo" version))
        (sha256
         (base32
-         "109q5m69clrvvialxdxznd0wdb54ajhx84nj8slx8bf909a427mj"))))
+         "1048qb12cx7fs156jcqzwkfmsjadkgnrqd0krznyxpn873zr9lq2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lme4" ,r-lme4)
@@ -3042,16 +3088,18 @@ structure.")
 (define-public r-vioplot
   (package
     (name "r-vioplot")
-    (version "0.2")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vioplot" version))
        (sha256
         (base32
-         "16wkb26kv6qr34hv5zgqmgq6zzgysg9i78pvy2c097lr60v087v0"))))
+         "1ddmmqq7qrnvr5q518afnysrl7ccr8am9njknv3dpwaqzcdr9akn"))))
     (build-system r-build-system)
-    (propagated-inputs `(("r-sm" ,r-sm)))
+    (propagated-inputs
+     `(("r-sm" ,r-sm)
+       ("r-zoo" ,r-zoo)))
     (home-page "http://wsopuppenkiste.wiso.uni-goettingen.de/~dadler")
     (synopsis "Violin plot")
     (description
@@ -7222,13 +7270,13 @@ series.")
 (define-public r-acceptancesampling
   (package
     (name "r-acceptancesampling")
-    (version "1.0-5")
+    (version "1.0-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "AcceptanceSampling" version))
        (sha256
-        (base32 "18krmmyn8pn11aqd81kbvka68lnd36mnpdh7p3pz9r4m4vjj007x"))))
+        (base32 "1z3rmln63ki2kik9kinbwr9qhr32ggbmh4mm3xqy6di119n47ca9"))))
     (properties
      `((upstream-name . "AcceptanceSampling")))
     (build-system r-build-system)
@@ -7320,14 +7368,14 @@ cross-sectional, time series, clustered, panel, and longitudinal data.")
 (define-public r-th-data
   (package
     (name "r-th-data")
-    (version "1.0-9")
+    (version "1.0-10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "TH.data" version))
        (sha256
         (base32
-         "03xfvww0krw0fn76qmmvrj7dx4shin57qafwhkrggfg25hbqlcfq"))))
+         "0mgz7aj2d9abbmdr65zgmg1ddp3fdbs3mfj83r5xadh5ldkir2k1"))))
     (properties `((upstream-name . "TH.data")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7371,14 +7419,14 @@ Hothorn, Westfall, 2010, CRC Press).")
 (define-public r-emmeans
   (package
     (name "r-emmeans")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "emmeans" version))
        (sha256
         (base32
-         "1sf7gmdb7aqhdpx489vg693ivc5677n4yjx27ixv8v7pjh8mlwwx"))))
+         "0mg6y007hfmr601cq4jgxl5ncwbx79kkh7xs2i504m0rinxj8bf5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-estimability" ,r-estimability)
@@ -8490,18 +8538,17 @@ Scientific.")
 (define-public r-activity
   (package
     (name "r-activity")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "activity" version))
        (sha256
         (base32
-         "1lqajgxfps2h6amz1791vp3f52rs9ghmanq1nqfxqd2jmk3idkrx"))))
+         "11w2bz6p9xbzdh6773dmbbh6rws0h5dj18p8m0ivzizgq932vdzs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-circular" ,r-circular)
-       ("r-overlap" ,r-overlap)
        ("r-pbapply" ,r-pbapply)))
     (home-page "https://cran.r-project.org/web/packages/activity/")
     (synopsis "Animal activity statistics")
@@ -8697,14 +8744,14 @@ in-memory raw vectors.")
 (define-public r-waveslim
   (package
     (name "r-waveslim")
-    (version "1.7.5")
+    (version "1.7.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "waveslim" version))
        (sha256
         (base32
-         "0lqslkihgrd7rbihqhhk57m9vkbnfsznkvk8430cvbcsn7vridii"))))
+         "0mky0nb4xxp8rybp87mxw2f1q6k400wpxv01zr4injv7ja6028xk"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -9540,14 +9587,14 @@ limitations\" using the GNU Multiple Precision library.")
 (define-public r-rmpfr
   (package
     (name "r-rmpfr")
-    (version "0.7-1")
+    (version "0.7-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rmpfr" version))
        (sha256
         (base32
-         "0172px5ryi7i0gyyin9z2bzif8vnj292gk0s1w5p3c12g9hj2c4v"))))
+         "1zq3as34r27v2yc729731997wdhxb6cs5ilmak4nmsljabnac7gc"))))
     (properties `((upstream-name . "Rmpfr")))
     (build-system r-build-system)
     (inputs

@@ -1,0 +1,37 @@
+diff --git a/src/libscotch/library.h b/src/libscotch/library.h
+index 1891c19..ecc0533 100644
+--- a/src/libscotch/library.h
++++ b/src/libscotch/library.h
+@@ -67,6 +67,8 @@
+ 
+ /*+ Integer type. +*/
+ 
++#include <stdint.h>
++
+ typedef DUMMYIDX SCOTCH_Idx;
+ 
+ typedef DUMMYINT SCOTCH_Num;
+diff --git a/src/libscotchmetis/library_metis.h b/src/libscotchmetis/library_metis.h
+index e6767e1..04e71c3 100644
+--- a/src/libscotchmetis/library_metis.h
++++ b/src/libscotchmetis/library_metis.h
+@@ -99,6 +99,7 @@ typedef enum {
+ */
+ 
+ #ifndef SCOTCH_H                                  /* In case "scotch.h" not included before */
++#include <stdint.h>
+ typedef DUMMYINT SCOTCH_Num;
+ #endif /* SCOTCH_H */
+ 
+diff --git a/src/libscotchmetis/library_parmetis.h b/src/libscotchmetis/library_parmetis.h
+index 6d2f0b0..3c803fc 100644
+--- a/src/libscotchmetis/library_parmetis.h
++++ b/src/libscotchmetis/library_parmetis.h
+@@ -106,6 +106,7 @@ typedef enum {
+ */
+ 
+ #ifndef SCOTCH_H                                  /* In case "scotch.h" not included before */
++#include <stdint.h>
+ typedef DUMMYINT SCOTCH_Num;
+ #endif /* SCOTCH_H */
+ 

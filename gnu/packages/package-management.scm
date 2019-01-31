@@ -52,6 +52,7 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages man)
@@ -106,8 +107,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.16.0")
-        (commit "7ba2b27467a39956f10e2e11061d9569e4b7d632")
-        (revision 8))
+        (commit "4bddd12ad540d45a33a5f9f129b896843dca603f")
+        (revision 9))
     (package
       (name "guix")
 
@@ -123,7 +124,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "14srgkl0vyr6q7azv76nncp63gngmm71y18ybyj9f6l6s4shbcm4"))
+                  "1abn4ghb25kn0cmr9dbb3q3fxdcc0g2fnnmbrykxv111s6ahdmlw"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -300,9 +301,6 @@ upgrades and roll-backs, per-user profiles, and much more.  It is based on
 the Nix package manager.")
       (license license:gpl3+)
       (properties '((ftp-server . "alpha.gnu.org"))))))
-
-;; Alias for backward compatibility.
-(define-public guix-devel guix)
 
 (define-public guix-daemon
   ;; This package is for internal consumption: it allows us to quickly build

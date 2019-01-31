@@ -48,6 +48,7 @@
 
 (define-module (gnu packages maths)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 match)
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -2297,20 +2298,18 @@ also provides threshold-based ILU factorization preconditioners.")
 (define-public superlu-dist
   (package
     (name "superlu-dist")
-    (version "5.3.0")
+    (version "6.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
                            "superlu_dist_" version ".tar.gz"))
        (sha256
-        (base32 "0ja5ihqivkda1wd58y4lmzvmwssm9g91f70c5q0fzwhng6580h6y"))
+        (base32 "0pqgcgh1yxhfzs99fas3mggajzd5wca3nbyp878rziy74gfk03dl"))
        (modules '((guix build utils)))
        (snippet
         ;; Replace the non-free implementation of MC64 with a stub
         '(begin
-           (use-modules (ice-9 regex)
-                        (ice-9 rdelim))
            (call-with-output-file "SRC/mc64ad_dist.c"
              (lambda (port)
                (display "
@@ -2326,92 +2325,57 @@ void mc64ad_dist (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
   abort ();
 }\n" port)))
            (substitute* "SRC/util.c"    ;adjust default algorithm
-             (("RowPerm[[:blank:]]*=[[:blank:]]*LargeDiag")
-              "RowPerm = NOROWPERM"))
+             (("RowPerm[[:blank:]]*=[[:blank:]]*LargeDiag_MC64;")
+              ;; TODO: set to "LargeDiag_AWPM" once combinatorial-blas has
+              ;; general (i.e. non-square) processor-grid support.
+              "RowPerm = NOROWPERM;"))
            #t))
-       (patches (search-patches "superlu-dist-scotchmetis.patch"))))
-    (build-system gnu-build-system)
+       (patches (search-patches "superlu-dist-scotchmetis.patch"
+                                "superlu-dist-awpm-grid.patch"))))
+    (build-system cmake-build-system)
     (native-inputs
      `(("tcsh" ,tcsh)))
     (inputs
-     `(("gfortran" ,gfortran)))
+     `(("gfortran" ,gfortran)
+       ("blas" ,openblas)
+       ("lapack" ,lapack)
+       ("combblas" ,combinatorial-blas)))
     (propagated-inputs
-     `(("openmpi" ,openmpi)             ;headers include MPI heades
-       ("lapack" ,lapack)               ;required to link with output library
-       ("pt-scotch" ,pt-scotch)))       ;same
+     `(("mpi" ,openmpi)                 ;headers include MPI heades
+       ("parmetis" ,pt-scotch32 "metis")
+       ("pt-scotch" ,pt-scotch32)))
     (arguments
-     `(#:parallel-build? #f             ;race conditions using ar
+     `(#:parallel-tests? #f             ;tests use MPI and OpenMP
+       #:configure-flags (list "-DBUILD_SHARED_LIBS:BOOL=YES"
+                               "-DTPL_ENABLE_COMBBLASLIB=YES"
+                               "-DTPL_BLAS_LIBRARIES=-lopenblas"
+                               "-DTPL_LAPACK_LIBRARIES=-llapack"
+                               (string-append "-DTPL_PARMETIS_LIBRARIES="
+                                              (string-join
+                                               '("ptscotchparmetis" "ptscotch" "ptscotcherr"
+                                                 "scotchmetis" "scotch" "scotcherr")
+                                               ";"))
+                               (string-append "-DTPL_PARMETIS_INCLUDE_DIRS="
+                                              (assoc-ref %build-inputs "parmetis")
+                                              "/include")
+                               "-DTPL_ENABLE_COMBBLASLIB=ON"
+                               (string-append "-DTPL_COMBBLAS_INCLUDE_DIRS="
+                                              (assoc-ref %build-inputs "combblas")
+                                              "/include/CombBLAS;"
+                                              (assoc-ref %build-inputs "combblas")
+                                              "/include/BipartiteMatchings")
+                               "-DTPL_COMBBLAS_LIBRARIES=CombBLAS")
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (call-with-output-file "make.inc"
-               (lambda (port)
-                 (format port "
-PLAT        =
-DSuperLUroot = ~a
-DSUPERLULIB  = ~a/lib/libsuperlu_dist.a
-BLASDEF     = -DUSE_VENDOR_BLAS
-BLASLIB     = -L~a/lib -lblas
-PARMETISLIB = -L~a/lib \
-              -lptscotchparmetis -lptscotch -lptscotcherr -lptscotcherrexit \
-              -lscotch -lscotcherr -lscotcherrexit
-METISLIB    = -L~:*~a/lib \
-              -lscotchmetis -lscotch -lscotcherr -lscotcherrexit
-LIBS        = $(DSUPERLULIB) $(PARMETISLIB) $(METISLIB) $(BLASLIB)
-ARCH        = ar
-ARCHFLAGS   = cr
-RANLIB      = ranlib
-CC          = mpicc
-PIC         = -fPIC
-CFLAGS      = -O3 -g -DPRNTlevel=0 $(PIC)
-NOOPTS      = -O0 -g $(PIC)
-FORTRAN     = mpifort
-FFLAGS      = -O2 -g $(PIC)
-LOADER      = $(CC)
-CDEFS       = -DAdd_"
-                         (getcwd)
-                         (assoc-ref outputs "out")
-                         (assoc-ref inputs "lapack")
-                         (assoc-ref inputs "pt-scotch"))))
-             #t))
-         (add-after 'unpack 'remove-broken-symlinks
+         (add-before 'configure 'set-c++-standard
            (lambda _
-             (for-each delete-file
-                       (find-files "MAKE_INC" "\\.#make\\..*"))
-             #t))
-         (add-before 'build 'create-install-directories
-           (lambda* (#:key outputs #:allow-other-keys)
-             (for-each
-              (lambda (dir)
-                (mkdir-p (string-append (assoc-ref outputs "out")
-                                        "/" dir)))
-              '("lib" "include"))
-             #t))
+             (substitute* "CMakeLists.txt"
+               ;; AWPM headers require C++14
+               (("CMAKE_CXX_STANDARD 11") "CMAKE_CXX_STANDARD 14"))))
 	 (add-before 'check 'mpi-setup
 	   ,%openmpi-setup)
-         (replace 'check
-           (lambda _
-             (with-directory-excursion "EXAMPLE"
-               (invoke "mpirun" "-n" "2"
-                       "./pddrive" "-r" "1" "-c" "2" "g20.rua")
-               (invoke "mpirun" "-n" "2"
-                       "./pzdrive" "-r" "1" "-c" "2" "cg20.cua"))
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Library is placed in lib during the build phase.  Copy over
-             ;; headers to include.
-             (let* ((out    (assoc-ref outputs "out"))
-                    (incdir (string-append out "/include")))
-               (for-each (lambda (file)
-                           (let ((base (basename file)))
-                             (format #t "installing `~a' to `~a'~%"
-                                     base incdir)
-                             (copy-file file
-                                        (string-append incdir "/" base))))
-                         (find-files "SRC" ".*\\.h$")))
-             #t)))))
+         (add-before 'check 'omp-setup
+           (lambda _ (setenv "OMP_NUM_THREADS" "1") #t)))))
     (home-page (package-home-page superlu))
     (synopsis "Parallel supernodal direct solver")
     (description
@@ -2423,25 +2387,25 @@ implemented in ANSI C, and MPI for communications.")
 (define-public scotch
   (package
     (name "scotch")
-    (version "6.0.5a")
+    (version "6.0.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://gforge.inria.fr/frs/download.php/"
                           "latestfile/298/scotch_" version ".tar.gz"))
       (sha256
-       (base32 "0vsmgjz8qv80di3ljmc7hbdsizxxxwy2b9rgd2fl1mdc6dgbj8av"))
-      (patches (search-patches "scotch-test-threading.patch"
-                               "scotch-build-parallelism.patch"
-                               "scotch-graph-induce-type-64.patch"
-                               "scotch-graph-diam-64.patch"))))
+       (base32 "1ky4k9r6jvajhqaqnnx6h8fkmds2yxgp70dpr1qzwcyhi2nhqvv8"))
+      (patches (search-patches "scotch-build-parallelism.patch"
+                               "scotch-integer-declarations.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
        ("flex" ,flex)
        ("bison" ,bison)))
+    (outputs '("out" "metis"))
     (arguments
-     `(#:phases
+     `(#:make-flags (list (string-append "prefix=" %output))
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'chdir-to-src
@@ -2476,7 +2440,7 @@ YACC = bison -pscotchyy -y -b y
                         '("COMMON_FILE_COMPRESS_GZ"
                           "COMMON_PTHREAD"
                           "COMMON_RANDOM_FIXED_SEED"
-                          "INTSIZE64"             ;use 'long' instead of 'int'
+                          "INTSIZE64"             ;use 'int64_t'
                           ;; Prevents symbolc clashes with libesmumps
                           "SCOTCH_RENAME"
                           ;; XXX: Causes invalid frees in superlu-dist tests
@@ -2489,22 +2453,21 @@ YACC = bison -pscotchyy -y -b y
             (invoke "make"
                     (format #f "-j~a" (parallel-job-count))
                     "esmumps")))
-         (replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (mkdir out)
-              (invoke "make"
-                      (string-append "prefix=" out)
-                      "install")
-              ;; esmumps files are not installed with the above
-              (for-each (lambda (f)
-                          (copy-file f (string-append out "/include/" f)))
-                        (find-files "../include" ".*esmumps.h$"))
-              (for-each (lambda (f)
-                          (copy-file f (string-append out "/lib/" f)))
-                        (find-files "../lib" "^lib.*esmumps.*"))
-              #t))))))
+         (add-before 'install 'make-install-dirs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir (assoc-ref outputs "out"))))
+         (add-after 'install 'install-metis
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "metis")))
+               (mkdir out)
+               ;; metis files are not installed with 'make install'
+               (for-each (lambda (f)
+                           (install-file f (string-append out "/include")))
+                         (find-files "../include/" ".*metis\\.h"))
+               (for-each (lambda (f)
+                           (install-file f (string-append out "/lib")))
+                         (find-files "../lib/" ".*metis\\..*"))
+               #t))))))
     (home-page "http://www.labri.fr/perso/pelegrin/scotch/")
     (synopsis "Programs and libraries for graph algorithms")
     (description "SCOTCH is a set of programs and libraries which implement
@@ -2742,6 +2705,7 @@ to BMP, JPEG or PNG image formats.")
     (inputs
      `(("gcl" ,gcl)
        ("gnuplot" ,gnuplot)                       ;for plots
+       ("sed" ,sed)
        ("tk" ,tk)))                               ;Tcl/Tk is used by 'xmaxima'
     (native-inputs
      `(("texinfo" ,texinfo)
@@ -2764,6 +2728,17 @@ to BMP, JPEG or PNG image formats.")
        #:make-flags (list "TMPDIR=/tmp")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((sed (string-append (assoc-ref inputs "sed") "/bin/sed"))
+                    (coreutils (assoc-ref inputs "coreutils"))
+                    (dirname (string-append coreutils "/bin/dirname"))
+                    (head (string-append coreutils "/bin/head")))
+               (substitute* "src/maxima.in"
+                 (("sed ") (string-append sed " "))
+                 (("dirname") dirname)
+                 (("head") head))
+               #t)))
          (add-before 'check 'pre-check
            (lambda _
              (chmod "src/maxima" #o555)
@@ -3531,7 +3506,11 @@ in finite element programs.")
         ``("-DMPI_C_COMPILER=mpicc"
            "-DMPI_CXX_COMPILER=mpicxx"
            "-DMPI_Fortran_COMPILER=mpifort"
-           ,@,cf))))
+           ,@,cf))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'mpi-setup
+             ,%openmpi-setup)))))
     (synopsis "Finite element library (with MPI support)")))
 
 (define-public flann
@@ -4215,3 +4194,53 @@ easily be incorporated into existing simulation codes.")
            (add-before 'check 'mpi-setup
 	     ,%openmpi-setup)))))
     (synopsis "SUNDIALS with OpenMPI support")))
+
+(define-public combinatorial-blas
+  (package
+    (name "combinatorial-blas")
+    (version "1.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://eecs.berkeley.edu/~aydin/CombBLAS_FILES/"
+                           "CombBLAS_beta_"
+                           (match (string-split version #\.)
+                            ((major minor patch)
+                             (string-append major minor "_" patch))) ;e.g. "16_2"
+                           ".tgz"))
+       (sha256
+        (base32
+         "1a9wbgdqyy1whhfc0yl0yqkax3amnqa6iihhq48d063gc0jwfd9a"))
+       (patches (search-patches "combinatorial-blas-awpm.patch"
+                                "combinatorial-blas-io-fix.patch"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("mpi" ,openmpi)
+       ("test-data" ,(origin
+                       (method url-fetch)
+                       (uri (string-append "https://people.eecs.berkeley.edu/~aydin/"
+                                           "CombBLAS_FILES/testdata_combblas1.6.1.tgz"))
+                       (sha256
+                        (base32
+                         "01y2781cy3fww7znmidrp85mf8zx0c905w5vzvk1mgrmhhynim87"))))))
+    (arguments
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES"
+                           "-DCMAKE_CXX_FLAGS=-DUSE_FUNNEL")
+       #:parallel-tests? #f             ;tests use 'mpiexec -n4'
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup)
+         (add-before 'check 'test-setup
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "OMP_NUM_THREADS" "2")
+             (invoke "tar" "xf" (assoc-ref inputs "test-data")))))))
+    (home-page "https://people.eecs.berkeley.edu/~aydin/CombBLAS/html/")
+    (synopsis "Linear algebra primitives for graph analytics")
+    (description "The Combinatorial BLAS (CombBLAS) is an extensible
+distributed-memory parallel graph library offering a small but powerful set of
+linear algebra primitives specifically targeting graph analytics.")
+    (license (list
+              license:gpl2+             ;include/psort/(funnel|sort)*.h
+              license:x11               ;usort and psort
+              license:bsd-3))))         ;CombBLAS and MersenneTwister.h

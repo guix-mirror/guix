@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -241,7 +241,7 @@ automatically.")
 (define-public scdoc
   (package
    (name "scdoc")
-   (version "1.6.0")
+   (version "1.8.1")
    (source
     (origin
      (method url-fetch)
@@ -250,7 +250,7 @@ automatically.")
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
       (base32
-       "1ca3js4arkg28gg2iszxxyrq7kgsrz482d1szv5dfd471h3vr5m3"))))
+       "1f3qrnbjr9ikbdvpsyx726nyiz4f7ka38rimy9fvbl7kmi62w1v7"))))
    (build-system gnu-build-system)
    (arguments
     `(#:make-flags '("CC=gcc")

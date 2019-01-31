@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -88,6 +88,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages java)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages image)
@@ -123,14 +124,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.37")
+    (version "2.4.38")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "09npb7vlz5sizgj0nvl0bqxj9zig29ipkp07fgmw5ykjcxfdr61l"))))
+               "0jiriyyf3pm6axf4mrz6c2z08yhs21hb4d23viq87jclm5bmiikx"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -5278,20 +5279,18 @@ snippets on @url{https://commandlinefu.com}.")
 (define-public rss-bridge
   (package
     (name "rss-bridge")
-    (version "2018-11-10")
+    (version "2019-01-13")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/RSS-Bridge/rss-bridge/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/RSS-Bridge/rss-bridge")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1l9a82smh6k37bjvzbmkdlssxywlmr40ig4cykgsns1iiszwv4ia"))))
+         "1m0dq491954f0d7k4508ddlywk09whcz9j21rc4yk3lbwpf0nd4c"))))
     (build-system trivial-build-system)
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
     (arguments
      '(#:modules ((guix build utils))
        #:builder
@@ -5300,12 +5299,9 @@ snippets on @url{https://commandlinefu.com}.")
                       (ice-9 match))
          (let* ((out (assoc-ref %outputs "out"))
                 (share-rss-bridge (string-append out "/share/rss-bridge")))
-           (set-path-environment-variable
-            "PATH" '("bin") (map (match-lambda ((_ . input) input))
-                                 %build-inputs))
            (mkdir-p share-rss-bridge)
-           (invoke "tar" "xvf" (assoc-ref %build-inputs "source")
-                   "--strip-components" "1" "-C" share-rss-bridge)))))
+           (copy-recursively (assoc-ref %build-inputs "source") share-rss-bridge)
+           #t))))
     (home-page "https://github.com/RSS-Bridge/rss-bridge")
     (synopsis "Generate Atom feeds for social networking websites")
     (description "rss-bridge generates Atom feeds for social networking
@@ -5324,6 +5320,9 @@ Instagram and YouTube.")
        (uri (git-reference
              (url "https://github.com/linkchecker/linkchecker")
              (commit (string-append "v" version))))
+       (patches
+        (search-patches
+         "linkchecker-mark-more-tests-that-require-the-network.patch"))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -5333,8 +5332,32 @@ Instagram and YouTube.")
      `(("python2-dnspython" ,python2-dnspython)
        ("python2-pyxdg" ,python2-pyxdg)
        ("python2-requests" ,python2-requests)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("python2-pytest" ,python2-pytest)
+       ("python2-miniboa" ,python2-miniboa)
+       ("python2-parameterized" ,python2-parameterized)))
     (arguments
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; Move the 'check phase to after 'install, so that the installed
+         ;; library can be used
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Set PYTHONPATH so that the installed linkchecker is used
+               (setenv "PYTHONPATH"
+                       (string-append out "/lib/python2.7/site-packages"
+                                      ":"
+                                      (getenv "PYTHONPATH")))
+               ;; Remove this directory to avoid it being used when running
+               ;; the tests
+               (delete-file-recursively "linkcheck")
+
+               (invoke "py.test" "tests"))
+             #t)))))
     (home-page "https://linkcheck.github.io/linkchecker")
     (synopsis "Check websites for broken links")
     (description "LinkChecker is a website validator.  It checks for broken

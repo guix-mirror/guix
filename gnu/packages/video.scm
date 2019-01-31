@@ -399,7 +399,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "2.9")
+    (version "3.0")
     (outputs '("out" "static"))
     (source
       (origin
@@ -408,9 +408,8 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "090hp4216isis8q5gb7bwzia8rfyzni54z21jnwm97x3hiy6ibpb"))
-        (patches (search-patches "x265-arm-flags.patch"
-                                 "x265-detect512-all-arches.patch"))
+          "0qh65wdpasrspkm1y0dlfa123myax568yi0sas0lmg5b1hkgrff5"))
+        (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
                     (delete-file-recursively "source/compat/getopt")
@@ -871,6 +870,34 @@ audio/video codec library.")
               (base32
                "0b59qk5wpc5ksiha76jbhb859g5gxa4w0k6afh3kgvgajiivs73l"))))))
 
+(define-public ffmpeg-for-stepmania
+  (hidden-package
+   (package
+     (inherit ffmpeg)
+     (version "2.1.3")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/stepmania/ffmpeg.git")
+              (commit "eda6effcabcf9c238e4635eb058d72371336e09b")))
+        (sha256
+         (base32 "1by8rmbva8mfrivdbbkr2gx4kga89zqygkd4cfjl76nr8mdcdamb"))
+        (file-name (git-file-name "ffmpeg" version))))
+     (arguments
+      (substitute-keyword-arguments (package-arguments ffmpeg)
+        ((#:configure-flags flags)
+         '(list "--disable-programs"
+                "--disable-doc"
+                "--disable-debug"
+                "--disable-avdevice"
+                "--disable-swresample"
+                "--disable-postproc"
+                "--disable-avfilter"
+                "--disable-shared"
+                "--enable-static"))))
+     (inputs '()))))
+
 (define-public ffmpegthumbnailer
   (package
     (name "ffmpegthumbnailer")
@@ -1314,7 +1341,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.01.17")
+    (version "2019.01.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
@@ -1322,7 +1349,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0fxajwv81b0bjw9qlwmxd4r93yp5nnqll79vhic0vy72ii0093r7"))))
+                "0z4x4lwpd6qd2r9xgp8cx4j1vl5vd76kzs74jp0hh3w2g31s51z8"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion

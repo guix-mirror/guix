@@ -20,7 +20,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
-  #:autoload   (gnu packages guile) (mcron)
+  #:autoload   (gnu packages guile-xyz) (mcron)
   #:use-module (guix deprecation)
   #:use-module (guix records)
   #:use-module (guix gexp)

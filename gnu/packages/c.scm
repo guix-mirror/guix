@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,8 +38,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (srfi srfi-1))
+  #:use-module (gnu packages pkg-config))
 
 (define-public tcc
   (package
@@ -69,11 +69,15 @@
                                               "/include:{B}/include")
                                (string-append "--libpaths="
                                               (assoc-ref %build-inputs "libc")
-                                              "/lib"))
+                                              "/lib")
+                               ,@(if (string-prefix? "armhf-linux"
+                                                     (or (%current-target-system)
+                                                         (%current-system)))
+                                     `("--triplet=arm-linux-gnueabihf")
+                                     '()))
        #:test-target "test"))
     ;; Fails to build on MIPS: "Unsupported CPU"
-    (supported-systems (fold delete %supported-systems
-                             '("mips64el-linux" "aarch64-linux")))
+    (supported-systems (delete "mips64el-linux" %supported-systems))
     (synopsis "Tiny and fast C compiler")
     (description
      "TCC, also referred to as \"TinyCC\", is a small and fast C compiler

@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Quiliro <quiliro@fsfla.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -79,12 +79,13 @@
     (version "5.1.0")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/steveire/grantlee/archive/v"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/steveire/grantlee.git")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
-         (base32 "1lf9rkv0i0kd7fvpgg5l8jb87zw8dzcwd1liv6hji7g4wlpmfdiq"))))
+         (base32 "1dmah2gd6zd4fgz2f4ir11dazqg067hjz8xshhywhfsmavchi626"))))
     (native-inputs
      ;; Optional: lcov and cccc, both are for code coverage
      `(("doxygen" ,doxygen)))

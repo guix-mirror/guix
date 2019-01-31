@@ -27,6 +27,7 @@
   #:use-module (guix profiles)
   #:use-module (guix derivations)
   #:use-module (guix combinators)
+  #:use-module (guix deprecation)
   #:use-module (guix store)
   #:use-module (guix i18n)
   #:use-module ((guix utils)
@@ -275,7 +276,12 @@ package modules under SOURCE using CORE, an instance of Guix."
   (if (file-exists? script)
       (let ((build (save-module-excursion
                     (lambda ()
-                      (primitive-load script)))))
+                      ;; Disable deprecation warnings; it's OK for SCRIPT to
+                      ;; use deprecated APIs and the user doesn't have to know
+                      ;; about it.
+                      (parameterize ((deprecation-warning-port
+                                      (%make-void-port "w")))
+                        (primitive-load script))))))
         ;; BUILD must be a monadic procedure of at least one argument: the
         ;; source tree.
         ;;
@@ -472,7 +478,8 @@ be used as a profile hook."
     (gexp->derivation-in-inferior "guix-package-cache" build
                                   profile
                                   #:properties '((type . profile-hook)
-                                                 (hook . package-cache)))))
+                                                 (hook . package-cache))
+                                  #:local-build? #t)))
 
 (define %channel-profile-hooks
   ;; The default channel profile hooks.

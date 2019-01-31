@@ -321,10 +321,7 @@ etc. ")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append
-            "https://pypi.python.org/packages/source/b/"
-            "backports.ssl_match_hostname/backports.ssl_match_hostname-"
-            version ".tar.gz"))
+      (uri (pypi-uri "backports.ssl_match_hostname" version))
       (sha256
        (base32
         "1wndipik52cyqy0677zdgp90i435pmvwd89cz98lm7ri0y3xjajh"))))
@@ -531,8 +528,7 @@ to users of that module.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/l/lockfile/"
-                           "lockfile-" version ".tar.gz"))
+       (uri (pypi-uri "lockfile" version))
        (sha256
         (base32
          "16gpx5hm73ah5n1079ng0vy381hl802v606npkx4x8nb0gg05vba"))))
@@ -1002,8 +998,7 @@ doing practical, real world data analysis in Python.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/m/mechanize/mechanize-"
-                          version ".tar.gz"))
+      (uri (pypi-uri "mechanize" version))
       (sha256
        (base32
         "0rj7r166i1dyrq0ihm5rijfmvhs8a04im28lv05c0c3v206v4rrf"))))
@@ -1342,18 +1337,30 @@ existing ones.")
 (define-public scons
   (package
     (name "scons")
-    (version "3.0.1")
+    (version "3.0.3")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://sourceforge/scons/scons/" version
-                                 "/scons-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/SCons/scons.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "0wzid419mlwqw9llrg8gsx4nkzhqy16m4m40r0xnh6cwscw5wir4"))))
+               "1xizkjgrvydkjhpv7i5rx0mdkp3618sis7jsckjh57nxcynlk5dc"))))
     (build-system python-build-system)
     (arguments
      `(#:use-setuptools? #f                ; still relies on distutils
-       #:tests? #f))                       ; no 'python setup.py test' command
+       #:tests? #f                         ; no 'python setup.py test' command
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'bootstrap
+           (lambda _
+             (substitute* "src/engine/SCons/compat/__init__.py"
+               (("sys.modules\\[new\\] = imp.load_module\\(old, \\*imp.find_module\\(old\\)\\)")
+                "sys.modules[new] = __import__(old)"))
+             (invoke "python" "bootstrap.py" "build/scons" "DEVELOPER=guix")
+             (chdir "build/scons")
+             #t)))))
     (home-page "http://scons.org/")
     (synopsis "Software construction tool written in Python")
     (description
@@ -1400,9 +1407,7 @@ software.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/python-mimeparse/python-mimeparse-"
-             version ".tar.gz"))
+       (uri (pypi-uri "python-mimeparse" version))
        (sha256
         (base32
          "0y2g6cl660bpz11srgqyvvm8gmywpgyx8g0xfvbiyr0af0yv1r3n"))))
@@ -1638,20 +1643,17 @@ files.")
 (define-public python-click
   (package
     (name "python-click")
-    (version "6.7")
+    (version "7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "click" version))
        (sha256
         (base32
-         "02qkfpykbq35id8glfgwc38yc430427yd05z1wc5cnld8zgicmgi"))))
+         "1mzjixd4vjbjvzb6vylki9w1556a9qmdh35kzmq6cign46av952v"))))
     (build-system python-build-system)
     (arguments
-     `(;; The tests are fragile, depending on a specific version of pytest:
-       ;; <https://github.com/pallets/click/issues/823>
-       #:tests? #f
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1660,10 +1662,13 @@ files.")
                (substitute* "click/_unicodefun.py"
                  (("'locale'")
                   (string-append "'" glibc "/bin/locale'"))))
-             #t)))))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "pytest"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://click.pocoo.org")
+    (home-page "https://palletsprojects.com/p/click/")
     (synopsis "Command line library for Python")
     (description
      "Click is a Python package for creating command line interfaces in a
@@ -1738,10 +1743,7 @@ version numbers.")
     (version "2.6.0")
     (source (origin
              (method url-fetch)
-             (uri
-              (string-append
-               "https://pypi.python.org/packages/source/j/jsonschema/jsonschema-"
-               version ".tar.gz"))
+             (uri (pypi-uri "jsonschema" version))
              (sha256
               (base32
                "00kf3zmpp9ya4sydffpifn0j0mzm342a2vzh82p6r0vh10cg7xbg"))))
@@ -1961,18 +1963,16 @@ visualisation and class tracker statistics.")
 (define-public python-itsdangerous
   (package
     (name "python-itsdangerous")
-    (version "0.24")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/i/itsdangerous/itsdangerous-"
-             version ".tar.gz"))
+       (uri (pypi-uri "itsdangerous" version))
        (sha256
         (base32
-         "06856q6x675ly542ig0plbqcyab6ksfzijlyf1hzhgg3sgwgrcyb"))))
+         "068zpbksq5q2z4dckh2k1zbcq43ay74ylqn77rni797j0wyh66rj"))))
     (build-system python-build-system)
-    (home-page "https://github.com/mitsuhiko/itsdangerous")
+    (home-page "https://palletsprojects.com/p/itsdangerous/")
     (synopsis "Python library for passing data to/from untrusted environments")
     (description
      "Itsdangerous provides various helpers to pass trusted data to untrusted
@@ -2074,9 +2074,7 @@ e.g. filters, callbacks and errbacks can all be promises.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/M/MarkupSafe/MarkupSafe-"
-             version ".tar.gz"))
+       (uri (pypi-uri "MarkupSafe" version))
        (sha256
         (base32
          "0rdn1s8x9ni7ss8rfiacj7x1085lx8mh2zdwqslnw8xc3l4nkgm6"))))
@@ -4326,8 +4324,7 @@ common operations on files to be invoked on those path objects directly.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/s/"
-                           "simplegeneric/simplegeneric-" version ".zip"))
+       (uri (pypi-uri "simplegeneric" version ".zip"))
        (sha256
         (base32 "0wwi1c6md4vkbcsfsf8dklf3vr4mcdj4mpxkanwgb6jb1432x5yw"))))
     (build-system python-build-system)
@@ -4355,9 +4352,7 @@ standard library.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/i/"
-                          "ipython_genutils/ipython_genutils-"
-                          version ".tar.gz"))
+      (uri (pypi-uri "ipython_genutils" version))
       (sha256
        (base32 "19l2pp1c64ansr89l3cqh19jdi2ixhssdzx0vz4n6r52a6i281is"))))
     (build-system python-build-system)
@@ -5537,15 +5532,12 @@ complexity of Python source code.")
   (package (inherit python-pep8)
     (version "1.5.7")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/p/pep8/pep8-"
-               version
-               ".tar.gz"))
-        (sha256
-          (base32
-           "12b9bbdbwnspxgak14xg58c130x2n0blxzlms5jn2dszn8qj3d0m"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pep8" version))
+       (sha256
+        (base32
+         "12b9bbdbwnspxgak14xg58c130x2n0blxzlms5jn2dszn8qj3d0m"))))
     (arguments
      ;; XXX Tests not compatible with Python 3.5.
      '(#:tests? #f))))
@@ -5559,15 +5551,12 @@ complexity of Python source code.")
   (package (inherit python-pyflakes)
     (version "0.8.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/p/pyflakes/pyflakes-"
-               version
-               ".tar.gz"))
-        (sha256
-          (base32
-           "0sbpq6pqm1i9wqi41mlfrsc5rk92jv4mskvlyxmnhlbdnc80ma1z"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyflakes" version))
+       (sha256
+        (base32
+         "0sbpq6pqm1i9wqi41mlfrsc5rk92jv4mskvlyxmnhlbdnc80ma1z"))))
     (arguments
      ;; XXX Tests not compatible with Python 3.5.
      '(#:tests? #f))))
@@ -6149,9 +6138,7 @@ Unicode-aware.  It is not intended as an end-user tool.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/P/PrettyTable/"
-             "prettytable-" version ".tar.bz2"))
+       (uri (pypi-uri "prettytable" version ".tar.bz2"))
        (sha256
         (base32
          "0diwsicwmiq2cpzpxri7cyl5fmsvicafw6nfqf6p6p322dji2g45"))))
@@ -6383,8 +6370,7 @@ domains support.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/"
-                           "pretend/pretend-" version ".tar.gz"))
+       (uri (pypi-uri "pretend" version))
        (sha256
         (base32
          "040vm94lcbscg5p81g1icmwwwa2jm7wrd1ybmxnv1sz8rl8bh3n9"))))
@@ -6657,16 +6643,14 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
 (define-public python-entrypoints
   (package
     (name "python-entrypoints")
-    (version "0.2.3")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/takluyver/entrypoints/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (pypi-uri "entrypoints" version))
        (sha256
         (base32
-         "1pdvgfr5bxyvnfvxbsd3zi0dh3il71pc4k6rinx6zpps91b84a56"))))
+         "0lc4si3xb7hza424414rdqdc3vng3kcrph8jbvjqb32spqddf3f7"))))
     (build-system python-build-system)
     ;; The package does not come with a setup.py file, so we have to generate
     ;; one ourselves.
@@ -7134,9 +7118,7 @@ This allows one to make simple text-mode user interfaces on Unix-like systems")
     (version "5.0.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/c/configobj/"
-                    "configobj-" version ".tar.gz"))
+              (uri (pypi-uri "configobj" version))
               (sha256
                (base32
                 "00h9rcmws03xvdlfni11yb60bz3kxfvsj6dg6nrpzj71f03nbxd2"))
@@ -9245,10 +9227,7 @@ programming errors.")
     (version "2.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                     "https://pypi.python.org/packages/8b/3e/"
-                     "384eeff406b06315738b62483fd2126c6e4f544167116b17cc04ea7d2a59/"
-                     "pykafka-" version ".tar.gz"))
+              (uri (pypi-uri "pykafka" version))
               (sha256
                (base32
                 "1id6sr159p6aa13bxcqyr9gln8sqg1l0ddzns5iws8kk5q1p5cfv"))))
@@ -9301,9 +9280,7 @@ specified in POSIX.1-2001 and POSIX.1-2008.")
     (version "0.1.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/j/jsonrpclib/"
-                    "jsonrpclib-" version ".tar.gz"))
+              (uri (pypi-uri "jsonrpclib" version))
               (sha256
                (base32
                 "02vgirw2bcgvpcxhv5hf3yvvb4h5wzd1lpjx8na5psdmaffj6l3z"))))

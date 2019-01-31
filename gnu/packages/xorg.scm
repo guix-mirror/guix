@@ -19,6 +19,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2019 nee <nee@cock.li>
+;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2623,6 +2624,29 @@ as USB mice.")
      "xf86-input-void is a null input driver for the Xorg X server.")
     (license license:x11)))
 
+(define-public xf86-video-amdgpu
+  (package
+    (name "xf86-video-amdgpu")
+    (version "18.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/driver/xf86-video-amdgpu-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+           "0wlnb929l3yqj4hdkzyxyhbaph13ac4villajgmbh66pa6xja7z1"))))
+    (build-system gnu-build-system)
+    (inputs `(("xorg-server" ,xorg-server)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "AMD Radeon video driver for X server")
+    (description
+     "xf86-video-amdgpu is an AMD Radeon video driver for the Xorg
+X server.")
+    (license license:x11)))
 
 (define-public xf86-video-ark
   (package
@@ -5700,6 +5724,37 @@ user-friendly mechanism to start the X server.")
      "Xaw is the X 3D Athena Widget Set based on the X Toolkit
 Intrinsics (Xt) Library.")
     (license license:x11)))
+
+(define-public xclock
+  (package
+    (name "xclock")
+    (version "1.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.x.org/releases/individual/app/"
+                           name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "1l3xv4bsca6bwxx73jyjz0blav86i7vwffkhdb1ac81y9slyrki3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-appdefaultdir="
+                            %output ,%app-defaults-dir))))
+    (inputs
+     `(("libxmu" ,libxmu)
+       ("libx11" ,libx11)
+       ("libxaw" ,libxaw)
+       ("libxrender" ,libxrender)
+       ("libxft" ,libxft)
+       ("libxkbfile" ,libxkbfile)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/")
+    (synopsis "Analog / digital clock for X")
+    (description "The xclock program displays the time in analog or digital
+form.")
+    (license (license:x11-style "file://COPYING" "See COPYING for details."))))
 
 (define-public xmag
   (package

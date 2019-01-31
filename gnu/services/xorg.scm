@@ -87,11 +87,11 @@
 ;;; Code:
 
 (define %default-xorg-modules
-  ;; Default list of modules loaded by the server.  Note that the order
-  ;; matters since it determines which driver is going to be used when there's
-  ;; a choice.
+  ;; Default list of modules loaded by the server.  When multiple drivers
+  ;; match, the first one in the list is loaded.
   (list xf86-video-vesa
         xf86-video-fbdev
+        xf86-video-amdgpu
         xf86-video-ati
         xf86-video-cirrus
         xf86-video-intel

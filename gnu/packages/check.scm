@@ -1133,9 +1133,7 @@ Python tests.")))
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/t/testrepository/testrepository-"
-             version ".tar.gz"))
+       (uri (pypi-uri "testrepository" version))
        (sha256
         (base32
          "1ssqb07c277010i6gzzkbdd46gd9mrj0bi0i8vn560n2k2y4j93m"))))
@@ -1307,9 +1305,7 @@ tools for mocking system commands and recording calls to those.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/t/testlib/testlib-"
-             version ".zip"))
+       (uri (pypi-uri "testlib" version ".zip"))
        (sha256
         (base32 "1mz26cxn4x8bbgv0rn0mvj2z05y31rkc8009nvdlb3lam5b4mj3y"))))
     (build-system python-build-system)
@@ -1806,9 +1802,7 @@ especially -cover-package.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/d/discover/discover-"
-             version ".tar.gz"))
+       (uri (pypi-uri "discover" version))
        (sha256
         (base32
          "0y8d0zwiqar51kxj8lzmkvwc3b8kazb04gk5zcb4nzg5k68zmhq5"))))
@@ -2039,13 +2033,13 @@ mocks, stubs and fakes.")
 (define-public python-flaky
   (package
     (name "python-flaky")
-    (version "3.4.0")
+    (version "3.5.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "flaky" version))
               (sha256
                (base32
-                "18pkmf79rfkfpy1d2rrx3v55nxj762ilyk9rvd6s6dccxw58imsa"))))
+                "1nm1kjf857z5aw7v642ffsy1vwf255c6wjvmil71kckjyd0mxg8j"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Tests require 'coveralls' and 'genty' which are not in Guix yet.

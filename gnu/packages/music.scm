@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
-;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -19,6 +19,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2577,6 +2578,28 @@ MusicBrainz database.")
 (define-public python2-musicbrainzngs
   (package-with-python2 python-musicbrainzngs))
 
+(define-public python-isrcsubmit
+  (package
+    (name "python-isrcsubmit")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "isrcsubmit" version))
+       (sha256
+        (base32
+         "0jh4cni8qhri6dh83cmp0i0m0384vv0vznlygv49wj9xzh1d99qv"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-discid" ,python-discid)
+       ("python-musicbrainzngs" ,python-musicbrainzngs)))
+    (home-page "https://github.com/JonnyJD/musicbrainz-isrcsubmit")
+    (synopsis "Submit ISRCs from CDs to MusicBrainz")
+    (description "@code{isrcsubmit} is a tool to extract @dfn{International
+Standard Recording Code} (ISRCs) from audio CDs and submit them to
+@url{https://musicbrainz.org/, MusicBrainz}.")
+    (license license:gpl3+)))
+
 (define-public python2-pyechonest
   (package
     (name "python2-pyechonest")
@@ -3613,7 +3636,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.0")
+    (version "3.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3622,7 +3645,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0g8n8xpw5d6wh8bwbvy12sinl9i0ir009sr28i4izr28lr4x8v50"))
+                "085qwfv3fsgry1pnx531w83lnyvf7kbaklipdf8zqa9shi6d3x9i"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.
@@ -4075,6 +4098,42 @@ an identifier which can be used to lookup the CD at MusicBrainz.  Additionally,
 it provides a submission URL for adding the disc ID to the database and gathers
 ISRCs and the MCN (=UPC/EAN) from disc.")
     (license license:lgpl2.1+)))
+
+(define-public python-discid
+  (package
+    (name "python-discid")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "discid" version))
+       (sha256
+        (base32
+         "1fgp67nhqlbvhhwrcxq5avil7alpzw4s4579hlyvxzbphdnbz8vq"))))
+    (build-system python-build-system)
+    (inputs
+     `(("libdiscid" ,libdiscid)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-libdiscid
+           ;; Set path of libdiscid
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((discid (assoc-ref inputs "libdiscid")))
+               (substitute* "discid/libdiscid.py"
+                 (("lib_name = (.*)$" all name)
+                  (string-append "lib_name = \"" discid
+                                 "/lib/libdiscid.so.0\"\n")))
+               #t))))))
+    (home-page "https://python-discid.readthedocs.io/")
+    (synopsis "Python bindings for Libdiscid")
+    (description
+     "This package provides Python bindings for the Libdiscid library.  The
+main purpose is the calculation of @url{https://musicbrainz.org/doc/Disc%20ID,
+Disc IDs} for use with the MusicBrainz database.  Additionally the disc
+@dfn{Media Catalog Number} (MCN) and track @dfn{International Standard
+Recording Code} (ISRC) can be extracted.}")
+    (license license:lgpl3+)))
 
 (define-public libmusicbrainz
   (package

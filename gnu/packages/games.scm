@@ -70,6 +70,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -155,7 +156,9 @@
   #:use-module (guix build-system scons)
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module ((srfi srfi-1) #:hide (zip))
+  #:use-module (srfi srfi-26))
 
 (define-public armagetronad
   (package
@@ -337,14 +340,14 @@ and against the others like yourself, that want what you have.")
          (delete 'build)                ; nothing to be built
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "sh" "install.sh"
-                             (assoc-ref outputs "out")))))
+             (invoke "sh" "install.sh"
+                     (assoc-ref outputs "out"))))
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* (string-append (assoc-ref outputs "out")
-                                            "/bin/cowsay")
-                             "We're done!")))))))
+             (invoke (string-append (assoc-ref outputs "out")
+                                    "/bin/cowsay")
+                     "We're done!"))))))
     (inputs
      `(("perl" ,perl)))
     (home-page (string-append "https://web.archive.org/web/20071026043648/"
@@ -1364,9 +1367,8 @@ a C library, so they can easily be integrated into other programs.")
              ;; variables passed as arguments.
              (let ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://www.asty.org/cmatrix")
     (synopsis "Simulate the display from \"The Matrix\"")
@@ -1534,61 +1536,6 @@ and Makruk.  Several lesser-known variants are also supported.  It presents a
 fully interactive graphical interface and it can load and save games in the
 Portable Game Notation.")
     (license license:gpl3+)))
-
-
-(define-public xboing
-  (package
-    (name "xboing")
-    (version "2.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://www.techrescue.org/xboing/xboing"
-                           version ".tar.gz"))
-       (sha256
-        (base32 "16m2si8wmshxpifk861vhpqviqxgcg8bxj6wfw8hpnm4r2w9q0b7"))
-       (patches (search-patches "xboing-CVE-2004-0149.patch"))))
-    (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-
-             (substitute* "Imakefile"
-               (("XPMINCLUDE[\t ]*= -I/usr/X11/include/X11")
-                (string-append "XPMINCLUDE = -I"
-                               (assoc-ref %build-inputs "libxpm")
-                               "/include/X11")))
-
-             (substitute* "Imakefile"
-               (("XBOING_DIR = \\.") "XBOING_DIR=$(PROJECTROOT)"))
-
-             ;; FIXME: HIGH_SCORE_FILE should be set to somewhere writeable
-
-             (zero? (system* "xmkmf" "-a"
-                             (string-append "-DProjectRoot="
-                                            (assoc-ref outputs "out"))))))
-        (replace 'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (and
-             (zero? (system* "make" "install.man"))
-             (zero? (system* "make" "install"))))))))
-    (inputs `(("libx11" ,libx11)
-              ("libxext" ,libxext)
-              ("libxpm" ,libxpm)))
-    (native-inputs `(("imake" ,imake)
-                     ("inetutils" ,inetutils)
-                     ("makedepend" ,makedepend)))
-    (build-system gnu-build-system)
-    (home-page "http://www.techrescue.org/xboing")
-    (synopsis "Ball and paddle game")
-    (description "XBoing is a blockout type game where you have a paddle which
-you control to bounce a ball around the game zone destroying blocks with a
-proton ball.  Each block carries a different point value.  The more blocks you
-destroy, the better your score.  The person with the highest score wins.")
-    (license (license:x11-style "file://COPYING"
-                                "Very similar to the X11 licence."))))
 
 (define-public gtypist
   (package
@@ -2358,15 +2305,14 @@ world}, @uref{http://evolonline.org, Evol Online} and
                      #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (lzo (assoc-ref inputs "lzo")))
-               (zero?
-                (apply system* "./configure"
-                       (string-append "--prefix=" out)
-                       ;; Provide the "lzo" path.
-                       (string-append "--with-liblzo2="
-                                      lzo "/lib/liblzo2.a")
-                       ;; Put the binary in 'bin' instead of 'games'.
-                       "--binary-dir=bin"
-                       configure-flags))))))))
+               (apply invoke "./configure"
+                      (string-append "--prefix=" out)
+                      ;; Provide the "lzo" path.
+                      (string-append "--with-liblzo2="
+                                     lzo "/lib/liblzo2.a")
+                      ;; Put the binary in 'bin' instead of 'games'.
+                      "--binary-dir=bin"
+                      configure-flags)))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("allegro" ,allegro)
@@ -4125,7 +4071,7 @@ over 100 user-created campaigns.")
          (add-before 'build 'build-kodilib
            (lambda* (#:key make-flags #:allow-other-keys)
              (with-directory-excursion "kodilib/linux"
-               (zero? (apply system* "make" make-flags)))))
+               (apply invoke "make" make-flags))))
          (add-after 'build-kodilib 'chdir
            (lambda _ (chdir "linux") #t))
          (replace 'install
@@ -4417,10 +4363,10 @@ shapes are arranged in a series of increasingly complex patterns, forming
              (let ((data (string-append (assoc-ref outputs "out")
                                         "/share/games/fillets-ng")))
                (mkdir-p data)
-               (zero? (system* "tar" "-xvf"
-                               (assoc-ref inputs "fillets-ng-data")
-                               "--strip-components=1"
-                               "-C" data))))))))
+               (invoke "tar" "-xvf"
+                       (assoc-ref inputs "fillets-ng-data")
+                       "--strip-components=1"
+                       "-C" data)))))))
     (inputs
      `(("sdl-union" ,(sdl-union (list sdl
                                       sdl-mixer
@@ -4502,10 +4448,10 @@ fish.  The whole game is accompanied by quiet, comforting music.")
              (setenv "HOME" (getcwd))
              ;; Fake a terminal for the test cases.
              (setenv "TERM" "xterm-256color")
-             (zero? (apply system* "make" "debug" "test"
-                           (format #f "-j~d" (parallel-job-count))
-                           ;; Force command line build for test cases.
-                           (append make-flags '("GAME=crawl" "TILES=")))))))))
+             (apply invoke "make" "debug" "test"
+                    (format #f "-j~d" (parallel-job-count))
+                    ;; Force command line build for test cases.
+                    (append make-flags '("GAME=crawl" "TILES="))))))))
     (synopsis "Roguelike dungeon crawler game")
     (description "Dungeon Crawl Stone Soup is a roguelike adventure through
 dungeons filled with dangerous monsters in a quest to find the mystifyingly
@@ -6021,3 +5967,136 @@ civilized than your own.")
                    license:cc-by-sa3.0
                    license:cc-by-sa4.0
                    license:public-domain))))
+
+(define-public stepmania
+  (package
+    (name "stepmania")
+    (version "5.1.0-b2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stepmania/stepmania.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0a7y9l7xm510vgnpmj1is7p9m6d6yd0fcaxrjcickz295k5w3rdn"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove song files, which are licensed under a non-commercial
+           ;; clause, and a course pointing to them.
+           (for-each delete-file-recursively
+                     '("Songs/StepMania 5/Goin' Under"
+                       "Songs/StepMania 5/MechaTribe Assault"
+                       "Songs/StepMania 5/Springtime"))
+           (for-each delete-file '("Courses/Default/Jupiter.crs"
+                                   "Courses/Default/Jupiter.png"))
+           ;; Unbundle libpng.
+           (substitute* "extern/CMakeLists.txt"
+             (("include\\(CMakeProject-png.cmake\\)") ""))
+           (delete-file-recursively "extern/libpng")
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;FIXME: couldn't find how to run tests
+       #:build-type "Release"
+       #:out-of-source? #f              ;for the 'install-desktop' phase
+       #:configure-flags
+       (list "-DWITH_SYSTEM_FFMPEG=1"
+             ;; SSE instructions are available on Intel systems only.
+             ,@(if (any (cute string-prefix? <> (or (%current-target-system)
+                                                    (%current-system)))
+                        '("x64_64" "i686"))
+                   '()
+                   '("-DWITH_SSE2=NO"))
+             ;; Configuration cannot find GTK2 without the two following
+             ;; flags.
+             (string-append "-DGTK2_GDKCONFIG_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "gtk+")
+                            "/lib/gtk-2.0/include")
+             (string-append "-DGTK2_GLIBCONFIG_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "glib")
+                            "/lib/glib-2.0/include"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-install-subdir
+           ;; Installation would be done in "%out/stepmania-X.Y", but we
+           ;; prefer the more common layout "%out/share/stepmania".
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               (("\"stepmania-.*?\"") "\"share/stepmania\""))
+             #t))
+         (add-after 'unpack 'unbundle-libpng
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/CMakeLists.txt"
+               (("\\$\\{SM_EXTERN_DIR\\}/libpng/include")
+                (string-append (assoc-ref inputs "libpng") "/include")))
+             #t))
+         (add-after 'install 'install-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (exe (string-append out "/share/stepmania/stepmania")))
+               (mkdir-p bin)
+               (symlink exe (string-append bin "/stepmania"))
+               #t)))
+         (add-after 'install-executable 'install-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (applications (string-append share "/applications"))
+                    (icons (string-append share "/icons")))
+               (install-file "stepmania.desktop" applications)
+               (mkdir-p icons)
+               (copy-recursively "icons" icons)
+               #t)))
+         ;; Move documentation in a more usual place, i.e.,
+         ;; "%out/share/doc/stepmania/".
+         (add-after 'install-desktop 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share")))
+               (with-directory-excursion share
+                 (mkdir-p "doc")
+                 (symlink "../stepmania/Docs" "doc/stepmania"))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("yasm" ,yasm)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ;; Per upstream, StepMania is only guaranteed to work with a very
+       ;; specific FFmpeg version, which is included in the repository as
+       ;; a Git submodule.  This particular version requirement usually
+       ;; changes every few years.
+       ("ffmpeg" ,ffmpeg-for-stepmania)
+       ("glib" ,glib)
+       ("glew" ,glew)
+       ("gtk+" ,gtk+-2)
+       ("jsoncpp" ,jsoncpp)
+       ("libpng" ,libpng)
+       ("libjpeg" ,libjpeg-8)
+       ("libmad" ,libmad)
+       ("libogg" ,libogg)
+       ("libva" ,libva)
+       ("libvorbis" ,libvorbis)
+       ("libxinerama" ,libxinerama)
+       ("libxrandr" ,libxrandr)
+       ("mesa" ,mesa)
+       ("pcre" ,pcre)
+       ("pulseaudio" ,pulseaudio)
+       ("sdl" ,sdl2)
+       ("udev" ,eudev)
+       ("zlib" ,zlib)))
+    (synopsis "Advanced rhythm game designed for both home and arcade use")
+    (description "StepMania is a dance and rhythm game.  It features 3D
+graphics, keyboard and dance pad support, and an editor for creating your own
+steps.
+
+This package provides the core application, but no song is shipped.  You need
+to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
+    (home-page "https://www.stepmania.com")
+    (license license:expat)))
+

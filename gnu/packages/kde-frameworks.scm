@@ -573,11 +573,14 @@ propagate their changes to their respective configuration files.")
        (modify-phases %standard-phases
          (add-before 'check 'blacklist-failing-test
            (lambda _
-             ;; Blacklist a failing test-function. FIXME: Make it pass.
-             ;; Test failure caused by stout/stderr being interleaved.
+             ;; Blacklist failing tests.
              (with-output-to-file "autotests/BLACKLIST"
                (lambda _
-                 (display "[test_channels]\n*\n")))
+                 ;; FIXME: Make it pass.  Test failure caused by stout/stderr
+                 ;; being interleaved.
+                 (display "[test_channels]\n*\n")
+                 ;; This fails with ENOSPC because of too many inotify watches.
+                 (display "[benchNotifyWatcher]\n*\n")))
              #t))
          ;; See upstream commit ee424e9b62368485bba4193053cabb553a1d268e
          (add-after 'unpack 'fix-broken-test
@@ -636,7 +639,7 @@ many more.")
          (replace 'check
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             (zero? (system* "dbus-launch" "ctest" ".")))))))
+             (invoke "dbus-launch" "ctest" "."))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Convenience classes for DBus")
     (description "KDBusAddons provides convenience classes on top of QtDBus,
@@ -1175,7 +1178,7 @@ lower level classes for interaction with the X Windowing System.")
          (replace 'check
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             (zero? (system* "dbus-launch" "ctest" ".")))))))
+             (invoke "dbus-launch" "ctest" "."))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Qt wrapper for ModemManager DBus API")
     (description "ModemManagerQt provides access to all ModemManager features
@@ -1214,7 +1217,7 @@ messages.")
          (replace 'check
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             (zero? (system* "dbus-launch" "ctest" ".")))))))
+             (invoke "dbus-launch" "ctest" "."))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Qt wrapper for NetworkManager DBus API")
     (description "NetworkManagerQt provides access to all NetworkManager
@@ -1327,7 +1330,7 @@ feel.")
          (replace 'check
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             (zero? (system* "dbus-launch" "ctest" ".")))))))
+             (invoke "dbus-launch" "ctest" "."))))))
     (native-inputs
      `(("bison" ,bison)
        ("dbus" ,dbus)
@@ -1497,7 +1500,7 @@ with other frameworks.")
          (replace 'check
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             (zero? (system* "dbus-launch" "ctest" ".")))))))
+             (invoke "dbus-launch" "ctest" "."))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Execute actions as privileged user")
     (description "KAuth provides a convenient, system-integrated way to offload
@@ -1806,7 +1809,7 @@ asynchronous jobs.")
          (replace 'check
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             (zero? (system* "dbus-launch" "ctest" ".")))))))
+             (invoke "dbus-launch" "ctest" "."))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Desktop notifications")
     (description "KNotification is used to notify the user of an event.  It
@@ -2011,7 +2014,7 @@ gallons).")
          (replace 'check
            (lambda _
              (setenv "DBUS_FATAL_WARNINGS" "0")
-             (zero? (system* "dbus-launch" "ctest" ".")))))))
+             (invoke "dbus-launch" "ctest" "."))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "File searching and indexing")
     (description "Baloo provides file searching and indexing.  It does so by
@@ -3534,8 +3537,8 @@ workspace.")
                (lambda _
                  (display "[testSmb]\n*\n")))
              ;; kuniqueapptest hangs. FIXME: Make this test pass.
-             (zero? (system* "dbus-launch" "ctest" "."
-                             "-E" "kstandarddirstest|kuniqueapptest")))))))
+             (invoke "dbus-launch" "ctest" "."
+                     "-E" "kstandarddirstest|kuniqueapptest"))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Frameworks 5 porting aid from KDELibs4")
     (description "This framework provides code and utilities to ease the

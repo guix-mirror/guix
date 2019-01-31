@@ -77,14 +77,14 @@ with what is used by the Bitcoin network.")
 (define-public python-bcrypt
   (package
     (name "python-bcrypt")
-    (version "3.1.4")
+    (version "3.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bcrypt" version))
        (sha256
         (base32
-         "13cyrnqwkhc70rs6dg65z4yrrr3dc42fhk11804fqmci9hvimvb7"))))
+         "1sh2xh0iragdq8dhssc1cdd02nppjq7b5kmv0qladfi2s9cnfqs4"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pycparser" ,python-pycparser)
@@ -148,10 +148,7 @@ to providing full-strength password hashing for multi-user application.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/py-bcrypt/py-bcrypt-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "py-bcrypt" version))
        (sha256
         (base32
          "0y6smdggwi5s72v6p1nn53dg6w05hna3d264cq6kas0lap73p8az"))))
@@ -240,10 +237,7 @@ Python interface around SSH networking concepts.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/e/ecdsa/ecdsa-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "ecdsa" version))
        (sha256
         (base32
          "1yj31j0asmrx4an9xvsaj2icdmzy6pw0glfpqrrkrphwdpi1xkv4"))))
@@ -322,11 +316,11 @@ etc.).  The package is structured to make adding new modules easy.")
         "0482rmi2x6p78wl2kz8qzyq21xz1sbbfwnv5x7dggar4vkwxhzfx"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-pycrypto" ,python-pycrypto)))
-    (arguments
-     `(#:tests? #f))                      ;TODO: tests require pytest
     (home-page "https://github.com/jaraco/keyring")
     (synopsis "Store and access your passwords safely")
     (description
@@ -363,14 +357,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "2.4.2")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "013qx2hz0jv79yzfzpn0r2kk33i5qy3sdnzgwiv5779d18snblwi"))))
+         "15qfl3pnw2f11r0z0zhwl56f6pb60ysav8fxmpnz5p80cfwljdik"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -385,14 +379,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "2.4.2")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1pc60dksi9w9mshl6cvn7gdjazbp3pmydy3qp9wgy5wzd8n0b9h5"))))
+         "00c4d7gvsymlaw0r13zrm32dcnarmpayjyrh65yymlmr6mrbcij9"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))

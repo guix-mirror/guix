@@ -74,7 +74,7 @@
                                      (string-split (getenv "PYTHONPATH")
                                                    #\:))
                                "', ")))
-             (zero? (system* "python" "tests/runtests.py")))))))
+             (invoke "python" "tests/runtests.py"))))))
     ;; TODO: Install extras/django_bash_completion.
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)

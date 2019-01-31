@@ -413,8 +413,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20.4")
-(define %linux-libre-hash "1p7ixkqvnr0mzyivyby8hfix44np7w1nvyxghz8wa1h2nhsszvzv")
+(define %linux-libre-version "4.20.5")
+(define %linux-libre-hash "1fis4izy97d35wb5626av235agn22ww8dfmmcdlbiay37ihwwm98")
 
 (define %linux-libre-4.20-patches
   (list %boot-logo-patch
@@ -427,8 +427,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.20-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.17")
-(define %linux-libre-4.19-hash "0friqd9wyhddjli4m41wd994ygnwng40a95ry14478rkadfv7iwh")
+(define %linux-libre-4.19-version "4.19.18")
+(define %linux-libre-4.19-hash "1m3qbd09zd7llq0fjsccyjr070n6szl5dj10qrlpd54bnvry22fc")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -441,8 +441,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.95")
-(define %linux-libre-4.14-hash "07bxbwb5fan96aws6g91vxkrvl80a53wjbl8xkh4q3c6iah8wkvf")
+(define %linux-libre-4.14-version "4.14.96")
+(define %linux-libre-4.14-hash "03g28n9n4ci8y2qs59vili7dkqag7fmhr9q6ah8l66qn37d375k9")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -451,14 +451,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.152"
-                    "0qssksykzbcy58aqvmxk9h1xpaqvfwp31xvxfmwxdh7z4n3yn60y"
+  (make-linux-libre "4.9.153"
+                    "1ks910wk4nggp7ygai2pnr5b61ix2j3gxk95rv9wkd5za15sgbqa"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.171"
-                    "01jd2672fq633xw5vdmifvd6dy93pif28xkvymah82jm9xj1lbqh"
+  (make-linux-libre "4.4.172"
+                    "000bz3jfg0li3rwlf2c80df6682lhi59hj1kwm4hw7whgg69xi7b"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 

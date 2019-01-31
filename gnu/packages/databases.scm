@@ -2093,8 +2093,7 @@ Database API 2.0T.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/S/"
-                          "SQLAlchemy/SQLAlchemy-" version ".tar.gz"))
+      (uri (pypi-uri "SQLAlchemy" version))
       (sha256
        (base32
         "094mmbs4igrxplfyqd59j90jb83ixpbbzqc0w49yw81m82nnjrgg"))))

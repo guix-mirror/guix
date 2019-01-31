@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
+;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -910,7 +911,7 @@ tmux.")
 (define-public kitty
   (package
     (name "kitty")
-    (version "0.13.1")
+    (version "0.13.3")
     (home-page "https://sw.kovidgoyal.net/kitty/")
     (source
      (origin
@@ -921,7 +922,7 @@ tmux.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1j24zjasdh48z7majfpqr71n1wn5a9688wsmmqn26v8kfb68pqs4"))
+         "1y0vd75j8g61jdj8miml79w5ri3pqli5rv9iq6zdrxvzfa4b2rmb"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -943,7 +944,8 @@ tmux.")
        ("libpng" ,libpng)
        ("freetype" ,freetype)
        ("fontconfig" ,fontconfig)
-       ("pygments" ,python2-pygments)))
+       ("pygments" ,python-pygments)
+       ("wayland" ,wayland)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("libxrandr" ,libxrandr)
@@ -959,6 +961,15 @@ tmux.")
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (delete 'configure)
+                  ;; Wayland backend requires EGL, which isn't found
+                  ;; out-of-the-box for some reason. Hard-code it instead.
+                  (add-after 'unpack 'hard-code-libegl
+                    (lambda _
+                      (let* ((mesa (assoc-ref %build-inputs "libgl1-mesa"))
+                             (libegl (string-append mesa "/lib/libEGL.so.1")))
+                        (substitute* "glfw/egl_context.c"
+                                     (("libEGL.so.1") libegl)))
+                      #t))
                   (replace 'build
                     (lambda _
                       (invoke "python3" "setup.py" "linux-package")))

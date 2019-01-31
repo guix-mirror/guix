@@ -638,9 +638,7 @@ to not fully trusted targets.  Borg is a fork of Attic.")
     (version "0.16")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/A/Attic/Attic-"
-                    version ".tar.gz"))
+              (uri (pypi-uri "Attic" version))
               (sha256
                (base32
                 "0b5skd36r4c0915lwpkqg5hxm49gls9pprs1b7hc40910wlcsl36"))))

@@ -1147,6 +1147,7 @@ generation.")
          #:test-target "test"
          #:phases
          (modify-phases %standard-phases
+           (delete 'bootstrap)
            (delete 'configure) ; No configure script
            (replace 'install ; Makefile has no 'install phase
             (lambda* (#:key outputs #:allow-other-keys)
@@ -1160,9 +1161,9 @@ generation.")
              (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (bin (string-append out "/bin")))
-                (and
-                 (zero? (system* "./bootstrap.sh"))
-                 (install-file "flisp.boot" bin))))))))
+                (invoke "./bootstrap.sh")
+                (install-file "flisp.boot" bin)
+                #t))))))
       (synopsis "Scheme-like lisp implementation")
       (description
        "@code{femtolisp} is a scheme-like lisp implementation with a

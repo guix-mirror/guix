@@ -72,6 +72,7 @@
   #:use-module (gnu packages graph)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
@@ -4503,9 +4504,7 @@ files and writing bioinformatics applications.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/W/WarpedLMM/WarpedLMM-"
-             version ".zip"))
+       (uri (pypi-uri "WarpedLMM" version ".zip"))
        (sha256
         (base32
          "1agfz6zqa8nc6cw47yh0s3y14gkpa9wqazwcj7mwwj3ffnw39p3j"))))
@@ -6021,7 +6020,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
 (define-public star
   (package
     (name "star")
-    (version "2.6.0c")
+    (version "2.7.0a")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6030,7 +6029,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "04cj6jw8d9q6lk9c78wa4fky6jdlicf1d13plq7182h8vqiz8p59"))
+                "1yx28gra6gqdx1ps5y8mpdinsn8r0dhsc2m3gcvjfrk71i9yhd6l"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -7183,14 +7182,14 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
 (define-public r-optparse
   (package
     (name "r-optparse")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "optparse" version))
        (sha256
         (base32
-         "1d7v5gl45x4amsfmzn5zyyffyqlc7a82h01szlnda22viyxids0h"))))
+         "04vyb6dhcga30mvghsg1p052jmf69xqxkvh3hzqz7dscyppy76w1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-getopt" ,r-getopt)))
@@ -7388,13 +7387,13 @@ CAGE.")
 (define-public r-variantannotation
   (package
     (name "r-variantannotation")
-    (version "1.28.8")
+    (version "1.28.10")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "VariantAnnotation" version))
               (sha256
                (base32
-                "0gf36lr9xy3zmcc4rxs5bi2ccrrc7b6wqp6p3cvnclgif4i0l66k"))))
+                "0kxf583cgkdz1shi85r0mpnfxmzi7s5f6srd1czbdl2iibvrm8jn"))))
     (properties
      `((upstream-name . "VariantAnnotation")))
     (inputs
@@ -7829,13 +7828,13 @@ as well as query and modify the browser state, such as the current viewport.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.34.1")
+    (version "1.34.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "0slq6hv5bmc3bgrl824jzmr6db3fvaj6b7ihwmdn76pgqqbq2fq6"))))
+                "0qs94b0ywrjyc9m1jykrbch3lb07576m508dikvx18vwn304mban"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)
@@ -8486,7 +8485,7 @@ throughput genetic sequencing data sets using regression methods.")
 (define-public r-qtl
  (package
   (name "r-qtl")
-  (version "1.42-8")
+  (version "1.44-9")
   (source
    (origin
     (method url-fetch)
@@ -8494,7 +8493,7 @@ throughput genetic sequencing data sets using regression methods.")
                         version ".tar.gz"))
     (sha256
      (base32
-      "1l528dwvfpdlr05imrrm4rq32axp6hld9nqm6mm43kn5n7z2f5k6"))))
+      "03lmvydln8b7666b6w46qbryhf83vsd11d4y2v95rfgvqgq66l1i"))))
   (build-system r-build-system)
   (home-page "http://rqtl.org/")
   (synopsis "R package for analyzing QTL experiments in genetics")
@@ -9131,8 +9130,7 @@ may optionally be provided to further inform the peak-calling process.")
     (version "1.0.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://pypi.python.org/packages/source/P"
-                                  "/PePr/PePr-" version ".tar.gz"))
+              (uri (pypi-uri "PePr" version))
               (sha256
                (base32
                 "0qxjfdpl1b1y53nccws2d85f6k74zwmx8y8sd9rszcqhfayx6gdx"))))

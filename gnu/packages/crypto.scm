@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -901,3 +901,29 @@ Features:
 @end itemize\n")
       (home-page "https://github.com/bitcoin-core/secp256k1")
       (license license:unlicense))))
+
+(define-public stoken
+  (package
+    (name "stoken")
+    (version "0.92")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/stoken/"
+                                  "stoken-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0npgr6y85gzwksy8jkwa4yzvqwjprwnplx3yiw3ayk4f0ldlhaxa"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("nettle" ,nettle)
+       ("libxml2" ,libxml2)))
+    (home-page "http://stoken.sf.net")
+    (synopsis "Software Token for cryptographic authentication")
+    (description
+     "@code{stoken} is a token code generator compatible with RSA SecurID
+128-bit (AES) tokens.  This package contains a standalone command-line program
+that allows for importing token seeds, generating token codes, and various
+utility/testing functions.")
+    (license license:lgpl2.1+)))

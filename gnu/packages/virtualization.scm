@@ -110,6 +110,8 @@
              (method url-fetch)
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
+             (patches (search-patches "qemu-CVE-2018-16872.patch"
+                                      "qemu-CVE-2019-6778.patch"))
              (sha256
               (base32
                "1z5bd5nfyjvhfi1s95labc82y4hjdjjkdabw931362ls0zghh1ba"))))
@@ -799,13 +801,13 @@ Machine Protocol.")
    (version "a12")
    (source
     (origin
-     (method url-fetch)
-     (uri (string-append "https://github.com/gnif/LookingGlass/archive/"
-                         version ".tar.gz"))
-     (file-name (string-append name "-" version))
+     (method git-fetch)
+     (uri (git-reference (url "https://github.com/gnif/LookingGlass")
+                         (commit version)))
+     (file-name (git-file-name name version))
      (sha256
       (base32
-       "0x57chx83f8pq56d9sfxmc9p4qjm9nqvdyamj41bmy145mxw5w3m"))))
+       "0r6bvl9q94039r6ff4f2bg8si95axx9w8bf1h1qr5730d2kv5yxq"))))
    (build-system cmake-build-system)
    (inputs `(("fontconfig" ,fontconfig)
              ("glu" ,glu)

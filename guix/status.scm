@@ -50,6 +50,11 @@
             build-status-builds-completed
             build-status-downloads-completed
 
+            build?
+            build
+            build-derivation
+            build-system
+
             download?
             download
             download-item
@@ -85,14 +90,28 @@
 ;; Builds and substitutions performed by the daemon.
 (define-record-type* <build-status> build-status make-build-status
   build-status?
-  (building     build-status-building             ;list of drv
+  (building     build-status-building             ;list of <build>
                 (default '()))
   (downloading  build-status-downloading          ;list of <download>
                 (default '()))
-  (builds-completed build-status-builds-completed ;list of drv
+  (builds-completed build-status-builds-completed ;list of <build>
                     (default '()))
-  (downloads-completed build-status-downloads-completed ;list of store items
+  (downloads-completed build-status-downloads-completed ;list of <download>
                        (default '())))
+
+;; On-going or completed build.
+(define-record-type <build>
+  (%build derivation id system log-file completion)
+  build?
+  (derivation  build-derivation)                ;string (.drv file name)
+  (id          build-id)                        ;#f | integer
+  (system      build-system)                    ;string
+  (log-file    build-log-file)                  ;#f | string
+  (completion  build-completion))               ;#f | integer (percentage)
+
+(define* (build derivation system #:key id log-file completion)
+  "Return a new build."
+  (%build derivation id system log-file completion))
 
 ;; On-going or completed downloads.  Downloads can be stem from substitutes
 ;; and from "builtin:download" fixed-output derivations.
@@ -113,10 +132,66 @@
   "Return a new download."
   (%download item uri size start end transferred))
 
+(define (matching-build drv)
+  "Return a predicate that matches builds of DRV."
+  (lambda (build)
+    (string=? drv (build-derivation build))))
+
 (define (matching-download item)
   "Return a predicate that matches downloads of ITEM."
   (lambda (download)
     (string=? item (download-item download))))
+
+(define %percentage-line-rx
+  ;; Things like CMake write lines like "[ 10%] gcc -c …".  This regexp
+  ;; matches them.
+  (make-regexp "^[[:space:]]*\\[ *([0-9]+)%\\]"))
+
+(define %fraction-line-rx
+  ;; The 'compiled-modules' derivations and Ninja produce reports like
+  ;; "[ 1/32]" at the beginning of each line, while GHC prints "[ 6 of 45]".
+  ;; This regexp matches these.
+  (make-regexp "^[[:space:]]*\\[ *([0-9]+) *(/|of) *([0-9]+)\\]"))
+
+(define (update-build status id line)
+  "Update STATUS based on LINE, a build output line for ID that might contain
+a completion indication."
+  (define (set-completion b %)
+    (build (build-derivation b)
+           (build-system b)
+           #:id (build-id b)
+           #:log-file (build-log-file b)
+           #:completion %))
+
+  (define (find-build)
+    (find (lambda (build)
+            (and (build-id build)
+                 (= (build-id build) id)))
+          (build-status-building status)))
+
+  (define (update %)
+    (let ((build (find-build)))
+      (build-status
+       (inherit status)
+       (building (cons (set-completion build %)
+                       (delq build (build-status-building status)))))))
+
+  (cond ((string-any #\nul line)
+         ;; Don't try to match a regexp here.
+         status)
+        ((regexp-exec %percentage-line-rx line)
+         =>
+         (lambda (match)
+           (let ((% (string->number (match:substring match 1))))
+             (update %))))
+        ((regexp-exec %fraction-line-rx line)
+         =>
+         (lambda (match)
+           (let ((done  (string->number (match:substring match 1)))
+                 (total (string->number (match:substring match 3))))
+             (update (* 100. (/ done total))))))
+        (else
+         status)))
 
 (define* (compute-status event status
                          #:key
@@ -126,15 +201,29 @@
   "Given EVENT, a tuple like (build-started \"/gnu/store/...-foo.drv\" ...),
 compute a new status based on STATUS."
   (match event
-    (('build-started drv _ ...)
-     (build-status
-      (inherit status)
-      (building (cons drv (build-status-building status)))))
+    (('build-started drv "-" system log-file . rest)
+     (let ((build (build drv system
+                         #:id (match rest
+                                ((pid . _) (string->number pid))
+                                (_ #f))
+                         #:log-file (if (string-null? log-file)
+                                        #f
+                                        log-file))))
+       (build-status
+        (inherit status)
+        (building (cons build (build-status-building status))))))
     (((or 'build-succeeded 'build-failed) drv _ ...)
-     (build-status
-      (inherit status)
-      (building (delete drv (build-status-building status)))
-      (builds-completed (cons drv (build-status-builds-completed status)))))
+     (let ((build (find (matching-build drv)
+                        (build-status-building status))))
+       ;; If BUILD is #f, this may be because DRV corresponds to a
+       ;; fixed-output derivation that is listed as a download.
+       (if build
+           (build-status
+            (inherit status)
+            (building (delq build (build-status-building status)))
+            (builds-completed
+             (cons build (build-status-builds-completed status))))
+           status)))
 
     ;; Note: Ignore 'substituter-started' and 'substituter-succeeded' because
     ;; they're not as informative as 'download-started' and
@@ -146,10 +235,11 @@ compute a new status based on STATUS."
      ;; because ITEM is different from DRV's output.
      (build-status
       (inherit status)
-      (building (remove (lambda (drv)
-                          (equal? (false-if-exception
-                                   (derivation-path->output-path drv))
-                                  item))
+      (building (remove (lambda (build)
+                          (let ((drv (build-derivation build)))
+                            (equal? (false-if-exception
+                                     (derivation-path->output-path drv))
+                                    item)))
                         (build-status-building status)))
       (downloading (cons (download item uri #:size size
                                    #:start (current-time time-monotonic))
@@ -204,6 +294,8 @@ compute a new status based on STATUS."
                                          (current-time time-monotonic))
                                      #:transferred transferred)
                            downloads)))))
+    (('build-log (? integer? pid) line)
+     (update-build status pid line))
     (_
      status)))
 
@@ -349,14 +441,29 @@ addition to build events."
         (cut colorize-string <> 'RED 'BOLD)
         identity))
 
+  (define (report-build-progress %)
+    (let ((% (min (max % 0) 100)))                ;sanitize
+      (erase-current-line port)
+      (format port "~3d% " (inexact->exact (round %)))
+      (display (progress-bar % (- (current-terminal-columns) 5))
+               port)
+      (force-output port)))
+
   (define print-log-line
     (if print-log?
         (if colorize?
-            (lambda (line)
+            (lambda (id line)
               (display (colorize-log-line line) port))
-            (cut display <> port))
-        (lambda (line)
-          (spin! port))))
+            (lambda (id line)
+              (display line port)))
+        (lambda (id line)
+          (match (build-status-building status)
+            ((build)                              ;single job
+             (match (build-completion build)
+               ((? number? %) (report-build-progress %))
+               (_ (spin! port))))
+            (_
+             (spin! port))))))
 
   (unless print-log?
     (display "\r" port))                          ;erase the spinner
@@ -394,7 +501,7 @@ addition to build events."
                 (N_ "The following build is still in progress:~%~{  ~a~%~}~%"
                     "The following builds are still in progress:~%~{  ~a~%~}~%"
                     (length ongoing))
-                ongoing))))
+                (map build-derivation ongoing)))))
     (('build-failed drv . _)
      (format port (failure (G_ "build of ~a failed")) drv)
      (newline port)
@@ -460,7 +567,7 @@ addition to build events."
                ;; through.
                (display line port)
                (force-output port))
-             (print-log-line line))
+             (print-log-line pid line))
          (cond ((string-prefix? "substitute: " line)
                 ;; The daemon prefixes early messages coming with 'guix
                 ;; substitute' with "substitute:".  These are useful ("updating
@@ -473,7 +580,7 @@ addition to build events."
                 (display (info (string-trim-right line)) port)
                 (newline))
                (else
-                (print-log-line line)))))
+                (print-log-line pid line)))))
     (_
      event)))
 
@@ -570,7 +677,11 @@ The second return value is a thunk to retrieve the current state."
 
   (define (process-line line)
     (cond ((string-prefix? "@ " line)
-           (match (string-tokenize (string-drop line 2))
+           ;; Note: Drop the trailing \n, and use 'string-split' to preserve
+           ;; spaces (the log file part of 'build-started' events can be the
+           ;; empty string.)
+           (match (string-split (string-drop (string-drop-right line 1) 2)
+                                #\space)
              (("build-log" (= string->number pid) (= string->number len))
               (set! %build-output-pid pid)
               (set! %build-output '())

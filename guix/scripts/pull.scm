@@ -69,7 +69,7 @@
     (multiplexed-build-output? . #t)
     (graft? . #t)
     (debug . 0)
-    (verbosity . 2)))
+    (verbosity . 1)))
 
 (define (show-help)
   (display (G_ "Usage: guix pull [OPTION]...
@@ -197,11 +197,13 @@ true, display what would be built without actually building it."
         (match (which "guix")
           (#f (return #f))
           (str
-           (let ((command (string-append profile "/bin/guix")))
-             (unless (string=? command str)
+           (let ((new (map (cut string-append <> "/bin/guix")
+                           (list (user-friendly-profile profile)
+                                 profile))))
+             (unless (member str new)
                (display-hint (format #f (G_ "After setting @code{PATH}, run
 @command{hash guix} to make sure your shell refers to @file{~a}.")
-                                     command)))
+                                     (first new))))
              (return #f))))))))
 
 (define (honor-lets-encrypt-certificates! store)

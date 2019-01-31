@@ -65,15 +65,16 @@
 
     (package
       (name "clojure")
-      (version "1.9.0")
-      (source
-       (origin
-         (method url-fetch)
-         (uri
-          (string-append "https://github.com/clojure/clojure/archive/clojure-"
-                         version ".tar.gz"))
-         (sha256
-          (base32 "0xjbzcw45z32vsn9pifp7ndysjzqswp5ig0jkjpivigh2ckkdzha"))))
+      (version "1.10.0")
+      (source (let ((name+version (string-append name "-" version)))
+                (origin
+                  (method git-fetch)
+                  (uri (git-reference
+                        (url "https://github.com/clojure/clojure")
+                        (commit name+version)))
+                  (file-name (string-append name+version "-checkout"))
+                  (sha256
+                   (base32 "1kcyv2836acs27vi75hvf3r773ahv2nlh9b3j9xa9m9sdanz1h83")))))
       (build-system ant-build-system)
       (arguments
        `(#:imported-modules ((guix build clojure-utils)

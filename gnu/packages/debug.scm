@@ -194,10 +194,8 @@ tools that process C/C++ code.")
                                   (patch-dir
                                    (string-append afl-dir
                                                   "/qemu_mode/patches")))
-                             (unless (zero?
-                                      (system* "tar" "xf"
-                                               (assoc-ref inputs "afl-src")))
-                               (error "tar failed to unpack afl-src"))
+                             (invoke "tar" "xf"
+                                     (assoc-ref inputs "afl-src"))
                              (install-file (string-append patch-dir
                                                           "/afl-qemu-cpu-inl.h")
                                            ".")
@@ -210,11 +208,12 @@ tools that process C/C++ code.")
                              (substitute* (string-append patch-dir
                                                          "/cpu-exec.diff")
                                (("\\.\\./patches/") ""))
-                             (every (lambda (patch-file)
-                                      (zero? (system* "patch" "--force" "-p1"
-                                                      "--input" patch-file)))
-                                    (find-files patch-dir
-                                                "\\.diff$"))))))))))))))
+                             (for-each (lambda (patch-file)
+                                         (invoke "patch" "--force" "-p1"
+                                                 "--input" patch-file))
+                                       (find-files patch-dir
+                                                   "\\.diff$"))
+                             #t))))))))))))
       (arguments
        `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                             "CC=gcc")
@@ -291,7 +290,7 @@ down the road.")
            (modify-phases %standard-phases
              (add-after 'unpack 'unpack-make
                (lambda* (#:key inputs #:allow-other-keys)
-                 (zero? (system* "tar" "xf" (assoc-ref inputs "make-source")))))
+                 (invoke "tar" "xf" (assoc-ref inputs "make-source"))))
              (add-after 'unpack-make 'set-default-shell
                (lambda _
                  ;; Taken mostly directly from (@ (gnu packages base) gnu-make)
@@ -301,7 +300,7 @@ down the road.")
                             (which "sh"))))))
              (add-before 'configure 'repack-make
                (lambda _
-                 (zero? (system* "tar" "cJf" "./make.tar.xz" ,make-dir))))))))
+                 (invoke "tar" "cJf" "./make.tar.xz" ,make-dir)))))))
       (home-page "https://github.com/losalamos/stress-make")
       (synopsis "Expose race conditions in Makefiles")
       (description

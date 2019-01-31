@@ -74,6 +74,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)

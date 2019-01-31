@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -433,6 +433,39 @@ container format.  With typical files, XZ Utils create 30 % smaller output
 than gzip and 15 % smaller output than bzip2.")
    (license (list license:gpl2+ license:lgpl2.1+)) ; bits of both
    (home-page "https://tukaani.org/xz/")))
+
+(define-public lhasa
+  (package
+    (name "lhasa")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/fragglet/lhasa/releases/download/v"
+                    version "/lhasa-" version ".tar.gz"))
+              (sha256
+               (base32
+                "092zi9av18ma20c6h9448k0bapvx2plnp292741dvfd9hmgqxc1z"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-up-test-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
+                                            "/share/zoneinfo"))
+             #t)))))
+    (native-inputs
+     `(("tzdata" ,tzdata)))
+    (home-page "https://fragglet.github.com/lhasa/")
+    (synopsis "LHA archive decompressor")
+    (description "Lhasa is a replacement for the Unix LHA tool, for
+decompressing .lzh (LHA / LHarc) and .lzs (LArc) archives.  The backend for the
+tool is a library, so that it can be reused for other purposes.  Lhasa aims to
+be compatible with as many types of lzh/lzs archives as possible.  It also aims
+to generate the same output as the (non-free) Unix LHA tool, so that it will
+act as a free drop-in replacement.")
+    (license license:isc)))
 
 (define-public lzo
   (package

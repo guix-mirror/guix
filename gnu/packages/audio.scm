@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -1805,11 +1805,7 @@ implementation of the Open Sound Control (@dfn{OSC}) protocol.")
     (source
      (origin
        (method url-fetch)
-       (uri
-        (string-append
-         "https://pypi.python.org/packages/ab/42/"
-         "b4f04721c5c5bfc196ce156b3c768998ef8c0ae3654ed29ea5020c749a6b"
-         "/PyAudio-" version ".tar.gz"))
+       (uri (pypi-uri "PyAudio" version))
        (sha256
         (base32
          "0x7vdsigm7xgvyg3shd3lj113m8zqj2pxmrgdyj66kmnw0qdxgwk"))))
@@ -2213,7 +2209,7 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.10.0")
+    (version "3.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2222,7 +2218,7 @@ background file post-processing.")
                     "/SuperCollider-" version "-Source-linux.tar.bz2"))
               (sha256
                (base32
-                "16j9psa32czx1p1y2vvq0qf2ib0ngrfc604vx35n2b4llyika84v"))))
+                "1yszs9j3sjk8hb8xxz30z3nd4j899ymb9mw9y1v26ikd603d1iig"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"

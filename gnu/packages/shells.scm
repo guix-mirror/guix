@@ -9,6 +9,7 @@
 ;;; Copyright © 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,9 +28,9 @@
 
 (define-module (gnu packages shells)
   #:use-module (gnu packages)
-  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages groff)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages scheme)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
@@ -89,51 +91,105 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
 (define-public fish
   (package
     (name "fish")
-    (version "2.7.1")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (list
-                (string-append "https://fishshell.com/files/"
-                               version "/fish-" version ".tar.gz")
-                (string-append "https://github.com/fish-shell/fish-shell/"
-                               "releases/download/" version "/"
-                               name "-" version ".tar.gz")))
-              (sha256
-               (base32
-                "0nhc3yc5lnnan7zmxqqxm07rdpwjww5ijy45ll2njdc6fnfb2az4"))
-              (modules '((guix build utils)))
-              ;; Don't try to install /etc/fish/config.fish.
-              (snippet '(begin
-                          (substitute* "Makefile.in"
-                            ((".*INSTALL.*sysconfdir.*fish.*") ""))
-                          #t))))
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/fish-shell/fish-shell/"
+                           "releases/download/" version "/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1kzjd0n0sfslkd36lzrvvvgy3qwkd9y466bkrqlnhd5h9dhx77ga"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("fish-foreign-env" ,fish-foreign-env)
+       ("groff" ,groff)                 ; for 'fish --help'
+       ("ncurses" ,ncurses)
+       ("pcre2" ,pcre2)      ; don't use the bundled PCRE2
+       ("python" ,python)))  ; for fish_config and manpage completions
     (native-inputs
      `(("doxygen" ,doxygen)))
-    (inputs
-     `(("bc" ,bc)
-       ("ncurses" ,ncurses)
-       ("groff" ,groff)               ;for 'fish --help'
-       ("pcre2" ,pcre2)               ;don't use the bundled PCRE2
-       ("python" ,python-wrapper)))   ;for fish_config and manpage completions
     (arguments
-     '(#:tests? #f ; no check target
-       #:configure-flags '("--sysconfdir=/etc")
+     '(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
-         ;; Embed absolute paths to store items.
-         (add-after 'unpack 'embed-store-paths
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (substitute* '("share/functions/math.fish"
-                            "share/functions/seq.fish")
-               (("\\| bc")
-                (string-append "| " (assoc-ref %build-inputs "bc")
-                               "/bin/bc")))
-             (substitute* "share/functions/fish_update_completions.fish"
-               (("python") (which "python")))
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* '("build_tools/build_commands_hdr.sh"
+                            "build_tools/build_user_doc.sh")
+               (("/usr/bin/env") "env"))
+             #t))
+         ;; Embed absolute paths.
+         (add-before 'install 'embed-absolute-paths
+           (lambda _
+             (substitute* '("share/functions/__fish_config_interactive.fish"
+                            "share/functions/fish_config.fish"
+                            "share/functions/fish_update_completions.fish")
+               (("python3") (which "python3")))
              (substitute* "share/functions/__fish_print_help.fish"
                (("nroff") (which "nroff")))
+             #t))
+         ;; Source /etc/fish/config.fish from $__fish_sysconf_dir/config.fish.
+         (add-before 'install 'patch-fish-config
+           (lambda _
+             (let ((port (open-file "etc/config.fish" "a")))
+               (display (string-append
+                         "\n\n"
+                         "# Patched by Guix.\n"
+                         "# Source /etc/fish/config.fish.\n"
+                         "if test -f /etc/fish/config.fish\n"
+                         "    source /etc/fish/config.fish\n"
+                         "end\n")
+                        port)
+               (close-port port))
+             #t))
+         ;; Enable completions, functions and configurations in user's and
+         ;; system's guix profiles by adding them to __extra_* variables.
+         (add-before 'install 'patch-fish-extra-paths
+           (lambda _
+             (let ((port (open-file "share/__fish_build_paths.fish" "a")))
+               (display
+                (string-append
+                 "\n\n"
+                 "# Patched by Guix.\n"
+                 "# Enable completions, functions and configurations in user's"
+                 " and system's guix profiles by adding them to __extra_*"
+                 " variables.\n"
+                 "set -l __guix_profile_paths ~/.guix-profile"
+                 " /run/current-system/profile\n"
+                 "set __extra_completionsdir"
+                 " $__guix_profile_paths\"/etc/fish/completions\""
+                 " $__guix_profile_paths\"/share/fish/vendor_completions.d\""
+                 " $__extra_completionsdir\n"
+                 "set __extra_functionsdir"
+                 " $__guix_profile_paths\"/etc/fish/functions\""
+                 " $__guix_profile_paths\"/share/fish/vendor_functions.d\""
+                 " $__extra_functionsdir\n"
+                 "set __extra_confdir"
+                 " $__guix_profile_paths\"/etc/fish/conf.d\""
+                 " $__guix_profile_paths\"/share/fish/vendor_conf.d\""
+                 " $__extra_confdir\n")
+                port)
+               (close-port port))
+             #t))
+         ;; Use fish-foreign-env to source /etc/profile.
+         (add-before 'install 'source-etc-profile
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((port (open-file "share/__fish_build_paths.fish" "a")))
+               (display
+                (string-append
+                 "\n\n"
+                 "# Patched by Guix.\n"
+                 "# Use fish-foreign-env to source /etc/profile.\n"
+                 "if status is-login\n"
+                 "    set fish_function_path "
+                 (assoc-ref inputs "fish-foreign-env") "/share/fish/functions"
+                 " $__fish_datadir/functions\n"
+                 "    fenv source /etc/profile\n"
+                 "    set -e fish_function_path\n"
+                 "end\n")
+                port)
+               (close-port port))
              #t)))))
     (synopsis "The friendly interactive shell")
     (description
@@ -147,6 +203,54 @@ include smart terminal handling based on terminfo, an easy to search history,
 and syntax highlighting.")
     (home-page "https://fishshell.com/")
     (license gpl2)))
+
+(define-public fish-foreign-env
+  (package
+    (name "fish-foreign-env")
+    (version "0.20190116")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/oh-my-fish/plugin-foreign-env.git")
+             (commit "dddd9213272a0ab848d474d0cbde12ad034e65bc")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00xqlyl3lffc5l0viin1nyp819wf81fncqyz87jx8ljjdhilmgbs"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (out (assoc-ref %outputs "out"))
+                (func-path (string-append out "/share/fish/functions")))
+           (mkdir-p func-path)
+           (copy-recursively (string-append source "/functions")
+                             func-path)
+
+           ;; Embed absolute paths.
+           (substitute* `(,(string-append func-path "/fenv.fish")
+                          ,(string-append func-path "/fenv.apply.fish")
+                          ,(string-append func-path "/fenv.main.fish"))
+             (("bash")
+              (string-append (assoc-ref %build-inputs "bash") "/bin/bash"))
+             (("sed")
+              (string-append (assoc-ref %build-inputs "sed") "/bin/sed"))
+             ((" tr ")
+              (string-append " " (assoc-ref %build-inputs "coreutils")
+                             "/bin/tr ")))))))
+    (inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("sed" ,sed)))
+    (home-page "https://github.com/oh-my-fish/plugin-foreign-env")
+    (synopsis "Foreign environment interface for fish shell")
+    (description "@code{fish-foreign-env} wraps bash script execution in a way
+that environment variables that are exported or modified get imported back
+into fish.")
+    (license expat)))
 
 (define-public rc
   (package
