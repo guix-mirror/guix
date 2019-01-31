@@ -69,7 +69,12 @@
                                               "/include:{B}/include")
                                (string-append "--libpaths="
                                               (assoc-ref %build-inputs "libc")
-                                              "/lib"))
+                                              "/lib")
+                               ,@(if (string-prefix? "armhf-linux"
+                                                     (or (%current-target-system)
+                                                         (%current-system)))
+                                     `("--triplet=arm-linux-gnueabihf")
+                                     '()))
        #:test-target "test"))
     ;; Fails to build on MIPS: "Unsupported CPU"
     (supported-systems (delete "mips64el-linux" %supported-systems))
