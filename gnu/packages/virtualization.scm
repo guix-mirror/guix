@@ -801,13 +801,13 @@ Machine Protocol.")
    (version "a12")
    (source
     (origin
-     (method url-fetch)
-     (uri (string-append "https://github.com/gnif/LookingGlass/archive/"
-                         version ".tar.gz"))
-     (file-name (string-append name "-" version))
+     (method git-fetch)
+     (uri (git-reference (url "https://github.com/gnif/LookingGlass")
+                         (commit version)))
+     (file-name (git-file-name name version))
      (sha256
       (base32
-       "0x57chx83f8pq56d9sfxmc9p4qjm9nqvdyamj41bmy145mxw5w3m"))))
+       "0r6bvl9q94039r6ff4f2bg8si95axx9w8bf1h1qr5730d2kv5yxq"))))
    (build-system cmake-build-system)
    (inputs `(("fontconfig" ,fontconfig)
              ("glu" ,glu)
