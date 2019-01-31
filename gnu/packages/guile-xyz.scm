@@ -1159,34 +1159,30 @@ above command-line parameters.")
         (ice-9 ftw)
         ,@%gnu-build-system-modules)
        #:phases
-       (modify-phases
-           %standard-phases
-         (add-after
-             'install
-             'hall-wrap-binaries
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin/"))
-                    (site (string-append out "/share/guile/site")))
+       (modify-phases %standard-phases
+         (add-after 'install 'hall-wrap-binaries
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin/"))
+                    (site (string-append out "/share/guile/site"))
+                    (config (assoc-ref inputs "guile-config")))
                (match (scandir site)
                  (("." ".." version)
                   (let ((modules (string-append site "/" version))
-                        (compiled-modules
-                         (string-append
-                          out
-                          "/lib/guile/"
-                          version
-                          "/site-ccache")))
-                    (for-each
-                     (lambda (file)
-                       (wrap-program
-                           (string-append bin file)
-                         `("GUILE_LOAD_PATH" ":" prefix (,modules))
-                         `("GUILE_LOAD_COMPILED_PATH"
-                           ":"
-                           prefix
-                           (,compiled-modules))))
-                     ,(list 'list "hall"))
+                        (compiled-modules (string-append
+                                           out "/lib/guile/" version
+                                           "/site-ccache")))
+                    (wrap-program (string-append bin "hall")
+                      `("GUILE_LOAD_PATH" ":" prefix
+                        (,modules
+                         ,(string-append config
+                                         "/share/guile/site/"
+                                         version)))
+                      `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                        (,compiled-modules
+                         ,(string-append config "/lib/guile/"
+                                         version
+                                         "/site-ccache"))))
                     #t)))))))))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1202,8 +1198,7 @@ above command-line parameters.")
 allow you to quickly create and publish Guile projects.  It allows you to
 transparently support the GNU build system, manage a project hierarchy &
 provides tight coupling to Guix.")
-    (home-page
-     "https://gitlab.com/a-sassmannshausen/guile-hall")
+    (home-page "https://gitlab.com/a-sassmannshausen/guile-hall")
     (license license:gpl3+)))
 
 (define-public guile-ics
