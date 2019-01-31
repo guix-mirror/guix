@@ -2780,14 +2780,16 @@ time.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.02.177")
+    (version "2.03.07")
     (source (origin
               (method url-fetch)
-              (uri (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
-                                  version ".tgz"))
+              (uri (list (string-append "ftp://sourceware.org/pub/lvm2/LVM2."
+                                        version ".tgz")
+                         (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
+                                        version ".tgz")))
               (sha256
                (base32
-                "1wl0isn0yz5wvglwylnlqkppafwmvhliq5bd92vjqp5ir4za49a0"))
+                "1s818ghgl0cxqak3r4cc99anh2xnm46kl03cyk089a1cr2ai0by7"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2795,7 +2797,7 @@ time.")
 
                   ;; Honor sysconfdir.
                   (substitute* "make.tmpl.in"
-                    (("confdir = .*$")
+                    (("^confdir = .*$")
                      "confdir = @sysconfdir@\n")
                     (("DEFAULT_SYS_DIR = @DEFAULT_SYS_DIR@")
                      "DEFAULT_SYS_DIR = @sysconfdir@"))
@@ -2806,7 +2808,8 @@ time.")
      `(("pkg-config" ,pkg-config)
        ("procps" ,procps)))                       ;tests use 'pgrep'
     (inputs
-     `(("udev" ,eudev)))
+     `(("libaio" ,libaio)
+       ("udev" ,eudev)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -2832,14 +2835,6 @@ time.")
                                ;; Make sure programs such as 'dmsetup' can
                                ;; find libdevmapper.so.
                                (string-append "LDFLAGS=-Wl,-rpath="
-                                              (assoc-ref %outputs "out")
-                                              "/lib,-rpath="
-                                              (assoc-ref %outputs "out")
-                                              "/lib/device-mapper")
-                               ;; TODO: Patch make.tmpl.in to take LDFLAGS
-                               ;; into account so that we don't need to also
-                               ;; set CLDFLAGS.
-                               (string-append "CLDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib,-rpath="
                                               (assoc-ref %outputs "out")
@@ -2871,7 +2866,26 @@ mapper.  Kernel components are part of Linux-libre.")
      (substitute-keyword-arguments (package-arguments lvm2)
        ((#:configure-flags flags '())
         ;; LVM2 doesn't use Libtool, hence the custom option.
-        `(cons "--enable-static_link" ,flags))))
+        `(append '("--enable-static_link")
+                 ;; Building dmeventd statically is complicated due to a
+                 ;; requirement on libdevmapper.a, which is being phased out
+                 ;; in favor of libdevice-mapper.a, which in turn is is not
+                 ;; easily made available at dmeventd build time.  Just ignore
+                 ;; it until the situation improves.
+                 (delete "--enable-dmeventd" ,flags)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'adjust-Makefile
+             (lambda _
+               ;; These fixes are related to the upstream libdm->device_mapper
+               ;; migration and will hopefully be fixed upstream in due time.
+               (substitute* "tools/Makefile.in"
+                 ;; This variable is empty in a static configuration and causes
+                 ;; an erroneous GCC command line.
+                 (("-L\\$\\(interfacebuilddir\\)") "")
+                 ;; Remove obsolete reference to libdevmapper.a.
+                 (("-ldevmapper") ""))
+               #t))))))
     (synopsis "Logical volume management for Linux (statically linked)")))
 
 (define-public wireless-tools
