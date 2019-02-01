@@ -5275,3 +5275,28 @@ first class values representing record fields, and additional routines, to get
 and set record fields, iterate and fold over all fields of a record and create
 new record values.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-sexp-conv
+  (package
+    (name "ocaml-ppx-sexp-conv")
+    (version "0.11.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janestreet/ppx_sexp_conv.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pqwnqy1xp309wvdcaax4lg02yk64lq2w03mbgfvf6ps5ry4gis9"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_sexp_conv")))
+    (home-page "https://github.com/janestreet/ppx_sexp_conv")
+    (synopsis "Generation of S-expression conversion functions from type definitions")
+    (description "This package generates S-expression conversion functions from type
+definitions.")
+    (license license:asl2.0)))
