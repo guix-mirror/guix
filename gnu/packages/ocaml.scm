@@ -805,64 +805,21 @@ libpanel, librsvg and quartz.")
 (define-public unison
   (package
     (name "unison")
-    (version "2.48.3")
-    (source
-      (origin
-        (method svn-fetch)
-        (uri (svn-reference
-              (url (string-append "https://webdav.seas.upenn.edu/svn/"
-                                  "unison/branches/"
-                                  (version-major+minor version)))
-              (revision 535)))
-        (file-name (string-append name "-" version "-checkout"))
-        (sha256
-         (base32
-          "0486s53wyayicj9f2raj2dvwvk4xyzar219rccc1iczdwixm4x05"))
-        (modules '((guix build utils)
-                   (ice-9 rdelim)
-                   (ice-9 regex)
-                   (srfi srfi-1)))
-        (snippet
-         `(begin
-            ;; The svn revision in the release tarball appears to be
-            ;; artificially manipulated in order to set the desired point
-            ;; version number.  Because the point version is calculated during
-            ;; the build, we can offset pointVersionOrigin by the desired
-            ;; point version and write that into "Rev: %d".  We do this rather
-            ;; than hardcoding the necessary revision number, for
-            ;; maintainability.
-            (with-atomic-file-replacement "src/mkProjectInfo.ml"
-              (lambda (in out)
-                (let ((pt-ver (string->number (third (string-split ,version #\.))))
-                      (pt-rx  (make-regexp "^let pointVersionOrigin = ([0-9]+)"))
-                      (rev-rx (make-regexp "Rev: [0-9]+")))
-                  (let loop ((pt-origin #f))
-                    (let ((line (read-line in 'concat)))
-                      (cond
-                       ((regexp-exec pt-rx line)
-                        => (lambda (m)
-                             (display line out)
-                             (loop (string->number (match:substring m 1)))))
-                       ((regexp-exec rev-rx line)
-                        => (lambda (m)
-                             (format out "~aRev: ~d~a"
-                                     (match:prefix m)
-                                     (+ pt-origin pt-ver)
-                                     (match:suffix m))
-                             (dump-port in out))) ;done
-                       (else
-                        (display line out)
-                        (loop pt-origin))))))))
-            ;; Without the '-fix' argument, the html file produced does not
-            ;; have functioning internal hyperlinks.
-            (substitute* "doc/Makefile"
-              (("hevea unison") "hevea -fix unison"))
-            #t))))
+    (version "2.51.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bcpierce00/unison.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1bykiyc0dc5pkw8x370qkg2kygq9pq7yqzsgczd3y13b6ivm4sdq"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                  ; 1.9 MiB of documentation
     (native-inputs
-     `(("ocaml" ,ocaml-4.02)
+     `(("ocaml" ,ocaml)
        ;; For documentation
        ("ghostscript" ,ghostscript)
        ("texlive" ,texlive-tiny)
