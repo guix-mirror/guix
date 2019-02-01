@@ -5096,6 +5096,7 @@ a more consistent API.")
     (build-system dune-build-system)
     (arguments
      '(#:tests? #f)) ;no tests
+    (properties `((upstream-name . "ppx_derivers")))
     (synopsis "Shared @code{@@deriving} plugin registry")
     (description
      "Ppx_derivers is a tiny package whose sole purpose is to allow
