@@ -4694,6 +4694,38 @@ Dedukti files.")
 syntax checking on dedukti files.")
       (license license:cecill-b))))
 
+(define-public ocaml-ppx-inline-test
+  (package
+    (name "ocaml-ppx-inline-test")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/ppx_inline_test")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "11n94fz1asjf5vqdgriv0pvsa5lbfpqcyk525c7816w23vskcvq6"))))
+    (build-system dune-build-system)
+    (arguments
+     ;see home page README for further information
+     `(#:tests? #f))
+    (inputs
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-compiler-libs" ,ocaml-compiler-libs)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)
+       ("ocaml-stdio" ,ocaml-stdio)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (synopsis "Syntax extension for writing in-line tests in ocaml code")
+    (description "This package contains a syntax extension for writing
+in-line tests in ocaml code.  It is part of Jane Street's PPX rewriters
+collection.")
+    (license license:expat)))
+
 (define-public ocaml-biniou
  (package
    (name "ocaml-biniou")
