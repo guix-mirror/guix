@@ -5515,3 +5515,24 @@ many values).")
     (description
       "Part of the Jane Street's PPX rewriters collection.")
     (license license:asl2.0)))
+
+(define-public ocaml-typerep
+  (package
+    (name "ocaml-typerep")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/typerep-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1zi7hy0prpgzqhr4lkacr04wvlvbp21jfbdfvffhrm6cd400rb5v"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:tests? #f))
+    (propagated-inputs `(("ocaml-base" ,ocaml-base)))
+    (home-page "https://github.com/janestreet/typerep")
+    (synopsis "Typerep is a library for runtime types")
+    (description "Typerep is a library for runtime types.")
+    (license license:asl2.0)))
