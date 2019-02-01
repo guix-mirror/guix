@@ -5841,3 +5841,35 @@ packages.")
     (description "This package can automatically generate runtime types
 from type definitions.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-base
+  (package
+    (name "ocaml-ppx-base")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_base-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0aq206pg330jmj7lhcagiiwm3a0b3gsqm801m8ajd4ysyw7idkym"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "."))
+    (propagated-inputs
+      `(("ocaml-ppx-compare" ,ocaml-ppx-compare)
+        ("ocaml-ppx-enumerate" ,ocaml-ppx-enumerate)
+        ("ocaml-ppx-hash" ,ocaml-ppx-hash)
+        ("ocaml-ppx-js-style" ,ocaml-ppx-js-style)
+        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_base")))
+    (home-page "https://github.com/janestreet/ppx_base")
+    (synopsis "Base set of ppx rewriters")
+    (description "Ppx_base is the set of ppx rewriters used for Base.
+
+Note that Base doesn't need ppx to build, it is only used as a
+verification tool.")
+    (license license:asl2.0)))
