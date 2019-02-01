@@ -5718,3 +5718,30 @@ match expressions, and if expressions.")
     (description "Syntax extension that makes [failwiths] always include a
 position.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-assert
+  (package
+    (name "ocaml-ppx-assert")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_assert-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "17kd311n0l9f72gblf9kv8i5rghr106w37x4f0m5qwh6nlgl0j9k"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-ppx-compare" ,ocaml-ppx-compare)
+        ("ocaml-ppx-here" ,ocaml-ppx-here)
+        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_assert")))
+    (home-page "https://github.com/janestreet/ppx_assert")
+    (synopsis "Assert-like extension nodes that raise useful errors on failure")
+    (description "This package contains assert-like extension nodes that raise
+useful errors on failure.")
+    (license license:asl2.0)))
