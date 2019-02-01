@@ -5975,3 +5975,24 @@ random values.
 This library implements a splittable pseudo-random number generator that sacrifices
 cryptographic-quality randomness in favor of performance.")
     (license license:asl2.0)))
+
+(define-public ocaml-jane-street-headers
+  (package
+    (name "ocaml-jane-street-headers")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/jane-street-headers-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0afhzm08l9v883fhpqqh2lmy7az609pxif40bp7x1sk8c0yszqsh"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "."))
+    (home-page "https://github.com/janestreet/jane-street-headers")
+    (synopsis "Jane Street C header files")
+    (description "This package provides C header files shared between the
+various Jane Street packages.")
+    (license license:asl2.0)))
