@@ -5388,3 +5388,23 @@ storage of large amounts of data.")
     (license (list
                license:asl2.0
                license:bsd-3))))
+
+(define-public ocaml-octavius
+  (package
+    (name "ocaml-octavius")
+    (version "1.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ocaml-doc/octavius")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gqfbwsh0zq4b9mvvlmg3zhpbfbvq8swqr31320aibbqydwf77hr"))))
+    (build-system dune-build-system)
+    (properties `((upstream-name . "octavius")))
+    (home-page "https://github.com/ocaml-doc/octavius")
+    (synopsis "Ocamldoc comment syntax parser")
+    (description "Octavius is a library to parse the `ocamldoc` comment syntax.")
+    (license license:isc)))
