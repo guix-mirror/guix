@@ -1,11 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
@@ -35,9 +35,11 @@
                 #:select (gpl3+ lgpl2.0+ lgpl3+ public-domain))
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages ed)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages compression)
@@ -55,6 +57,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:export (glibc
             libiconv-if-needed))
 
@@ -500,6 +504,33 @@ the strings in a binary file, and utilities for working with archives.  The
 included.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/binutils/")))
+
+(define-public binutils-gold
+  (package
+    (inherit binutils)
+    (name "binutils-gold")
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-more-shebangs
+           (lambda _
+             (substitute* "gold/Makefile.in"
+               (("/bin/sh") (which "sh")))
+             #t)))
+       ,@(substitute-keyword-arguments (package-arguments binutils)
+         ; Upstream is aware of unrelocatable test failures on arm*.
+         ((#:tests? _ #f)
+          (if (any (cute string-prefix? <> (or (%current-target-system)
+                                               (%current-system)))
+                   '("i686" "x86_64"))
+              '#t '#f))
+         ((#:configure-flags flags)
+          `(cons* "--enable-gold=default"
+                 (delete "LDFLAGS=-static-libgcc" ,flags))))))
+     (native-inputs
+     `(("bc" ,bc)))
+     (inputs
+     `(("gcc:lib" ,gcc "lib")))))
 
 (define* (make-ld-wrapper name #:key
                           (target (const #f))
