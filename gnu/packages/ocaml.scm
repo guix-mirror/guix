@@ -5164,3 +5164,32 @@ OCaml AST in the OCaml syntax;
 @item a generator of open recursion classes from type definitions.
 @end itemize")
     (license license:expat)))
+
+(define-public ocaml-ppx-compare
+  (package
+    (name "ocaml-ppx-compare")
+    (version "0.11.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janestreet/ppx_compare.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06bq4m1bsm4jlx4g7wh5m99qky7xm4c2g52kaz6pv25hdn5agi2m"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_compare")))
+    (home-page "https://github.com/janestreet/ppx_compare")
+    (synopsis "Generation of comparison functions from types")
+    (description "Generation of fast comparison functions from type expressions
+and definitions.  Ppx_compare is a ppx rewriter that derives comparison functions
+from type representations.  The scaffolded functions are usually much faster
+than ocaml's Pervasives.compare.  Scaffolding functions also gives you more
+flexibility by allowing you to override them for a specific type and more safety
+by making sure that you only compare comparable values.")
+    (license license:asl2.0)))
