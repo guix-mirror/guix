@@ -5193,3 +5193,31 @@ than ocaml's Pervasives.compare.  Scaffolding functions also gives you more
 flexibility by allowing you to override them for a specific type and more safety
 by making sure that you only compare comparable values.")
     (license license:asl2.0)))
+
+(define-public ocaml-fieldslib
+  (package
+    (name "ocaml-fieldslib")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version) "/files/"
+                                  "fieldslib-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "12948pzxrl360lybm9fzyvplgcl87zjbn4m3sk1aw75zk85p1388"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "fieldslib")))
+    (home-page "https://github.com/janestreet/fieldslib")
+    (synopsis "Syntax extension to record fields")
+    (description "Syntax extension to define first class values representing
+record fields, to get and set record fields, iterate and fold over all fields
+of a record and create new record values.")
+    (license license:asl2.0)))
