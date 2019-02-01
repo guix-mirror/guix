@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
@@ -399,6 +399,10 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  #t)))))))
     (native-inputs
      `(("go" ,go-1.4)
+       ,@(match (%current-system)
+           ((or "armhf-linux" "aarch64-linux")
+            `(("gold" ,binutils-gold)))
+           (_ `()))
        ,@(package-native-inputs go-1.4)))
     (supported-systems %supported-systems)))
 
