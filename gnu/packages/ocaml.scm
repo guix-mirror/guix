@@ -5814,3 +5814,30 @@ to denote the expected output.")
 @code{lint} tool to enforce some coding conventions across all Jane Street
 packages.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-typerep-conv
+  (package
+    (name "ocaml-ppx-typerep-conv")
+    (version "0.11.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janestreet/ppx_typerep_conv.git")
+                     (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0a13dpfrrg0rsm8qni1bh7pqcda30l70z8r6yzi5a64bmwk7g5ah"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "."))
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-typerep" ,ocaml-typerep)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_typerep_conv")))
+    (home-page "https://github.com/janestreet/ppx_typerep_conv")
+    (synopsis "Generation of runtime types from type declarations")
+    (description "This package can automatically generate runtime types
+from type definitions.")
+    (license license:asl2.0)))
