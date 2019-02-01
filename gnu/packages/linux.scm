@@ -427,8 +427,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.20-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.18")
-(define %linux-libre-4.19-hash "1m3qbd09zd7llq0fjsccyjr070n6szl5dj10qrlpd54bnvry22fc")
+(define %linux-libre-4.19-version "4.19.19")
+(define %linux-libre-4.19-hash "1sgcca9zpw5hza6vkza7613pd8bmvvd2kmd2f0xkl5fyrna7dipq")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
