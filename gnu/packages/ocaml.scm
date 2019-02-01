@@ -5745,3 +5745,43 @@ position.")
     (description "This package contains assert-like extension nodes that raise
 useful errors on failure.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-expect
+  (package
+    (name "ocaml-ppx-expect")
+    (version "0.11.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janestreet/ppx_expect.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0bnz3cpj3vwdw409r6f8raakl8n364q5l7wy4i6gckr34a4vla69"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:jbuild? #t))
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-ppx-assert" ,ocaml-ppx-assert)
+        ("ocaml-ppx-compare" ,ocaml-ppx-compare)
+        ("ocaml-ppx-custom-printf" ,ocaml-ppx-custom-printf)
+        ("ocaml-ppx-fields-conv" ,ocaml-ppx-fields-conv)
+        ("ocaml-ppx-here" ,ocaml-ppx-here)
+        ("ocaml-ppx-inline-test" ,ocaml-ppx-inline-test)
+        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-ppx-variants-conv" ,ocaml-ppx-variants-conv)
+        ("ocaml-stdio" ,ocaml-stdio)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)
+        ("ocaml-re" ,ocaml-re)))
+    (properties `((upstream-name . "ppx_expect")))
+    (home-page "https://github.com/janestreet/ppx_expect")
+    (synopsis "Cram like framework for OCaml")
+    (description "Expect-test is a framework for writing tests in OCaml, similar
+to Cram.  Expect-tests mimics the existing inline tests framework with the
+@code{let%expect_test} construct.  The body of an expect-test can contain
+output-generating code, interleaved with @code{%expect} extension expressions
+to denote the expected output.")
+    (license license:asl2.0)))
