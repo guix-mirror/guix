@@ -5873,3 +5873,33 @@ from type definitions.")
 Note that Base doesn't need ppx to build, it is only used as a
 verification tool.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-bin-prot
+  (package
+    (name "ocaml-ppx-bin-prot")
+    (version "0.11.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janestreet/ppx_bin_prot.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1h60i75bzvhna1axyn662gyrzhh441l79vl142d235i5x31dmnkz"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; Cyclic dependency with ocaml-ppx-jane
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-bin-prot" ,ocaml-bin-prot)
+        ("ocaml-ppx-here" ,ocaml-ppx-here)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_bin_prot")))
+    (home-page "https://github.com/janestreet/ppx_bin_prot")
+    (synopsis "Generation of bin_prot readers and writers from types")
+    (description "Generation of binary serialization and deserialization
+functions from type definitions.")
+    (license license:asl2.0)))
