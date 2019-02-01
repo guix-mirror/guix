@@ -1391,14 +1391,14 @@ coverage information.")
 (define-public dune
   (package
     (name "dune")
-    (version "1.2.1")
+    (version "1.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ocaml/dune/releases/"
                                   "download/" version "/dune-" version ".tbz"))
               (sha256
                (base32
-                "00c5dbm4hkdapc2i7pg07b2lj8sv6ly38qr7zid58cdmbmzq21z9"))))
+                "0dmf0wbfmgdy5plz1bjiisc2hjgblvxsnrqjmw2c8y45v1h23mdz"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f; require odoc
