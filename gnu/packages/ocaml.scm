@@ -5903,3 +5903,46 @@ verification tool.")
     (description "Generation of binary serialization and deserialization
 functions from type definitions.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-jane
+  (package
+    (name "ocaml-ppx-jane")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_jane-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0lgppkw3aixrfnixihrsz2ipafv8fpvkdpy3pw8n0r615gg8x8la"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "."))
+    (propagated-inputs
+      `(("ocaml-ppx-assert" ,ocaml-ppx-assert)
+        ("ocaml-ppx-base" ,ocaml-ppx-base)
+        ("ocaml-ppx-bench" ,ocaml-ppx-bench)
+        ("ocaml-ppx-bin-prot" ,ocaml-ppx-bin-prot)
+        ("ocaml-ppx-custom-printf" ,ocaml-ppx-custom-printf)
+        ("ocaml-ppx-expect" ,ocaml-ppx-expect)
+        ("ocaml-ppx-fail" ,ocaml-ppx-fail)
+        ("ocaml-ppx-fields-conv" ,ocaml-ppx-fields-conv)
+        ("ocaml-ppx-here" ,ocaml-ppx-here)
+        ("ocaml-ppx-inline-test" ,ocaml-ppx-inline-test)
+        ("ocaml-ppx-let" ,ocaml-ppx-let)
+        ("ocaml-ppx-optcomp" ,ocaml-ppx-optcomp)
+        ("ocaml-ppx-optional" ,ocaml-ppx-optional)
+        ("ocaml-ppx-pipebang" ,ocaml-ppx-pipebang)
+        ("ocaml-ppx-sexp-message" ,ocaml-ppx-sexp-message)
+        ("ocaml-ppx-sexp-value" ,ocaml-ppx-sexp-value)
+        ("ocaml-ppx-typerep-conv" ,ocaml-ppx-typerep-conv)
+        ("ocaml-ppx-variants-conv" ,ocaml-ppx-variants-conv)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_jane")))
+    (home-page "https://github.com/janestreet/ppx_jane")
+    (synopsis "Standard Jane Street ppx rewriters")
+    (description "This package installs a ppx-jane executable, which is a ppx
+driver including all standard Jane Street ppx rewriters.")
+    (license license:asl2.0)))
