@@ -5408,3 +5408,29 @@ storage of large amounts of data.")
     (synopsis "Ocamldoc comment syntax parser")
     (description "Octavius is a library to parse the `ocamldoc` comment syntax.")
     (license license:isc)))
+
+(define-public ocaml-ppx-hash
+  (package
+    (name "ocaml-ppx-hash")
+    (version "0.11.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janestreet/ppx_hash.git")
+                     (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1p0ic6aijxlrdggpmycj12q3cy9xksbq2vq727215maz4snvlf5p"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-ppx-compare" ,ocaml-ppx-compare)
+        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_hash")))
+    (home-page "https://github.com/janestreet/ppx_hash")
+    (synopsis "Generation of hash functions from type expressions and definitions")
+    (description "This package is a collecton of ppx rewriters that generate
+hash functions from type exrpessions and definitions.")
+    (license license:asl2.0)))
