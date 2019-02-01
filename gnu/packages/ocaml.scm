@@ -5221,3 +5221,30 @@ by making sure that you only compare comparable values.")
 record fields, to get and set record fields, iterate and fold over all fields
 of a record and create new record values.")
     (license license:asl2.0)))
+
+(define-public ocaml-variantslib
+  (package
+    (name "ocaml-variantslib")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/variantslib-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hsdwmkslvk4cznqr4lyyiy7vvk5spil226k0z2in26fxq6y0hf3"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "variantslib")))
+    (home-page "https://github.com/janestreet/variantslib")
+    (synopsis "OCaml variants as first class values")
+    (description "The Core suite of libraries is an alternative to OCaml's
+standard library.")
+    (license license:asl2.0)))
