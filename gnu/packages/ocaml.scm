@@ -4976,7 +4976,7 @@ parsexp_io.")
         (base32
          "1qfl0m04rpcjvc4yw1hzh6r16jpwmap0sa9ax6zjji67dz4szpyb"))))
     (build-system dune-build-system)
-    (inputs
+    (propagated-inputs
      `(("ocaml-num" ,ocaml-num)
        ("ocaml-parsexp" ,ocaml-parsexp)
        ("ocaml-sexplib0" ,ocaml-sexplib0)))
@@ -5003,7 +5003,7 @@ functionality for parsing and pretty-printing s-expressions.")
         (base32
          "0j6xb4265jr41vw4fjzak6yr8s30qrnzapnc6rl1dxy8bjai0nir"))))
     (build-system dune-build-system)
-    (inputs
+    (propagated-inputs
      `(("ocaml-sexplib0" ,ocaml-sexplib0)))
     (arguments
      `(#:phases
@@ -5066,8 +5066,9 @@ is now @code{Ocaml_common.Ast_helper}.")
         (base32
          "1facajqhvq34g2wrg368y0ajxd6lrj5b3lyzyj0jhdmraxajjcwn"))))
     (build-system dune-build-system)
-    (inputs `(("ocaml-base" ,ocaml-base)
-              ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (propagated-inputs
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)))
     (arguments
      '(#:tests? #f)) ;no tests
     (synopsis "Standard IO library for OCaml")
@@ -5120,7 +5121,7 @@ as part of the same ocaml-migrate-parsetree driver.")
         (base32
          "1nr4igf5m4prvigvv470dnhfdhdw0p6hz6zw8gnm5bzcv7s2lg5l"))))
     (build-system dune-build-system)
-    (inputs
+    (propagated-inputs
      `(("ocaml-base" ,ocaml-base)
        ("ocaml-compiler-libs" ,ocaml-compiler-libs)
        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
@@ -5128,8 +5129,6 @@ as part of the same ocaml-migrate-parsetree driver.")
        ("ocaml-stdio" ,ocaml-stdio)
        ("ocaml-result" ,ocaml-result)
        ("ocaml-sexplib0" ,ocaml-sexplib0)))
-    (native-inputs
-     `(("ocaml-findlib" ,ocaml-findlib)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -5137,7 +5136,7 @@ as part of the same ocaml-migrate-parsetree driver.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; add the line #directory ".." at the top of each file
              ;; using #use "topfind";; to be able to find topfind
-             (let* ((findlib-path (assoc-ref inputs "ocaml-findlib"))
+             (let* ((findlib-path (assoc-ref inputs "findlib"))
                     (findlib-libdir
                      (string-append findlib-path "/lib/ocaml/site-lib")))
                (substitute* '("test/base/test.ml"
