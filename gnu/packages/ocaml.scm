@@ -5248,3 +5248,30 @@ of a record and create new record values.")
     (description "The Core suite of libraries is an alternative to OCaml's
 standard library.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-fields-conv
+  (package
+    (name "ocaml-ppx-fields-conv")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_fields_conv-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "07zrd3qky2ppbfl55gpm90rvqa5860xgwcsvihrjmkrw6d0jirkc"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-fieldslib" ,ocaml-fieldslib)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_fields_conv")))
+    (home-page "https://github.com/janestreet/ppx_fields_conv")
+    (synopsis "Generation of accessor and iteration functions for ocaml records")
+    (description "Ppx_fields_conv is a ppx rewriter that can be used to define
+first class values representing record fields, and additional routines, to get
+and set record fields, iterate and fold over all fields of a record and create
+new record values.")
+    (license license:asl2.0)))
