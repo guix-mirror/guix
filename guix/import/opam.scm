@@ -127,12 +127,17 @@ path to the repository."
     (lambda _
       (peg:tree (match-pattern records (get-string-all (current-input-port)))))))
 
+(define (substitute-char str what with)
+  (string-join (string-split str what) with))
+
 (define (ocaml-name->guix-name name)
-  (cond
-    ((equal? name "ocamlfind") "ocaml-findlib")
-    ((string-prefix? "ocaml" name) name)
-    ((string-prefix? "conf-" name) (substring name 5))
-    (else (string-append "ocaml-" name))))
+  (substitute-char
+    (cond
+      ((equal? name "ocamlfind") "ocaml-findlib")
+      ((string-prefix? "ocaml" name) name)
+      ((string-prefix? "conf-" name) (substring name 5))
+      (else (string-append "ocaml-" name)))
+    #\_ "-"))
 
 (define (metadata-ref file lookup)
   (fold (lambda (record acc)
@@ -247,6 +252,10 @@ path to the repository."
                      ,@(if (null? native-inputs)
                          '()
                          `((native-inputs ,(list 'quasiquote native-inputs))))
+                     ,@(if (equal? name (guix-name->opam-name (ocaml-name->guix-name name)))
+                         '()
+                         `((properties
+                             ,(list 'quasiquote `((upstream-name . ,name))))))
                      (home-page ,(metadata-ref opam-content "homepage"))
                      (synopsis ,(metadata-ref opam-content "synopsis"))
                      (description ,(metadata-ref opam-content "description"))
@@ -259,6 +268,11 @@ path to the repository."
                                            (opam->guix-package name))
                     #:guix-name ocaml-name->guix-name))
 
+(define (guix-name->opam-name name)
+  (if (string-prefix? "ocaml-" name)
+    (substring name 6)
+    name))
+
 (define (guix-package->opam-name package)
   "Given an OCaml PACKAGE built from OPAM, return the name of the
 package in OPAM."
@@ -266,10 +280,9 @@ package in OPAM."
                          (package-properties package)
                          'upstream-name))
         (name (package-name package)))
-    (cond
-      (upstream-name upstream-name)
-      ((string-prefix? "ocaml-" name) (substring name 6))
-      (else name))))
+    (if upstream-name
+      upstream-name
+      (guix-name->opam-name name))))
 
 (define (opam-package? package)
   "Return true if PACKAGE is an OCaml package from OPAM"
