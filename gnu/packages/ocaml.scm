@@ -5462,3 +5462,29 @@ hash functions from type exrpessions and definitions.")
 for the list of all values of a type (for a type which only has finitely
 many values).")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-bench
+  (package
+    (name "ocaml-ppx-bench")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_bench-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ys4pblbcjbk9dn073rqiwm7r6rc7fah03j7riklkwnb5n44andl"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("ocaml-ppx-inline-test" ,ocaml-ppx-inline-test)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_bench")))
+    (home-page "https://github.com/janestreet/ppx_bench")
+    (synopsis "Syntax extension for writing in-line benchmarks in ocaml code")
+    (description "Syntax extension for writing in-line benchmarks in ocaml code.")
+    (license license:asl2.0)))
