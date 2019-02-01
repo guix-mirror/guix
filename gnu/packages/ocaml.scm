@@ -5488,3 +5488,30 @@ many values).")
     (synopsis "Syntax extension for writing in-line benchmarks in ocaml code")
     (description "Syntax extension for writing in-line benchmarks in ocaml code.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-here
+  (package
+    (name "ocaml-ppx-here")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_here-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0wxcak3ay4jpigm3pfdcpr65qw4hxfa8whhkryhcd8gy71x056z5"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; broken tests
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_here")))
+    (home-page "https://github.com/janestreet/ppx_here")
+    (synopsis "Expands [%here] into its location")
+    (description
+      "Part of the Jane Street's PPX rewriters collection.")
+    (license license:asl2.0)))
