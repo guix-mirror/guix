@@ -5329,3 +5329,28 @@ definitions.")
       "This package generates accessors and interation functions for OCaml
 variant types.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-custom-printf
+  (package
+    (name "ocaml-ppx-custom-printf")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_custom_printf-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "11b73smf3g3bpd9lg014pr4rx285nk9mnk6g6464ph51jv0sqzhj"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_custom_printf")))
+    (home-page "https://github.com/janestreet/ppx_custom_printf")
+    (synopsis "Printf-style format-strings for user-defined string conversion")
+    (description "Extensions to printf-style format-strings for user-defined
+string conversion.")
+    (license license:asl2.0)))
