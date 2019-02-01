@@ -5644,3 +5644,28 @@ context such as function arguments.")
       "A ppx rewriter that rewrites simple match statements with an if then
 else expression.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-optcomp
+  (package
+    (name "ocaml-ppx-optcomp")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_optcomp-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bb52p2j2h4s9f06vrcpla80rj93jinnzq6jzilapyx9q068929i"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-stdio" ,ocaml-stdio)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_optcomp")))
+    (home-page "https://github.com/janestreet/ppx_optcomp")
+    (synopsis "Optional compilation for OCaml")
+    (description "Ppx_optcomp stands for Optional Compilation.  It is a tool
+used to handle optional compilations of pieces of code depending of the word
+size, the version of the compiler, ...")
+    (license license:asl2.0)))
