@@ -5434,3 +5434,31 @@ storage of large amounts of data.")
     (description "This package is a collecton of ppx rewriters that generate
 hash functions from type exrpessions and definitions.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-enumerate
+  (package
+    (name "ocaml-ppx-enumerate")
+    (version "0.11.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janestreet/ppx_enumerate.git")
+                     (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0spx9k1v7vjjb6sigbfs69yndgq76v114jhxvzjmffw7q989cyhr"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_enumerate")))
+    (home-page "https://github.com/janestreet/ppx_enumerate")
+    (synopsis "Generate a list containing all values of a finite type")
+    (description "Ppx_enumerate is a ppx rewriter which generates a definition
+for the list of all values of a type (for a type which only has finitely
+many values).")
+    (license license:asl2.0)))
