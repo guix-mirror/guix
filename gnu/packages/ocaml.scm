@@ -1419,24 +1419,24 @@ following a very simple s-expression syntax.")
 (define-public ocaml-migrate-parsetree
   (package
     (name "ocaml-migrate-parsetree")
-    (version "1.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml-ppx/"
-                                  "ocaml-migrate-parsetree/releases/download/v"
-                                  version "/ocaml-migrate-parsetree-"
-                                  version ".tbz"))
-              (sha256
-               (base32
-                "01zjp1q4hryqaxv4apkjd868fycz2kf887r6lkb6x2a545h1lh7f"))))
+    (version "1.2.0")
+    (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "16kas19iwm4afijv3yxd250s08absabmdcb4yj57wc8r4fmzv5dm"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f
-       #:jbuild? #t))
+     `(#:tests? #f))
     (propagated-inputs
-     `(("ocamlbuild" ,ocamlbuild)
+     `(("ocaml-ppx-derivers" ,ocaml-ppx-derivers)
+       ("ocamlbuild" ,ocamlbuild)
        ("ocaml-result" ,ocaml-result)))
-    (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
     (synopsis "OCaml parsetree convertor")
     (description "This library converts between parsetrees of different OCaml
 versions.  For each version, there is a snapshot of the parsetree and conversion
