@@ -5785,3 +5785,32 @@ to Cram.  Expect-tests mimics the existing inline tests framework with the
 output-generating code, interleaved with @code{%expect} extension expressions
 to denote the expected output.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-js-style
+  (package
+    (name "ocaml-ppx-js-style")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_js_style-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0z3fc55jdjhhsblla6z4fqc13kljpcz29q79rvs5h2vsraqrldr2"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-octavius" ,ocaml-octavius)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_js_style")))
+    (home-page "https://github.com/janestreet/ppx_js_style")
+    (synopsis "Code style checker for Jane Street Packages")
+    (description "This packages is a no-op ppx rewriter.  It is used as a
+@code{lint} tool to enforce some coding conventions across all Jane Street
+packages.")
+    (license license:asl2.0)))
