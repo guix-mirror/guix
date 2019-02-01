@@ -5590,3 +5590,29 @@ in OCaml.  This is mainly motivated by writing error and debugging messages,
 where one needs to construct a s-expression based on various element of the
 context such as function arguments.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-pipebang
+  (package
+    (name "ocaml-ppx-pipebang")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_pipebang-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1wrrzlb4kdvkkcmzi01fw25jar38r2jlnyn0i6pn4z0lq4gpm9m0"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_pipebang")))
+    (home-page "https://github.com/janestreet/ppx_pipebang")
+    (synopsis "Inline reverse application operators `|>` and `|!`")
+    (description "A ppx rewriter that inlines reverse application operators
+@code{|>} and @code{|!}.")
+    (license license:asl2.0)))
