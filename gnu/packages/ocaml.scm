@@ -4746,6 +4746,47 @@ extension which allows the definition of parsers inside the language.  There
 is also support for writing OCaml syntax extensions in a camlp4 style.")
     (license license:cecill-b)))
 
+(define-public ocaml-timed
+  (package
+    (name "ocaml-timed")
+    (version "1.0")
+    (home-page "https://github.com/rlepigre/ocaml-timed")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append home-page ".git"))
+                    (commit (string-append name "_" version))))
+              (sha256
+               (base32
+                "0hfxz710faxy5yk97bkfnw87r732jcxxhmjppwrbfdb6pd0wks96"))
+              (file-name (git-file-name name version))))
+    (build-system ocaml-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "make")))
+         (replace 'install
+           (lambda _
+             (invoke "make" "install")))
+         (replace 'check
+           (lambda _
+             (invoke "make" "tests"))))))
+    (synopsis "Timed references for imperative state")
+    (description "Timed references for imperative state.  This module provides
+an alternative type for references (or mutable cells) supporting undo/redo
+operations.  In particular, an abstract notion of time is used to capture the
+state of the references at any given point, so that it can be restored.  Note
+that usual reference operations only have a constant time / memory overhead
+(compared to those of the standard library).
+
+Moreover, we provide an alternative implementation based on the references
+of the standard library (Pervasives module).  However, it is less efficient
+than the first one.")
+    (license license:expat)))
+
 (define-public ocaml-biniou
  (package
    (name "ocaml-biniou")
