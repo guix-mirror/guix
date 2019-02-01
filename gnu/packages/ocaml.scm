@@ -4683,6 +4683,31 @@ in-line tests in ocaml code.  It is part of Jane Street's PPX rewriters
 collection.")
     (license license:expat)))
 
+(define-public ocaml-earley
+  (package
+    (name "ocaml-earley")
+    (version "2.0.0")
+    (home-page "https://github.com/rlepigre/ocaml-earley")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "18k7bi7krc4bvqnhijz1q0pfr0nfahghfjifci8rh1q4i5zd0xz5"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "."))
+    (synopsis "Parsing library based on Earley Algorithm")
+    (description "Earley is a parser combinator library base on Earley's
+algorithm.  It is intended to be used in conjunction with an OCaml syntax
+extension which allows the definition of parsers inside the language.  There
+is also support for writing OCaml syntax extensions in a camlp4 style.")
+    (license license:cecill-b)))
+
 (define-public ocaml-biniou
  (package
    (name "ocaml-biniou")
