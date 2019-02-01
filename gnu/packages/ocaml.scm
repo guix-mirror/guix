@@ -5536,3 +5536,29 @@ many values).")
     (synopsis "Typerep is a library for runtime types")
     (description "Typerep is a library for runtime types.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-sexp-value
+  (package
+    (name "ocaml-ppx-sexp-value")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_sexp_value-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xnalfrln6k5khsyxvxkg6v32q8fpr4cqamsjqfih29jdv486xrs"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-ppx-here" ,ocaml-ppx-here)
+        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_sexp_value")))
+    (home-page "https://github.com/janestreet/ppx_sexp_value")
+    (synopsis "Simplify building s-expressions from ocaml values")
+    (description "A ppx rewriter that simplifies building s-expressions from
+ocaml values.")
+    (license license:asl2.0)))
