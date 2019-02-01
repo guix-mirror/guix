@@ -5300,3 +5300,32 @@ new record values.")
     (description "This package generates S-expression conversion functions from type
 definitions.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-variants-conv
+  (package
+    (name "ocaml-ppx-variants-conv")
+    (version "0.11.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janestreet/ppx_variants_conv.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1yc0gsds5m2nv39zga8nnrca2n75rkqy5dz4xj1635ybz20hhbjd"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-variantslib" ,ocaml-variantslib)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties
+      `((upstream-name . "ppx_variants_conv")))
+    (home-page
+      "https://github.com/janestreet/ppx_variants_conv")
+    (synopsis "Generation of accessor and iteration functions for OCaml variant types")
+    (description
+      "This package generates accessors and interation functions for OCaml
+variant types.")
+    (license license:asl2.0)))
