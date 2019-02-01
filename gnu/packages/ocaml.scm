@@ -5996,3 +5996,37 @@ cryptographic-quality randomness in favor of performance.")
     (description "This package provides C header files shared between the
 various Jane Street packages.")
     (license license:asl2.0)))
+
+(define-public ocaml-configurator
+  (package
+    (name "ocaml-configurator")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/configurator-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0kwgi3sh92v4n242dk5hgpwd85zzgnczgbkqi0q0kr6m93zgbf7p"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-stdio" ,ocaml-stdio)))
+    (home-page "https://github.com/janestreet/configurator")
+    (synopsis "Helper library for gathering system configuration")
+    (description "Configurator is a small library that helps writing OCaml
+scripts that test features available on the system, in order to generate config.h
+files for instance.
+
+Configurator allows one to:
+@itemize
+@item test if a C program compiles
+@item query pkg-config
+@item import #define from OCaml header files
+@item generate config.h file
+@end itemize")
+    (license license:asl2.0)))
