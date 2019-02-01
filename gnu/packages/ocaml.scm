@@ -4683,6 +4683,44 @@ in-line tests in ocaml code.  It is part of Jane Street's PPX rewriters
 collection.")
     (license license:expat)))
 
+(define-public ocaml-bindlib
+  (package
+    (name "ocaml-bindlib")
+    (version "5.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rlepigre/ocaml-bindlib.git")
+             (commit (string-append "ocaml-bindlib_" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1f8kr81w8vsi4gv61xn1qbc6zrzkjp8l9ix0942vjh4gjxc74v75"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f ;no tests
+       #:use-make? #t
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "make")))
+         (replace 'install
+           (lambda _
+             (invoke "make" "install"))))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("ocaml-findlib" ,ocaml-findlib)))
+    (home-page "https://rlepigre.github.io/ocaml-bindlib/")
+    (synopsis "OCaml Bindlib library for bound variables")
+    (description "Bindlib is a library allowing the manipulation of data
+structures with bound variables.  It is particularly useful when writing ASTs
+for programming languages, but also for manipulating terms of the λ-calculus
+or quantified formulas.")
+    (license license:gpl3+)))
+
 (define-public ocaml-earley
   (package
     (name "ocaml-earley")
