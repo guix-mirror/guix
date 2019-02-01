@@ -5946,3 +5946,32 @@ functions from type definitions.")
     (description "This package installs a ppx-jane executable, which is a ppx
 driver including all standard Jane Street ppx rewriters.")
     (license license:asl2.0)))
+
+(define-public ocaml-splittable-random
+  (package
+    (name "ocaml-splittable-random")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/splittable_random-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0l1wbd881mymlnpzlq5q53mmdz3g5d7qjhyc7lfaq1x0iaccn5lc"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-ppx-jane" ,ocaml-ppx-jane)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)))
+    (properties `((upstream-name . "splittable_random")))
+    (home-page "https://github.com/janestreet/splittable_random")
+    (synopsis "PRNG that can be split into independent streams")
+    (description "This package provides a splittable pseudo-random number generator
+(@defn{PRNG}) functions like a PRNG that can be used as a stream of random
+values; it can also be split to produce a second, independent stream of
+random values.
+
+This library implements a splittable pseudo-random number generator that sacrifices
+cryptographic-quality randomness in favor of performance.")
+    (license license:asl2.0)))
