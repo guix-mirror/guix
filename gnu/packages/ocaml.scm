@@ -5616,3 +5616,31 @@ context such as function arguments.")
     (description "A ppx rewriter that inlines reverse application operators
 @code{|>} and @code{|!}.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-optional
+  (package
+    (name "ocaml-ppx-optional")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_optional-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z8z2bga95k2vksljljfglg10vygkjd24kn1b37sk4z3nmp47x0h"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_optional")))
+    (home-page "https://github.com/janestreet/ppx_optional")
+    (synopsis "Pattern matching on flat options")
+    (description
+      "A ppx rewriter that rewrites simple match statements with an if then
+else expression.")
+    (license license:asl2.0)))
