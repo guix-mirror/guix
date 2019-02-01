@@ -739,9 +739,9 @@ processed, #f otherwise."
               (available (fold-available-packages
                           (lambda* (name version result
                                          #:key outputs location
-                                         supported? superseded?
+                                         supported? deprecated?
                                          #:allow-other-keys)
-                            (if (and supported? (not superseded?))
+                            (if (and supported? (not deprecated?))
                                 (if regexp
                                     (if (regexp-exec regexp name)
                                         (cons `(,name ,version
