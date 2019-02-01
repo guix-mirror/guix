@@ -4717,6 +4717,13 @@ libraries, which are often integrated directly into libfabric.")
                          (string-append %output "/include")))
                       (substitute* "Makefile"
                         (("/lib64") "/lib"))
+                      #t))
+                  (add-after 'unpack 'patch-sysmacros
+                    (lambda _
+                      (substitute* "ipath/ipath_proto.c"
+                        (("#include <sys/poll.h>" m)
+                         (string-append m "\n"
+                                        "#include <sys/sysmacros.h>")))
                       #t)))))
     (synopsis "Intel Performance Scaled Messaging (PSM) Libraries")
     (description
