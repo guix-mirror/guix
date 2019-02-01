@@ -4534,7 +4534,7 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad-data
   (package
     (name "0ad-data")
-    (version "0.0.23-alpha")
+    (version "0.0.23b-alpha")
     (source
      (origin
        (method url-fetch)
@@ -4543,7 +4543,7 @@ fight against their plot and save his fellow rabbits from slavery.")
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1b6qcvd8yyyxavgdwpcs7asmln3xgnvjkglz6ggvwb956x37ggzx"))
+         "04x7729hk6zw1xj3n4s4lvaviijsnbjf5rhzvjxlr5fygvg4l6z1"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
@@ -4587,7 +4587,7 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad
   (package
     (name "0ad")
-    (version "0.0.23-alpha")
+    (version "0.0.23b-alpha")
     (source
      (origin
        (method url-fetch)
@@ -4596,7 +4596,7 @@ fight against their plot and save his fellow rabbits from slavery.")
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0qz1sg4n5y766qwgi63drrrx6k17kk0rcnn9a4a9crllk2vf78fg"))))
+         "0draa53xg69i5qhqym85658m45xhwkbiimaldj4sr3703rjgggq1"))))
        ;; A snippet here would cause a build failure because of timestamps
        ;; reset.  See https://bugs.gnu.org/26734.
     (inputs
