@@ -1,4 +1,3 @@
-;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -117,7 +116,11 @@ path to the repository."
                         (lambda (dir)
                           (string-join (cdr (string-split dir #\.)) "."))
                         versions)))
-        (latest-version versions))
+        ;; Workaround for janestreet re-versionning
+        (let ((v-versions (filter (lambda (version) (string-prefix? "v" version)) versions)))
+          (if (null? v-versions)
+            (latest-version versions)
+            (string-append "v" (latest-version (map (lambda (version) (substring version 1)) v-versions))))))
       (begin
         (format #t (G_ "Package not found in opam repository: ~a~%") package)
         #f))))
@@ -239,7 +242,9 @@ path to the repository."
                  (values
                   `(package
                      (name ,(ocaml-name->guix-name name))
-                     (version ,version)
+                     (version ,(if (string-prefix? "v" version)
+                                 (substring version 1)
+                                 version))
                      (source
                        (origin
                          (method url-fetch)
