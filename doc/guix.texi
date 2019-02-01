@@ -9982,10 +9982,10 @@ version:
 The @code{services} field lists @dfn{system services} to be made
 available when the system starts (@pxref{Services}).
 The @code{operating-system} declaration above specifies that, in
-addition to the basic services, we want the @command{lshd} secure shell
+addition to the basic services, we want the OpenSSH secure shell
 daemon listening on port 2222 (@pxref{Networking Services,
-@code{lsh-service}}).  Under the hood,
-@code{lsh-service} arranges so that @code{lshd} is started with the
+@code{openssh-service-type}}).  Under the hood,
+@code{openssh-service-type} arranges so that @command{sshd} is started with the
 right command-line options, possibly with supporting configuration files
 generated as needed (@pxref{Defining Services}).
 
@@ -23428,7 +23428,7 @@ Guix system services are connected by @dfn{extensions}.  For instance, the
 secure shell service @emph{extends} the Shepherd---the
 initialization system, running as PID@tie{}1---by giving it the command
 lines to start and stop the secure shell daemon (@pxref{Networking
-Services, @code{lsh-service}}); the UPower service extends the D-Bus
+Services, @code{openssh-service-type}}); the UPower service extends the D-Bus
 service by passing it its @file{.service} specification, and extends the
 udev service by passing it device management rules (@pxref{Desktop
 Services, @code{upower-service}}); the Guix daemon service extends the
@@ -23455,7 +23455,7 @@ particular operating system definition.
 Technically, developers can define @dfn{service types} to express these
 relations.  There can be any number of services of a given type on the
 system---for instance, a system running two instances of the GNU secure
-shell server (lsh) has two instances of @var{lsh-service-type}, with
+shell server (lsh) has two instances of @code{lsh-service-type}, with
 different parameters.
 
 The following section describes the programming interface for service
