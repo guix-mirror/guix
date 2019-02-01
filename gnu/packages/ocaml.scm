@@ -5693,3 +5693,28 @@ size, the version of the compiler, ...")
     (description "A ppx rewriter for monadic and applicative let bindings,
 match expressions, and if expressions.")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-fail
+  (package
+    (name "ocaml-ppx-fail")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_fail-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "07plqsvljiwvngggfypwq55g46s5my55y45mvlmalrxyppzr03s8"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-ppx-here" ,ocaml-ppx-here)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_fail")))
+    (home-page "https://github.com/janestreet/ppx_fail")
+    (synopsis "Add location to calls to failwiths")
+    (description "Syntax extension that makes [failwiths] always include a
+position.")
+    (license license:asl2.0)))
