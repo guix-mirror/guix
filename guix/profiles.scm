@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
@@ -1300,12 +1300,22 @@ the entries in MANIFEST."
                          (srfi srfi-19))
 
             (define (compute-entries)
-              (append-map (lambda (directory)
-                            (let ((man (string-append directory "/share/man")))
-                              (if (directory-exists? man)
-                                  (mandb-entries man)
-                                  '())))
-                          '#$(manifest-inputs manifest)))
+              ;; This is the most expensive part (I/O and CPU, due to
+              ;; decompression), so report progress as we traverse INPUTS.
+              (let* ((inputs '#$(manifest-inputs manifest))
+                     (total  (length inputs)))
+                (append-map (lambda (directory count)
+                              (format #t "\r[~3d/~3d] building list of \
+man-db entries..."
+                                      count total)
+                              (force-output)
+                              (let ((man (string-append directory
+                                                        "/share/man")))
+                                (if (directory-exists? man)
+                                    (mandb-entries man)
+                                    '())))
+                            inputs
+                            (iota total 1))))
 
             (define man-directory
               (string-append #$output "/share/man"))
@@ -1320,6 +1330,7 @@ the entries in MANIFEST."
                                                                   "/index.db")
                                                    entries))
                    (duration (time-difference (current-time) start)))
+              (newline)
               (format #t "~a entries processed in ~,1f s~%"
                       (length entries)
                       (+ (time-second duration)
