@@ -5669,3 +5669,27 @@ else expression.")
 used to handle optional compilations of pieces of code depending of the word
 size, the version of the compiler, ...")
     (license license:asl2.0)))
+
+(define-public ocaml-ppx-let
+  (package
+    (name "ocaml-ppx-let")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ocaml.janestreet.com/ocaml-core/v"
+                                  (version-major+minor version)
+                                  "/files/ppx_let-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1wdfw6w4xbg97a35yg6bif9gggxniy9ddnrjfw1a0inkl2yamxkj"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_let")))
+    (home-page "https://github.com/janestreet/ppx_let")
+    (synopsis "Monadic let-bindings")
+    (description "A ppx rewriter for monadic and applicative let bindings,
+match expressions, and if expressions.")
+    (license license:asl2.0)))
