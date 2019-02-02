@@ -913,7 +913,7 @@ main features are:
 (define-public silkaj
   (package
     (name "silkaj")
-    (version "0.6.1")
+    (version "0.6.5")
     (source
      (origin
        (method git-fetch)
@@ -923,17 +923,16 @@ main features are:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0a99gbgdd7m9wisqhqpfyaim0rlv9gkp8gmrppkagqf6j0683igh"))))
+         "1fy509vsmz7rs9m3vah0ky0jvq9mxmfga6b18rkrkl2lbjk872q2"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;no test
     (inputs
-     `(("python-commandlines" ,python-commandlines)
-       ("python-ipaddress" ,python-ipaddress)
-       ("python-pyaes" ,python-pyaes)
-       ("python-pynacl" ,python-pynacl)
-       ("python-scrypt" ,python-scrypt)
-       ("python-tabulate" ,python-tabulate)))
+     `(("click" ,python-click)
+       ("duniterpy" ,python-duniterpy)
+       ("ipaddress" ,python-ipaddress)
+       ("pynacl" ,python-pynacl)
+       ("tabulate" ,python-tabulate)))
     (home-page "https://silkaj.duniter.org/")
     (synopsis "Command line client for Duniter network")
     (description "@code{Silkaj} is a command line client for the
