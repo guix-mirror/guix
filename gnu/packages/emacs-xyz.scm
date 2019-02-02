@@ -12992,3 +12992,25 @@ front end to mpc, a client for the @dfn{Music Player Daemon} (MPD).")
 mode for editing gnuplot scripts.  It provides syntax highlighting,
 indentation and a command to plot the file.")
     (license license:gpl3+)))
+
+(define-public emacs-dtrt-indent
+  (package
+    (name "emacs-dtrt-indent")
+    (version "0.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jscheid/dtrt-indent")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pgf0pvqd8k4yzhdn2df9lp0y8hmlm2ccrh07jivwlccs95pcz7z"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/jscheid/dtrt-indent")
+    (synopsis "Minor mode that guesses the indentation offset")
+    (description "This package provides a minor mode that guesses the
+indentation offset originally used for creating source code files and
+transparently adjusts the corresponding settings in Emacs, making it more
+convenient to edit foreign files.")
+    (license license:gpl2+)))
