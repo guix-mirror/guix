@@ -349,16 +349,16 @@ traditional Chinese output.")
 (define-public rime-data
   (package
     (name "rime-data")
-    (version "0.38.20181029")
+    (version "0.38.20190131")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/rime/plum.git")
-             (commit "fb4f829da2007f2dbb37d60a79bc67c25ea16568")))
+             (commit "8b48688cd4610d0c9223eb68831a31b6134e4cc8")))
        (file-name "plum-checkout")
        (sha256
-        (base32 "1m1wiv9j5bay4saga58c7dj4h8gqivsbyp16y245ifvxvp9czj67"))))
+        (base32 "0fv3hv4av9y7afxijh1n8idnyf82v9rxxi2ypmxd7lkj4naa22qh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                  ; no tests
@@ -380,7 +380,8 @@ traditional Chinese output.")
              (let* ((dest-dir "package/rime"))
                (mkdir-p dest-dir)
                (for-each (lambda (pkg)
-                           (symlink (assoc-ref inputs pkg)
+                           (symlink (assoc-ref inputs
+                                               (string-append "rime-" pkg))
                                     (string-append dest-dir "/" pkg)))
                          '("array"
                            "bopomofo"
@@ -406,216 +407,216 @@ traditional Chinese output.")
              #t))
          (delete 'configure))))
     (native-inputs
-     `(("array"
+     `(("rime-array"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-array.git")
-                 (commit "906e923902147584b0b0247028a782abbfbfd8a0")))
+                 (commit "93cc99238f120606a076220ec4ddcad164f6396a")))
            (file-name "rime-array-checkout")
            (sha256
             (base32
-             "1alk6ghn4ji4kvp7lfm57bwm2gjh99i79r0w9naz6wkdim8idvb1"))))
-       ("bopomofo"
+             "06yxrv3x702751jvx46rfw3ix34jk7jh183rz6bllznzi7lxz7sz"))))
+       ("rime-bopomofo"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-bopomofo.git")
-                 (commit "8dc44ca1b6ef4e45b452e070b9da737f5da165e3")))
+                 (commit "ed25098386f5efd3d70b08650f0d1b70c41c11a3")))
            (file-name "rime-bopomofo-checkout")
            (sha256
             (base32
-             "16k6wfhcrw3a77rmbrp21ca0gmsmb3f68s193c1cfwr8i68k46nf"))))
-       ("cangjie"
+             "1ip1pbfb1hadf2mcymr5939iagf25ywfl67d9198jahzyr6rdyvc"))))
+       ("rime-cangjie"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-cangjie.git")
-                 (commit "ab085e90856b3399b374dc3c8b4cb40d11f307a8")))
+                 (commit "5fd8ce6f64039e505ca02655a621f2e830b97c19")))
            (file-name "rime-cangjie-checkout")
            (sha256
             (base32
-             "11fgj0rbv9nyzfijwm2l8pm8fznhif4h27ndrrcaaylkp7p5zsx2"))))
-       ("combo-pinyin"
+             "1gf6r0q593ixar6v0jyvs56cik2gjp7pf9v799rfd2yydyia3bfg"))))
+       ("rime-combo-pinyin"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-combo-pinyin.git")
-                 (commit "f1bae63f20504f2b8113c5cbdf2700e858aa91eb")))
+                 (commit "9bd952b964e9744e5d18e9e31625b50f3585a2cb")))
            (file-name "rime-combo-pinyin-checkout")
            (sha256
             (base32
-             "1l1079akwm1hw4kkn0q6x9fpylnl2ka6z2fn7lmdpfpsr0xgn0n7"))))
-       ("double-pinyin"
+             "0crafjs39x4j221gb34mxxh3cdpxfhhx3nfw6b6bgkzlrp35a02b"))))
+       ("rime-double-pinyin"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-double-pinyin.git")
-                 (commit "2101a5cd40e511ec38835769aa66d2dddf059c2e")))
+                 (commit "69bf85d4dfe8bac139c36abbd68d530b8b6622ea")))
            (file-name "rime-double-pinyin-checkout")
            (sha256
             (base32
-             "19hh2qm0njbfk2js678hfm2hw9b796s43vs11yy3m1v9m0gk2vi7"))))
-       ("emoji"
+             "093wif5avvvw45fqbwj5wkbxrychy4pagl4mwsmbrayc8jkp69ak"))))
+       ("rime-emoji"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-emoji.git")
-                 (commit "6e6611b315f03ee4c33f958f9dbe960b13a0ed19")))
+                 (commit "c8d67f9b50bf89a10c57da646d2e6db8799aef38")))
            (file-name "rime-emoji-checkout")
            (sha256
             (base32
-             "1brfs3214w36j3345di9ygp468hbvbqdqpkjxxs1dbp437rayhyy"))))
-       ("essay"
+             "0ngcm088iyyp3llxvv0m80i7n5928d6cgh256ikhn3ixallxxdxv"))))
+       ("rime-essay"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-essay.git")
-                 (commit "5e5c7a0ef41c9b030abdad81a9df07b56b1661e9")))
+                 (commit "71d0b1f3d4f3bfe61ae07581edf07579740c4421")))
            (file-name "rime-essay-checkout")
            (sha256
             (base32
-             "0ana9is0zhh79m4gjshvmaxbrg3jiqysydx5bpm151i7i6vw5y1i"))))
-       ("ipa"
+             "1iwz104k7zfk7lpa257kvpqdr6jhbg3p76n3644ywiz4l7kc678i"))))
+       ("rime-ipa"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-ipa.git")
-                 (commit "02a9e2c181921a2e95e1a81f88188c41132755c3")))
+                 (commit "e420c7bfb07153a2d2484eb2bdccdd719811abbb")))
            (file-name "rime-ipa-checkout")
            (sha256
             (base32
-             "1szrxgvqlgmxapj2aflw2cvbv0p6pl0sw0gyxa13dvdhhf7s9rvr"))))
-       ("jyutping"
+             "1wfv7lb4y61b3qic5mhw92rn46cckldd9wrkcq03mg5512mbw63z"))))
+       ("rime-jyutping"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-jyutping.git")
-                 (commit "1402ec3d6cc0973f952fe3f9ef531294e4ffe9e0")))
+                 (commit "04891a298319888e8c6b1a20e0fa81cfaea01264")))
            (file-name "rime-jyutping-checkout")
            (sha256
             (base32
-             "17g03dy4gw6vyc9da1wjn3iy9hx64dfnwiwsfc7bkzan22x2m4dv"))))
-       ("luna-pinyin"
+             "0wsj965khglz36cnvfm4fkv386xvxhmsxgcw88p5qi0b3wlbzzx6"))))
+       ("rime-luna-pinyin"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-luna-pinyin.git")
-                 (commit "3b05132576f5c347ff8a70857d2dae080936ac3b")))
+                 (commit "c9c405566177cb3898bdb82d7f4157587f2d9c01")))
            (file-name "rime-luna-pinyin-checkout")
            (sha256
             (base32
-             "0kgnpxjn10dm2d9718r12rdjlwqd2s2h84jvkhxhh5v0dkv1anl2"))))
-       ("middle-chinese"
+             "0i7f2675lvj9pzwlm8550ifnr3xqi77xlyyvml1wpxpkfqhjr475"))))
+       ("rime-middle-chinese"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-middle-chinese.git")
-                 (commit "9ba8d70330654b9a730f882d35cfad7dbeddfd75")))
+                 (commit "ed6d44f8d0bedf6e0c1c3183a270f8f01a211a40")))
            (file-name "rime-middle-chinese-checkout")
            (sha256
             (base32
-             "0hwg5zby5kphh0bcfay8mfxwr5bwqhamiw3cmmmf7kp9fbns5s23"))))
-       ("pinyin-simp"
+             "09mql88lsrxa99pyllby5z22kaiwwa037ha8gwaxjnnlsjgvz7zx"))))
+       ("rime-pinyin-simp"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-pinyin-simp.git")
-                 (commit "74357ffd62c05fb60edf6eab5b86bc8c8c1907d0")))
+                 (commit "bb5a6dfa871669d2f451b477bfff6d131df6f6c6")))
            (file-name "rime-pinyin-simp-checkout")
            (sha256
             (base32
-             "1paw3c7pv5bl54abnp9pidfxrkchdacyxy5m9zb311p5sgm7fhxh"))))
-       ("prelude"
+             "0ss82042k833w5q72h72ghcfchkx00nx6l4z4fb861s2rxr0bkjd"))))
+       ("rime-prelude"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-prelude.git")
-                 (commit "33040568c3ddb2ee6340c9b669494317db21b77c")))
+                 (commit "8a52b4f86a59f3eb602f9a4cf6a680a67c15df8c")))
            (file-name "rime-prelude-checkout")
            (sha256
             (base32
-             "1gwcasyyg6f0ib6s4qsrrjcqr1lcs7j3xqxl65rznsw44nhnbwwq"))))
-       ("quick"
+             "039fr3996vfxzn2milaq1f5fw08f6zgjsxsql6cfhsc5b55fidm7"))))
+       ("rime-quick"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-quick.git")
-                 (commit "910a97d403ad8e72f322488da146da79c19d623f")))
+                 (commit "3fe5911ba608cb2df1b6301b76ad1573bd482a76")))
            (file-name "rime-quick-checkout")
            (sha256
             (base32
-             "0yrq3gbfmm29xlr52rmxc41mqfrb0295q7sdhbc3ax71677mpr0y"))))
-       ("scj"
+             "08bh87ym5qvw55lyw20l3m7jd4c2z5rvil8h5q8790r7z6j6ijy9"))))
+       ("rime-scj"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-scj.git")
-                 (commit "e0eae889f4376d2a434ac3b38523e0da7400db68")))
+                 (commit "cab5a0858765eff0553dd685a2d61d5536e9149c")))
            (file-name "rime-scj-checkout")
            (sha256
             (base32
-             "1whnv9zs349kvy0zi7dnmpqwil8i6gqwrzvhy3qdrjzy58y6gwxn"))))
-       ("soutzoe"
+             "0ard2bjp4896a8dimmcwyjwgmp9kl4rz92yc92jnd3y4rgwl6fvk"))))
+       ("rime-soutzoe"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-soutzoe.git")
-                 (commit "e47841a8ad6341731c41cdb814b7a25c837603c4")))
+                 (commit "beeaeca72d8e17dfd1e9af58680439e9012987dc")))
            (file-name "rime-soutzoe-checkout")
            (sha256
             (base32
-             "1rgpmkxa72jy6gyy44fn8azpk3amk9s9lrdf7za03nv95d0fvm0p"))))
-       ("stenotype"
+             "0jyqx0q9s0qxn168l5n8zav8jcl2g5ppr7pa8jm1vwrllf20slcc"))))
+       ("rime-stenotype"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-stenotype.git")
-                 (commit "d4ff379314fd95283853d1734854979cf3cbd287")))
+                 (commit "1d472097c32d943d1096644f4c31f28799a17bd8")))
            (file-name "rime-stenotype-checkout")
            (sha256
             (base32
-             "1kckpi4l4884hvydr3d6vid3v7rsc1app29kmk7v8jf8vn16afhl"))))
-       ("stroke"
+             "1dy9qlbyhnshq2k1vcvkqn2624r96iaixhyrx1z7v0vz84fjf6y4"))))
+       ("rime-stroke"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-stroke.git")
-                 (commit "cfd29c675c46cf70b7a7f0a3836a913059316a0a")))
+                 (commit "f802735392b378fb2a56a9b7b53b8ec96a30ccaf")))
            (file-name "rime-stroke-checkout")
            (sha256
             (base32
-             "135is9c1p4lm98fd9l1gxyflkm69cv5an129ka7sk614bq84m08d"))))
-       ("terra-pinyin"
+             "1wlrsskxhldh8369n771gk7sxflzdx0c9qhq1mqm5hhkwc5ig1j0"))))
+       ("rime-terra-pinyin"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-terra-pinyin.git")
-                 (commit "15b5c73a796571cd6f9ef6c89f96656cb9df86f9")))
+                 (commit "b9e0edd3182e74b26b03a278c038e669ca538a35")))
            (file-name "rime-terra-pinyin-checkout")
            (sha256
             (base32
-             "1xsd84h1zw417h5hr4dbgyk5009zi7q2p9774w3ccr5sxgc3i3cm"))))
-       ("wubi"
+             "1vzrv2k178bii4ld9rvpdi8zmcwybd8bks0qzjx2v4kbjgwj28zk"))))
+       ("rime-wubi"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-wubi.git")
-                 (commit "d44403728a0b1cd8b47cb1f81b83f58e5f790b74")))
+                 (commit "dd052ee158a38cb791755318b1aef9b4a3ed0316")))
            (file-name "rime-wubi-checkout")
            (sha256
             (base32
-             "0ld31bdn94lncxd1ka44w4sbl03skh08mc927dhdmwq5bpvrgn36"))))
-       ("wugniu"
+             "00xzv3sbwqh2jz4i7s315h7rw17qa2dgj7kflyy3blxk0s2cqiqa"))))
+       ("rime-wugniu"
         ,(origin
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/rime/rime-wugniu.git")
-                 (commit "65bcc354ada3839591d7546a64c71dbdd0592b02")))
+                 (commit "abd1ee98efbf170258fcf43875c21a4259e00b61")))
            (file-name "rime-wugniu-checkout")
            (sha256
             (base32
-             "0g31awp40s778sp5c290x40s8np86n8aw011s17sslxrqhhb0bkx"))))))
+             "0qn54d3cclny106ixdw08r5n6wn52ffs1hgrma3k0j4pv0kr9nlq"))))))
     (home-page "https://rime.im/")
     (synopsis "Schema data of Rime Input Method Engine")
     (description "@dfn{rime-data} provides the schema data of Rime Input
