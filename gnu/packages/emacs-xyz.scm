@@ -18,7 +18,7 @@
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
-;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017, 2018 Kyle Meyer <kyle@kyleam.com>
@@ -13061,3 +13061,25 @@ buffer and launches Magit from the status buffer for the project at point.")
 and black color themes for Emacs.  The themes are intended to be used with
 GUI.")
     (license license:gpl3+)))
+
+(define-public emacs-google-c-style
+  (let ((commit "6271f3f473ceb3a7fef99388a3040903b1a145f1")
+        (revision "0"))
+    (package
+      (name "emacs-google-c-style")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/google/styleguide")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1jghyyasdl15c4gaqaxmdn43am63k6bykn5ab83f1ahv9zi1krxk"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/google/styleguide")
+      (synopsis "Emacs settings file for Google C/C++ style")
+      (description "@code{emacs-google-c-style} provides an Emacs settings
+file for Google C and C++ style.")
+      (license license:gpl1+))))
