@@ -855,7 +855,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.51.0")
+    (version "0.52.0")
     (source
      (origin
        (method git-fetch)
@@ -866,7 +866,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "074mh2kh3s00ib0h99050ss3j4c51v57py6dzm7crida6l0iydbv"))))
+         "07liba2d21hb8m3n6yccfamq9yq0ryywh18vs9g2sgywfsnv82lh"))))
     (build-system python-build-system)
     (arguments
      ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
@@ -884,16 +884,17 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
                (copy-recursively "docs/_build/html" doc))
              #t)))))
     (native-inputs
-     `(("python-sphinx" ,python-sphinx)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+     `(("sphinx" ,python-sphinx)
+       ("sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
     (propagated-inputs
-     `(("python-aiohttp" ,python-aiohttp)
-       ("python-attr" ,python-attr)
-       ("python-base58" ,python-base58)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-libnacl" ,python-libnacl)
-       ("python-pylibscrypt" ,python-pylibscrypt)
-       ("python-pypeg2" ,python-pypeg2)))
+     `(("aiohttp" ,python-aiohttp)
+       ("attr" ,python-attr)
+       ("base58" ,python-base58)
+       ("jsonschema" ,python-jsonschema)
+       ("libnacl" ,python-libnacl)
+       ("pyaes" ,python-pyaes)
+       ("pylibscrypt" ,python-pylibscrypt)
+       ("pypeg2" ,python-pypeg2)))
     (home-page "https://git.duniter.org/clients/python/duniterpy")
     (synopsis "Python implementation of Duniter API")
     (description "@code{duniterpy} is an implementation of
