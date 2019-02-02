@@ -977,6 +977,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
   %D%/packages/patches/libmygpo-qt-fix-qt-5.11.patch		\
   %D%/packages/patches/libmygpo-qt-missing-qt5-modules.patch	\
+  %D%/packages/patches/libreoffice-boost.patch			\
   %D%/packages/patches/libreoffice-icu.patch			\
   %D%/packages/patches/libreoffice-glm.patch			\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\

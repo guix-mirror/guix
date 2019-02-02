@@ -1,0 +1,17 @@
+Fix compatibility with newer Boost.
+
+Extracted from this upstream commit:
+https://cgit.freedesktop.org/libreoffice/core/commit/?id=23a8d5ffbbe58761b89f590f0735abccd69a3681
+
+diff --git a/sfx2/source/appl/shutdownicon.cxx b/sfx2/source/appl/shutdownicon.cxx
+--- a/sfx2/source/appl/shutdownicon.cxx
++++ b/sfx2/source/appl/shutdownicon.cxx
+@@ -144,7 +144,7 @@ bool LoadModule()
+ #endif // ENABLE_QUICKSTART_APPLET
+     }
+     assert(!boost::logic::indeterminate(loaded));
+-    return loaded;
++    return bool(loaded);
+ }
+ 
+ }
