@@ -626,7 +626,7 @@ Method Engine.")
 (define-public ibus-rime
   (package
     (name "ibus-rime")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
@@ -635,7 +635,7 @@ Method Engine.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1nqi7ymv34a9kx24say3xj98lkrs9nkpv1n2ijb91wdz3cr012ly"))))
+        (base32 "12y6jdz1amhgrnqa7zjim63dfsz6zyxyahbirfan37wmcfp6gp1d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
