@@ -13040,6 +13040,7 @@ convenient to edit foreign files.")
     (description "This package provides integration of the Google Repo tool
 with emacs.  It displays the output of the @code{repo status} command in a
 buffer and launches Magit from the status buffer for the project at point.")
+    (license license:gpl3+)))
 
 (define-public emacs-alect-themes
   (package
