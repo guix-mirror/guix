@@ -13014,3 +13014,30 @@ indentation offset originally used for creating source code files and
 transparently adjusts the corresponding settings in Emacs, making it more
 convenient to edit foreign files.")
     (license license:gpl2+)))
+
+(define-public emacs-repo
+  (package
+    (name "emacs-repo")
+    (version "0.1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/canatella/repo-el")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rbvcvm7bfr6ncji7cllfxyyr6x7n9fx863byp243phsj3n93adz"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs-el-mock" ,emacs-el-mock)
+       ("ert-runner" ,emacs-ert-runner)))
+    (propagated-inputs
+     `(("emacs-f" ,emacs-f)
+       ("magit" ,emacs-magit)))
+    (home-page "https://github.com/canatella/repo-el")
+    (synopsis "Emacs interface for the Google Repo tool")
+    (description "This package provides integration of the Google Repo tool
+with emacs.  It displays the output of the @code{repo status} command in a
+buffer and launches Magit from the status buffer for the project at point.")
+    (license license:gpl3+)))
