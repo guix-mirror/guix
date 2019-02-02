@@ -13040,4 +13040,24 @@ convenient to edit foreign files.")
     (description "This package provides integration of the Google Repo tool
 with emacs.  It displays the output of the @code{repo status} command in a
 buffer and launches Magit from the status buffer for the project at point.")
+
+(define-public emacs-alect-themes
+  (package
+    (name "emacs-alect-themes")
+    (version "0.9")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alezost/alect-themes")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nffxpdm0sa7bynwi0rmlwpc4qmvbda5ankhzz7fmk4ap9fkjxv9"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/alezost/alect-themes")
+    (synopsis "Low contrast, light, dark and black color theme for Emacs")
+    (description "@code{emacs-alect-themes} provides configurable light, dark
+and black color themes for Emacs.  The themes are intended to be used with
+GUI.")
     (license license:gpl3+)))
