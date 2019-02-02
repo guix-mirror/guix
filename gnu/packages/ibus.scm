@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -298,7 +298,7 @@ Japanese language input in most graphical applications.")
 (define-public librime
   (package
     (name "librime")
-    (version "1.3.2")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
@@ -308,7 +308,7 @@ Japanese language input in most graphical applications.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "06q10cv7a3i6d8l3sq79nasw3p1njvmjgh4jq2hqw9abcx351m1r"))
+         "1zkx1wfbd94v55gfycyd2b94jxclfyk2zl7yw35pyjx63qdlb6sd"))
        (modules '((guix build utils)))
        (snippet
         '(begin
