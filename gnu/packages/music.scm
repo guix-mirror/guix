@@ -2793,6 +2793,7 @@ of tools for manipulating and accessing your music.")
        #:configure-flags '("-DCMAKE_CXX_FLAGS=-ljack")))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("lhasa" ,lhasa)
        ("jack" ,jack-1)
        ("rtmidi" ,rtmidi)
        ("sdl" ,sdl2)
