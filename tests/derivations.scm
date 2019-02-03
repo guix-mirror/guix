@@ -650,18 +650,19 @@
       (build-derivations %store (list drv))
       #f)))
 
-;; Here we should get the value of $NIX_STATE_DIR that the daemon sees, which
-;; is a unique value for each test process; this value is the same as the one
-;; we see in the process executing this file since it is set by 'test-env'.
+;; Here we should get the value of $GUIX_STATE_DIRECTORY that the daemon sees,
+;; which is a unique value for each test process; this value is the same as
+;; the one we see in the process executing this file since it is set by
+;; 'test-env'.
 (test-equal "derivation #:leaked-env-vars"
-  (getenv "NIX_STATE_DIR")
-  (let* ((value (getenv "NIX_STATE_DIR"))
+  (getenv "GUIX_STATE_DIRECTORY")
+  (let* ((value (getenv "GUIX_STATE_DIRECTORY"))
          (drv   (derivation %store "leaked-env-vars" %bash
-                            '("-c" "echo -n $NIX_STATE_DIR > $out")
+                            '("-c" "echo -n $GUIX_STATE_DIRECTORY > $out")
                             #:hash (sha256 (string->utf8 value))
                             #:hash-algo 'sha256
                             #:inputs `((,%bash))
-                            #:leaked-env-vars '("NIX_STATE_DIR"))))
+                            #:leaked-env-vars '("GUIX_STATE_DIRECTORY"))))
     (and (build-derivations %store (list drv))
          (call-with-input-file (derivation->output-path drv)
            get-string-all))))

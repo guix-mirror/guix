@@ -63,7 +63,7 @@ guile -c "
   (exit (has-substitutes? store \"$out\"))"
 
 # Now, run guix-daemon --no-substitutes.
-socket="$NIX_STATE_DIR/alternate-socket"
+socket="$GUIX_STATE_DIRECTORY/alternate-socket"
 guix-daemon --no-substitutes --listen="$socket" --disable-chroot &
 daemon_pid=$!
 trap 'kill $daemon_pid' EXIT

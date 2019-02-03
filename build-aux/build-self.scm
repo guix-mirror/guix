@@ -114,11 +114,11 @@
                      (define %state-directory
                        ;; This must match `NIX_STATE_DIR' as defined in
                        ;; `nix/local.mk'.
-                       (or (getenv "NIX_STATE_DIR")
+                       (or (getenv "GUIX_STATE_DIRECTORY")
                            (string-append %localstatedir "/guix")))
 
                      (define %store-database-directory
-                       (or (getenv "NIX_DB_DIR")
+                       (or (getenv "GUIX_DATABASE_DIRECTORY")
                            (string-append %state-directory "/db")))
 
                      (define %config-directory

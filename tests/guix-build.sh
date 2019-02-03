@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -37,7 +37,7 @@ guix build hello -d |				\
     grep -e '-hello-[0-9\.]\+\.drv$'
 
 # Passing a URI.
-GUIX_DAEMON_SOCKET="file://$NIX_STATE_DIR/daemon-socket/socket"	\
+GUIX_DAEMON_SOCKET="file://$GUIX_STATE_DIRECTORY/daemon-socket/socket"	\
 guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'
 
 ( if GUIX_DAEMON_SOCKET="weird://uri"					\
