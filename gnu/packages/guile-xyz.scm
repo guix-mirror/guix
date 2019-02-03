@@ -1839,3 +1839,27 @@ format is also supported.")
 (define-public mcron2
   ;; This was mthl's mcron development branch, and it became mcron 1.1.
   (deprecated-package "mcron2" mcron))
+
+(define-public guile-picture-language
+  (let ((commit "1531116036d1b5e0d2482ff2c8d77ad21f1d2bef")
+        (revision "1"))
+    (package
+      (name "guile-picture-language")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.elephly.net/software/guile-picture-language.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "04salmqf5x84vb3qkkxx47b64jyl290zsf3ik81l9hg6fwvvlmq3"))))
+      (build-system guile-build-system)
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (home-page "https://git.elephly.net/software/guile-picture-language.git")
+      (synopsis "Picture language for Guile")
+      (description
+       "This package provides a simple SVG-based picture language for Guile.
+The picture values can directly be displayed in Geiser.")
+      (license license:lgpl3+))))
