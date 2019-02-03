@@ -6030,3 +6030,47 @@ Configurator allows one to:
 @item generate config.h file
 @end itemize")
     (license license:asl2.0)))
+
+(define-public ocaml-spawn
+  (package
+    (name "ocaml-spawn")
+    (version "0.12.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janestreet/spawn.git")
+                     (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0amgj7g9sjlbjivn1mg7yjdmxd21hgp4a0ak2zrm95dmm4gi846i"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-tests
+           (lambda _
+             (substitute* "test/tests.ml"
+               (("/bin/pwd") (which "pwd"))
+               (("/bin/echo") (which "echo")))
+             #t)))))
+    (native-inputs
+     `(("ocaml-ppx-expect" ,ocaml-ppx-expect)))
+    (home-page "https://github.com/janestreet/spawn")
+    (synopsis "Spawning sub-processes")
+    (description
+      "Spawn is a small library exposing only one functionality: spawning sub-process.
+
+It has three main goals:
+
+@itemize
+@item provide missing features of Unix.create_process such as providing a
+working directory,
+@item provide better errors when a system call fails in the
+sub-process.  For instance if a command is not found, you get a proper
+@code{Unix.Unix_error} exception,
+@item improve performances by using vfork when available.  It is often
+claimed that nowadays fork is as fast as vfork, however in practice
+fork takes time proportional to the process memory while vfork is
+constant time.  In application using a lot of memory, vfork can be
+thousands of times faster than fork.")
+    (license license:asl2.0)))
