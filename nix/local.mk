@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 #
 # This file is part of GNU Guix.
@@ -107,7 +107,6 @@ libstore_a_CPPFLAGS =				\
   -I$(top_srcdir)/%D%/libstore			\
   -I$(top_builddir)/%D%/libstore		\
   -DNIX_STORE_DIR=\"$(storedir)\"		\
-  -DNIX_DATA_DIR=\"$(datadir)\"			\
   -DNIX_STATE_DIR=\"$(localstatedir)/guix\"	\
   -DNIX_LOG_DIR=\"$(localstatedir)/log/guix\"	\
   -DGUIX_CONFIGURATION_DIRECTORY=\"$(sysconfdir)/guix\"		\

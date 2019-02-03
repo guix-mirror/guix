@@ -66,7 +66,6 @@ Settings::Settings()
 void Settings::processEnvironment()
 {
     nixStore = canonPath(getEnv("NIX_STORE_DIR", getEnv("NIX_STORE", NIX_STORE_DIR)));
-    nixDataDir = canonPath(getEnv("NIX_DATA_DIR", NIX_DATA_DIR));
     nixLogDir = canonPath(getEnv("GUIX_LOG_DIRECTORY", NIX_LOG_DIR));
     nixStateDir = canonPath(getEnv("GUIX_STATE_DIRECTORY", NIX_STATE_DIR));
     nixDBPath = getEnv("GUIX_DATABASE_DIRECTORY", nixStateDir + "/db");
