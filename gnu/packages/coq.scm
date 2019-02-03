@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -444,3 +446,49 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
 simplifying the proofs of inequalities on expressions of real numbers for the
 Coq proof assistant.")
     (license license:cecill-c)))
+
+(define-public coq-autosubst
+  ;; Latest commit on that branch, where work on supporting coq 8.6 and
+  ;; more recent versions of coq happen.
+  (let ((branch "coq86-devel")
+        (commit "d0d73557979796b3d4be7aac72135581c33f26f7"))
+    (package
+      (name "coq-autosubst")
+      (version (git-version "1" branch commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://github.com/uds-psl/autosubst.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "1852xb5cwkjw3dlc0lp2sakwa40bjzw37qmwz4bn3vqazg1hnh6r"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
+               (invoke "make"
+                       (string-append "COQLIB=" (assoc-ref outputs "out")
+                                      "/lib/coq/")
+                       "install"))))))
+      (native-inputs
+       `(("coq" ,coq)))
+      (home-page "https://www.ps.uni-saarland.de/autosubst/")
+      (synopsis "Coq library for parallel de Bruijn substitutions")
+      (description "Formalizing syntactic theories with variable binders is
+not easy.  Autosubst is a library for the Coq proof assistant to
+automate this process.  Given an inductive definition of syntactic objects in
+de Bruijn representation augmented with binding annotations, Autosubst
+synthesizes the parallel substitution operation and automatically proves the
+basic lemmas about substitutions.  This library contains an automation
+tactic that solves equations involving terms and substitutions.  This makes the
+usage of substitution lemmas unnecessary.  The tactic is based on our current
+work on a decision procedure for the equational theory of an extension of the
+sigma-calculus by Abadi et al.  The library is completely written in Coq and
+uses Ltac to synthesize the substitution operation.")
+      (license license:bsd-3))))
