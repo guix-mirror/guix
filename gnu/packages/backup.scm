@@ -11,7 +11,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -564,6 +564,11 @@ detection, and lossless compression.")
                ;; HOME=/homeless-shelter.
                (setenv "HOME" "/tmp")
                #t)))
+         (add-after 'unpack 'remove-documentation-timestamps ; reproducibility
+           (lambda _
+             (substitute* "setup.py"
+               (("write\\(':Date:'.*") "\n"))
+             #t))
          ;; The tests need to be run after Borg is installed.
          (delete 'check)
          (add-after 'install 'check
