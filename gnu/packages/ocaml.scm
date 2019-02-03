@@ -6110,3 +6110,52 @@ standard library that was developed by Jane Street.")
     ;; Also contains parts of OCaml, relicensed to asl2.0, as permitted
     ;; by OCaml's license for consortium members (see THIRD-PARTY.txt).
     (license license:asl2.0)))
+
+(define-public ocaml-core-kernel
+  (package
+    (name "ocaml-core-kernel")
+    (version "0.11.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janestreet/core_kernel.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1dg7ygy7i64c5gaakb1cp1b26p9ks81vbxmb8fd7jff2q60j2z2g"))))
+    (build-system dune-build-system)
+    (arguments
+     ;; Cyclic dependency with ocaml-core
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-bin-prot" ,ocaml-bin-prot)
+        ("ocaml-configurator" ,ocaml-configurator)
+        ("ocaml-fieldslib" ,ocaml-fieldslib)
+        ("ocaml-jane-street-headers" ,ocaml-jane-street-headers)
+        ("ocaml-ppx-assert" ,ocaml-ppx-assert)
+        ("ocaml-ppx-base" ,ocaml-ppx-base)
+        ("ocaml-ppx-hash" ,ocaml-ppx-hash)
+        ("ocaml-ppx-inline-test" ,ocaml-ppx-inline-test)
+        ("ocaml-ppx-jane" ,ocaml-ppx-jane)
+        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)
+        ("ocaml-ppx-sexp-message" ,ocaml-ppx-sexp-message)
+        ("ocaml-sexplib" ,ocaml-sexplib)
+        ("ocaml-splittable-random" ,ocaml-splittable-random)
+        ("ocaml-stdio" ,ocaml-stdio)
+        ("ocaml-typerep" ,ocaml-typerep)
+        ("ocaml-variantslib" ,ocaml-variantslib)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)))
+    (properties `((upstream-name . "core_kernel")))
+    (home-page "https://github.com/janestreet/core_kernel")
+    (synopsis "Portable standard library for OCaml")
+    (description "Core is an alternative to the OCaml standard library.
+
+Core_kernel is the system-independent part of Core.  It is aimed for cases when
+the full Core is not available, such as in Javascript.")
+    (license (list
+               ;; this package and parts of OCaml, relicensed by janestreet
+               license:asl2.0
+               ;; MLton and sjs
+               license:expat))))
