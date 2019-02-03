@@ -32,14 +32,14 @@
 (define-public libkscreen
   (package
     (name "libkscreen")
-    (version "5.13.5")
+    (version "5.14.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/plasma/" version "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "04719va15i66qn1xqx318v6risxhp8bfcnhxh9mqm5h9qx5c6c4k"))))
+        (base32 "1vyaml5ap9siw9idiny92li2bykd0nwjsmwmg0c7ad912j4g1s7y"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -71,7 +71,7 @@ basic needs and easy to configure for those who want special setups.")
 (define-public libksysguard
   (package
     (name "libksysguard")
-    (version "5.13.4")
+    (version "5.14.5")
     (source
      (origin
        (method url-fetch)
@@ -79,7 +79,7 @@ basic needs and easy to configure for those who want special setups.")
                            "/libksysguard-" version ".tar.xz"))
        (sha256
         (base32
-         "0k8q5bxk9zyv7c3nny1c399v8acqs618nw39q20pj2qdijl9ibvh"))))
+         "11nz0g7dqvpvgsv0a7sai445vgfsfi25plj7jb1i46n7zf8i8mya"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
@@ -92,6 +92,8 @@ basic needs and easy to configure for those who want special setups.")
        ("kcompletion" ,kcompletion)
        ("kconfig" ,kconfig)
        ("kcoreaddons" ,kcoreaddons)
+       ("kglobalaccel" ,kglobalaccel)
+       ("kio" ,kio)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kservice" ,kservice)
        ("qtbase" ,qtbase)
