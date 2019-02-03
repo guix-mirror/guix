@@ -460,17 +460,27 @@ load path."
 the modules (under share/guile/site and lib/guile), and DEPENDENCIES, a list
 of packages depended on.  COMMAND is the 'guix' program to use; INFO is the
 Info manual."
+  (define (wrap daemon)
+    (program-file "guix-daemon"
+                  #~(begin
+                      (setenv "GUIX" #$command)
+                      (apply execl #$(file-append daemon "/bin/guix-daemon")
+                             "guix-daemon" (cdr (command-line))))))
+
   (computed-file name
                  (with-imported-modules '((guix build utils))
                    #~(begin
                        (use-modules (guix build utils))
 
+                       (define daemon
+                         #$(and daemon (wrap daemon)))
+
                        (mkdir-p (string-append #$output "/bin"))
                        (symlink #$command
                                 (string-append #$output "/bin/guix"))
 
-                       (when #$daemon
-                         (symlink (string-append #$daemon "/bin/guix-daemon")
+                       (when daemon
+                         (symlink daemon
                                   (string-append #$output "/bin/guix-daemon")))
 
                        (let ((share (string-append #$output "/share"))

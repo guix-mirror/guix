@@ -356,7 +356,7 @@ the Nix package manager.")
                (let ((out (assoc-ref outputs "out")))
                  (substitute* (find-files (string-append out "/libexec"))
                    (("exec \".*/bin/guix\"")
-                    "exec /var/guix/profiles/per-user/root/current-guix/bin/guix"))
+                    "exec \"${GUIX:-/var/guix/profiles/per-user/root/current-guix/bin/guix}\""))
                  #t)))
            (delete 'wrap-program)))))))
 
