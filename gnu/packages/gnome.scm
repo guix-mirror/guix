@@ -5658,7 +5658,7 @@ like switching to windows and launching applications.")
 (define-public gtk-vnc
   (package
     (name "gtk-vnc")
-    (version "0.7.1")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
@@ -5667,7 +5667,7 @@ like switching to windows and launching applications.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1cdaywj5lqnl5b22qzd7k7lmacsnmk8b8rc4drk6gvqmcrlsljzk"))))
+         "1dya1wc9vis8h0fv625pii1n70cckf1xjg1m2hndz989d118i6is"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-gtk=3.0")))
