@@ -171,7 +171,11 @@ The Perfect Setup to hack on Guix is basically the perfect setup used
 for Guile hacking (@pxref{Using Guile in Emacs,,, guile, Guile Reference
 Manual}).  First, you need more than an editor, you need
 @url{http://www.gnu.org/software/emacs, Emacs}, empowered by the
-wonderful @url{http://nongnu.org/geiser/, Geiser}.
+wonderful @url{http://nongnu.org/geiser/, Geiser}.  To set that up, run:
+
+@example
+guix package -i emacs guile emacs-geiser
+@end example
 
 Geiser allows for interactive and incremental development from within
 Emacs: code compilation and evaluation from within buffers, access to
