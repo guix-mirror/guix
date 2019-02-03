@@ -6074,3 +6074,39 @@ fork takes time proportional to the process memory while vfork is
 constant time.  In application using a lot of memory, vfork can be
 thousands of times faster than fork.")
     (license license:asl2.0)))
+
+(define-public ocaml-core
+  (package
+    (name "ocaml-core")
+    (version "0.11.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janestreet/core.git")
+                     (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0pzl8n09z4f3i7z2wq4cjxfqrr8mj6xcdp7rbg0nxap2zdhjgvrq"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:jbuild? #t
+       ;; Require a cyclic dependency: core_extended
+       #:tests? #f))
+    (propagated-inputs
+      `(("ocaml-base" ,ocaml-base)
+        ("ocaml-configurator" ,ocaml-configurator)
+        ("ocaml-core-kernel" ,ocaml-core-kernel)
+        ("ocaml-ppx-assert" ,ocaml-ppx-assert)
+        ("ocaml-ppx-jane" ,ocaml-ppx-jane)
+        ("ocaml-sexplib" ,ocaml-sexplib)
+        ("ocaml-spawn" ,ocaml-spawn)
+        ("ocaml-stdio" ,ocaml-stdio)
+        ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (home-page "https://github.com/janestreet/core")
+    (synopsis "Alternative to OCaml's standard library")
+    (description "The Core suite of libraries is an alternative to OCaml's
+standard library that was developed by Jane Street.")
+    ;; Also contains parts of OCaml, relicensed to asl2.0, as permitted
+    ;; by OCaml's license for consortium members (see THIRD-PARTY.txt).
+    (license license:asl2.0)))
