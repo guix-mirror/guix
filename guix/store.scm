@@ -1856,8 +1856,9 @@ syntactically valid store path."
   "Return the build log file for DRV, a derivation file name, or #f if it
 could not be found."
   (let* ((base    (basename drv))
-         (log     (string-append (dirname %state-directory) ; XXX
-                                 "/log/guix/drvs/"
+         (log     (string-append (or (getenv "GUIX_LOG_DIRECTORY")
+                                     (string-append %localstatedir "/log/guix"))
+                                 "/drvs/"
                                  (string-take base 2) "/"
                                  (string-drop base 2)))
          (log.gz  (string-append log ".gz"))
