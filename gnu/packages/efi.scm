@@ -207,7 +207,7 @@ and EFI variable management.")
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "efilinux.efi"
                            (string-append (assoc-ref outputs "out")
-                           "/libexec"))
+                                          "/libexec"))
              #t)))))
     (inputs
      `(("gnu-efi" ,gnu-efi)))
