@@ -47,6 +47,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages ed)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
@@ -1236,7 +1237,7 @@ The library is shipped with documentation in Info format and usage examples.")
 (define-public guile-wisp
   (package
     (name "guile-wisp")
-    (version "0.9.9")
+    (version "0.9.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/ArneBab/"
@@ -1244,13 +1245,18 @@ The library is shipped with documentation in Info format and usage examples.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1xa0f0fvcrimqap50azv5872bfx8jbhc6baxa1prpbwcksbh8gdz"))))
+                "1ii14qz1lx7ffhb8i9q7dgaiwbif8g2q182skx17j11skp65c8r3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
+                  ((guix build emacs-build-system) #:prefix emacs:)
                   (guix build utils)
+                  (guix build emacs-utils)
                   (ice-9 rdelim)
                   (ice-9 popen))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-build-system)
+                           (guix build emacs-utils))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-/usr/bin/env
@@ -1284,12 +1290,19 @@ The library is shipped with documentation in Info format and usage examples.")
                              (invoke "guild" "compile" "-L" module-dir
                                      file "-o" go)))
                          (find-files module-dir "\\.scm$"))
-               #t))))))
+               #t)))
+         (add-after 'install 'install-emacs-files
+           (assoc-ref emacs:%standard-phases 'install))
+         (add-after 'install-emacs-files 'compile-emacs-files
+           (assoc-ref emacs:%standard-phases 'build))
+         (add-after 'compile-emacs-files 'make-autoloads
+           (assoc-ref emacs:%standard-phases 'make-autoloads)))))
     (home-page "https://draketo.de/english/wisp")
     (inputs
      `(("guile" ,guile-2.2)))
     (native-inputs
-     `(("python" ,python)
+     `(("emacs" ,emacs-minimal)
+       ("python" ,python)
        ("pkg-config" ,pkg-config)))
     (synopsis "Whitespace to lisp syntax for Guile")
     (description "Wisp is a syntax for Guile which provides a Python-like
