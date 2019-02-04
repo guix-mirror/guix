@@ -631,7 +631,7 @@ authentication}.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://www.harding.motd.ca/autossh/autossh-"
+             "https://www.harding.motd.ca/autossh/autossh-"
              version ".tgz"))
        (sha256
         (base32 "1wpqwa2872nqgqbhnb6nnkrlzpdawd5k69gh1qp68354pvhyawh1"))))
@@ -641,7 +641,7 @@ authentication}.")
     (synopsis "Automatically restart SSH sessions and tunnels")
     (description "autossh is a program to start a copy of @command{ssh} and
 monitor it, restarting it as necessary should it die or stop passing traffic.")
-    (home-page "http://www.harding.motd.ca/autossh/")
+    (home-page "https://www.harding.motd.ca/autossh/")
     (license
      ;; Why point to a source file?  Well, all the individual files have a
      ;; copy of this license in their headers, but there's no separate file
