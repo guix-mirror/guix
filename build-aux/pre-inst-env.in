@@ -45,7 +45,7 @@ export PATH
 # Daemon helpers.
 
 NIX_ROOT_FINDER="$abs_top_builddir/nix/scripts/list-runtime-roots"
-NIX_LIBEXEC_DIR="@abs_top_builddir@/nix/scripts" # for 'guix-authenticate'
+NIX_LIBEXEC_DIR="@abs_top_builddir@/nix/scripts" # for 'authenticate', etc.
 
 export NIX_ROOT_FINDER NIX_LIBEXEC_DIR
 

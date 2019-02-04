@@ -480,7 +480,7 @@ main (int argc, char *argv[])
 	{
 	  std::string build_hook;
 
-	  build_hook = settings.nixLibexecDir + "/guix/offload";
+	  build_hook = settings.nixLibexecDir + "/offload";
 	  setenv ("NIX_BUILD_HOOK", build_hook.c_str (), 1);
 	}
 #else
@@ -498,16 +498,8 @@ main (int argc, char *argv[])
 	       format ("build log compression: %1%") % settings.logCompression);
 
       if (settings.useSubstitutes)
-	{
-	  /* XXX: Hack our way to use the 'substitute' script from
-	     'LIBEXECDIR/guix' or just 'LIBEXECDIR', depending on whether
-	     we're running uninstalled or not.  */
-	  const string subdir = getenv("GUIX_UNINSTALLED") != NULL
-	    ? "" : "/guix";
-
-	  settings.substituters.push_back (settings.nixLibexecDir
-					   + subdir + "/substitute");
-	}
+	settings.substituters.push_back (settings.nixLibexecDir
+					 + "/substitute");
       else
 	/* Clear the substituter list to make sure nothing ever gets
 	   substituted, regardless of the client's settings.  */

@@ -340,7 +340,7 @@ Roots LocalStore::findRoots()
 static void addAdditionalRoots(StoreAPI & store, PathSet & roots)
 {
     Path rootFinder = getEnv("NIX_ROOT_FINDER",
-        settings.nixLibexecDir + "/guix/list-runtime-roots");
+        settings.nixLibexecDir + "/list-runtime-roots");
 
     if (rootFinder.empty()) return;
 
