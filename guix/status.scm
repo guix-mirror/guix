@@ -465,8 +465,15 @@ addition to build events."
             (_
              (spin! port))))))
 
+  (define erase-current-line*
+    (if (isatty?* port)
+        (lambda (port)
+          (erase-current-line port)
+          (force-output port))
+        (const #t)))
+
   (unless print-log?
-    (display "\r" port))                          ;erase the spinner
+    (erase-current-line* port))             ;clear the spinner or progress bar
   (match event
     (('build-started drv . _)
      (let ((properties (derivation-properties
