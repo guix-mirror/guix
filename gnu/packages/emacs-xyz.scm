@@ -41,6 +41,7 @@
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5052,7 +5053,7 @@ target will call @code{compile} on it.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "0.18.0")
+    (version "0.20.0")
     (source
      (origin
        (method git-fetch)
@@ -5062,7 +5063,7 @@ target will call @code{compile} on it.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1m9kc88vga3q5d731qnpngnsa0n57pf21k3hll20rw8rggrx4vdn"))))
+         "0lfhzg9c931jbx27hpshk3l76gwbp6ggf668sqa77xrvymwdlsnw"))))
     (build-system emacs-build-system)
     (arguments
      '(#:exclude                        ; Don't exclude 'cider-test.el'.
