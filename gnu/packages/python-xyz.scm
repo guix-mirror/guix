@@ -6732,31 +6732,6 @@ convert an @code{.ipynb} notebook file into various static formats including:
 (define-public python2-nbconvert
   (package-with-python2 python-nbconvert))
 
-(define-public python-prometheus-client
-  (package
-    (name "python-prometheus-client")
-    (version "0.5.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "prometheus_client" version))
-       (sha256
-        (base32
-         "0g7rpv1pq2lab1nfqdx98z9d3bqwc400alg1j4ynrpjkrbsizhg8"))))
-    (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; tests are not included
-    (propagated-inputs
-     `(("python-twisted" ,python-twisted)))
-    (home-page "https://github.com/prometheus/client_python")
-    (synopsis "Python client for the Prometheus monitoring system")
-    (description
-     "This package provides a Python client for the Prometheus monitoring
-system.")
-    (license license:asl2.0)))
-
-(define-public python2-prometheus-client
-  (package-with-python2 python-prometheus-client))
-
 (define-public python-notebook
   (package
     (name "python-notebook")
