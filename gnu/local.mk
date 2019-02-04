@@ -1330,7 +1330,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wpa-supplicant-fix-nonce-reuse.patch	\
   %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
   %D%/packages/patches/x265-arm-flags.patch			\
-  %D%/packages/patches/xboing-CVE-2004-0149.patch		\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-i128-remove-mibstore.patch	\
