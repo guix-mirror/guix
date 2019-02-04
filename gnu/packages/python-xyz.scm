@@ -105,6 +105,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages monitoring)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ncurses)
