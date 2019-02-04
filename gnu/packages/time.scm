@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,10 +35,12 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz))
 
@@ -377,3 +380,41 @@ datetime type.")
 
 (define-public python2-aniso8601
   (package-with-python2 python-aniso8601))
+
+(define-public datefudge
+  (package
+    (name "datefudge")
+    (version "1.22")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://salsa.debian.org/debian/datefudge.git")
+                    (commit (string-append "debian/" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1fmd05r00wx4zc90lbi804jl7xwdl11jq2a1kp5lqimk3yyvfw4c"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags (list "CC=gcc"
+                          (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefile
+           (lambda _
+             (substitute* "Makefile"
+               ((" -o root -g root") "")
+               (("VERSION := \\$\\(shell dpkg-parsechangelog .*")
+                (string-append "VERSION = " ,version)))
+             #t))
+         (delete 'configure))))
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "https://salsa.debian.org/debian/datefudge")
+    (synopsis "Pretend the system date is different")
+    (description
+     "Utility that fakes the system time by pre-loading a small library that
+modifies the @code{time}, @code{gettimeofday} and @code{clock_gettime} system
+calls.")
+    (license gpl2)))
