@@ -4505,28 +4505,6 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 (define-public python2-ipykernel
   (package-with-python2 python-ipykernel))
 
-(define-public python-send2trash
-  (package
-    (name "python-send2trash")
-    (version "1.5.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "send2trash" version))
-       (sha256
-        (base32
-         "1ci8vcwjmjlp11ljj1ckrfmml9fkq1mclx2gr53y4zvhgp01q030"))))
-    (build-system python-build-system)
-    (home-page "https://github.com/hsoft/send2trash")
-    (synopsis "Send files to trash")
-    (description
-     "This package provides a cross-platform mechanism to send files to the
-trash.")
-    (license license:bsd-3)))
-
-(define-public python2-send2trash
-  (package-with-python2 python-send2trash))
-
 ;; This is the latest release of the LTS version of ipython with support for
 ;; Python 2.7 and Python 3.x.  Later non-LTS versions starting from 6.0 have
 ;; dropped support for Python 2.7.  We may want to rename this package.
@@ -13215,16 +13193,17 @@ and works only with Python 2 and NumPy < 1.9.")
 (define-public python-send2trash
   (package
     (name "python-send2trash")
-    (version "1.4.2")
+    (version "1.5.0")
     (source
-     (origin (method url-fetch)
+     (origin (method git-fetch)
              ;; Source tarball on PyPI doesn't include tests.
-             (uri (string-append "https://github.com/hsoft/send2trash/archive/"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (uri (git-reference
+                   (url "https://github.com/hsoft/send2trash.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "0ffyhwjyx61slkdy38iwjc4gmj7fj9gs2q58f075gwvq630pzm9z"))))
+               "1c76zldhw2ay7q7r00nnzcampjz9lkqfcbzqpm0iqp5i6bmmv30v"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
