@@ -332,14 +332,14 @@ private network between hosts on the internet.")
 (define-public sshuttle
   (package
     (name "sshuttle")
-    (version "0.78.4")
+    (version "0.78.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
         (base32
-         "0pqk43kd7crqhg6qgnl8kapncwgw1xgaf02zarzypcw64kvdih9h"))))
+         "0vp13xwrhx4m6zgsyzvai84lkq9mzkaw47j58dk0ll95kaymk2x8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -354,8 +354,9 @@ private network between hosts on the internet.")
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
        ;; For tests only.
+       ("python-flake8", python-flake8)
        ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/sshuttle/sshuttle")
     (synopsis "VPN that transparently forwards connections over SSH")
