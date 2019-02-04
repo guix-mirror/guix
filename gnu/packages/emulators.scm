@@ -1053,7 +1053,7 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.5")
+    (version "1.7.6")
     (source
      (origin
        (method git-fetch)
@@ -1062,7 +1062,7 @@ emulation community.  It provides highly accurate emulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jfpgl34jjxn3dvxd1kd564swkw7v98hnn562v998b7vllz3dxdm"))))
+        (base32 "122c6cqax92qk2mhm9ywnwhw3qkv8f1ybma9gal5w6i2gsmp0s0s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1100,6 +1100,7 @@ emulation community.  It provides highly accurate emulation.")
        ("libxinerama" ,libxinerama)
        ("libxkbcommon" ,libxkbcommon)
        ("libxml2" ,libxml2)
+       ("libxrandr" ,libxrandr)
        ("libxv" ,libxv)
        ("mesa" ,mesa)
        ("openal" ,openal)
