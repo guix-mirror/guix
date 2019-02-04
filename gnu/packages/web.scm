@@ -5157,15 +5157,15 @@ inspired by Ruby's @code{fakeweb}.")
 (define-public jo
   (package
     (name "jo")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/jpmens/jo/releases/download/v"
+       (uri (string-append "https://github.com/jpmens/jo/releases/download/"
                            version "/jo-" version ".tar.gz"))
        (sha256
         (base32
-         "0pysickpxrbl53c122h6swvz8sck68q3j0ql38wvbz70q9k4gvb3"))))
+         "1bmdck53jslrl3anqqpm6iyjdxrz445qzcc4fr37hr3wjg22zv1n"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/jpmens/jo")
     (synopsis "Output JSON from a shell")
