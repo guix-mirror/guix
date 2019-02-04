@@ -1273,7 +1273,7 @@ projects while introducing many more.")
 (define-public gnome-mpv
   (package
     (name "gnome-mpv")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
@@ -1282,7 +1282,7 @@ projects while introducing many more.")
                            ".tar.xz"))
        (sha256
         (base32
-         "1y47abkidxh1il0bvq8r3dglwn3ggsy41x2n7ic3x23wvvcqmq74"))))
+         "0jzdzvhcqp5jp1inwk2466zf7r8iimk3x69066gl8mzaay98mk92"))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
