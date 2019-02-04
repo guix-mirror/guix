@@ -366,31 +366,6 @@ database/sql package.")
       (home-page "https://github.com/lib/pq")
       (license expat))))
 
-(define-public go-github-com-minio-sha256-simd
-  (let ((commit "ad98a36ba0da87206e3378c556abbfeaeaa98668")
-        (revision "1"))
-    (package
-      (name "go-github-com-minio-sha256-simd")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/minio/sha256-simd")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0yfnqn3kqdnlfm54yvc4fr5vpdmwdi2kw571nlkbpmy8ldhsqqfi"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/minio/sha256-simd"))
-      (synopsis "Hardware-accelerated SHA256 in Go using SIMD")
-      (description "This packages provides a pure Go implementation of SHA256
-using SIMD (Single instruction, multiple data) instructions for Intel and ARM
-architectures.")
-      (home-page "https://github.com/minio/sha256-simd")
-      (license asl2.0))))
-
 (define-public go-github-com-oschwald-geoip2-golang
   (package
     (name "go-github-com-oschwald-geoip2-golang")
