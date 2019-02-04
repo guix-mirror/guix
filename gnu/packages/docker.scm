@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -160,7 +161,7 @@ Python without keeping their credentials in a Docker configuration file.")
 (define-public containerd
   (package
     (name "containerd")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
       (method git-fetch)
@@ -170,7 +171,7 @@ Python without keeping their credentials in a Docker configuration file.")
       (file-name (git-file-name name version))
       (sha256
        (base32
-        "16zn6p1ky3yrgn53z8h9wza53ch91fj47wj5xgz6w4c57j30f66p"))))
+        "065snv0s3v3z0ghadlii4w78qnhchcbx2kfdrvm8fk8gb4pkx1ya"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/containerd/containerd"
