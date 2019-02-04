@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
@@ -3612,7 +3612,7 @@ portability, and boilerplate reduction in CSS.")
 (define-public cl-css
   (sbcl-package->cl-source-package sbcl-cl-css))
 
-(define-public ecl-cl-markup
+(define-public ecl-cl-css
   (sbcl-package->ecl-package sbcl-cl-css))
 
 (define-public sbcl-portable-threads
