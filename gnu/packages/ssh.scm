@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
@@ -626,7 +626,7 @@ authentication}.")
 (define-public autossh
   (package
     (name "autossh")
-    (version "1.4f")
+    (version "1.4g")
     (source
      (origin
        (method url-fetch)
@@ -634,7 +634,7 @@ authentication}.")
              "https://www.harding.motd.ca/autossh/autossh-"
              version ".tgz"))
        (sha256
-        (base32 "1wpqwa2872nqgqbhnb6nnkrlzpdawd5k69gh1qp68354pvhyawh1"))))
+        (base32 "0xqjw8df68f4kzkns5gcah61s5wk0m44qdk2z1d6388w6viwxhsz"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; There is no "make check" or anything similar
     (inputs `(("openssh" ,openssh)))
