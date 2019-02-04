@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2017 Eric Bavier <bavier@cray.com>
 #
 # This file is part of GNU Guix.
@@ -45,10 +45,9 @@ export PATH
 # Daemon helpers.
 
 NIX_ROOT_FINDER="$abs_top_builddir/nix/scripts/list-runtime-roots"
-NIX_SUBSTITUTERS="$abs_top_builddir/nix/scripts/substitute"
 NIX_LIBEXEC_DIR="@abs_top_builddir@/nix/scripts" # for 'guix-authenticate'
 
-export NIX_ROOT_FINDER NIX_SUBSTITUTERS NIX_LIBEXEC_DIR
+export NIX_ROOT_FINDER NIX_LIBEXEC_DIR
 
 NIX_BUILD_HOOK="$abs_top_builddir/nix/scripts/offload"
 @BUILD_DAEMON_OFFLOAD_TRUE@export NIX_BUILD_HOOK

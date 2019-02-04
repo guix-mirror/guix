@@ -141,18 +141,6 @@ void Settings::update()
     _get(gcKeepDerivations, "gc-keep-derivations");
     _get(autoOptimiseStore, "auto-optimise-store");
     _get(envKeepDerivations, "env-keep-derivations");
-
-    string subs = getEnv("NIX_SUBSTITUTERS", "default");
-    if (subs == "default") {
-        substituters.clear();
-#if 0
-        if (getEnv("NIX_OTHER_STORES") != "")
-            substituters.push_back(nixLibexecDir + "/nix/substituters/copy-from-other-stores.pl");
-#endif
-        substituters.push_back(nixLibexecDir + "/nix/substituters/download-using-manifests.pl");
-        substituters.push_back(nixLibexecDir + "/nix/substituters/download-from-binary-cache.pl");
-    } else
-        substituters = tokenizeString<Strings>(subs, ":");
 }
 
 
