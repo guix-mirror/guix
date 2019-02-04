@@ -7406,27 +7406,6 @@ output, progress bar display, and pipes.")
 (define-public python2-clint
   (package-with-python2 python-clint))
 
-(define-public python-astor
-  (package
-    (name "python-astor")
-    (version "0.5")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "astor" version))
-              (sha256
-               (base32
-                "1fdafq5hkis1fxqlmhw0sn44zp2ar46nxhbc22cvwg7hsd8z5gsa"))))
-    (build-system python-build-system)
-    (home-page "https://github.com/berkerpeksag/astor")
-    (synopsis "Read and write Python ASTs")
-    (description
-     "Astor is designed to allow easy manipulation of Python source via the
-Abstract Syntax Tree.")
-    (license license:bsd-3)))
-
-(define-public python2-astor
-  (package-with-python2 python-astor))
-
 (define-public python-rply
   (package
     (name "python-rply")
@@ -14680,10 +14659,13 @@ of Python libraries for building Python applications.")
     ;; FIXME: There are two errors and two test failures.
     (arguments `(#:tests? #f))
     (home-page "https://github.com/berkerpeksag/astor")
-    (synopsis "Read/rewrite/write Python ASTs")
+    (synopsis "Read and write Python ASTs")
     (description "Astor is designed to allow easy manipulation of Python
-source via the AST.")
+source via the Abstract Syntax Tree.")
     (license license:bsd-3)))
+
+(define-public python2-astor
+  (package-with-python2 python-astor))
 
 (define-public python-grpcio
   (package
