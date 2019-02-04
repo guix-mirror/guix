@@ -451,6 +451,9 @@ concepts.")
 @code{subprocess} feature.")
     (license license:expat)))
 
+(define-public python2-sh
+  (package-with-python2 python-sh))
+
 (define-public python-cftime
   (package
     (name "python-cftime")
@@ -9841,28 +9844,6 @@ reasoning, wrappers for natural language processing libraries.")
 
 (define-public python2-pymongo
   (package-with-python2 python-pymongo))
-
-(define-public python-sh
-  (package
-    (name "python-sh")
-    (version "1.11")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "sh" version))
-              (sha256
-               (base32
-                "192r0mpv6dmkysjzhc43ddffiwb5g7c76bgr1mb1z2xz9awbj3sr"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f)) ; no tests
-    (home-page "https://github.com/amoffat/sh")
-    (synopsis "Python subprocess interface")
-    (description "Abstracts process invocation by providing a function
-interface for programs.")
-    (license license:expat)))
-
-(define-public python2-sh
-  (package-with-python2 python-sh))
 
 (define-public python-consul
   (package
