@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 André <eu@euandre.org>
@@ -1963,7 +1963,7 @@ be served with a HTTP file server of your choice.")
 (define-public darcs
   (package
     (name "darcs")
-    (version "2.14.1")
+    (version "2.14.2")
     (source
      (origin
        (method url-fetch)
@@ -1971,7 +1971,7 @@ be served with a HTTP file server of your choice.")
                            "darcs-" version ".tar.gz"))
        (sha256
         (base32
-         "0dfd6bp2wy0aabxx7l93gi3dmq21j970cds424xdy1mgmjcvrpb1"))
+         "0zm2486gyhiga1amclbg92cd09bvki6vgh0ll75hv5kl72j61lb5"))
        (modules '((guix build utils)))
        ;; Remove time-dependent code for reproducibility.
        (snippet
