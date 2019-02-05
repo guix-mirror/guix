@@ -2502,6 +2502,10 @@ void DerivationGoal::registerOutputs()
                     throw Error(format("derivation `%1%' may not be deterministic: output `%2%' differs")
                         % drvPath % path);
             }
+
+            if (settings.printBuildTrace)
+                printMsg(lvlError, format("@ build-succeeded %1% -") % drvPath);
+
             continue;
         }
 

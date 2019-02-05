@@ -917,6 +917,19 @@
                                 (build-mode check))
                   #f))))))))
 
+(test-assert "build-succeeded trace in check mode"
+  (string-contains
+   (call-with-output-string
+     (lambda (port)
+       (let ((d (build-expression->derivation
+                 %store "foo" '(mkdir (assoc-ref %outputs "out"))
+                 #:guile-for-build
+                 (package-derivation %store %bootstrap-guile))))
+         (build-derivations %store (list d))
+         (parameterize ((current-build-output-port port))
+           (build-derivations %store (list d) (build-mode check))))))
+   "@ build-succeeded"))
+
 (test-assert "build multiple times"
   (with-store store
     ;; Ask to build twice.
