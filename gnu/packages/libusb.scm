@@ -368,10 +368,10 @@ connections from and to iOS devices by connecting to a socket provided by a
                             "m"))))
     (propagated-inputs
      `(("openssl" ,openssl)
+       ("libplist" ,libplist) ; libimobiledevice's ".pc" file requires it.
        ("libusbmuxd" ,libusbmuxd)))
     (inputs
-     `(("libplist" ,libplist)
-       ("python" ,python)))
+     `(("python" ,python)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)
