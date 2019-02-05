@@ -211,4 +211,37 @@
           (display "@ build-succeeded foo.drv\n" port)
           (list first second third (get-status)))))))
 
+(test-equal "compute-status, build phase"
+  (list (build-status
+         (building (list (build "foo.drv" "x86_64-linux" #:id 121
+                                #:phase 'configure))))
+        (build-status
+         (building (list (build "foo.drv" "x86_64-linux" #:id 121
+                                #:phase 'configure
+                                #:completion 50.))))
+        (build-status
+         (building (list (build "foo.drv" "x86_64-linux" #:id 121
+                                #:phase 'install))))
+        (build-status
+         (builds-completed (list (build "foo.drv" "x86_64-linux" #:id 121
+                                        #:phase 'install)))))
+  (let-values (((port get-status)
+                (build-event-output-port (lambda (event status)
+                                           (compute-status event status
+                                                           #:current-time
+                                                           (const 'now))))))
+    (display "@ build-started foo.drv - x86_64-linux  121\n" port)
+    (display "@ build-log 121 27\nstarting phase `configure'\n" port)
+    (display "@ build-log 121 6\nabcde!" port)
+    (let ((first (get-status)))
+      (display "@ build-log 121 20\n[50/100] building Y\n" port)
+      (display "@ build-log 121 6\nfghik!" port)
+      (let ((second (get-status)))
+        (display "@ build-log 121 21\n[100/100] building Z\n" port)
+        (display "@ build-log 121 25\nstarting phase `install'\n" port)
+        (display "@ build-log 121 6\nlmnop!" port)
+        (let ((third (get-status)))
+          (display "@ build-succeeded foo.drv\n" port)
+          (list first second third (get-status)))))))
+
 (test-end "status")

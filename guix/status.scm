@@ -55,6 +55,9 @@
             build
             build-derivation
             build-system
+            build-log-file
+            build-phase
+            build-completion
 
             download?
             download
@@ -102,18 +105,20 @@
 
 ;; On-going or completed build.
 (define-immutable-record-type <build>
-  (%build derivation id system log-file completion)
+  (%build derivation id system log-file phase completion)
   build?
   (derivation  build-derivation)                ;string (.drv file name)
   (id          build-id)                        ;#f | integer
   (system      build-system)                    ;string
   (log-file    build-log-file)                  ;#f | string
+  (phase       build-phase                      ;#f | symbol
+               set-build-phase)
   (completion  build-completion                 ;#f | integer (percentage)
                set-build-completion))
 
-(define* (build derivation system #:key id log-file completion)
+(define* (build derivation system #:key id log-file phase completion)
   "Return a new build."
-  (%build derivation id system log-file completion))
+  (%build derivation id system log-file phase completion))
 
 ;; On-going or completed downloads.  Downloads can be stem from substitutes
 ;; and from "builtin:download" fixed-output derivations.
@@ -143,6 +148,10 @@
   "Return a predicate that matches downloads of ITEM."
   (lambda (download)
     (string=? item (download-item download))))
+
+(define %phase-start-rx
+  ;; Match the "starting phase" message emitted by 'gnu-build-system'.
+  (make-regexp "^starting phase [`']([^']+)'"))
 
 (define %percentage-line-rx
   ;; Things like CMake write lines like "[ 10%] gcc -c …".  This regexp
@@ -185,6 +194,19 @@ a completion indication."
            (let ((done  (string->number (match:substring match 1)))
                  (total (string->number (match:substring match 3))))
              (update (* 100. (/ done total))))))
+        ((regexp-exec %phase-start-rx line)
+         =>
+         (lambda (match)
+           (let ((phase (match:substring match 1))
+                 (build (find-build)))
+             (if build
+                 (build-status
+                  (inherit status)
+                  (building
+                   (cons (set-build-phase (set-build-completion build #f)
+                                          (string->symbol phase))
+                         (delq build (build-status-building status)))))
+                 status))))
         (else
          status)))
 
