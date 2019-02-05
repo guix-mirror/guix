@@ -13433,6 +13433,43 @@ and other tools.")
 (define-public python2-typing
   (package-with-python2 python-typing))
 
+(define-public python-typing-extensions
+  (package
+    (name "python-typing-extensions")
+    (version "3.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "typing_extensions" version))
+       (sha256
+        (base32
+         "0wfsv71pvkyf2na938l579jh0v3kzl6g744ijgnahcwd4d9x0b7v"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/python/typing/blob/master/typing_extensions/README.rst")
+    (synopsis "Experimental type hints for Python")
+    (description
+     "The typing_extensions module contains additional @code{typing} hints not
+yet present in the of the @code{typing} standard library.
+Included are implementations of:
+@enumerate
+@item ClassVar
+@item ContextManager
+@item Counter
+@item DefaultDict
+@item Deque
+@item NewType
+@item NoReturn
+@item overload
+@item Protocol
+@item runtime
+@item Text
+@item Type
+@item TYPE_CHECKING
+@item AsyncGenerator
+@end enumerate\n")
+    (license license:psfl)))
+
 (define-public bpython
   (package
     (name "bpython")
