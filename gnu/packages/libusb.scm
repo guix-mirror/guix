@@ -409,6 +409,32 @@ music and video to the device.")
 iOS devices and access their contents.")
     (license license:lgpl2.1+)))
 
+(define-public usbmuxd
+  (package
+    (name "usbmuxd")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+                                  "usbmuxd-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0bdlc7a8plvglqqx39qqampqm6y0hcdws76l9dffwl22zss4i29y"))))
+    (inputs
+     `(("libplist" ,libplist)
+       ("libusb" ,libusb)
+       ("libimobiledevice" ,libimobiledevice)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (build-system gnu-build-system)
+    (home-page "http://www.libimobiledevice.org/")
+    (synopsis "Multiplex connections over USB to an iOS device")
+    (description "This package provides the @code{usbmuxd} daemon
+which multiplexes connections over USB to an iOS device.  To
+users, it means you can sync your music, contacts, photos, etc.
+over USB.")
+    (license license:gpl2+)))
+
 (define-public libmtp
   (package
     (name "libmtp")
