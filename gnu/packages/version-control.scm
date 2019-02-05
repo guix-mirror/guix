@@ -1427,27 +1427,19 @@ RCS, PRCS, and Aegis packages.")
 (define-public cvs-fast-export
   (package
     (name "cvs-fast-export")
-    (version "1.44")
+    (version "1.45")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/cvs-fast-export/"
                                   "cvs-fast-export-" version ".tar.gz"))
               (sha256
                (base32
-                "1l7hlys4vw4zk4ikdjiig5vzgv5dv48mbm8bdqgvgkyyxb2j0dm0"))))
+                "19pxg6p0pcgyd2fbnh3wy1kazv6vcfi5lzc2whhdi1w9kj4r9c4z"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-before 'check 'fix-setpython-PATH
-           (lambda _
-             ;; The Makefile does try to add the current working directory to
-             ;; $PATH, but this fails for some reason in 1.44.  Hack around it.
-             (substitute* "tests/Makefile"
-               (("setpython" command)
-                (string-append "./" command)))
-             #t))
+         (delete 'configure)            ; no configure script
          (add-after 'unpack 'remove-optimizations
            (lambda _
              ;; Don't optimize for a specific processor architecture.
