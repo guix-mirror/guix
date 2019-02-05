@@ -30,6 +30,7 @@
   #:use-module (guix memoization)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 regex)
@@ -100,14 +101,15 @@
                        (default '())))
 
 ;; On-going or completed build.
-(define-record-type <build>
+(define-immutable-record-type <build>
   (%build derivation id system log-file completion)
   build?
   (derivation  build-derivation)                ;string (.drv file name)
   (id          build-id)                        ;#f | integer
   (system      build-system)                    ;string
   (log-file    build-log-file)                  ;#f | string
-  (completion  build-completion))               ;#f | integer (percentage)
+  (completion  build-completion                 ;#f | integer (percentage)
+               set-build-completion))
 
 (define* (build derivation system #:key id log-file completion)
   "Return a new build."
@@ -156,13 +158,6 @@
 (define (update-build status id line)
   "Update STATUS based on LINE, a build output line for ID that might contain
 a completion indication."
-  (define (set-completion b %)
-    (build (build-derivation b)
-           (build-system b)
-           #:id (build-id b)
-           #:log-file (build-log-file b)
-           #:completion %))
-
   (define (find-build)
     (find (lambda (build)
             (and (build-id build)
@@ -173,7 +168,7 @@ a completion indication."
     (let ((build (find-build)))
       (build-status
        (inherit status)
-       (building (cons (set-completion build %)
+       (building (cons (set-build-completion build %)
                        (delq build (build-status-building status)))))))
 
   (cond ((string-any #\nul line)
