@@ -45,6 +45,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages ed)
   #:use-module (gnu packages emacs)
@@ -63,6 +64,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
@@ -1055,8 +1057,10 @@ library}.")
        (list (string-append
               "--with-guile-site-dir=" %output "/share/guile/site/2.2"))
        #:make-flags
-       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib:"
-                            (assoc-ref %build-inputs "guile-dbd-sqlite3") "/lib"))
+       (list (string-append
+              "LDFLAGS=-Wl,-rpath=" %output "/lib:"
+              (assoc-ref %build-inputs "guile-dbd-sqlite3") "/lib" ":"
+              (assoc-ref %build-inputs "guile-dbd-postgresql") "/lib"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'patch-extension-path
@@ -1068,7 +1072,8 @@ library}.")
                (substitute* dbi.scm (("libguile-dbi") ext))
                #t))))))
     (inputs
-     `(("guile-dbd-sqlite3" ,guile-dbd-sqlite3))) ; only shared library, no scheme files
+     `(("guile-dbd-sqlite3" ,guile-dbd-sqlite3)
+       ("guile-dbd-postgresql" ,guile-dbd-postgresql))) ; only shared library, no scheme files
     (propagated-inputs
      `(("guile" ,guile-2.2)))
     (synopsis "Guile database abstraction layer")
@@ -1114,6 +1119,62 @@ It currently supports MySQL, Postgres and SQLite3.")
      "guile-dbi is a library for Guile that provides a convenient interface to
 SQL databases.  This package implements the interface for SQLite.")
     (license license:gpl2+)))
+
+(define-public guile-dbd-postgresql
+  (let ((commit "e97589b6b018b206c901e4cc24db463407a4036b")
+        (revision 0))
+    (package
+      (name "guile-dbd-postgresql")
+      (version (string-append
+                "2.1.6-" (number->string revision) "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/opencog/guile-dbi.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0n1gv9a0kdys10a4qmnrwvg5sydwb03880asri4gqdchcj3fimni"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _
+               ;; The upstream Git repository contains all the code, so change
+               ;; to the relevant directory.
+               (chdir "guile-dbd-postgresql")
+               #t))
+           (add-after 'chdir 'patch-src/Makefile.am
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/Makefile.am"
+                 (("/usr/include")
+                  (string-append (assoc-ref inputs "postgresql") "/include")))
+               #t))
+           (add-after 'patch-src/Makefile.am 'patch-src
+             (lambda _
+               (substitute* "src/guile-dbd-postgresql.c"
+                 (("postgresql/libpq-fe\\.h") "libpq-fe.h"))
+               #t)))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("automake" ,automake)
+         ("autoconf" ,autoconf)
+         ("perl" ,perl)
+         ("libtool" ,libtool)
+         ("guile-dbi-bootstrap" ,guile-dbi-bootstrap)))
+      (inputs
+       `(("postgresql" ,postgresql)
+         ("zlib" ,zlib)))
+      (synopsis "Guile DBI driver for PostgreSQL")
+      (home-page
+       "https://github.com/opencog/guile-dbi/tree/master/guile-dbd-postgresql")
+      (description
+       "@code{guile-dbi} is a library for Guile that provides a convenient
+interface to SQL databases.  This package implements the interface for
+PostgreSQL.")
+      (license license:gpl2+))))
 
 (define-public guile-config
   (package
