@@ -1072,10 +1072,14 @@ emulation community.  It provides highly accurate emulation.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (etc (string-append out "/etc"))
-                    (vulkan (assoc-ref inputs "vulkan-loader")))
+                    (vulkan (assoc-ref inputs "vulkan-loader"))
+                    (wayland-protocols (assoc-ref inputs "wayland-protocols")))
                ;; Hard-code the path to libvulkan.so.
                (substitute* "gfx/common/vulkan_common.c"
                  (("libvulkan.so") (string-append vulkan "/lib/libvulkan.so")))
+               (substitute* "gfx/common/wayland/generate_wayland_protos.sh"
+                 (("/usr/local/share/wayland-protocols")
+                 (string-append wayland-protocols "/share/wayland-protocols")))
                (substitute* "qb/qb.libs.sh"
                  (("/bin/true") (which "true")))
                ;; Use shared zlib.
@@ -1114,6 +1118,7 @@ emulation community.  It provides highly accurate emulation.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("wayland-protocols" ,wayland-protocols)
        ("which" ,which)))
     (home-page "https://www.libretro.com/")
     (synopsis "Reference frontend for the libretro API")
