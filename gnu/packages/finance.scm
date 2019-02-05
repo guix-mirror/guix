@@ -683,14 +683,14 @@ Ledger Blue/Nano S.")
 (define-public python-trezor
   (package
     (name "python-trezor")
-    (version "0.10.2")
+    (version "0.11.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "trezor" version))
         (sha256
           (base32
-            "138k6zsqqpb46k3rcpyslm9q7yq5i6k4myvr9n425jnkadf4vfjd"))))
+            "064yds8f4px0c6grkkanpdjx022g4q87ihzhkmdv9qanv0hz6hv0"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -698,21 +698,23 @@ Ledger Blue/Nano S.")
           ;; Default tests run device-specific tests which fail, only run specific tests.
           (replace 'check
             (lambda* (#:key inputs outputs #:allow-other-keys)
-              (invoke "python" "-m" "pytest" "--pyarg" "trezorlib.tests.unit_tests")
-              (invoke "python" "-m" "pytest" "-m" "slow_cosi" "--pyarg" "trezorlib.tests.unit_tests")
-              )))))
+              ;; Delete tests that require network access.
+              (delete-file "trezorlib/tests/unit_tests/test_tx_api.py")
+              (invoke "python" "-m" "pytest" "--pyarg" "trezorlib.tests.unit_tests"))))))
     (propagated-inputs
      `(("python-click" ,python-click)
+       ("python-construct" ,python-construct)
        ("python-ecdsa" ,python-ecdsa)
-       ("python-hidapi" ,python-hidapi)
        ("python-libusb1" ,python-libusb1)
        ("python-mnemonic" ,python-mnemonic)
-       ("python-protobuf" ,python-protobuf)
        ("python-pyblake2" ,python-pyblake2)
        ("python-requests" ,python-requests)
-       ("python-typing" ,python-typing)))
+       ("python-typing-extensions" ,python-typing-extensions)))
     (native-inputs
-     `(("python-mock" ,python-mock) ; Tests
+     `(("protobuf" ,protobuf) ; Tests
+       ("python-black" ,python-black) ; Tests
+       ("python-protobuf" ,python-protobuf) ; Tests
+       ("python-isort" ,python-isort) ; Tests
        ("python-pyqt" ,python-pyqt) ; Tests
        ("python-pytest" ,python-pytest))) ; Tests
     (home-page "https://github.com/trezor/python-trezor")
