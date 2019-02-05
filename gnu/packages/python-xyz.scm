@@ -445,6 +445,14 @@ concepts.")
         (base32
          "1z2hx357xp3v4cv44xmqp7lli3frndqpyfmpbxf7n76h7s1zaaxm"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "sh.py" "test"))))))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)))
     (home-page "https://github.com/amoffat/sh")
     (synopsis "Python subprocess replacement")
     (description "This package provides a replacement for Python's
