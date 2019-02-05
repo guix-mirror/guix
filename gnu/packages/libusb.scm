@@ -368,7 +368,7 @@ connections from and to iOS devices by connecting to a socket provided by a
                             "m"))))
     (propagated-inputs
      `(("openssl" ,openssl)
-       ("libplist" ,libplist) ; libimobiledevice's ".pc" file requires it.
+       ("libplist" ,libplist)
        ("libusbmuxd" ,libusbmuxd)))
     (inputs
      `(("python" ,python)))
@@ -384,6 +384,29 @@ the device's filesystem, retrieve information about the device and it's
 internals, backup/restore the device, manage installed applications, retrieve
 addressbook/calendars/notes and bookmarks and (using libgpod) synchronize
 music and video to the device.")
+    (license license:lgpl2.1+)))
+
+(define-public ifuse
+  (package
+    (name "ifuse")
+    (version "1.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+                                  "ifuse-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1p9a4n36jb194cnp6v57cz2bggwbywaz8pbpb95ch83pzdkdx257"))))
+    (inputs
+     `(("fuse" ,fuse)
+       ("libimobiledevice" ,libimobiledevice)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (build-system gnu-build-system)
+    (home-page "http://www.libimobiledevice.org/")
+    (synopsis "Mount iOS devices")
+    (description "This package provides @command{ifuse}, a command to mount
+iOS devices and access their contents.")
     (license license:lgpl2.1+)))
 
 (define-public libmtp
