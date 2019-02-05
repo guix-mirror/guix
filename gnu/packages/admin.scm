@@ -2810,7 +2810,7 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
 (define-public pscircle
   (package
     (name "pscircle")
-    (version "1.1.0")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -2820,7 +2820,7 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1sxdnhkcr26l29nk0zi1zkvkd7128xglfql47rdb1bx940vflgb6"))))
+         "0qsif00dkqa8ky3vl2ycx5anx2yk62nrv47f5lrlqzclz91f00fx"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
