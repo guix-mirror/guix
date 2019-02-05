@@ -1073,7 +1073,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\
   %D%/packages/patches/nvi-db4.patch				\
   %D%/packages/patches/nyacc-binary-literals.patch		\
-  %D%/packages/patches/nyx-show-header-stats-with-python3.patch	\
   %D%/packages/patches/oath-toolkit-glibc-compat.patch		\
   %D%/packages/patches/ocaml-bisect-fix-camlp4-in-another-directory.patch	\
   %D%/packages/patches/ocaml-bitstring-fix-configure.patch \

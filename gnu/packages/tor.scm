@@ -222,16 +222,14 @@ from you.")
 (define-public nyx
   (package
     (name "nyx")
-    (version "2.0.4")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
-       (patches
-        (search-patches "nyx-show-header-stats-with-python3.patch"))
        (sha256
         (base32
-         "0pm7vfcqr02pzqz4b2f6sw5prxxmgqwr1912am42xmy2i53n7nrq"))))
+         "02rrlllz2ci6i6cs3iddyfns7ang9a54jrlygd2jw1f9s6418ll8"))))
     (build-system python-build-system)
     (inputs
      `(("python-stem" ,python-stem)))
