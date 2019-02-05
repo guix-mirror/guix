@@ -1430,8 +1430,8 @@ RCS, PRCS, and Aegis packages.")
     (version "1.44")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.catb.org/~esr/"
-                                  name "/" name "-" version ".tar.gz"))
+              (uri (string-append "http://www.catb.org/~esr/cvs-fast-export/"
+                                  "cvs-fast-export-" version ".tar.gz"))
               (sha256
                (base32
                 "1l7hlys4vw4zk4ikdjiig5vzgv5dv48mbm8bdqgvgkyyxb2j0dm0"))))
