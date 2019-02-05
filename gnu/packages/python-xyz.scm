@@ -138,6 +138,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages serialization)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -14818,4 +14819,34 @@ in doctests.")
     (synopsis "Decorator for attributes of target function or class")
     (description "Simple decorator to set attributes of target function or
 class in a @acronym{DRY, Don't Repeat Yourself} way.")
+    (license license:expat)))
+
+(define-public python-construct
+  (package
+    (name "python-construct")
+    (version "2.9.45")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "construct" version))
+       (sha256
+        (base32
+         "130iy05awzigm2xah2yvlmb08mac5bi4gzr5m3g7k1krs3ps0w92"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; No tests exist.
+    (propagated-inputs
+     `(("python-extras" ,python-extras)
+       ("python-arrow" ,python-arrow)
+       ("python-numpy" ,python-numpy)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)))
+    (home-page "http://construct.readthedocs.io")
+    (synopsis "Declarative and symmetrical parser and builder for binary data")
+    (description
+     "This package provides both simple, atomic constructs (such as
+integers of various sizes), as well as composite ones which allow you
+form hierarchical and sequential structures of increasing complexity.
+It features bit and byte granularity, easy debugging and testing, an
+easy-to-extend subclass system, and lots of primitive constructs to
+make your work easier.")
     (license license:expat)))
