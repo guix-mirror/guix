@@ -2813,14 +2813,14 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
     (version "1.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://gitlab.com/mildlyparallel/pscircle/-/archive/v"
-             version "/pscircle-v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/mildlyparallel/pscircle.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1k757yf2bmgfrjd417l6kpcf83hlvi0z1791vz967mwcklrsb3fj"))))
+         "1sxdnhkcr26l29nk0zi1zkvkd7128xglfql47rdb1bx940vflgb6"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
