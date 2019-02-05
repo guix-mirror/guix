@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
@@ -914,16 +914,15 @@ either a pure Python implementation, or the faster, but more resource intensive
     (name "shflags")
     (version "1.2.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/kward/shflags/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/kward/shflags.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1h9xfrwwdhzflipfwdcgcc3y7zapdslnyk1rg5y8jm7k144rfrs4"))))
+                "1ydx0sb6vz9s2dgp5bd64y7fpzh9qvmlfjxrbmzac8saknijrlly"))))
     (build-system gnu-build-system)
-    (native-inputs `(("tar" ,tar)
-                     ("gzip" ,gzip)))
     (arguments
      `(#:tests? #f                      ; no tests
        #:phases
