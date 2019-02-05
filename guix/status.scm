@@ -345,14 +345,21 @@ build-log\" traces."
 
 (define spin!
   (let ((steps (circular-list "\\" "|" "/" "-")))
-    (lambda (port)
-      "Display a spinner on PORT."
+    (lambda (phase port)
+      "Display a spinner on PORT.  If PHASE is true, display it as a hint of
+the current build phase."
       (when (isatty?* port)
         (match steps
           ((first . rest)
            (set! steps rest)
            (display "\r\x1b[K" port)
            (display first port)
+           (when phase
+             (display " " port)
+             ;; TRANSLATORS: The word "phase" here denotes a "build phase";
+             ;; "~a" is a placeholder for the untranslated name of the current
+             ;; build phase--e.g., 'configure' or 'build'.
+             (format port (G_ "'~a' phase") phase))
            (force-output port)))))))
 
 (define (color-output? port)
@@ -458,12 +465,18 @@ addition to build events."
         (cut colorize-string <> 'RED 'BOLD)
         identity))
 
-  (define (report-build-progress %)
+  (define (report-build-progress phase %)
     (let ((% (min (max % 0) 100)))                ;sanitize
       (erase-current-line port)
-      (format port "~3d% " (inexact->exact (round %)))
-      (display (progress-bar % (- (current-terminal-columns) 5))
-               port)
+      (let* ((prefix (format #f "~3d% ~@['~a' ~]"
+                            (inexact->exact (round %))
+                            (case phase
+                              ((build) #f)        ;not useful to display it
+                              (else phase))))
+             (length (string-length prefix)))
+        (display prefix port)
+        (display (progress-bar % (- (current-terminal-columns) length))
+                 port))
       (force-output port)))
 
   (define print-log-line
@@ -477,10 +490,12 @@ addition to build events."
           (match (build-status-building status)
             ((build)                              ;single job
              (match (build-completion build)
-               ((? number? %) (report-build-progress %))
-               (_ (spin! port))))
+               ((? number? %)
+                (report-build-progress (build-phase build) %))
+               (_
+                (spin! (build-phase build) port))))
             (_
-             (spin! port))))))
+             (spin! #f port))))))
 
   (define erase-current-line*
     (if (isatty?* port)
