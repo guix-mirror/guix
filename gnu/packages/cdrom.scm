@@ -525,7 +525,7 @@ from an audio CD.")
 (define-public abcde
   (package
     (name "abcde")
-    (version "2.9.2")
+    (version "2.9.3")
     (home-page "https://abcde.einval.com/")
     (source (origin
               (method url-fetch)
@@ -533,19 +533,13 @@ from an audio CD.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13c5yvp87ckqgha160ym5rdr1a4divgvyqbjh0yb6ffclip6qd9l"))
+                "091ip2iwb6b67bhjsj05l0sxyq2whqjycbzqpkfbpm4dlyxx0v04"))
               (modules '((guix build utils)))
               (snippet
-               `(begin
+               '(begin
                   (substitute* "Makefile"
-                    ;; Fix abcde 2.9.2 still thinking it's 2.9.1.
-                    ;; XXX This will be fixed in the next release.
-                    (("(abcde_version = abcde-)(2.9.1)" _ good bad)
-                     (string-append good ,version))
                     (("/usr/bin/install")
-                     "install")
-                    (("^etcdir = .*$")
-                     (string-append "etcdir = $(prefix)/etc\n")))
+                     "install"))
                   #t))))
     (build-system gnu-build-system)
     (arguments
