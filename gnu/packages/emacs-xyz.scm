@@ -5184,31 +5184,30 @@ news items, openrc and runscripts.")
     (license license:gpl2+)))
 
 (define-public emacs-evil
-  (let ((commit "230b87212c81aaa68ef5547a6b998d9c365fe139"))
-    (package
-      (name "emacs-evil")
-      (version (git-version "1.2.13" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/emacs-evil/evil")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "0c9zy3bpck10gcrv79kd3h7i4ygd5bgbgy773n0lg7a2r5kwn1gx"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-undo-tree" ,emacs-undo-tree)
-         ("emacs-goto-chg" ,emacs-goto-chg)))
-      (home-page "https://github.com/emacs-evil/evil")
-      (synopsis "Extensible Vi layer for Emacs")
-      (description
-       "Evil is an extensible vi layer for Emacs.  It emulates the
+  (package
+    (name "emacs-evil")
+    (version "1.2.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-evil/evil")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1833w397xhac5g3pp25szr2gyvclxy91aw27azvbmsx94pyk2a3q"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-undo-tree" ,emacs-undo-tree)
+       ("emacs-goto-chg" ,emacs-goto-chg)))
+    (home-page "https://github.com/emacs-evil/evil")
+    (synopsis "Extensible Vi layer for Emacs")
+    (description
+     "Evil is an extensible vi layer for Emacs.  It emulates the
 main features of Vim, and provides facilities for writing custom
 extensions.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-evil-collection
   (let ((commit "4e1f0e0b17153d460805a0da90d6191d66b2673d")
