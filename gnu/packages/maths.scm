@@ -764,7 +764,8 @@ incompatible with HDF5.")
                                 "/src/hdf5-" version ".tar.bz2")))
       (sha256
        (base32 "0f3jfbqpaaq21ighi40qzs52nb52kc2d2yjk541rjmsx20b3ih2r"))
-      (patches (list (search-patch "hdf5-config-date.patch")))))
+      (patches (search-patches "hdf5-config-date.patch"
+                               "hdf5-1.8-mpi-deprecations.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -877,7 +878,8 @@ extremely large and complex data collections.")
                                 "/src/hdf5-" version ".tar.bz2")))
       (sha256
        (base32 "1pr85fa1sh2ky6ai2hs3f21lp252grl2cq3wbyi4rh7dm83gyrqj"))
-      (patches (list (search-patch "hdf5-config-date.patch")))))))
+      (patches (search-patches "hdf5-config-date.patch"
+                               "hdf5-mpi-deprecations.patch"))))))
 
 (define-public hdf-java
   (package

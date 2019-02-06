@@ -873,6 +873,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf4-reproducibility.patch 		\
   %D%/packages/patches/hdf4-shared-fortran.patch 		\
   %D%/packages/patches/hdf5-config-date.patch			\
+  %D%/packages/patches/hdf5-mpi-deprecations.patch		\
+  %D%/packages/patches/hdf5-1.8-mpi-deprecations.patch		\
   %D%/packages/patches/hdf-eos2-build-shared.patch 		\
   %D%/packages/patches/hdf-eos2-remove-gctp.patch		\
   %D%/packages/patches/hdf-eos2-fortrantests.patch		\
