@@ -749,7 +749,7 @@ incompatible with HDF5.")
 (define-public hdf5
   (package
     (name "hdf5")
-    (version "1.8.19")
+    (version "1.8.21")
     (source
      (origin
       (method url-fetch)
@@ -759,11 +759,12 @@ incompatible with HDF5.")
                                 version ".tar.bz2")
                  (string-append "https://support.hdfgroup.org/ftp/HDF5/"
                                 "current"
-                                (apply string-append
-                                       (take (string-split version #\.) 2))
+                                (match (string-split version #\.)
+                                  ((major minor _ ...)
+                                   (string-append major minor)))
                                 "/src/hdf5-" version ".tar.bz2")))
       (sha256
-       (base32 "0f3jfbqpaaq21ighi40qzs52nb52kc2d2yjk541rjmsx20b3ih2r"))
+       (base32 "03glk4w4wyb1jyb443g53y3y1ncnf6mj2cqwm6avfr2awkgb3cg5"))
       (patches (search-patches "hdf5-config-date.patch"
                                "hdf5-1.8-mpi-deprecations.patch"))))
     (build-system gnu-build-system)
