@@ -4031,10 +4031,8 @@ S-expression.")
       (license license:gpl3+))))
 
 (define-public emacs-lispyville
-  ;; Later versions need a more recent Evil, with an evil-define-key*
-  ;; supporting nil for the state.
-  (let ((commit "b4291857ed6a49a67c4ea77522889ce51fb171ab")
-        (revision "0"))
+  (let ((commit "d28b937f0cabd8ce61e2020fe9a733ca80d82c74")
+        (revision "1"))
     (package
       (name "emacs-lispyville")
       (version (git-version "0.1" revision commit))
@@ -4044,7 +4042,7 @@ S-expression.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "095zibzc3naknahdrnb59g9rbljy8wz9rkc7rf8avb3wxlwvxhm3"))
+                  "0f6srwj1qqkfkbmp5n5pjvi6gm7b7xav05p5hrs2i83rjrakzzqx"))
                 (file-name (git-file-name name version))))
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
