@@ -560,6 +560,45 @@ HTML (via SXML) or any other format for rendering.")
 It has a nice, simple s-expression based syntax.")
     (license license:lgpl3+)))
 
+(define-public guile-squee
+  (let ((commit "a85902a92bf6f58a1d35fd974a01ade163deda8d")
+        (revision "0"))
+    (package
+      (name "guile-squee")
+      (version (string-append "0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://notabug.org/cwebber/guile-squee.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0p1lpsp4kx57j3ai1dkxilm4ziavzzx8wbbc42m3hpziq0a7qz5z"))))
+      (build-system guile-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "squee.scm"
+                 (("dynamic-link \"libpq\"")
+                  (string-append
+                   "dynamic-link \""
+                   (assoc-ref inputs "postgresql") "/lib/libpq.so"
+                   "\"")))
+               #t)))))
+      (inputs
+       `(("postgresql" ,postgresql)))
+      (native-inputs
+       `(("guile" ,guile-2.2)))
+      (home-page "https://notabug.org/cwebber/guile-squee")
+      (synopsis "Connect to PostgreSQL using Guile")
+      (description
+       "@code{squee} is a Guile library for connecting to PostgreSQL databases
+using Guile's foreign function interface.")
+      (license license:gpl3+))))
+
 (define-public guile-colorized
   (package
     (name "guile-colorized")
