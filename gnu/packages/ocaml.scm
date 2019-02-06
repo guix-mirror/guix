@@ -5967,10 +5967,10 @@ driver including all standard Jane Street ppx rewriters.")
     (properties `((upstream-name . "splittable_random")))
     (home-page "https://github.com/janestreet/splittable_random")
     (synopsis "PRNG that can be split into independent streams")
-    (description "This package provides a splittable pseudo-random number generator
-(@defn{PRNG}) functions like a PRNG that can be used as a stream of random
-values; it can also be split to produce a second, independent stream of
-random values.
+    (description "This package provides a splittable
+@acronym{PRNG,pseudo-random number generator} functions like a PRNG that can
+be used as a stream of random values; it can also be split to produce a
+second, independent stream of random values.
 
 This library implements a splittable pseudo-random number generator that sacrifices
 cryptographic-quality randomness in favor of performance.")
