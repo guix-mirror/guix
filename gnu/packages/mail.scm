@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -1861,7 +1861,7 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.0")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
@@ -1869,7 +1869,7 @@ converts them to maildir format directories.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "14xsvpm5bc1wycisq882gqrnamnyi1q4rlk6anlw8ihzvwgm4h2j"))))
+         "1rx5mhgqkm7swbynrhbsz32v85h0rydb4kqfgfs9jrznd9d14m2d"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
