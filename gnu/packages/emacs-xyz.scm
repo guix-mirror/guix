@@ -4000,8 +4000,8 @@ navigate code in a tree-like fashion.")
 (define-public emacs-lispy
   ;; Release 0.26.0 was almost 3 years ago, and there have been ~772 commits
   ;; since.
-  (let ((commit "c2a358a7a15fcf056a5b7461a8e690b481b03b80")
-        (revision "0"))
+  (let ((commit "f94cfc6b8f9c3afe7d028c366928049c011023de")
+        (revision "1"))
     (package
       (name "emacs-lispy")
       (version (git-version "0.26.0" revision commit))
@@ -4011,7 +4011,7 @@ navigate code in a tree-like fashion.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "1g6756qqx2n4cx8jac6mlwayilsiyc5rz8nrqjnywvzc75xdinjd"))
+                  "1bm2cpwizg1qfpm377gpx1af1hm5maw69if1csnk5vwaphmv8c4g"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
