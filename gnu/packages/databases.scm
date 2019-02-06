@@ -582,7 +582,12 @@ Language.")
                       "main.explain_non_select"
                       "main.stat_tables_innodb"
                       "roles.acl_statistics"
+
+                      ;; This file contains a time bomb which makes it fail after
+                      ;; 2019-01-01.  See <https://bugs.gnu.org/34351> for details.
                       "main.mysqldump"
+
+                      ;; XXX: Fails sporadically.
                       "innodb_fts.crash_recovery"
 
                       ;; FIXME: This test fails on i686:
