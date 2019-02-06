@@ -93,13 +93,13 @@ algebra.")
 (define-public mpfr
   (package
    (name "mpfr")
-   (version "4.0.1")
+   (version "4.0.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/mpfr/mpfr-" version
                                 ".tar.xz"))
             (sha256 (base32
-                     "0vp1lrc08gcmwdaqck6bpzllkrykvp06vz5gnqpyw0v3h9h4m1v7"))))
+                     "12m3amcavhpqygc499s3fzqlb8f2j2rr7fkqsm10xbjfc04fffqx"))))
    (build-system gnu-build-system)
    (outputs '("out" "debug"))
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
