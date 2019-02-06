@@ -624,7 +624,25 @@ board-independent tools.")))
   (make-u-boot-package "mx6cuboxi" "arm-linux-gnueabihf"))
 
 (define-public u-boot-novena
-  (make-u-boot-package "novena" "arm-linux-gnueabihf"))
+  (let ((base (make-u-boot-package "novena" "arm-linux-gnueabihf")))
+    (package
+      (inherit base)
+      (description "U-Boot is a bootloader used mostly for ARM boards. It
+also initializes the boards (RAM etc).
+
+This U-Boot is built for Novena.  Be advised that this version, contrary
+to Novena upstream, does not load u-boot.img from the first patition.")
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'patch-novena-defconfig
+               ;; Patch configuration to disable loading u-boot.img from FAT partition,
+               ;; allowing it to be installed at a device offset.
+               (lambda _
+                 (substitute* "configs/novena_defconfig"
+                   (("CONFIG_SPL_FAT_SUPPORT=y") "# CONFIG_SPL_FAT_SUPPORT is not set"))
+                 #t)))))))))
 
 (define-public u-boot-cubieboard
   (make-u-boot-package "Cubieboard" "arm-linux-gnueabihf"))
